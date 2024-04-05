@@ -5,14 +5,14 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(widget)
    
    Procedure CallBack( )
-      Select WidgetEventType( )
-         Case #__event_Focus
-            Debug "active - event " + EventWidget( )\class
-            
-         Case #__event_LostFocus
-            Debug "deactive - event " + EventWidget( )\class
-            
-      EndSelect
+;       Select WidgetEventType( )
+;          Case #__event_Focus
+;             Debug "active - event " + EventWidget( )\class
+;             
+;          Case #__event_LostFocus
+;             Debug "deactive - event " + EventWidget( )\class
+;             
+;       EndSelect
    EndProcedure
    
    If Open(0, 0, 0, 800, 600, " focus demo ", #PB_Window_SystemMenu |
@@ -23,8 +23,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MaximizeGadget |
                                             #PB_Window_MinimizeGadget )
       
-      SetClass(widget( ), "window_0" ) : SetClass(widget( ), "window_0_container_1" )
-      Container( 30,30,240,140 )
+      SetClass(widget( ), "window_0" )
+      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_0" )
+      AddItem(widget(), -1, "item_0" )
       Button(10,10,200,50,"window_0_button_1")
       SetClass(widget( ), "window_0_button_1" )
       Button(10,65,200,50,"window_0_button_2")
@@ -37,7 +38,8 @@ CompilerIf #PB_Compiler_IsMainFile
                                               #PB_Window_MinimizeGadget )
       
       SetClass(widget( ), "window_1" )
-      Container( 30,30,240,140 ) : SetClass(widget( ), "window_1_container_1" )
+      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_1" )
+      AddItem(widget(), -1, "item_0" )
       Button(10,10,200,50,"window_1_button_1")
       SetClass(widget( ), "window_1_button_1" )
       Button(10,65,200,50,"window_1_button_2")
@@ -50,7 +52,8 @@ CompilerIf #PB_Compiler_IsMainFile
                                               #PB_Window_MinimizeGadget )
       
       SetClass(widget( ), "window_2" )
-      Container( 30,30,240,140 ) : SetClass(widget( ), "window_2_container_1" )
+      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_2" )
+      AddItem(widget(), -1, "item_0" )
       Button(10,10,200,50,"window_2_button_1")
       SetClass(widget( ), "window_2_button_1" )
       Button(10,65,200,50,"window_2_button_2")
@@ -61,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 10
+; CursorPosition = 54
+; FirstLine = 31
 ; Folding = -
 ; EnableXP

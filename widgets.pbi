@@ -15169,6 +15169,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure SetClass( *this._s_WIDGET, class.s )
          If *this\class <> class
             *this\class = class
+            If *this\TabBox( )
+               *this\TabBox( )\class = ClassFromType( *this\TabBox( )\type ) +"-"+ *this\class
+            EndIf
             ProcedureReturn *this
          EndIf
       EndProcedure
@@ -15758,7 +15761,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                If *this
                   If *this\child > 0 
-                     ProcedureReturn 
+                   ;  ProcedureReturn 
                   EndIf
                   ;
                   If Not IsChild( *this, ActiveWindow( ) )
@@ -15882,36 +15885,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not ( *this\child > 0 And GetActive( ) = *this\parent )
                      ;  
                      SetDeactive( *this )
-                     ;
-                     If GetActive( )\child > 0 
-                        If GetActive( )\parent 
-                           If GetActive( )\parent <> *this
-                              If GetActive( )\parent\focus = #True
-                                 GetActive( )\parent\focus = #False
-                                 DoFocus( GetActive( )\parent, #__event_LostFocus )
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
+;                      ;
+;                      If GetActive( )\child > 0 
+;                         If GetActive( )\parent 
+;                            If GetActive( )\parent <> *this
+;                               If GetActive( )\parent\focus = #True
+;                                  GetActive( )\parent\focus = #False
+;                                  DoFocus( GetActive( )\parent, #__event_LostFocus )
+;                               EndIf
+;                            EndIf
+;                         EndIf
+;                      EndIf
                   EndIf
                EndIf
             EndIf
             ;
             If GetActive( ) <> *this
                GetActive( ) = *this
-;                Debug 777
-;                *this\root\repaint = #True
             EndIf
             ;
             If *this\focus = #False
                *this\focus = #True
                
                ;\\ get active window
-               If is_window_( *active ) Or 
-                  is_root_( *active )
+               If is_root_( *active ) Or 
+                  is_window_( *active )
                   ActiveWindow( ) = *active
                Else
-                  ActiveWindow( ) = *active\window
+                  If *active\window
+                     ActiveWindow( ) = *active\window
+                  Else
+                     ActiveWindow( ) = *active\root
+                  EndIf
                   If ActiveWindow( )
                      ActiveGadget( ) = *active
                   EndIf
@@ -15956,14 +15961,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                DoFocus( *this, #__event_Focus )
-               If *this\child > 0
-                  If *this\parent
-                     If *this\parent\focus = #False
-                        *this\parent\focus = #True
-                        DoFocus( *this\parent, #__event_Focus )
-                     EndIf
-                  EndIf
-               EndIf
+;                If *this\child > 0
+;                   If *this\parent
+;                      If *this\parent\focus = #False
+;                         *this\parent\focus = #True
+;                         DoFocus( *this\parent, #__event_Focus )
+;                      EndIf
+;                   EndIf
+;                EndIf
          
                ;\\
                If ActiveWindow( )
@@ -21144,10 +21149,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;Debug "  StatusChange - "+*this\class
          EndIf
          If eventtype = #__event_Focus
-            Debug "  Focus - "+*this\class +" "+ GetActive( )\class
+            ;Debug "  Focus - "+*this\class ;+" "+ GetActive( )\class
          EndIf
          If eventtype = #__event_LostFocus
-            Debug "  LostFocus - "+*this\class
+            ;Debug "  LostFocus - "+*this\class
             
             If is_menu_( *this )
                If *this\FocusedTab( )
@@ -24748,7 +24753,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19446
-; FirstLine = 19359
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--4----------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 15980
+; FirstLine = 15788
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------0-------------------------------------------------------------------------------------------+-v-----------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

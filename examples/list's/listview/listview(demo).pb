@@ -31,12 +31,19 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   EndImport
 CompilerEndIf
 
+; Procedure GoToListItem(gad,i)
+;   SetGadgetState(gad,-1) ; De-select any selected items.
+;   SetGadgetState(gad,i-1) ; Now select the wanted item.
+;   SendMessage_(GadgetID(gad),#LVM_ENSUREVISIBLE,i-1,0) ; And scroll to it.
+; EndProcedure
 Procedure scroll_to_point(Gadget,Item)
-  CompilerSelect #PB_Compiler_OS
+   ; https://www.purebasic.fr/english/viewtopic.php?f=13&t=60533&view=unread#unread
+   CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_Linux
       gtk_tree_view_scroll_to_point_(GadgetID(Gadget), -1, (Item - 1) * 22 - 20)
     CompilerCase #PB_OS_MacOS
       RevealDataBrowserItem(GadgetID(Gadget), Item, 0, 1)
+      ;CocoaMessage(0, GadgetID(Gadget), "scrollRowToVisible:", item-1)
     CompilerCase #PB_OS_Windows
       SendMessage_(GadgetID(Gadget), #LVM_ENSUREVISIBLE, (Item - 1), #True)
   CompilerEndSelect
@@ -191,6 +198,8 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 39
+; FirstLine = 29
 ; Folding = --
 ; EnableXP

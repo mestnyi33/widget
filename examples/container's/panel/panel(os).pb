@@ -84,6 +84,17 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
+   Procedure events_widget( )
+      Select WidgetEventType( )
+         Case #__event_Focus
+            Debug "active - event " + EventWidget( )\class
+            
+         Case #__event_LostFocus
+            Debug "deactive - event " + EventWidget( )\class
+            
+      EndSelect
+   EndProcedure
+   
    Open(0, 270, 100, 600, 310, "Change tab location")
    ;a_init(root(),0)
    SetColor(root(), #__color_back, $FFF2F2F2)
@@ -133,6 +144,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   SetState(*option, #True)
    ;   Bind( #PB_All, @events_widget( ), #PB_EventType_Change )
    
+   
+    Bind( #PB_All, @events_widget( ) )
+   
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       ClipGadgets( UseGadgetList(0) )
    CompilerEndIf
@@ -145,6 +159,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 86
+; FirstLine = 68
+; Folding = ---
 ; EnableXP
