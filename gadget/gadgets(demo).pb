@@ -32,7 +32,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     OptionGadget(#PB_GadgetType_Option, 5, 405, 160,95, "Option_"+Str(#PB_GadgetType_Option) ) : SetGadgetState(#PB_GadgetType_Option, 1)                                                       
     ListViewGadget(#PB_GadgetType_ListView, 5, 505, 160,95) : AddGadgetItem(#PB_GadgetType_ListView, -1, "ListView_"+Str(#PB_GadgetType_ListView)) : For i=1 To 5 : AddGadgetItem(#PB_GadgetType_ListView, i, "item_"+Str(i)) : Next
     FrameGadget(#PB_GadgetType_Frame, 170, 5, 160,95, "Frame_"+Str(#PB_GadgetType_Frame) )
-    ComboBoxGadget(#PB_GadgetType_ComboBox, 170, 105, 160,95) : AddGadgetItem(#PB_GadgetType_ComboBox, -1, "ComboBox_"+Str(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddGadgetItem(#PB_GadgetType_ComboBox, i, "item_"+Str(i)) : Next : SetGadgetState(#PB_GadgetType_ComboBox, 0) 
+    ComboBoxGadget(#PB_GadgetType_ComboBox, 170, 105, 160,45) : AddGadgetItem(#PB_GadgetType_ComboBox, -1, "ComboBox_"+Str(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddGadgetItem(#PB_GadgetType_ComboBox, i, "item_"+Str(i)) : Next : SetGadgetState(#PB_GadgetType_ComboBox, 0) 
+    ComboBoxGadget(100+#PB_GadgetType_ComboBox, 170, 155, 160,45, #PB_ComboBox_Editable) : AddGadgetItem(100+#PB_GadgetType_ComboBox, -1, "ComboBox_"+Str(100+#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddGadgetItem(100+#PB_GadgetType_ComboBox, i, "item_"+Str(i)) : Next : SetGadgetState(100+#PB_GadgetType_ComboBox, 0) 
     ImageGadget(#PB_GadgetType_Image, 170, 205, 160,95, 0, #PB_Image_Border ) 
     HyperLinkGadget(#PB_GadgetType_HyperLink, 170, 305, 160,95,"HyperLink_"+Str(#PB_GadgetType_HyperLink), $00FF00, #PB_HyperLink_Underline ) 
     ContainerGadget(#PB_GadgetType_Container, 170, 405, 160,95, #PB_Container_Flat )
@@ -146,6 +147,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 35
+; FirstLine = 10
 ; Folding = --
 ; EnableXP

@@ -273,7 +273,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          a_index( ) = #__a_moved
       EndMacro
       
+;       Macro  SetState(widget, State)
+;          SetText(widget,
+;                  Str(IPAddressField(State,0))+"."+
+;                  Str(IPAddressField(State,1))+"."+
+;                  Str(IPAddressField(State,2))+"."+
+;                  Str(IPAddressField(State,3)))
+;       EndMacro
       
+      Macro IPAddress( x,y,width,height, flag=0 )
+         String( x,y,width,height, "", #__flag_textnumeric|flag )
+         widget( )\class = "IPAddress"
+      EndMacro
+  
       ;- \\
       Macro __tabs( ): bar\_s( ): EndMacro
       Macro __rows( ): columns( )\items( ): EndMacro
@@ -1319,8 +1331,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i GetFont( *this )
       Declare.i SetFont( *this, FontID.i )
       
-      Declare.f GetState( *this )
-      Declare.b SetState( *this, state.f )
+      Declare.i GetState( *this )
+      Declare.b SetState( *this, state.i )
       
       Declare.i GetParent( *this )
       Declare   SetParent( *this, *parent, tabindex.l = #PB_Default )
@@ -14873,7 +14885,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.f GetState( *this._s_WIDGET )
+      Procedure.i GetState( *this._s_WIDGET )
          ; This is a universal function which works For almost all gadgets: 
          ; 
          ; - ButtonImage( )  : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
@@ -14917,6 +14929,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this = *this\ComboBar( )
          EndIf
          
+         If *this\class = "IPAddress"
+           ProcedureReturn *this\FocusedLineIndex( )
+         EndIf
+      
          ;\\
          If *this\type = #__type_Window
             If *this\resize & #__resize_minimize
@@ -15134,7 +15150,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.b SetState( *this._s_WIDGET, state.f )
+      Procedure.b SetState( *this._s_WIDGET, state.i )
          ; This is a universal function which works For almost all gadgets: 
          ; 
          ; - ButtonImage( ) : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
@@ -15262,7 +15278,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ - widget::IPaddress_SetState( )
-         If *this\type = #__type_IPAddress
+         If *this\class = "IPAddress" ; type = #__type_IPAddress
             If *this\FocusedLineIndex( ) <> State
                *this\FocusedLineIndex( ) = State
                SetText( *this, Str( IPAddressField( State, 0 )) + "." +
@@ -15979,7 +15995,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PushListPosition( __widgets( ))
                ChangeCurrentElement( __widgets( ), *this\address )
                MoveElement( __widgets( ), #PB_List_After, *last\address )
-               
+                 
                If *this\haschildren
                   While NextElement( __widgets( ))
                      If IsChild( __widgets( ), *this )
@@ -24654,7 +24670,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14100
-; FirstLine = 14010
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 15152
+; FirstLine = 15108
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

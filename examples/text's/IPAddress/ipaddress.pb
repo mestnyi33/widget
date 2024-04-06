@@ -8,20 +8,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *S_1
   Global *S_2
   
-  Macro  SetState(widget, State)
-    SetText(widget,
-            Str(IPAddressField(State,0))+"."+
-            Str(IPAddressField(State,1))+"."+
-            Str(IPAddressField(State,2))+"."+
-            Str(IPAddressField(State,3)))
-  EndMacro
-  
-  Macro IPAddress( x,y,width,height, flag=0 )
-    String( x,y,width,height, "", #__flag_textnumeric|flag )
-;     widget( )\fs = 1
-;     Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-;     ;widget( )\type = #__type_IPAddress
-  EndMacro
   
   If Open(0, 0, 0, 615, 235, "IPAddressGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
@@ -76,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 65
-; FirstLine = 8
-; Folding = v
+; CursorPosition = 10
+; FirstLine = 3
+; Folding = 8
 ; EnableXP
