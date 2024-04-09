@@ -3177,7 +3177,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure a_remove( *this._s_WIDGET )
          Protected a_index
          For a_index = 0 To #__a_moved
-            If *this\anchors\id[a_index]
+            If *this\anchors And
+               *this\anchors\id[a_index]
                FreeStructure( *this\anchors\id[a_index] )
                *this\anchors\id[a_index] = #Null
             EndIf
@@ -3207,7 +3208,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; atpoint
          If is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] )
             For i = 1 To #__a_moved  
-               If *this\anchors\id[i] And
+               If *this\anchors And 
+                  *this\anchors\id[i] And
                   is_atpoint_( *this\anchors\id[i], mouse( )\x, mouse( )\y )
                   ;
                   a_index = i
@@ -3218,7 +3220,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          i = 0
          ;
-         If a_transform( ) And a_focused( )
+         If a_transform( ) And a_focused( ) And a_focused( )\anchors
             For i = 1 To #__a_moved  
                If a_focused( )\anchors\id[i] And
                   is_atpoint_( a_focused( )\anchors\id[i], mouse( )\x, mouse( )\y )
@@ -3556,7 +3558,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      ;
                      If StartEnumerate( *this\root )
-                        If __widgets( )\type = #__type_splitter
+                        If __widgets( )\type = #__type_splitter Or *this\autosize
                            If __widgets( )\anchors And
                               __widgets( )\anchors\mode 
                               ;
@@ -5448,7 +5450,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.b Resize( *this._s_WIDGET, x.l, y.l, width.l, height.l )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
-         ;Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
+         
+;          If Not *this\child
+;             Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
+;          EndIf
          
          ;\\
          If *this\anchors
@@ -5459,6 +5464,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\bs < *this\fs
                *this\bs = *this\fs
             EndIf
+         EndIf
+         ;
+         If *this\autosize And *this\parent And *this\parent\type = #__type_Splitter
+            *this\autosize = 0
          EndIf
          
          ;\\
@@ -5908,144 +5917,151 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ then move and size parent
          ;\\ resize all children's
          If *this\resize
-            If *this\haschildren
-               ; If Not mouse( )\press
-               Protected pw, ph
-               
-               If StartEnumerate( *this )
-                  ;
-                  If Not is_scrollbars_( widget( ))
-                     If widget( )\align
-                        ;\\
-                        If widget( )\parent\align
-                           pw = ( widget( )\parent\inner_width( ) - widget( )\parent\align\width )
-                           ph = ( widget( )\parent\inner_height( ) - widget( )\parent\align\height )
-                        EndIf
-                        
-                        ;\\
-                        ;\\ horizontal
-                        ;\\
-                        If widget( )\align\left > 0
-                           x = widget( )\align\x
-                           If widget( )\align\right < 0
-                              If widget( )\align\left = 0
-                                 x + pw / 2
-                              EndIf
-                              width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - x
+           If *this\haschildren 
+             If *this\type <> #__type_Splitter
+               ;Debug *this\class
+                  ; If Not mouse( )\press
+                  Protected pw, ph
+                  
+                  If StartEnumerate( *this )
+                     If widget( )\parent <> *this
+                        ;Continue
+                        Break
+                     EndIf
+                     ;
+                     If Not is_scrollbars_( widget( ))
+                        If widget( )\align
+                           ;\\
+                           If widget( )\parent\align
+                              pw = ( widget( )\parent\inner_width( ) - widget( )\parent\align\width )
+                              ph = ( widget( )\parent\inner_height( ) - widget( )\parent\align\height )
                            EndIf
-                        EndIf
-                        If Not widget( )\align\right
-                           width = widget( )\align\width
                            
-                           If Not widget( )\align\left
+                           ;\\
+                           ;\\ horizontal
+                           ;\\
+                           If widget( )\align\left > 0
                               x = widget( )\align\x
-                              If widget( )\align\left = 0
-                                 x + pw / 2
+                              If widget( )\align\right < 0
+                                 If widget( )\align\left = 0
+                                    x + pw / 2
+                                 EndIf
+                                 width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - x
                               EndIf
-                              width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - x
                            EndIf
-                        EndIf
-                        If widget( )\align\right > 0
-                           x = widget( )\align\x
-                           If widget( )\align\left < 0
-                              ;\\ ( left = proportional & right = 1 )
-                              x     = widget( )\align\x + pw / 2
-                              width = (( widget( )\align\x + widget( )\align\width ) + pw ) - x
-                           Else
-                              If widget( )\align\left = 0
-                                 x + pw
+                           If Not widget( )\align\right
+                              width = widget( )\align\width
+                              
+                              If Not widget( )\align\left
+                                 x = widget( )\align\x
+                                 If widget( )\align\left = 0
+                                    x + pw / 2
+                                 EndIf
+                                 width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - x
                               EndIf
-                              width = (( widget( )\align\x + widget( )\align\width ) + pw ) - x
                            EndIf
-                        EndIf
-                        ;\\ horizontal proportional
-                        If ( widget( )\align\left < 0 And widget( )\align\right <= 0 ) Or
-                           ( widget( )\align\right < 0 And widget( )\align\left <= 0 )
-                           Protected ScaleX.f = widget( )\parent\inner_width( ) / widget( )\parent\align\width
-                           width = ScaleX * widget( )\align\width
-                           ;\\ center proportional
-                           If widget( )\align\left < 0 And widget( )\align\right < 0
-                              x = ( widget( )\parent\inner_width( ) - width ) / 2
-                           ElseIf widget( )\align\left < 0 And widget( )\align\right = 0
-                              ;\\ right proportional
-                              x = widget( )\parent\inner_width( ) - ( widget( )\parent\align\width - widget( )\align\x - widget( )\align\width ) - width
-                           ElseIf ( widget( )\align\right < 0 And widget( )\align\left = 0 )
-                              ;\\ left proportional
+                           If widget( )\align\right > 0
                               x = widget( )\align\x
-                           EndIf
-                        EndIf
-                        
-                        ;\\
-                        ;\\ vertical
-                        ;\\
-                        If widget( )\align\top > 0
-                           y = widget( )\align\y
-                           If widget( )\align\bottom < 0
-                              If widget( )\align\top = 0
-                                 y + ph / 2
+                              If widget( )\align\left < 0
+                                 ;\\ ( left = proportional & right = 1 )
+                                 x     = widget( )\align\x + pw / 2
+                                 width = (( widget( )\align\x + widget( )\align\width ) + pw ) - x
+                              Else
+                                 If widget( )\align\left = 0
+                                    x + pw
+                                 EndIf
+                                 width = (( widget( )\align\x + widget( )\align\width ) + pw ) - x
                               EndIf
-                              height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - y
                            EndIf
-                        EndIf
-                        If Not widget( )\align\bottom
-                           height = widget( )\align\height
+                           ;\\ horizontal proportional
+                           If ( widget( )\align\left < 0 And widget( )\align\right <= 0 ) Or
+                              ( widget( )\align\right < 0 And widget( )\align\left <= 0 )
+                              Protected ScaleX.f = widget( )\parent\inner_width( ) / widget( )\parent\align\width
+                              width = ScaleX * widget( )\align\width
+                              ;\\ center proportional
+                              If widget( )\align\left < 0 And widget( )\align\right < 0
+                                 x = ( widget( )\parent\inner_width( ) - width ) / 2
+                              ElseIf widget( )\align\left < 0 And widget( )\align\right = 0
+                                 ;\\ right proportional
+                                 x = widget( )\parent\inner_width( ) - ( widget( )\parent\align\width - widget( )\align\x - widget( )\align\width ) - width
+                              ElseIf ( widget( )\align\right < 0 And widget( )\align\left = 0 )
+                                 ;\\ left proportional
+                                 x = widget( )\align\x
+                              EndIf
+                           EndIf
                            
-                           If Not widget( )\align\top
+                           ;\\
+                           ;\\ vertical
+                           ;\\
+                           If widget( )\align\top > 0
                               y = widget( )\align\y
-                              If widget( )\align\top = 0
-                                 y + ph / 2
+                              If widget( )\align\bottom < 0
+                                 If widget( )\align\top = 0
+                                    y + ph / 2
+                                 EndIf
+                                 height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - y
                               EndIf
-                              height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - y
                            EndIf
-                        EndIf
-                        If widget( )\align\bottom > 0
-                           y = widget( )\align\y
-                           If widget( )\align\top < 0
-                              ;\\ ( top = proportional & bottom = 1 )
-                              y      = widget( )\align\y + ph / 2
-                              height = (( widget( )\align\y + widget( )\align\height ) + ph ) - y
-                           Else
-                              If widget( )\align\top = 0
-                                 y + ph
+                           If Not widget( )\align\bottom
+                              height = widget( )\align\height
+                              
+                              If Not widget( )\align\top
+                                 y = widget( )\align\y
+                                 If widget( )\align\top = 0
+                                    y + ph / 2
+                                 EndIf
+                                 height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - y
                               EndIf
-                              height = (( widget( )\align\y + widget( )\align\height ) + ph ) - y
                            EndIf
-                        EndIf
-                        ;\\ vertical proportional
-                        If ( widget( )\align\top < 0 And widget( )\align\bottom <= 0 ) Or
-                           ( widget( )\align\bottom < 0 And widget( )\align\top <= 0 )
-                           Protected ScaleY.f = widget( )\parent\inner_height( ) / widget( )\parent\align\height
-                           height = ScaleY * widget( )\align\height
-                           ;\\ center proportional
-                           If widget( )\align\top < 0 And widget( )\align\bottom < 0
-                              y = ( widget( )\parent\inner_height( ) - height ) / 2
-                           ElseIf widget( )\align\top < 0 And widget( )\align\bottom = 0
-                              ;\\ bottom proportional
-                              y = widget( )\parent\inner_height( ) - ( widget( )\parent\align\height - widget( )\align\y - widget( )\align\height ) - height
-                           ElseIf ( widget( )\align\bottom < 0 And widget( )\align\top = 0 )
-                              ;\\ top proportional
+                           If widget( )\align\bottom > 0
                               y = widget( )\align\y
+                              If widget( )\align\top < 0
+                                 ;\\ ( top = proportional & bottom = 1 )
+                                 y      = widget( )\align\y + ph / 2
+                                 height = (( widget( )\align\y + widget( )\align\height ) + ph ) - y
+                              Else
+                                 If widget( )\align\top = 0
+                                    y + ph
+                                 EndIf
+                                 height = (( widget( )\align\y + widget( )\align\height ) + ph ) - y
+                              EndIf
                            EndIf
-                        EndIf
-                        
-                        
-                        Resize( widget( ), x, y, width, height )
-                     Else
-                        If (*this\resize & #__resize_x Or *this\resize & #__resize_y)
-                           Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                           ;\\ vertical proportional
+                           If ( widget( )\align\top < 0 And widget( )\align\bottom <= 0 ) Or
+                              ( widget( )\align\bottom < 0 And widget( )\align\top <= 0 )
+                              Protected ScaleY.f = widget( )\parent\inner_height( ) / widget( )\parent\align\height
+                              height = ScaleY * widget( )\align\height
+                              ;\\ center proportional
+                              If widget( )\align\top < 0 And widget( )\align\bottom < 0
+                                 y = ( widget( )\parent\inner_height( ) - height ) / 2
+                              ElseIf widget( )\align\top < 0 And widget( )\align\bottom = 0
+                                 ;\\ bottom proportional
+                                 y = widget( )\parent\inner_height( ) - ( widget( )\parent\align\height - widget( )\align\y - widget( )\align\height ) - height
+                              ElseIf ( widget( )\align\bottom < 0 And widget( )\align\top = 0 )
+                                 ;\\ top proportional
+                                 y = widget( )\align\y
+                              EndIf
+                           EndIf
+                           
+                           
+                           Resize( widget( ), x, y, width, height )
                         Else
-                           If widget( )\autosize
+                           If (*this\resize & #__resize_x Or *this\resize & #__resize_y)
                               Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                            Else
-                              widget( )\resize | #__reclip
+                              If widget( )\autosize
+                                 Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                              Else
+                                 widget( )\resize | #__reclip
+                              EndIf
                            EndIf
                         EndIf
                      EndIf
+                     ;
+                     StopEnumerate( )
                   EndIf
-                  ;
-                  StopEnumerate( )
+                  
                EndIf
-               
             EndIf
          EndIf
          
@@ -6130,8 +6146,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Bool( _bar_\page\pos <= _bar_\min + _bar_\min[1] ) ;
       EndMacro
       
+;       Macro bar_page_pos_( _bar_, _thumb_pos_ )
+;          ( _bar_\min + Round(((( _thumb_pos_ ) + _bar_\min[2] ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+;       EndMacro
+      
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
-         ( _bar_\min + Round(((( _thumb_pos_ ) + _bar_\min[2] ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+         ( _bar_\min + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
       Macro bar_thumb_pos_( _bar_, _scroll_pos_ )
@@ -8239,8 +8259,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          width  = *this\frame_width( )
          height = *this\frame_height( )
          
-         Debug *bar\PageChange( )
-         
          ;\\
          If mode > 0
             ;\\ get area size
@@ -8399,6 +8417,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If mode < 2
+            ; Debug ""+*bar\PageChange( ) +" "+ *bar\percent +" "+ *bar\min +" "+ *bar\min[2] +" "+ *bar\page\pos +" "+ *bar\area\end +" "+ *bar\page\end
+         
             ;\\ get thumb pos
             If *bar\fixed And Not *bar\PageChange( )
 ;                If Not *bar\ThumbChange( )
@@ -9126,7 +9146,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          EndIf
          
-         ProcedureReturn 1;is_resize_( *this )
+         ProcedureReturn is_resize_( *this )
       EndProcedure
       
       Procedure.b bar_Change( *this._s_WIDGET, ScrollPos.l )
@@ -16322,8 +16342,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; Debug ""+*this\class +" "+ *this\parent\class
                      a_free( *this )
                   Else
-                     If Not *this\anchors And *this\parent\anchors 
-                        a_create( *this, #__a_full )
+                     If Not *this\autosize
+                        If Not *this\anchors And *this\parent\anchors 
+                           a_create( *this, #__a_full )
+                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -24667,7 +24689,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9128
-; FirstLine = 8287
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v6Kpv0P-u+4-++f-4-+-+v-n---0----------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 5455
+; FirstLine = 5442
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------PfJ00---2-+44-8-+4-----f--------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------vX-------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -45,17 +45,19 @@ CompilerIf #PB_Compiler_IsMainFile
      
      Protected *first._s_WIDGET = Container(0,0,0,0) 
      Protected *info._s_WIDGET = ListView(0,0,0,0, #__flag_autosize)
+     ;*first = *info
      SetData(*first, *info)
      Closelist( )
      Protected *second._s_WIDGET = Container(0,0,0,0) 
      Protected *buttons._s_WIDGET = ListView(0,0,0,0, #__flag_autosize)
+     ;*second = *buttons
      SetData(*second, *buttons)
      Closelist( )
      
      Protected *splitter._s_WIDGET = Splitter(0,0,0,0, *first,*second, #PB_Splitter_Vertical |#PB_Splitter_FirstFixed| #__flag_autosize )
-     SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, 10 )
+     SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, 50 )
      SetState(*splitter, 50 )
-     
+     ;*this = *splitter
      SetData(*this, *splitter)
      Closelist( )
      ProcedureReturn *this
@@ -96,15 +98,15 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #PB_GadgetType_ComboBox, 1);Str(Disable(Value)))
     AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_GadgetType_ComboBox, 1)
     
-;     Splitter_0 = Splitter(0, 0, 300, 300, Button_1, *Tree)
-;     Splitter_1 = Splitter(30, 30, 300, 300, Splitter_0, *Tree1, #PB_Splitter_Vertical)
+    Splitter_0 = Splitter(0, 0, 300, 300, Button_1, *Tree)
+    Splitter_1 = Splitter(30, 30, 300, 300, Splitter_0, *Tree1, #PB_Splitter_Vertical)
     
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 55
-; FirstLine = 38
+; CursorPosition = 46
+; FirstLine = 33
 ; Folding = -
 ; EnableXP
