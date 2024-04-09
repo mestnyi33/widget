@@ -2921,6 +2921,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If StartEnumerate( a_focused( )\parent )
+               
                If __widgets( )\anchors And Not __widgets( )\hide And __widgets( ) <> a_focused( ) And __widgets( )\level = a_focused( )\level
                   ; If is_level_( __widgets( ), a_focused( ) )
                   ;
@@ -5925,8 +5926,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If StartEnumerate( *this )
                      If widget( )\parent <> *this
-                        ;Continue
-                        Break
+                        widget( )\resize | #__reclip
+                        Continue
                      EndIf
                      ;
                      If Not is_scrollbars_( widget( ))
@@ -6200,9 +6201,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; (начиная с выбранного индекса)
                If is_integral_( *this )
                   If StartEnumerate( *this\parent )
-                     If widget( )\parent = *this\parent And
-                        widget( )\TabIndex( ) >= Item
-                        widget( )\TabIndex( ) + 1
+                     If widget( )\parent = *this\parent 
+                        If widget( )\TabIndex( ) >= Item
+                           widget( )\TabIndex( ) + 1
+                        EndIf
                      EndIf
                      StopEnumerate( )
                   EndIf
@@ -9076,14 +9078,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;
                            ;\\ Area children's x&y auto move
                            If StartEnumerate( *this\parent )
-                              If *this\parent = widget( )\parent And
-                                 *this\parent\scroll\v <> widget( ) And
-                                 *this\parent\scroll\h <> widget( ) And Not widget( )\align
-                                 ;
-                                 If widget( )\child
-                                    Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore )
-                                 Else
-                                    Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+                              If *this\parent = widget( )\parent 
+                                 If *this\parent\scroll\v <> widget( ) And
+                                    *this\parent\scroll\h <> widget( ) And Not widget( )\align
+                                    ;
+                                    If widget( )\child
+                                       Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore )
+                                    Else
+                                       Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+                                    EndIf
                                  EndIf
                               EndIf
                               ;
@@ -9097,14 +9100,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;
                            ;\\ Area children's x&y auto move
                            If StartEnumerate( *this\parent )
-                              If *this\parent = widget( )\parent And
-                                 *this\parent\scroll\v <> widget( ) And
-                                 *this\parent\scroll\h <> widget( ) And Not widget( )\align
-                                 ;
-                                 If widget( )\child
-                                    Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                                 Else
-                                    Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                              If *this\parent = widget( )\parent 
+                                 If *this\parent\scroll\v <> widget( ) And
+                                    *this\parent\scroll\h <> widget( ) And Not widget( )\align
+                                    ;
+                                    If widget( )\child
+                                       Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                                    Else
+                                       Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                                    EndIf
                                  EndIf
                               EndIf
                               ;
@@ -24689,7 +24693,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5455
-; FirstLine = 5442
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------PfJ00---2-+44-8-+4-----f--------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------vX-------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 5930
+; FirstLine = 5554
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------f+S78---r-0vv-4-0v--------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------07------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
