@@ -23,43 +23,58 @@ CompilerIf #PB_Compiler_IsMainFile
   EndEnumeration
   
   
+  Macro GetItem( _this_ )
+     _this_\EnteredRow( )\index  
+  EndMacro
+  
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
+  Procedure Property_Events( )
+     Protected *splitter._s_WIDGET = EventWidget( )\parent
+     Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+     Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+     
+     Select WidgetEventType( )
+        Case #__event_Down
+           SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
+           
+        Case #__event_StatusChange
+           If *first\EnteredRow( )
+              SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
+           EndIf
+           
+     EndSelect
+  EndProcedure
   
   Procedure AddItem_( *this._s_WIDGET, item, text.s, image=-1, mode=0 )
      Protected *splitter._s_WIDGET = GetData(*this)
      Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-     Protected *info._s_WIDGET = GetData(*first)
-     Protected *buttons._s_WIDGET = GetData(*second)
      
-     AddItem( *info, item, StringField(text.s, 1, Chr(10)), image, mode )
-     AddItem( *buttons, item, StringField(text.s, 2, Chr(10)), image, mode )
+     AddItem( *first, item, StringField(text.s, 1, Chr(10)), image, mode )
+     AddItem( *second, item, StringField(text.s, 2, Chr(10)), image, mode )
      
      
   EndProcedure
   
   Procedure property( x,y,width,height, flag=0 )
      Protected *this._s_WIDGET = Container(x,y,width,height) 
-     
-     Protected *first._s_WIDGET = Container(0,0,0,0) 
-     Protected *info._s_WIDGET = ListView(0,0,0,0, #__flag_autosize)
-     ;*first = *info
-     SetData(*first, *info)
-     Closelist( )
-     Protected *second._s_WIDGET = Container(0,0,0,0) 
-     Protected *buttons._s_WIDGET = ListView(0,0,0,0, #__flag_autosize)
-     ;*second = *buttons
-     SetData(*second, *buttons)
-     Closelist( )
+     Protected *first._s_WIDGET = Tree(0,0,0,0, #__flag_autosize)
+     Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_autosize)
      
      Protected *splitter._s_WIDGET = Splitter(0,0,0,0, *first,*second, #PB_Splitter_Vertical |#PB_Splitter_FirstFixed| #__flag_autosize )
      SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, 50 )
      SetState(*splitter, 50 )
-     ;*this = *splitter
      SetData(*this, *splitter)
+     
      Closelist( )
+     
+     
+     SetData(*second, *first)
+     SetData(*first, *second)
+     
+     Bind(*first, @Property_Events( ))
      ProcedureReturn *this
   EndProcedure
   
@@ -106,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 33
-; Folding = -
+; CursorPosition = 42
+; FirstLine = 14
+; Folding = --
 ; EnableXP

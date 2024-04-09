@@ -1302,7 +1302,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.l GetLevel( *this )
       
       Declare.l GetCount( *this, mode.b = #False )
-      Declare.i GetItem( *this, parent_sublevel.l = - 1 )
       Declare.i GetRoot( *this )
       Declare.i GetGadget( *this = #Null )
       Declare.i GetWindow( *this = #Null )
@@ -13780,6 +13779,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn flags
       EndProcedure
       
+      Procedure.i get_item_( *this._s_WIDGET, parent_sublevel.l = - 1 ) ;???
+         Protected result
+         Protected *rows._s_ROWS
+         Protected *widget._s_WIDGET
+         
+         If *this
+            If parent_sublevel = - 1
+               *widget = *this
+               result  = *widget\TabIndex( )
+               
+            Else
+               *rows = *this
+               
+               While *rows And *rows <> *rows\ParentRow( )
+                  
+                  If Not *rows\ParentRow( ) 
+                     Break
+                  EndIf
+                  If parent_sublevel = *rows\ParentRow( )\sublevel
+                     result = *rows
+                     Break
+                  EndIf
+                  
+                  *rows = *rows\ParentRow( )
+               Wend
+               
+            EndIf
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
       Procedure.q Flag( *this._s_WIDGET, flag.q = #Null, state.b = #PB_Default )
          Protected result.q
          ;
@@ -13984,7 +14015,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\__items( )\ParentRow( )
                               *this\__items( )\RowBoxState( ) = #PB_Checkbox_Unchecked
                               If state
-                                 *this\__items( )\GroupRow( ) = GetItem( *this\__items( ), 0 )
+                                 *this\__items( )\GroupRow( ) = get_item_( *this, 0 )
                               EndIf
                            EndIf
                         Next
@@ -14613,38 +14644,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-      EndProcedure
-      
-      Procedure.i GetItem( *this._s_WIDGET, parent_sublevel.l = - 1 ) ;???
-         Protected result
-         Protected *rows._s_ROWS
-         Protected *widget._s_WIDGET
-         
-         If *this
-            If parent_sublevel = - 1
-               *widget = *this
-               result  = *widget\TabIndex( )
-               
-            Else
-               *rows = *this
-               
-               While *rows And *rows <> *rows\ParentRow( )
-                  
-                  If Not *rows\ParentRow( ) 
-                     Break
-                  EndIf
-                  If parent_sublevel = *rows\ParentRow( )\sublevel
-                     result = *rows
-                     Break
-                  EndIf
-                  
-                  *rows = *rows\ParentRow( )
-               Wend
-               
-            EndIf
-         EndIf
-         
-         ProcedureReturn result
       EndProcedure
       
       Procedure.i GetCursor( *this._s_WIDGET = #Null )
@@ -24695,7 +24694,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21210
-; FirstLine = 20082
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---7f-88-0f-8--------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------------------------------------------fv+------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 14013
+; FirstLine = 13019
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---7f-88-0f-8----------------------------------------------------------------------------------------------------------------------------f----------+------------------------------------------------------------------------------------------------------------------------------------------------------------fv+------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
