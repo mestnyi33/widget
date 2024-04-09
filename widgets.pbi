@@ -4299,7 +4299,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.w ChangeValue( *this._s_widget ) ; -32768 to +32767
          If *this\bar
-            ProcedureReturn *this\bar\page\change
+            ProcedureReturn *this\bar\PageChange( )
          EndIf
       EndProcedure
       
@@ -8239,6 +8239,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          width  = *this\frame_width( )
          height = *this\frame_height( )
          
+         Debug *bar\PageChange( )
+         
          ;\\
          If mode > 0
             ;\\ get area size
@@ -8363,12 +8365,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                               ; if splitter fixed
                               ; set splitter pos to center
-                              If *bar\fixed
-                                 If *bar\fixed = #PB_Splitter_FirstMinimumSize
-                                    *bar\fixed[*bar\fixed] = *bar\page\pos
-                                 Else
-                                    *bar\fixed[*bar\fixed] = *bar\page\end - *bar\page\pos
-                                 EndIf
+                              If *bar\fixed = 1
+                                 *bar\fixed[1] = *bar\page\pos
+                              ElseIf *bar\fixed = 2
+                                 *bar\fixed[2] = *bar\page\end - *bar\page\pos
                               EndIf
                            Else
                               If *bar\PageChange( ) Or *bar\fixed = 1
@@ -8401,8 +8401,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If mode < 2
             ;\\ get thumb pos
             If *bar\fixed And Not *bar\PageChange( )
-               If *bar\fixed = #PB_Splitter_FirstMinimumSize
-                  ThumbPos = *bar\fixed[*bar\fixed]
+;                If Not *bar\ThumbChange( )
+               If *bar\fixed = 1
+                  ThumbPos = *bar\fixed[1]
                   
                   If ThumbPos > *bar\area\end
                      If *bar\min[1] < *bar\area\end
@@ -8417,8 +8418,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                Else
-                  ;ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\fixed[*bar\fixed] ;[2]
-                  ThumbPos = *bar\area\end - *bar\fixed[*bar\fixed]                    ;[1]
+                  ;ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\fixed[2] ;[2]
+                  ThumbPos = *bar\area\end - *bar\fixed[2]                    ;[1]
                   
                   If ThumbPos < *bar\min[1]
                      If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
@@ -8501,14 +8502,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ get fixed size
-            If *bar\fixed And *bar\PageChange( )
-               If *bar\fixed = #PB_Splitter_FirstMinimumSize
-                  *bar\fixed[*bar\fixed] = *bar\thumb\pos
-               Else
+            If *bar\PageChange( )
+               If *bar\fixed = 1
+                  *bar\fixed[1] = *bar\thumb\pos
+               ElseIf *bar\fixed = 2
                   ; Debug "splitter - "+Str( *bar\area\len - *bar\thumb\len ) +" "+ Str( *bar\area\end + *bar\min[2] ) +" "+ *bar\area\end
-                  ; *bar\fixed[*bar\fixed] = ( *bar\area\len - *bar\thumb\len ) - *bar\thumb\pos ;[2]
-                  ; *bar\fixed[*bar\fixed] = ( *bar\area\end + *bar\min[2] ) - *bar\thumb\pos    ;[2]
-                  *bar\fixed[*bar\fixed] = *bar\area\end - *bar\thumb\pos                        ;[1]
+                  ; *bar\fixed[2] = ( *bar\area\len - *bar\thumb\len ) - *bar\thumb\pos ;[2]
+                  ; *bar\fixed[2] = ( *bar\area\end + *bar\min[2] ) - *bar\thumb\pos    ;[2]
+                  *bar\fixed[2] = *bar\area\end - *bar\thumb\pos                        ;[1]
                EndIf
             EndIf
             
@@ -9125,7 +9126,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          EndIf
          
-         ProcedureReturn is_resize_( *this )
+         ProcedureReturn 1;is_resize_( *this )
       EndProcedure
       
       Procedure.b bar_Change( *this._s_WIDGET, ScrollPos.l )
@@ -18039,9 +18040,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\bar\vertical = Bool( Flag & #__bar_vertical = #False And Flag & #PB_Splitter_Vertical = #False )
                
                If Flag & #PB_Splitter_FirstFixed = #PB_Splitter_FirstFixed
-                  *this\bar\fixed = #PB_Splitter_FirstMinimumSize
+                  *this\bar\fixed = 1
                ElseIf Flag & #PB_Splitter_SecondFixed = #PB_Splitter_SecondFixed
-                  *this\bar\fixed = #PB_Splitter_SecondMinimumSize
+                  *this\bar\fixed = 2
                EndIf
                
                ;\\
@@ -19627,10 +19628,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ; Debug "send - "+*this\class +" "+ ClassFromEvent(eventtype) +" "+ *button +" "+ *data
                   
-                  ;\\ scrollbar
-                  If *this\type = #__type_scrollBar
-                     ; *this\bar\PageChange( ) = *data
-                  EndIf
                   ;
                   ;\\
                   If Not is_root_( *this )
@@ -24670,7 +24667,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15152
-; FirstLine = 15108
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9128
+; FirstLine = 8287
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v6Kpv0P-u+4-++f-4-+-+v-n---0----------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

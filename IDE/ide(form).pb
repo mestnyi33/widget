@@ -1119,7 +1119,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;\\\ 
    w_ide_design_panel = Panel( 0,0,0,0 ) : SetClass(w_ide_design_panel, "w_ide_design_panel" ) ; , #__bar_vertical ) : OpenList( w_ide_design_panel )
    AddItem( w_ide_design_panel, -1, "Form" )
-   w_ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) : SetClass(w_ide_design_MDI, "w_ide_design_MDI" ) 
+   w_ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) : SetClass(w_ide_design_MDI, "w_ide_design_MDI" ) ;: SetFrame(w_ide_design_MDI, 10)
    a_init( w_ide_design_MDI);, 0 )
    
    ;AddItem( w_ide_design_panel, -1, "Code" )
@@ -1384,7 +1384,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 551
-; FirstLine = 538
+; CursorPosition = 1121
+; FirstLine = 831
 ; Folding = -----------u-0-v4O-----
 ; EnableXP
