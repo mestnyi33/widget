@@ -69,22 +69,22 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       *r1 = Open(0, 5, 5, 335, 60+h-10)
       Define x = 50, y = 50
-      *g11 = Container( x+10,y+10,size,size, #__flag_noGadgets ) : setclass(*g11,"*g11")
-      *g12 = Container( x+30,y+30,size,size, #__flag_noGadgets ) : setclass(*g12,"*g12") 
-      *g13 = Container( x+50,y+50,size,size, #__flag_noGadgets ) : setclass(*g13,"*g13") 
-      *g14 = Container( x+70,y+70,size,size, #__flag_noGadgets ) : setclass(*g14,"*g14") 
-      ;*g15 = Container( x+90,y+90,size,size, #__flag_noGadgets ) : setclass(*g15,"*g15") 
+      *g11 = Container( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g11,"*g11")
+      *g12 = Container( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g12,"*g12") 
+      *g13 = Container( x+50,y+50,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g13,"*g13") 
+      *g14 = Container( x+70,y+70,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g14,"*g14") 
+      ;*g15 = Container( x+90,y+90,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g15,"*g15") 
       *g15 = tree( x+90,y+90,size,size ) : setclass(*g15,"*g15") : AddItem(*g15, -1, "item-1") : AddItem(*g15, -1, "item-2") : AddItem(*g15, -1, "item-3")
       
       
       ;\\
       *r2 = Open(0, 345, 5, 335, 60+h-10, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Define x = 0, y = 0
-      *g21 = Container( x+10,y+10,size,size, #__flag_noGadgets ) : setclass(*g21,"*g21")
-      *g22 = Container( x+30,y+30,size,size, #__flag_noGadgets ) : setclass(*g22,"*g22") 
-      *g23 = Container( x+50,y+50,size,size, #__flag_noGadgets ) : setclass(*g23,"*g23") 
-      *g24 = Container( x+70,y+70,size,size, #__flag_noGadgets ) : setclass(*g24,"*g24") 
-      ;*g25 = Container( x+90,y+90,size,size, #__flag_noGadgets ) : setclass(*g25,"*g25") 
+      *g21 = Container( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g21,"*g21")
+      *g22 = Container( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g22,"*g22") 
+      *g23 = Container( x+50,y+50,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g23,"*g23") 
+      *g24 = Container( x+70,y+70,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g24,"*g24") 
+      ;*g25 = Container( x+90,y+90,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g25,"*g25") 
       *g25 = tree( x+90,y+90,size,size ) : setclass(*g25,"*g25") : AddItem(*g25, -1, "item-1") : AddItem(*g25, -1, "item-2") : AddItem(*g25, -1, "item-3")
       
       
@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 20
+; CursorPosition = 75
+; FirstLine = 66
 ; Folding = --
 ; EnableXP

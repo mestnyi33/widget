@@ -456,12 +456,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   example_1()
-;   example_2()
-;   example_3()
-;   example_4()
-;    example_5()
-;   example_6()
-;   example_7()
+  example_2()
+  example_3()
+  example_4()
+   example_5()
+  example_6()
+  example_7()
   
   
   Procedure example_demo()
@@ -500,8 +500,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     
   ;   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 79
-; FirstLine = 67
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 464
+; FirstLine = 123
 ; Folding = --B+
 ; EnableXP

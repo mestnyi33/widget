@@ -1186,38 +1186,60 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;
    ;\\\ ide splitters
    ;
+   ; main splitter 1 example
    w_ide_design_splitter = Splitter( 0,0,0,0, w_ide_toolbar_container,w_ide_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(w_ide_design_splitter, "w_ide_design_splitter" )
    w_ide_inspector_splitter = Splitter( 0,0,0,0, w_ide_inspector_view,w_ide_inspector_panel, #PB_Splitter_FirstFixed ) : SetClass(w_ide_inspector_splitter, "w_ide_inspector_splitter" )
    w_ide_debug_splitter = Splitter( 0,0,0,0, w_ide_design_splitter,w_ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(w_ide_debug_splitter, "w_ide_debug_splitter" )
    w_ide_help_splitter = Splitter( 0,0,0,0, w_ide_inspector_splitter,w_ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(w_ide_help_splitter, "w_ide_help_splitter" )
-   
-   ; main splitter 1 example
    w_ide_splitter = Splitter( 0,0,0,0, w_ide_debug_splitter,w_ide_help_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(w_ide_splitter, "w_ide_splitter" )
-   SetAttribute( w_ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
-   SetAttribute( w_ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
-   SetState( w_ide_splitter, width( w_ide_splitter )-200 )
-;    ;\\ main splitter 2 example 
-;    w_ide_splitter = Splitter( 0,0,0,0, w_ide_help_splitter, w_ide_debug_splitter,#__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed ) : SetClass(w_ide_splitter, "w_ide_splitter" )
-;    SetAttribute( w_ide_splitter, #PB_Splitter_FirstMinimumSize, 120 )
-;    SetAttribute( w_ide_splitter, #PB_Splitter_SecondMinimumSize, 500 )
-;    SetState( w_ide_splitter, 200 )
    
    ; set splitters default minimum size
-   SetAttribute( w_ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-   SetAttribute( w_ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
+   SetAttribute( w_ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
+   SetAttribute( w_ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
    SetAttribute( w_ide_help_splitter, #PB_Splitter_FirstMinimumSize, 230 )
    SetAttribute( w_ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
    SetAttribute( w_ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
    SetAttribute( w_ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+   SetAttribute( w_ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
+   SetAttribute( w_ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
    SetAttribute( w_ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
    SetAttribute( w_ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
    ; SetAttribute( w_ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
    
    ; set splitters dafault positions
+   SetState( w_ide_splitter, width( w_ide_splitter )-200 )
    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
-   SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
-   SetState( w_ide_inspector_splitter, 230 )
+   SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-150 )
+   SetState( w_ide_inspector_splitter, 200 )
    SetState( w_ide_design_splitter, Height( w_ide_toolbar ) - 1 + 2 )
+   
+;    ;
+;    ;\\ main splitter 2 example 
+;    w_ide_inspector_splitter = Splitter( 0,0,0,0, w_ide_inspector_view,w_ide_inspector_panel, #PB_Splitter_FirstFixed ) : SetClass(w_ide_inspector_splitter, "w_ide_inspector_splitter" )
+;    w_ide_debug_splitter = Splitter( 0,0,0,0, w_ide_design_panel,w_ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(w_ide_debug_splitter, "w_ide_debug_splitter" )
+;    w_ide_help_splitter = Splitter( 0,0,0,0, w_ide_inspector_splitter,w_ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(w_ide_help_splitter, "w_ide_help_splitter" )
+;    w_ide_design_splitter = Splitter( 0,0,0,0, w_ide_help_splitter, w_ide_debug_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(w_ide_design_splitter, "w_ide_design_splitter" )
+;    w_ide_splitter = Splitter( 0,0,0,0, w_ide_toolbar_container, w_ide_design_splitter,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(w_ide_splitter, "w_ide_splitter" )
+;    
+;    ; set splitters default minimum size
+;    SetAttribute( w_ide_splitter, #PB_Splitter_FirstMinimumSize, 20 )
+;    SetAttribute( w_ide_splitter, #PB_Splitter_SecondMinimumSize, 500 )
+;    SetAttribute( w_ide_design_splitter, #PB_Splitter_FirstMinimumSize, 120 )
+;    SetAttribute( w_ide_design_splitter, #PB_Splitter_SecondMinimumSize, 500 )
+;    SetAttribute( w_ide_help_splitter, #PB_Splitter_FirstMinimumSize, 230 )
+;    SetAttribute( w_ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
+;    SetAttribute( w_ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
+;    SetAttribute( w_ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+;    SetAttribute( w_ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
+;    SetAttribute( w_ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
+;    
+;    ; set splitters dafault positions
+;    SetState( w_ide_splitter, Height( w_ide_toolbar ) - 1 + 2 )
+;    SetState( w_ide_design_splitter, 200 )
+;    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
+;    SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
+;    SetState( w_ide_inspector_splitter, 230 )
+   
    
    ;
    ;\\\ ide events binds
@@ -1385,6 +1407,6 @@ DataSection
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 1212
-; FirstLine = 904
+; FirstLine = 910
 ; Folding = -----------u-0-v4O-----
 ; EnableXP

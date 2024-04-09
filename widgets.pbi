@@ -6047,15 +6047,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            Resize( widget( ), x, y, width, height )
                         Else
-                           If (*this\resize & #__resize_x Or *this\resize & #__resize_y)
+;                            If (*this\resize & #__resize_x Or *this\resize & #__resize_y)
                               Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                           Else
-                              If widget( )\autosize
-                                 Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                              Else
-                                 widget( )\resize | #__reclip
-                              EndIf
-                           EndIf
+;                            Else
+;                               If widget( )\autosize
+;                                  Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+;                               Else
+;                                  widget( )\resize | #__reclip
+;                               EndIf
+;                            EndIf
                         EndIf
                      EndIf
                      ;
@@ -21208,8 +21208,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      If is_menu_( *this )
                         Send( *this, #__event_Change )
-                        SetActive( *this\ParentBar( )\parent )
+                        If *this\ParentBar( )
+                           SetActive( *this\ParentBar( )\parent )
                         ; SetActiveGadget( *this\ParentBar( )\root\canvas\gadget )
+                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -24693,7 +24695,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5930
-; FirstLine = 5554
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------f+S78---r-0vv-4-0v--------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------07------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21210
+; FirstLine = 20082
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---7f-88-0f-8--------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------------------------------------------fv+------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
