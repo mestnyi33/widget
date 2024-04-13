@@ -11343,21 +11343,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ; Draw text
                         ; Draw string
                         If *this\text\editable And
-                           *this\__lines( )\text\edit[2]\width And
-                           *this\__lines( )\color\front[2] <> *this\color\front
+                           *this\__lines( )\text\edit[2]\width And *this\__lines( )\color\front[2] <> *this\color\front
                            
+                           drawing_mode_alpha_( #PB_2DDrawing_Default )
+                                 
                            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                               If *this\__lines( )\text\string.s
-                                 drawing_mode_alpha_( #PB_2DDrawing_Transparent )
+                                 ;drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                                  DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\string.s, *this\text\rotate, *this\__lines( )\color\front[text_no_sel_state] )
                               EndIf
                               
                               If *this\__lines( )\text\edit[2]\width
-                                 drawing_mode_alpha_( #PB_2DDrawing_Default )
+                                 ;drawing_mode_alpha_( #PB_2DDrawing_Default )
                                  draw_box_( sel_text_x2, Y, text_sel_width, *this\__lines( )\height, *this\__lines( )\color\back[text_sel_state] )
                               EndIf
                               
-                              drawing_mode_alpha_( #PB_2DDrawing_Transparent )
+                              ;drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                               
                               ; to right select
                               If ( ( *this\EnteredLine( ) And *this\PressedLine( ) And *this\EnteredLine( )\index > *this\PressedLine( )\Index ) Or
@@ -11373,6 +11374,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\edit[1]\string.s + *this\__lines( )\text\edit[2]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_sel_state] )
                                  EndIf
                                  
+;                                  If *this\__lines( )\text\edit[1]\width
+;                                     draw_box_( Text_x, Text_Y, *this\__lines( )\text\edit[1]\width, *this\__lines( )\text\edit[1]\height, *this\color\back);*this\__lines( )\color\back[text_sel_state] )
+;                                  EndIf
+                                 
                                  If *this\__lines( )\text\edit[1]\string.s
                                     DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\edit[1]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_no_sel_state] )
                                  EndIf
@@ -11380,11 +11385,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                            CompilerElse
                               If *this\__lines( )\text\edit[2]\width
-                                 drawing_mode_alpha_( #PB_2DDrawing_Default )
+                               ;  drawing_mode_alpha_( #PB_2DDrawing_Default )
                                  draw_box_( sel_text_x2, Y, text_sel_width, *this\__lines( )\height, *this\__lines( )\color\back[text_sel_state] )
                               EndIf
                               
-                              drawing_mode_alpha_( #PB_2DDrawing_Transparent )
+                             ; drawing_mode_alpha_( #PB_2DDrawing_Transparent )
                               
                               If *this\__lines( )\text\edit[1]\string.s
                                  DrawRotatedText( sel_text_x1, Text_Y, *this\__lines( )\text\edit[1]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_no_sel_state] )
@@ -11398,18 +11403,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            CompilerEndIf
                            
                         Else
-                           If *this\__lines( )\text\edit[2]\width
-                              drawing_mode_alpha_( #PB_2DDrawing_Default )
-                              draw_box_( sel_text_x2, Y, text_sel_width, *this\__lines( )\height, $FFFBD9B7 );*this\__lines( )\color\back[2] )
-                           EndIf
+;                            Debug *this\__lines( )\text\edit[2]\width
+;                            If *this\__lines( )\text\edit[2]\width
+;                               drawing_mode_alpha_( #PB_2DDrawing_Default )
+;                               draw_box_( sel_text_x2, Y, text_sel_width, *this\__lines( )\height, $FFFBD9B7 );*this\__lines( )\color\back[2] )
+;                            EndIf
                            
-                           If *this\ColorState( ) = 2
+;                            If *this\ColorState( ) = 2
                               drawing_mode_( #PB_2DDrawing_Transparent )
                               DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\string.s, *this\text\rotate, *this\__lines( )\color\front[text_sel_state_2] )
-                           Else
-                              drawing_mode_( #PB_2DDrawing_Transparent )
-                              DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\string.s, *this\text\rotate, *this\__lines( )\color\front[*this\__lines( )\ColorState( )] )
-                           EndIf
+;                            Else
+;                               drawing_mode_( #PB_2DDrawing_Transparent )
+;                               DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\string.s, *this\text\rotate, *this\__lines( )\color\front[*this\__lines( )\ColorState( )] )
+;                            EndIf
                         EndIf
                         
                         ; Draw margin text
@@ -24694,7 +24700,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14013
-; FirstLine = 13019
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---7f-88-0f-8----------------------------------------------------------------------------------------------------------------------------f----------+------------------------------------------------------------------------------------------------------------------------------------------------------------fv+------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 11394
+; FirstLine = 10135
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---7f-88-0f-8----------------------------------------------------------------------------------------------------------------------------4---------v-------------------------------------------------------------------------------------------------------------------------------------------------------------4r-------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

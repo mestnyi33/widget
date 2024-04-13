@@ -121,18 +121,10 @@ Module String
             EndIf
             
             \Text[1]\Width = TextWidth(\Text[1]\String.s) 
-              \Text[2]\X = \Text\X+\Text[1]\Width
-               \Text[2]\Width = TextWidth(\Text[2]\String.s)
+            \Text[2]\X = \Text\X + \Text[1]\Width
+            \Text[3]\X = \Text\X + TextWidth(\Text[1]\String.s + \Text[2]\String.s) 
+            \Text[2]\Width = \Text[3]\X - \Text[2]\X 
                
-               \Text[3]\X =  \Text[2]\X+\Text[2]\Width
-            
-            If \Text\CaretPos >= \Text\CaretPos[1] 
-               ;\Text[3]\X = TextWidth(\Text[1]\String.s + \Text[2]\String.s) ; \Text\X+\Text[1]\Width+\Text[2]\Width
-               
-            Else
-             ;  \Text[2]\Width = TextWidth(\Text[1]\String.s + \Text[2]\String.s + \Text[3]\String.s) - TextWidth(\Text[1]\String.s) - TextWidth(\Text[3]\String.s); \Text[3]\X - \Text[2]\X
-            EndIf
-            
             StopDrawing()
          EndIf
       EndWith
@@ -153,48 +145,57 @@ Module String
             \Text\Y = 3
             
             If \Text\String.s
-               DrawingMode( #PB_2DDrawing_Default )
-               
                If \Text[2]\Len
+                  
+                  DrawingMode( #PB_2DDrawing_Default )
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                      If \text\string.s
-                        DrawText( \Text\X, \Text\Y, \Text\string.s, $0B0B0B, $FFFFFF )
+                        DrawRotatedText( \Text\X, \Text\Y, \Text\string.s, 0,$0B0B0B )
+                     EndIf
+                     
+                     If \Text[2]\width
+                        Box( \Text[2]\X, \Text\Y, \Text[2]\Width, \Text\Height, $D77800 )
                      EndIf
                      
                      ; to right select
                      If ( \Text\CaretPos > \Text\CaretPos[1] )
                         
                         If \Text[2]\string.s
-                           DrawText( \Text[2]\X, \Text\Y, \Text[2]\string.s, $FFFFFF, $D77800 )
+                           DrawRotatedText( \Text[2]\X, \Text\Y, \Text[2]\string.s, 0,$FFFFFF )
                         EndIf
                         
                         ; to left select
                      Else
                         If \Text[2]\string.s
-                           DrawText( \Text\X, \Text\Y, \Text[1]\string.s + \Text[2]\string.s, $FFFFFF, $D77800 )
+                           DrawRotatedText( \Text\X, \Text\Y, \Text[1]\string.s + \Text[2]\string.s, 0,$FFFFFF )
+                        EndIf
+                        
+                        If \Text[1]\width
+                           Box( \Text\X, \Text\Y, \Text[1]\Width, \Text\Height, $FFFFFF )
                         EndIf
                         
                         If \Text[1]\string.s
-                           DrawText( \Text\X, \Text\Y, \Text[1]\string.s, $0B0B0B, $FFFFFF )
+                           DrawRotatedText( \Text\X, \Text\Y, \Text[1]\string.s, 0,$0B0B0B )
                         EndIf
                      EndIf
                   CompilerElse
                      If \Text[1]\String.s
-                        DrawText(\Text\X, \Text\Y, \Text[1]\String.s, $FFFFFF, $0B0B0B)
+                        DrawRotatedText(\Text\X, \Text\Y, \Text[1]\String.s, 0,$FFFFFF)
                      EndIf
                      
                      If \Text[2]\String.s
-                        DrawText(\Text[2]\X, \Text\Y, \Text[2]\String.s, $FFFFFF, $D77800)
+                        DrawRotatedText(\Text[2]\X, \Text\Y, \Text[2]\String.s, 0,$FFFFFF)
                      EndIf
                      
                      If \Text[3]\String.s
-                        DrawText(\Text[3]\X, \Text\Y, \Text[3]\String.s, $FFFFFF, $0B0B0B)
+                        DrawRotatedText(\Text[3]\X, \Text\Y, \Text[3]\String.s, 0,$FFFFFF)
                      EndIf
                   CompilerEndIf
                   
                Else
-                  DrawText(\Text\X, \Text\Y, \Text\String.s, $0B0B0B, $FFFFFF)
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  DrawRotatedText(\Text\X, \Text\Y, \Text\String.s, 0, $0B0B0B)
                EndIf
             EndIf
             
@@ -339,7 +340,7 @@ If OpenWindow(0, 0, 0, 605, 235, "StringGadget Flags", #PB_Window_SystemMenu | #
 EndIf
 
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 196
-; FirstLine = 160
+; CursorPosition = 126
+; FirstLine = 107
 ; Folding = --------
 ; EnableXP
