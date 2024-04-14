@@ -9671,25 +9671,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\ Macro edit_row_caret_1_( _this_ ): _this_\text\caret\pos[3]: EndMacro
       
-      Procedure.l edit_caret_( *this._s_WIDGET )
+      Procedure.l edit_caret_( *this._s_WIDGET, *line._s_ROWS )
          ; Get caret position
          Protected i.l, mouse_x.l, caret_x.l, caret.l = - 1
          Protected Distance.f, MinDistance.f = Infinity( )
          
-         If *this\EnteredLine( )
-            ;\\
-            ReDrawing( *this, *this\EnteredLine( ) )
+         If *line 
+            ReDrawing( *this, *line )
             
-            mouse_x = mouse( )\x - row_x_( *this, *this\EnteredLine( ) ) - *this\EnteredLine( )\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
+            mouse_x = mouse( )\x - row_x_( *this, *line ) - *line\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
-            For i = 0 To *this\EnteredLine( )\text\len
-               caret_x = TextWidth( Left( *this\EnteredLine( )\text\string, i ))
-               
+            For i = 0 To *line\text\len
+               caret_x = TextWidth( Left( *line\text\string, i ))
                Distance = ( mouse_x - caret_x ) * ( mouse_x - caret_x )
                
-               If MinDistance > Distance
+               If MinDistance >= Distance
                   MinDistance = Distance
-                  ; *this\text\caret\x = *this\text\padding\x + caret_x
                   caret = i
                Else
                   Break
@@ -20244,7 +20241,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ; Debug "en - "
                            
                            *this\FocusedLine( )  = *item
-                           *this\edit_caret_0( ) = edit_caret_( *this )
+                           *this\edit_caret_0( ) = edit_caret_( *this, *item )
                            *this\edit_caret_1( ) = *this\edit_caret_0( ) + *item\text\pos
                            
                            ; это на тот случай если резко выделили строки
@@ -20294,7 +20291,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If dragged = #PB_Drag_Update
                   If *this\PressedLine( ) And *this\FocusedLine( ) And *this\EnteredLine( )
                      
-                     *this\edit_caret_0( ) = edit_caret_( *this )
+                     *this\edit_caret_0( ) = edit_caret_( *this, *this\EnteredLine( ) )
                      If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
                         *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
                         edit_sel_row_text_( *this, *this\EnteredLine( ) )
@@ -20369,7 +20366,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      
                      If mouse( )\click = 1
-                        *this\edit_caret_0( ) = edit_caret_( *this )
+                        *this\edit_caret_0( ) = edit_caret_( *this, *this\EnteredLine( ) )
                         ;Debug *this\edit_caret_0( )
                         
                         If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
@@ -24637,7 +24634,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 11161
-; FirstLine = 10231
+; CursorPosition = 9687
+; FirstLine = 8838
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8-------------------------------------------------------------------------------------f----------+------------------------------------------------------------------------------------------------------------------------------------------------------------vX-------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
