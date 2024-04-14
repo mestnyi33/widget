@@ -9678,7 +9678,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *line 
             ReDrawing( *this, *line )
-            
             mouse_x = mouse( )\x - row_x_( *this, *line ) - *line\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
             For i = 0 To *line\text\len
@@ -11156,22 +11155,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                   Protected text_enter_state = Bool(e_rows( )\enter > 0) ;  Bool( e_rows( )\ColorState( ) Or e_rows( ) = *this\PressedLine( ))
-                   If *this\ColorState( ) = 3
-                      text_enter_state = 0
-                   EndIf
-                   
-                   ; Draw entered selection
-                  If text_enter_state = 1
-                     If e_rows( )\color\back[text_enter_state] <> - 1              ; no draw transparent
-                        drawing_mode_alpha_( #PB_2DDrawing_Default )
-                        draw_roundbox_( sel_x, Y, sel_width , e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\back[text_enter_state] )
-                     EndIf
+                  ;\\
+                  If e_rows( ) = *this\PressedLine( ) Or 
+                     e_rows( ) = *this\FocusedLine( )
                      
-                     If e_rows( )\color\frame[text_enter_state] <> - 1 ; no draw transparent
-                        drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                        draw_roundbox_( sel_x, Y, sel_width , e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[text_enter_state] )
-                     EndIf
+                     drawing_mode_alpha_( #PB_2DDrawing_Default )
+                     draw_roundbox_( Text_x, Y, e_rows( )\text\width+7, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\back[1] )
                   EndIf
                EndIf
                
@@ -11240,6 +11229,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         DrawRotatedText( sel_text_x3, Text_Y, e_rows( )\text\edit[3]\string.s, *this\text\rotate, e_rows( )\color\front )
                      EndIf
                   CompilerEndIf
+               EndIf
+               
+               ;\\
+               If e_rows( ) = *this\EnteredLine( ) 
+                  ;drawing_mode_alpha_( #PB_2DDrawing_XOr | #PB_2DDrawing_Outlined )
+                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                  draw_roundbox_( Text_x, Y, e_rows( )\text\width + 7, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
+                  draw_roundbox_( Text_x+1, Y+1, e_rows( )\text\width-2 + 7 , e_rows( )\height-2, e_rows( )\round, e_rows( )\round, $ffffffff )
+                  draw_roundbox_( Text_x+2, Y+2, e_rows( )\text\width-4 + 7 , e_rows( )\height-4, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
                EndIf
                
                ; Draw margin text
@@ -24634,7 +24632,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9687
-; FirstLine = 8838
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8-------------------------------------------------------------------------------------f----------+------------------------------------------------------------------------------------------------------------------------------------------------------------vX-------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 11158
+; FirstLine = 10233
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8-------------------------------------------------------------------------------------4---------v-------------------------------------------------------------------------------------------------------------------------------------------------------------82-------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
