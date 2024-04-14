@@ -1478,7 +1478,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare.b bar_area_update( *this._s_WIDGET )
       Declare.l update_items_( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
-      Declare.l update_visible_items_( *this._s_WIDGET, List *items._s_ROWS( ), visible_items_height.l = 0 )
+      Declare.l update_visible_items_( *this._s_WIDGET, List *items._s_ROWS( ), visible_height.l = 0 )
       Declare.l draw_items_( *this._s_WIDGET, List *items._s_ROWS( ) )
       Declare   Text_Update( *this._s_WIDGET )
       
@@ -6754,7 +6754,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\parent
                Protected color = *this\parent\color\frame
                If *this\parent\focus >= 0 
-                  color = *this\parent\color\frame[*this\parent\focus*2]
+                  color = *this\parent\color\frame[*this\parent\focus]
                EndIf
                
                If *bar\vertical
@@ -9503,7 +9503,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
                      PressedButton( )\ColorState( ) = #__s_2
                   EndIf
-                  PressedButton( )\color\back[PressedButton( )\ColorState( )] = $FF2C70F5
                   
                   ;
                   If ( *BB2\press And *bar\invert ) Or
@@ -10461,82 +10460,82 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Procedure edit_SetItem( *this._s_WIDGET, position, *text.Character, string_len )
+      Procedure edit_SetItem( *this._s_WIDGET, List e_rows._s_ROWS( ), position, *text.Character, string_len )
          Protected *rowLine._s_ROWS
          Protected add_index = - 1, add_y, add_pos, add_height
          
-         If position < 0 Or position > ListSize( *this\__lines( )) - 1
-            LastElement( *this\__lines( ))
-            *rowLine = AddElement( *this\__lines( ))
+         If position < 0 Or position > ListSize( e_rows( )) - 1
+            LastElement( e_rows( ))
+            *rowLine = AddElement( e_rows( ))
             
             ;If position < 0
-            position = ListIndex( *this\__lines( ))
+            position = ListIndex( e_rows( ))
             ;EndIf
             
          Else
             
-            *rowLine   = SelectElement( *this\__lines( ), position )
-            add_index  = *this\__lines( )\index
-            add_y      = *this\__lines( )\y + Bool( #PB_Compiler_OS = #PB_OS_Windows )
-            add_pos    = *this\__lines( )\text\pos
-            add_height = *this\__lines( )\height + *this\mode\gridlines
-            *rowLine   = InsertElement( *this\__lines( ))
+            *rowLine   = SelectElement( e_rows( ), position )
+            add_index  = e_rows( )\index
+            add_y      = e_rows( )\y + Bool( #PB_Compiler_OS = #PB_OS_Windows )
+            add_pos    = e_rows( )\text\pos
+            add_height = e_rows( )\height + *this\mode\gridlines
+            *rowLine   = InsertElement( e_rows( ))
             
-            PushListPosition( *this\__lines( ))
-            While NextElement( *this\__lines( ))
-               *this\__lines( )\index = ListIndex( *this\__lines( ) )
-               *this\__lines( )\y + add_height
-               *this\__lines( )\text\pos + string_len + Len( #LF$ )
+            PushListPosition( e_rows( ))
+            While NextElement( e_rows( ))
+               e_rows( )\index = ListIndex( e_rows( ) )
+               e_rows( )\y + add_height
+               e_rows( )\text\pos + string_len + Len( #LF$ )
             Wend
-            PopListPosition(*this\__lines( ))
+            PopListPosition(e_rows( ))
             
          EndIf
          
          ;\\
-         ReDrawing( *this, *this\__lines( ) )
+         ReDrawing( *this, e_rows( ) )
          
-         *this\__lines( )\index       = position
-         *this\__lines( )\text\len    = string_len
-         *this\__lines( )\text\string = PeekS ( *text, string_len )
+         e_rows( )\index       = position
+         e_rows( )\text\len    = string_len
+         e_rows( )\text\string = PeekS ( *text, string_len )
          
-         draw_font_item_( *this, *this\__lines( ), *this\__lines( )\TextChange( ) )
+         draw_font_item_( *this, e_rows( ), e_rows( )\TextChange( ) )
          
-         *this\__lines( )\height = *this\__lines( )\text\height ; + 10
-         *this\__lines( )\width  = *this\inner_width( )
-         ;*this\__lines( )\color  = _get_colors_( )
-         ;*this\__lines( )\color\back = $FFF9F9F9
+         e_rows( )\height = e_rows( )\text\height ; + 10
+         e_rows( )\width  = *this\inner_width( )
+         
+         e_rows( )\color  = _get_colors_( )
          
          ; make line position
          If *this\text\vertical
          Else ; horizontal
-            If *this\scroll_width( ) < *this\__lines( )\text\width + *this\text\padding\x * 2
-               *this\scroll_width( ) = *this\__lines( )\text\width + *this\text\padding\x * 2
+            If *this\scroll_width( ) < e_rows( )\text\width + *this\text\padding\x * 2
+               *this\scroll_width( ) = e_rows( )\text\width + *this\text\padding\x * 2
             EndIf
             
             If *this\text\rotate = 0
                If add_index >= 0
-                  *this\__lines( )\text\pos = add_pos
-                  *this\__lines( )\y        = add_y - *this\text\padding\y
+                  e_rows( )\text\pos = add_pos
+                  e_rows( )\y        = add_y - *this\text\padding\y
                Else
-                  *this\__lines( )\text\pos = *this\text\len
-                  *this\__lines( )\y        = *this\scroll_height( ) - *this\text\padding\y
+                  e_rows( )\text\pos = *this\text\len
+                  e_rows( )\y        = *this\scroll_height( ) - *this\text\padding\y
                EndIf
             ElseIf *this\text\rotate = 180
-               *this\__lines( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - *this\__lines( )\text\height ) + *this\text\padding\y
+               e_rows( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - e_rows( )\text\height ) + *this\text\padding\y
             EndIf
             
-            *this\scroll_height( ) + *this\__lines( )\height + *this\mode\gridlines
+            *this\scroll_height( ) + e_rows( )\height + *this\mode\gridlines
          EndIf
          
          *this\count\items + 1
          *this\text\len + string_len + Len( #LF$ )
          
-         set_align_y_( *this\text, *this\__lines( )\text, - 1, *this\text\rotate )
-         set_align_x_( *this\text, *this\__lines( )\text, *this\scroll_width( ), *this\text\rotate )
+         set_align_y_( *this\text, e_rows( )\text, - 1, *this\text\rotate )
+         set_align_x_( *this\text, e_rows( )\text, *this\scroll_width( ), *this\text\rotate )
       EndProcedure
       
       Procedure edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
-         edit_SetItem(*this, position, *text, string_len)
+         edit_SetItem(*this, *this\__lines( ), position, *text, string_len)
          
          If *this\__lines( )\text\pos = 0
             *this\text\string = InsertString( *this\text\string, *this\__lines( )\text\string, 1 )
@@ -10638,7 +10637,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          While *end\c
             If *end\c = #LF
-               edit_SetItem( *this, - 1, *str, (*end - *str) >> #PB_Compiler_Unicode )
+               edit_SetItem( *this, *this\__lines( ), - 1, *str, (*end - *str) >> #PB_Compiler_Unicode )
                
                If enter_index = *this\__lines( )\index: *this\EnteredLine( ) = *this\__lines( ): EndIf
                If focus_index = *this\__lines( )\index: *this\EnteredLine( ) = *this\__lines( ): EndIf
@@ -10672,7 +10671,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\FocusedLine( ) <> *this\__lines( )
                If *this\FocusedLine( )
-                  If *this\FocusedLine( )\focus <> #False
+                  If *this\FocusedLine( )\focus <> 0
                      *this\FocusedLine( )\RowFocus( 0 )
                   EndIf
                   
@@ -10721,7 +10720,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\FocusedLine( ) <> *this\__lines( )
                      If *this\FocusedLine( )
-                        If *this\FocusedLine( )\focus <> #False
+                        If *this\FocusedLine( )\focus <> 0
                            *this\FocusedLine( )\RowFocus( 0 )
                         EndIf
                         
@@ -10779,7 +10778,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          While *End\c
             If *end\c = #LF
-               edit_SetItem( *this, - 1, *str, (*end - *str) >> #PB_Compiler_Unicode )
+               edit_SetItem( *this, *this\__lines( ), - 1, *str, (*end - *str) >> #PB_Compiler_Unicode )
                
                If enter_index = *this\__lines( )\index: *this\EnteredLine( ) = *this\__lines( ): EndIf
                If focus_index = *this\__lines( )\index: *this\EnteredLine( ) = *this\__lines( ): EndIf
@@ -11090,12 +11089,182 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            
          EndWith
       EndProcedure
       
+      Procedure Editor_DrawItems( *this._s_WIDGET, List e_rows._s_ROWS( ) )
+         Protected Y, Text_x, Text_y, visible_y, visible_height
+               
+               
+         If Not visible_y
+            visible_y = 0;*this\inner_y( ) ; *this\draw_y( ) ;
+         EndIf
+         If Not visible_height
+            If *this\draw_height( ) > *this\inner_height( )
+               visible_height = *this\inner_height( ) ;
+            Else
+               visible_height = *this\draw_height( )
+            EndIf
+         EndIf
+         
+         ForEach e_rows( )
+            ; update visible lines 
+            e_rows( )\visible = Bool( Not e_rows( )\hide And
+                                      (( e_rows( )\y + *this\scroll_y( ) ) < visible_y + visible_height ) And
+                                      ( e_rows( )\y + e_rows( )\height + *this\scroll_y( ) ) > visible_y )
+            
+            
+            ; Draw selections
+            If e_rows( )\visible
+               If Not *this\VisibleFirstRow( )
+                  *this\VisibleFirstRow( ) = e_rows( )
+               EndIf
+               *this\VisibleLastRow( ) = e_rows( )
+               
+               
+               
+               If *this\focus >= 0
+                  *this\ColorState( ) = *this\focus
+               EndIf
+               
+               Y      = row_y_( *this, e_rows( ) ) + *this\scroll_y( )
+               Text_x = row_x_( *this, e_rows( ) ) + *this\scroll_x( ) + e_rows( )\text\x
+               Text_Y = y + e_rows( )\text\y
+               
+               ;Protected sel_text_x1 = edit_row_edit_text_x_( *this, [1] ) + *this\scroll_x( )
+               Protected sel_text_x2 = edit_row_edit_text_x_( *this, [2] ) + *this\scroll_x( )
+               ;Protected sel_text_x3 = edit_row_edit_text_x_( *this, [3] ) + *this\scroll_x( )
+               
+               Protected sel_x = *this\inner_x( ) + *this\text\x
+               Protected sel_width = *this\inner_width( ) - *this\text\y * 2
+               Protected text_sel_width = e_rows( )\text\edit[2]\width + Bool( *this\focus = #False ) * *this\text\caret\width
+               
+               If *this\text\editable
+                  ; Draw lines
+                  ; Если для итема установили задный
+                  ; фон отличный от заднего фона едитора
+                  If e_rows( )\color\back
+                     ;                     drawing_mode_alpha_( #PB_2DDrawing_Default )
+                     ;                     draw_roundbox_( sel_x,Y,sel_width ,e_rows( )\height, e_rows( )\round,e_rows( )\round, e_rows( )\color\back[0] )
+                     
+                     If *this\color\back And
+                        *this\color\back <> e_rows( )\color\back
+                        ; Draw margin back color
+                        If *this\MarginLine( )\width > 0
+                           ; то рисуем вертикальную линию на границе поля нумерации и начало итема
+                           drawing_mode_alpha_( #PB_2DDrawing_Default )
+                           draw_box_( *this\MarginLine( )\x, e_rows( )\y, *this\MarginLine( )\width, e_rows( )\height, *this\MarginLine( )\color\back )
+                           Line( *this\inner_x( ) + *this\MarginLine( )\width, e_rows( )\y, 1, e_rows( )\height, *this\color\back ) ; $FF000000 );
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                   Protected text_enter_state = Bool(e_rows( )\enter > 0) ;  Bool( e_rows( )\ColorState( ) Or e_rows( ) = *this\PressedLine( ))
+                   If *this\ColorState( ) = 3
+                      text_enter_state = 0
+                   EndIf
+                   
+                   ; Draw entered selection
+                  If text_enter_state = 1
+                     If e_rows( )\color\back[text_enter_state] <> - 1              ; no draw transparent
+                        drawing_mode_alpha_( #PB_2DDrawing_Default )
+                        draw_roundbox_( sel_x, Y, sel_width , e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\back[text_enter_state] )
+                     EndIf
+                     
+                     If e_rows( )\color\frame[text_enter_state] <> - 1 ; no draw transparent
+                        drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+                        draw_roundbox_( sel_x, Y, sel_width , e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[text_enter_state] )
+                     EndIf
+                  EndIf
+               EndIf
+               
+               ; Draw text string
+               drawing_mode_alpha_( #PB_2DDrawing_Default )
+               If e_rows( )\color\front[2] = *this\color\front 
+                  If e_rows( )\text\edit[2]\width
+                     draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
+                  EndIf
+               EndIf 
+               
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If e_rows( )\text\string.s
+                     DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
+                  EndIf
+               CompilerEndIf
+               
+               If e_rows( )\text\edit[2]\width 
+                  
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                     If e_rows( )\color\front[2] <> *this\color\front
+                        If e_rows( )\text\edit[2]\width
+                           draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
+                        EndIf
+                        
+                        If mouse( )\press
+                           ; to right select
+                           If ( ( *this\EnteredLine( ) And *this\PressedLine( ) And *this\EnteredLine( )\index > *this\PressedLine( )\Index ) Or
+                                ( *this\EnteredLine( ) = *this\PressedLine( ) And *this\edit_caret_1( ) > *this\edit_caret_2( ) ))
+                              
+                              If e_rows( )\text\edit[2]\string.s
+                                 DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                              EndIf
+                              
+                              ; to left select
+                           Else
+                              If e_rows( )\text\edit[2]\string.s
+                                 DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s + e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                              EndIf
+                              
+                              If e_rows( )\enter
+                                 If e_rows( )\text\edit[1]\width
+                                    draw_box_( Text_x, Text_Y+2, e_rows( )\text\edit[1]\width, e_rows( )\text\edit[1]\height-2, e_rows( )\color\back[1] )
+                                 EndIf
+                              EndIf
+                              
+                              If e_rows( )\text\edit[1]\string.s
+                                 DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
+                              EndIf
+                           EndIf
+                        Else
+                           If e_rows( )\text\edit[2]\string.s
+                              DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                           EndIf
+                        EndIf
+                     EndIf
+                     
+                  CompilerElse
+                     If e_rows( )\text\edit[1]\string.s
+                        DrawRotatedText( sel_text_x1, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
+                     EndIf
+                     If e_rows( )\text\edit[2]\string.s
+                        DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                     EndIf
+                     If e_rows( )\text\edit[3]\string.s
+                        DrawRotatedText( sel_text_x3, Text_Y, e_rows( )\text\edit[3]\string.s, *this\text\rotate, e_rows( )\color\front )
+                     EndIf
+                  CompilerEndIf
+               EndIf
+               
+               ; Draw margin text
+               If *this\MarginLine( )\width > 0
+                  drawing_mode_( #PB_2DDrawing_Transparent )
+                  DrawRotatedText( e_rows( )\margin\x + Bool( *this\text\vertical ) * *this\scroll_x( ),
+                                   e_rows( )\margin\y + Bool( Not *this\text\vertical ) * *this\scroll_y( ),
+                                   e_rows( )\margin\string, *this\text\rotate, *this\MarginLine( )\color\front )
+               EndIf
+               
+               ; Horizontal line
+               If *this\mode\GridLines And
+                  e_rows( )\color\line And e_rows( )\color\line <> e_rows( )\color\back
+                  drawing_mode_alpha_( #PB_2DDrawing_Default )
+                  draw_box_( row_x_( *this, e_rows( ) ), y + e_rows( )\height, e_rows( )\width, *this\mode\GridLines, $fff0f0f0 )
+               EndIf
+            EndIf
+         Next
+      EndProcedure
+
       Procedure Editor_Draw( *this._s_WIDGET )
-         Protected String.s, StringWidth, ix, iy, iwidth, iheight
+         Protected String.s, StringWidth
          Protected IT, Text_Y, Text_x, x, Y, Width, Drawing
          
          If Not *this\hide
@@ -11116,9 +11285,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\create = 1
                   *this\create = - 1
                   edit_make_text_position( *this )
-                  ;             *this\scroll\v\hide = 0
-                  ;             *this\scroll\h\hide = 0
-                  ; Debug *this\class +" "+ *this\class
                EndIf
                ;
                ; then change text update cursor pos
@@ -11178,13 +11344,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ; Draw back color
-               ;         If *this\color\fore[\ColorState( )]
-               ;           drawing_mode_( #PB_2DDrawing_Gradient )
-               ;           draw_gradient_( *this\text\vertical, *this,\color\fore[\ColorState( )],\color\back[\ColorState( )], [#__c_frame] )
-               ;         Else
                drawing_mode_alpha_( #PB_2DDrawing_Default )
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[0] )
-               ;         EndIf
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back )
                
                ; Draw margin back color
                If *this\MarginLine( )\width > 0
@@ -11199,41 +11360,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   draw_box_( *this\MarginLine( )\x, *this\MarginLine( )\y, *this\MarginLine( )\width, *this\MarginLine( )\height, *this\MarginLine( )\color\back )
                EndIf
                
-               ; widget inner coordinate
-               ix      = *this\inner_x( ) + *this\MarginLine( )\width
-               iY      = *this\inner_y( )
-               iwidth  = *this\inner_width( )
-               iheight = *this\inner_height( )
-               
-               
-               Protected result, scroll_x, scroll_y, scroll_x_, scroll_y_
-               Protected visible_items_y.l = 0, visible_items_height
-               
-               If *this\scroll\v
-                  scroll_y_ = *this\scroll\v\bar\page\pos
-               EndIf
-               
-               If *this\scroll\h
-                  scroll_x_ = *this\scroll\h\bar\page\pos
-               EndIf
-               scroll_x = *this\scroll_x( )
-               scroll_y = *this\scroll_y( )
-               
-               ; Debug ""+ scroll_x +" "+ scroll_x_ +" "+ scroll_y +" "+ scroll_y_
-               
-               
-               If Not visible_items_y
-                  visible_items_y = 0;*this\inner_y( ) ; *this\draw_y( ) ;
-               EndIf
-               If Not visible_items_height
-                  If *this\draw_height( ) > *this\inner_height( )
-                     visible_items_height = *this\inner_height( ) ;
-                  Else
-                     visible_items_height = *this\draw_height( )
-                  EndIf
-               EndIf
-               
-               
                ; Draw Lines text
                If *this\count\items
                   *this\VisibleFirstRow( ) = 0
@@ -11242,199 +11368,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   clip_output_( *this, [#__c_draw2] )
                   PushListPosition( *this\__lines( ))
-                  ForEach *this\__lines( )
-                     ; Is visible lines - -  -
-                     *this\__lines( )\visible = Bool( Not *this\__lines( )\hide And
-                                                      (( *this\__lines( )\y - scroll_y_ ) < visible_items_y + visible_items_height ) And
-                                                      ( *this\__lines( )\y + *this\__lines( )\height - scroll_y_ ) > visible_items_y )
-                     
-                     
-                     ; Draw selections
-                     If *this\__lines( )\visible
-                        If Not *this\VisibleFirstRow( )
-                           *this\VisibleFirstRow( ) = *this\__lines( )
-                        EndIf
-                        *this\VisibleLastRow( ) = *this\__lines( )
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        Y      = row_y_( *this, *this\__lines( ) ) + scroll_y
-                        Text_x = row_x_( *this, *this\__lines( ) ) + *this\__lines( )\text\x + scroll_x
-                        Text_Y = row_y_( *this, *this\__lines( ) ) + *this\__lines( )\text\y + scroll_y
-                        
-                        Protected sel_text_x1 = edit_row_edit_text_x_( *this, [1] ) + scroll_x
-                        Protected sel_text_x2 = edit_row_edit_text_x_( *this, [2] ) + scroll_x
-                        Protected sel_text_x3 = edit_row_edit_text_x_( *this, [3] ) + scroll_x
-                        
-                        Protected sel_x = *this\inner_x( ) + *this\text\x
-                        Protected sel_width = *this\inner_width( ) - *this\text\y * 2
-                        
-                        Protected text_sel_state_2 = 0;2 + Bool( *this\focus = #False )
-                        Protected text_sel_width = *this\__lines( )\text\edit[2]\width + Bool( *this\focus = #False ) * *this\text\caret\width
-                        
-                        ;                 ;                 If *this\PressedLine( ) = *this\__lines( );Keyboard( )\key And *this\__lines( )\ColorState( )
-                        ;                 ;                   Debug "state - "+*this\__lines( )\index +" "+ *this\__lines( )\ColorState( )
-                        ;                 ;                 EndIf
-                        ;                 ;
-                        ;                 ;                 If *this\text\caret\y+1 + scroll_y = y
-                        ;                 ;                   ;Debug " state "+ *this\__lines( )\index +" "+ *this\__lines( )\ColorState( ); text_enter_state = 1
-                        ;                 ;                   text_enter_state = 1
-                        ;                 ;                 EndIf
-                        ;                 If *this\__lines( )\ColorState( ) = 2
-                        ;                   ; Debug *this\__lines( )\index
-                        ;
-                        ;                 EndIf
-                        
-                        If *this\text\editable
-                           ; Draw lines
-                           ; Если для итема установили задный
-                           ; фон отличный от заднего фона едитора
-                           If *this\__lines( )\color\back
-                              ;                     drawing_mode_alpha_( #PB_2DDrawing_Default )
-                              ;                     draw_roundbox_( sel_x,Y,sel_width ,*this\__lines( )\height, *this\__lines( )\round,*this\__lines( )\round, *this\__lines( )\color\back[0] )
-                              
-                              If *this\color\back And
-                                 *this\color\back <> *this\__lines( )\color\back
-                                 ; Draw margin back color
-                                 If *this\MarginLine( )\width > 0
-                                    ; то рисуем вертикальную линию на границе поля нумерации и начало итема
-                                    drawing_mode_alpha_( #PB_2DDrawing_Default )
-                                    draw_box_( *this\MarginLine( )\x, *this\__lines( )\y, *this\MarginLine( )\width, *this\__lines( )\height, *this\MarginLine( )\color\back )
-                                    Line( *this\inner_x( ) + *this\MarginLine( )\width, *this\__lines( )\y, 1, *this\__lines( )\height, *this\color\back ) ; $FF000000 );
-                                 EndIf
-                              EndIf
-                           EndIf
-                           
-                           ;                   If *this\__lines( )\press
-                           ;                     *this\__lines( )\ColorState( ) = 0
-                           ;                   ElseIf *this\__lines( )\enter ;And *this\press
-                           ;                     *this\__lines( )\ColorState( ) = 1
-                           ;                   Else
-                           ;                     *this\__lines( )\ColorState( ) = 0
-                           ;                   EndIf
-                           
-                           Protected text_enter_state = Bool( *this\__lines( )\ColorState( ) Or *this\__lines( ) = *this\PressedLine( ))
-                           ;Bool( *this\__lines( ) = *this\EnteredLine( ) ); *this\__lines( )\ColorState( ) ; Bool( *this\__lines( )\ColorState( ) = 1 Or *this\__lines( ) = *this\PressedLine( ))
-                           
-                           ; text_enter_state = Bool(*this\__lines( ) = *this\FocusedLine( )) ; *this\__lines( )\ColorState( ) ; Bool( *this\__lines( )\ColorState( ) ) ; Bool( *this\__lines( )\index = *this\EnteredLine( )\index ) + Bool( *this\__lines( )\index = *this\EnteredLine( )\index And *this\focus = #False )*2
-                           ; Draw entered selection
-                           If text_enter_state = 1
-                              If *this\__lines( )\color\back[text_enter_state] <> - 1              ; no draw transparent
-                                 drawing_mode_alpha_( #PB_2DDrawing_Default )
-                                 draw_roundbox_( sel_x, Y, sel_width , *this\__lines( )\height, *this\__lines( )\round, *this\__lines( )\round, *this\__lines( )\color\back[text_enter_state] )
-                              EndIf
-                              
-                              If *this\__lines( )\color\frame[text_enter_state] <> - 1 ; no draw transparent
-                                 drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                                 draw_roundbox_( sel_x, Y, sel_width , *this\__lines( )\height, *this\__lines( )\round, *this\__lines( )\round, *this\__lines( )\color\frame[text_enter_state] )
-                              EndIf
-                           EndIf
-                        EndIf
-                        
-                        ;Debug *this\__lines( )\ColorState( )
-                        Protected text_sel_state = *this\ColorState( )
-                        Protected text_no_sel_state = 0
-                        
-                        
-                        ; Draw text
-                        ; Draw string
-                        If *this\text\editable And
-                           *this\__lines( )\text\edit[2]\width And *this\__lines( )\color\front[2] <> *this\color\front
-                           
-                           drawing_mode_alpha_( #PB_2DDrawing_Default )
-                                 
-                           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                              If *this\__lines( )\text\string.s
-                                 ;drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-                                 DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\string.s, *this\text\rotate, *this\__lines( )\color\front[text_no_sel_state] )
-                              EndIf
-                              
-                              If *this\__lines( )\text\edit[2]\width
-                                 ;drawing_mode_alpha_( #PB_2DDrawing_Default )
-                                 draw_box_( sel_text_x2, Y, text_sel_width, *this\__lines( )\height, *this\__lines( )\color\back[text_sel_state] )
-                              EndIf
-                              
-                              ;drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-                              
-                              ; to right select
-                              If ( ( *this\EnteredLine( ) And *this\PressedLine( ) And *this\EnteredLine( )\index > *this\PressedLine( )\Index ) Or
-                                   ( *this\EnteredLine( ) = *this\PressedLine( ) And *this\edit_caret_1( ) > *this\edit_caret_2( ) ))
-                                 
-                                 If *this\__lines( )\text\edit[2]\string.s
-                                    DrawRotatedText( sel_text_x2, Text_Y, *this\__lines( )\text\edit[2]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_sel_state] )
-                                 EndIf
-                                 
-                                 ; to left select
-                              Else
-                                 If *this\__lines( )\text\edit[2]\string.s
-                                    DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\edit[1]\string.s + *this\__lines( )\text\edit[2]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_sel_state] )
-                                 EndIf
-                                 
-;                                  If *this\__lines( )\text\edit[1]\width
-;                                     draw_box_( Text_x, Text_Y, *this\__lines( )\text\edit[1]\width, *this\__lines( )\text\edit[1]\height, *this\color\back);*this\__lines( )\color\back[text_sel_state] )
-;                                  EndIf
-                                 
-                                 If *this\__lines( )\text\edit[1]\string.s
-                                    DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\edit[1]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_no_sel_state] )
-                                 EndIf
-                              EndIf
-                              
-                           CompilerElse
-                              If *this\__lines( )\text\edit[2]\width
-                               ;  drawing_mode_alpha_( #PB_2DDrawing_Default )
-                                 draw_box_( sel_text_x2, Y, text_sel_width, *this\__lines( )\height, *this\__lines( )\color\back[text_sel_state] )
-                              EndIf
-                              
-                             ; drawing_mode_alpha_( #PB_2DDrawing_Transparent )
-                              
-                              If *this\__lines( )\text\edit[1]\string.s
-                                 DrawRotatedText( sel_text_x1, Text_Y, *this\__lines( )\text\edit[1]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_no_sel_state] )
-                              EndIf
-                              If *this\__lines( )\text\edit[2]\string.s
-                                 DrawRotatedText( sel_text_x2, Text_Y, *this\__lines( )\text\edit[2]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_sel_state] )
-                              EndIf
-                              If *this\__lines( )\text\edit[3]\string.s
-                                 DrawRotatedText( sel_text_x3, Text_Y, *this\__lines( )\text\edit[3]\string.s, *this\text\rotate, *this\__lines( )\color\front[text_no_sel_state] )
-                              EndIf
-                           CompilerEndIf
-                           
-                        Else
-;                            Debug *this\__lines( )\text\edit[2]\width
-;                            If *this\__lines( )\text\edit[2]\width
-;                               drawing_mode_alpha_( #PB_2DDrawing_Default )
-;                               draw_box_( sel_text_x2, Y, text_sel_width, *this\__lines( )\height, $FFFBD9B7 );*this\__lines( )\color\back[2] )
-;                            EndIf
-                           
-;                            If *this\ColorState( ) = 2
-                              drawing_mode_( #PB_2DDrawing_Transparent )
-                              DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\string.s, *this\text\rotate, *this\__lines( )\color\front[text_sel_state_2] )
-;                            Else
-;                               drawing_mode_( #PB_2DDrawing_Transparent )
-;                               DrawRotatedText( Text_x, Text_Y, *this\__lines( )\text\string.s, *this\text\rotate, *this\__lines( )\color\front[*this\__lines( )\ColorState( )] )
-;                            EndIf
-                        EndIf
-                        
-                        ; Draw margin text
-                        If *this\MarginLine( )\width > 0
-                           drawing_mode_( #PB_2DDrawing_Transparent )
-                           DrawRotatedText( *this\__lines( )\margin\x + Bool( *this\text\vertical ) * scroll_x,
-                                            *this\__lines( )\margin\y + Bool( Not *this\text\vertical ) * scroll_y,
-                                            *this\__lines( )\margin\string, *this\text\rotate, *this\MarginLine( )\color\front )
-                        EndIf
-                        
-                        ; Horizontal line
-                        If *this\mode\GridLines And
-                           *this\__lines( )\color\line And
-                           *this\__lines( )\color\line <> *this\__lines( )\color\back
-                           drawing_mode_alpha_( #PB_2DDrawing_Default )
-                           draw_box_( row_x_( *this, *this\__lines( ) ), y + *this\__lines( )\height, *this\__lines( )\width, *this\mode\GridLines, $fff0f0f0 )
-                        EndIf
-                     EndIf
-                  Next
+                  
+                  Editor_DrawItems( *this, *this\__lines( ) )
+                  
                   PopListPosition( *this\__lines( )) ;
                   clip_output_( *this, [#__c_draw] )
                EndIf
@@ -11442,7 +11378,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; Draw caret
                If *this\text\editable And *this\focus
                   drawing_mode_( #PB_2DDrawing_XOr )
-                  draw_box_( *this\inner_x( ) + *this\text\caret\x + scroll_x, *this\inner_y( ) + *this\text\caret\y + scroll_y, *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
+                  draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
                EndIf
                
                ; Draw frames
@@ -12259,30 +12195,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure.l update_visible_items_( *this._s_WIDGET, List *items._s_ROWS( ), visible_items_height.l = 0 )
+      Procedure.l update_visible_items_( *this._s_WIDGET, List *items._s_ROWS( ), visible_height.l = 0 )
          Protected result, scroll_y = *this\scroll\v\bar\page\pos
-         Protected visible_items_y.l = 0
+         Protected visible_y.l = 0
          
          PushListPosition( *this\__items( ))
          
-         If Not visible_items_y
-            visible_items_y = 0;*this\inner_y( ) ; *this\draw_y( ) ;
+         If Not visible_y
+            visible_y = 0;*this\inner_y( ) ; *this\draw_y( ) ;
          EndIf
-         If Not visible_items_height
+         If Not visible_height
             If *this\draw_height( ) > *this\inner_height( )
-               visible_items_height = *this\inner_height( ) ;
+               visible_height = *this\inner_height( ) ;
             Else
-               visible_items_height = *this\draw_height( )
+               visible_height = *this\draw_height( )
             EndIf
          EndIf
          
          
          ForEach *this\__items( )
             *this\__items( )\visible = Bool( Not *this\__items( )\hide And
-                                             (( *this\__items( )\y - scroll_y ) < visible_items_y + visible_items_height ) And
-                                             ( *this\__items( )\y + *this\__items( )\height - scroll_y ) > visible_items_y )
+                                             (( *this\__items( )\y - scroll_y ) < visible_y + visible_height ) And
+                                             ( *this\__items( )\y + *this\__items( )\height - scroll_y ) > visible_y )
             
-            ;;Debug ""+*this\class +" "+ visible_items_height  +" "+ *this\__items( )\height
+            ;;Debug ""+*this\class +" "+ visible_height  +" "+ *this\__items( )\height
             
             If *this\__items( )\index % 2 = 0
                If *this\__items( )\color\back = 0
@@ -15756,8 +15692,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If ActiveWindow( )
             If ActiveWindow( ) = *this 
                If GetActive( )\child > 0
-                  If GetActive( )\focus = #True
-                     GetActive( )\focus = #False
+                  If GetActive( )\focus <> 3
+                     GetActive( )\focus = 3
                      ;
                      DoFocus( GetActive( ), #__event_LostFocus )
                   EndIf
@@ -15765,8 +15701,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                If *this
                   If Not IsChild( *this, ActiveWindow( ) )
-                     If ActiveWindow( )\focus = #True
-                        ActiveWindow( )\focus = #False
+                     If ActiveWindow( )\focus <> 3
+                        ActiveWindow( )\focus = 3
                         ;
                         DoFocus( ActiveWindow( ), #__event_LostFocus )
                      EndIf
@@ -15776,8 +15712,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\ we will deactivate his last active gadget
                   If ActiveGadget( ) And
                      ActiveGadget( ) <> *this And 
-                     ActiveGadget( )\focus = #True
-                     ActiveGadget( )\focus = #False
+                     ActiveGadget( )\focus <> 3
+                     ActiveGadget( )\focus = 3
                      ;
                      DoFocus( ActiveGadget( ), #__event_LostFocus )
                   EndIf
@@ -15787,8 +15723,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      GetActive( ) <> ActiveWindow( ) And 
                      GetActive( ) <> ActiveGadget( )
                      ;
-                     If GetActive( )\focus = #True
-                        GetActive( )\focus = #False
+                     If GetActive( )\focus <> 3
+                        GetActive( )\focus = 3
                         ;
                         DoFocus( GetActive( ), #__event_LostFocus )
                      EndIf
@@ -15820,8 +15756,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            If IsChild( *active, widget( ))
                               ;If Not IsChild( *this, widget( ) )
-                              If widget( )\focus = #True
-                                 widget( )\focus = #False
+                              If widget( )\focus <> 3
+                                 widget( )\focus = 3
                                  DoFocus( widget( ), #__event_LostFocus )
                               EndIf
                               ;EndIf
@@ -15835,8 +15771,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          Else
             If GetActive( ) 
-               If GetActive( )\focus = #True
-                  GetActive( )\focus = #False
+               If GetActive( )\focus <> 3
+                  GetActive( )\focus = 3
                   ;
                   DoFocus( GetActive( ), #__event_LostFocus )
                EndIf
@@ -15848,7 +15784,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.i, *active._s_WIDGET
          
          If *this And Not *this\disable
-            If *this\root\focus =- 1
+            If *this\focus =- 1 Or 
+               *this\root\focus =- 1
                ProcedureReturn 0
             EndIf
             
@@ -15892,8 +15829,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                GetActive( ) = *this
             EndIf
             ;
-            If *this\focus = #False
-               *this\focus = #True
+            If *this\focus <> 2
+               *this\focus = 2
                
                ;\\ get active window
                If is_root_( *active ) Or 
@@ -15925,8 +15862,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         If is_window_( __widgets( ) )
                            If IsChild( *active, __widgets( ) )
-                              If __widgets( )\focus = #False
-                                 __widgets( )\focus = #True
+                              If __widgets( )\focus <> 2
+                                 __widgets( )\focus = 2
                                  ;
                                  DoFocus( __widgets( ), #__event_Focus )
                               EndIf
@@ -15939,8 +15876,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If ActiveWindow( ) And 
-                  ActiveWindow( )\focus = #False
-                  ActiveWindow( )\focus = #True
+                  ActiveWindow( )\focus <> 2
+                  ActiveWindow( )\focus = 2
                   ;
                   ; when we activate the gadget
                   ; first we activate its parent window
@@ -15953,8 +15890,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If ActiveWindow( )
                   If ActiveGadget( ) And
-                     ActiveGadget( )\focus = #False
-                     ActiveGadget( )\focus = #True
+                     ActiveGadget( )\focus <> 2
+                     ActiveGadget( )\focus = 2
                      ;
                      ; when we activate the window
                      ; we will activate his last gadget that lost focus
@@ -17504,10 +17441,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\frame_width( )  = #PB_Ignore
          *this\frame_height( ) = #PB_Ignore
          
-         ;\\ set activate state
-         If *this\type = #__type_String
-            *this\ColorState( ) = #__s_2
-         EndIf
+;          ;\\ set activate state
+;          If *this\type = #__type_String
+;             *this\ColorState( ) = #__s_2
+;          EndIf
          
          ;\\ Flags
          *this\flag = Flag
@@ -19346,7 +19283,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      ;\\ draw active containers frame
                      If GetActive( )
-                        If GetActive( )\focus And 
+                        If GetActive( )\focus > 0 And 
                            GetActive( )\haschildren 
                            ;
                            If GetActive( )\AfterWidget( ) = __widgets( )  
@@ -19360,7 +19297,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                         ;\\ draw active parent frame
                         If ActiveWindow( )  
-                           If ActiveWindow( )\focus And 
+                           If ActiveWindow( )\focus > 0 And 
                               ActiveWindow( )\haschildren And  
                               ActiveWindow( ) <> GetActive( )
                               ;
@@ -19375,7 +19312,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;
                            ;\\ draw active child frame
                            If ActiveGadget( ) And
-                              ActiveGadget( )\focus And 
+                              ActiveGadget( )\focus > 0 And 
                               ActiveGadget( )\haschildren And  
                               ActiveGadget( ) <> GetActive( ) 
                               
@@ -19432,7 +19369,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; 
                      ;\\ draw active containers frame
                      If GetActive( ) 
-                        If GetActive( )\focus And 
+                        If GetActive( )\focus > 0 And 
                            GetActive( )\haschildren 
                            ;
                            If Not GetActive( )\AfterWidget( ) 
@@ -19448,7 +19385,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                         ;\\ draw active parent frame
                         If ActiveWindow( )  
-                           If ActiveWindow( )\focus And 
+                           If ActiveWindow( )\focus > 0 And 
                               ActiveWindow( )\haschildren And  
                               ActiveWindow( ) <> GetActive( ) 
                               ;
@@ -19465,7 +19402,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ; 
                            ;\\ draw active child frame
                            If ActiveGadget( ) And
-                              ActiveGadget( )\focus And 
+                              ActiveGadget( )\focus > 0 And 
                               ActiveGadget( )\haschildren And  
                               ActiveGadget( ) <> GetActive( ) 
                               
@@ -20761,7 +20698,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If *this\FocusedRow( )
-                  If *this\FocusedRow( )\focus And
+                  If *this\FocusedRow( )\focus > 0 And
                      *this\FocusedRow( )\ColorState( ) = #__s_3
                      ;
                      *this\FocusedRowIndex( )        = *this\FocusedRow( )\index
@@ -20816,7 +20753,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\__items( )\ColorState( ) <> #__s_0
                               *this\__items( )\ColorState( ) = #__s_0
                               
-                              ;                               If *this\__items( )\focus 
+                              ;                               If *this\__items( )\focus > 0
                               ;                                  Debug " multiselect " + *this\__items( )\focus + " " + *this\__items( )\text\string
                               ;                               EndIf
                               
@@ -22330,7 +22267,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; not no-Activate window
                   If GetActive( )\root\focus >= 0
                      If GetActive( )\root\focus = 0
-                        GetActive( )\root\focus = 1
+                        GetActive( )\root\focus = 2
                         DoFocus( GetActive( )\root, #__event_Focus )
                      EndIf
                      ;
@@ -22339,13 +22276,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            widget( ) = GetActive( )\window
                            ;
                            If widget( )\focus = 0
-                              widget( )\focus = 1
+                              widget( )\focus = 2
                               DoFocus( widget( ), #__event_Focus )
                               ;
                               If is_window_( widget( ) )
                                  If widget( )\gadget
                                     If widget( )\gadget\focus = 0
-                                       widget( )\gadget\focus = 1
+                                       widget( )\gadget\focus = 2
                                        DoFocus( widget( )\gadget, #__event_Focus )
                                     EndIf
                                  EndIf
@@ -22357,7 +22294,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      If GetActive( )\enter
                         If GetActive( )\focus = 0
-                           GetActive( )\focus = 1
+                           GetActive( )\focus = 2
                            DoFocus( GetActive( ), #__event_Focus )
                         EndIf
                      EndIf
@@ -22372,20 +22309,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Root( )\focus >= 0 
                      ; Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                      ;
-                     If GetActive( )\root\focus = 1
+                     If GetActive( )\root\focus > 0
                         GetActive( )\root\focus = 0
                         DoFocus( GetActive( )\root, #__event_LostFocus )
                      EndIf
                      ; 
                      If StartEnumerate( GetActive( )\root )
-                        If widget( )\focus = 1
+                        If widget( )\focus > 0
                            widget( )\focus = 0
                            DoFocus( widget( ), #__event_LostFocus )
                         EndIf
                         StopEnumerate( )
                      EndIf
                      ;
-                     If GetActive( )\focus = 1
+                     If GetActive( )\focus > 0
                         GetActive( )\focus = 0
                         DoFocus( GetActive( ), #__event_LostFocus )
                      EndIf
@@ -24700,7 +24637,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 11394
-; FirstLine = 10135
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---7f-88-0f-8----------------------------------------------------------------------------------------------------------------------------4---------v-------------------------------------------------------------------------------------------------------------------------------------------------------------4r-------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 11161
+; FirstLine = 10231
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8-------------------------------------------------------------------------------------f----------+------------------------------------------------------------------------------------------------------------------------------------------------------------vX-------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
