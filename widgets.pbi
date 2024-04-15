@@ -11127,9 +11127,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Text_x = row_x_( *this, e_rows( ) ) + *this\scroll_x( ) + e_rows( )\text\x
                Text_Y = y + e_rows( )\text\y
                
-               ;Protected sel_text_x1 = edit_row_edit_text_x_( *this, [1] ) + *this\scroll_x( )
+               Protected sel_text_x1 = edit_row_edit_text_x_( *this, [1] ) + *this\scroll_x( )
                Protected sel_text_x2 = edit_row_edit_text_x_( *this, [2] ) + *this\scroll_x( )
-               ;Protected sel_text_x3 = edit_row_edit_text_x_( *this, [3] ) + *this\scroll_x( )
+               Protected sel_text_x3 = edit_row_edit_text_x_( *this, [3] ) + *this\scroll_x( )
                
                Protected sel_x = *this\inner_x( ) + *this\text\x
                Protected sel_width = *this\inner_width( ) - *this\text\y * 2
@@ -11167,77 +11167,85 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; Draw text string
                drawing_mode_alpha_( #PB_2DDrawing_Default )
                If e_rows( )\color\front[2] = *this\color\front 
-                  If e_rows( )\text\edit[2]\width
-                     draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
-                  EndIf
+                 If e_rows( )\text\edit[2]\width
+                   draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
+                 EndIf
                EndIf 
                
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If e_rows( )\text\string.s
-                     DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
-                  EndIf
-               CompilerEndIf
+;                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                 If e_rows( )\text\string.s
+                   DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
+                 EndIf
+;                CompilerEndIf
+               
+               If e_rows( )\color\front[2] <> *this\color\front
+                 If e_rows( )\text\edit[2]\width
+                   draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
+                 EndIf
+               EndIf
+               
                
                If e_rows( )\text\edit[2]\width 
-                  
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     If e_rows( )\color\front[2] <> *this\color\front
-                        If e_rows( )\text\edit[2]\width
-                           draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
-                        EndIf
-                        
-                        If mouse( )\press
-                           ; to right select
-                           If ( ( *this\EnteredLine( ) And *this\PressedLine( ) And *this\EnteredLine( )\index > *this\PressedLine( )\Index ) Or
-                                ( *this\EnteredLine( ) = *this\PressedLine( ) And *this\edit_caret_1( ) > *this\edit_caret_2( ) ))
-                              
-                              If e_rows( )\text\edit[2]\string.s
-                                 DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
-                              EndIf
-                              
-                              ; to left select
-                           Else
-                              If e_rows( )\text\edit[2]\string.s
-                                 DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s + e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
-                              EndIf
-                              
-                              If e_rows( )\enter
-                                 If e_rows( )\text\edit[1]\width
-                                    draw_box_( Text_x, Text_Y+2, e_rows( )\text\edit[1]\width, e_rows( )\text\edit[1]\height-2, e_rows( )\color\back[1] )
-                                 EndIf
-                              EndIf
-                              
-                              If e_rows( )\text\edit[1]\string.s
-                                 DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
-                              EndIf
+                 If e_rows( )\color\front[2] <> *this\color\front
+                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                     If mouse( )\press
+                       ; to right select
+                       If ( ( *this\EnteredLine( ) And *this\PressedLine( ) And *this\EnteredLine( )\index > *this\PressedLine( )\Index ) Or
+                            ( *this\EnteredLine( ) = *this\PressedLine( ) And *this\edit_caret_1( ) > *this\edit_caret_2( ) ))
+                         
+                         If e_rows( )\text\edit[2]\string.s
+                           DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                         EndIf
+                         
+                         ; to left select
+                       Else
+                         If e_rows( )\text\edit[2]\string.s
+                           DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s + e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                         EndIf
+                         
+                         If e_rows( )\enter
+                           If e_rows( )\text\edit[1]\width
+                             draw_box_( Text_x, Text_Y+2, e_rows( )\text\edit[1]\width, e_rows( )\text\edit[1]\height-2, e_rows( )\color\back[1] )
                            EndIf
-                        Else
-                           If e_rows( )\text\edit[2]\string.s
-                              DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
-                           EndIf
-                        EndIf
+                         EndIf
+                         
+                         If e_rows( )\text\edit[1]\string.s
+                           DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
+                         EndIf
+                       EndIf
+                     Else
+                       If e_rows( )\text\edit[2]\string.s
+                         DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                       EndIf
                      EndIf
                      
-                  CompilerElse
-                     If e_rows( )\text\edit[1]\string.s
-                        DrawRotatedText( sel_text_x1, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
-                     EndIf
+                   CompilerElse
+;                      If e_rows( )\text\edit[1]\string.s
+;                        DrawRotatedText( sel_text_x1, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
+;                      EndIf
                      If e_rows( )\text\edit[2]\string.s
-                        DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                       DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
                      EndIf
-                     If e_rows( )\text\edit[3]\string.s
-                        DrawRotatedText( sel_text_x3, Text_Y, e_rows( )\text\edit[3]\string.s, *this\text\rotate, e_rows( )\color\front )
-                     EndIf
-                  CompilerEndIf
+;                      If e_rows( )\text\edit[3]\string.s
+;                        DrawRotatedText( sel_text_x3, Text_Y, e_rows( )\text\edit[3]\string.s, *this\text\rotate, e_rows( )\color\front )
+;                      EndIf
+                   CompilerEndIf
+                 EndIf
+;                Else
+;                  CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+;                    If e_rows( )\text\string.s
+;                      DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
+;                    EndIf
+;                  CompilerEndIf
                EndIf
                
                ;\\
                If e_rows( ) = *this\EnteredLine( ) 
                   ;drawing_mode_alpha_( #PB_2DDrawing_XOr | #PB_2DDrawing_Outlined )
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( Text_x, Y, e_rows( )\text\width + 7, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
-                  draw_roundbox_( Text_x+1, Y+1, e_rows( )\text\width-2 + 7 , e_rows( )\height-2, e_rows( )\round, e_rows( )\round, $ffffffff )
-                  draw_roundbox_( Text_x+2, Y+2, e_rows( )\text\width-4 + 7 , e_rows( )\height-4, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
+                  draw_roundbox_( Text_x-2, Y, e_rows( )\text\width+2 + 7, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
+                  draw_roundbox_( Text_x-1, Y+1, e_rows( )\text\width + 7 , e_rows( )\height-2, e_rows( )\round, e_rows( )\round, $ffffffff )
+                  draw_roundbox_( Text_x, Y+2, e_rows( )\text\width-2 + 7 , e_rows( )\height-4, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
                EndIf
                
                ; Draw margin text
@@ -24631,8 +24639,6 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 11158
-; FirstLine = 10233
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8-------------------------------------------------------------------------------------4---------v-------------------------------------------------------------------------------------------------------------------------------------------------------------82-------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8-------------------------------------------------------------------------------------0---------8-------------------------------------------------------------------------------------------------------------------------------------------------------------e0------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
