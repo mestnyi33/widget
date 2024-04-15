@@ -11172,66 +11172,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  EndIf
                EndIf 
                
-;                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                 If e_rows( )\text\string.s
-                   DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
-                 EndIf
-;                CompilerEndIf
+               If e_rows( )\text\string.s
+                 DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
+               EndIf
                
                If e_rows( )\text\edit[2]\width 
                  If e_rows( )\color\front[2] <> *this\color\front
                    draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
                    
-                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     If mouse( )\press
-                       ; to right select
-                       If ( ( *this\EnteredLine( ) And *this\PressedLine( ) And *this\EnteredLine( )\index > *this\PressedLine( )\Index ) Or
-                            ( *this\EnteredLine( ) = *this\PressedLine( ) And *this\edit_caret_1( ) > *this\edit_caret_2( ) ))
-                         
-                         If e_rows( )\text\edit[2]\string.s
-                           DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
-                         EndIf
-                         
-                         ; to left select
-                       Else
-                         If e_rows( )\text\edit[2]\string.s
-                           DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s + e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
-                         EndIf
-                         
-                         If e_rows( )\enter
-                           If e_rows( )\text\edit[1]\width
-                             draw_box_( Text_x, Text_Y+2, e_rows( )\text\edit[1]\width, e_rows( )\text\edit[1]\height-2, e_rows( )\color\back[1] )
-                           EndIf
-                         EndIf
-                         
-                         If e_rows( )\text\edit[1]\string.s
-                           DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
-                         EndIf
-                       EndIf
-                     Else
+                   If mouse( )\press And #PB_Compiler_OS = #PB_OS_MacOS
+                     
+                     ; to right select
+                     If ( ( *this\EnteredLine( ) And *this\PressedLine( ) And *this\EnteredLine( )\index > *this\PressedLine( )\Index ) Or
+                          ( *this\EnteredLine( ) = *this\PressedLine( ) And *this\edit_caret_1( ) > *this\edit_caret_2( ) ))
+                       
                        If e_rows( )\text\edit[2]\string.s
                          DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
                        EndIf
+                       
+                       ; to left select
+                     Else
+                       If e_rows( )\text\edit[2]\string.s
+                         DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s + e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                       EndIf
+                       
+                       If e_rows( )\enter
+                         If e_rows( )\text\edit[1]\width
+                           draw_box_( Text_x, Text_Y+2, e_rows( )\text\edit[1]\width, e_rows( )\text\edit[1]\height-2, e_rows( )\color\back[1] )
+                         EndIf
+                       EndIf
+                       
+                       If e_rows( )\text\edit[1]\string.s
+                         DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
+                       EndIf
                      EndIf
                      
-                   CompilerElse
-;                      If e_rows( )\text\edit[1]\string.s
-;                        DrawRotatedText( sel_text_x1, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
-;                      EndIf
+                   Else
                      If e_rows( )\text\edit[2]\string.s
                        DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
                      EndIf
-;                      If e_rows( )\text\edit[3]\string.s
-;                        DrawRotatedText( sel_text_x3, Text_Y, e_rows( )\text\edit[3]\string.s, *this\text\rotate, e_rows( )\color\front )
-;                      EndIf
-                   CompilerEndIf
+                   EndIf
                  EndIf
-;                Else
-;                  CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-;                    If e_rows( )\text\string.s
-;                      DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
-;                    EndIf
-;                  CompilerEndIf
                EndIf
                
                ;\\
@@ -24635,5 +24616,5 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8------------------------------------------------------------------------------------f----------+------------------------------------------------------------------------------------------------------------------------------------------------------------vX-------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8------------------------------------------------------------------------------------4---------v-------------------------------------------------------------------------------------------------------------------------------------------------------------82-------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
