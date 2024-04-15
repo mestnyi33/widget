@@ -11166,8 +11166,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Draw text string
                drawing_mode_alpha_( #PB_2DDrawing_Default )
-               If e_rows( )\color\front[2] = *this\color\front 
-                 If e_rows( )\text\edit[2]\width
+               If e_rows( )\text\edit[2]\width
+                 If e_rows( )\color\front[2] = *this\color\front 
                    draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
                  EndIf
                EndIf 
@@ -11178,15 +11178,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  EndIf
 ;                CompilerEndIf
                
-               If e_rows( )\color\front[2] <> *this\color\front
-                 If e_rows( )\text\edit[2]\width
-                   draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
-                 EndIf
-               EndIf
-               
-               
                If e_rows( )\text\edit[2]\width 
                  If e_rows( )\color\front[2] <> *this\color\front
+                   draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
+                   
                    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                      If mouse( )\press
                        ; to right select
@@ -24640,5 +24635,5 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8-------------------------------------------------------------------------------------0---------8-------------------------------------------------------------------------------------------------------------------------------------------------------------e0------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8------------------------------------------------------------------------------------f----------+------------------------------------------------------------------------------------------------------------------------------------------------------------vX-------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
