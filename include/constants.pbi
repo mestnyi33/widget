@@ -5,6 +5,12 @@
       EndMacro
       
       ;- - CONSTANTs
+      CompilerIf Not Defined(PB_canvas_container, #PB_Constant)
+         #PB_Canvas_Container = 1 << 5
+      CompilerEndIf
+      
+      
+      
       ;-\\ DD
       ;#PB_Drag_Resize = - 1; #PB_Drag_Move
       
@@ -451,10 +457,9 @@
       CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
          #PB_EventType_ReturnKey = 7
       CompilerEndIf
-      Enumeration 65510 ; #PB_EventType_FirstCustomValue
+      Enumeration #PB_EventType_FirstCustomValue
+         #PB_EventType_Drop
          #PB_EventType_Repaint
-      EndEnumeration
-      Enumeration 65519
          #PB_EventType_MouseWheelX
          #PB_EventType_MouseWheelY
       EndEnumeration
@@ -811,7 +816,17 @@
       CompilerIf Not Defined(PB_toolBar_small, #PB_Constant)
          #PB_ToolBar_Small = 1 << 0
       CompilerEndIf
-;       #PB_ToolBar_child
+      CompilerIf Not Defined(PB_ToolBar_Large, #PB_Constant)
+         #PB_ToolBar_Large = 1 << 1;??? 2
+      CompilerEndIf
+      CompilerIf Not Defined(PB_ToolBar_Text, #PB_Constant)
+         #PB_ToolBar_Text = 1 << 2;??? 4
+      CompilerEndIf
+      CompilerIf Not Defined(PB_ToolBar_InlineText, #PB_Constant)
+         #PB_ToolBar_InlineText = 1 << 3;??? 8
+      CompilerEndIf
+;     
+;      #PB_ToolBar_child
 ;       #PB_ToolBar_vertical
       #PB_ToolBar_Buttons = 1<<4
       #PB_ToolBar_Left    = 1<<5
@@ -832,10 +847,6 @@
 
 
       
-      CompilerIf Not Defined(PB_canvas_container, #PB_Constant)
-         #PB_Canvas_Container = 1 << 5
-      CompilerEndIf
-      
       ;- \\ Message
       CompilerIf Not Defined(PB_messageRequester_info, #PB_Constant)
          #PB_MessageRequester_Info = 1 << 2
@@ -845,6 +856,9 @@
       CompilerEndIf
       CompilerIf Not Defined(PB_messageRequester_warning, #PB_Constant)
          #PB_MessageRequester_Warning = 1 << 4
+      CompilerEndIf
+      CompilerIf Not Defined(PB_MessageRequester_Error, #PB_Constant)
+         #PB_MessageRequester_Error = 1 << 5;  8
       CompilerEndIf
       
       #__message_Cancel = #PB_MessageRequester_Cancel           ; 2
@@ -862,16 +876,13 @@
       
       
    EndDeclareModule
-   
-   
    Module Constants
-      
    EndModule
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8
-; FirstLine = 1
-; Folding = ---
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 460
+; FirstLine = 448
+; Folding = ----
 ; EnableXP

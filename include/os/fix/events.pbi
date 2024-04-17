@@ -1,19 +1,10 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
-  DeclareModule constants
-    Enumeration #PB_EventType_FirstCustomValue
-      #PB_EventType_Drop
-      #PB_EventType_MouseWheelX
-      #PB_EventType_MouseWheelY
-    EndEnumeration
-  EndDeclareModule
-  Module constants
-  EndModule
-CompilerEndIf
-
+﻿XIncludeFile "../../constants.pbi"
 
 ;-\\ DECLARE
 DeclareModule events
   EnableExplicit
+  UseModule constants
+   
   
   Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
     ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
@@ -78,12 +69,12 @@ XIncludeFile "event.pbi"
 
 ;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
+  UseModule constants
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     XIncludeFile "../../win/id.pbi"
     XIncludeFile "../../win/ClipGadgets.pbi"
   CompilerEndIf
   
-  UseModule constants
   ; UseModule events
   
   Define event
@@ -298,8 +289,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 288
-; FirstLine = 263
-; Folding = -------
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 135
+; FirstLine = 72
+; Folding = +------
 ; EnableXP

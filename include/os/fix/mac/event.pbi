@@ -39,7 +39,6 @@ Module events
    Global event_window =- 1
    Global event_gadget =- 1
    
-   
    ImportC ""
       CFRunLoopGetCurrent( )
       CFRunLoopAddCommonMode(rl, mode)
@@ -355,50 +354,54 @@ Module events
       
    EndProcedure
    
-   Procedure Events( )
-      Protected eventgadget
-      Protected eventtype
-      
+   Procedure GadgetEvents( )
       If *setcallback
-         Select Event( ) 
-            Case #PB_Event_Gadget
-               eventtype = EventType( )
-               EventGadget = EventGadget( )
-               
-               If #PB_EventType_Resize = eventtype
-                  CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, eventtype, EventData( ))
-               EndIf
-               
-               If EventType = #PB_EventType_Focus 
-                  ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
-                  If FocusedGadget( ) = - 1
-                     CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-                  EndIf
-               ElseIf EventType = #PB_EventType_LostFocus
-                  ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
-                  If FocusedGadget( ) = - 1
-                     CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-                  EndIf
-               ElseIf (EventType = #PB_EventType_KeyDown Or
-                       EventType = #PB_EventType_KeyUp Or
-                       EventType = #PB_EventType_Input)
-                  
-                  CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-               Else
-                  
-                  If FocusedGadget( ) = - 1
-                     CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-                  EndIf
-               EndIf
-               
-            Case #PB_Event_SizeWindow
-               CallFunctionFast(*setcallback, #PB_Event_SizeWindow, #PB_All, #PB_All, EventData( ) )
-            Case #PB_Event_ActivateWindow
-               CallFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_All, EventData( ) )
-            Case #PB_Event_DeactivateWindow
-               CallFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_All, EventData( ) )
-               
-         EndSelect
+         Protected eventtype = EventType( )
+         Protected eventGadget = EventGadget( )
+         
+         If #PB_EventType_Resize = eventtype
+            CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, eventtype, EventData( ))
+         EndIf
+         
+         If EventType = #PB_EventType_Focus 
+            ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
+            If FocusedGadget( ) = - 1
+               CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+            EndIf
+         ElseIf EventType = #PB_EventType_LostFocus
+            ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
+            If FocusedGadget( ) = - 1
+               CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+            EndIf
+         ElseIf (EventType = #PB_EventType_KeyDown Or
+                 EventType = #PB_EventType_KeyUp Or
+                 EventType = #PB_EventType_Input)
+            
+            CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+         Else
+            
+            If FocusedGadget( ) = - 1
+               CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
+            EndIf
+         EndIf
+      EndIf
+   EndProcedure
+   
+   Procedure ResizeEvents( )
+      If *setcallback
+         CallFunctionFast(*setcallback, #PB_Event_SizeWindow, #PB_All, #PB_All, EventData( ) )
+      EndIf
+   EndProcedure
+   
+   Procedure ActivateEvents( )
+      If *setcallback
+         CallFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_All, EventData( ) )
+      EndIf
+   EndProcedure
+   
+   Procedure DeactivateEvents( )
+      If *setcallback
+         CallFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_All, EventData( ) )
       EndIf
    EndProcedure
    
@@ -489,11 +492,11 @@ Module events
       
       If *callback
          ;       ;\\
-         BindEvent( #PB_Event_Gadget, @Events( ) )
+         BindEvent( #PB_Event_Gadget, @GadgetEvents( ) )
          CompilerIf #PB_Compiler_IsMainFile ; TEST
-            BindEvent( #PB_Event_ActivateWindow, @Events( ) )
-            BindEvent( #PB_Event_DeactivateWindow, @Events( ) )
-            ;       BindEvent( #PB_Event_SizeWindow, @Events( ) )
+            BindEvent( #PB_Event_ActivateWindow, @ActivateEvents( ) )
+            BindEvent( #PB_Event_DeactivateWindow, @DeactivateEvents( ) )
+            ;       BindEvent( #PB_Event_SizeWindow, @ResizeEvents( ) )
          CompilerEndIf
       EndIf
    EndProcedure
@@ -556,7 +559,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Open( id, flag=0 )
       Static x,y
       OpenWindow( id, x,y,200,200,"window_"+Str(id), #PB_Window_SystemMenu|flag)
-      CanvasGadget( id, 40,40,200-80,55, #PB_Canvas_Keyboard | #PB_Canvas_Container) : CloseGadgetList()
+      CanvasGadget( id, 40,40,200-80,55, #PB_Canvas_Keyboard );| #PB_Canvas_Container) : CloseGadgetList()
       CanvasGadget( 10+id, 40,110,200-80,55, #PB_Canvas_Keyboard)
       x + 100
       y + 100
@@ -607,8 +610,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 517
-; FirstLine = 498
-; Folding = -v+-----------
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 4
+; Folding = -v+------------
 ; EnableXP

@@ -11166,8 +11166,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Draw text string
                drawing_mode_alpha_( #PB_2DDrawing_Default )
-               If e_rows( )\text\edit[2]\width
-                 If e_rows( )\color\front[2] = *this\color\front 
+               If e_rows( )\color\front[2] = *this\color\front 
+                 If e_rows( )\text\edit[2]\width
                    draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
                  EndIf
                EndIf 
@@ -11176,8 +11176,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
                EndIf
                
-               If e_rows( )\text\edit[2]\width 
-                 If e_rows( )\color\front[2] <> *this\color\front
+               If e_rows( )\color\front[2] <> *this\color\front
+                 If e_rows( )\text\edit[2]\width 
                    draw_box_( sel_text_x2, Y, text_sel_width, e_rows( )\height, e_rows( )\color\back[*this\ColorState( )] )
                    
                    If mouse( )\press And #PB_Compiler_OS = #PB_OS_MacOS
@@ -11215,14 +11215,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  EndIf
                EndIf
                
-               ;\\
-               If e_rows( ) = *this\EnteredLine( ) 
-                  ;drawing_mode_alpha_( #PB_2DDrawing_XOr | #PB_2DDrawing_Outlined )
-                  drawing_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( Text_x-2, Y, e_rows( )\text\width+2 + 7, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
-                  draw_roundbox_( Text_x-1, Y+1, e_rows( )\text\width + 7 , e_rows( )\height-2, e_rows( )\round, e_rows( )\round, $ffffffff )
-                  draw_roundbox_( Text_x, Y+2, e_rows( )\text\width-2 + 7 , e_rows( )\height-4, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
-               EndIf
+;                ;\\
+;                If e_rows( ) = *this\EnteredLine( ) 
+;                   ;drawing_mode_alpha_( #PB_2DDrawing_XOr | #PB_2DDrawing_Outlined )
+;                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
+;                   draw_roundbox_( Mouse()\x, Y, 20, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
+; ;                   draw_roundbox_( Text_x-2, Y, e_rows( )\text\width+2 + 7, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
+; ;                   draw_roundbox_( Text_x-1, Y+1, e_rows( )\text\width + 7 , e_rows( )\height-2, e_rows( )\round, e_rows( )\round, $ffffffff )
+; ;                   draw_roundbox_( Text_x, Y+2, e_rows( )\text\width-2 + 7 , e_rows( )\height-4, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
+;                EndIf
                
                ; Draw margin text
                If *this\MarginLine( )\width > 0
@@ -20280,8 +20281,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         edit_sel_text_( *this, *this\EnteredLine( ) )
                      EndIf
                   EndIf
-               EndIf
-            EndIf
+;                 Else
+;                    If *this\EnteredLine( )
+;                       *this\edit_caret_0( ) = edit_caret_( *this, *this\EnteredLine( ) )
+;                       ;Debug *this\edit_caret_0( )
+;                       
+;                       If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
+;                          *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
+;                          *this\edit_caret_2( ) = *this\edit_caret_1( )
+;                          
+;                          edit_sel_row_text_( *this, *this\EnteredLine( ) )
+;                          edit_sel_text_( *this, *this\EnteredLine( ) )
+;                       EndIf
+;                    EndIf  
+                EndIf
+             EndIf
             
             
             ;
@@ -24615,6 +24629,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8--------------------------------------+8------------------------------------------------------------------------------------4---------v-------------------------------------------------------------------------------------------------------------------------------------------------------------82-------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 11225
+; FirstLine = 10113
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8---------------------f---+pt----------+8---------------8----v---------------------------------------------------------------8---------4-------------------------------------------------------------------------------------------------------------------------------------------------------------07-----n4-+0-4+------------------------------------------------------------------------------------------------------------------
 ; EnableXP
