@@ -1245,7 +1245,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare Close( *window )
       Declare Button_Draw( *this )
       Declare GetBar( *this, type.b, index.b = 0 )
-      Declare GetAtPoint( *root, mouse_x, mouse_y )
+      Declare GetAtPoint( *root, mouse_x, mouse_y, List *List._s_WIDGET( ))
       
       Declare.w ChangeValue( *this )
       Declare.i ToPBEventType( event.i )
@@ -19235,7 +19235,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          DrawingStart( *root\canvas\gadget )
          If Drawing( )
-            If Not ( a_transform( ) And a_transform( )\grab )
+            If __gui\grabintersectimage > 0
+               DrawAlphaImage( ImageID( __gui\grabintersectimage ), 0,0)
+               ForEach __gui\intersect( )
+                  Draw( __gui\intersect( ) )
+               Next
+            EndIf
+               
+            If Not ( a_transform( ) And a_transform( )\grab ) And Not __gui\grabintersectimage
                ;\\
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   ; good transparent canvas
@@ -19522,6 +19529,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            If __gui\grabintersectimage < 0
+              __gui\grabintersectimage = GrabDrawingImage( #PB_Any, 0,0, OutputWidth( ), OutputHeight( ) )
+            EndIf
             ;\\
             DrawingStop( )
          EndIf
@@ -19771,7 +19781,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure GetAtPoint( *root._s_ROOT, mouse_x, mouse_y )
+      Procedure GetAtPoint( *root._s_ROOT, mouse_x, mouse_y, List *List._s_WIDGET( ) )
          Protected i, a_index, Repaint, *this._s_WIDGET, *e._s_WIDGET
          
          ;\\ get at point address
@@ -19781,25 +19791,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          Else
             If *root\haschildren
-               ; If ListSize( __widgets( ))
-               LastElement( __widgets( ))
+               ; If ListSize( *list( ))
+               LastElement( *list( ))
                Repeat
-                  If __widgets( )\address And
-                     __widgets( )\hide = 0 And
-                     __widgets( )\root = *root And 
-                     is_atpoint_( __widgets( ), mouse_x, mouse_y, [#__c_frame] ) And
-                     is_atpoint_( __widgets( ), mouse_x, mouse_y, [#__c_draw] )
+                  If *list( )\address And
+                     *list( )\hide = 0 And
+                     *list( )\root = *root And 
+                     is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
+                     is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_draw] )
                      ;
                      ;                      ;\\ get alpha
-                     ;                      If __widgets( )\anchors = 0 And
-                     ;                         ( __widgets( )\image[#__image_background]\id And
-                     ;                           __widgets( )\image[#__image_background]\depth > 31 And
-                     ;                           is_atpoint_( __widgets( ), mouse_x, mouse_y, [#__c_inner] ) And
-                     ;                           StartDrawing( ImageOutput( __widgets( )\image[#__image_background]\img )))
+                     ;                      If *list( )\anchors = 0 And
+                     ;                         ( *list( )\image[#__image_background]\id And
+                     ;                           *list( )\image[#__image_background]\depth > 31 And
+                     ;                           is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_inner] ) And
+                     ;                           StartDrawing( ImageOutput( *list( )\image[#__image_background]\img )))
                      ;                         
                      ;                         drawing_mode_( #PB_2DDrawing_AlphaChannel )
-                     ;                         If Not Alpha( Point( ( mouse( )\x - __widgets( )\inner_x( ) ) - 1,
-                     ;                                              ( mouse( )\y - __widgets( )\inner_y( ) ) - 1 ) )
+                     ;                         If Not Alpha( Point( ( mouse( )\x - *list( )\inner_x( ) ) - 1,
+                     ;                                              ( mouse( )\y - *list( )\inner_y( ) ) - 1 ) )
                      ;                            StopDrawing( )
                      ;                            Continue
                      ;                         Else
@@ -19810,18 +19820,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;\\ если переместили виджет то его исключаем
                      If mouse( )\dragstart
                         If is_drag_move( )
-                           If PressedWidget( ) = __widgets( )
+                           If PressedWidget( ) = *list( )
                               Continue
                            EndIf
-                           EnteredWidget( ) =  __widgets( )
+                           EnteredWidget( ) =  *list( )
                            ProcedureReturn 0
                         EndIf
                      EndIf
                      
-                     *this = __widgets( )
+                     *this = *list( )
                      Break
                   EndIf
-               Until PreviousElement( __widgets( )) = #False
+               Until PreviousElement( *list( )) = #False
                ;EndIf
             EndIf
          EndIf
@@ -21284,16 +21294,69 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;         EndIf
          ;       EndIf
          
+;          If eventtype = #__event_MouseMove
+;             If ListSize( __gui\intersect( ) )
+;                ForEach __gui\intersect( ) 
+;                   Debug "           "+__gui\intersect( )\class
+;                Next
+;             EndIf
+;          EndIf
          
-         ;                                     ;\\
-         ;                                     If eventtype = #__event_MouseEnter
-         ;                                        Debug "e "+*this\class
-         ;                                     EndIf
-         ;          
-         ;                                     ;\\
-         ;                                     If eventtype = #__event_MouseLeave
-         ;                                        Debug "l "+*this\class
-         ;                                     EndIf
+         ;\\
+         If eventtype = #__event_MouseEnter ;And 3=4
+            If Not *this\child
+               ClearList( __gui\intersect( ) )
+               ;FreeList( __gui\intersect( ) )
+               
+               ;Debug "e "+*this\class
+               
+               If *this\parent
+                  If StartEnumerate( *this\parent )
+                     If Not widget( )\hide
+                        ;If *this <> widget( )
+                           ;If *this\level = widget( )\level
+                              If *this\index <= widget( )\index
+                                 If is_intersect_( *this, widget( ) )
+                                    ;Debug "    e "+widget( )\class
+                                    AddElement( __gui\intersect( ) )
+                                    __gui\intersect.allocate(WIDGET, ())
+                                    __gui\intersect( ) = widget( )
+                                 EndIf
+                              EndIf
+                           ;EndIf
+                        ;EndIf
+                     EndIf
+                     StopEnumerate( )
+                  EndIf
+                  
+                  If Not __gui\grabintersectimage
+                     If ListSize( __gui\intersect( ) )
+                        ForEach __gui\intersect( ) 
+                           __gui\intersect( )\hide = 1
+                        Next
+                        __gui\grabintersectimage =- 1
+                        ReDraw( *this\root )
+                        ForEach __gui\intersect( ) 
+                           __gui\intersect( )\hide = 0
+                        Next
+                     EndIf
+                  EndIf
+                  
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\
+         If eventtype = #__event_MouseLeave
+            If ListSize( __gui\intersect( ) )
+               ClearList( __gui\intersect( ) )
+               __gui\grabintersectimage = 0
+               
+;             If Not *this\child
+;                  Debug "l "+*this\class 
+;             EndIf
+            EndIf
+         EndIf
          ;                 ;\\
          ;                  If eventtype = #__event_LeftDown
          ;                     Debug " d "+*this\class
@@ -22247,7 +22310,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                      If Root( )
                      ;                          Debug "    "+Root( )\class +" "+ ClassFromEvent(eventtype)
                      ;                      EndIf
-                     GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
+                     If ListSize( __gui\intersect( ) )
+                        GetAtPoint( Root( ), mouse( )\x, mouse( )\y, __gui\intersect( ) )
+                     Else
+                        GetAtPoint( Root( ), mouse( )\x, mouse( )\y, __widgets( ) )
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -22524,12 +22591,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         ;\\ do enter&leave events
                         If EnteredWidget( ) <> PressedWidget( )
-                           GetAtPoint( Root( ), mouse( )\x, mouse( )\y )
+                           GetAtPoint( Root( ), mouse( )\x, mouse( )\y, __widgets( ) )
                            
                            ;If Not a_index( )
                            If EnteredWidget( ) <> PressedWidget( )
                               EnteredWidget( ) = PressedWidget( )
-                              GetAtPoint( PressedWidget( )\root, mouse( )\x, mouse( )\y )
+                              GetAtPoint( PressedWidget( )\root, mouse( )\x, mouse( )\y, __widgets( ) )
                            EndIf
                            ;EndIf
                         EndIf
@@ -23625,7 +23692,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;             ForEach __roots( )
          ;                If __roots( ) <> *root
          ;                   DisableWindow( __roots( )\canvas\window, #True )
-         ;                   GetAtPoint( __roots( ), - 1, - 1 )
+         ;                   GetAtPoint( __roots( ), - 1, - 1, __widgets( ) )
          ;                EndIf
          ;             Next
          ;             PopMapPosition( __roots( ) )
@@ -24630,8 +24697,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 11230
-; FirstLine = 10109
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8---------------------f---+pt----------+8---------------8----v---------------------------------------------------------------8---------4-------------------------------------------------------------------------------------------------------------------------------------------------------------07-----n4-+0-4+------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21305
+; FirstLine = 19313
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8---------------------f---+pt----------+8---------------8----v---------------------------------------------------------------8---------4--------------------------------------------------------------------------------------------------------------------------------------------r-----3f0---------------fe-84-f8--------------------------------------------------------------f-----------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
