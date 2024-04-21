@@ -575,8 +575,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *function.EventFunc
       EndStructure
       
+      Structure RESIZEINFO Extends _s_COORDINATE
+         change.b
+         start.b
+         stop.b
+         send.b
+      EndStructure
+      
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
+         resize.RESIZEINFO                 
+         resizeflag.i                 ; state
          tabindex.c
          index.l[4]
          ; \index[0] - widget index
@@ -602,7 +611,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          class.s
          ;
          level.c
-         resize.i                 ; state
          ;
          create.b
          change.b
@@ -769,7 +777,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 750
-; FirstLine = 629
+; CursorPosition = 581
+; FirstLine = 454
 ; Folding = -fyB-d-7--
 ; EnableXP

@@ -130,18 +130,19 @@
       
       ;-\\ resize-state
       EnumerationBinary
-         #__resize_x
-         #__resize_y
-         #__resize_width
-         #__resize_height
+;          #__resize_x
+;          #__resize_y
+;          #__resize_width
+;          #__resize_height
          
          #__resize_change
          
          #__resize_restore
          #__resize_minimize
          #__resize_maximize
+         
          #__reclip
-         #__resize_start
+         ;#__resize_start
       EndEnumeration
       
       ;-\\ create-flags
@@ -881,8 +882,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
-; CursorPosition = 460
-; FirstLine = 448
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 137
+; FirstLine = 131
 ; Folding = ----
 ; EnableXP

@@ -652,10 +652,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro is_resize_( _this_ )
-         Bool( _this_\resize & #__resize_x Or
-               _this_\resize & #__resize_y Or
-               _this_\resize & #__resize_width Or
-               _this_\resize & #__resize_height )
+         Bool( _this_\resize\change )
       EndMacro
       
       Macro is_text_gadget_( _this_ )
@@ -3106,6 +3103,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected a_index
          
          If Not a_index( )
+            If *this\container <> 3
+               *this\resize\send = #True
+            EndIf
             ; Debug "a_show_add "+*this\class
             For a_index = 0 To #__a_moved
                If *this\anchors\mode & #__a_height = 0 And
@@ -3176,6 +3176,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure a_remove( *this._s_WIDGET )
          Protected a_index
+         If *this\container <> 3
+            *this\resize\send = #False
+         EndIf
          For a_index = 0 To #__a_moved
             If *this\anchors And
                *this\anchors\id[a_index]
@@ -4369,7 +4372,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          
          ; Чтобы обновить границы отоброжения (clip-coordinate)
-         _this_\resize | #__reclip
+         _this_\resizeflag | #__reclip
       EndMacro
       
       
@@ -4441,7 +4444,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; Чтобы обновить границы отоброжения (clip-coordinate)
-            *this\resize | #__reclip
+            *this\resizeflag | #__reclip
             
             If *this\haschildren
                ChildrensState( *this, 1 )
@@ -5449,7 +5452,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.b Resize( *this._s_WIDGET, x.l, y.l, width.l, height.l )
          Protected.b result
-         Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
+         Protected.l ix, iy, iwidth, iheight
          
 ;          If Not *this\child
 ;             Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
@@ -5683,24 +5686,48 @@ CompilerIf Not Defined( Widget, #PB_Module )
          iheight = height - ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
          
          ;\\
-         If Not Change_x And *this\screen_x( ) <> x - ( *this\bs - *this\fs ) : Change_x = ( x - ( *this\bs - *this\fs )) - *this\screen_x( ) : EndIf
-         If Not Change_y And *this\screen_y( ) <> y - ( *this\bs - *this\fs ) : Change_y = ( y - ( *this\bs - *this\fs )) - *this\screen_y( ) : EndIf
-         If Not Change_width And *this\screen_width( ) <> width + ( *this\bs * 2 - *this\fs * 2 ) : Change_width = ( width + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_width( ) : EndIf
-         If Not Change_height And *this\screen_height( ) <> height + ( *this\bs * 2 - *this\fs * 2 ) : Change_height = ( height + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_height( ) : EndIf
+         If Not *this\resize\x And *this\screen_x( ) <> x - ( *this\bs - *this\fs ) 
+            *this\resize\x = ( x - ( *this\bs - *this\fs )) - *this\screen_x( ) 
+         EndIf
+         If Not *this\resize\y And *this\screen_y( ) <> y - ( *this\bs - *this\fs ) 
+            *this\resize\y = ( y - ( *this\bs - *this\fs )) - *this\screen_y( ) 
+         EndIf
+         If Not *this\resize\width And *this\screen_width( ) <> width + ( *this\bs * 2 - *this\fs * 2 ) 
+            *this\resize\width = ( width + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_width( ) 
+         EndIf
+         If Not *this\resize\height And *this\screen_height( ) <> height + ( *this\bs * 2 - *this\fs * 2 ) 
+            *this\resize\height = ( height + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_height( ) 
+         EndIf
          
-         If Not Change_x And *this\frame_x( ) <> x : Change_x = x - *this\frame_x( ) : EndIf
-         If Not Change_y And *this\frame_y( ) <> y : Change_y = y - *this\frame_y( ) : EndIf
-         If Not Change_width And *this\frame_width( ) <> width : Change_width = width - *this\frame_width( ) : EndIf
-         If Not Change_height And *this\frame_height( ) <> height : Change_height = height - *this\frame_height( ) : EndIf
+         If Not *this\resize\x And *this\frame_x( ) <> x 
+            *this\resize\x = x - *this\frame_x( ) 
+         EndIf
+         If Not *this\resize\y And *this\frame_y( ) <> y 
+            *this\resize\y = y - *this\frame_y( ) 
+         EndIf
+         If Not *this\resize\width And *this\frame_width( ) <> width 
+            *this\resize\width = width - *this\frame_width( ) 
+         EndIf
+         If Not *this\resize\height And *this\frame_height( ) <> height 
+            *this\resize\height = height - *this\frame_height( ) 
+         EndIf
          
-         If Not Change_x And *this\inner_x( ) <> ix : Change_x = ix - *this\inner_x( ) : EndIf
-         If Not Change_y And *this\inner_y( ) <> iy : Change_y = iy - *this\inner_y( ) : EndIf
-         If Not Change_width And *this\container_width( ) <> iwidth : Change_width = iwidth - *this\container_width( ) : EndIf
-         If Not Change_height And *this\container_height( ) <> iheight : Change_height = iheight - *this\container_height( ) : EndIf
+         If Not *this\resize\x And *this\inner_x( ) <> ix 
+            *this\resize\x = ix - *this\inner_x( ) 
+         EndIf
+         If Not *this\resize\y And *this\inner_y( ) <> iy 
+            *this\resize\y = iy - *this\inner_y( ) 
+         EndIf
+         If Not *this\resize\width And *this\container_width( ) <> iwidth 
+            *this\resize\width = iwidth - *this\container_width( ) 
+         EndIf
+         If Not *this\resize\height And *this\container_height( ) <> iheight 
+            *this\resize\height = iheight - *this\container_height( ) 
+         EndIf
          
          ;\\
-         If Change_x
-            *this\resize | #__resize_x
+         If *this\resize\x
+            *this\resize\change = #True
             *this\frame_x( )  = x
             *this\inner_x( )  = ix
             *this\screen_x( ) = x - ( *this\bs - *this\fs )
@@ -5708,8 +5735,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\x[#__c_window] = x - *this\window\inner_x( )
             EndIf
          EndIf
-         If Change_y
-            *this\resize | #__resize_y
+         If *this\resize\y
+            *this\resize\change = #True
             *this\frame_y( )  = y
             *this\inner_y( )  = iy
             *this\screen_y( ) = y - ( *this\bs - *this\fs )
@@ -5717,8 +5744,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\y[#__c_window] = y - *this\window\inner_y( )
             EndIf
          EndIf
-         If Change_width
-            *this\resize | #__resize_width
+         If *this\resize\width
+            *this\resize\change = #True
             *this\frame_width( )     = width
             *this\container_width( ) = iwidth
             *this\screen_width( )    = width + ( *this\bs * 2 - *this\fs * 2 )
@@ -5727,8 +5754,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             *this\inner_width( ) = *this\container_width( )
          EndIf
-         If Change_height
-            *this\resize | #__resize_height
+         If *this\resize\height
+            *this\resize\change = #True
             *this\frame_height( )     = height
             *this\container_height( ) = iheight
             *this\screen_height( )    = height + ( *this\bs * 2 - *this\fs * 2 )
@@ -5741,8 +5768,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;;Debug "resize_"+*this\class +" "+ height +" "+ iheight +" "+ *this\inner_height( ) +" "+ *this\fs[2]
          
          ;\\
-         If ( Change_x Or Change_y Or Change_width Or Change_height )
-            *this\resize | #__reclip
+         If is_resize_( *this )
+            *this\resizeflag | #__reclip
             *this\root\repaint = #True
                
             ;\\
@@ -5756,7 +5783,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If ( Change_width Or Change_height )
+            If ( *this\resize\width Or *this\resize\height )
                If *this\type = #__type_Image Or
                   *this\type = #__type_ButtonImage
                   *this\ImageChange( ) = 1
@@ -5781,12 +5808,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If *this\type = #__type_MDI
                   ;\\
-                  ;If Change_x Or Change_y
+                  ;If *this\resize\x Or *this\resize\y
                   Resize( *this\scroll\v, *this\container_width( ) - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   Resize( *this\scroll\h, #PB_Ignore, *this\container_height( ) - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
                   ;EndIf
                   
-                  If Change_width Or Change_height
+                  If *this\resize\width Or *this\resize\height
                      ;If *this\haschildren
                      bar_mdi_update( *this, 0, 0, 0, 0 )
                      bar_mdi_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
@@ -5884,31 +5911,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\bar
                ; ???
-               If ( Change_width Or Change_height )
+               If ( *this\resize\width Or *this\resize\height )
                   *this\TabChange( ) = - 1
                EndIf
                
                ; Debug "-- bar_Update -- "+" "+ *this\class
-               bar_Update( *this, Bool( Change_width Or Change_height ) )
+               bar_Update( *this, Bool( *this\resize\width Or *this\resize\height ) )
             EndIf
             
             ;
             ;\\ Post Event
             ;
             
-            If *this\child <= 0
-               If mouse( )\press
-                  ;If *this\press
-                  If Not *this\resize & #__resize_change
-                     ; Debug "start-resize "+*this\class
-                     *this\resize | #__resize_change
-                     Send( *this, #__event_ResizeBegin )
-                  EndIf
-                  ;EndIf
-               EndIf
+            If *this\resize\send
                Send( *this, #__event_resize )
             EndIf
-         EndIf
          
          
          
@@ -5916,8 +5933,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;-\\ children's resize
          ;\\ then move and size parent
          ;\\ resize all children's
-         If *this\resize
-           If *this\haschildren 
+         If *this\haschildren 
              If *this\type <> #__type_Splitter
                ;Debug *this\class
                   ; If Not mouse( )\press
@@ -5925,7 +5941,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If StartEnumerate( *this )
                      If widget( )\parent <> *this
-                        widget( )\resize | #__reclip
+                        widget( )\resizeflag | #__reclip
                         Continue
                      EndIf
                      ;
@@ -6046,13 +6062,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            Resize( widget( ), x, y, width, height )
                         Else
-;                            If (*this\resize & #__resize_x Or *this\resize & #__resize_y)
+;                            If (*this\resize\x Or *this\resize\y)
                               Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
 ;                            Else
 ;                               If widget( )\autosize
 ;                                  Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
 ;                               Else
-;                                  widget( )\resize | #__reclip
+;                                  widget( )\resizeflag | #__reclip
 ;                               EndIf
 ;                            EndIf
                         EndIf
@@ -11329,7 +11345,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Draw margin back color
                If *this\MarginLine( )\width > 0
-                  If ( *this\TextChange( ) Or *this\resize )
+                  If ( *this\TextChange( ) Or *this\resizeflag )
                      *this\MarginLine( )\x      = *this\inner_x( )
                      *this\MarginLine( )\y      = *this\inner_y( )
                      *this\MarginLine( )\height = *this\inner_height( )
@@ -14881,10 +14897,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
          ;\\
          If *this\type = #__type_Window
-            If *this\resize & #__resize_minimize
+            If *this\resizeflag & #__resize_minimize
                ProcedureReturn #PB_Window_Minimize
             EndIf
-            If *this\resize & #__resize_maximize
+            If *this\resizeflag & #__resize_maximize
                ProcedureReturn #PB_Window_Maximize
             EndIf
             ProcedureReturn #PB_Window_Normal
@@ -15239,14 +15255,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; restore state
             If state = #PB_Window_Normal
                If Not Send( *this, #__event_restore )
-                  *this\resize | #__resize_restore
-                  If *this\resize & #__resize_minimize
-                     *this\resize & ~ #__resize_minimize
+                  *this\resizeflag | #__resize_restore
+                  If *this\resizeflag & #__resize_minimize
+                     *this\resizeflag & ~ #__resize_minimize
                      ;                   *this\CloseButton( )\hide    = 0
                      ;                   *this\MinimizeButton( )\hide = 0
                   EndIf
-                  If *this\resize & #__resize_maximize
-                     *this\resize & ~ #__resize_maximize
+                  If *this\resizeflag & #__resize_maximize
+                     *this\resizeflag & ~ #__resize_maximize
                      ;                   *this\MaximizeButton( )\hide = 0
                   EndIf
                   
@@ -15267,9 +15283,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; maximize state
             If state = #PB_Window_Maximize
                If Not Send( *this, #__event_maximize )
-                  *this\resize | #__resize_maximize
-                  If *this\resize & #__resize_minimize
-                     *this\resize & ~ #__resize_minimize
+                  *this\resizeflag | #__resize_maximize
+                  If *this\resizeflag & #__resize_minimize
+                     *this\resizeflag & ~ #__resize_minimize
                   Else
                      *this\x[#__c_restore]      = *this\container_x( )
                      *this\y[#__c_restore]      = *this\container_y( )
@@ -15296,9 +15312,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; minimize state
             If state = #PB_Window_Minimize
                If Not Send( *this, #__event_Minimize )
-                  *this\resize | #__resize_minimize
-                  If *this\resize & #__resize_maximize
-                     *this\resize & ~ #__resize_maximize
+                  *this\resizeflag | #__resize_minimize
+                  If *this\resizeflag & #__resize_maximize
+                     *this\resizeflag & ~ #__resize_maximize
                   Else
                      *this\x[#__c_restore]      = *this\container_x( )
                      *this\y[#__c_restore]      = *this\container_y( )
@@ -16281,7 +16297,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If ReParent
                ;
                If is_drag_move( )
-                  *this\resize | #__resize_x | #__resize_y | #__reclip
+                  *this\resizeflag | #__reclip
                   
                   x = *this\frame_x( ) - *parent\inner_x( )
                   y = *this\frame_y( ) - *parent\inner_y( )
@@ -17719,6 +17735,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\container = - 1
             Else
                *this\container = 3
+               *this\resize\send = #True
             EndIf
             *this\color\back = $FFF9F9F9
             
@@ -19007,8 +19024,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ init drawing font
                draw_font_( *this )
                ;
-               If *this\resize & #__reclip
-                  *this\resize & ~ #__reclip
+               If *this\resizeflag & #__reclip
+                  *this\resizeflag & ~ #__reclip
                   Reclip( *this )
                EndIf
                
@@ -19213,20 +19230,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\ImageChange( ) = 0
             EndIf
             
-            If *this\resize & #__resize_x
-               *this\resize & ~ #__resize_x
-            EndIf
-            
-            If *this\resize & #__resize_y
-               *this\resize & ~ #__resize_y
-            EndIf
-            
-            If *this\resize & #__resize_width
-               *this\resize & ~ #__resize_width
-            EndIf
-            
-            If *this\resize & #__resize_height
-               *this\resize & ~ #__resize_height
+            If *this\resize\change <> 0
+               *this\resize\change = 0
             EndIf
          EndWith
       EndProcedure
@@ -21303,7 +21308,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;          EndIf
          
          ;\\
-         If eventtype = #__event_MouseEnter ;And 3=4
+         If eventtype = #__event_MouseEnter And 3=4
             If Not *this\child
                ClearList( __gui\intersect( ) )
                ;FreeList( __gui\intersect( ) )
@@ -21553,7 +21558,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If eventtype = #__event_Left2Click
                         If *this\caption\interact
-                           If Not *this\resize & #__resize_maximize
+                           If Not *this\resizeflag & #__resize_maximize
                               ProcedureReturn SetState( *this, #PB_Window_Maximize )
                            Else
                               ProcedureReturn SetState( *this, #PB_Window_Normal )
@@ -21573,7 +21578,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                               ; maximize button
                            Case *this\MaximizeButton( )
-                              If Not *this\resize & #__resize_maximize
+                              If Not *this\resizeflag & #__resize_maximize
                                  ProcedureReturn SetState( *this, #PB_Window_Maximize )
                               Else
                                  ProcedureReturn SetState( *this, #PB_Window_Normal )
@@ -21581,7 +21586,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                               ; minimize button
                            Case *this\MinimizeButton( )
-                              If Not *this\resize & #__resize_minimize
+                              If Not *this\resizeflag & #__resize_minimize
                                  ProcedureReturn SetState( *this, #PB_Window_Minimize )
                               Else
                                  ProcedureReturn SetState( *this, #PB_Window_Normal )
@@ -21826,8 +21831,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ after post-widget-events then drop if create new widget
          If eventtype = #__event_Drop
             If *this <> __widgets( )
-               If __widgets( )\resize & #__reclip
-                  __widgets( )\resize & ~ #__reclip
+               If __widgets( )\resizeflag & #__reclip
+                  __widgets( )\resizeflag & ~ #__reclip
                   Reclip( __widgets( ) )
                EndIf
             EndIf
@@ -22262,7 +22267,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                               mouse( )\dragstart = #PB_Drag_Update
                               PressedWidget( )\dragged = #PB_Drag_Update
-                              PressedWidget( )\resize = 0 ; temp
+                              PressedWidget( )\resizeflag = 0 ; temp
                               
                               DoEvents( PressedWidget( ), #__event_DragStart )
                            EndIf
@@ -22585,8 +22590,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         ;\\
-                        If PressedWidget( )\resize <> 0
-                           PressedWidget( )\resize = 0
+                        If PressedWidget( )\resizeflag <> 0
+                           PressedWidget( )\resizeflag = 0
                         EndIf
                         
                         ;\\ do enter&leave events
@@ -24697,8 +24702,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21305
-; FirstLine = 19313
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------e--8--vt20-rq------Zbtt------------------------------------------------------nvk++---+---8-0f-8---------------------f---+pt----------+8---------------8----v---------------------------------------------------------------8---------4--------------------------------------------------------------------------------------------------------------------------------------------r-----3f0---------------fe-84-f8--------------------------------------------------------------f-----------------------------------------------------
+; CursorPosition = 3106
+; FirstLine = 3101
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------f-------------J4v-1-----------------------------------------------------------zXSf---f----0-+v-0---------------------v--f-13---------f-0---------------0----4---------------------------------------------------------------0---------8----------------------------------------------------------------------------------------------------v-f------------------------------------v+----b-2----------------60vf--t--------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
