@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 EnableExplicit
 Uselib( widget )
@@ -22,7 +21,7 @@ Procedure events_widgets( )
   ; Debug ""+Str( EventWidget( )\index - 1 )+ " - widget  event - " +WidgetEventType( )+ "  state - " GetState( EventWidget( ) ) ; 
   
   Select WidgetEventType( )
-    Case #PB_EventType_Change
+    Case #__event_Change
       SetGadgetState( GetIndex( EventWidget( ) ), GetState( EventWidget( ) ) )
       Debug  Str( GetIndex( EventWidget( ) ) )+" - widget change state " + GetState( EventWidget( ) )
       
@@ -31,7 +30,7 @@ EndProcedure
 
 Define cr.s = #LF$, text.s = "this long" + cr + " multiline " + cr + "text"
   
-If Open( OpenWindow( #PB_Any, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) )
+If Open( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
   CheckBoxGadget( 0, 10, 10, 140, 20, "CheckBox 1" )
   CheckBoxGadget( 1, 10, 35, 140, 40, text, #PB_CheckBox_ThreeState )
   CheckBoxGadget( 2, 10, 80, 140, 20, "CheckBox (right)", #PB_CheckBox_Right )
@@ -56,5 +55,7 @@ If Open( OpenWindow( #PB_Any, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_S
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 32
+; FirstLine = 19
 ; Folding = -
 ; EnableXP
