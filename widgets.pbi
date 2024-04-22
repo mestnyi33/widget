@@ -8501,7 +8501,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If *bar\thumb\pos <> ThumbPos
-                  *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+                  ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
                   *bar\thumb\pos      = ThumbPos
                EndIf
                
@@ -8555,7 +8555,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               If Not *bar\ThumbChange( ) Or *this\ResizeChange( )
+               If mode = 1
                   ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
                   ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
                   
@@ -8563,11 +8563,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
                   
                   If *bar\thumb\pos <> ThumbPos
-                     *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+                     ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
                      *bar\thumb\pos = ThumbPos
                   EndIf
                EndIf
                
+            EndIf
+            ;
+            If *bar\ThumbChange( ) <> 0
+               ;*bar\ThumbChange( ) = 0
+               ;*this\root\repaint  = #True
             EndIf
             
             ;\\ get fixed size
@@ -9188,13 +9193,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;   *bar\PageChange( ) = 0
             EndIf
-            
-; ;             ;
-;             If *bar\ThumbChange( ) <> 0
-; ;                *bar\ThumbChange( ) = 0
-;                *this\root\repaint  = #True
-;             EndIf
-            
          EndIf
          
          ProcedureReturn *this\ResizeChange( )
@@ -9209,8 +9207,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;????
-            If *bar\thumb\len = *bar\thumb\end And *bar\thumb\end
-               ScrollPos = *bar\min
+            If *bar\thumb\len
+               If *bar\thumb\len = *bar\thumb\end 
+                  ScrollPos = *bar\min
+               EndIf
             EndIf
             
             If ScrollPos > *bar\page\end - *bar\min[2]
@@ -9223,7 +9223,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If ScrollPos < *bar\min
                If *bar\max > *bar\page\len
                   ScrollPos = *bar\min
-               Else
+                  ; Else
                   ; ScrollPos = *bar\page\end + ScrollPos
                   ; Debug "" + #PB_Compiler_Procedure + " - " + " child - " + *this\child + " " + *this\class + " " + *bar\page\end + " " + ScrollPos
                EndIf
@@ -9255,7 +9255,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ; example-scroll(area) fixed
                If is_integral_( *this )
                   If *this\type = #__type_ScrollBar
-                     DoEvents( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
+                     Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
                   EndIf
                Else
                   ; scroll area change
@@ -9267,10 +9267,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *bar\PageChange( ) = 0
                EndIf
                If *bar\ThumbChange( ) <> 0
-                  *bar\ThumbChange( ) = 0
-                  *this\root\repaint  = #True
-                  result              = #True
+                  ;*bar\ThumbChange( ) = 0
                EndIf
+               
+               *this\root\repaint  = #True
+               result              = #True
             EndIf
          EndIf
          
@@ -9284,35 +9285,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
          If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
          
-         
-         ;          ;       If *bar\thumb\end <> ThumbPos : *bar\thumb\end = ThumbPos
-         ;          If *bar\thumb\pos <> ThumbPos
-         ;             ; Debug ""+ThumbPos +" "+ *bar\thumb\pos
-         ;             ProcedureReturn bar_Change( *this, bar_invert_page_pos_( *bar, bar_page_pos_( *bar, ThumbPos ) ) )
-         ;          EndIf
-         ;
-         
-         If *bar\thumb\pos <> ThumbPos
+         If *bar\thumb\pos <> ThumbPos 
+            ; *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+            *bar\thumb\pos = ThumbPos
+           
             ScrollPos = bar_page_pos_( *bar, ThumbPos )
             ScrollPos = bar_invert_page_pos_( *bar, ScrollPos )
             
-            ;         *bar\page\pos = ScrollPos
-            ;         ;
-            ;         If *this\scroll\increment > 1
-            ;           ScrollPos - Mod( ScrollPos, *this\scroll\increment )
-            ;         EndIf
-            
-            ; thumb move tick steps
-            If ( *this\type = #__type_trackbar And *this\flag & #PB_TrackBar_Ticks )
-               ProcedureReturn bar_Change( *this, ScrollPos )
-            Else
-               If *bar\ThumbChange( ) <> *bar\thumb\pos - ThumbPos
-                  *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
-                  *bar\thumb\pos      = ThumbPos
-                  
-                  ProcedureReturn bar_Change( *this, ScrollPos, #False )
-               EndIf
-            EndIf
+            ProcedureReturn bar_Change( *this, ScrollPos, #False )
          EndIf
       EndProcedure
       
@@ -24702,8 +24682,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9264
-; FirstLine = 8602
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------f+f-0----------------------------------------------------------8----------+4-++f-4-+-+--f-------f---+44------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9283
+; FirstLine = 9274
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
