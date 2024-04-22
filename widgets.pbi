@@ -1275,7 +1275,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
       Declare.l MouseButtons( )
       
-      Declare.b Update( *this )
       Declare   IsChild( *this, *parent )
       Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
       Declare.i SetAlignment( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
@@ -5754,6 +5753,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                Bool( *this\resize\width Or *this\resize\height )
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height )
+            If ( Change_width Or Change_height )
+               If *this\type = #__type_Image Or
+                  *this\type = #__type_ButtonImage
+                  *this\ImageChange( ) = 1
+               EndIf
+            EndIf
+            
+            ;\\
             *this\resize\clip = #True
             *this\root\repaint = #True
                
@@ -5765,14 +5772,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                        *this\screen_y( ),
                        *this\screen_width( ),
                        *this\screen_height( ) )
-            EndIf
-            
-            ;\\
-            If ( Change_width Or Change_height )
-               If *this\type = #__type_Image Or
-                  *this\type = #__type_ButtonImage
-                  *this\ImageChange( ) = 1
-               EndIf
             EndIf
             
             ;\\ if the widgets is composite
@@ -5875,11 +5874,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this\type = #__type_Window
-               result = Update( *this )
-            EndIf
-            
-            ;\\
             If *this\type = #__type_ComboBox
                If *this\StringBox( )
                   *this\ComboButton( )\width = *this\fs[3]
@@ -5895,13 +5889,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\bar
-               ; ???
-               If ( Change_width Or Change_height )
-                  *this\TabChange( ) = - 1
-               EndIf
-               
-               ; Debug "-- bar_Update -- "+" "+ *this\class
                bar_Update( *this, Bool( Change_width Or Change_height ) )
+            EndIf
+            
+            ;\\
+            If *this\type = #__type_Window
+               result = bar_Update( *this )
             EndIf
             
             ;
@@ -6368,7 +6361,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If Not *this\hide 
                ; - widget::bar_tab_update_( )
-               If *this\TabChange( )
+               If *this\TabChange( ) Or *this\ResizeChange( )
+            
                   *bar\max = 0
                   *this\image\x = ( *this\height - 16 - pos - 1 ) / 2
                   ; Debug " --- widget::Tab_Update( ) - " + *this\width +" "+ *this\height
@@ -8231,10 +8225,82 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.b bar_Update( *this._s_WIDGET, mode.b = 1 )
          Protected fixed.l, ScrollPos.f, ThumbPos.i, width, height
          
+         If *this\type = #__type_Window
+            ; чтобы закруглять только у окна с титлебаром
+            If *this\fs[2]
+               If *this\round
+                  *this\caption\round = *this\round
+                  *this\round         = 0
+               EndIf
+            EndIf
+            
+            ; caption title bar
+            If Not *this\caption\hide
+               *this\caption\x      = *this\frame_x( ) + *this\fs
+               *this\caption\y      = *this\frame_y( ) + *this\fs
+               *this\caption\width  = *this\frame_width( ) - *this\fs * 2
+               *this\caption\height = *this\barHeight + *this\fs - 1
+               
+               If *this\caption\height > *this\frame_height( ) - *this\fs ;*2
+                  *this\caption\height = *this\frame_height( ) - *this\fs ;*2
+               EndIf
+               
+               ; caption close button
+               If Not *this\CloseButton( )\hide
+                  *this\CloseButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\CloseButton( )\width + *this\caption\_padding )
+                  *this\CloseButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\CloseButton( )\height ) / 2
+               EndIf
+               
+               ; caption maximize button
+               If Not *this\MaximizeButton( )\hide
+                  If *this\CloseButton( )\hide
+                     *this\MaximizeButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
+                  Else
+                     *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\caption\_padding )
+                  EndIf
+                  *this\MaximizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MaximizeButton( )\height ) / 2
+               EndIf
+               
+               ; caption minimize button
+               If Not *this\MinimizeButton( )\hide
+                  If *this\MaximizeButton( )\hide
+                     *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
+                  Else
+                     *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
+                  EndIf
+                  *this\MinimizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MinimizeButton( )\height ) / 2
+               EndIf
+               
+               ; caption help button
+               If Not *this\HelpButton( )\hide
+                  If Not *this\MinimizeButton( )\hide
+                     *this\HelpButton( )\x = *this\MinimizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
+                  ElseIf Not *this\MaximizeButton( )\hide
+                     *this\HelpButton( )\x = *this\MaximizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
+                  Else
+                     *this\HelpButton( )\x = *this\CloseButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
+                  EndIf
+                  *this\HelpButton( )\y = *this\CloseButton( )\y
+               EndIf
+               
+               ; title bar width
+               If Not *this\HelpButton( )\hide
+                  *this\caption\width = *this\HelpButton( )\x - *this\caption\x - *this\caption\_padding
+               ElseIf Not *this\MinimizeButton( )\hide
+                  *this\caption\width = *this\MinimizeButton( )\x - *this\caption\x - *this\caption\_padding
+               ElseIf Not *this\MaximizeButton( )\hide
+                  *this\caption\width = *this\MaximizeButton( )\x - *this\caption\x - *this\caption\_padding
+               ElseIf Not *this\CloseButton( )\hide
+                  *this\caption\width = *this\CloseButton( )\x - *this\caption\x - *this\caption\_padding
+               EndIf
+               
+               
+            EndIf
+         EndIf
+         
          If Not *this\bar
             ProcedureReturn 0
          EndIf
-         
          Protected *bar._s_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2, *SB
          *SB  = *bar\button
@@ -8406,7 +8472,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
             ;\\ get thumb pos
             If *bar\fixed And Not *bar\PageChange( )
-;                If Not *bar\ThumbChange( )
                If *bar\fixed = 1
                   ThumbPos = *bar\fixed[1]
                   
@@ -8490,7 +8555,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               If Not *bar\ThumbChange( )
+               If Not *bar\ThumbChange( ) Or *this\ResizeChange( )
                   ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
                   ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
                   
@@ -8499,7 +8564,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *bar\thumb\pos <> ThumbPos
                      *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
-                     ; Debug ""+*bar\ThumbChange( ) +" "+ ThumbPos
                      *bar\thumb\pos = ThumbPos
                   EndIf
                EndIf
@@ -9122,14 +9186,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               *bar\PageChange( ) = 0
+               ;   *bar\PageChange( ) = 0
             EndIf
             
-            ;
-            If *bar\ThumbChange( ) <> 0
-               *bar\ThumbChange( ) = 0
-               *this\root\repaint  = #True
-            EndIf
+; ;             ;
+;             If *bar\ThumbChange( ) <> 0
+; ;                *bar\ThumbChange( ) = 0
+;                *this\root\repaint  = #True
+;             EndIf
             
          EndIf
          
@@ -9186,7 +9250,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Debug ""+ScrollPos +" "+ *bar\page\end +" "+ *bar\thumb\len +" "+ *bar\thumb\end +" "+ *bar\page\pos +" "+ Str(*bar\page\end-*bar\min[2])
                 
-               result = bar_Update( *this, mode )
+               bar_Update( *this, mode )
                
               ; example-scroll(area) fixed
                If is_integral_( *this )
@@ -9196,6 +9260,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   ; scroll area change
                   DoEvents( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
+               EndIf
+               
+               ;\\
+               If *bar\PageChange( ) <> 0
+                  *bar\PageChange( ) = 0
+               EndIf
+               If *bar\ThumbChange( ) <> 0
+                  *bar\ThumbChange( ) = 0
+                  *this\root\repaint  = #True
+                  result              = #True
                EndIf
             EndIf
          EndIf
@@ -9435,7 +9509,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If ( *bar\vertical And *this\height ) Or ( *bar\vertical = 0 And *this\width )
                   ; Debug "bar_SetAttribute - "+*this\height +" "+ *this\width +" "+ *bar\vertical
                   bar_Update( *this ) ; ??????????????
-               EndIf
+              EndIf
                ;EndIf
                
                ; after update and resize bar
@@ -14048,104 +14122,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.b Update( *this._s_WIDGET )
-         Protected result.b, _scroll_pos_.f
-         
-         If *this\type = #__type_Window
-            ; чтобы закруглять только у окна с титлебаром
-            If *this\fs[2]
-               If *this\round
-                  *this\caption\round = *this\round
-                  *this\round         = 0
-               EndIf
-            EndIf
-            
-            ; caption title bar
-            If Not *this\caption\hide
-               *this\caption\x      = *this\frame_x( ) + *this\fs
-               *this\caption\y      = *this\frame_y( ) + *this\fs
-               *this\caption\width  = *this\frame_width( ) - *this\fs * 2
-               *this\caption\height = *this\barHeight + *this\fs - 1
-               
-               If *this\caption\height > *this\frame_height( ) - *this\fs ;*2
-                  *this\caption\height = *this\frame_height( ) - *this\fs ;*2
-               EndIf
-               
-               ; caption close button
-               If Not *this\CloseButton( )\hide
-                  *this\CloseButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\CloseButton( )\width + *this\caption\_padding )
-                  *this\CloseButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\CloseButton( )\height ) / 2
-               EndIf
-               
-               ; caption maximize button
-               If Not *this\MaximizeButton( )\hide
-                  If *this\CloseButton( )\hide
-                     *this\MaximizeButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
-                  Else
-                     *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\caption\_padding )
-                  EndIf
-                  *this\MaximizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MaximizeButton( )\height ) / 2
-               EndIf
-               
-               ; caption minimize button
-               If Not *this\MinimizeButton( )\hide
-                  If *this\MaximizeButton( )\hide
-                     *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
-                  Else
-                     *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
-                  EndIf
-                  *this\MinimizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MinimizeButton( )\height ) / 2
-               EndIf
-               
-               ; caption help button
-               If Not *this\HelpButton( )\hide
-                  If Not *this\MinimizeButton( )\hide
-                     *this\HelpButton( )\x = *this\MinimizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                  ElseIf Not *this\MaximizeButton( )\hide
-                     *this\HelpButton( )\x = *this\MaximizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                  Else
-                     *this\HelpButton( )\x = *this\CloseButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                  EndIf
-                  *this\HelpButton( )\y = *this\CloseButton( )\y
-               EndIf
-               
-               ; title bar width
-               If Not *this\HelpButton( )\hide
-                  *this\caption\width = *this\HelpButton( )\x - *this\caption\x - *this\caption\_padding
-               ElseIf Not *this\MinimizeButton( )\hide
-                  *this\caption\width = *this\MinimizeButton( )\x - *this\caption\x - *this\caption\_padding
-               ElseIf Not *this\MaximizeButton( )\hide
-                  *this\caption\width = *this\MaximizeButton( )\x - *this\caption\x - *this\caption\_padding
-               ElseIf Not *this\CloseButton( )\hide
-                  *this\caption\width = *this\CloseButton( )\x - *this\caption\x - *this\caption\_padding
-               EndIf
-               
-               
-            EndIf
-         EndIf
-         
-         ; update draw coordinate
-         If *this\TabBox( )
-            result = bar_Update( *this\TabBox( ) )
-         EndIf
-         
-         If *this\type = #__type_ToolBar Or
-            *this\type = #__type_TabBar Or
-            *this\type = #__type_Menu Or
-            *this\type = #__type_ScrollBar Or
-            *this\type = #__type_ProgressBar Or
-            *this\type = #__type_TrackBar Or
-            *this\type = #__type_Splitter Or
-            *this\type = #__type_Spin
-            
-            result = bar_Update( *this )
-         Else
-            result = *this\ResizeChange( )
-         EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
       ;-
       Procedure.i TypeFromClass( class.s )
          Protected result.i
@@ -16116,7 +16092,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *parent\FirstWidget( ) = *this
                      *parent\split_1( )    = *this
                      *parent\split_1_is( ) = Bool( PB(IsGadget)( *this ))
-                     Update( *parent )
+                     Bar_Update( *parent )
                      If *parent\split_1_is( )
                         ProcedureReturn 0
                      EndIf
@@ -16124,7 +16100,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *parent\LastWidget( ) = *this
                      *parent\split_2( )    = *this
                      *parent\split_2_is( ) = Bool( PB(IsGadget)( *this ))
-                     Update( *parent )
+                     Bar_Update( *parent )
                      If *parent\split_2_is( )
                         ProcedureReturn 0
                      EndIf
@@ -19270,7 +19246,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\resize\change <> 0
                *this\resize\change = 0
             EndIf
-            
          EndWith
       EndProcedure
       
@@ -19716,13 +19691,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               
                         EndSelect
-                     EndIf
-                  EndIf
-                  
-                  ;\\ scrollbar
-                  If *this\type = #__type_scrollBar
-                     If *this\bar\PageChange( ) <> 0
-                        *this\bar\PageChange( ) = 0
                      EndIf
                   EndIf
                   
@@ -22755,7 +22723,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Opened( )\split_1( ) = Opened( )\FirstWidget( )
             Opened( )\split_2( ) = Opened( )\LastWidget( )
             
-            Update(Opened( ))
+            Bar_Update(Opened( ))
          EndIf
          
          If Opened( ) And
@@ -24734,8 +24702,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 6416
-; FirstLine = 6334
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-88---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9264
+; FirstLine = 8602
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------f+f-0----------------------------------------------------------8----------+4-++f-4-+-+--f-------f---+44------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
