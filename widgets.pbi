@@ -5889,7 +5889,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\bar
-               bar_Update( *this, Bool( Change_width Or Change_height ) )
+               bar_Update( *this, #True )
             EndIf
             
             ;\\
@@ -8470,9 +8470,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Debug ""+*bar\PageChange( ) +" "+ *bar\percent +" "+ *bar\min +" "+ *bar\min[2] +" "+ *bar\page\pos +" "+ *bar\area\end +" "+ *bar\page\end
          
             ;\\ get thumb pos
-            If *bar\fixed ; And Not *bar\PageChange( )
-               If Not mouse( )\press ; *bar\PageChange( )
-                  If *bar\fixed = 1
+            If *bar\fixed And Not *bar\PageChange( )
+               If *bar\fixed = 1
                      ThumbPos = *bar\fixed[1]
                      
                      If ThumbPos > *bar\area\end
@@ -8504,8 +8503,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
                      *bar\thumb\pos      = ThumbPos
                   EndIf
-               EndIf
-               
             Else
                If *this\type = #__type_ToolBar Or
                   *this\type = #__type_TabBar Or
@@ -8554,28 +8551,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *bar\PageChange( ) = *bar\page\pos - *bar\page\end
                      *bar\page\pos      = *bar\page\end
                   EndIf
+                  
+                  ;\\
+                  If mode = 1
+                     ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
+                     ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
+                     
+                     If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
+                     If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
+                     
+                     If *bar\thumb\pos <> ThumbPos
+                        ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+                        *bar\thumb\pos = ThumbPos
+                     EndIf
+                  EndIf
                EndIf
-               
             EndIf
-            
-            ;\\
-            If Not mouse( )\press ; mode = 1
-               ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
-               ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
-               
-               If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-               If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
-               
-               If *bar\thumb\pos <> ThumbPos
-                  ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
-                  *bar\thumb\pos = ThumbPos
-               EndIf
-            EndIf
-;             ;
-;             If *bar\ThumbChange( ) <> 0
-;                ;*bar\ThumbChange( ) = 0
-;                ;*this\root\repaint  = #True
-;             EndIf
             
             ;\\ get fixed size
             If *bar\PageChange( )
@@ -9119,7 +9110,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *bar\PageChange( ) <> 0
+            If *bar\PageChange( ) 
                ;\\
                If *this\type = #__type_ScrollBar
                   ;- widget::bar_update_parent_area_( )
@@ -9192,10 +9183,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;   *bar\PageChange( ) = 0
+               ;\\
+               If *this\ResizeChange( ) 
+                  *bar\PageChange( ) = 0
+               EndIf
+               ProcedureReturn #True   
             EndIf
-         
-         ProcedureReturn *this\ResizeChange( )
       EndProcedure
       
       Procedure.b bar_Change( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
@@ -9266,10 +9259,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *bar\PageChange( ) <> 0
                   *bar\PageChange( ) = 0
                EndIf
-               If *bar\ThumbChange( ) <> 0
-                  ;*bar\ThumbChange( ) = 0
-               EndIf
-               
                *this\root\repaint  = #True
                result              = #True
             EndIf
@@ -24682,8 +24671,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8472
-; FirstLine = 8328
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-fy------v+4-++f-4-+-+4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9261
+; FirstLine = 8427
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-fy---0v-f-8ff-v-8f-f-4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
