@@ -174,7 +174,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Else
             If \v\hide <> #True
                \v\hide = #True
-               *this\resize | #__resize_change
+               ;*this\resize | #__resize_change
                ; reset page pos then hide scrollbar
                If \v\bar\page\pos > \v\bar\min
                   If bar_Change( \v, \v\bar\min )
@@ -196,7 +196,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Else
             If \h\hide <> #True
                \h\hide = #True
-               *this\resize | #__resize_change
+               ;*this\resize | #__resize_change
                ; reset page pos then hide scrollbar
                If \h\bar\page\pos > \h\bar\min
                   If bar_Change( \h, \h\bar\min )
@@ -389,5 +389,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 8-+----0---
+; CursorPosition = 198
+; FirstLine = 143
+; Folding = 8------0---
 ; EnableXP

@@ -130,13 +130,13 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   
   Define *this._s_widget = w_13
   ;*this\bar\max = 0
-  Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
+  ;Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
   ;   *this\resize &~ #__resize_change
   ;   *this\bar\max = (*this\bar\area\len-*this\bar\thumb\len)
   ;   *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
   
   widget::SetState(w_13, 30)
-  Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
+  ;Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
   ;widget::SetState(w_15, 250-30-#__splitter_buttonsize)
   widget::SetState(w_15, 250-30-#__splitter_buttonsize)
   
@@ -162,5 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 138
+; FirstLine = 129
 ; Folding = ---
 ; EnableXP

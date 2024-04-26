@@ -8311,7 +8311,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          height = *this\frame_height( )
          
          ;\\
-         If mode = 1
+         If mode 
             ;\\ get area size
             If *bar\vertical
                *bar\area\len = height
@@ -8470,27 +8470,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Debug ""+*bar\PageChange( ) +" "+ *bar\percent +" "+ *bar\min +" "+ *bar\min[2] +" "+ *bar\page\pos +" "+ *bar\area\end +" "+ *bar\page\end
          
             ;\\ get thumb pos
+         If *this\type = #__type_Splitter 
             If *bar\fixed And Not *bar\PageChange( )
                If *bar\fixed = 1
-                     ThumbPos = *bar\fixed[1]
-                     
-                     If ThumbPos > *bar\area\end
-                        If *bar\min[1] < *bar\area\end
-                           ThumbPos = *bar\area\end
-                        Else
-                           If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
-                              ThumbPos = ( *bar\area\end + *bar\min[2] )
-                           Else
-                              ThumbPos = *bar\min[1]
-                           EndIf
-                        EndIf
-                     EndIf
-                     
-                  Else
-                     ;ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\fixed[2] ;[2]
-                     ThumbPos = *bar\area\end - *bar\fixed[2]                    ;[1]
-                     
-                     If ThumbPos < *bar\min[1]
+                  ThumbPos = *bar\fixed[1]
+                  
+                  If ThumbPos > *bar\area\end
+                     If *bar\min[1] < *bar\area\end
+                        ThumbPos = *bar\area\end
+                     Else
                         If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
                            ThumbPos = ( *bar\area\end + *bar\min[2] )
                         Else
@@ -8499,75 +8487,90 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If *bar\thumb\pos <> ThumbPos
-                     ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
-                     *bar\thumb\pos      = ThumbPos
-                  EndIf
-            Else
-               If *this\type = #__type_ToolBar Or
-                  *this\type = #__type_TabBar Or
-                  *this\type = #__type_Menu
-                  ;
-                  If *bar\page\pos < *bar\min
-                     ; If *bar\max > *bar\page\len
-                     *bar\page\pos = *bar\min
-                     ; EndIf
-                  EndIf
+               ElseIf *bar\fixed = 2
+                  ;ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\fixed[2] ;[2]
+                  ThumbPos = *bar\area\end - *bar\fixed[2]                    ;[1]
                   
-                  ;\\ scroll to active tab
-                  If *this\TabChange( )
-                     If *this\FocusedTab( ) And *this\FocusedTab( )\enter = #False
-                        If *this\FocusedTab( )\ScrollToActive( - 1 )
-                           *this\FocusedTab( )\ScrollToActive( 1 )
-                           ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
-                           
-                           ScrollPos = *bar\max - *this\FocusedTab( )\x
-                           ;ScrollPos - *bar\thumb\end                                    ; to left
-                           ;ScrollPos - *this\FocusedTab( )\width                         ; to right
-                           ScrollPos - ( *bar\thumb\end + *this\FocusedTab( )\width ) / 2 ; to center
-                           
-                           ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-                           ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
-                           *bar\page\pos = ScrollPos
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-               Else
-                  ; fixed mac-OS splitterGadget
-                  If *bar\page\pos < *bar\min
-                     If *bar\max > *bar\page\len
-                        If *bar\page\end
-                           *bar\page\pos = *bar\page\end + *bar\page\pos
-                        Else
-                           Debug "error page\end - " + *bar\page\end
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-                  ; for the scrollarea children's
-                  If *bar\page\end And *bar\page\pos > *bar\page\end
-                     ; Debug " bar end change - " + *bar\page\pos +" "+ *bar\page\end
-                     *bar\PageChange( ) = *bar\page\pos - *bar\page\end
-                     *bar\page\pos      = *bar\page\end
-                  EndIf
-                  
-                  ;\\
-                  If mode = 1
-                     ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
-                     ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
-                     
-                     If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-                     If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
-                     
-                     If *bar\thumb\pos <> ThumbPos
-                        ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
-                        *bar\thumb\pos = ThumbPos
+                  If ThumbPos < *bar\min[1]
+                     If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
+                        ThumbPos = ( *bar\area\end + *bar\min[2] )
+                     Else
+                        ThumbPos = *bar\min[1]
                      EndIf
                   EndIf
                EndIf
+               
+               If *bar\thumb\pos <> ThumbPos
+                  ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+                  *bar\thumb\pos      = ThumbPos
+               EndIf
+            Else
+               If Not mouse( )\press 
+                  ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
+                  ThumbPos = bar_invert_thumb_pos_( *bar, ThumbPos )
+                  
+                  If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
+                  If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
+                  
+                  If *bar\thumb\pos <> ThumbPos
+                     ;*bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+                     *bar\thumb\pos = ThumbPos
+                  EndIf
+               EndIf
+            EndIf
+         Else
+            
+            If *this\type = #__type_ToolBar Or
+               *this\type = #__type_TabBar Or
+               *this\type = #__type_Menu
+               ;
+               If *bar\page\pos < *bar\min
+                  ; If *bar\max > *bar\page\len
+                  *bar\page\pos = *bar\min
+                  ; EndIf
+               EndIf
+               
+               ;\\ scroll to active tab
+               If *this\TabChange( )
+                  If *this\FocusedTab( ) And *this\FocusedTab( )\enter = #False
+                     If *this\FocusedTab( )\ScrollToActive( - 1 )
+                        *this\FocusedTab( )\ScrollToActive( 1 )
+                        ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
+                        
+                        ScrollPos = *bar\max - *this\FocusedTab( )\x
+                        ;ScrollPos - *bar\thumb\end                                    ; to left
+                        ;ScrollPos - *this\FocusedTab( )\width                         ; to right
+                        ScrollPos - ( *bar\thumb\end + *this\FocusedTab( )\width ) / 2 ; to center
+                        
+                        ScrollPos     = bar_page_pos_( *bar, ScrollPos )
+                        ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+                        *bar\page\pos = ScrollPos
+                     EndIf
+                  EndIf
+               EndIf
+               
+            Else
+               ; fixed mac-OS splitterGadget
+               If *bar\page\pos < *bar\min
+                  If *bar\max > *bar\page\len
+                     If *bar\page\end
+                        *bar\page\pos = *bar\page\end + *bar\page\pos
+                     Else
+                        Debug "error page\end - " + *bar\page\end
+                     EndIf
+                  EndIf
+               EndIf
+               
+               ; for the scrollarea children's
+               If *bar\page\end And *bar\page\pos > *bar\page\end
+                  ; Debug " bar end change - " + *bar\page\pos +" "+ *bar\page\end
+                  *bar\PageChange( ) = *bar\page\pos - *bar\page\end
+                  *bar\page\pos      = *bar\page\end
+               EndIf
             EndIf
             
+         EndIf
+         
             ;\\ get fixed size
             If *bar\PageChange( )
                If *bar\fixed = 1
@@ -9183,6 +9186,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
+               If mode = 2
+                  Debug "change"
+               If is_integral_( *this )
+                  If *this\type = #__type_ScrollBar
+                     Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
+                  EndIf
+               Else
+                  ; scroll area change
+                  Send( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
+               EndIf  
+            EndIf
+            
                ;\\
                If *this\ResizeChange( ) 
                   *bar\PageChange( ) = 0
@@ -9233,7 +9248,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *bar\page\pos <> ScrollPos
                If *bar\page\pos > ScrollPos
-                  *bar\direction =  - 1
+                  *bar\direction =- 1
                Else
                   *bar\direction = 1
                EndIf
@@ -9243,24 +9258,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Debug ""+ScrollPos +" "+ *bar\page\end +" "+ *bar\thumb\len +" "+ *bar\thumb\end +" "+ *bar\page\pos +" "+ Str(*bar\page\end-*bar\min[2])
                 
-               bar_Update( *this, mode )
-               
-              ; example-scroll(area) fixed
-               If is_integral_( *this )
-                  If *this\type = #__type_ScrollBar
-                     Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
+               If bar_Update( *this, mode )
+                  Debug "  change"
+;                   ; example-scroll(area) fixed
+;                   If is_integral_( *this )
+;                      If *this\type = #__type_ScrollBar
+;                         Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
+;                      EndIf
+;                   Else
+;                      ; scroll area change
+;                      DoEvents( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
+;                   EndIf
+                  
+                  ;\\
+                  If *bar\PageChange( ) <> 0
+                     *bar\PageChange( ) = 0
                   EndIf
-               Else
-                  ; scroll area change
-                  DoEvents( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
+                  *this\root\repaint  = #True
+                  result              = #True
                EndIf
-               
-               ;\\
-               If *bar\PageChange( ) <> 0
-                  *bar\PageChange( ) = 0
-               EndIf
-               *this\root\repaint  = #True
-               result              = #True
             EndIf
          EndIf
          
@@ -9281,7 +9297,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ScrollPos = bar_page_pos_( *bar, ThumbPos )
             ScrollPos = bar_invert_page_pos_( *bar, ScrollPos )
             
-            ProcedureReturn bar_Change( *this, ScrollPos, #False )
+            ProcedureReturn bar_Change( *this, ScrollPos, 2 )
          EndIf
       EndProcedure
       
@@ -15434,11 +15450,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__type_Panel
                result = bar_tab_SetState( *this\TabBox( ), state )
                
-            Case #__type_ToolBar, #__type_Menu
-               result = bar_Change( *this, state )
-               
             Case #__type_TabBar
                result = bar_tab_SetState( *this, state )
+               
+            Case #__type_ToolBar, #__type_Menu
+               result = bar_Change( *this, state )
                
             Case #__type_Spin ,
                  #__type_TrackBar,
@@ -15446,7 +15462,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  #__type_ProgressBar,
                  #__type_Splitter
                
-               result = bar_Change( *this, state )
+               result = bar_Change( *this, state, 2 )
          EndSelect
          
          If result
@@ -22779,10 +22795,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             events::SetCallback( @EventHandler( ) )
          EndIf
          
-         If width = #PB_Ignore And height = #PB_Ignore
-            flag | #PB_Canvas_Container
-         EndIf
-         
          If Not PB(IsWindow)(Window)
             If Window > 5000
                Window = #PB_Any
@@ -22816,39 +22828,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
             w = WindowID( Window )
          EndIf
          
-         If x = #PB_Ignore : x = 0 : EndIf
-         If y = #PB_Ignore : y = 0 : EndIf
-         
-         If width = #PB_Ignore
-            width = WindowWidth( Window, #PB_Window_InnerCoordinate )
-            If x And x <> #PB_Ignore
-               width - x * 2
-            EndIf
-         EndIf
-         
-         If height = #PB_Ignore
-            height = WindowHeight( Window, #PB_Window_InnerCoordinate )
-            If y And y <> #PB_Ignore
-               height - y * 2
-            EndIf
-         EndIf
-         
          ; get a handle from the previous usage list
          If w
             UseGadgetList = UseGadgetList( w )
          EndIf
-         
-         ;
-         If PB(IsGadget)(Canvas)
-            g = GadgetID( Canvas )
-         Else
-            If flag & #PB_Canvas_Container = #PB_Canvas_Container
-               g = CanvasGadget( Canvas, x, y, width, height, #PB_Canvas_Container | #PB_Canvas_Keyboard )
-            Else
-               g = CanvasGadget( Canvas, x, y, width, height, #PB_Canvas_Keyboard )
+            
+            If x = #PB_Ignore : x = 0 : EndIf
+            If y = #PB_Ignore : y = 0 : EndIf
+            
+            If width = #PB_Ignore And height = #PB_Ignore
+               flag | #PB_Canvas_Container
             EndIf
-            If Canvas = - 1 : Canvas = g : g = GadgetID( Canvas ) : EndIf
-         EndIf
+            
+            If width = #PB_Ignore
+               width = WindowWidth( Window, #PB_Window_InnerCoordinate )
+               If x And x <> #PB_Ignore
+                  width - x * 2
+               EndIf
+            EndIf
+            
+            If height = #PB_Ignore
+               height = WindowHeight( Window, #PB_Window_InnerCoordinate )
+               If y And y <> #PB_Ignore
+                  height - y * 2
+               EndIf
+            EndIf
+            
+            ;
+            If PB(IsGadget)(Canvas)
+               g = GadgetID( Canvas )
+            Else
+               If flag & #PB_Canvas_Container = #PB_Canvas_Container
+                  g = CanvasGadget( Canvas, x, y, width, height, #PB_Canvas_Container | #PB_Canvas_Keyboard )
+               Else
+                  g = CanvasGadget( Canvas, x, y, width, height, #PB_Canvas_Keyboard )
+               EndIf
+               If Canvas = - 1 : Canvas = g : g = GadgetID( Canvas ) : EndIf
+            EndIf
          
          ;
          If UseGadgetList And w <> UseGadgetList
@@ -24671,8 +24687,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9261
-; FirstLine = 8427
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-fy---0v-f-8ff-v-8f-f-4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22834
+; FirstLine = 22012
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-fy---0--v+4-++f-4-+-+v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

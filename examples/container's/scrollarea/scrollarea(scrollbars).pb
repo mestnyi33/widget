@@ -7,6 +7,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Global Event.i, MyCanvas, *spl1,*spl2
   Global x=100,y=100, width=420, height=420 , focus
   
+  Procedure ScrollBars_ChangeEvents( )
+     Debug " ---- " + ClassFromEvent( WidgetEventType( ))
+  EndProcedure
+  
+  
   If Not OpenWindow(0, 0, 0, width+x*2+20, height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
@@ -37,11 +42,17 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Resize(*g0,#PB_Ignore,189,#PB_Ignore,#PB_Ignore )
   ; Resize(*g0,113,189,#PB_Ignore,#PB_Ignore )
   
- 
+   
+  ;Bind( GetBar( *mdi, #__type_ScrollBar, 1 ), @ScrollBars_ChangeEvents( ), #__event_Change ) 
+  ;Bind( GetBar( *mdi, #__type_ScrollBar, 2 ), @ScrollBars_ChangeEvents( ), #__event_Change ) 
+  Bind( *mdi, @ScrollBars_ChangeEvents( ), #__event_ScrollChange ) 
+  
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 45
+; FirstLine = 18
 ; Folding = -
 ; EnableXP

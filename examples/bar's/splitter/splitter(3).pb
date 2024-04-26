@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global b_0,b_1,b_2,s_0,b_2,b_3,s_1, s_2
+  Global b_0,b_1,b_2,b_2,b_3, s_0,s_1,s_2,s_3,s_4,s_5
   
   Procedure resize_window_0()
     Protected width = WindowWidth(EventWindow())
@@ -36,6 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ButtonGadget(4, 0, 0, 0, 0, "BTN3")
   ButtonGadget(5, 0, 0, 0, 0, "BTN4")
   SplitterGadget(6, 0, 0, 0, 0, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+  ;
   SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
   
   ; first splitter
@@ -46,11 +47,13 @@ CompilerIf #PB_Compiler_IsMainFile
   ButtonGadget(41, 0, 0, 0, 0, "BTN3")
   ButtonGadget(51, 0, 0, 0, 0, "BTN4")
   SplitterGadget(61, 0, 0, 0, 0, 41, 51, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+  ;
   SplitterGadget(71, 125, 80, 250, 70, 31, 61, #PB_Splitter_Separator )
   
+  Define max = 250-#__splitter_buttonsize
   SetGadgetState(3, -10)
-  SetGadgetState(6, 250-10)
-  SetGadgetState(31, 250/2)
+  SetGadgetState(6, max-10)
+  SetGadgetState(31, max/2)
   SetGadgetState(61, 10)
   
   
@@ -58,25 +61,28 @@ CompilerIf #PB_Compiler_IsMainFile
   b_0 = widget::Button(0, 0, 0, 0, "BTN1")
   b_1 = widget::Button(0, 0, 0, 0, "BTN2")
   s_0 = widget::Splitter(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
-  SetState(s_0, -50)
   
   b_2 = widget::Button(0, 0, 0, 0, "BTN3")
   b_3 = widget::Button(0, 0, 0, 0, "BTN4")
   s_1 = widget::Splitter(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-  SetState(s_1, 250-50)
+  ;
   s_2 = widget::Splitter(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
   
   ; first splitter
   b_0 = widget::Button(0, 0, 0, 0, "BTN1")
   b_1 = widget::Button(0, 0, 0, 0, "BTN2")
-  s_0 = widget::Splitter(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
-  SetState(s_0, 250/2)
+  s_3 = widget::Splitter(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
   
   b_2 = widget::Button(0, 0, 0, 0, "BTN3")
   b_3 = widget::Button(0, 0, 0, 0, "BTN4")
-  s_1 = widget::Splitter(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-  SetState(s_1, 50)
-  s_2 = widget::Splitter(125, 250, 250, 70, s_0, s_1, #PB_Splitter_Separator)
+  s_4 = widget::Splitter(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+  ;
+  s_5 = widget::Splitter(125, 250, 250, 70, s_3, s_4, #PB_Splitter_Separator)
+  
+  SetState(s_0, -10)
+  SetState(s_1, max-10)
+  SetState(s_3, max/2)
+  SetState(s_4, 10)
   
   Define event
   Repeat
@@ -85,5 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 79
+; FirstLine = 57
 ; Folding = -
 ; EnableXP

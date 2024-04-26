@@ -34,7 +34,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ButtonGadget(4, 0,0,0,0, "BTN4")
   ButtonGadget(5, 0,0,0,0, "BTN5")
   SplitterGadget(6, 0,0,0,0, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-  SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
+  ;
+  SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator | #PB_Splitter_Vertical)
   
   
   
@@ -46,11 +47,14 @@ CompilerIf #PB_Compiler_IsMainFile
   *w_4 = widget::Button(0,0,0,0, "BTN4")
   *w_5 = widget::Button(0,0,0,0, "BTN5")
   *w_6 = widget::Splitter(0,0,0,0, *w_4, *w_5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-  *w_7 = widget::Splitter(125, 170, 250, 70, *w_3, *w_6, #PB_Splitter_Separator)
+  ;
+  *w_7 = widget::Splitter(125, 170, 250, 70, *w_3, *w_6, #PB_Splitter_Separator | #PB_Splitter_Vertical)
   
   
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 50
+; FirstLine = 21
 ; Folding = -
 ; EnableXP
