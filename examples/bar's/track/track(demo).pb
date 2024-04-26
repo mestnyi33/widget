@@ -3,7 +3,7 @@
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
-  Global i, w_0,w_1,w_2
+  Global i, w_0,w_1,w_2, event
     
   
   Procedure events_gadgets()
@@ -59,10 +59,12 @@ CompilerIf #PB_Compiler_IsMainFile
     TextGadget    (#PB_Any, 10, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
     TextGadget    (#PB_Any,  90, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
     
+    If event
     BindGadgetEvent(0, @events_gadgets())
     BindGadgetEvent(1, @events_gadgets())
     BindGadgetEvent(2, @events_gadgets())
-    
+  EndIf
+  
     ;\\
     w_0 = Track(10+320,  40, 250, 20, 0, 30)
     SetState(Splitter(10 + 320,  40, 250, 20, w_0,  #PB_Default, #PB_Splitter_Vertical ), 250)
@@ -80,16 +82,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Text(10+320, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
     Text(90+320, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
     
+    If event
     Bind(w_0, @events_widgets())
     Bind(w_1, @events_widgets())
     Bind(w_2, @events_widgets())
-
+    EndIf
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 5
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
