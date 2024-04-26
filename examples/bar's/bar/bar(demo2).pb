@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEventType( )
       Case #PB_EventType_MouseEnter
         Debug "post enter - "+EventWidget( )\index
-        If GetButtons( )
+        If EnteredButton( )
           EventWidget( )\color\back = $00FF00
         Else
           EventWidget( )\color\back = $0000FF
@@ -232,6 +232,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4
+; CursorPosition = 38
+; FirstLine = 29
 ; Folding = --
 ; EnableXP
