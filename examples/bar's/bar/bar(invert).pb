@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_widgets()
       Select WidgetEventType( )
-         Case #PB_EventType_Change
+         Case #__event_Change
             Protected state = GetState(*bar)
             Debug "#PB_EventType_Change "+state
             SetState(*splitter, state)
@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;*bar = Splitter(15, 20+35*5, 350, 30, -1,-1, #__Bar_Vertical)
             SetState(*bar, min+2)
             
-            Bind( *bar, @events_widgets( ), #PB_EventType_Change )
+            Bind( *bar, @events_widgets( ), #__event_Change )
          EndIf
       EndIf
    EndProcedure
@@ -90,7 +90,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   ReDraw(root())
                   
                Case g_Canvas
-                  If widget()\change
+                  If widget( )\change
                      SetWindowTitle(0, Str(GetState(widget())))
                   EndIf
                   
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 13
+; CursorPosition = 92
+; FirstLine = 71
 ; Folding = --
 ; EnableXP

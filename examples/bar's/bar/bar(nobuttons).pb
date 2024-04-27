@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Splitter(0, 0, 380, 80, *scrollbar, - 1 )
         SetState(widget(), 70)
         
-        SetGadgetState(0, GetAttribute(*scrollbar, #__bar_buttonsize))
+        ;SetGadgetState(0, GetAttribute(*scrollbar, #__bar_buttonsize))
         SetWindowTitle(0, Str(GetState(*scrollbar)))
         redraw(root())
       EndIf
@@ -67,6 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 21
+; FirstLine = 9
 ; Folding = --
 ; EnableXP

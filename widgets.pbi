@@ -5086,7 +5086,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   *this\autosize = 1
                   
-                  If *this\child
+                  If is_integral_( *this )
                      *displayRoot\TabBox( ) = *this
                      ChangeParent( *this, *displayRoot )
                   Else
@@ -5819,7 +5819,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                Else
-                  If *this\child > 0
+                  If is_integral_( *this )
                      If *this\parent\container_width( ) = *this\parent\inner_width( ) And
                         *this\parent\container_height( ) = *this\parent\inner_height( )
                         ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
@@ -6281,7 +6281,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          set_image_( *this, *this\__tabs( )\Image, Image )
          PostRepaint( *this\root )
          ;         
-         If *this\child
+         If is_integral_( *this )
             If *this\parent = Opened( )
                If *this\type = #__type_TabBar
                   *this\parent\TabAddIndex( ) = Item
@@ -8365,7 +8365,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *bar\max
                         *bar\thumb\len = *bar\thumb\end - ( *bar\max - *bar\area\len )
                         *bar\page\end  = *bar\max - ( *bar\thumb\end - *bar\thumb\len )
-                        ;   *bar\page\end  = *bar\max - ( *bar\area\len - *bar\thumb\len )
+                        ; *bar\page\end  = *bar\max - ( *bar\area\len - *bar\thumb\len )
                      EndIf
                   Else
                      If *bar\page\len
@@ -8398,7 +8398,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *bar\thumb\len > *bar\area\len
                               *bar\thumb\len = *bar\area\len
                            EndIf
-                           ; *bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )), #PB_Round_Nearest )
                            *bar\page\end = *bar\max
                         Else
                            ; get thumb size
@@ -8483,7 +8482,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               
             Else
                ; fixed mac-OS splitterGadget
                If *bar\page\pos < *bar\min
@@ -8685,7 +8683,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this\child
+            If is_integral_( *this )
                *this\hide = Bool(*bar\max <= *bar\page\len)
             EndIf
          EndIf
@@ -9101,7 +9099,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If *this\parent\scroll\v <> widget( ) And
                                  *this\parent\scroll\h <> widget( ) And Not widget( )\align
                                  ;
-                                 If widget( )\child
+                                 If widget( )\child < 0
                                     Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore )
                                  Else
                                     Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
@@ -9123,7 +9121,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If *this\parent\scroll\v <> widget( ) And
                                  *this\parent\scroll\h <> widget( ) And Not widget( )\align
                                  ;
-                                 If widget( )\child
+                                 If widget( )\child < 0
                                     Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
                                  Else
                                     Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -9160,7 +9158,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ post change event
             If mode = 2
-               If is_integral_( *this )
+               If is_scrollbars_( *this )
                   If *this\type = #__type_ScrollBar
                      Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
                   EndIf
@@ -9340,7 +9338,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ; Debug  "   min " + *bar\min + " max " + *bar\max
                         
                         ;\\
-                        If *bar And *this\child And *this\parent
+                        If *bar And *this\parent And is_integral_( *this )
                            If *bar\vertical
                               *this\parent\scroll_height( ) = *bar\max
                            Else
@@ -9422,7 +9420,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            ; if it is a composite element of the parent
-                           If *this\child > 0 And *this\parent And *value
+                           If is_integral_( *this ) And *this\parent And *value
                               *value + 1
                               If *bar\vertical
                                  Resize(*this, *this\parent\container_width( ) - *value, #PB_Ignore, *value, #PB_Ignore)
@@ -15627,7 +15625,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If ActiveWindow( )
             If ActiveWindow( ) = *this 
-               If GetActive( )\child > 0
+               If is_integral_( GetActive( ) )
                   If GetActive( )\focus <> 3
                      GetActive( )\focus = 3
                      ;
@@ -15725,7 +15723,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            If *this\child > 0
+            If is_integral_( *this )
                *active = *this\parent
             Else
                *active = *this
@@ -15755,7 +15753,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ deactivate
             If GetActive( )
                If GetActive( ) <> *this
-                  If Not ( *this\child > 0 And GetActive( ) = *this\parent )
+                  If Not ( is_integral_( *this ) And GetActive( ) = *this\parent )
                      SetDeactive( *this )
                   EndIf
                EndIf
@@ -17410,7 +17408,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_TabBar Or
             *this\type = #__type_Menu
             ;
-            If *this\child
+            If is_integral_( *this )
                *this\fs = *parent\fs
             Else
                *this\fs = #__scroll_border
@@ -17478,7 +17476,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\child
-               *this\index   = - 1
+               *this\index   =- 1
                *this\address = *parent\address
                ChangeParent( *this, *parent )
             Else
@@ -18081,7 +18079,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ Resize
-         If *this\child
+         If is_integral_( *this )
             If *this\type = #__type_ScrollBar
                If *this\parent
                   If *this\bar\vertical
@@ -19509,7 +19507,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Post( *this, eventtype, *button, *data )
                   
                Else
-                  If *this And *this\child
+                  If *this And is_integral_( *this )
                      If Popup( ) And Popup( )\widget
                         *this = Popup( )\parent
                      EndIf
@@ -19650,7 +19648,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.i Post( *this._s_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
          If *this > 0
-            If *this And *this\child
+            If *this And is_integral_( *this )
                If Popup( ) And Popup( )\widget
                   *this = Popup( )\parent
                EndIf
@@ -19883,7 +19881,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                LeavedWidget( )\enter = 0
                DoEvents( LeavedWidget( ), #__event_MouseLeave )
                ;
-               If LeavedWidget( )\child And
+               If is_integral_( LeavedWidget( ) ) And
                   LeavedWidget( )\parent And 
                   LeavedWidget( )\parent\frame_enter( ) And
                   Not Bool( is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_frame] ) And
@@ -22976,7 +22974,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If flag & #__flag_child = #__flag_child
                If *parent And *parent\type = #__type_MDI
-                  *this\child = - 1
+                  *this\child =- 1
                Else
                   *this\child = 1
                EndIf
@@ -24644,8 +24642,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8966
-; FirstLine = 8251
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------T---v3v-4-+44-0-0v-4-8-r-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9160
+; FirstLine = 8628
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------4v-4-+---0-0v-4---r-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

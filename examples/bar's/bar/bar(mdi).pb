@@ -660,7 +660,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
     Procedure Widget_Events()
       Select EventType()
-        Case #PB_EventType_ScrollChange
+        Case #__Event_ScrollChange
           Debug EventData()
       EndSelect
     EndProcedure
@@ -916,5 +916,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 662
+; FirstLine = 580
 ; Folding = ----f-------
 ; EnableXP
