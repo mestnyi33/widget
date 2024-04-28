@@ -285,6 +285,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          String( x,y,width,height, "", #__flag_textnumeric|flag )
          widget( )\class = "IPAddress"
       EndMacro
+      Macro OpenCanvas( canvas = #PB_Any )
+         Open( ID::Window(UseGadgetList(0)), 0, 0, #PB_Ignore, #PB_Ignore, #Null$, #Null, #Null, canvas )
+      EndMacro
+      Macro CloseCanvas( )
+         CloseGadgetList( )
+      EndMacro
+      
       
       ;- \\
       Macro __tabs( ): bar\_s( ): EndMacro
@@ -18096,7 +18103,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          Else
-            Resize( *this, x, y, width, height )
+            If *this\root And 
+               width And height And 
+               *this\root\width = WindowWidth(*this\root\canvas\window) And 
+               *this\root\height = WindowHeight(*this\root\canvas\window)
+               *this\autosize = 1
+               Debug " canvas gadget resize"
+               ResizeGadget( *this\root\canvas\gadget, x, y, width, height )
+            Else
+               Resize( *this, x, y, width, height )
+            EndIf
          EndIf
          
          ;\\ Scroll bars
@@ -22743,22 +22759,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure Open( window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
-         Protected result, w, g, UseGadgetList, *root._s_ROOT 
+         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_ROOT 
          
          ; init
          If Not MapSize( __roots( ) )
             events::SetCallback( @EventHandler( ) )
          EndIf
          
-         If Not PB(IsWindow)(Window)
-            If Window > 5000
-               Window = #PB_Any
+         If PB(IsWindow)( Window )
+            w = WindowID( Window )
+            ;
+;             If flag & #PB_Window_NoGadgets
+;                flag &~ #PB_Window_NoGadgets
+;             EndIf
+            If flag & #PB_Canvas_Container
+               flag &~ #PB_Canvas_Container
+               canvasflag | #PB_Canvas_Container
             EndIf
-            
+            If width = #PB_Ignore And 
+               height = #PB_Ignore
+               canvasflag | #PB_Canvas_Container
+            EndIf
+         Else
+            If flag & #PB_Window_NoGadgets
+               flag &~ #PB_Window_NoGadgets
+            Else
+               canvasflag | #PB_Canvas_Container
+            EndIf
+            If Window = #PB_Any
+               Window = 500 + MapSize( __roots( ) )
+            EndIf
+            ;
             w = OpenWindow( Window, x, y, width, height, title$, flag, *parentID )
             If Window = - 1 : Window = w : w = WindowID( Window ) : EndIf
-            
-            ;\\
+            ;
             If flag & #PB_Window_BorderLess = #PB_Window_BorderLess
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   If CocoaMessage(0, w, "hasShadow") = 0
@@ -22774,53 +22808,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                CompilerEndIf
             EndIf
-            
-            
+            ;
             x = 0
             y = 0
-            flag | #PB_Canvas_Container
-         Else
-            w = WindowID( Window )
          EndIf
          
-         ; get a handle from the previous usage list
+         ;\\ get a handle from the previous usage list
          If w
             UseGadgetList = UseGadgetList( w )
          EndIf
-         
+         ;
          If x = #PB_Ignore : x = 0 : EndIf
          If y = #PB_Ignore : y = 0 : EndIf
-         
-         If width = #PB_Ignore And height = #PB_Ignore
-            flag | #PB_Canvas_Container
-         EndIf
-         
+         ;
          If width = #PB_Ignore
             width = WindowWidth( Window, #PB_Window_InnerCoordinate )
-            If x And x <> #PB_Ignore
-               width - x * 2
+            If x <> #PB_Ignore
+               If x > 0 And x < 50 
+                  width - x * 2
+               EndIf
             EndIf
          EndIf
-         
+         ;
          If height = #PB_Ignore
             height = WindowHeight( Window, #PB_Window_InnerCoordinate )
-            If y And y <> #PB_Ignore
-               height - y * 2
+            If y <> #PB_Ignore
+               If y > 0 And y < 50 
+                  height - y * 2
+               EndIf
             EndIf
          EndIf
-         
          ;
          If PB(IsGadget)(Canvas)
             g = GadgetID( Canvas )
          Else
-            If flag & #PB_Canvas_Container = #PB_Canvas_Container
-               g = CanvasGadget( Canvas, x, y, width, height, #PB_Canvas_Container | #PB_Canvas_Keyboard )
-            Else
-               g = CanvasGadget( Canvas, x, y, width, height, #PB_Canvas_Keyboard )
-            EndIf
+            g = CanvasGadget( Canvas, x, y, width, height, canvasflag )
             If Canvas = - 1 : Canvas = g : g = GadgetID( Canvas ) : EndIf
          EndIf
-         
          ;
          If UseGadgetList And w <> UseGadgetList
             UseGadgetList( UseGadgetList )
@@ -24642,8 +24666,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9160
-; FirstLine = 8628
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------4v-4-+---0-0v-4---r-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22773
+; FirstLine = 22760
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------
 ; EnableXP
 ; Executable = widgets2.app
