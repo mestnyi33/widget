@@ -130,7 +130,7 @@ CompilerIf #PB_Compiler_IsMainFile = 1
   Repeat:Until WaitWindowEvent()=#PB_Event_CloseWindow
 CompilerEndIf
 
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = v-+
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 4
+; Folding = -4+
 ; EnableXP
