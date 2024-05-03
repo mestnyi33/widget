@@ -48,17 +48,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndMacro
    
    Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
-      ;_parent_\root = OpenedWidget( ) : OpenedWidget( ) = _parent_
       _parent_\class = "Area"
       _parent_\fs = _frame_size_
-      ;      _parent_\x = _x_
-      ;      _parent_\y = _y_
-      ;      _parent_\width = _width_
-      ;      _parent_\height = _height_
-      ; Resize(_parent_, _x_, _y_, _width_, _height_ )
       
       _parent_\scroll\v = widget::scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
       _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
+      
       _parent_\scroll\v\child = 1
       _parent_\scroll\h\child = 1
       ; widget::bar_area_resize( _parent_, _x_+_parent_\fs, _y_+_parent_\fs, _width_-_parent_\fs*2, _height_-_parent_\fs*2 )
@@ -419,7 +414,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 40
-; Folding = 4+-f0----
+; CursorPosition = 56
+; FirstLine = 37
+; Folding = 4--f0----
 ; EnableXP

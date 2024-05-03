@@ -1248,6 +1248,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; Requester
       Global resize_one
       Declare.b bar_tab_update_items_( *this._s_WIDGET, List *items._s_TABS( ) )
+      Declare.l bar_setAttribute( *this, Attribute.l, *value )
+      Declare.i bar_tab_SetState( *this, item.l )
+      Declare   bar_mdi_resize( *this, x.l, y.l, width.l, height.l )
+      Declare   bar_mdi_update( *this, x.l, y.l, width.l, height.l )
+      Declare   bar_area_resize( *this, x.l, y.l, width.l, height.l )
+      Declare.b bar_Update( *this, mode.b = 1 )
+      Declare.b bar_PageChange( *this, state.l, mode.b = 1 )
+      
+      
       Declare   Close( *window )
       Declare   Button_Draw( *this )
       Declare   GetBar( *this, type.b, index.b = 0 )
@@ -1437,14 +1446,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   OpenBar( text.s, image.i = - 1 )
       Declare   CloseBar( )
       
-      
-      Declare.l bar_setAttribute( *this, Attribute.l, *value )
-      Declare.i bar_tab_SetState( *this, item.l )
-      Declare   bar_mdi_resize( *this, x.l, y.l, width.l, height.l )
-      Declare   bar_mdi_update( *this, x.l, y.l, width.l, height.l )
-      Declare   bar_area_resize( *this, x.l, y.l, width.l, height.l )
-      Declare.b bar_Update( *this, mode.b = 1 )
-      
       Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
       Declare   AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
       
@@ -1477,7 +1478,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare DoFocus( *this, eventtype.l, *button = #PB_All, *data = #Null )
       
       Declare.b bar_tab_draw( *this )
-      Declare.b bar_PageChange( *this, state.l, mode.b = 1 )
       
       Declare.b bar_area_update( *this._s_WIDGET )
       Declare.l update_items_( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
@@ -24671,7 +24671,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 1257
+; FirstLine = 1253
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------Luf-l-f+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
