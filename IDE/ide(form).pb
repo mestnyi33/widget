@@ -100,6 +100,7 @@ Global w_ide_help_splitter,
 Global group_select
 Global group_drag
 
+;Macro ChangeCursor( a,b ) : EndMacro
 
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
 
@@ -638,14 +639,13 @@ Procedure widget_events( )
             If IsContainer( *e_widget ) 
                If GetState( w_ide_inspector_elements ) > 0 
                   If eventtype = #__event_MouseLeave
-                     If GetCursor( ) <> #PB_Cursor_Default
+                     If CurrentCursor( ) <> #PB_Cursor_Default
                         ChangeCursor( *e_widget, #PB_Cursor_Default )
                      EndIf
-                  Else
-                     If *e_widget\inner_enter( ) 
-                        If GetCursor( ) <> #PB_Cursor_Cross
-                           ChangeCursor( *e_widget, #PB_Cursor_Cross )
-                        EndIf
+                     
+                  ElseIf *e_widget\inner_enter( ) 
+                     If CurrentCursor( ) <> #PB_Cursor_Cross
+                        ChangeCursor( *e_widget, #PB_Cursor_Cross )
                      EndIf
                   EndIf
                EndIf
@@ -1406,7 +1406,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1187
-; FirstLine = 903
-; Folding = -----------u-0-v4O-----
+; CursorPosition = 634
+; FirstLine = 487
+; Folding = -----------+-+-4bn----
 ; EnableXP

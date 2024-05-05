@@ -19,12 +19,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Global NewList Images.IMAGES( )
    Declare Canvas_Draw( canvas.i, List Images.IMAGES( ) )
    
-   Macro Area_Draw( _this_ )
-      widget::bar_mdi_resize( _this_,
-                              _this_\scroll\h\x, 
-                              _this_\scroll\v\y, 
-                              (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
-                              (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
+   Macro Area_Draw( _this_, _objects_ )
+      ;\\
+      widget::bar_area_Change( *this, _objects_ )
+      
+      ;widget::bar_area_Draw( *this )
       
       If Not _this_\scroll\v\hide
          widget::Draw( _this_\scroll\v )
@@ -33,13 +32,14 @@ CompilerIf #PB_Compiler_IsMainFile
          widget::Draw( _this_\scroll\h )
       EndIf
       
+      ;\\
       UnclipOutput( )
       DrawingMode( #PB_2DDrawing_Outlined )
-      Box( x, y, Width, Height, RGB( 0,255,0 ) )
-      Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 0,0,255 ) )
       
-      ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-      Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+      Box(*this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), RGB( 0,0,255 ) )
+      Box(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), RGB( 0,255,0 ) )
+      Box( *this\scroll_x( ), *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), RGB( 255,0,0 ) )
+      
    EndMacro
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
@@ -50,30 +50,139 @@ CompilerIf #PB_Compiler_IsMainFile
    Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
       _parent_\class = "Area"
       _parent_\fs = _frame_size_
-      
-      _parent_\scroll\v = widget::scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
-      _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
-      
-      _parent_\scroll\v\child = 1
-      _parent_\scroll\h\child = 1
-      ; widget::bar_area_resize( _parent_, _x_+_parent_\fs, _y_+_parent_\fs, _width_-_parent_\fs*2, _height_-_parent_\fs*2 )
+      ;
+      SetParent( _parent_, root( ) )
+      ;
+      OpenList( _parent_ )
+      ;       _parent_\scroll\v = widget::scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|#__flag_child|_flag_, 11 )
+      ;       _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0, _scrollbar_size_, 0, 0, 0, #__flag_child|_flag_, 11 )
+      bar_area_create_( _parent_, 1, 0, 0, _width_, _height_, _scrollbar_size_ )
+      CloseList( )
+      ;
+      Resize( _parent_, _x_, _y_, _width_, _height_ )
    EndMacro                                                  
    
-   Macro Area_Bind( _parent_, _callback_)
+   Macro Area_Bind( _parent_, _callback_ )
       If _callback_
-         Bind( _parent_\scroll\v, _callback_);, #__event_Change )
-         Bind( _parent_\scroll\h, _callback_);, #__event_Change )
+         Bind( _parent_, _callback_, #__event_ScrollChange )
+         Bind( _parent_, _callback_, #__event_Draw )
       EndIf
    EndMacro                                                  
    
+   #Font = 0
+   LoadFont(#Font, "Arial", 12)
+   Procedure.i HSVA(Hue.i, Saturation.i, Value.i, Aplha.i=255) ; [0,360], [0,100], [0,255], [0,255]
+      Protected H.i = Int(Hue/60)
+      Protected f.f = (Hue/60-H)
+      Protected p = Value * (1-Saturation/100.0)
+      Protected q = Value * (1-Saturation/100.0*f)
+      Protected t = Value * (1-Saturation/100.0*(1-f))
+      Select H
+         Case 1 : ProcedureReturn RGBA(q,Value,p, Aplha)
+         Case 2 : ProcedureReturn RGBA(p,Value,t, Aplha)
+         Case 3 : ProcedureReturn RGBA(p,q,Value, Aplha)  
+         Case 4 : ProcedureReturn RGBA(t,p,Value, Aplha)
+         Case 5 : ProcedureReturn RGBA(Value,p,q, Aplha)  
+         Default : ProcedureReturn RGBA(Value,t,p, Aplha)
+      EndSelect
+   EndProcedure
+   Procedure Button_DrawCallback(*Object._s_widget, Width.i, Height.i, DataValue.i)
+      Protected Text.s = GetText(*Object)
+      Protected Hue = DataValue
+      
+      Protected enter = Bool(*object\enter > 0)
+      Protected press = Bool(*object\press > 0 And enter)
+      
+      If a_index( )
+         enter = 0
+         press = 0
+      EndIf
+      
+      ; Box background
+      AddPathBox(0.0, 0.0, Width, Height)
+      VectorSourceLinearGradient(0.0, 0.0, 0.0, Height)
+      If press And Not *object\disable
+         VectorSourceGradientColor(HSVA(Hue, 10, $FF), 0.00)
+         VectorSourceGradientColor(HSVA(Hue, 20, $F8), 0.45)
+         VectorSourceGradientColor(HSVA(Hue, 30, $F0), 0.50)
+         VectorSourceGradientColor(HSVA(Hue, 40, $E8), 1.00)
+      ElseIf enter And Not *object\disable
+         VectorSourceGradientColor(HSVA(Hue, 5, $FF), 0.00)
+         VectorSourceGradientColor(HSVA(Hue, 10, $F8), 0.45)
+         VectorSourceGradientColor(HSVA(Hue, 15, $F0), 0.50)
+         VectorSourceGradientColor(HSVA(Hue, 20, $E8), 1.00)
+      Else
+         VectorSourceGradientColor(HSVA(0, 0, $F8), 0.00)
+         VectorSourceGradientColor(HSVA(0, 0, $F0), 0.45)
+         VectorSourceGradientColor(HSVA(0, 0, $E8), 0.50)
+         VectorSourceGradientColor(HSVA(0, 0, $D8), 1.00)
+      EndIf
+      FillPath( )
+      
+      
+      ; Box frame
+      If *object\disable
+         AddPathBox(0.5, 0.5, Width-1, Height-1)
+         VectorSourceColor(HSVA(0, 0, $D0))
+         StrokePath(1)
+         AddPathBox(1.5, 1.5, Width-3, Height-3)
+         VectorSourceColor(HSVA(0, 0, $F0))
+         StrokePath(1)
+      ElseIf press
+         AddPathBox(0.5, 0.5, Width-1, Height-1)
+         VectorSourceColor(HSVA(Hue, 100, $80))
+         StrokePath(1)
+         AddPathBox(1.5, 1.5, Width-3, Height-3)
+         VectorSourceColor(HSVA(Hue, 50, $FF))
+         StrokePath(1)
+      ElseIf enter
+         AddPathBox(0.5, 0.5, Width-1, Height-1)
+         VectorSourceColor(HSVA(0, 0, $A0))
+         StrokePath(1)
+         AddPathBox(1.5, 1.5, Width-3, Height-3)
+         VectorSourceColor(HSVA(Hue, 10, $FF))
+         StrokePath(1)
+      Else
+         AddPathBox(0.5, 0.5, Width-1, Height-1)
+         VectorSourceColor(HSVA(0, 0, $A0))
+         StrokePath(1)
+         AddPathBox(1.5, 1.5, Width-3, Height-3)
+         VectorSourceColor(HSVA(0, 0, $FF))
+         StrokePath(1)
+      EndIf
+      
+      ; Text
+      AddPathBox(0.0, 0.0, Width, Height)
+      ClipPath( )
+      VectorFont(FontID(#Font))
+      If *object\disable
+         VectorSourceColor($40000000)
+      Else
+         VectorSourceColor($FF000000)
+      EndIf
+      If Height - 6 > 0 And Width - 6 > 0
+         If press
+            MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2)
+         Else
+            MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2-1)
+         EndIf
+         DrawVectorParagraph(Text, Width-6, Height-6, #PB_VectorParagraph_Center)
+      EndIf
+      
+   EndProcedure
    Procedure Area_Events( )
       Protected change
       
       Select WidgetEventType( )
-         Case #__event_Change
+         Case #__event_Draw
+            StartVectorDrawing( CanvasVectorOutput( EventWidget( )\root\canvas\gadget ))
+            TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
+            Button_DrawCallback(EventWidget( ), EventWidget( )\width[#__c_frame], EventWidget( )\height[#__c_frame], EventWidget( )\data)
+            StopVectorDrawing( )
+            
+         Case #__event_ScrollChange
             change = WidgetEventData( )
-            Debug "changing scroller values - " +change +" "+ EventWidget( )\bar\PageChange( ) +" "+ EventWidget( )\bar\ThumbChange( ) 
-            ;change = EventWidget( )\bar\PageChange( )
+            Debug "changing scroller values - " +change 
             
             PushListPosition(  Images( )  )
             If EventWidget( )\bar\vertical
@@ -87,47 +196,19 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             PopListPosition( Images( ) )
             
-            ;Canvas_Draw( MyCanvas, Images( ) ) 
       EndSelect
       
    EndProcedure
    
-   
-   ;   Procedure bUpdate( )
-   ;     Debug "  "+*this\scroll\h\x +" "+ *this\scroll\v\y +" "+ Str((*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x) +" "+ Str((*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y)
-   ;     ;widget::bar_Updates( *this, *this\scroll\h\x, *this\scroll\v\y, (*this\scroll\v\x+*this\scroll\v\width)-*this\scroll\h\x, (*this\scroll\h\y+*this\scroll\h\height)-*this\scroll\v\y )
-   ;   
-   ;   EndProcedure
-   ;   
    ;-
    Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
       Protected round
-      
-      ;\\ Debug Images( )\x
-      *this\scroll_x( ) = Images( )\x 
-      *this\scroll_y( ) = Images( )\Y
-      *this\scroll_width( ) = Images( )\x+Images( )\width - *this\scroll_x( )
-      *this\scroll_height( ) = Images( )\Y+Images( )\height - *this\scroll_y( )
-      PushListPosition( Images( ) )
-      ForEach Images( )
-         If *this\scroll_x( ) > Images( )\x : *this\scroll_x( ) = Images( )\x : EndIf
-         If *this\scroll_y( ) > Images( )\y : *this\scroll_y( ) = Images( )\y : EndIf
-      Next
-      ForEach Images( )
-         If *this\scroll_width( ) < Images( )\x+Images( )\width - *this\scroll_x( ) : *this\scroll_width( ) = Images( )\x+Images( )\width - *this\scroll_x( ) : EndIf
-         If *this\scroll_height( ) < Images( )\Y+Images( )\height - *this\scroll_y( ) : *this\scroll_height( ) = Images( )\Y+Images( )\height - *this\scroll_y( ) : EndIf
-      Next
-      PopListPosition( Images( ) )
-      
       
       ;\\
       DrawingStart( canvas ) 
       If Drawing( )
          DrawingMode( #PB_2DDrawing_Default )
          Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
-         
-         ;\\
-         Area_Draw( *this )
          
          ;\\
          If GetGadgetState(5)
@@ -138,6 +219,7 @@ CompilerIf #PB_Compiler_IsMainFile
                RoundBox( Images( )\x, Images( )\y, Images( )\width, Images( )\height,round, round, RGB( 255,255,0 )) ; draw all images with z-order
             Next
             ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len )
+            ;ClipOutput(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ) )
          EndIf
          
          ;\\
@@ -146,7 +228,16 @@ CompilerIf #PB_Compiler_IsMainFile
             DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
          Next
          
-          DrawingStop( )
+         ;\\
+         Area_Draw( *this, Images( ) )
+         
+         
+         ;            StartVectorDrawing( CanvasVectorOutput( *this\root\canvas\gadget ))
+         ;             TranslateCoordinates(*this\x[#__c_frame], *this\y[#__c_frame])
+         ;             Button_DrawCallback(*this, *this\width[#__c_frame], *this\height[#__c_frame], *this\data)
+         ;             StopVectorDrawing( )
+         ;           
+         DrawingStop( )
       EndIf
    EndProcedure
    
@@ -238,18 +329,23 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     Height = widget::Root( )\height - y*2
       
       Select Event
-;          Case #PB_EventType_Repaint
-;             Repaint = #True
-;             
+            ;          Case #PB_EventType_Repaint
+            ;             Repaint = #True
+            ;             
          Case #PB_EventType_LeftButtonUp : Drag = #False
-            ; Canvas_SetCursor( Mousex, Mousey )
-            
-         Case #PB_EventType_LeftButtonDown
-            Drag = Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
-            If Drag 
-               ; Canvas_SetCursor( Mousex, Mousey, #PB_Cursor_Arrows )
-               Repaint = #True 
+            If Canvas_HitTest( Images( ), Mousex, Mousey )
+               ChangeCursor( *this, #PB_Cursor_Cross )
+            Else
+               ChangeCursor( *this, #PB_Cursor_Default )
             EndIf
+               
+         Case #PB_EventType_LeftButtonDown
+            If Canvas_HitTest( Images( ), Mousex, Mousey ) 
+               ChangeCursor( *this, #PB_Cursor_Hand )
+               Repaint = #True 
+               Drag = #True
+            EndIf
+            
             
          Case #PB_EventType_MouseMove
             If Drag = #True
@@ -264,14 +360,19 @@ CompilerIf #PB_Compiler_IsMainFile
                      Repaint = #True
                   EndIf
                EndIf
-            Else 
-               ; Canvas_SetCursor( Mousex, Mousey )
+               
+               ChangeCursor( *this, #PB_Cursor_Arrows )
+            Else
+               If Canvas_HitTest( Images( ), Mousex, Mousey )
+                  ChangeCursor( *this, #PB_Cursor_Cross )
+               Else
+                  ChangeCursor( *this, #PB_Cursor_Default )
+               EndIf
             EndIf
             
          Case #PB_EventType_Resize 
             ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) ; Bug ( 562 )
-            
-            widget::bar_area_resize( *this, x+*this\fs, y+*this\fs, width-*this\fs*2, height-*this\fs*2 )
+            Resize( *this, x, y, width, height )
             
             Repaint = #True
       EndSelect
@@ -319,8 +420,8 @@ CompilerIf #PB_Compiler_IsMainFile
       FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
       
       DrawingMode(#PB_2DDrawing_Default)
-      Box(5, 10, 30, 2, RGB( 0,255,0 ))
-      Box(5, 10+25, 30, 2, RGB( 0,0,255 ))
+      Box(5, 10, 30, 2, RGB( 0,0,255 ))
+      Box(5, 10+25, 30, 2, RGB( 0,255,0 ))
       Box(5, 10+50, 30, 2, RGB( 255,0,0 ))
       
       DrawingMode(#PB_2DDrawing_Transparent)
@@ -361,13 +462,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent( )
       
       If event = #PB_Event_Repaint
-;          Select EventType( )
-;             Case #PB_EventType_Repaint
+         ;          Select EventType( )
+         ;             Case #PB_EventType_Repaint
          If EventData( )
             Canvas_Draw( MyCanvas, Images( ) ) 
          EndIf
          
-;          EndSelect
+         ;          EndSelect
       EndIf
       
       Select Event
@@ -390,9 +491,9 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                   ; Canvas_Draw(MyCanvas, Images( ))
+                  ; Canvas_Draw(MyCanvas, Images( ))
                   PostRepaint( Root( ) )
-                
+                  
                Case 4
                   If GetGadgetState(2)
                      SetAttribute(*this\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
@@ -401,11 +502,11 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                   ; Canvas_Draw(MyCanvas, Images( ))
+                  ; Canvas_Draw(MyCanvas, Images( ))
                   PostRepaint( Root( ) )
-                
+                  
                Case 5
-                 ; Canvas_Draw(MyCanvas, Images( ))
+                  ; Canvas_Draw(MyCanvas, Images( ))
                   PostRepaint( Root( ) )
                   
             EndSelect
@@ -414,7 +515,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 37
-; Folding = 4--f0----
+; CursorPosition = 345
+; FirstLine = 334
+; Folding = ----------
 ; EnableXP
