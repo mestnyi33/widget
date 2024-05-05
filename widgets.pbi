@@ -298,6 +298,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro CurrentCursor( ) : mouse( )\cursor : EndMacro
       Macro DraggedCursor( ) : mouse( )\drag\cursor : EndMacro
+      Macro DragState( ): mouse( )\drag\state: EndMacro
       
       ;-
       Declare.b bar_scroll_draw( *this )
@@ -2478,7 +2479,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-\\ DD
-      Macro DragState( ): mouse( )\drag\state: EndMacro
       Procedure DropDraw( *this._s_WIDGET )
          Protected j = 5, s = j/2
          
@@ -2488,48 +2488,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this = *this\parent
             EndIf
             
-            ;\\ first - draw backgraund color
-            drawing_mode_alpha_( #PB_2DDrawing_Default )
-            If *this\drop
-               If *this\inner_enter( )
-                  If DragState( ) = #PB_Drag_Enter
-                     draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
-                     
-                     draw_box_( *this\inner_x( )+5, mouse( )\y-s-1, *this\inner_width( )-10, j, $2000ff00 )
-                     
+            If *this\enter
+               ;\\ first - draw backgraund color
+               drawing_mode_alpha_( #PB_2DDrawing_Default )
+               If *this\drop
+                  If *this\inner_enter( )
+                     If DragState( ) = #PB_Drag_Enter
+                        draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
+                        
+                        draw_box_( *this\inner_x( )+5, mouse( )\y-s-1, *this\inner_width( )-10, j, $2000ff00 )
+                        
+                     Else
+                        draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff0000 )
+                     EndIf
                   Else
-                     draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff0000 )
+                     ;draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
                   EndIf
                Else
-                  ;draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
-               EndIf
-            Else
-               If *this\enter
                   If *this\press And *this\inner_enter( )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff00ff )
                   Else
                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $100000ff )
                   EndIf
                EndIf
-            EndIf
-            
-            ;\\ second - draw frame color
-            drawing_mode_( #PB_2DDrawing_Outlined )
-            If *this\drop
-               If *this\inner_enter( )
-                  If DragState( ) = #PB_Drag_Enter
-                     draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
-                     
-                     draw_box_( *this\inner_x( )+5, mouse( )\y-s-1, *this\inner_width( )-10, j, $ff00ff00 )
-                     
+               
+               ;\\ second - draw frame color
+               drawing_mode_( #PB_2DDrawing_Outlined )
+               If *this\drop
+                  If *this\inner_enter( )
+                     If DragState( ) = #PB_Drag_Enter
+                        draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
+                        
+                        draw_box_( *this\inner_x( )+5, mouse( )\y-s-1, *this\inner_width( )-10, j, $ff00ff00 )
+                        
+                     Else
+                        draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff0000 )
+                     EndIf
                   Else
-                     draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff0000 )
+                     ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ffff0000 )
                   EndIf
                Else
-                  ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ffff0000 )
-               EndIf
-            Else
-               If *this\enter
                   If *this\press And *this\inner_enter( )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff00ff )
                   Else
@@ -24741,8 +24739,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2487
-; FirstLine = 2469
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 301
+; FirstLine = 296
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
