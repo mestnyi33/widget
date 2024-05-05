@@ -643,7 +643,7 @@ Procedure widget_events( )
                         ChangeCursor( *e_widget, #PB_Cursor_Default )
                      EndIf
                      
-                  ElseIf *e_widget\inner_enter( ) 
+                  ElseIf *e_widget\enter = 2
                      If CurrentCursor( ) <> #PB_Cursor_Cross
                         ChangeCursor( *e_widget, #PB_Cursor_Cross )
                      EndIf
@@ -1406,7 +1406,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 634
-; FirstLine = 487
+; CursorPosition = 645
+; FirstLine = 620
 ; Folding = -----------+-+-4bn----
 ; EnableXP
