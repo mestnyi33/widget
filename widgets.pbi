@@ -183,7 +183,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       
-      ;       ;-  Drag & Drop
+      ;-  DRAG & DROP
       ;       Macro EventDropX( ): DropX( ): EndMacro
       ;       Macro EventDropY( ): DropY( ): EndMacro
       ;       Macro EventDropWidth( ): DropWidth( ): EndMacro
@@ -296,12 +296,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
-      Macro CurrentCursor( )
-         mouse( )\cursor
-      EndMacro
-      Macro DraggedCursor( )
-         mouse( )\drag\cursor
-      EndMacro
+      Macro CurrentCursor( ) : mouse( )\cursor : EndMacro
+      Macro DraggedCursor( ) : mouse( )\drag\cursor : EndMacro
       
       ;-
       Declare.b bar_scroll_draw( *this )
@@ -445,8 +441,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro ToggleBoxState( ): ToggleBox( )\state: EndMacro
-      Macro DragState( ): drag\state: EndMacro
-      ;Macro DragState( ): dragstart: EndMacro
       Macro ColorState( ): color\state: EndMacro
       Macro ScrollState( ): scroll\state: EndMacro
       Macro RowBoxState( ): RowBox( )\state: EndMacro
@@ -1923,8 +1917,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Procedure.i ChangeCursor( *this._s_WIDGET, *cursor )
-         Protected dragged = *this\dragged
-         ;Protected dragged = mouse( )\dragstart
          Protected result.i
          
          If *this\cursor <> *cursor
@@ -1936,9 +1928,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If mouse( )\drag
-            If dragged
+            If *this\dragged
                If *this\enter > 0
-                  If mouse( )\DragState( ) <> #PB_Drag_Leave
+                  If DragState( ) <> #PB_Drag_Leave
                       Debug "changeDRAG-CURSOR ( "+ *this\cursor +" ) " + DraggedCursor( )
                      DraggedCursor( ) = *this\cursor
                   EndIf
@@ -2486,6 +2478,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-\\ DD
+      Macro DragState( ): mouse( )\drag\state: EndMacro
       Procedure DropDraw( *this._s_WIDGET )
          Protected j = 5, s = j/2
          
@@ -2495,11 +2488,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this = *this\parent
             EndIf
             
-            ;\\ first draw backgraund color
+            ;\\ first - draw backgraund color
             drawing_mode_alpha_( #PB_2DDrawing_Default )
             If *this\drop
                If *this\inner_enter( )
-                  If mouse( )\DragState( ) = #PB_Drag_Enter
+                  If DragState( ) = #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                      
                      draw_box_( *this\inner_x( )+5, mouse( )\y-s-1, *this\inner_width( )-10, j, $2000ff00 )
@@ -2520,11 +2513,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\ second draw frame color
+            ;\\ second - draw frame color
             drawing_mode_( #PB_2DDrawing_Outlined )
             If *this\drop
                If *this\inner_enter( )
-                  If mouse( )\DragState( ) = #PB_Drag_Enter
+                  If DragState( ) = #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                      
                      draw_box_( *this\inner_x( )+5, mouse( )\y-s-1, *this\inner_width( )-10, j, $ff00ff00 )
@@ -21910,8 +21903,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  ( *this\drop\private = mouse( )\drag\private Or
                                    *this\drop\private & mouse( )\drag\private )
                                  
-                                 If mouse( )\DragState( ) <> #PB_Drag_Enter
-                                    mouse( )\DragState( ) = #PB_Drag_Enter
+                                 If DragState( ) <> #PB_Drag_Enter
+                                    DragState( ) = #PB_Drag_Enter
                                     ; Debug "#PB_Drag_Enter"
                                     
                                     If PressedWidget( )\cursor <> DraggedCursor( )
@@ -21920,8 +21913,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  EndIf
                               EndIf
                            Else
-                              If mouse( )\DragState( ) = #PB_Drag_Enter
-                                 mouse( )\DragState( ) = #PB_Drag_Leave
+                              If DragState( ) = #PB_Drag_Enter
+                                 DragState( ) = #PB_Drag_Leave
                                  ; Debug "#PB_Drag_Leave"
                                  
                                  If PressedWidget( )\cursor = cursor::#__cursor_Drop
@@ -22577,8 +22570,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         ;\\ do drop events
                         If mouse( )\drag
-                           If mouse( )\DragState( ) = #PB_Drag_Enter
-                              mouse( )\DragState( ) = #PB_Drag_Finish
+                           If DragState( ) = #PB_Drag_Enter
+                              DragState( ) = #PB_Drag_Finish
                            EndIf
                            ;
                            If is_drag_move( )
@@ -22603,7 +22596,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     DoEvents( PressedWidget( ), #__event_Drop )
                                  EndIf
                               ElseIf EnteredWidget( )\drop
-                                 If mouse( )\DragState( ) = #PB_Drag_Finish
+                                 If DragState( ) = #PB_Drag_Finish
                                     mouse( )\drag\x = mouse( )\x - EnteredWidget( )\inner_x( ) - EnteredWidget( )\scroll_x( )
                                     mouse( )\drag\y = mouse( )\y - EnteredWidget( )\inner_y( ) - EnteredWidget( )\scroll_y( )
                                     
@@ -24748,8 +24741,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 11363
-; FirstLine = 11348
+; CursorPosition = 2487
+; FirstLine = 2469
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

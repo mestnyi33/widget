@@ -376,7 +376,6 @@ Procedure ListIconWidget( x,y,width,height, title.s, titleWidth )
 EndProcedure
 
 If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
-  ;Bind(, #PB_Default )
   ; Create and fill the Gadget_Source s
   ;
   Gadget_SourceText = ListIconWidget( 10, 10, 140, 140, "Drag Text here", 130 )   
@@ -471,7 +470,7 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 370
+; CursorPosition = 378
 ; FirstLine = 365
 ; Folding = ----
 ; EnableXP
