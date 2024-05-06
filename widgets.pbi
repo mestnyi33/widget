@@ -19039,10 +19039,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected arrow_right
          
          With *this
-            Debug "DRAW( "+*this\class +" "+ *this\enter
-            
             ;\\ draw belowe drawing
             If Not *this\hide
+               Debug "DRAW( "+*this\class +" "+ *this\enter
+            
                ;\\ init drawing font
                draw_font_( *this )
                ;
@@ -24742,9 +24742,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 303
-; FirstLine = 300
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
