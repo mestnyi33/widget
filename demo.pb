@@ -1,6 +1,7 @@
 ﻿XIncludeFile "widgets.pbi"
 ;https://github.com/Hoeppner1867?tab=followers
 ;https://forum.ru-board.com/topic.cgi?forum=33&topic=6087&start=20#6
+;https://python-gtk-3-tutorial.readthedocs.io/en/latest/combobox.html
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -103,8 +104,6 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 41
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
