@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Debug "----------"
   If StartEnumerate( Root( ) )
-    Debug ""+EnumWidget( )\class +" childrens - "+ EnumWidget( )\count\childrens
+    Debug ""+EnumWidget( )\class +" childrens - "+ EnumWidget( )\haschildren
     StopEnumerate( )
   EndIf
 
@@ -105,5 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 95
+; FirstLine = 73
 ; Folding = -
 ; EnableXP

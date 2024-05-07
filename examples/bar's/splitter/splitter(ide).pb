@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global s_desi, s_tbar, s_view, s_help, s_list,s_insp
   
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
-  widget::Open(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag))
+  widget::Open(0, 100,100,800,600, "ide", flag)
   window_ide = widget::GetWindow(root())
   canvas_ide = widget::GetGadget(root())
   
@@ -166,8 +166,7 @@ CompilerEndIf
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 49
-; FirstLine = 44
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP
 ; Executable = splitter(ide).exe
