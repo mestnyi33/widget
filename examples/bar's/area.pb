@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndMacro
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
-      Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
+      Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", #PB_Canvas_Container, 0, _canvas_gadget_ )
       BindGadgetEvent( GetGadget( Root( ) ), _callback_ )
    EndMacro
    
@@ -175,10 +175,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEventType( )
          Case #__event_Draw
-            StartVectorDrawing( CanvasVectorOutput( EventWidget( )\root\canvas\gadget ))
-            TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
-            Button_DrawCallback(EventWidget( ), EventWidget( )\width[#__c_frame], EventWidget( )\height[#__c_frame], EventWidget( )\data)
-            StopVectorDrawing( )
+;             StartVectorDrawing( CanvasVectorOutput( EventWidget( )\root\canvas\gadget ))
+;             TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
+;             Button_DrawCallback(EventWidget( ), EventWidget( )\width[#__c_frame], EventWidget( )\height[#__c_frame], EventWidget( )\data)
+;             StopVectorDrawing( )
             
          Case #__event_ScrollChange
             change = WidgetEventData( )
@@ -204,9 +204,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
       Protected round
       
+      If StartReDraw( Root( ) )
+      ReDraw( )
+            
       ;\\
-      DrawingStart( canvas ) 
-      If Drawing( )
+;       DrawingStart( canvas ) 
+;       If Drawing( )
          DrawingMode( #PB_2DDrawing_Default )
          Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
          
@@ -237,8 +240,10 @@ CompilerIf #PB_Compiler_IsMainFile
          ;             Button_DrawCallback(*this, *this\width[#__c_frame], *this\height[#__c_frame], *this\data)
          ;             StopVectorDrawing( )
          ;           
-         DrawingStop( )
-      EndIf
+;          DrawingStop( )
+;       EndIf
+         StopReDraw( )
+         EndIf
    EndProcedure
    
    Procedure.i Canvas_HitTest( List Images.IMAGES( ), mouse_x, mouse_y )
@@ -379,7 +384,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Repaint
          Canvas_Draw( MyCanvas, Images( ) ) 
-         ; PostRepaint( Root( ) )
       EndIf
    EndProcedure
    
@@ -515,7 +519,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 345
-; FirstLine = 334
-; Folding = ----------
+; CursorPosition = 207
+; FirstLine = 120
+; Folding = -8--------
 ; EnableXP

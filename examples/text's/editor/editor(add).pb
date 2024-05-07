@@ -93,7 +93,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     ;               #PB_EventType_Repaint)
 ;     ;     ; While WindowEvent() : Wend
 ;     ;   EndIf
-;     Redraw(*w)
 ;     ; Editor::SetFont(*w, FontID(LoadFont(#PB_Any, "Impact", 18 , #PB_Font_HighQuality)))
     Repeat 
       Event=WaitWindowEvent()
@@ -103,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 58
-; FirstLine = 17
+; CursorPosition = 95
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

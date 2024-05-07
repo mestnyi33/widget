@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 
 ;- EXAMPLE
@@ -198,8 +198,6 @@ CompilerIf #PB_Compiler_IsMainFile
               EndIf
               
               SetText(*button, text)
-              
-              Redraw(Root())
               
               ;             ClearDebugOutput()
               ;             ForEach widget()

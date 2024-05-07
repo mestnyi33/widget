@@ -135,8 +135,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Bind(@Events(), *w2)
       SetState(*w1, 3)
       
-      ReDraw(Root())
-    
     Repeat
       Define Event = WaitWindowEvent()
     Until Event= #PB_Event_CloseWindow
@@ -144,6 +142,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 137
+; FirstLine = 78
 ; Folding = 0-
 ; EnableXP

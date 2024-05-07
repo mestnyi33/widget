@@ -179,8 +179,6 @@ CompilerEndIf
 ; ;   Debug "  "+Str(ElapsedMilliseconds()-time) + " - gadget set items state time"
 ; ;   ; HideGadget(0, 0)
 ; ;   
-; ;   ;Redraw(root())
-; ;   
 ; ;   Debug " -------- "
 ; ;   
 ; ;   EditorGadget(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
@@ -222,14 +220,12 @@ CompilerEndIf
 ; ;   ; HideGadget(0, 0)
 ; ;   
 ; ;   Debug " -------- "
-; ;   
-; ;   ; Redraw(root())
-; ;   
+; ;   ; ;   
 ; ;   Repeat : Event=WaitWindowEvent()
 ; ;   Until  Event= #PB_Event_CloseWindow
 ; ; EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 96
-; FirstLine = 93
+; CursorPosition = 181
+; FirstLine = 178
 ; Folding = ---
 ; EnableXP

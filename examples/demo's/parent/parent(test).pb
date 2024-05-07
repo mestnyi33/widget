@@ -197,9 +197,6 @@ CompilerIf #PB_Compiler_IsMainFile
   HideWindow(GetWindow(GetRoot(*window_10)),0)
   HideWindow(GetWindow(GetRoot(*window_20)),0)
   
-;   ReDraw(GetRoot(*window_10))
-;   ReDraw(GetRoot(*window_20))
-  
   Bind(GetRoot(*window_10), @Widgets_CallBack())
   Bind(GetRoot(*window_20), @Widgets_CallBack())
   
@@ -210,7 +207,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 174
+; CursorPosition = 198
+; FirstLine = 187
 ; Folding = --
 ; EnableXP

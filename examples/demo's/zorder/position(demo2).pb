@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 
 ;- EXAMPLE
@@ -156,10 +156,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Static after
     Static before
     
-    Select this()\event
+    Select widgeteventtype( )
       Case #PB_EventType_LeftButtonDown 
-        after = GetPosition(this()\widget, #PB_List_After)
-        before = GetPosition(this()\widget, #PB_List_Before)
+        after = GetPosition(eventwidget( ), #PB_List_After)
+        before = GetPosition(eventwidget( ), #PB_List_Before)
         
         If after
           Debug "After - "+GetClass(after)
@@ -168,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Debug "Before - "+GetClass(before)
         EndIf
         
-        _SetPosition(this()\widget, #PB_List_First)
+        _SetPosition(eventwidget( ), #PB_List_First)
         
 ;         Debug ">>"
 ;         ForEach widget()
@@ -176,7 +176,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         Next
         
       Case #PB_EventType_LeftButtonUp
-        _SetPosition(this()\widget, #PB_List_After)
+        _SetPosition(eventwidget( ), #PB_List_After)
         
         If after 
           Debug "<<"
@@ -261,8 +261,8 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     ;}
     
-    ForEach widget()
-      Debug widget()\class
+    ForEach __widgets()
+      Debug __widgets()\class
     Next
     
     ResizeWindow(0,WindowX(0)-200,#PB_Ignore,#PB_Ignore,#PB_Ignore)
@@ -314,8 +314,6 @@ CompilerIf #PB_Compiler_IsMainFile
                 EndIf
             EndSelect
             
-            Redraw(Root())
-            
             ;             ClearDebugOutput()
             ;             ForEach widget()
             ;               Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
@@ -334,6 +332,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 6--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 264
+; FirstLine = 125
+; Folding = 0--
 ; EnableXP

@@ -71,8 +71,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
-    Bind( #PB_Default, #PB_Default )
-    ReDraw(Root())
   EndProcedure
   
   Procedure Window_1()
@@ -86,8 +84,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
-    Bind( #PB_Default, #PB_Default )
-    ReDraw(Root())
     ;       
     w_list(Hex(120)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu)) : SetData(w_list(Hex(120)), 120)
     ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -98,8 +94,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
-    Bind( #PB_Default, #PB_Default )
-    ReDraw(Root())
     
     w_list(Hex(130)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_130")) : SetData(w_list(Hex(130)), 130)
     ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -110,8 +104,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
-    Bind( #PB_Default, #PB_Default )
-    ReDraw(Root())
   EndProcedure
   
   Procedure Window_2()
@@ -136,8 +128,6 @@ CompilerIf #PB_Compiler_IsMainFile
         ;         SetActive(w_list(Hex(2)))
         
         Bind(#PB_All, @Widget_Handler())
-        Bind( #PB_Default, #PB_Default )
-        ReDraw(Root())
       EndIf
       
       Debug ""
@@ -160,8 +150,6 @@ CompilerIf #PB_Compiler_IsMainFile
         ;         SetActive(w_list(Hex(102)))
         
         Bind(#PB_All, @Widget_Handler())
-        Bind( #PB_Default, #PB_Default )
-        ReDraw(Root())
       EndIf
       
       w_list(Hex(210)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(210)), 210)
@@ -172,8 +160,6 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(212)) = String(10, 105, 180, 85, "String_212") : SetData(w_list(Hex(212)), 212) 
       
       Bind(#PB_All, @Widget_Handler())
-      Bind( #PB_Default, #PB_Default )
-      ReDraw(Root())
       
       w_list(Hex(220)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_220", #PB_Window_SystemMenu)) : SetData(w_list(Hex(220)), 220)
       ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -182,8 +168,6 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(222)) = String(10, 105, 180, 85, "String_222") : SetData(w_list(Hex(222)), 222)
       
       Bind(#PB_All, @Widget_Handler())
-      Bind( #PB_Default, #PB_Default )
-      ReDraw(Root())
       
       w_list(Hex(230)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_230")) : SetData(w_list(Hex(230)), 230)
       ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -192,9 +176,6 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(232)) = String(10, 105, 180, 85, "String_232") : SetData(w_list(Hex(232)), 232)
       
       Bind(#PB_All, @Widget_Handler())
-      Bind( #PB_Default, #PB_Default )
-      ReDraw(Root())
-      
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
   EndProcedure
@@ -239,8 +220,6 @@ CompilerIf #PB_Compiler_IsMainFile
         SetActive(w_list(Hex(2)))
         
         Bind(#PB_All, @Widget_Handler());, w_list(Hex(22)))
-        Bind( #PB_Default, #PB_Default )
-        ReDraw(Root())
       EndIf
       
       Debug "-----"
@@ -255,8 +234,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
-      Bind( #PB_Default, #PB_Default )
-      ReDraw(Root())
       ;       
       w_list(Hex(120)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu)) : SetData(w_list(Hex(120)), 120)
       ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -267,8 +244,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
-      Bind( #PB_Default, #PB_Default )
-      ReDraw(Root())
       
       w_list(Hex(130)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_130")) : SetData(w_list(Hex(130)), 130)
       ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -279,8 +254,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
-      Bind( #PB_Default, #PB_Default )
-      ReDraw(Root())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
@@ -329,21 +302,20 @@ CompilerIf #PB_Compiler_IsMainFile
                   SetActive(w_list(Hex(22)))
               EndSelect
               
-             ; ReDraw(*root)
             EndIf
             
         EndSelect
     EndSelect
     
     If root()\repaint
-      redraw(root())
+      PostEventRepaint( root( ) )
     EndIf
     
     ;Repaint()
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21
-; FirstLine = 6
+; CursorPosition = 311
+; FirstLine = 283
 ; Folding = ----
 ; EnableXP

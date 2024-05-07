@@ -306,7 +306,6 @@ CompilerIf #PB_Compiler_IsMainFile
          ResizeGadget(#Gadget_Canvas, 10, 10, WindowWidth(#Window)-20, #PB_Ignore)
       EndIf
       
-      ReDraw(*g_tab1)
       Resize(*g_Container, 100, 100, WindowWidth(#Window)-150, WindowHeight(#Window)-150)
       
    EndProcedure
@@ -742,7 +741,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
          ResizeGadget(#Gadget_TabBar, 10, 10, WindowWidth(#Window)-20, #PB_Ignore)
       EndIf
       
-      ReDraw(*tab1)
       ResizeGadget(#Gadget_Container, 100, 100, WindowWidth(#Window)-150, WindowHeight(#Window)-150)
       
    EndProcedure
@@ -866,9 +864,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
    ForEver
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 182
-; FirstLine = 186
+; CursorPosition = 743
+; FirstLine = 711
 ; Folding = --------
 ; EnableXP

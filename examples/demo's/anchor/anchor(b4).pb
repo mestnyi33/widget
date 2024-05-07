@@ -29,8 +29,6 @@ Procedure menu_events()
         SetPosition(CurrentObject, #PB_List_First) 
     EndSelect
     
-    Redraw( root( ) )
-    ; Repaints( )
   EndIf
   
 EndProcedure
@@ -64,7 +62,7 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 26
+; CursorPosition = 31
+; FirstLine = 28
 ; Folding = -
 ; EnableXP

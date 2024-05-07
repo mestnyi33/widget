@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     ;}
     
-    ForEach widget()
-      Debug widget()\class
+    ForEach __widgets()
+      Debug __widgets()\class
     Next
     
     ResizeWindow(0,WindowX(0)-200,#PB_Ignore,#PB_Ignore,#PB_Ignore)
@@ -175,8 +175,6 @@ CompilerIf #PB_Compiler_IsMainFile
                 EndIf
             EndSelect
             
-            Redraw(Root())
-            
             ;             ClearDebugOutput()
             ;             ForEach widget()
             ;               Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
@@ -196,5 +194,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 125
+; FirstLine = 115
 ; Folding = ---
 ; EnableXP

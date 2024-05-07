@@ -261,6 +261,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro GetIndex( widgetID )
          Index( widgetID )
       EndMacro
+      Macro GetType( _this_ )
+         Type( _this_ )
+      EndMacro
       Macro RowFocus( _state_ ) 
          focus = _state_
       EndMacro
@@ -286,19 +289,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          String( x,y,width,height, "", #__flag_textnumeric|flag )
          widget( )\class = "IPAddress"
       EndMacro
-      Macro OpenCanvas( canvas = #PB_Any )
-         Open( ID::Window(UseGadgetList(0)), 0, 0, #PB_Ignore, #PB_Ignore, #Null$, #Null, #Null, canvas )
-         Root( )\root\width = 0 
-         Root( )\root\height = 0
-      EndMacro
-      Macro CloseCanvas( )
-         CloseGadgetList( )
-      EndMacro
-      
-      ;-
-      Macro CurrentCursor( ) : mouse( )\cursor : EndMacro
-      Macro DraggedCursor( ) : mouse( )\drag\cursor : EndMacro
-      Macro DragState( ): mouse( )\drag\state: EndMacro
       
       Macro EnterMouse( ): enter > 0: EndMacro
       Macro EnterInner( ): enter = 2: EndMacro
@@ -415,7 +405,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If widget::__gui\loop
                If Not widget::Send( _root_, constants::#__event_Repaint )
                   ; Debug "PostEventRepaint - ReDraw"
-                  widget::Redraw( _root_ )
+                  If widget::StartReDraw( _root_ )
+                     widget::ReDraw( )
+                     widget::StopReDraw( )
+                  EndIf
                EndIf
             Else
                If _root_\canvas\repaint = 0
@@ -540,6 +533,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro ; Returns activeed gadget
       
       ;-
+      Macro DragState( ): mouse( )\drag\state: EndMacro
+      Macro DraggedCursor( ): mouse( )\drag\cursor: EndMacro
+      Macro CurrentCursor( ): mouse( )\cursor: EndMacro
+      Macro OpenCanvas( _canvas_ = #PB_Any )
+         Open( ID::Window(UseGadgetList(0)), 0,0,0,0, "", #PB_Canvas_Container, 0, _canvas_ )
+      EndMacro
+      Macro CloseCanvas( )
+         CloseGadgetList( )
+      EndMacro
+      ;-
+      Macro MouseButtons( ): mouse( )\buttons: EndMacro
       Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
       Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y[_mode_]: EndMacro ; Returns mouse y
       Macro CanvasMouseX( _canvas_ )
@@ -552,6 +556,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          DesktopMouseY( ) - GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate )
          ; WindowMouseY( window ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
       EndMacro
+      
       
       ;-
       ;Macro EventIndex( ): EventWidget( )\index: EndMacro
@@ -646,6 +651,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget( ) = *before_start_enumerate_widget
       EndMacro
       
+      
+      ;-
+      Macro StartReDraw( _root_ )
+        Bool(widget::__gui\draw <> _root_)
+        StopReDraw( )
+        StartDrawing( CanvasOutput( _root_\canvas\gadget ))
+        widget::__gui\draw = _root_
+       EndMacro
+      Macro StopReDraw( )
+         If widget::__gui\draw 
+            widget::__gui\draw = 0
+            StopDrawing( )
+         EndIf
+      EndMacro
+      
+      Macro ReDrawing( _this_ )
+        Bool(widget::__gui\draw <> _this_\root)
+          Debug "reee"
+          ;If Not __gui\draw
+           StopReDraw( )
+           StartReDraw( _this_\root )
+          ;EndIf
+        EndMacro
+      
+      
+      ;-
+      Macro MidF(_string_, _start_pos_, _length_ = -1)
+         func::MidFast(_string_, _start_pos_, _length_)
+      EndMacro
+      
+      Macro ICase( String ) ; sTRinG = StrINg
+         func::InvertCase( String )
+      EndMacro
+      
+      Macro ULCase( String ) ; sTRinG = String
+         InsertString( UCase( Left( String, 1 )), LCase( Right( String, Len( String ) - 1 )), 2 )
+      EndMacro
+      
+      
+      ;-
+      Macro TitleText( ): text: EndMacro
+      Macro GetTitle( window ): widget::GetText( window ): EndMacro
+      Macro CloseButton( ): caption\button[#__wb_close]: EndMacro
+      Macro MaximizeButton( ): caption\button[#__wb_maxi]: EndMacro
+      Macro MinimizeButton( ): caption\button[#__wb_mini]: EndMacro
+      Macro HelpButton( ): caption\button[#__wb_help]: EndMacro
       
       ;-
       Macro draw_x( ): x[#__c_draw]: EndMacro
@@ -896,78 +947,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro a_group( )
          a_transform( )\group( )
       EndMacro
-      
-      
-      
-      ;-
-      Macro MidF(_string_, _start_pos_, _length_ = -1)
-         func::MidFast(_string_, _start_pos_, _length_)
-      EndMacro
-      
-      Macro ICase( String ) ; sTRinG = StrINg
-         func::InvertCase( String )
-      EndMacro
-      
-      Macro ULCase( String ) ; sTRinG = String
-         InsertString( UCase( Left( String, 1 )), LCase( Right( String, Len( String ) - 1 )), 2 )
-      EndMacro
-      
-      
-      ;-
-      Macro TitleText( ): text: EndMacro
-      Macro GetTitle( window ): widget::GetText( window ): EndMacro
-      Macro CloseButton( ): caption\button[#__wb_close]: EndMacro
-      Macro MaximizeButton( ): caption\button[#__wb_maxi]: EndMacro
-      Macro MinimizeButton( ): caption\button[#__wb_mini]: EndMacro
-      Macro HelpButton( ): caption\button[#__wb_help]: EndMacro
-      
-      ;-
-      Macro Drawing( ): widget::__gui\drawing: EndMacro
-      Macro ReDrawing( _this_, _item_ = 0 )
-         If Not Drawing( )
-            If _this_\root
-               Drawing( ) = Bool( StartDrawing( Output( _this_\root )))
-            EndIf
-            
-            If _item_ > 0
-               draw_font_item_( _this_, _item_, 1 )
-               
-               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                  If _item_\text\fontID
-                     DrawingFont( _item_\text\fontID )
-                  EndIf
-               CompilerEndIf
-            ElseIf _item_ = - 1
-               draw_font_( _this_ )
-            EndIf
-            
-            If test_startdrawing
-               Debug "  ReDrawing( " + #PB_Compiler_Procedure + " ( )) " + Drawing( ) + " " + _this_\class
-            EndIf
-         EndIf
-      EndMacro
-      Macro DrawingStart( _canvas_ )
-         If Drawing( )
-            StopDrawing( )
-            
-            If _canvas_ = #PB_Default
-               Drawing( ) = 0
-               If test_startdrawing
-                  Debug "     DrawingStop( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
-               EndIf
-            EndIf
-         EndIf
-         If _canvas_ >= 0
-            Drawing( ) = Bool( StartDrawing( CanvasOutput( _canvas_ )))
-            If test_startdrawing
-               Debug "     DrawingStart( " + #PB_Compiler_Procedure + " ( )) " + Drawing( )
-            EndIf
-         EndIf
-      EndMacro
-      Macro DrawingStop( )
-         DrawingStart( #PB_Default )
-      EndMacro
-      Macro Output( _root_ ) : CanvasOutput( _root_\canvas\gadget ) : EndMacro
       
       ;-
       Macro draw_box_( _x_, _y_, _width_, _height_, _color_ = $ffffffff )
@@ -1367,7 +1346,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.b IsContainer( *this )
       
       Declare.b Draw( *this )
-      Declare   ReDraw( *root )
+      Declare   ReDraw( *root = 0 )
       
       Declare.l x( *this, mode.l = #__c_frame )
       Declare.l Y( *this, mode.l = #__c_frame )
@@ -1377,7 +1356,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.b Hide( *this, State.b = #PB_Default )
       Declare.b Disable( *this, State.b = #PB_Default )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
-      Declare.l MouseButtons( )
       
       Declare   IsChild( *this, *parent )
       Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
@@ -2780,7 +2758,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          hDC = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent )
          ;
          ;\\
-         DrawingStop( )
          If StartDrawing( ImageOutput( hDC ))
             drawing_mode_( #PB_2DDrawing_AllChannels )
             If Color = 0 : Color = $ff808080 : EndIf
@@ -4087,13 +4064,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not a_index( )
                      a_grid_change( *this )
                      
-                     ReDraw( *this\root )
                      
                      If *this\root And 
-                        StartDrawing( Output( *this\root ))
+                        StartReDraw( *this\root )
+                        
+                        ReDraw( )
+                        
                         a_transform( )\grab = GrabDrawingImage( #PB_Any, 0, 0, *this\root\width, *this\root\height )
                         
-                        StopDrawing( )
+                        StopReDraw( )
                      EndIf
                   EndIf
                EndIf
@@ -4433,10 +4412,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.b IsContainer( *this._s_WIDGET )
          ProcedureReturn *this\container
-      EndProcedure
-      
-      Procedure.l MouseButtons( )
-         ProcedureReturn mouse( )\buttons
       EndProcedure
       
       Procedure IsChild( *this._s_WIDGET, *parent._s_WIDGET )
@@ -9856,7 +9831,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected Distance.f, MinDistance.f = Infinity( )
          
          If *line 
-            ReDrawing( *this, *line )
+           If ReDrawing( *this )
+             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               If *line\text\fontID
+                 DrawingFont( *line\text\fontID )
+               EndIf
+             CompilerEndIf
+           EndIf
+           
             mouse_x = mouse( )\x - row_x_( *this, *line ) - *line\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
             For i = 0 To *line\text\len
@@ -9880,8 +9862,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "edit_sel_row_text - " + *rowLine\index + " " + mode
          
          ;\\
-         ReDrawing( *this, *rowLine )
-         
+         If ReDrawing( *this )
+             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               If *rowLine\text\fontID
+                 DrawingFont( *rowLine\text\fontID )
+               EndIf
+             CompilerEndIf
+           EndIf
+           
+           
          *this\root\repaint = #True
          ;\\ *rowLine\ColorState( ) = #__s_2
          *rowLine\RowFocus( 1 )
@@ -10283,8 +10272,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Chr.s
             *rowLine = *this\FocusedLine( )
             ;\\
-            ReDrawing( *this, *rowLine )
-            
+            If ReDrawing( *this )
+             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               If *rowLine\text\fontID
+                 DrawingFont( *rowLine\text\fontID )
+               EndIf
+             CompilerEndIf
+           EndIf
+           
             If *rowLine
                Count = CountString( Chr.s, #LF$)
                
@@ -10667,13 +10662,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         ReDrawing( *this, e_rows( ) )
+         If ReDrawing( *this )
+             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               If e_rows( )\text\fontID
+                 DrawingFont( e_rows( )\text\fontID )
+               EndIf
+             CompilerEndIf
+           EndIf
+           ;draw_font_item_( *this, e_rows( ), e_rows( )\TextChange( ) )
          
          e_rows( )\index       = position
          e_rows( )\text\len    = string_len
          e_rows( )\text\string = PeekS ( *text, string_len )
-         
-         draw_font_item_( *this, e_rows( ), e_rows( )\TextChange( ) )
          
          e_rows( )\height = e_rows( )\text\height ; + 10
          e_rows( )\width  = *this\inner_width( )
@@ -11974,7 +11974,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;     EventWidget( )*this\__items( )\ColorState( ) = 2
          ;     EventWidget( )\ColorState( ) = 2
          ;
-         ;     ;Tree_reDraw( EventWidget( ))
+         ;     ;Tree_Draw( EventWidget( ))
          
          tt_close( GetWindowData( EventWindow( ) ))
       EndProcedure
@@ -12038,11 +12038,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ update coordinate
                If _change_ > 0
                   ; Debug "   " + #PB_Compiler_Procedure + "( )"
-                  
-                  ;\\
-                  ReDrawing( *this, *this\EnteredLine( ) )
-                  
-                  
+                                   
                   ;\\ if the item list has changed
                   *this\scroll_width( ) = 0
                   If ListSize( *this\columns( ) )
@@ -12197,11 +12193,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ update coordinate
                If _change_ > 0
                   ; Debug "   " + #PB_Compiler_Procedure + "( )"
-                  
-                  ;\\
-                  ReDrawing( *this, *this\EnteredLine( ) )
-                  
-                  
+                 
                   ;\\ if the item list has changed
                   *this\scroll_width( ) = 0
                   If ListSize( *this\columns( ) )
@@ -12634,14 +12626,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                update_visible_items_( *this, *this\__items( ) )
             EndIf
             
-            ;\\
-            If Not Drawing( )
-               ;If *this\FocusedRow( )
-               ReDrawing( *this, *this\__items( ) )
-               ;EndIf
-            EndIf
-            
-            ;\\ Draw background
+           ;\\ Draw background
             If *this\color\_alpha
                drawing_mode_alpha_( #PB_2DDrawing_Default )
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back )
@@ -14134,10 +14119,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Next
                         PopListPosition( *this\__items( ))
                      EndIf
-                     
-                     If *this\root
-                        ReDraw( *this\root )
-                     EndIf
                   EndIf
                   
                   
@@ -15111,6 +15092,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn SetColor( *this, #__color_back, color )
       EndProcedure
       
+      Procedure SetImage( *this._s_WIDGET, *image );, mode.a = 0 )
+         set_image_( *this, *this\Image, *image )
+      EndProcedure
+      
+      Procedure SetBackgroundImage( *this._s_WIDGET, *image )
+         set_image_( *this, *this\Image[#__image_background], *image )
+      EndProcedure
+      
       Procedure SetClass( *this._s_WIDGET, class.s )
          If *this\class <> class
             *this\class = class
@@ -15660,20 +15649,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
             EndIf
             
-            ReDraw( *this\root )
-            
             result = #True
          EndIf
          
          ProcedureReturn result
-      EndProcedure
-      
-      Procedure SetImage( *this._s_WIDGET, *image );, mode.a = 0 )
-         set_image_( *this, *this\Image, *image )
-      EndProcedure
-      
-      Procedure SetBackgroundImage( *this._s_WIDGET, *image )
-         set_image_( *this, *this\Image[#__image_background], *image )
       EndProcedure
       
       Procedure SetData( *this._s_WIDGET, *data )
@@ -19041,7 +19020,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          With *this
             ;\\ draw belowe drawing
             If Not *this\hide
-               Debug "DRAW( "+*this\class +" "+ *this\enter
+               ;Debug "DRAW( "+*this\class +" "+ *this\enter
             
                ;\\ init drawing font
                draw_font_( *this )
@@ -19209,7 +19188,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\EnterMouse( )
+               If *this\enter
                   ;\\ draw entered anchors
                   If Not *this\focus
                      If Not *this\haschildren 
@@ -19275,11 +19254,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure ReDraw( *root._s_ROOT )
-         ClearDebugOutput( )
-         ;\\
-         DrawingStart( *root\canvas\gadget )
-         If Drawing( )
+      Procedure ReDraw( *root._s_ROOT = 0 )
+         If Not *root
+            *root = __gui\draw\root
+         EndIf
+         
+;          ClearDebugOutput( )
+;          ;\\
+ If __gui\draw
             If __gui\grabintersectimage > 0
                DrawAlphaImage( ImageID( __gui\grabintersectimage ), 0,0)
                ForEach __gui\intersect( )
@@ -19581,9 +19563,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If __gui\grabintersectimage < 0
                __gui\grabintersectimage = GrabDrawingImage( #PB_Any, 0,0, OutputWidth( ), OutputHeight( ) )
             EndIf
-            ;\\
-            DrawingStop( )
-         EndIf
+            
+EndIf
          
          ProcedureReturn *root
       EndProcedure
@@ -20033,7 +20014,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      scroll_y = mouse( )\y - ( *this\inner_y( ) )
                      bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
                      Text_Update( *this )
-                     ReDraw( *this\root )
                      Debug "scroll v top " + scroll_y + " " + *this\VisibleFirstRow( )\index
                      
                   Else
@@ -20044,7 +20024,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      scroll_y = 400;mouse( )\y - ( *this\inner_y( ) + *this\inner_height( ) )
                                    ;bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
                                    ;Text_Update( *this )
-                                   ;ReDraw(   *this\root )
+                                   
                      Debug "scroll v bottom " + scroll_y + " " + *this\VisibleLastRow( )\index
                      
                      ;               If *this\FocusedRow( ) <> *this\VisibleLastRow( )
@@ -20106,7 +20086,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If result = 1
                ;Debug 888
-               ;           ReDraw(   *this\root )
                ; If Not *this\anchors
                ;   DoEvents( *this, #__event_StatusChange )
                ; EndIf
@@ -21377,7 +21356,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            __gui\intersect( )\hide = 1
                         Next
                         __gui\grabintersectimage =- 1
-                        ReDraw( *this\root )
+                        If StartReDraw( *this\root )
+                           ReDraw( )
+                           StopReDraw( )
+                        EndIf
                         ForEach __gui\intersect( ) 
                            __gui\intersect( )\hide = 0
                         Next
@@ -21455,8 +21437,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If eventtype = #__event_cursor
             Protected cursor, result
-            
-            DrawingStop( )
             
             result = Send( *this, eventtype, #PB_All, *data )
             If result > 0
@@ -22009,7 +21989,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ; Debug "   REPAINT " + Root( )\class
-                  ReDraw( Root( ) )
+                  ;StartVectorDrawing( CanvasVectorOutput( Root( )\canvas\gadget ))
+                  
+                  If Not __gui\draw
+                    StartReDraw( Root( ) )
+                  EndIf
+                  ReDraw( )
+                  StopReDraw( )
+                  
+                  ;StopVectorDrawing( )
                   Root( )\canvas\repaint = 0
                   
                   ;                   Debug "-----s----"
@@ -22723,11 +22711,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure EventResize( )
          Protected canvas = PB(GetWindowData)( PB(EventWindow)( ))
-         ; Debug "- resize - os - window -"
+          Debug "- resize - os - window -"
          ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
          PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( canvas ) * 2 ) ; bug
-         Root( )\repaint = 0
-         ReDraw( Root( ) )
       EndProcedure
       
       Procedure EventRepaint( )
@@ -22954,10 +22940,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *root\canvas\window   = Window
             *root\canvas\gadget   = Canvas
             
-            ;\\
-            DrawingStart( Canvas )
-            draw_font_( *root )
-            
+;             ;\\
+;             If StartReDraw( *root )
+;                draw_font_( *root )
+;                StopReDraw( )
+;             EndIf
+                  
             ;\\
             Post( *root, #__event_create )
             
@@ -24711,38 +24699,17 @@ CompilerIf #PB_Compiler_IsMainFile
       ;CloseList( )
       y + 130
    Next
-   
-   ;SetActive(*tree)
-   
-   
-   ;    Procedure CallBack( )
-   ; ;     Select WidgetEventType( )
-   ; ;       Case #__event_Focus
-   ; ;         Debug "focus "+EventWidget( )\class
-   ; ;
-   ; ;       Case #__event_LostFocus
-   ; ;         Debug "lostfocus "+EventWidget( )\class
-   ; ;
-   ; ;       Case #__event_Repaint
-   ; ;         Debug "repaint " + EventWidget( )\class
-   ; ;         ;ReDraw( EventWidget( ) )
-   ; ;         ;ProcedureReturn 1
-   ; ;
-   ; ;       Default
-   ; ;         ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
-   ; ;
-   ; ;     EndSelect
-   ;   EndProcedure
-   ;    ;\\
-   ;   Bind( #PB_All, @CallBack( ) )
-   ;   ; Message( "message", "test", #__message_ScreenCentered )
-   ;
-   ;\\
-   ;WaitQuit( )
+  
    WaitClose( )
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
+; EnableXP
+; Executable = widgets2.app
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 10671
+; FirstLine = 10652
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9-----f-2--------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

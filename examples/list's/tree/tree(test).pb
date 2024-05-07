@@ -136,7 +136,6 @@ CompilerIf #PB_Compiler_IsMainFile
           ClearItems(*tree)
         EndIf
         
-        ; widget::Redraw(GetGadgetData(1))
         
       Case #PB_EventType_LeftDoubleClick : Debug "gadget " +EventGadget+ " ldclick item = " + EventItem +" data "+ EventData +" State "+ State
       Case #PB_EventType_Change    : Debug "gadget " +EventGadget+ " change item = " + EventItem +" data "+ EventData +" State "+ State
@@ -221,7 +220,7 @@ Define a
     Next
     
     ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ Type(*tree)
-    EnableGadgetDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
+    EnableDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     ;\\
     For a=0 To CountItems(*tree) : SetItemState(*tree, a, #PB_Tree_Collapsed) : Next
@@ -255,6 +254,8 @@ Define a
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 222
+; FirstLine = 146
 ; Folding = --yC--
 ; EnableXP

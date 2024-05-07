@@ -24,7 +24,6 @@ CompilerIf #PB_Compiler_IsMainFile
        Button( 10,5,80,35, "_"+Str(1) ) 
      CloseList( )
      
-     redraw(root())
      
     Debug "----panel all childrens-----"
     If StartEnumerate( Root())
@@ -62,6 +61,7 @@ CompilerEndIf
 ; --221 90 158 0
 ; 221 90 158 0
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 26
+; FirstLine = 23
 ; Folding = --
 ; EnableXP

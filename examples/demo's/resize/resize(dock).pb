@@ -65,8 +65,6 @@ CompilerIf #PB_Compiler_IsMainFile
       _SetAlignment(Widgets(Str(5)), #__flag_AutoSize)
       
       ;BindGadgetEvent(Canvas_0, @Canvas_CallBack())
-      ReDraw(Root())
-      
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
   EndProcedure
@@ -97,8 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If Resize(Widgets(Str(0)), #PB_Ignore, #PB_Ignore, Width, Height)
           ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
         EndIf
-        ReDraw(Root())
-    
+      
       Case #PB_Event_Gadget
         
         Select EventGadget()
@@ -119,5 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 67
+; FirstLine = 64
 ; Folding = ---
 ; EnableXP

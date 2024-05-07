@@ -53,7 +53,6 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
     AddItem (*w, -1, "Item "+Str(a), 0)
   Next
   Debug " "+Str(ElapsedMilliseconds()-time) + " - widget add items time count - " + CountItems(*w)
-  ;Redraw(root())
   
   a=0
   Define time = ElapsedMilliseconds()
@@ -61,7 +60,6 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
     SetState(*w, a-1) ; set (beginning with 0) the tenth item as the active one
   Next
   Debug "  "+Str(ElapsedMilliseconds()-time) + " - widget set items state time"
-  ;Redraw(root())
     ;SetState(*w, ln-111) ; set (beginning with 0) the tenth item as the active one
   
   
@@ -81,7 +79,6 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Debug "  "+Str(ElapsedMilliseconds()-time) + " - gadget set items state time"
   ; HideGadget(0, 0)
   
-  Redraw(root())
   
   Debug " -------- "
   
@@ -137,10 +134,11 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   
   Debug " -------- "
   
-  Redraw(root())
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 55
+; FirstLine = 52
 ; Folding = --
 ; EnableXP

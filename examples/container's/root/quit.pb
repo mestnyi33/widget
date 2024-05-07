@@ -66,7 +66,6 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #__event_Repaint
         Debug "repaint " + EventWidget( )\class 
-        ;ReDraw( EventWidget( ) )
         ;ProcedureReturn 1
         
       Case #__event_LeftClick
@@ -87,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 55
-; FirstLine = 32
+; CursorPosition = 68
+; FirstLine = 56
 ; Folding = -
 ; EnableXP

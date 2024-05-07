@@ -20,8 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case 2 : SetState(w_2, GetGadgetState(EventGadget()))
       EndSelect
       
-      ReDraw( root( ) )
-      ; PostEventCanvasRepaint( root( ))
+      PostEventRepaint( root( ))
     EndSelect
   EndProcedure
   
@@ -91,6 +90,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 22
+; FirstLine = 8
 ; Folding = --
 ; EnableXP

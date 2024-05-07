@@ -57,8 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEventType( )
       Case #__event_Repaint
         Debug "repaint " + EventWidget( )\class 
-        ;               ReDraw( EventWidget( )\root )
-        ;               ProcedureReturn 1
+         ;               ProcedureReturn 1
         
       Case #__event_LeftClick
         Select GetText( EventWidget( ) )
@@ -100,6 +99,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 59
+; FirstLine = 55
 ; Folding = -
 ; EnableXP

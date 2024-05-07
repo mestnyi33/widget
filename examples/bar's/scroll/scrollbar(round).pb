@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
               SetGadgetText(0, "round scrollbar buttons")
             EndIf
             
-            redraw(root())
+            PostEventRepaint( root( ) )
             
           Case g_Canvas
             If widget()\change
@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 19
+; CursorPosition = 66
+; FirstLine = 54
 ; Folding = --
 ; EnableXP

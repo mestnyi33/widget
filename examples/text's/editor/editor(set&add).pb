@@ -74,7 +74,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     *g._s_widget=GetGadgetData(g)
     
     SetText(*g, Text.s) 
-    ;redraw(*g)
     For a = 0 To 2
       AddItem(*g, a, "Line "+Str(a))
     Next
@@ -174,6 +173,8 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 76
+; FirstLine = 73
 ; Folding = ---
 ; EnableXP

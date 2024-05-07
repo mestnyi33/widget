@@ -81,8 +81,6 @@ CompilerIf #PB_Compiler_IsMainFile
          
          Resize(Widgets(Hex(0)), #PB_Ignore, #PB_Ignore, 360,260)
          
-         ;ReDraw(Root())
-         
          BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
       EndIf
    EndProcedure
@@ -138,8 +136,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       SetAlignment(Widgets(Hex(14)), #__align_bottom|#__align_right)
       ;       SetAlignment(Widgets(Hex(15)), #__align_bottom|#__align_right)
       ;       
-      ;       ReDraw(Root())
-      ;       
       ;       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
       ;     EndIf
    EndProcedure
@@ -167,7 +163,6 @@ CompilerIf #PB_Compiler_IsMainFile
             Height + direction
             
             Resize(Widgets(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
-            ReDraw(Root())
             
          Case #PB_Event_Gadget
             
@@ -188,8 +183,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 189
-; FirstLine = 152
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 83
+; FirstLine = 80
 ; Folding = --
 ; EnableXP

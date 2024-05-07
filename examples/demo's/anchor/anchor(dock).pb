@@ -334,8 +334,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If Resize(*cont, #PB_Ignore, #PB_Ignore, Width, Height)
           ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
         EndIf
-        ReDraw(Root())
-    
+       
       Case #PB_Event_Gadget
         
         Select EventGadget()
@@ -356,5 +355,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 336
+; FirstLine = 309
 ; Folding = 8R-
 ; EnableXP

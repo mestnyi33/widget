@@ -753,6 +753,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     STRUCT
       Structure _s_STRUCT
+         *draw._s_WIDGET
          repaint.b
          drawing.b                      ;
          
@@ -796,7 +797,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 307
-; FirstLine = 224
+; CursorPosition = 755
+; FirstLine = 656
 ; Folding = -fzB-d-7--
 ; EnableXP

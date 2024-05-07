@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
               ;               EndIf
               ;               
               ;               ; SetItemState(tree_view, CountItems(tree_view), 1)
-              ;               ; ReDraw(tree_view)
+              
             EndIf
           EndIf
         EndIf
@@ -501,7 +501,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 464
-; FirstLine = 123
+; CursorPosition = 60
+; FirstLine = 57
 ; Folding = --B+
 ; EnableXP

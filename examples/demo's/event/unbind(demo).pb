@@ -53,8 +53,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         ForEach *id\bind()
 ;           Debug ""+ *id\bind() +" "+ *id\bind()\events();\call() ;+""
 ;         Next
-        
-        ReDraw(Root())
       EndIf
     EndIf
   EndProcedure
@@ -65,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20
-; FirstLine = 30
+; CursorPosition = 55
+; FirstLine = 37
 ; Folding = --
 ; EnableXP

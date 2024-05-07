@@ -70,8 +70,6 @@ CompilerIf #PB_Compiler_IsMainFile
 				Bind(Button(10, 100, 260, 80, "post event for to two procedure", Editable), @events_widgets())
 				Bind(Button(10, 190, 280, 80, "post event for all procedures", Editable), @events_widgets())
 				
-				
-				 ;ReDraw(Root())
 			EndIf
 		EndIf
 	EndProcedure
@@ -155,7 +153,7 @@ CompilerEndIf
 ; CompilerEndIf
 ; End  
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15
-; FirstLine = 15
+; CursorPosition = 72
+; FirstLine = 70
 ; Folding = ----
 ; EnableXP

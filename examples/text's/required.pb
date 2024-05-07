@@ -14,11 +14,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open( #WINDOW, 0, 0, text_gadget_width*2 + 30, 100, "TextGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;*gadget = TextGadget(-1, 10,  10, text_gadget_width, 80, text.s, #PB_Text_Border )
-      *gadget = StringGadget(-1, 10,  10, text_gadget_width, 80, text.s, #PB_Text_Border )
+      *gadget = StringGadget(-1, 10,  10, text_gadget_width, 80, text.s )
       
       *widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
-      
-      ;Redraw( *widget )
       
       Define widget_required_size = Height( *widget, #__c_Required )
       Define gadget_required_size = GadgetHeight( *gadget, #PB_Gadget_RequiredSize )
@@ -31,6 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18
+; CursorPosition = 16
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

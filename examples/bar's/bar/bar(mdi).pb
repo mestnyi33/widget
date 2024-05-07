@@ -131,7 +131,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndWith
   EndProcedure
   
-  Procedure Canvas_ReDraw (canvas.i, List Images.canvasitem())
+  Procedure Canvas_Re_Draw (canvas.i, List Images.canvasitem())
     With *this
       pb_scroll_update()
       
@@ -636,7 +636,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
     ;EndIf 
     
-    If Repaint : Canvas_ReDraw(g_Canvas, Images()) : EndIf
+    If Repaint : Canvas_Re_Draw(g_Canvas, Images()) : EndIf
   EndProcedure
   
   
@@ -905,7 +905,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 
                 Debug "vmi "+ GetAttribute(*this\scroll\v, #__bar_Minimum) +" vma "+ GetAttribute(*this\scroll\v, #__bar_Maximum) +" vpl "+ GetAttribute(*this\scroll\v, #__bar_PageLength)
                 
-                Canvas_ReDraw(g_Canvas, Images())
+                Canvas_Re_Draw(g_Canvas, Images())
             EndSelect
             
         EndSelect
@@ -916,7 +916,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 662
-; FirstLine = 580
-; Folding = ----f-------
+; CursorPosition = 907
+; FirstLine = 879
+; Folding = ------------
 ; EnableXP

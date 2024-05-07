@@ -62,15 +62,13 @@ CompilerIf #PB_Compiler_IsMainFile
       GadgeCreate(27, x+10+(width+space)*2, y+10+(height+space)*1, width, height, text_h,      #__text_invert|#__text_right|#__text_center) ;
       GadgeCreate(210, x+10+(width+space)*2, y+10+(height+space)*2, width, height, text_h,      #__text_invert|#__text_right|#__text_bottom);
       
-      
-      redraw(root());
    EndIf
    
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15
-; FirstLine = 4
+; CursorPosition = 64
+; FirstLine = 46
 ; Folding = -
 ; EnableXP

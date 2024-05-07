@@ -58,8 +58,6 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*scrollbar, #__Bar_ButtonSize, 0)
                   EndIf
                   
-                  ;             redraw(root())
-                  
                Case g_Canvas
                   If widget()\change
                      ; SetWindowTitle(0, Str(GetState(widget())))
@@ -74,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 39
+; CursorPosition = 60
+; FirstLine = 46
 ; Folding = --
 ; EnableXP

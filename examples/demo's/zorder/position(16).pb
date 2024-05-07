@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../-widgets.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 
 ;- EXAMPLE
@@ -190,8 +190,6 @@ CompilerIf #PB_Compiler_IsMainFile
               
               SetText(*current, text)
               
-              Redraw(Root())
-              
               ;             ClearDebugOutput()
               ;             ForEach widget()
               ;               Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
@@ -212,5 +210,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = v+--
+; Folding = v---
 ; EnableXP

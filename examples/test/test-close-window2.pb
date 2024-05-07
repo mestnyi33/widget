@@ -218,8 +218,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;__Free( *window2 ) ;: *window2 = 0
       
-      ;ReDraw( Root( ))
-      
       If *window1
          Debug "--1--" 
          If *window1\parent
@@ -301,7 +299,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 218
-; FirstLine = 211
+; CursorPosition = 220
+; FirstLine = 217
 ; Folding = ----------
 ; EnableXP

@@ -461,7 +461,6 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   ; main loop
   ;
   WaitClose( )
-  ;   ReDraw( Root( ) )
   ;   
   ;   Repeat
   ;     Event = WaitWindowEvent( )
@@ -470,7 +469,7 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 378
-; FirstLine = 365
+; CursorPosition = 463
+; FirstLine = 437
 ; Folding = ----
 ; EnableXP

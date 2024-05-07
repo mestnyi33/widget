@@ -99,11 +99,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ;   count = CountGadgetItems(0) : For a = count To 0 Step - 1 : RemoveGadgetItem(0, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove gadget items time count - " + CountGadgetItems(0)
     
     
-    ;Redraw(root())
     Repeat : Define Event=WaitWindowEvent()
     Until  Event= #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 101
+; FirstLine = 69
 ; Folding = -
 ; EnableXP

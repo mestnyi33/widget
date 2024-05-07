@@ -73,7 +73,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     CloseList()
   ;     
   ;     Bind(@Events(), root())
-  ;     Redraw(Root())
   ;   EndIf
   ;   
   
@@ -115,7 +114,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ; demo editor
     Editor(320, 5, 150, 100)
     SetText(Widget(), Text.s) 
-    ;redraw(*g)
     Define a
     For a = 0 To 2
       AddItem(Widget(), a, "Line "+Str(a))
@@ -219,8 +217,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ;         SetState(Widget(), 5)
     ;         Progress(320+110, 370, 40, 150, 0, 20, #__bar_Vertical)
     ;         SetState(Widget(), 5)
-    ;     
-    ReDraw(Root())
   EndIf
   
   WaitClose( )
@@ -232,7 +228,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 29
+; CursorPosition = 222
+; FirstLine = 196
 ; Folding = --
 ; EnableXP

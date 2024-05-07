@@ -77,7 +77,6 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*spl1, width); - 150)
   SetState(*spl2, height); - 150)
   
-;   Redraw(root())
   Resize(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
   Resize(*g3, 10, #PB_Ignore, #PB_Ignore, #PB_Ignore)
 ;   mouse( )\buttons = 1
@@ -94,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 43
+; CursorPosition = 79
+; FirstLine = 63
 ; Folding = -
 ; EnableXP

@@ -2576,7 +2576,7 @@ EndProcedure
 
 
 ; Führt eine Aktualisierung (Neuzeichnung) des Gadgets durch.
-Procedure ReDraw(*this._s_widget) ; Code OK, Hilfe OK
+Procedure ReDraw (*this._s_widget) ; Code OK, Hilfe OK
   
   
   
@@ -2645,7 +2645,7 @@ Procedure.i TabBar(Gadget, X.i, Y.i, Width.i, Height.i, Attributes.i, Window.i) 
   
   BindGadgetEvent(gadget, @Callback())
   ;BindEvent(#PB_Event_Gadget, @Callback(), #PB_All, Gadget, #PB_All) ; Aktuelle nicht benutzbar
-  ReDraw(*this._s_widget)
+  ReDraw (*this._s_widget)
   
   ProcedureReturn *this
   
@@ -3426,7 +3426,7 @@ Procedure Window_Resize()
     ResizeGadget(#Gadget_TabBar, 10, 10, WindowWidth(#Window)-20, #PB_Ignore)
   EndIf
   
-  ReDraw(*tab1)
+  ReDraw (*tab1)
      ResizeGadget(#Gadget_Container, 100, 100, WindowWidth(#Window)-150, WindowHeight(#Window)-150)
  
 EndProcedure
@@ -3546,6 +3546,8 @@ Repeat
   EndSelect
   
 ForEver
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 3428
+; FirstLine = 3222
 ; Folding = Pg--0-------------------------------------------------------------------f4------
 ; EnableXP

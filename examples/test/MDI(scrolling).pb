@@ -98,7 +98,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected width = WindowWidth( EventWindow() )
       Resize( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
       Resize( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
-      ReDraw(Root())
    EndProcedure
    
    Procedure Gadgets_Events()
@@ -121,8 +120,6 @@ CompilerIf #PB_Compiler_IsMainFile
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
             
-            redraw(root())
-            
          Case 4
             If GetGadgetState(2)
                SetAttribute(*mdi\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
@@ -132,10 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
             
-            redraw(root())
-            
          Case 5
-            redraw(root())
             
       EndSelect
    EndProcedure
@@ -241,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 207
-; FirstLine = 15
+; CursorPosition = 100
+; FirstLine = 97
 ; Folding = ---
 ; EnableXP

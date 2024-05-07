@@ -79,13 +79,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Gadget(37, 8+300+450,  (height+5)*4+10, 140, height, text_h, #__flag_vertical|#__text_invert|#__text_right|#__text_center);
     Gadget(38, 8+300+450,  (height+5)*5+10, 140, height, text_h, #__flag_vertical|#__text_invert|#__text_right|#__text_bottom);
     
-    
-    redraw(root());
   EndIf
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 81
+; FirstLine = 63
 ; Folding = -
 ; EnableXP

@@ -50,13 +50,11 @@ If OpenWindow(0, 100, 50, 530, 540, "editor set&get item state", #PB_Window_Syst
   
   Debug " -------- "
   
-  ; Redraw(root())
-  
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
-; FirstLine = 19
+; CursorPosition = 52
+; FirstLine = 31
 ; Folding = -
 ; EnableXP

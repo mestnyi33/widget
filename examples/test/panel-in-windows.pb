@@ -24,8 +24,6 @@ CompilerIf #PB_Compiler_IsMainFile
        Button( 10,5,80,35, "_"+Str(1) ) 
      CloseList( )
      
-     redraw(root())
-     
     Debug "----panel all childrens-----"
     If StartEnumerate( Root())
       Debug widget( )\text\string
@@ -47,6 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
    
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 26
+; FirstLine = 14
 ; Folding = --
 ; EnableXP

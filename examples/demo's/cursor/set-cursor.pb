@@ -27,7 +27,6 @@ CompilerIf #PB_Compiler_IsMainFile
           SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
         EndIf
         ; Canvas_Draw(MyCanvas, Images( ))
-        redraw(root())
         
       Case 4
         If GetGadgetState(2)
@@ -38,11 +37,9 @@ CompilerIf #PB_Compiler_IsMainFile
           SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
         EndIf
         ; Canvas_Draw(MyCanvas, Images( ))
-        ;;redraw(root())
         
       Case 5
         ; Canvas_Draw(MyCanvas, Images( ))
-        redraw(root())
         
     EndSelect
     ;     EndSelect
@@ -164,7 +161,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected width = WindowWidth( EventWindow() )
     Resize( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
     Resize( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
-    ReDraw(Root())
   EndProcedure
   
   Define yy = 90
@@ -268,7 +264,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 234
-; FirstLine = 154
+; CursorPosition = 42
+; FirstLine = 39
 ; Folding = --v+
 ; EnableXP

@@ -124,8 +124,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     CloseList()
     
-    ReDraw(Root())
-    
     Bind(Widgets(Hex(#PB_GadgetType_ScrollBar)), @scrolled() )
     
     WaitClose( )
@@ -136,7 +134,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 107
-; FirstLine = 101
+; CursorPosition = 126
+; FirstLine = 102
 ; Folding = -
 ; EnableXP

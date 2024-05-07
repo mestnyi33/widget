@@ -87,7 +87,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetGadgetText(0, "set inverted scrollbar")
                   EndIf
                   
-                  ReDraw(root())
+                  PostEventRepaint( root( ) )
                   
                Case g_Canvas
                   If widget( )\change
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 92
-; FirstLine = 71
+; CursorPosition = 89
+; FirstLine = 74
 ; Folding = --
 ; EnableXP

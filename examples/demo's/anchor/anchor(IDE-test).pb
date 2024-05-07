@@ -196,7 +196,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;               
 ;               a_update(a_transform()\widget)
 ;               
-;               ;Redraw(root())
 ;           EndSelect
 ;         EndIf
 ;         
@@ -312,7 +311,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 292
-; FirstLine = 273
+; CursorPosition = 198
+; FirstLine = 195
 ; Folding = --
 ; EnableXP

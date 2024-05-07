@@ -42,10 +42,119 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       *this\_a_\mode = mode  
    ;     EndIf
    ;   EndProcedure
+   Declare DrawCallback( *ew )
+   Procedure Object_DrawCallback(*Object._s_widget, DataValue.i)
+      Protected Text.s = GetText(*Object)
+      Protected State.i = GetState(*Object)
+      Protected Hue = DataValue
+      
+      Protected width.i = *Object\frame_width( )
+      Protected height.i = *Object\frame_height( )
+      Protected Y.i = Int((Height-19)/2)
+      
+      Protected enter = Bool(*object\enter > 0)
+      Protected press = Bool(*object\press > 0 And enter)
+      
+      If a_index( )
+         enter = 0
+         press = 0
+      EndIf
+      
+      ; Box background
+      AddPathBox(0.0, 0.0, Width, Height)
+      VectorSourceLinearGradient(0.0, 0.0, 0.0, Height)
+      If press And Not *object\disable
+         VectorSourceGradientColor(HSVA(Hue, 10, $FF), 0.00)
+         VectorSourceGradientColor(HSVA(Hue, 20, $F8), 0.45)
+         VectorSourceGradientColor(HSVA(Hue, 30, $F0), 0.50)
+         VectorSourceGradientColor(HSVA(Hue, 40, $E8), 1.00)
+      ElseIf enter And Not *object\disable
+         VectorSourceGradientColor(HSVA(Hue, 5, $FF), 0.00)
+         VectorSourceGradientColor(HSVA(Hue, 10, $F8), 0.45)
+         VectorSourceGradientColor(HSVA(Hue, 15, $F0), 0.50)
+         VectorSourceGradientColor(HSVA(Hue, 20, $E8), 1.00)
+      Else
+         VectorSourceGradientColor(HSVA(0, 0, $F8), 0.00)
+         VectorSourceGradientColor(HSVA(0, 0, $F0), 0.45)
+         VectorSourceGradientColor(HSVA(0, 0, $E8), 0.50)
+         VectorSourceGradientColor(HSVA(0, 0, $D8), 1.00)
+      EndIf
+      FillPath( )
+      
+      
+      ; Box frame
+      If *object\disable
+         AddPathBox(0.5, 0.5, Width-1, Height-1)
+         VectorSourceColor(HSVA(0, 0, $D0))
+         StrokePath(1)
+         AddPathBox(1.5, 1.5, Width-3, Height-3)
+         VectorSourceColor(HSVA(0, 0, $F0))
+         StrokePath(1)
+      ElseIf press
+         AddPathBox(0.5, 0.5, Width-1, Height-1)
+         VectorSourceColor(HSVA(Hue, 100, $80))
+         StrokePath(1)
+         AddPathBox(1.5, 1.5, Width-3, Height-3)
+         VectorSourceColor(HSVA(Hue, 50, $FF))
+         StrokePath(1)
+      ElseIf enter
+         AddPathBox(0.5, 0.5, Width-1, Height-1)
+         VectorSourceColor(HSVA(0, 0, $A0))
+         StrokePath(1)
+         AddPathBox(1.5, 1.5, Width-3, Height-3)
+         VectorSourceColor(HSVA(Hue, 10, $FF))
+         StrokePath(1)
+      Else
+         AddPathBox(0.5, 0.5, Width-1, Height-1)
+         VectorSourceColor(HSVA(0, 0, $A0))
+         StrokePath(1)
+         AddPathBox(1.5, 1.5, Width-3, Height-3)
+         VectorSourceColor(HSVA(0, 0, $FF))
+         StrokePath(1)
+      EndIf
+      
+      ; Check
+      If State
+         MovePathCursor(9.5, Y+10.5+Bool(*object\press))
+         AddPathLine(10.5, -10.5, #PB_Path_Relative)
+         AddPathLine(2.5, 2.5, #PB_Path_Relative)
+         AddPathLine(-13, 13, #PB_Path_Relative)
+         AddPathLine(-5, -5, #PB_Path_Relative)
+         AddPathLine(2.5, -2.5, #PB_Path_Relative)
+         ClosePath( )
+         If *object\disable
+            VectorSourceColor(HSVA(Hue, 0, $C0))
+         Else
+            VectorSourceColor(HSVA(Hue, 100, $C0))
+         EndIf
+         FillPath( )
+      EndIf
+      
+      ; Text
+      AddPathBox(0.0, 0.0, Width, Height)
+      Height - 6 
+      Width - 6
+      If Height > 0 And Width > 0
+         ClipPath( )
+         VectorFont(FontID(#Font))
+         If *object\disable
+            VectorSourceColor($40000000)
+         Else
+            VectorSourceColor($FF000000)
+         EndIf
+         If press
+            MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width, Height))/2)
+         Else
+            MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width, Height))/2-1)
+         EndIf
+         DrawVectorParagraph(Text, Width, Height, #PB_VectorParagraph_Center)
+      EndIf
+      
+   EndProcedure
    
    
    ;-\\
-   Procedure Button_DrawCallback(*Object._s_widget, Width.i, Height.i, DataValue.i)
+   Procedure Button_DrawCallback(*Object._s_widget, Width.d, Height.d, DataValue.i)
       Protected Text.s = GetText(*Object)
       Protected Hue = DataValue
       
@@ -111,21 +220,21 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ; Text
-      AddPathBox(0.0, 0.0, Width, Height)
-      ClipPath( )
-      VectorFont(FontID(#Font))
-      If *object\disable
-         VectorSourceColor($40000000)
-      Else
-         VectorSourceColor($FF000000)
-      EndIf
-      If Height - 6 > 0 And Width - 6 > 0
-         If press
-            MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2)
+      Protected text_x.d = 30
+       Width - text_x*2
+       ;Height - 10
+       
+      If Height > 0 And Width > 0
+         VectorFont(FontID(#Font))
+         AddPathBox(text_x, 0, Width, Height)
+         If *object\disable
+            VectorSourceColor($40000000)
          Else
-            MovePathCursor(3, (Height-VectorParagraphHeight(Text, Width-6, Height-6))/2-1)
+            VectorSourceColor($FF000000)
          EndIf
-         DrawVectorParagraph(Text, Width-6, Height-6, #PB_VectorParagraph_Center)
+         ClipPath( )
+         MovePathCursor(text_x, (Height-VectorParagraphHeight(Text, Width, Height))/2-press)
+         DrawVectorParagraph(Text, Width, Height, #PB_VectorParagraph_Center)
       EndIf
       
    EndProcedure
@@ -141,10 +250,12 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Draw
             With *ew
-               StartVectorDrawing( CanvasVectorOutput( \root\canvas\gadget ))
-               TranslateCoordinates(\x[#__c_frame], \y[#__c_frame])
-               Button_DrawCallback(*ew, \width[#__c_frame], \height[#__c_frame], \data)
-               StopVectorDrawing( )
+               DrawCallback( *ew )
+               ;PostEvent( #PB_Event_FirstCustomValue, *ew\root\canvas\window, *ew\root\canvas\gadget, #PB_All, *ew )
+;               ;StartVectorDrawing( CanvasVectorOutput( \root\canvas\gadget ))
+;                TranslateCoordinates(\x[#__c_frame], \y[#__c_frame] )
+;                Button_DrawCallback(*ew, \width[#__c_frame], \height[#__c_frame], \data)
+;                ;StopVectorDrawing( )
             EndWith
       EndSelect
    EndProcedure
@@ -155,6 +266,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       *Object = a_object( X, Y, Width, Height, Text, 0)
       *Object\type = 0
+      *Object\class = "Button"
       *Object\container = 0
       *Object\data = HighlightColorHue
       ;SetText(*Object, Text)                                 ; Set the button text as a dictionary entry
@@ -168,7 +280,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    ;-\\ 
    ;
-   Procedure CheckBox_DrawCallback(*Object._s_widget, Width.i, Height.i, DataValue.i)
+   Procedure CheckBox_DrawCallback(*Object._s_widget, Width.d, Height.d, DataValue.i)
       Protected Text.s = GetText(*Object)
       Protected State.i = GetState(*Object)
       Protected Y.i = Int((Height-19)/2)
@@ -251,21 +363,21 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ; Text
-      AddPathBox(25, 0, Width-25, Height)
-      ClipPath( )
-      VectorFont(FontID(#Font))
-      If *object\disable
-         VectorSourceColor($40000000)
-      Else
-         VectorSourceColor($FF000000)
-      EndIf
-      If Height > 0 And Width - 25 > 0
-         If press
-            MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2)
+      Protected text_x.d = 25
+      Width - text_x
+      
+      If Height > 0 And Width > 0
+         VectorFont(FontID(#Font))
+         AddPathBox(text_x, 0, Width, Height)
+         ClipPath( )
+         MovePathCursor(text_x, (Height-VectorParagraphHeight(Text, Width, Height))/2-press)
+         If *object\disable
+            VectorSourceColor($40000000)
          Else
-            MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2-1)
+            VectorSourceColor($FF000000)
          EndIf
-         DrawVectorParagraph(Text, Width-25, Height, #PB_VectorParagraph_Left)
+         DrawVectorParagraph(Text, Width, Height, #PB_VectorParagraph_Left)
+         ;DrawVectorText(Text)
       EndIf
       
    EndProcedure
@@ -282,10 +394,12 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Draw
             With *ew
-               StartVectorDrawing( CanvasVectorOutput( \root\canvas\gadget ))
-               TranslateCoordinates(\x[#__c_frame], \y[#__c_frame])
-               CheckBox_DrawCallback(*ew, \width[#__c_frame], \height[#__c_frame], 0)
-               StopVectorDrawing( )
+               DrawCallback( *ew )
+               ;PostEvent( #PB_Event_FirstCustomValue, *ew\root\canvas\window, *ew\root\canvas\gadget, #PB_All, *ew )
+;                ;StartVectorDrawing( CanvasVectorOutput( \root\canvas\gadget ))
+;                TranslateCoordinates(\x[#__c_frame], \y[#__c_frame])
+;                CheckBox_DrawCallback(*ew, \width[#__c_frame], \height[#__c_frame], 0)
+;                ;StopVectorDrawing( )
             EndWith
       EndSelect
    EndProcedure
@@ -296,6 +410,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       *Object = a_object( X, Y, Width, Height, Text, 0)
       *Object\type = 0
+      *Object\class = "CheckBox"
       *Object\container = 0
       ;SetText(*Object, Text)                                ; Set the button text as a dictionary entry
       Bind(*Object, @CheckBox_Events( ), #__event_Draw)       ; Set the drawing callback with the specified highlighting color
@@ -307,6 +422,28 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn *Object
    EndProcedure
    
+   ;-\\
+   Procedure DrawCallback( *ew._s_widget )
+      ;StartVectorDrawing( CanvasVectorOutput( *ew\root\canvas\gadget ))
+      SaveVectorState()
+      TranslateCoordinates(*ew\x[#__c_frame], *ew\y[#__c_frame])
+      If *ew\class = "CheckBox"
+         CheckBox_DrawCallback(*ew, *ew\width[#__c_frame], *ew\height[#__c_frame], 0)
+      EndIf
+      If *ew\class = "Button"
+         Button_DrawCallback(*ew, *ew\width[#__c_frame], *ew\height[#__c_frame], 0)
+      EndIf
+      RestoreVectorState()
+      ;StopVectorDrawing( )
+   EndProcedure
+   
+   Procedure DrawCallback_Event( )
+      Protected *ew._s_widget = EventData( )
+      
+      DrawCallback( *ew )
+   EndProcedure
+   
+   BindEvent( #PB_Event_FirstCustomValue, @DrawCallback_Event( ))
    
    ; ----------------------------------------------
    
@@ -380,7 +517,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 134
-; Folding = -----
+; CursorPosition = 427
+; FirstLine = 376
+; Folding = ---3-8-
 ; EnableXP
