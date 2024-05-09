@@ -2,27 +2,28 @@
 
 EnableExplicit
 Uselib(widget)
+Global *container._s_WIDGET
 
 Procedure events_widgets()
    If WidgetEventType() = #__event_LeftClick
       Select GetText(EventWidget())
          Case "Page 1"
-            SetState(GetData(EventWidget()), 1 )
+            SetState(*container, GetData(EventWidget()))
          Case "Page 2"
-            SetState(GetData(EventWidget()), 2 )
+            SetState(*container, GetData(EventWidget()))
       EndSelect
    EndIf
 EndProcedure
 
-Procedure AddButtons( *this, x,y,text.s )
+Procedure AddButtons( item, x,y,text.s )
    Button(x, y, 80, 24, text)
-   SetData(widget( ), *this )
+   SetData(widget( ), item )
    Bind(widget(), @events_widgets() )
 EndProcedure
 
 ;\\
 If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  Define *container._s_WIDGET = Panel(8, 8, 284, 184-32, #__flag_nobuttons)
+  *container = Panel(8, 8, 284, 184-32, #__flag_nobuttons)
   AddItem( *container, -1, "Panel 0")
   ;
   AddItem( *container, -1, "Panel 1")
@@ -39,12 +40,12 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
   CloseList( )
   
   ;\\ 
-  AddButtons(*container, 300-196, 200-32,"Page 1")
-  AddButtons(*container, 300-88, 200-32,"Page 2")
+  AddButtons(1, 300-196, 200-32,"Page 1")
+  AddButtons(2, 300-88, 200-32,"Page 2")
   ;
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 36
+; CursorPosition = 12
 ; Folding = -
 ; EnableXP
