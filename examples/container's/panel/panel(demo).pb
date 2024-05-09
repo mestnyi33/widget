@@ -166,7 +166,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 33
-; FirstLine = 130
+; CursorPosition = 89
+; FirstLine = 80
 ; Folding = ---
 ; EnableXP
