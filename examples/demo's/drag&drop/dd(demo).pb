@@ -470,6 +470,6 @@ EndIf
 End
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 463
-; FirstLine = 437
+; FirstLine = 430
 ; Folding = ----
 ; EnableXP
