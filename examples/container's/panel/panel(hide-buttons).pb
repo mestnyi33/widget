@@ -6,12 +6,7 @@ Global *container._s_WIDGET
 
 Procedure events_widgets()
    If WidgetEventType() = #__event_LeftClick
-      Select GetText(EventWidget())
-         Case "Page 1"
-            SetState(*container, GetData(EventWidget()))
-         Case "Page 2"
-            SetState(*container, GetData(EventWidget()))
-      EndSelect
+      SetState(*container, GetData(EventWidget()))
    EndIf
 EndProcedure
 
@@ -46,6 +41,6 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 12
+; CursorPosition = 9
 ; Folding = -
 ; EnableXP
