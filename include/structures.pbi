@@ -111,7 +111,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          width.l
          height.l
          state.b
-         *cursor
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD ; Ok
@@ -305,7 +304,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
-         *cursor                 ; current visible cursor
+         *cursor [2]                ; current visible cursor
          press.b                 ; mouse buttons state
          change.b                ; mouse moved state
          click.a                 ; mouse clicked count
@@ -797,7 +796,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 755
-; FirstLine = 656
-; Folding = -fzB-d-7--
+; CursorPosition = 113
+; FirstLine = 91
+; Folding = --zB-d-7--
 ; EnableXP

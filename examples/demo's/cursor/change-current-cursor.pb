@@ -99,23 +99,21 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "enter " + EventWidget( )\class
          Case #__event_leave
             Debug "leave " + EventWidget( )\class
-;             
-;          Case #__event_draw
-; ;              If *enter And *enter\anchors And *enter\anchors\id[#__a_left]
-; ;                   Debug ""+*enter\anchors\id[#__a_left]\state
-; ;                EndIf
-;                
-            ;\\ demo change current cursor
+            
+            ;\\ current cursor
          Case #__event_cursor
-            If GetCursor( )
-               Debug "("+GetCursor( ) +") "+ "SETCURSOR " + EventWidget( )\class +" "+ WidgetEventData( )
+            If CurrentCursor( )
+               Debug "SET( "+CurrentCursor( ) +" ) "+ EventWidget( )\class +" "+ WidgetEventData( )
             Else
                Debug "       RESETCURSOR " + EventWidget( )\class +" "+ WidgetEventData( )
             EndIf
             
+            Debug GetCursor( EventWidget( ) )
+            
+            ;\\ demo change current cursor
             If EventWidget( ) = object2
                If a_transform( )
-                  If GetCursor( )
+                  If CurrentCursor( )
                      If a_index( )
                         ProcedureReturn cursor::#__cursor_Hand
                      Else
@@ -130,7 +128,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 13
-; Folding = --
+; CursorPosition = 110
+; FirstLine = 89
+; Folding = -
 ; EnableXP

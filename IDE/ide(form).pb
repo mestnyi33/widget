@@ -554,16 +554,16 @@ Procedure widget_events( )
             If DragDropPrivate( #_DD_reParent )
                ChangeCursor( *e_widget, #PB_Cursor_Arrows )
             EndIf
-         EndIf
-         
-         If IsContainer( *e_widget )
-            If GetState( w_ide_inspector_elements) > 0 
-               If DragDropPrivate( #_DD_CreateNew )
-                  ChangeCursor( *e_widget, #PB_Cursor_Cross )
-               EndIf
-            Else
-               If DragDropPrivate( #_DD_Group )
-                  ChangeCursor( *e_widget, #PB_Cursor_Cross )
+         Else
+            If IsContainer( *e_widget )
+               If GetState( w_ide_inspector_elements) > 0 
+                  If DragDropPrivate( #_DD_CreateNew )
+                     ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                  EndIf
+               Else
+                  If DragDropPrivate( #_DD_Group )
+                     ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -1406,7 +1406,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 645
-; FirstLine = 620
+; CursorPosition = 554
+; FirstLine = 544
 ; Folding = -----------+-+-4bn----
 ; EnableXP
