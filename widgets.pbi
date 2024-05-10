@@ -2361,11 +2361,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-\\ DD
-      Macro Dragged( _this_ ) 
-        mouse( )\dragstart ; _this_\dragged
-      EndMacro
       Macro DragState( )
-         mouse( )\dragstart ; mouse( )\drag\state
+         mouse( )\dragstart
       EndMacro
       Procedure DropDraw( *this._s_WIDGET )
          Protected j = 5, s = j/2
@@ -3557,7 +3554,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_entered( )\anchors\id[a_index( )] And
                a_entered( )\anchors\id[a_index( )]\state
                ;
-               If Not Dragged( a_entered( ) )
+               If Not DragState( )
                   If *this <> a_entered( ) And 
                      *this\root = a_entered( )\root 
                      ;
@@ -19823,7 +19820,7 @@ EndIf
                      ;                      EndIf
                      
                      ;\\ если переместили виджет то его исключаем
-                     If PressedWidget( ) And Dragged( PressedWidget( ) )
+                     If PressedWidget( ) And DragState( )
                         If is_drag_move( )
                            If PressedWidget( ) = *list( )
                               Continue
@@ -20076,7 +20073,7 @@ EndIf
       EndProcedure
       
       Procedure DoEvent_Lines( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged = Dragged( *this )
+         Protected dragged = DragState( )
          Protected repaint, *item._s_ROWS
          mouse_x - *this\inner_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
@@ -20438,7 +20435,7 @@ EndIf
       EndProcedure
       
       Procedure DoEvent_Items( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged = Dragged( *this )
+         Protected dragged = DragState( )
          Protected repaint, *item._s_ROWS
          mouse_x - *this\inner_x( ) ; - *this\scroll_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
@@ -22243,8 +22240,8 @@ EndIf
                         ;\\ mouse-drag-start send drag event
                         If PressedWidget( ) And 
                            PressedWidget( )\press And
-                           Dragged( PressedWidget( ) ) = #PB_Drag_None
-                           Dragged( PressedWidget( ) ) = #PB_Drag_Update
+                           DragState( ) = #PB_Drag_None
+                           DragState( ) = #PB_Drag_Update
                            CurrentCursor( ) = cursor::#__cursor_Drag
                            DoEvents( PressedWidget( ), #__event_DragStart )
                         EndIf
@@ -22375,7 +22372,7 @@ EndIf
                If mouse( )\change > 1
                   ;\\ mouse-pressed-widget move event
                   If PressedWidget( ) And 
-                     Dragged( PressedWidget( ) ) And 
+                     DragState( ) And 
                      PressedWidget( ) <> EnteredWidget( )
                      ;
                      If Root( ) <> PressedWidget( )\root
@@ -22561,7 +22558,7 @@ EndIf
                      EndIf
                      
                      ;\\ do enter&leave events
-                     If Dragged( PressedWidget( ) )
+                     If DragState( )
                         If EnteredWidget( ) <> PressedWidget( )
                            GetAtPoint( Root( ), mouse( )\x, mouse( )\y, __widgets( ) )
                            
@@ -22585,7 +22582,7 @@ EndIf
                      
                      ;\\ do 1click events
                      If PressedWidget( ) = EnteredWidget( )
-                        If Not Dragged( PressedWidget( ) ) 
+                        If Not DragState( ) 
                            If eventtype = #__event_LeftButtonUp
                               DoEvents( PressedWidget( ), #__event_LeftClick )
                            EndIf
@@ -22616,7 +22613,7 @@ EndIf
                      EndIf
                   EndIf
                   
-                  Dragged( PressedWidget( ) ) = #PB_Drag_None
+                  DragState( ) = #PB_Drag_None
                   PressedWidget( ) = 0
                EndIf
                
@@ -24652,8 +24649,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22245
-; FirstLine = 21276
-; Folding = -------------------------------------------++64-bv+--w------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P------4f0------------------------------------------------------P-8------------------040g--8W8----f-v-4----------------------------------------------
+; CursorPosition = 20437
+; FirstLine = 19700
+; Folding = -------------------------------------------++64-bv+-f5------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n------8v+------------------------------------------------------n-0------------------+8ew--dr0----v-4-8---------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
