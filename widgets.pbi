@@ -19592,7 +19592,6 @@ EndIf
                   WidgetEvent( )\item   = *button
                   WidgetEvent( )\data   = *data
                   
-                  
                   ; Debug "send - "+*this\class +" "+ ClassFromEvent(eventtype) +" "+ *button +" "+ *data
                   
                   ;
@@ -19707,7 +19706,7 @@ EndIf
             
             ; Debug "post - "+*this\class +" "+ ClassFromEvent(eventtype)
             If __gui\repost = 1
-               __gui\repost =  - 1
+              ; __gui\repost = - 1 ; 
             EndIf
             
             If AddElement( __events( ) )
@@ -19820,7 +19819,7 @@ EndIf
                      ;                      EndIf
                      
                      ;\\ если переместили виджет то его исключаем
-                     If PressedWidget( ) And DragState( )
+                     If DragState( )
                         If is_drag_move( )
                            If PressedWidget( ) = *list( )
                               Continue
@@ -21823,7 +21822,7 @@ EndIf
                  #__event_Down,
                  #__event_Up
                
-               If Not a_index( )
+                If Not a_index( )
                   ;\\ after post&send drag-start-event
                   If mouse( )\drag
                      If *this\drop And *this\EnterInner( ) And 
@@ -22371,8 +22370,8 @@ EndIf
             ElseIf eventtype = #__event_MouseMove
                If mouse( )\change > 1
                   ;\\ mouse-pressed-widget move event
-                  If PressedWidget( ) And 
-                     DragState( ) And 
+                  If DragState( ) And 
+                     PressedWidget( ) And 
                      PressedWidget( ) <> EnteredWidget( )
                      ;
                      If Root( ) <> PressedWidget( )\root
@@ -22571,7 +22570,6 @@ EndIf
                      
                      ;
                      PressedWidget( )\press = #False
-                     
                      ;\\
                      DoEvents( PressedWidget( ), #__event_Up )
                      
@@ -22581,8 +22579,10 @@ EndIf
                      EndIf
                      
                      ;\\ do 1click events
-                     If PressedWidget( ) = EnteredWidget( )
-                        If Not DragState( ) 
+                     If DragState( )
+                        DragState( ) = #PB_Drag_None
+                     Else
+                        If PressedWidget( ) = EnteredWidget( )
                            If eventtype = #__event_LeftButtonUp
                               DoEvents( PressedWidget( ), #__event_LeftClick )
                            EndIf
@@ -22613,7 +22613,6 @@ EndIf
                      EndIf
                   EndIf
                   
-                  DragState( ) = #PB_Drag_None
                   PressedWidget( ) = 0
                EndIf
                
@@ -24649,8 +24648,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 20437
-; FirstLine = 19700
-; Folding = -------------------------------------------++64-bv+-f5------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n------8v+------------------------------------------------------n-0------------------+8ew--dr0----v-4-8---------------------------------------------
+; CursorPosition = 19708
+; FirstLine = 18971
+; Folding = -------------------------------------------++64-bv+-f5------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n------8v+------------------------------------------------------n-0--8------4---------8fw--dr0----v-4-8---------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

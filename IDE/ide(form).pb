@@ -552,17 +552,19 @@ Procedure widget_events( )
       Case #__event_DragStart
          If is_drag_move( )
             If DragDropPrivate( #_DD_reParent )
-               ChangeCursor( *e_widget, #PB_Cursor_Arrows )
+              ; ChangeCursor( *e_widget, #PB_Cursor_Arrows )
             EndIf
          Else
-            If IsContainer( *e_widget )
-               If GetState( w_ide_inspector_elements) > 0 
-                  If DragDropPrivate( #_DD_CreateNew )
-                     ChangeCursor( *e_widget, #PB_Cursor_Cross )
-                  EndIf
-               Else
-                  If DragDropPrivate( #_DD_Group )
-                     ChangeCursor( *e_widget, #PB_Cursor_Cross )
+            If Not a_index( )
+               If IsContainer( *e_widget )
+                  If GetState( w_ide_inspector_elements) > 0 
+                     If DragDropPrivate( #_DD_CreateNew )
+                        ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                     EndIf
+                  Else
+                     If DragDropPrivate( #_DD_Group )
+                        ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -1407,6 +1409,6 @@ DataSection
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 554
-; FirstLine = 544
-; Folding = -----------+-+-4bn----
+; FirstLine = 543
+; Folding = -----------0-0-v4O-----
 ; EnableXP
