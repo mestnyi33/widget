@@ -196,9 +196,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       Macro EventDropText( ): DropText( ): EndMacro
       ;       Macro EventDropImage( Image = - 1, Depth = 24 ): DropImage( Image, Depth ): EndMacro
       
-      ;       Macro DragType( )
-      ;          WidgetEvent( )\widget\dragged
-      ;       EndMacro
       ;       Macro DragText( Text, Actions = #PB_Drag_Copy ): DragDropText( Text, Actions ): EndMacro
       ;       Macro DragImage( Image, Actions = #PB_Drag_Copy ): DragDropImage( Image, Actions ): EndMacro
       ;       Macro DragFiles( Files, Actions = #PB_Drag_Copy ): DragDropFiles( Files, Actions ): EndMacro
@@ -2364,7 +2361,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-\\ DD
-      Macro DragState( ): mouse( )\drag\state: EndMacro
+      Macro Dragged( _this_ ) 
+        mouse( )\dragstart ; _this_\dragged
+      EndMacro
+      Macro DragState( )
+         mouse( )\dragstart ; mouse( )\drag\state
+      EndMacro
       Procedure DropDraw( *this._s_WIDGET )
          Protected j = 5, s = j/2
          
@@ -3555,7 +3557,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_entered( )\anchors\id[a_index( )] And
                a_entered( )\anchors\id[a_index( )]\state
                ;
-               If Not a_entered( )\dragged
+               If Not Dragged( a_entered( ) )
                   If *this <> a_entered( ) And 
                      *this\root = a_entered( )\root 
                      ;
@@ -19821,7 +19823,7 @@ EndIf
                      ;                      EndIf
                      
                      ;\\ если переместили виджет то его исключаем
-                     If mouse( )\dragstart
+                     If PressedWidget( ) And Dragged( PressedWidget( ) )
                         If is_drag_move( )
                            If PressedWidget( ) = *list( )
                               Continue
@@ -20074,7 +20076,7 @@ EndIf
       EndProcedure
       
       Procedure DoEvent_Lines( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged = *this\dragged
+         Protected dragged = Dragged( *this )
          Protected repaint, *item._s_ROWS
          mouse_x - *this\inner_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
@@ -20436,7 +20438,7 @@ EndIf
       EndProcedure
       
       Procedure DoEvent_Items( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged = *this\dragged
+         Protected dragged = Dragged( *this )
          Protected repaint, *item._s_ROWS
          mouse_x - *this\inner_x( ) ; - *this\scroll_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
@@ -21385,10 +21387,6 @@ EndIf
             ProcedureReturn 0
          EndIf
          
-         If eventtype = #__event_DragStart
-            CurrentCursor( ) = cursor::#__cursor_Drag
-         EndIf 
-         
          ;
          ;\\ activate send event
          If *this\root And
@@ -21437,20 +21435,6 @@ EndIf
                   ; Debug "#__event_Change "+*this\FocusedRowIndex( ) +" "+ *this\FocusedRow( )\index +" "+ *button ;+" "+ *data
                   *this\FocusedRowIndex( ) = *button
                EndIf
-            Else
-               ;                If *this\row
-               ;                   If mouse( )\dragstart
-               ;                      If *this\FocusedRow( )
-               ;                         *button = *this\FocusedRow( )\index
-               ;                         *data   = *this\FocusedRow( )
-               ;                      EndIf
-               ;                   Else
-               ;                      If *this\EnteredRow( )
-               ;                         *button = *this\EnteredRow( )\index
-               ;                         *data   = *this\EnteredRow( )
-               ;                      EndIf
-               ;                   EndIf
-               ;                EndIf
             EndIf
          EndIf
          
@@ -22257,14 +22241,12 @@ EndIf
                         EndIf
                         
                         ;\\ mouse-drag-start send drag event
-                        If PressedWidget( ) And PressedWidget( )\press And PressedWidget( )\enter 
-                           If mouse( )\press And mouse( )\change And Not mouse( )\dragstart
-                              
-                              mouse( )\dragstart = #PB_Drag_Update
-                              PressedWidget( )\dragged = #PB_Drag_Update
-                              
-                              DoEvents( PressedWidget( ), #__event_DragStart )
-                           EndIf
+                        If PressedWidget( ) And 
+                           PressedWidget( )\press And
+                           Dragged( PressedWidget( ) ) = #PB_Drag_None
+                           Dragged( PressedWidget( ) ) = #PB_Drag_Update
+                           CurrentCursor( ) = cursor::#__cursor_Drag
+                           DoEvents( PressedWidget( ), #__event_DragStart )
                         EndIf
                      EndIf
                   EndIf
@@ -22392,16 +22374,15 @@ EndIf
             ElseIf eventtype = #__event_MouseMove
                If mouse( )\change > 1
                   ;\\ mouse-pressed-widget move event
-                  If mouse( )\dragstart
-                     If PressedWidget( ) And 
-                        PressedWidget( ) <> EnteredWidget( )
-                        ;
-                        If Root( ) <> PressedWidget( )\root
-                           mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
-                           mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
-                        EndIf
-                        DoEvents( PressedWidget( ), eventtype )
+                  If PressedWidget( ) And 
+                     Dragged( PressedWidget( ) ) And 
+                     PressedWidget( ) <> EnteredWidget( )
+                     ;
+                     If Root( ) <> PressedWidget( )\root
+                        mouse( )\x = CanvasMouseX( PressedWidget( )\root\canvas\gadget )
+                        mouse( )\y = CanvasMouseY( PressedWidget( )\root\canvas\gadget )
                      EndIf
+                     DoEvents( PressedWidget( ), eventtype )
                   EndIf
                   
                   ;\\ mouse-entered-widget move event
@@ -22528,71 +22509,66 @@ EndIf
                   ;\\ do up&click events
                   If PressedWidget( )\press
                      
-                     ;\\ drag & drop stop
-                     If mouse( )\dragstart
-                        PressedWidget( )\dragged = #PB_Drag_None
-                        
-                        ;\\ do drop events
-                        If mouse( )\drag
-                           If DragState( ) = #PB_Drag_Enter
-                              DragState( ) = #PB_Drag_Finish
+                     ;\\ do drop events
+                     If mouse( )\drag
+                        If DragState( ) = #PB_Drag_Enter
+                           DragState( ) = #PB_Drag_Finish
+                        EndIf
+                        ;
+                        If is_drag_move( )
+                           If EnteredWidget( )\drop
+                              mouse( )\drag\x = a_selector( )\x - PressedWidget( )\inner_x( ) - PressedWidget( )\scroll_x( )
+                              mouse( )\drag\y = a_selector( )\y - PressedWidget( )\inner_y( ) - PressedWidget( )\scroll_y( )
+                              
+                              mouse( )\drag\width  = a_selector( )\width
+                              mouse( )\drag\height = a_selector( )\height
+                              
+                              DoEvents( EnteredWidget( ), #__event_Drop )
                            EndIf
-                           ;
-                           If is_drag_move( )
-                              If EnteredWidget( )\drop
+                        Else
+                           If IsContainer( PressedWidget( ) ) 
+                              If PressedWidget( )\drop
                                  mouse( )\drag\x = a_selector( )\x - PressedWidget( )\inner_x( ) - PressedWidget( )\scroll_x( )
                                  mouse( )\drag\y = a_selector( )\y - PressedWidget( )\inner_y( ) - PressedWidget( )\scroll_y( )
                                  
                                  mouse( )\drag\width  = a_selector( )\width
                                  mouse( )\drag\height = a_selector( )\height
                                  
+                                 DoEvents( PressedWidget( ), #__event_Drop )
+                              EndIf
+                           ElseIf EnteredWidget( )\drop
+                              If DragState( ) = #PB_Drag_Finish
+                                 mouse( )\drag\x = mouse( )\x - EnteredWidget( )\inner_x( ) - EnteredWidget( )\scroll_x( )
+                                 mouse( )\drag\y = mouse( )\y - EnteredWidget( )\inner_y( ) - EnteredWidget( )\scroll_y( )
+                                 
+                                 mouse( )\drag\width  = #PB_Ignore
+                                 mouse( )\drag\height = #PB_Ignore
+                                 
                                  DoEvents( EnteredWidget( ), #__event_Drop )
                               EndIf
-                           Else
-                              If IsContainer( PressedWidget( ) ) 
-                                 If PressedWidget( )\drop
-                                    mouse( )\drag\x = a_selector( )\x - PressedWidget( )\inner_x( ) - PressedWidget( )\scroll_x( )
-                                    mouse( )\drag\y = a_selector( )\y - PressedWidget( )\inner_y( ) - PressedWidget( )\scroll_y( )
-                                    
-                                    mouse( )\drag\width  = a_selector( )\width
-                                    mouse( )\drag\height = a_selector( )\height
-                                    
-                                    DoEvents( PressedWidget( ), #__event_Drop )
-                                 EndIf
-                              ElseIf EnteredWidget( )\drop
-                                 If DragState( ) = #PB_Drag_Finish
-                                    mouse( )\drag\x = mouse( )\x - EnteredWidget( )\inner_x( ) - EnteredWidget( )\scroll_x( )
-                                    mouse( )\drag\y = mouse( )\y - EnteredWidget( )\inner_y( ) - EnteredWidget( )\scroll_y( )
-                                    
-                                    mouse( )\drag\width  = #PB_Ignore
-                                    mouse( )\drag\height = #PB_Ignore
-                                    
-                                    DoEvents( EnteredWidget( ), #__event_Drop )
-                                 EndIf
-                              EndIf
                            EndIf
-                           
-                           ;\\ reset dragged cursor
-                           If Cursor( PressedWidget( ) ) <> PressedWidget( )\cursor
-                              Debug "free drop CURSOR "
-                              Cursor( PressedWidget( ) ) = PressedWidget( )\cursor 
-                           EndIf
-                           
-                           ;\\ reset
-                           FreeStructure( mouse( )\drag)
-                           mouse( )\drag = #Null
                         EndIf
                         
-                        ;\\ do enter&leave events
+                        ;\\ reset dragged cursor
+                        If Cursor( PressedWidget( ) ) <> PressedWidget( )\cursor
+                           Debug "free drop CURSOR "
+                           Cursor( PressedWidget( ) ) = PressedWidget( )\cursor 
+                        EndIf
+                        
+                        ;\\ reset
+                        FreeStructure( mouse( )\drag)
+                        mouse( )\drag = #Null
+                     EndIf
+                     
+                     ;\\ do enter&leave events
+                     If Dragged( PressedWidget( ) )
                         If EnteredWidget( ) <> PressedWidget( )
                            GetAtPoint( Root( ), mouse( )\x, mouse( )\y, __widgets( ) )
                            
-                           ;If Not a_index( )
                            If EnteredWidget( ) <> PressedWidget( )
                               EnteredWidget( ) = PressedWidget( )
                               GetAtPoint( PressedWidget( )\root, mouse( )\x, mouse( )\y, __widgets( ) )
                            EndIf
-                           ;EndIf
                         EndIf
                      EndIf
                      
@@ -22609,7 +22585,7 @@ EndIf
                      
                      ;\\ do 1click events
                      If PressedWidget( ) = EnteredWidget( )
-                        If Not mouse( )\dragstart
+                        If Not Dragged( PressedWidget( ) ) 
                            If eventtype = #__event_LeftButtonUp
                               DoEvents( PressedWidget( ), #__event_LeftClick )
                            EndIf
@@ -22640,11 +22616,11 @@ EndIf
                      EndIf
                   EndIf
                   
+                  Dragged( PressedWidget( ) ) = #PB_Drag_None
                   PressedWidget( ) = 0
                EndIf
                
                ;\\ reset mouse states
-               mouse( )\dragstart = 0
                mouse( )\interact = 0
                mouse( )\buttons = 0
                mouse( )\delta\x = 0
@@ -24676,8 +24652,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22577
-; FirstLine = 21426
-; Folding = -------------------------------------------++64-bv+-f5------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n------8v+------------------------------------------------------n-0------------------040g--8W8-----+fff----------------------------------------------
+; CursorPosition = 22245
+; FirstLine = 21276
+; Folding = -------------------------------------------++64-bv+--w------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P------4f0------------------------------------------------------P-8------------------040g--8W8----f-v-4----------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

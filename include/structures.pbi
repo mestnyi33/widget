@@ -110,7 +110,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          x.l
          width.l
          height.l
-         state.b
+         ;state.b
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD ; Ok
@@ -633,7 +633,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          create.b
          change.b
          hidden.b                 ; hide state
-         dragged.b              ;
+         ;dragged.b              ;
          autosize.b
          container.b              ; is container
          ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
@@ -796,7 +796,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 113
-; FirstLine = 91
+; CursorPosition = 635
+; FirstLine = 534
 ; Folding = --zB-d-7--
 ; EnableXP
