@@ -339,14 +339,14 @@ CompilerIf #PB_Compiler_IsMainFile
             ;             
          Case #PB_EventType_LeftButtonUp : Drag = #False
             If Canvas_HitTest( Images( ), Mousex, Mousey )
-               ChangeCursor( *this, #PB_Cursor_Cross )
+               ChangeCursor( *this, #PB_Cursor_Hand )
             Else
                ChangeCursor( *this, #PB_Cursor_Default )
             EndIf
                
          Case #PB_EventType_LeftButtonDown
             If Canvas_HitTest( Images( ), Mousex, Mousey ) 
-               ChangeCursor( *this, #PB_Cursor_Hand )
+               ChangeCursor( *this, #PB_Cursor_Cross )
                Repaint = #True 
                Drag = #True
             EndIf
@@ -369,7 +369,7 @@ CompilerIf #PB_Compiler_IsMainFile
                ChangeCursor( *this, #PB_Cursor_Arrows )
             Else
                If Canvas_HitTest( Images( ), Mousex, Mousey )
-                  ChangeCursor( *this, #PB_Cursor_Cross )
+                  ChangeCursor( *this, #PB_Cursor_Hand )
                Else
                   ChangeCursor( *this, #PB_Cursor_Default )
                EndIf
@@ -519,7 +519,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 207
-; FirstLine = 120
+; CursorPosition = 474
+; FirstLine = 372
 ; Folding = -8--------
 ; EnableXP

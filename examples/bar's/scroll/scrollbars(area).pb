@@ -124,9 +124,12 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;\\
-      DrawingStart( canvas ) 
-      If Drawing( )
-         DrawingMode( #PB_2DDrawing_Default )
+;       DrawingStart( canvas ) 
+;       If Drawing( )
+      If StartReDraw( Root( ) )
+      ReDraw( )
+      
+      DrawingMode( #PB_2DDrawing_Default )
          Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
          
          ;\\
@@ -149,8 +152,11 @@ CompilerIf #PB_Compiler_IsMainFile
             DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
          Next
          
-          DrawingStop( )
-      EndIf
+         StopReDraw( )
+         EndIf
+        
+;           DrawingStop( )
+;       EndIf
    EndProcedure
    
    Procedure.i Canvas_HitTest( List Images.IMAGES( ), mouse_x, mouse_y )
@@ -363,11 +369,17 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent( )
       
       If event = #PB_Event_Repaint
-         Select EventType( )
-            Case #PB_EventType_Repaint
-               Canvas_Draw( MyCanvas, Images( ) ) 
-               
-         EndSelect
+;          Select EventType( )
+;             Case #PB_EventType_Repaint
+;                Canvas_Draw( MyCanvas, Images( ) ) 
+;                
+;          EndSelect
+         
+         If EventData( )
+            Canvas_Draw( MyCanvas, Images( ) ) 
+         EndIf
+         
+         
       EndIf
       
       Select Event
@@ -411,7 +423,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 91
-; FirstLine = 38
-; Folding = L-vf0----
+; CursorPosition = 375
+; FirstLine = 241
+; Folding = L-vf0--4-
 ; EnableXP
