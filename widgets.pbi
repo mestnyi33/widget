@@ -5351,6 +5351,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not *this\root\widget
                   ;Debug "displayBar - create " + *this\class +" "+ *this\root
                   *displayRoot = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible )
+                  *displayRoot\window = 0
                   
                   ;\\
                   *displayRoot\parent = *display
@@ -5472,7 +5473,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                Debug "popup resize width="+width +" height="+ height
-               ResizeWindow( *this\root\canvas\window, x, y, width, height )
+                ResizeWindow( *this\root\canvas\window, x, y, width, height )
+                ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
+               ;Resize( *this\root, x, y, width, height )
                HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
                PostRepaint( *this\root )
                
@@ -24865,8 +24868,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 743
-; FirstLine = 740
-; Folding = -------------------------------------------88nf-v07--h---------------------------------------------------------f----8-00------------------e--8----------------------------v-----v------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6------+r-------------------------------------------------------6f---+------0---------uH9--v2+----4-8-0---------------------------------------------
+; CursorPosition = 5365
+; FirstLine = 4658
+; Folding = -------------------------------------------00zv-4e0--w---------------------------------------------------------v----0-++-----------------fv--0----------------------------4-----4------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----f-2-------------------------------------------------------9v--f-------+--------f4D+--4a-----8-0-+---------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
