@@ -741,12 +741,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro is_item_( _this_, _item_ ) : Bool( _item_ >= 0 And _item_ < _this_\count\items ) : EndMacro
-      Macro is_root_(_this_ ) : Bool( _this_ >= 65536 And _this_\main ): EndMacro
-      ;Macro is_root_(_this_ ) : Bool( _this_ >= 65536 And _this_ = _this_\root ): EndMacro
+      ;Macro is_root_(_this_ ) : Bool( _this_ >= 65536 And _this_\main ): EndMacro
+      Macro is_root_(_this_ ) : Bool( _this_ >= 65536 And _this_ = _this_\root ): EndMacro
       Macro is_widget_( _this_ ) : Bool( _this_ >= 65536 And _this_\address ) : EndMacro
       Macro is_menu_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_menu ) : EndMacro
       ; Macro is_gadget_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type > 0 ) : EndMacro
       Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
+      Macro is_root_window_( _this_ ) : Bool( _this_ = _this_\root And _this_\root\window ): EndMacro
       
       Macro is_child_( _this_, _parent_ )
          Bool( _this_\parent = _parent_ And Not ( _parent_\TabBox( ) And _this_\TabIndex( ) <> _parent_\TabBox( )\TabState( ) ))
@@ -1351,7 +1352,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.l Width( *this, mode.l = #__c_frame )
       Declare.l Height( *this, mode.l = #__c_frame )
       
-      Declare.b Hide( *this, State.b = #PB_Default )
+      Declare.b Hide( *this, State.b = #PB_Default, flags.q = 0 )
       Declare.b Disable( *this, State.b = #PB_Default )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
       
@@ -4502,11 +4503,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default )
+      Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default, flags.q = 0 )
          If State = #PB_Default : ProcedureReturn *this\hide : EndIf
          
          If *this\hidden <> state
             *this\hidden = state
+            
+            If is_root_window_( *this )
+               HideWindow( *this\root\canvas\window, state, flags ) 
+            EndIf
             
             ; *this\hide = HideState( *this )
             
@@ -4640,7 +4645,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected Window
          Protected WindowID
          Protected ParentID
-         Protected *root
+         Protected *root._s_ROOT
          
          ;\\
          If *display
@@ -4659,6 +4664,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          Window   = GetWindow( *root )
          WindowID = WindowID( Window )
+         
+         ;\\
+         *root\window = *root
          
          ;\\
          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -5015,6 +5023,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   Debug "display - create "
                   Popup( ) = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess )
+                  SetClass( Popup( ), "Popup( )" ) 
                EndIf
                
                ;\\
@@ -5025,19 +5034,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; Debug CocoaMessage(0, WindowID(Popup( )\canvas\window), "level")
                CompilerEndIf
                
+               ;*this\child = 0
                ;\\
                Popup( )\widget = *this
                Popup( )\parent = *display
                ChangeParent( *this, Popup( ) )
-               PostRepaint( Popup( ) )
+               ;SetParent( *this, Popup( ) )
                
-               ;           ;\\
-               ;           CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-               ;             ResizeWindow( Popup( )\canvas\window, x, y, width-6, height-29 )
-               ;           CompilerElse
-               ResizeWindow( Popup( )\canvas\window, x, y, width, height )
-               Resize( Popup( ), 0, 0, width, height)
+;                ;\\
+;                ResizeWindow( Popup( )\canvas\window, x, y, width, height )
+;                ResizeGadget( Popup( )\canvas\gadget, 0, 0, width, height)
                
+               Resize( Popup( ), x, y, width, height)
+                    
                ProcedureReturn #True
             EndIf
          EndIf
@@ -5714,6 +5723,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                   If Not *this\child
 ;                      Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
 ;                   EndIf
+         If is_root_window_( *this )
+            ResizeWindow( *this\root\canvas\window, x, y, width, height )
+            ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height)
+            x = 0
+            y = 0 
+         EndIf
          
          ;\\
          If *this\resize\change <> 1
@@ -5746,7 +5761,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
            ; Debug "auto_resize_"+*this\class +" "+ x +" "+ y +" "+ width +" "+ height
-         
+            *this\resize\clip = 1
+            *this\root\repaint = #True
+            
          Else
             ;\\ move & size steps
             If mouse( )\steps > 1 And *this\anchors And *this\anchors\mode
@@ -19320,6 +19337,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $AAE4E4E4 )
                   EndIf
                   
+;                   If *this = *this\root And 
+;                      *this\root\widget
+;                      ;*this\root\widget\resize\clip = 1
+;                      Draw( *this\root\widget )
+;                      Debug *this\root\widget\draw_height( )
+;                   EndIf
                   ;\\
                   Send( *this, #__event_Draw )
                EndIf
@@ -22126,8 +22149,15 @@ EndIf
                      Repost( )
                   EndIf
                   
-                  ; Debug "   REPAINT " + Root( )\class
-                  ;StartVectorDrawing( CanvasVectorOutput( Root( )\canvas\gadget ))
+; ;                   If Root( )\class = "Popup( )"
+; ;                      Debug "   REPAINT " + Root( )\class +" "+ Popup( )\widget\x +" "+ Popup( )\widget\y +" "+ Popup( )\widget\width +" "+ Popup( )\widget\height
+; ; ; ;                      ForEach __widgets( ) 
+; ; ; ;                         If __widgets( )\root = Root()
+; ; ; ;                            Debug "    "+__widgets( )\class
+; ; ; ;                         EndIf
+; ; ; ;                      Next
+; ;                   EndIf
+; ;                   ;StartVectorDrawing( CanvasVectorOutput( Root( )\canvas\gadget ))
                   
                   If Not __gui\draw
                     StartReDraw( Root( ) )
@@ -22268,7 +22298,9 @@ EndIf
                   ;                      Debug 777
                   ;                      Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ) - Root( )\fs * 2, PB(GadgetHeight)( eventgadget ) - Root( )\fs * 2 - Root( )\fs[2] )
                   ;                   Else
-                  Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
+                  If Not is_root_window_( Root( ) )
+                     Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
+                  EndIf
                   ;                   EndIf
                EndIf
                ; PopMapPosition( __roots( ) )
@@ -23046,12 +23078,13 @@ EndIf
             
             ;
             *root\main      = 1
+            *root\root      = *root
+            
             *root\container = 1
             *root\address   = result
             *root\type      = #__type_Container
             
             *root\class     = "Root"
-            *root\root      = *root
             ;*root\window   = *root
             ;*root\parent   = Opened( )
             
@@ -24831,7 +24864,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------------------------------------------++64-bv+-f5---------------------------------------------------------8-------------------------80-v-----------------------------+-----+-----------------------------------------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n------8v+------------------------------------------------------n-0--8------4---------8fw--dr0----v-4-8---------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 743
+; FirstLine = 740
+; Folding = -------------------------------------------88nf-v07--h---------------------------------------------------------f----8-00------------------e--8----------------------------v-----v------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6------+r-------------------------------------------------------6f---+------0---------uH9--v2+----4-8-0---------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
