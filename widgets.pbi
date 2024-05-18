@@ -470,21 +470,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro PressedTab( ): tab\pressed: EndMacro   ; Returns mouse focused tab
       Macro FocusedTab( ): tab\focused: EndMacro   ; Returns mouse focused tab
                                                    ;
-      Macro TabIndex( ): tab\index: EndMacro        ; index[3]  
+      Macro TabIndex( ): tab\index: EndMacro       ; index[3]  
       Macro TabState( ): tab\state: EndMacro       ; index[2]  
-      Macro TabAddIndex( ): tab\addindex: EndMacro    ; index[1]  
+      Macro TabAddIndex( ): tab\addindex: EndMacro ; index[1]  
       
       ;-
-      Macro ResizeChange( )
-         resize\change
-      EndMacro
-      
-      Macro TabChange( ): change: EndMacro         ; tab\change
+      Macro ResizeChange( ): resize\change: EndMacro
       Macro TextChange( ): text\change: EndMacro   ; temp
       Macro ImageChange( ): image\change: EndMacro ; temp
       Macro AreaChange( ): area\change: EndMacro   ; temp
       Macro PageChange( ): page\change: EndMacro   ; temp
       Macro ThumbChange( ): thumb\change: EndMacro ; temp
+      ;                                            ;
+      Macro TabChange( ): change: EndMacro         ; tab\widget\change
       Macro WidgetChange( ): change: EndMacro      ; temp
       
       ;-
@@ -24744,8 +24742,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 476
-; FirstLine = 400
+; CursorPosition = 484
+; FirstLine = 408
 ; Folding = -----9-----------------------------------DG--98-tXn-PA932kc-xn----06-----7-------40-f--------------fo-9-4v-v-4-----+-f------------------v4--+----------------------------------8--------------------------------------------------------------------------------j0---------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------0------+r----------------e-----t--0---------------------------------------4---------f---------v8B---bt-----0-+f----------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

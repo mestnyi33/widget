@@ -1,12 +1,13 @@
 ﻿XIncludeFile "constants.pbi"
 
 ; StructureUnion
+;   b.b[0]    ; BYTE    : 8 Bit signed    [-128..127]
 ;   a.a[0]    ; ASCII   : 8 Bit unsigned  [0..255]
+;
+;   w.w[0]    ; WORD    : 2 Byte signed   [-32768..32767]
 ;   c.c[0]    ; CAHR    : 2 Byte unsigned [0..65535]
 ;   u.u[0]    ; UNICODE : 2 Byte unsigned [0..65535]
 ;
-;   b.b[0]    ; BYTE    : 8 Bit signed    [-128..127]
-;   w.w[0]    ; WORD    : 2 Byte signed   [-32768..32767]
 ;   l.l[0]    ; LONG    : 4 Byte signed   [-2147483648..2147483647]
 ;   q.q[0]    ; QUAD    : 8 Byte signed   [-9223372036854775808..9223372036854775807]
 ;
@@ -776,7 +777,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 331
-; FirstLine = 254
+; CursorPosition = 10
+; FirstLine = 1
 ; Folding = --6g-uf0--
 ; EnableXP
