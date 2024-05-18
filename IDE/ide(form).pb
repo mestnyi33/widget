@@ -116,7 +116,7 @@ Macro properties_update_text( _gadget_, _value_ )
 EndMacro
 
 Macro properties_update_class( _gadget_, _value_ )
-   SetItemText( _gadget_, #_pi_class,   GetItemText( _gadget_, #_pi_class )   +Chr( 10 )+GetClass( _value_ )+"_"+GetCount( _value_ ) )
+   SetItemText( _gadget_, #_pi_class,   GetItemText( _gadget_, #_pi_class )   +Chr( 10 )+GetClass( _value_ )+"_"+GetTypeCount( _value_ ) )
 EndMacro
 
 Macro properties_update_hide( _gadget_, _value_ )
@@ -431,8 +431,8 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
       
       If *new
          Protected newClass.s
-         newClass.s = GetClass( *new )+"_"+GetCount( *new , 0 )
-         ; newClass.s = GetClass( *parent )+"_"+GetCount( *parent , 0 )+"_"+GetClass( *new )+"_"+GetCount( *new , 1 )
+         newClass.s = GetClass( *new )+"_"+GetTypeCount( *new )
+         ; newClass.s = GetClass( *parent )+"_"+GetTypeCount( *parent )+"_"+GetClass( *new )+"_"+GetTypeCount( *new , 1 )
          ;
          If IsContainer( *new )
             EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
@@ -1408,7 +1408,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 554
-; FirstLine = 543
+; CursorPosition = 434
+; FirstLine = 415
 ; Folding = -----------0-0-v4O-----
 ; EnableXP

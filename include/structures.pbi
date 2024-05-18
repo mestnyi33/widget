@@ -70,12 +70,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          collapsed.b
          threeState.b
       EndStructure
-      ;--     COUNT
-      Structure _s_COUNT
-         index.l
-         type.l
-         items.l
-      EndStructure
       Structure _s_ANIMATION
          Value.i
          Min.i
@@ -338,6 +332,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          state.c
          index.c
+         addindex.c
          
          ; tab
          *entered._s_rows
@@ -393,7 +388,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     ROW
       Structure _s_ROW
-         index.i
+         id.i[4]
          
          column.a
          sublevelcolumn.a
@@ -604,28 +599,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
 ;          move.MOVEINFO                 
          resize.RESIZEINFO                 
          
-         tabindex.c
-         index.l[4]
-         ; \index[0] - widget index
-         ;
-         ; \index[1] - panel opened tab index     - TabAddIndex( )
-         ; \index[2] - panel selected tab index   - TabState( )
-         ; \index[3] - panel added tab index      - TabIndex( )
-         ;
-         ; \index[1] - splitter is first gadget   - splitter_is_gadget_1( )
-         ; \index[2] - splitter is second gadget  - splitter_is_gadget_2( )
-         ;
-         ; \index[1] - edit entered line index    - EnteredLineIndex( )
-         ; \index[2] - edit focused line index    - FocusedLineIndex( )
-         ; \index[3] - edit pressed line index    - PressedLineIndex( )
-         
+         _id.i      ; - widget index
          
          y.l[constants::#__c]
          x.l[constants::#__c]
          height.l[constants::#__c]
          width.l[constants::#__c]
          ;
-         type.b
+         type.c
          class.s
          ;
          level.c
@@ -633,7 +614,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          create.b
          change.b
          hidden.b                 ; hide state
-         ;dragged.b              ;
+         ; transporent.b
+         ; dragged.b              ;
          autosize.b
          container.b              ; is container
          ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
@@ -641,6 +623,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
+         countitems.l             ; count items
          ;                        ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
          ;
@@ -676,7 +659,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          StatusBarHeight.w
          
          
-         ; transporent.b
          ; placing layout
          first._s_OBJECTTYPE
          after._s_OBJECTTYPE
@@ -685,9 +667,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          bounds._s_BOUNDS
          scroll._s_SCROLL            ; vertical & horizontal scrollbars
-                                     ;
          text._s_TEXT
-         count._s_COUNT
          ;
          *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget
@@ -703,7 +683,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          flag.q
          *data
-         *cursor[4]
+         *cursor[4] ;
          
          *errors
          notify.l ; оповестить об изменении
@@ -796,7 +776,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 567
-; FirstLine = 475
-; Folding = --zB-d-7--
+; CursorPosition = 331
+; FirstLine = 254
+; Folding = --6g-uf0--
 ; EnableXP

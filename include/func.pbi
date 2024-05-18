@@ -7,12 +7,8 @@
 
 ; macos
 ; https://www.purebasic.fr/english/viewtopic.php?f=19&t=51968&start=1
-DeclareModule Caret
-  Declare SetPos(Gadget, Position)
-EndDeclareModule
 
-Module Caret
-  Procedure SetPos(Gadget, Position)
+  Procedure SetCaretPos(Gadget, Position)
     ;     SetActiveGadget(Gadget)
     
     CompilerSelect #PB_Compiler_OS
@@ -36,11 +32,6 @@ Module Caret
         
     CompilerEndSelect
   EndProcedure
-EndModule
-
-Macro SetCaretPos(_gadget_, _position_)
-  Caret::SetPos(_gadget_, _position_)
-EndMacro
 
 Procedure GadgetRefresh(gadget)
   ; https://www.purebasic.fr/english/viewtopic.php?t=71125
@@ -931,5 +922,7 @@ CompilerEndIf
 ;   EndIf
 ; EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = 9--------------
+; CursorPosition = 25
+; FirstLine = 4
+; Folding = ---------------
 ; EnableXP
