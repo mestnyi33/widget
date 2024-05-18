@@ -558,13 +558,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;Macro EventIndex( ): EventWidget( )\index: EndMacro
-      Macro EventWidget( ): WidgetEvent( )\widget: EndMacro
       Macro WidgetEvent( ): widget::__gui\event: EndMacro
-      Macro WidgetEventWidget( ): WidgetEvent( )\widget: EndMacro
       Macro WidgetEventType( ): WidgetEvent( )\type: EndMacro
       Macro WidgetEventData( ): WidgetEvent( )\data: EndMacro
-      Macro WidgetEventItem( ): WidgetEvent( )\item: EndMacro
-      Macro WidgetEventMenu( ): WidgetEvent( )\item: EndMacro
+      Macro WidgetEventItem( ): WidgetEvent( )\item: EndMacro : Macro WidgetEventMenu( ): WidgetEvent( )\item: EndMacro
+      Macro EventWidget( ): WidgetEvent( )\widget: EndMacro
       
       ;-
       Macro WindowEvent( )
@@ -814,20 +812,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro is_list_gadget_( _this_ )
          Bool( _this_\type = #__type_Tree Or
-               _this_\type = #__type_ListView Or
-               _this_\type = #__type_ListIcon Or
-               _this_\type = #__type_ExplorerTree Or
-               _this_\type = #__type_ExplorerList )
-      EndMacro
-      
-      Macro is_interact_row_( _this_ )
-         Bool( _this_\type = #__type_TabBar Or
-               _this_\type = #__type_Splitter Or
-               _this_\type = #__type_Editor Or
-               _this_\type = #__type_IPAddress Or
-               _this_\type = #__type_String Or
-               _this_\type = #__type_Button Or
-               _this_\type = #__type_Tree Or
                _this_\type = #__type_ListView Or
                _this_\type = #__type_ListIcon Or
                _this_\type = #__type_ExplorerTree Or
@@ -1572,7 +1556,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       
-      ;
+      ;-
       Macro row_x_( _this_, _address_ )
          ( _this_\inner_x( ) + _address_\x )  ; + _this_\scroll_x( )
       EndMacro
@@ -1584,6 +1568,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro row_scroll_y_( _this_, _row_, _page_height_ = )
          bar_scroll_pos_( _this_\scroll\v, ( row_y_( _this_, _row_ ) _page_height_ ) - _this_\scroll\v\y, _row_\height )
       EndMacro
+      
+      Macro row_sel_element_( _this_, _address_, _index_ )
+         _address_\RowFocus( 0 )
+         ;_address_\enter = 0
+         _address_\ColorState( ) = 0
+         
+         _address_ = SelectElement( _this_\__lines( ), _index_ )
+         
+         If _address_
+            _address_\ColorState( ) = 1
+            ;_address_\enter = 1
+            _address_\RowFocus( 1 )
+         EndIf
+      EndMacro
+      
       
       ;-
       Macro make_scrollarea_x( _this_, _address_ )
@@ -9955,84 +9954,123 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      ;-  EDITOR
-      Macro edit_row_edit_text_x_( _this_, _mode_ )
-         ( row_x_( _this_, _this_\__lines( ) ) + _this_\__lines( )\text\edit#_mode_\x )
-      EndMacro
-      
-      Macro edit_row_edit_text_y_( _this_, _mode_ ) ; пока не используется
-         ( row_y_( _this_, _this_\__lines( ) ) + _this_\__lines( )\text\edit#_mode_\y )
-      EndMacro
-      
-      Macro edit_row_select_( _this_, _address_, _index_ )
-         _address_\RowFocus( 0 )
-         ;_address_\enter = 0
-         _address_\ColorState( ) = 0
-         
-         _address_ = SelectElement( _this_\__lines( ), _index_ )
-         
-         If _address_
-            _address_\ColorState( ) = 1
-            ;_address_\enter = 1
-            _address_\RowFocus( 1 )
-         EndIf
-      EndMacro
-      
-      Macro edit_text_scroll_x_( _this_ )
-         If *this\scroll\h And Not *this\scroll\h\hide And _this_\text\caret\x
-            If bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x) - _this_\inner_x( ), ( _this_\text\padding\x * 2 + _this_\MarginLine( )\width )) ; ok
-               *this\WidgetChange( ) = - 1
-            EndIf
-         EndIf
-      EndMacro
-      
-      Macro edit_text_scroll_y_( _this_ )
-         If *this\scroll\v And Not *this\scroll\v\hide
-            If bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y) - _this_\inner_y( ), ( _this_\text\padding\y * 2 + _this_\text\caret\height )) ; ok
-               *this\WidgetChange( ) = - 1
-            EndIf
-         EndIf
-      EndMacro
-      
+      ;-  EDIT STRING
       Macro edit_caret_0( ): text\caret\pos[0]: EndMacro
       Macro edit_caret_1( ): text\caret\pos[1]: EndMacro
       Macro edit_caret_2( ): text\caret\pos[2]: EndMacro
       
       ;\\ Macro edit_row_caret_1_( _this_ ): _this_\text\caret\pos[3]: EndMacro
       
-      Procedure.l edit_caret_( *this._s_WIDGET, *line._s_ROWS )
-         ; Get caret position
-         Protected i.l, mouse_x.l, caret_x.l, caret.l = - 1
-         Protected Distance.f, MinDistance.f = Infinity( )
+      Macro edit_string_x_( _this_, _mode_ )
+         ( row_x_( _this_, _this_\__lines( ) ) + _this_\__lines( )\text\edit#_mode_\x )
+      EndMacro
+      
+      Macro edit_string_y_( _this_, _mode_ ) ; пока не используется
+         ( row_y_( _this_, _this_\__lines( ) ) + _this_\__lines( )\text\edit#_mode_\y )
+      EndMacro
+      
+      Macro edit_change_text_( _address_, _char_len_ = 0, _position_ = )
+         _address_\text\edit#_position_\len + _char_len_
+         _address_\text\len      = _address_\text\edit[1]\len + _address_\text\edit[3]\len
+         _address_\text\string.s = Left( _address_\text\string.s, _address_\text\edit[1]\len ) + Right( _address_\text\string.s, _address_\text\edit[3]\len )
+      EndMacro
+      
+      Macro edit_change_caret_( _this_, _index_ )
+         If _this_\PressedLineIndex( ) <> _index_
+            _this_\TextChange( ) = - 1
+         EndIf
          
-         If *line 
-           If ReDrawing( *this )
-             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-               If *line\text\fontID
-                 DrawingFont( *line\text\fontID )
+         If _this_\edit_caret_1( ) > _this_\edit_caret_2( )
+            _this_\edit_caret_1( ) = _this_\edit_caret_2( )
+         Else
+            _this_\edit_caret_2( ) = _this_\edit_caret_1( )
+         EndIf
+         
+         If _this_\PressedLineIndex( ) > _index_
+            _this_\PressedLineIndex( ) = _index_
+            _this_\EnteredLineIndex( ) = _index_
+         Else
+            _this_\EnteredLineIndex( ) = _this_\PressedLineIndex( )
+         EndIf
+      EndMacro
+      
+      ;-
+      Macro edit_sel_reset_( _this_ )
+         If _this_\text\edit[2]\width <> 0
+            ; вызывать если только строки выделени
+            If _this_\text\multiLine
+               PushListPosition( _this_\__lines( ) )
+               ForEach _this_\__lines( )
+                  If _this_\__lines( )\text\edit[2]\width <> 0
+                     ; Debug " remove - " +" "+ _this_\__lines( )\text\string
+                     edit_sel_string_( _this_, _this_\__lines( ), #__sel_to_remove )
+                  EndIf
+               Next
+               PopListPosition( _this_\__lines( ) )
+            EndIf
+         EndIf
+      EndMacro
+      
+      Macro edit_sel_is_line_pos_( _this_ )
+         Bool( _this_\__lines( )\text\edit[2]\width And
+               mouse( )\x > _this_\__lines( )\text\edit[2]\x - _this_\scroll_x( ) And
+               mouse( )\y > _this_\__lines( )\text\y - _this_\scroll_y( ) And
+               mouse( )\y < ( _this_\__lines( )\text\y + _this_\__lines( )\text\height ) - _this_\scroll_y( ) And
+               mouse( )\x < ( _this_\__lines( )\text\edit[2]\x + _this_\__lines( )\text\edit[2]\width ) - _this_\scroll_x( ) )
+      EndMacro
+      
+      Macro edit_sel_end_( _char_ )
+         Bool(( _char_ >= ' ' And _char_ <= '/' ) Or               ; ! " # $ % & ' ( ) * + , - .
+              ( _char_ >= ':' And _char_ <= '@' ) Or               ;   ; < = > ?
+              ( _char_ >= '[' And _char_ <= '^' ) Or               ; \ ] ^ _ `
+              ( _char_ >= '{' And _char_ <= '~' ) Or _char_ = '`') ; | }
+         
+      EndMacro
+      
+      Procedure.i edit_sel_start_word( *this._s_WIDGET, caret, *rowLine._s_ROWS )
+         Protected result.i, i.i, char.i
+         
+         ; | <<<<<< left edge of the word
+         char = Asc( Mid( *rowLine\text\string, caret + 1, 1 ))
+         If edit_sel_end_( char )
+            result = *rowLine\text\pos + caret
+         Else
+            result = *rowLine\text\pos
+            For i = caret To 1 Step - 1
+               char = Asc( Mid( *rowLine\text\string, i, 1 ))
+               If edit_sel_end_( char )
+                  result = *rowLine\text\pos + i
+                  Break
                EndIf
-             CompilerEndIf
-           EndIf
-           
-            mouse_x = mouse( )\x - row_x_( *this, *line ) - *line\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
-            
-            For i = 0 To *line\text\len
-               caret_x = TextWidth( Left( *line\text\string, i ))
-               Distance = ( mouse_x - caret_x ) * ( mouse_x - caret_x )
-               
-               If MinDistance >= Distance
-                  MinDistance = Distance
-                  caret = i
-               Else
+            Next
+         EndIf
+         ;Debug result - *rowLine\text\pos
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure.i edit_sel_stop_word( *this._s_WIDGET, caret, *rowLine._s_ROWS )
+         Protected result.i, i.i, char.i
+         
+         ; >>>>>> | right edge of the word
+         char = Asc( Mid( *rowLine\text\string, caret, 1 ))
+         If edit_sel_end_( char )
+            result.i = *rowLine\text\pos + caret
+         Else
+            result.i = *rowLine\text\pos + *rowLine\text\len
+            For i = caret + 1 To *rowLine\text\len
+               char = Asc( Mid( *rowLine\text\string, i, 1 ))
+               If edit_sel_end_( char )
+                  result = *rowLine\text\pos + ( i - 1 )
                   Break
                EndIf
             Next
          EndIf
          
-         ProcedureReturn caret
+         ProcedureReturn result
       EndProcedure
       
-      Procedure edit_sel_row_text_( *this._s_WIDGET, *rowLine._s_ROWS, mode.l = #__sel_to_line )
+      Procedure edit_sel_string_( *this._s_WIDGET, *rowLine._s_ROWS, mode.l = #__sel_to_line )
          Protected CaretLeftPos, CaretRightPos, CaretLastLen = 0
          Debug "edit_sel_row_text - " + *rowLine\index + " " + mode
          
@@ -10188,7 +10226,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\edit_caret_2( ) = 0
             PushListPosition( *this\__lines( ) )
             ForEach *this\__lines( )
-               edit_sel_row_text_( *this, *this\__lines( ), #__sel_to_last )
+               edit_sel_string_( *this, *this\__lines( ), #__sel_to_last )
             Next
             ;*this\PressedLine( ) = *this\__lines( )
             PopListPosition( *this\__lines( ) )
@@ -10245,84 +10283,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn 1
       EndProcedure
       
-      Macro edit_sel_reset_( _this_ )
-         If _this_\text\edit[2]\width <> 0
-            ; вызывать если только строки выделени
-            If _this_\text\multiLine
-               PushListPosition( _this_\__lines( ) )
-               ForEach _this_\__lines( )
-                  If _this_\__lines( )\text\edit[2]\width <> 0
-                     ; Debug " remove - " +" "+ _this_\__lines( )\text\string
-                     edit_sel_row_text_( _this_, _this_\__lines( ), #__sel_to_remove )
-                  EndIf
-               Next
-               PopListPosition( _this_\__lines( ) )
-            EndIf
-         EndIf
-      EndMacro
-      
-      Macro edit_sel_is_line_pos_( _this_ )
-         Bool( _this_\__lines( )\text\edit[2]\width And
-               mouse( )\x > _this_\__lines( )\text\edit[2]\x - _this_\scroll_x( ) And
-               mouse( )\y > _this_\__lines( )\text\y - _this_\scroll_y( ) And
-               mouse( )\y < ( _this_\__lines( )\text\y + _this_\__lines( )\text\height ) - _this_\scroll_y( ) And
-               mouse( )\x < ( _this_\__lines( )\text\edit[2]\x + _this_\__lines( )\text\edit[2]\width ) - _this_\scroll_x( ) )
-      EndMacro
-      
-      Macro edit_sel_end_( _char_ )
-         Bool(( _char_ >= ' ' And _char_ <= '/' ) Or               ; ! " # $ % & ' ( ) * + , - .
-              ( _char_ >= ':' And _char_ <= '@' ) Or               ;   ; < = > ?
-              ( _char_ >= '[' And _char_ <= '^' ) Or               ; \ ] ^ _ `
-              ( _char_ >= '{' And _char_ <= '~' ) Or _char_ = '`') ; | }
+      ;-
+      Procedure.l edit_make_caret_position( *this._s_WIDGET, *line._s_ROWS )
+         ; Get caret position
+         Protected i.l, mouse_x.l, caret_x.l, caret.l = - 1
+         Protected Distance.f, MinDistance.f = Infinity( )
          
-      EndMacro
-      
-      Procedure.i edit_sel_start_word( *this._s_WIDGET, caret, *rowLine._s_ROWS )
-         Protected result.i, i.i, char.i
-         
-         ; | <<<<<< left edge of the word
-         char = Asc( Mid( *rowLine\text\string, caret + 1, 1 ))
-         If edit_sel_end_( char )
-            result = *rowLine\text\pos + caret
-         Else
-            result = *rowLine\text\pos
-            For i = caret To 1 Step - 1
-               char = Asc( Mid( *rowLine\text\string, i, 1 ))
-               If edit_sel_end_( char )
-                  result = *rowLine\text\pos + i
-                  Break
+         If *line 
+           If ReDrawing( *this )
+             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               If *line\text\fontID
+                 DrawingFont( *line\text\fontID )
                EndIf
-            Next
-         EndIf
-         ;Debug result - *rowLine\text\pos
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      Procedure.i edit_sel_stop_word( *this._s_WIDGET, caret, *rowLine._s_ROWS )
-         Protected result.i, i.i, char.i
-         
-         ; >>>>>> | right edge of the word
-         char = Asc( Mid( *rowLine\text\string, caret, 1 ))
-         If edit_sel_end_( char )
-            result.i = *rowLine\text\pos + caret
-         Else
-            result.i = *rowLine\text\pos + *rowLine\text\len
-            For i = caret + 1 To *rowLine\text\len
-               char = Asc( Mid( *rowLine\text\string, i, 1 ))
-               If edit_sel_end_( char )
-                  result = *rowLine\text\pos + ( i - 1 )
+             CompilerEndIf
+           EndIf
+           
+            mouse_x = mouse( )\x - row_x_( *this, *line ) - *line\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
+            
+            For i = 0 To *line\text\len
+               caret_x = TextWidth( Left( *line\text\string, i ))
+               Distance = ( mouse_x - caret_x ) * ( mouse_x - caret_x )
+               
+               If MinDistance >= Distance
+                  MinDistance = Distance
+                  caret = i
+               Else
                   Break
                EndIf
             Next
          EndIf
          
-         ProcedureReturn result
+         ProcedureReturn caret
       EndProcedure
       
-      Procedure edit_row_align( *this._s_WIDGET )
+      Procedure edit_make_text_position( *this._s_WIDGET )
+         ; edit row align
          ; Debug ""+*this\text\align\left +" "+ *this\text\align\top +" "+ *this\text\align\right +" "+ *this\text\align\bottom
-         ; set align position
          ForEach *this\__lines( )
             If *this\text\vertical
             Else ; horizontal
@@ -10339,12 +10335,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;           EndIf
             EndIf
          Next
-      EndProcedure
       
-      ;-
-      Procedure edit_make_text_position( *this._s_WIDGET )
-         edit_row_align( *this )
-         
          ;
          bar_area_update( *this )
          
@@ -10439,6 +10430,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn String.s
       EndProcedure
       
+      ;-
       Procedure.b edit_insert_text( *this._s_WIDGET, Chr.s )
          Protected result.b, String.s, Count.i, *rowLine._s_ROWS
          
@@ -10517,44 +10509,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Macro edit_change_text_( _address_, _char_len_ = 0, _position_ = )
-         _address_\text\edit#_position_\len + _char_len_
-         _address_\text\len      = _address_\text\edit[1]\len + _address_\text\edit[3]\len
-         _address_\text\string.s = Left( _address_\text\string.s, _address_\text\edit[1]\len ) + Right( _address_\text\string.s, _address_\text\edit[3]\len )
-      EndMacro
-      
-      Macro edit_change_caret_( _this_, _index_ )
-         If _this_\PressedLineIndex( ) <> _index_
-            _this_\TextChange( ) = - 1
-         EndIf
-         
-         If _this_\edit_caret_1( ) > _this_\edit_caret_2( )
-            _this_\edit_caret_1( ) = _this_\edit_caret_2( )
-         Else
-            _this_\edit_caret_2( ) = _this_\edit_caret_1( )
-         EndIf
-         
-         If _this_\PressedLineIndex( ) > _index_
-            _this_\PressedLineIndex( ) = _index_
-            _this_\EnteredLineIndex( ) = _index_
-         Else
-            _this_\EnteredLineIndex( ) = _this_\PressedLineIndex( )
-         EndIf
-      EndMacro
-      
-      Procedure edit_key_page_up_down_( *this._s_WIDGET, wheel, row_select )
+      Procedure edit_key_page_up_down_( *this._s_WIDGET, wheel, index_select_row )
          Protected repaint, select_index, page_height
          Protected first_index = 0, last_index = *this\count\items - 1
          
          If wheel = - 1 ; page-up
-            If row_select
-               If row_select > 0
+            If index_select_row
+               If index_select_row > 0
                   select_index = *this\VisibleFirstRow( )\index
                Else
                   select_index = first_index
                EndIf
                If *this\FocusedLine( )\index <> select_index
-                  edit_row_select_( *this, *this\FocusedLine( ), select_index )
+                  row_sel_element_( *this, *this\FocusedLine( ), select_index )
                   
                   If select_index = first_index
                      *this\edit_caret_1( ) = 0
@@ -10574,14 +10541,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
          ElseIf wheel = 1 ; page-down
-            If row_select
-               If row_select > 0
+            If index_select_row
+               If index_select_row > 0
                   select_index = *this\VisibleLastRow( )\index
                Else
                   select_index = last_index
                EndIf
                If *this\FocusedLine( )\index <> select_index
-                  edit_row_select_( *this, *this\FocusedLine( ), select_index )
+                  row_sel_element_( *this, *this\FocusedLine( ), select_index )
                   
                   If select_index = last_index
                      *this\edit_caret_1( ) = *this\text\len
@@ -11049,7 +11016,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\edit_caret_2( ) = State + *this\FocusedLine( )\text\pos
             
             ;
-            edit_sel_row_text_( *this, *this\FocusedLine( ) )
+            edit_sel_string_( *this, *this\FocusedLine( ) )
             edit_sel_text_( *this, *this\FocusedLine( ) )
             row_scroll_y_( *this, *this\FocusedLine( ) )
             ProcedureReturn #True
@@ -11097,7 +11064,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\edit_caret_0( ) = State - *this\FocusedLine( )\text\pos
             
             ;
-            edit_sel_row_text_( *this, *this\FocusedLine( ) )
+            edit_sel_string_( *this, *this\FocusedLine( ) )
             edit_sel_text_( *this, *this\FocusedLine( ) )
             row_scroll_y_( *this, *this\FocusedLine( ) )
             ProcedureReturn #True
@@ -11106,46 +11073,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Procedure edit_Update_SetText( *this._s_WIDGET, text.s )
-         *this\text\edit\string = *this\text\string
-         
-         *this\scroll_width( )  = *this\text\padding\x * 2
-         *this\scroll_height( ) = *this\text\padding\y * 2
-         
-         Protected string.s = text.s + #LF$
-         Protected *str.Character = @string
-         Protected *end.Character = @string
-         
-         Protected enter_index = - 1: If *this\EnteredLine( ): enter_index = *this\EnteredLine( )\index: *this\EnteredLine( ) = #Null: EndIf
-         Protected focus_index = - 1: If *this\FocusedLine( ): focus_index = *this\FocusedLine( )\index: *this\FocusedLine( ) = #Null: EndIf
-         Protected press_index = - 1: If *this\PressedLine( ): press_index = *this\PressedLine( )\index: *this\PressedLine( ) = #Null: EndIf
-         
-         *this\text\len = 0
-         If *this\count\items
-            *this\count\items = 0
-            ClearList( *this\__lines( ))
-         EndIf
-         
-         While *End\c
-            If *end\c = #LF
-               edit_SetItem( *this, *this\__lines( ), - 1, *str, (*end - *str) >> #PB_Compiler_Unicode )
-               
-               If enter_index = *this\__lines( )\index: *this\EnteredLine( ) = *this\__lines( ): EndIf
-               If focus_index = *this\__lines( )\index: *this\EnteredLine( ) = *this\__lines( ): EndIf
-               If press_index = *this\__lines( )\index: *this\EnteredLine( ) = *this\__lines( ): EndIf
-               
-               *str = *end + #__sOC
-            EndIf
-            *end + #__sOC
-         Wend
-         
-         *this\text\len - Len( #LF$ )
-         *this\TextChange( )   = 0
-         *this\WidgetChange( ) = 0
-         
-         ProcedureReturn 1
-      EndProcedure
-      
       Procedure Text_Update( *this._s_WIDGET )
          With *this
             
@@ -11473,9 +11400,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Text_x = row_x_( *this, e_rows( ) ) + *this\scroll_x( ) + e_rows( )\text\x
                Text_Y = y + e_rows( )\text\y
                
-               Protected sel_text_x1 = edit_row_edit_text_x_( *this, [1] ) + *this\scroll_x( )
-               Protected sel_text_x2 = edit_row_edit_text_x_( *this, [2] ) + *this\scroll_x( )
-               Protected sel_text_x3 = edit_row_edit_text_x_( *this, [3] ) + *this\scroll_x( )
+               Protected sel_text_x1 = edit_string_x_( *this, [1] ) + *this\scroll_x( )
+               Protected sel_text_x2 = edit_string_x_( *this, [2] ) + *this\scroll_x( )
+               Protected sel_text_x3 = edit_string_x_( *this, [3] ) + *this\scroll_x( )
                
                Protected sel_x = *this\inner_x( ) + *this\text\x
                Protected sel_width = *this\inner_width( ) - *this\text\y * 2
@@ -11625,7 +11552,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Debug "    key - change caret pos " + ListSize( *this\__lines( ) ) + " " + *this\FocusedLine( )\index + " " + *this\PressedLineIndex( )
                      
                      ;
-                     edit_sel_row_text_( *this, *this\FocusedLine( ) )
+                     edit_sel_string_( *this, *this\FocusedLine( ) )
                      edit_sel_text_( *this, *this\FocusedLine( ) )
                      
                      ;
@@ -11725,369 +11652,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndWith
          EndIf
          
-      EndProcedure
-      
-      Procedure Editor_Events_Key( *this._s_WIDGET, eventtype.l, mouse_x.l, mouse_y.l )
-         Static _caret_last_pos_, DoubleClick.i
-         Protected i.i, caret.i
-         
-         Protected Repaint.i, Item.i, String.s
-         Protected _line_, _step_ = 1, _caret_min_ = 0, _caret_max_ = *this\__lines( )\text\len, _line_first_ = 0, _line_last_ = *this\count\items - 1
-         Protected page_height = *this\inner_height( )
-         
-         With *this
-            Select EventType
-               Case #__event_Input ;- Input ( key )
-                  If Not Keyboard( )\key[1] & #PB_Canvas_Control
-                     If Not *this\notify And Keyboard( )\input
-                        
-                        edit_insert_text( *this, Chr( Keyboard( )\input ))
-                        
-                     EndIf
-                  EndIf
-                  
-               Case #__event_KeyUp
-                  ; Чтобы перерисовать
-                  ; рамку вокруг едитора
-                  ; reset all errors
-                  If *this\notify
-                     *this\notify = 0
-                     ProcedureReturn - 1
-                  EndIf
-                  
-                  
-               Case #__event_KeyDown
-                  Select Keyboard( )\key
-                     Case #PB_Shortcut_Home
-                        Repaint = edit_key_home_( *this )
-                        
-                     Case #PB_Shortcut_End
-                        Repaint = edit_key_end_( *this )
-                        
-                     Case #PB_Shortcut_PageUp : Debug "key PageUp"
-                        Repaint = edit_key_page_up_down_( *this, - 1, 1 )
-                        
-                     Case #PB_Shortcut_PageDown : Debug "key PageDown"
-                        Repaint = edit_key_page_up_down_( *this, 1, 1 )
-                        
-                     Case #PB_Shortcut_Up       ; Ok
-                        If *this\FocusedLine( ) And *this\edit_caret_1( ) > 0
-                           If keyboard( )\key[1] & #PB_Canvas_Shift
-                              If *this\FocusedLine( ) = *this\PressedLine( )
-                                 ;Debug " le top remove - Pressed  " +" "+ *this\FocusedLine( )\text\string
-                                 edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_first )
-                                 edit_sel_text_( *this, *this\FocusedLine( ))
-                              ElseIf *this\FocusedLine( )\index > *this\PressedLine( )\index
-                                 ;Debug "  le top remove - " +" "+ *this\FocusedLine( )\text\string
-                                 edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_remove )
-                                 edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\FocusedLine( )\index - 1))
-                              Else
-                                 ;Debug " ^le bottom  set - " +" "+ *this\FocusedLine( )\text\string
-                                 edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_set )
-                                 edit_sel_text_( *this, *this\FocusedLine( ))
-                              EndIf
-                           EndIf
-                           
-                           If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos
-                              *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
-                           Else
-                              If *this\FocusedLine( )\index > 0
-                                 *this\FocusedLine( )\ColorState( ) = #__s_0
-                                 *this\FocusedLine( )             = SelectElement( *this\__lines( ), *this\FocusedLine( )\index - 1 )
-                                 *this\FocusedLine( )\ColorState( ) = #__s_1
-                                 
-                                 If *this\edit_caret_0( ) > *this\FocusedLine( )\text\len
-                                    *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                                 Else
-                                    *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\edit_caret_0( )
-                                 EndIf
-                              Else
-                                 *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos
-                              EndIf
-                           EndIf
-                           
-                           If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                              edit_sel_reset_( *this )
-                              
-                              If *this\PressedLine( ) <> *this\FocusedLine( )
-                                 If *this\PressedLine( ) And
-                                    *this\PressedLine( )\press
-                                    *this\PressedLine( )\press = #False
-                                 EndIf
-                                 *this\PressedLine( )       = *this\FocusedLine( )
-                                 *this\PressedLine( )\press = #True
-                              EndIf
-                              
-                              *this\edit_caret_2( ) = *this\edit_caret_1( )
-                           EndIf
-                           
-                           edit_sel_row_text_( *this, *this\FocusedLine( ) )
-                           edit_sel_text_( *this, *this\FocusedLine( ) )
-                        EndIf
-                        
-                     Case #PB_Shortcut_Down     ; Ok
-                        If *this\FocusedLine( ) And *this\edit_caret_1( ) < *this\text\len
-                           If keyboard( )\key[1] & #PB_Canvas_Shift
-                              If *this\FocusedLine( ) = *this\PressedLine( )
-                                 ;Debug " le bottom  set - Pressed  " +" "+ *this\FocusedLine( )\text\string
-                                 edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_last )
-                                 edit_sel_text_( *this, *this\FocusedLine( ))
-                              ElseIf *this\FocusedLine( )\index < *this\PressedLine( )\index
-                                 ;Debug "  ^le top remove - " +" "+ *this\FocusedLine( )\text\string
-                                 edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_remove )
-                                 edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\FocusedLine( )\index + 1))
-                              Else
-                                 ;Debug " le bottom  set - " +" "+ *this\FocusedLine( )\text\string
-                                 edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_set )
-                                 edit_sel_text_( *this, *this\FocusedLine( ))
-                              EndIf
-                           EndIf
-                           
-                           If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                              *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
-                           Else
-                              If *this\FocusedLine( )\index < ( *this\count\items - 1 )
-                                 *this\FocusedLine( )\ColorState( ) = #__s_0
-                                 *this\FocusedLine( )             = SelectElement( *this\__lines( ), *this\FocusedLine( )\index + 1 )
-                                 *this\FocusedLine( )\ColorState( ) = #__s_1
-                                 
-                                 If *this\edit_caret_0( ) > *this\FocusedLine( )\text\len
-                                    *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                                 Else
-                                    *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\edit_caret_0( )
-                                 EndIf
-                              Else
-                                 *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                              EndIf
-                           EndIf
-                           
-                           If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                              edit_sel_reset_( *this )
-                              
-                              If *this\PressedLine( ) <> *this\FocusedLine( )
-                                 If *this\PressedLine( ) And
-                                    *this\PressedLine( )\press
-                                    *this\PressedLine( )\press = #False
-                                 EndIf
-                                 *this\PressedLine( )       = *this\FocusedLine( )
-                                 *this\PressedLine( )\press = #True
-                              EndIf
-                              
-                              *this\edit_caret_2( ) = *this\edit_caret_1( )
-                           EndIf
-                           
-                           edit_sel_row_text_( *this, *this\FocusedLine( ) )
-                           edit_sel_text_( *this, *this\FocusedLine( ) )
-                        EndIf
-                        
-                     Case #PB_Shortcut_Left     ; Ok
-                        If *this\FocusedLine( ) And *this\edit_caret_1( ) > 0
-                           If *this\edit_caret_1( ) > *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                              *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                           EndIf
-                           
-                           If *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos
-                              If *this\FocusedLine( )\index > 0
-                                 *this\FocusedLine( )\ColorState( ) = #__s_0
-                                 *this\FocusedLine( )             = SelectElement( *this\__lines( ), *this\FocusedLine( )\index - 1 )
-                                 *this\FocusedLine( )\ColorState( ) = #__s_1
-                              EndIf
-                           EndIf
-                           
-                           If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\edit_caret_1( ) = edit_sel_start_word( *this, *this\edit_caret_0( ) - 1, *this\FocusedLine( ) )
-                           Else
-                              *this\edit_caret_1( ) - 1
-                           EndIf
-                           
-                           If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                              edit_sel_reset_( *this )
-                              
-                              *this\edit_caret_2( ) = *this\edit_caret_1( )
-                           EndIf
-                           
-                           *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
-                           
-                           edit_sel_row_text_( *this, *this\FocusedLine( ) )
-                           edit_sel_text_( *this, *this\FocusedLine( ) )
-                        EndIf
-                        
-                     Case #PB_Shortcut_Right    ; Ok
-                        If *this\FocusedLine( ) And *this\edit_caret_1( ) < *this\text\len
-                           If *this\edit_caret_1( ) > *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                              *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                           EndIf
-                           
-                           If *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
-                              If *this\FocusedLine( )\index < *this\count\items - 1
-                                 
-                                 If keyboard( )\key[1] & #PB_Canvas_Shift
-                                    If *this\FocusedLine( ) = *this\PressedLine( )
-                                       ;Debug " le bottom  set - Pressed  " +" "+ *this\FocusedLine( )\text\string
-                                       edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_last )
-                                       edit_sel_text_( *this, *this\FocusedLine( ))
-                                    ElseIf *this\FocusedLine( )\index < *this\PressedLine( )\index
-                                       ;Debug "  ^le top remove - " +" "+ *this\FocusedLine( )\text\string
-                                       edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_remove )
-                                       edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\FocusedLine( )\index + 1))
-                                    Else
-                                       ;Debug " le bottom  set - " +" "+ *this\FocusedLine( )\text\string
-                                       edit_sel_row_text_( *this, *this\FocusedLine( ), #__sel_to_set )
-                                       edit_sel_text_( *this, *this\FocusedLine( ))
-                                    EndIf
-                                 EndIf
-                                 
-                                 *this\FocusedLine( )\ColorState( ) = #__s_0
-                                 *this\FocusedLine( )             = SelectElement( *this\__lines( ), *this\FocusedLine( )\index + 1 )
-                                 *this\FocusedLine( )\ColorState( ) = #__s_1
-                              EndIf
-                           EndIf
-                           
-                           If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\edit_caret_1( ) = edit_sel_stop_word( *this, *this\edit_caret_0( ) + 1, *this\FocusedLine( ) )
-                           Else
-                              *this\edit_caret_1( ) + 1
-                           EndIf
-                           
-                           If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                              edit_sel_reset_( *this )
-                              
-                              *this\edit_caret_2( ) = *this\edit_caret_1( )
-                           EndIf
-                           
-                           *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
-                           
-                           edit_sel_row_text_( *this, *this\FocusedLine( ) )
-                           edit_sel_text_( *this, *this\FocusedLine( ) )
-                        EndIf
-                        
-                     Case #PB_Shortcut_Back
-                        If Not *this\notify
-                           Repaint = edit_key_backup_( *this )
-                        EndIf
-                        
-                     Case #PB_Shortcut_Delete
-                        If Not *this\notify
-                           Repaint = edit_key_delete_( *this )
-                        EndIf
-                        
-                     Case #PB_Shortcut_Return
-                        If Not *this\notify
-                           Repaint = edit_key_return_( *this )
-                        EndIf
-                        
-                        
-                     Case #PB_Shortcut_A        ; Ok
-                        If Keyboard( )\key[1] & #PB_Canvas_Control
-                           If *this\text\edit[2]\len <> *this\text\len
-                              
-                              ; select first and last items
-                              *this\PressedLineIndex( ) = *this\count\items - 1
-                              *this\FocusedLine( )      = SelectElement( *this\__lines( ), 0 )
-                              
-                              edit_sel_text_( *this, #PB_All )
-                              
-                              Repaint = 1
-                           EndIf
-                        EndIf
-                        
-                     Case #PB_Shortcut_C, #PB_Shortcut_X
-                        If Keyboard( )\key[1] & #PB_Canvas_Control
-                           If *this\text\edit[2]\len
-                              SetClipboardText( *this\text\edit[2]\string )
-                              
-                              If Keyboard( )\key = #PB_Shortcut_X
-                                 edit_ClearItems( *this )
-                              EndIf
-                           EndIf
-                        EndIf
-                        
-                     Case #PB_Shortcut_V
-                        ; edit_key_v_
-                        If Keyboard( )\key[1] & #PB_Canvas_Control
-                           If *this\text\editable
-                              Protected Text.s = GetClipboardText( )
-                              
-                              If Not *this\text\multiLine
-                                 Text = ReplaceString( Text, #LFCR$, #LF$ )
-                                 Text = ReplaceString( Text, #CRLF$, #LF$ )
-                                 Text = ReplaceString( Text, #CR$, #LF$ )
-                                 Text = RemoveString( Text, #LF$ )
-                              EndIf
-                              
-                              edit_insert_text( *this, Text )
-                           EndIf
-                        EndIf
-                        
-                  EndSelect
-                  
-                  Select Keyboard( )\key
-                     Case #PB_Shortcut_Home,
-                          #PB_Shortcut_End,
-                          #PB_Shortcut_PageUp,
-                          #PB_Shortcut_PageDown,
-                          #PB_Shortcut_Up,
-                          #PB_Shortcut_Down,
-                          #PB_Shortcut_Left,
-                          #PB_Shortcut_Right,
-                          #PB_Shortcut_Delete,
-                          #PB_Shortcut_Return ;, #PB_Shortcut_back
-                        
-                        If Not Repaint
-                           *this\notify = - 1
-                           ProcedureReturn - 1
-                        EndIf
-                        
-                     Case #PB_Shortcut_A,
-                          #PB_Shortcut_C,
-                          #PB_Shortcut_X,
-                          #PB_Shortcut_V
-                        
-                  EndSelect
-                  
-            EndSelect
-         EndWith
-         
-         ProcedureReturn Repaint
-      EndProcedure
-      
-      Procedure Editor_Events( *this._s_WIDGET, eventtype.l, *item._s_ROWS, item = - 1 )
-         Static DoubleClick.i = -1
-         Protected Repaint.i, Caret.i, _line_.l, String.s
-         Protected *currentRow._s_ROWS, mouse_x.l = mouse( )\x, mouse_y.l = mouse( )\y
-         Static click_time
-         
-         
-         With *this
-            
-            If *this\row
-               ; edit key events
-               If eventtype = #__event_Input Or
-                  eventtype = #__event_KeyDown Or
-                  eventtype = #__event_KeyUp
-                  
-                  Repaint | Editor_Events_Key( *this, eventtype, mouse( )\x, mouse( )\y )
-               EndIf
-            EndIf
-            
-         EndWith
-         
-         ;          If *this\TextChange( )
-         ;             *this\WidgetChange( ) = 1
-         ;          EndIf
-         
-         If Repaint
-            PushListPosition( *this\__lines( ) )
-            If *this\TextChange( )
-               ; text change
-               DoEvents( *this, #__event_Change);, 0, 0 )
-            EndIf
-            PopListPosition( *this\__lines( ) )
-         EndIf
-         
-         ProcedureReturn Repaint
       EndProcedure
       
       
@@ -19791,16 +19355,16 @@ EndIf
                   EndIf
                   
                   ;\\
-                  __widget = WidgetEvent( )\widget
-                  __type   = WidgetEvent( )\type
-                  __item   = WidgetEvent( )\item
-                  __data   = WidgetEvent( )\data
+                  __widget = EventWidget( )
+                  __type   = WidgetEventType( )
+                  __item   = WidgetEventItem( )
+                  __data   = WidgetEventData( )
                   
                   ;\\
-                  WidgetEvent( )\widget = *this
-                  WidgetEvent( )\type   = eventtype
-                  WidgetEvent( )\item   = *button
-                  WidgetEvent( )\data   = *data
+                  EventWidget( )     = *this
+                  WidgetEventType( ) = eventtype
+                  WidgetEventItem( ) = *button
+                  WidgetEventData( ) = *data
                   
                   ; Debug "send - "+*this\class +" "+ ClassFromEvent(eventtype) +" "+ *button +" "+ *data
                   
@@ -19895,10 +19459,10 @@ EndIf
                   EndIf
                   
                   ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
-                  WidgetEvent( )\widget = __widget
-                  WidgetEvent( )\type   = __type
-                  WidgetEvent( )\item   = __item
-                  WidgetEvent( )\data   = __data
+                  EventWidget( ) = __widget
+                  WidgetEventType( )   = __type
+                  WidgetEventItem( )   = __item
+                  WidgetEventData( )   = __data
                EndIf
             EndIf
          EndIf
@@ -20389,33 +19953,35 @@ EndIf
                      If dragged = #PB_Drag_Update
                         ;Debug "le - "
                         
-                        If mouse_y > ( *this\EnteredLine( )\y + *this\EnteredLine( )\height / 2 )
-                           If *this\EnteredLine( ) = *this\PressedLine( )
-                              ;Debug " le bottom  set - Pressed  " +" "+ *this\EnteredLine( )\text\string
-                              edit_sel_row_text_( *this, *this\EnteredLine( ), #__sel_to_last )
-                              edit_sel_text_( *this, *this\EnteredLine( ))
-                           ElseIf *this\EnteredLine( )\index < *this\PressedLine( )\index
-                              ;Debug "  ^le top remove - " +" "+ *this\EnteredLine( )\text\string
-                              edit_sel_row_text_( *this, *this\EnteredLine( ), #__sel_to_remove )
-                              edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\EnteredLine( )\index + 1))
+                        If *this\EnteredLine( ) And *this\PressedLine( )
+                           If mouse_y > ( *this\EnteredLine( )\y + *this\EnteredLine( )\height / 2 )
+                              If *this\EnteredLine( ) = *this\PressedLine( )
+                                 ;Debug " le bottom  set - Pressed  " +" "+ *this\EnteredLine( )\text\string
+                                 edit_sel_string_( *this, *this\EnteredLine( ), #__sel_to_last )
+                                 edit_sel_text_( *this, *this\EnteredLine( ))
+                              ElseIf *this\EnteredLine( )\index < *this\PressedLine( )\index
+                                 ;Debug "  ^le top remove - " +" "+ *this\EnteredLine( )\text\string
+                                 edit_sel_string_( *this, *this\EnteredLine( ), #__sel_to_remove )
+                                 edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\EnteredLine( )\index + 1))
+                              Else
+                                 ;Debug " le bottom  set - " +" "+ *this\EnteredLine( )\text\string
+                                 edit_sel_string_( *this, *this\EnteredLine( ), #__sel_to_set )
+                                 edit_sel_text_( *this, *this\EnteredLine( ))
+                              EndIf
                            Else
-                              ;Debug " le bottom  set - " +" "+ *this\EnteredLine( )\text\string
-                              edit_sel_row_text_( *this, *this\EnteredLine( ), #__sel_to_set )
-                              edit_sel_text_( *this, *this\EnteredLine( ))
-                           EndIf
-                        Else
-                           If *this\EnteredLine( ) = *this\PressedLine( )
-                              ;Debug " le top remove - Pressed  " +" "+ *this\EnteredLine( )\text\string
-                              edit_sel_row_text_( *this, *this\EnteredLine( ), #__sel_to_first )
-                              edit_sel_text_( *this, *this\EnteredLine( ))
-                           ElseIf *this\EnteredLine( )\index > *this\PressedLine( )\index
-                              ;Debug "  le top remove - " +" "+ *this\EnteredLine( )\text\string
-                              edit_sel_row_text_( *this, *this\EnteredLine( ), #__sel_to_remove )
-                              edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\EnteredLine( )\index - 1))
-                           Else
-                              ;Debug " ^le bottom  set - " +" "+ *this\EnteredLine( )\text\string
-                              edit_sel_row_text_( *this, *this\EnteredLine( ), #__sel_to_set )
-                              edit_sel_text_( *this, *this\EnteredLine( ))
+                              If *this\EnteredLine( ) = *this\PressedLine( )
+                                 ;Debug " le top remove - Pressed  " +" "+ *this\EnteredLine( )\text\string
+                                 edit_sel_string_( *this, *this\EnteredLine( ), #__sel_to_first )
+                                 edit_sel_text_( *this, *this\EnteredLine( ))
+                              ElseIf *this\EnteredLine( )\index > *this\PressedLine( )\index
+                                 ;Debug "  le top remove - " +" "+ *this\EnteredLine( )\text\string
+                                 edit_sel_string_( *this, *this\EnteredLine( ), #__sel_to_remove )
+                                 edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\EnteredLine( )\index - 1))
+                              Else
+                                 ;Debug " ^le bottom  set - " +" "+ *this\EnteredLine( )\text\string
+                                 edit_sel_string_( *this, *this\EnteredLine( ), #__sel_to_set )
+                                 edit_sel_text_( *this, *this\EnteredLine( ))
+                              EndIf
                            EndIf
                         EndIf
                         
@@ -20442,7 +20008,7 @@ EndIf
                            ; Debug "en - "
                            
                            *this\FocusedLine( )  = *item
-                           *this\edit_caret_0( ) = edit_caret_( *this, *item )
+                           *this\edit_caret_0( ) = edit_make_caret_position( *this, *item )
                            *this\edit_caret_1( ) = *this\edit_caret_0( ) + *item\text\pos
                            
                            ; это на тот случай если резко выделили строки
@@ -20462,14 +20028,14 @@ EndIf
                                           
                                           If *this\__lines( )\text\edit[2]\width <> *this\__lines( )\text\width + *this\mode\fullselection
                                              Debug "set - " + " " + *this\__lines( )\text\string
-                                             edit_sel_row_text_( *this, *this\__lines( ), #__sel_to_set )
+                                             edit_sel_string_( *this, *this\__lines( ), #__sel_to_set )
                                           EndIf
                                        EndIf
                                     Else
                                        ;
                                        If *this\__lines( )\text\edit[2]\width <> 0
                                           Debug " remove - " + " " + *this\__lines( )\text\string
-                                          edit_sel_row_text_( *this, *this\__lines( ), #__sel_to_remove )
+                                          edit_sel_string_( *this, *this\__lines( ), #__sel_to_remove )
                                        EndIf
                                     EndIf
                                  Next
@@ -20478,7 +20044,7 @@ EndIf
                            EndIf
                            
                            ;\\ *this\EnteredLineIndex( ) = *item\index
-                           edit_sel_row_text_( *this, *item )
+                           edit_sel_string_( *this, *item )
                            edit_sel_text_( *this, *item )
                            
                         Else
@@ -20492,23 +20058,23 @@ EndIf
                If dragged = #PB_Drag_Update
                   If *this\PressedLine( ) And *this\FocusedLine( ) And *this\EnteredLine( )
                      
-                     *this\edit_caret_0( ) = edit_caret_( *this, *this\EnteredLine( ) )
+                     *this\edit_caret_0( ) = edit_make_caret_position( *this, *this\EnteredLine( ) )
                      If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
                         *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
-                        edit_sel_row_text_( *this, *this\EnteredLine( ) )
+                        edit_sel_string_( *this, *this\EnteredLine( ) )
                         edit_sel_text_( *this, *this\EnteredLine( ) )
                      EndIf
                   EndIf
                   ;                 Else
                   ;                    If *this\EnteredLine( )
-                  ;                       *this\edit_caret_0( ) = edit_caret_( *this, *this\EnteredLine( ) )
+                  ;                       *this\edit_caret_0( ) = edit_make_caret_position( *this, *this\EnteredLine( ) )
                   ;                       ;Debug *this\edit_caret_0( )
                   ;                       
                   ;                       If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
                   ;                          *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
                   ;                          *this\edit_caret_2( ) = *this\edit_caret_1( )
                   ;                          
-                  ;                          edit_sel_row_text_( *this, *this\EnteredLine( ) )
+                  ;                          edit_sel_string_( *this, *this\EnteredLine( ) )
                   ;                          edit_sel_text_( *this, *this\EnteredLine( ) )
                   ;                       EndIf
                   ;                    EndIf  
@@ -20580,7 +20146,7 @@ EndIf
                      
                      
                      If mouse( )\click = 1
-                        *this\edit_caret_0( ) = edit_caret_( *this, *this\EnteredLine( ) )
+                        *this\edit_caret_0( ) = edit_make_caret_position( *this, *this\EnteredLine( ) )
                         ;Debug *this\edit_caret_0( )
                         
                         If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\EnteredLine( )\text\pos
@@ -20593,7 +20159,7 @@ EndIf
                            ;
                            edit_sel_reset_( *this )
                            
-                           edit_sel_row_text_( *this, *this\EnteredLine( ) )
+                           edit_sel_string_( *this, *this\EnteredLine( ) )
                            edit_sel_text_( *this, *this\EnteredLine( ) )
                         EndIf
                      EndIf
@@ -20607,7 +20173,7 @@ EndIf
                *this\edit_caret_1( ) = edit_sel_stop_word( *this, *this\edit_caret_0( ), *this\EnteredLine( ) )
                *this\edit_caret_2( ) = edit_sel_start_word( *this, *this\edit_caret_0( ) + 1, *this\EnteredLine( ) )
                
-               edit_sel_row_text_( *this, *this\EnteredLine( ) )
+               edit_sel_string_( *this, *this\EnteredLine( ) )
                edit_sel_text_( *this, *this\EnteredLine( ) )
             EndIf
             
@@ -20617,7 +20183,7 @@ EndIf
                *this\edit_caret_2( ) = *this\EnteredLine( )\text\pos
                *this\edit_caret_1( ) = *this\EnteredLine( )\text\pos + *this\EnteredLine( )\text\len
                
-               edit_sel_row_text_( *this, *this\EnteredLine( ) )
+               edit_sel_string_( *this, *this\EnteredLine( ) )
                edit_sel_text_( *this, *this\EnteredLine( ) )
             EndIf
             
@@ -20638,6 +20204,334 @@ EndIf
                      EndIf
                   EndIf
                EndIf
+            EndIf
+            
+            ;\\ edit key events
+            If eventtype = #__event_Input Or
+               eventtype = #__event_KeyDown Or
+               eventtype = #__event_KeyUp
+               
+               Static _caret_last_pos_, DoubleClick.i
+               Protected i.i, caret.i
+               
+               Protected Item.i, String.s
+               Protected _line_, _step_ = 1, _caret_min_ = 0, _caret_max_ = *this\__lines( )\text\len, _line_first_ = 0, _line_last_ = *this\count\items - 1
+               Protected page_height = *this\inner_height( )
+               
+               With *this
+                  Select EventType
+                     Case #__event_Input ;- Input ( key )
+                        If Not Keyboard( )\key[1] & #PB_Canvas_Control
+                           If Not *this\notify And Keyboard( )\input
+                              
+                              edit_insert_text( *this, Chr( Keyboard( )\input ))
+                              
+                           EndIf
+                        EndIf
+                        
+                     Case #__event_KeyUp
+                        ; Чтобы перерисовать
+                        ; рамку вокруг едитора
+                        ; reset all errors
+                        If *this\notify
+                           *this\notify = 0
+                           ProcedureReturn - 1
+                        EndIf
+                        
+                        
+                     Case #__event_KeyDown
+                        Select Keyboard( )\key
+                           Case #PB_Shortcut_Home
+                              Repaint = edit_key_home_( *this )
+                              
+                           Case #PB_Shortcut_End
+                              Repaint = edit_key_end_( *this )
+                              
+                           Case #PB_Shortcut_PageUp : Debug "key PageUp"
+                              Repaint = edit_key_page_up_down_( *this, - 1, 1 )
+                              
+                           Case #PB_Shortcut_PageDown : Debug "key PageDown"
+                              Repaint = edit_key_page_up_down_( *this, 1, 1 )
+                              
+                           Case #PB_Shortcut_Up       ; Ok
+                              If *this\FocusedLine( ) And *this\edit_caret_1( ) > 0
+                                 If keyboard( )\key[1] & #PB_Canvas_Shift
+                                    If *this\FocusedLine( ) = *this\PressedLine( )
+                                       ;Debug " le top remove - Pressed  " +" "+ *this\FocusedLine( )\text\string
+                                       edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_first )
+                                       edit_sel_text_( *this, *this\FocusedLine( ))
+                                    ElseIf *this\FocusedLine( )\index > *this\PressedLine( )\index
+                                       ;Debug "  le top remove - " +" "+ *this\FocusedLine( )\text\string
+                                       edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_remove )
+                                       edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\FocusedLine( )\index - 1))
+                                    Else
+                                       ;Debug " ^le bottom  set - " +" "+ *this\FocusedLine( )\text\string
+                                       edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_set )
+                                       edit_sel_text_( *this, *this\FocusedLine( ))
+                                    EndIf
+                                 EndIf
+                                 
+                                 If keyboard( )\key[1] & #PB_Canvas_Alt
+                                    *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos
+                                    *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
+                                 Else
+                                    If *this\FocusedLine( )\index > 0
+                                       *this\FocusedLine( )\ColorState( ) = #__s_0
+                                       *this\FocusedLine( )             = SelectElement( *this\__lines( ), *this\FocusedLine( )\index - 1 )
+                                       *this\FocusedLine( )\ColorState( ) = #__s_1
+                                       
+                                       If *this\edit_caret_0( ) > *this\FocusedLine( )\text\len
+                                          *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                       Else
+                                          *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\edit_caret_0( )
+                                       EndIf
+                                    Else
+                                       *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos
+                                    EndIf
+                                 EndIf
+                                 
+                                 If keyboard( )\key[1] & #PB_Canvas_Shift = #False
+                                    edit_sel_reset_( *this )
+                                    
+                                    If *this\PressedLine( ) <> *this\FocusedLine( )
+                                       If *this\PressedLine( ) And
+                                          *this\PressedLine( )\press
+                                          *this\PressedLine( )\press = #False
+                                       EndIf
+                                       *this\PressedLine( )       = *this\FocusedLine( )
+                                       *this\PressedLine( )\press = #True
+                                    EndIf
+                                    
+                                    *this\edit_caret_2( ) = *this\edit_caret_1( )
+                                 EndIf
+                                 
+                                 edit_sel_string_( *this, *this\FocusedLine( ) )
+                                 edit_sel_text_( *this, *this\FocusedLine( ) )
+                              EndIf
+                              
+                           Case #PB_Shortcut_Down     ; Ok
+                              If *this\FocusedLine( ) And *this\edit_caret_1( ) < *this\text\len
+                                 If keyboard( )\key[1] & #PB_Canvas_Shift
+                                    If *this\FocusedLine( ) = *this\PressedLine( )
+                                       ;Debug " le bottom  set - Pressed  " +" "+ *this\FocusedLine( )\text\string
+                                       edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_last )
+                                       edit_sel_text_( *this, *this\FocusedLine( ))
+                                    ElseIf *this\FocusedLine( )\index < *this\PressedLine( )\index
+                                       ;Debug "  ^le top remove - " +" "+ *this\FocusedLine( )\text\string
+                                       edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_remove )
+                                       edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\FocusedLine( )\index + 1))
+                                    Else
+                                       ;Debug " le bottom  set - " +" "+ *this\FocusedLine( )\text\string
+                                       edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_set )
+                                       edit_sel_text_( *this, *this\FocusedLine( ))
+                                    EndIf
+                                 EndIf
+                                 
+                                 If keyboard( )\key[1] & #PB_Canvas_Alt
+                                    *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                    *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
+                                 Else
+                                    If *this\FocusedLine( )\index < ( *this\count\items - 1 )
+                                       *this\FocusedLine( )\ColorState( ) = #__s_0
+                                       *this\FocusedLine( )             = SelectElement( *this\__lines( ), *this\FocusedLine( )\index + 1 )
+                                       *this\FocusedLine( )\ColorState( ) = #__s_1
+                                       
+                                       If *this\edit_caret_0( ) > *this\FocusedLine( )\text\len
+                                          *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                       Else
+                                          *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\edit_caret_0( )
+                                       EndIf
+                                    Else
+                                       *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                    EndIf
+                                 EndIf
+                                 
+                                 If keyboard( )\key[1] & #PB_Canvas_Shift = #False
+                                    edit_sel_reset_( *this )
+                                    
+                                    If *this\PressedLine( ) <> *this\FocusedLine( )
+                                       If *this\PressedLine( ) And
+                                          *this\PressedLine( )\press
+                                          *this\PressedLine( )\press = #False
+                                       EndIf
+                                       *this\PressedLine( )       = *this\FocusedLine( )
+                                       *this\PressedLine( )\press = #True
+                                    EndIf
+                                    
+                                    *this\edit_caret_2( ) = *this\edit_caret_1( )
+                                 EndIf
+                                 
+                                 edit_sel_string_( *this, *this\FocusedLine( ) )
+                                 edit_sel_text_( *this, *this\FocusedLine( ) )
+                              EndIf
+                              
+                           Case #PB_Shortcut_Left     ; Ok
+                              If *this\FocusedLine( ) And *this\edit_caret_1( ) > 0
+                                 If *this\edit_caret_1( ) > *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                    *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                 EndIf
+                                 
+                                 If *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos
+                                    If *this\FocusedLine( )\index > 0
+                                       *this\FocusedLine( )\ColorState( ) = #__s_0
+                                       *this\FocusedLine( )             = SelectElement( *this\__lines( ), *this\FocusedLine( )\index - 1 )
+                                       *this\FocusedLine( )\ColorState( ) = #__s_1
+                                    EndIf
+                                 EndIf
+                                 
+                                 If keyboard( )\key[1] & #PB_Canvas_Alt
+                                    *this\edit_caret_1( ) = edit_sel_start_word( *this, *this\edit_caret_0( ) - 1, *this\FocusedLine( ) )
+                                 Else
+                                    *this\edit_caret_1( ) - 1
+                                 EndIf
+                                 
+                                 If keyboard( )\key[1] & #PB_Canvas_Shift = #False
+                                    edit_sel_reset_( *this )
+                                    
+                                    *this\edit_caret_2( ) = *this\edit_caret_1( )
+                                 EndIf
+                                 
+                                 *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
+                                 
+                                 edit_sel_string_( *this, *this\FocusedLine( ) )
+                                 edit_sel_text_( *this, *this\FocusedLine( ) )
+                              EndIf
+                              
+                           Case #PB_Shortcut_Right    ; Ok
+                              If *this\FocusedLine( ) And *this\edit_caret_1( ) < *this\text\len
+                                 If *this\edit_caret_1( ) > *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                    *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                 EndIf
+                                 
+                                 If *this\edit_caret_1( ) = *this\FocusedLine( )\text\pos + *this\FocusedLine( )\text\len
+                                    If *this\FocusedLine( )\index < *this\count\items - 1
+                                       
+                                       If keyboard( )\key[1] & #PB_Canvas_Shift
+                                          If *this\FocusedLine( ) = *this\PressedLine( )
+                                             ;Debug " le bottom  set - Pressed  " +" "+ *this\FocusedLine( )\text\string
+                                             edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_last )
+                                             edit_sel_text_( *this, *this\FocusedLine( ))
+                                          ElseIf *this\FocusedLine( )\index < *this\PressedLine( )\index
+                                             ;Debug "  ^le top remove - " +" "+ *this\FocusedLine( )\text\string
+                                             edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_remove )
+                                             edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\FocusedLine( )\index + 1))
+                                          Else
+                                             ;Debug " le bottom  set - " +" "+ *this\FocusedLine( )\text\string
+                                             edit_sel_string_( *this, *this\FocusedLine( ), #__sel_to_set )
+                                             edit_sel_text_( *this, *this\FocusedLine( ))
+                                          EndIf
+                                       EndIf
+                                       
+                                       *this\FocusedLine( )\ColorState( ) = #__s_0
+                                       *this\FocusedLine( )             = SelectElement( *this\__lines( ), *this\FocusedLine( )\index + 1 )
+                                       *this\FocusedLine( )\ColorState( ) = #__s_1
+                                    EndIf
+                                 EndIf
+                                 
+                                 If keyboard( )\key[1] & #PB_Canvas_Alt
+                                    *this\edit_caret_1( ) = edit_sel_stop_word( *this, *this\edit_caret_0( ) + 1, *this\FocusedLine( ) )
+                                 Else
+                                    *this\edit_caret_1( ) + 1
+                                 EndIf
+                                 
+                                 If keyboard( )\key[1] & #PB_Canvas_Shift = #False
+                                    edit_sel_reset_( *this )
+                                    
+                                    *this\edit_caret_2( ) = *this\edit_caret_1( )
+                                 EndIf
+                                 
+                                 *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\FocusedLine( )\text\pos
+                                 
+                                 edit_sel_string_( *this, *this\FocusedLine( ) )
+                                 edit_sel_text_( *this, *this\FocusedLine( ) )
+                              EndIf
+                              
+                           Case #PB_Shortcut_Back
+                              If Not *this\notify
+                                 Repaint = edit_key_backup_( *this )
+                              EndIf
+                              
+                           Case #PB_Shortcut_Delete
+                              If Not *this\notify
+                                 Repaint = edit_key_delete_( *this )
+                              EndIf
+                              
+                           Case #PB_Shortcut_Return
+                              If Not *this\notify
+                                 Repaint = edit_key_return_( *this )
+                              EndIf
+                              
+                              
+                           Case #PB_Shortcut_A        ; Ok
+                              If Keyboard( )\key[1] & #PB_Canvas_Control
+                                 If *this\text\edit[2]\len <> *this\text\len
+                                    
+                                    ; select first and last items
+                                    *this\PressedLineIndex( ) = *this\count\items - 1
+                                    *this\FocusedLine( )      = SelectElement( *this\__lines( ), 0 )
+                                    
+                                    edit_sel_text_( *this, #PB_All )
+                                    
+                                    Repaint = 1
+                                 EndIf
+                              EndIf
+                              
+                           Case #PB_Shortcut_C, #PB_Shortcut_X
+                              If Keyboard( )\key[1] & #PB_Canvas_Control
+                                 If *this\text\edit[2]\len
+                                    SetClipboardText( *this\text\edit[2]\string )
+                                    
+                                    If Keyboard( )\key = #PB_Shortcut_X
+                                       edit_ClearItems( *this )
+                                    EndIf
+                                 EndIf
+                              EndIf
+                              
+                           Case #PB_Shortcut_V
+                              ; edit_key_v_
+                              If Keyboard( )\key[1] & #PB_Canvas_Control
+                                 If *this\text\editable
+                                    Protected Text.s = GetClipboardText( )
+                                    
+                                    If Not *this\text\multiLine
+                                       Text = ReplaceString( Text, #LFCR$, #LF$ )
+                                       Text = ReplaceString( Text, #CRLF$, #LF$ )
+                                       Text = ReplaceString( Text, #CR$, #LF$ )
+                                       Text = RemoveString( Text, #LF$ )
+                                    EndIf
+                                    
+                                    edit_insert_text( *this, Text )
+                                 EndIf
+                              EndIf
+                              
+                        EndSelect
+                        
+                        Select Keyboard( )\key
+                           Case #PB_Shortcut_Home,
+                                #PB_Shortcut_End,
+                                #PB_Shortcut_PageUp,
+                                #PB_Shortcut_PageDown,
+                                #PB_Shortcut_Up,
+                                #PB_Shortcut_Down,
+                                #PB_Shortcut_Left,
+                                #PB_Shortcut_Right,
+                                #PB_Shortcut_Delete,
+                                #PB_Shortcut_Return ;, #PB_Shortcut_back
+                              
+                              If Not Repaint
+                                 *this\notify = - 1
+                                 ProcedureReturn - 1
+                              EndIf
+                              
+                           Case #PB_Shortcut_A,
+                                #PB_Shortcut_C,
+                                #PB_Shortcut_X,
+                                #PB_Shortcut_V
+                              
+                        EndSelect
+                        
+                  EndSelect
+               EndWith
             EndIf
          EndIf
          
@@ -21892,9 +21786,6 @@ EndIf
                   
                Case #__type_Tree, #__type_ListView, #__type_ListIcon
                   Tree_events( *this, eventtype, mouse( )\x, mouse( )\y )
-                  
-               Case #__type_Editor, #__type_String
-                  Editor_events( *this, eventtype, mouse( )\x, mouse( )\y )
                   
                Case #__type_TabBar, #__type_ToolBar, #__type_Menu,
                     #__type_ScrollBar,
@@ -23722,7 +23613,6 @@ EndIf
             ;\\ send posted events
             If ListSize( __events( ) )
                ForEach __events( )
-                  ;If __events( )\widget\root = root Or root = #PB_All
                   *root    = __events( )\widget\root
                   __widget = __events( )\widget
                   __type   = __events( )\type
@@ -24868,8 +24758,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5365
-; FirstLine = 4658
-; Folding = -------------------------------------------00zv-4e0--w---------------------------------------------------------v----0-++-----------------fv--0----------------------------4-----4------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----f-2-------------------------------------------------------9v--f-------+--------f4D+--4a-----8-0-+---------------------------------------------
+; CursorPosition = 568
+; FirstLine = 548
+; Folding = -----------------------------------------HA--98-tXn-PA932kc-xD-f--tZ-----7-+-----40-f4-------------fAud+-84-4-8----f--v------------------48-f-----------------------------0-----0-----------------------------------------------------------------f--------------x+-------8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------+r----------------e-----t--0-------------------------------------f+4---------f---------v8B---bt-----0-+f----------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
