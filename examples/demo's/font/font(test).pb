@@ -28,7 +28,7 @@
    Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
    *w = Tree( 10, 10, 424 - 20, 352 - 20) ; , #__flag_autosize )
    For i = 1 To 100;0000
-      If ((i -5) & 2) 
+      If (i & 2) 
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
          ;SetItemFont(*w, i, 6)
       Else
@@ -37,7 +37,7 @@
    Next 
    i=0
    For i = 1 To 100;0000
-      If ((i -5) & 2) 
+      If (i & 2) 
          SetItemFont(*w, i, 6)
          ;Debug i
       EndIf
@@ -113,7 +113,8 @@
    WaitClose( )
    
 CompilerEndIf
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 39
+; FirstLine = 24
 ; Folding = --
 ; EnableXP

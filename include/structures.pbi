@@ -710,7 +710,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *gadgetID                ; canvas handle
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
-      EndStructure
+      *fontID                       ; current drawing fontID
+         EndStructure
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
@@ -766,7 +767,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 733
-; FirstLine = 709
+; CursorPosition = 713
+; FirstLine = 706
 ; Folding = ---------0
 ; EnableXP
