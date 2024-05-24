@@ -658,22 +658,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro StartReDraw( _root_ )
-        Bool(widget::__gui\draw <> _root_)
+        Bool(widget::__gui\drawingroot <> _root_)
         StopReDraw( )
-        StartDrawing( CanvasOutput( _root_\canvas\gadget ))
-        widget::__gui\draw = _root_
+        If Not _root_\drawmode 
+          _root_\drawmode | 1<<2
+        EndIf
+        If _root_\drawmode & 1<<1
+          StartVectorDrawing( CanvasVectorOutput( _root_\canvas\gadget ))
+        EndIf
+        If _root_\drawmode & 1<<2
+          StartDrawing( CanvasOutput( _root_\canvas\gadget ))
+        EndIf
+        widget::__gui\drawingroot = _root_
        EndMacro
       Macro StopReDraw( )
-         If widget::__gui\draw 
-            widget::__gui\draw = 0
-            StopDrawing( )
+         If widget::__gui\drawingroot 
+           If widget::__gui\drawingroot\drawmode & 1<<2
+             StopDrawing( )
+           EndIf
+           If widget::__gui\drawingroot\drawmode & 1<<1
+             StopVectorDrawing( )  
+           EndIf
+            widget::__gui\drawingroot = 0
          EndIf
       EndMacro
       
       Macro ReDrawing( _this_ )
-        Bool(widget::__gui\draw <> _this_\root)
+        Bool(widget::__gui\drawingroot <> _this_\root)
           Debug "reee"
-          ;If Not __gui\draw
+          ;If Not __gui\drawingroot
            StopReDraw( )
            StartReDraw( _this_\root )
           ;EndIf
@@ -3472,6 +3485,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             a_size( *this\anchors\id,
                     *this\anchors\size, 
                     *this\anchors\mode )
+            
             ;
             a_move( *this,
                     *this\anchors\id,
@@ -3481,7 +3495,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     *this\screen_height( ) )
             ;
             a_enter( *this, - 1 )
-            ;
+          ;
             ProcedureReturn *this
          EndIf
       EndProcedure
@@ -18753,7 +18767,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not *this\hide
                ;Debug "DRAW( "+*this\class +" "+ *this\enter
             
-               ;\\ init drawing font
+               If *this\root\drawmode & 1<<2
+              ;\\ init drawing font
                draw_font_( *this )
                ;
                If *this\resize\clip <> 0
@@ -18951,7 +18966,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      draw_box_( *this\draw_x( ), *this\draw_y( ), *this\draw_width( ), *this\draw_height( ), $ff000000 )
                   EndIf
                EndIf
-            EndIf
+             EndIf
+             
+             
+             If *this\root\drawmode & 1<<1 And Not *this\root\drawmode & 1<<2
+               Send( *this, #__event_Draw )
+             EndIf
+           EndIf
             
             
             If test_scrollbars_draw And Not is_root_(*this)
@@ -18993,12 +19014,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure ReDraw( *root._s_ROOT = 0 )
          If Not *root
-            *root = __gui\draw\root
+            *root = __gui\drawingroot
          EndIf
          
 ;          ClearDebugOutput( )
 ;          ;\\
- If __gui\draw
+ If *root
             If __gui\grabintersectimage > 0
                DrawAlphaImage( ImageID( __gui\grabintersectimage ), 0,0)
                ForEach __gui\intersect( )
@@ -19007,8 +19028,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If Not ( a_transform( ) And a_transform( )\grab ) And Not __gui\grabintersectimage
-               ;\\
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              If *root\drawmode & 1<<1
+                VectorSourceColor($FFF0F0F0)
+                FillVectorOutput( )
+              EndIf
+              ;\\
+              If *root\drawmode & 1<<2
+                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   ; good transparent canvas
                   FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
                   ;             CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -19021,7 +19047,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
                CompilerEndIf
                ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
-               
+               EndIf
                ;\\
                Draw( *root )
                
@@ -19198,7 +19224,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\ draw clip out transform widgets frame
-                  UnclipOutput( )
+                  If *root\drawmode & 1<<2
+              UnclipOutput( )
                   drawing_mode_alpha_( #PB_2DDrawing_Outlined )
                   If StartEnumerate( *root )
                      If Not __widgets( )\parent\hide And
@@ -19210,12 +19237,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      StopEnumerate( )
                   EndIf
-                  ;
+                EndIf
+                ;
                EndIf
             EndIf
             ;
             ;\\ draw anchors (movable & sizable)
-            If a_transform( ) 
+            If *root\drawmode & 1<<2
+              If a_transform( ) 
                ;\\
                If a_focused( ) And
                   a_focused( )\hide = 0 And
@@ -19265,7 +19294,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            ;
+          EndIf
+          ;
             ;\\ draw current-popup-widget
             If Popup( ) = *root
                If Popup( )\widget
@@ -19276,7 +19306,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ TEMP
-            If test_buttons_draw
+            If *root\drawmode & 1<<2
+              If test_buttons_draw
                If EnteredButton( ) And
                   a_entered( ) And
                   a_entered( )\bar And
@@ -19296,7 +19327,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
+          EndIf
+          
             If __gui\grabintersectimage < 0
                __gui\grabintersectimage = GrabDrawingImage( #PB_Any, 0,0, OutputWidth( ), OutputHeight( ) )
             EndIf
@@ -22036,8 +22068,7 @@ EndIf
 ; ; ; ;                      Next
 ; ;                   EndIf
 ; ;                   ;StartVectorDrawing( CanvasVectorOutput( Root( )\canvas\gadget ))
-                  
-                  If Not __gui\draw
+                  If Not __gui\drawingroot
                     StartReDraw( Root( ) )
                   EndIf
                   ReDraw( )
@@ -22953,6 +22984,7 @@ EndIf
             __roots( ) = AllocateStructure( _s_root )
             Root( )    = __roots( )
             *root      = __roots( )
+            
             
             ;
             *root\main      = 1
@@ -24741,9 +24773,7 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 484
-; FirstLine = 408
-; Folding = -----9-----------------------------------DG--98-tXn-PA932kc-xn----06-----7-------40-f--------------fo-9-4v-v-4-----+-f------------------v4--+----------------------------------8--------------------------------------------------------------------------------j0---------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------0------+r----------------e-----t--0---------------------------------------4---------f---------v8B---bt-----0-+f----------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -----9-----------------------------------DG--98-tXn-PA932kc-x4----06-----8-------40-f--------------fo-9-4v-v-4-----+-f------------------v4--+----------------------------------8--------------------------------------------------------------------------------j0---------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------6C7eX-44------+b----------------0+----b--8---------------------------------------v----------+--------f4D+--4a-----8-0-+---------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

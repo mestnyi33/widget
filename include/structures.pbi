@@ -716,10 +716,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
-         repaint.b
-         *widget._s_WIDGET
-         canvas._s_canvas
-         List *children._s_WIDGET( ) ; widget( )\
+        drawmode.b
+        repaint.b
+        canvas._s_canvas
+        *widget._s_WIDGET
+        List *children._s_WIDGET( ) ; widget( )\
       EndStructure
       
       ;--     STICKY
@@ -733,9 +734,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     STRUCT
       Structure _s_STRUCT
-         *draw._s_WIDGET
          repaint.b
-         drawing.b                      ;
          
          *drawingIMG
          
@@ -743,7 +742,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *widget._s_WIDGET             ; enumerate widget
          *root._s_ROOT                 ; enumerate root
-         
+         *drawingroot._s_ROOT
+        
          *popup._s_WIDGET              
          
          mouse._s_mouse                ; mouse( )\
@@ -776,8 +776,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 10
-; FirstLine = 1
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --6g-uf0--
 ; EnableXP
