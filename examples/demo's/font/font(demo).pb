@@ -228,7 +228,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   ; set auto font size
   Define iw = 2 + (*b\bs+*b\text\x)*4 
   
-  If StartReDraw( Root( ) )
+  If StartDrawingRoot( Root( ) )
      ReDraw()
      Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
      Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
@@ -244,7 +244,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
      ReDraw()
      Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
      Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
-     StopReDraw( )
+     StopDrawingRoot( )
   EndIf
   
   CloseList()
@@ -273,7 +273,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 243
-; FirstLine = 221
+; CursorPosition = 209
+; FirstLine = 194
 ; Folding = ----
 ; EnableXP

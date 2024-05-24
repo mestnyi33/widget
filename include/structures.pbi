@@ -300,22 +300,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
          *cursor [2]                ; current visible cursor
-         press.b                 ; mouse buttons state
-         change.b                ; mouse moved state
-         click.a                 ; mouse clicked count
-         buttons.a               ; mouse clicked button
+         press.b                    ; mouse buttons state
+         change.b                   ; mouse moved state
+         click.a                    ; mouse clicked count
+         buttons.a                  ; mouse clicked button
          dragstart.b
          interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
          
          steps.a
          
          *drag._s_DRAG           ;
-         ;
+                                 ;
          wheel._s_POINT          ;
          delta._s_POINT          ;
          anchors._s_TRANSFORM    ;
          selector._s_SELECTOR    ; a_selector( )
-         ;
+                                 ;
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
          
@@ -366,7 +366,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ROWS
       Structure _s_ROWS Extends _s_TABS
          checkbox._s_BOX ; \box[1]\ -> \checkbox\
-         buttonbox._s_BOX ; \box[0]\ -> \button\ -> \collapsebox\
+         buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
          
          
          *first._s_rows           ;TEMP first elemnt in the list
@@ -467,7 +467,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          y.l;[5]
          x.l;[5]
          height.l;[5]
-         width.l;[5]
+         width.l ;[5]
          
          button._s_buttons[5]
          color._s_color
@@ -579,25 +579,25 @@ CompilerIf Not Defined(Structures, #PB_Module)
          nochildren.b
       EndStructure
       
-;       Structure SIZEINFO Extends _s_SIZE
-;          change.b
-;          start.b
-;          stop.b
-;          send.b
-;          ;children.b
-;       EndStructure
-;       Structure MOVEINFO Extends _s_POINT
-;          change.b
-;          start.b
-;          stop.b
-;          send.b
-;          ;children.b
-;       EndStructure
+      ;       Structure SIZEINFO Extends _s_SIZE
+      ;          change.b
+      ;          start.b
+      ;          stop.b
+      ;          send.b
+      ;          ;children.b
+      ;       EndStructure
+      ;       Structure MOVEINFO Extends _s_POINT
+      ;          change.b
+      ;          start.b
+      ;          stop.b
+      ;          send.b
+      ;          ;children.b
+      ;       EndStructure
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-;          size.SIZEINFO                 
-;          move.MOVEINFO                 
+         ;          size.SIZEINFO                 
+         ;          move.MOVEINFO                 
          resize.RESIZEINFO                 
          
          _id.i      ; - widget index
@@ -615,22 +615,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
          create.b
          change.b
          hidden.b                 ; hide state
-         ; transporent.b
-         ; dragged.b              ;
+                                  ; transporent.b
+                                  ; dragged.b              ;
          autosize.b
          container.b              ; is container
-         ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
-         ; container =- 1         ; if the not has children ( Splitter( ); Frame( ))
-         ;
+                                  ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
+                                  ; container =- 1         ; if the not has children ( Splitter( ); Frame( ))
+                                  ;
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
          countitems.l             ; count items
-         ;                        ;*Draw.DrawFunc          ; Function to Draw
+                                  ;                        ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
          ;
          fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
          bs.a                     ; border size
-         ;                        ;
+                                  ;                        ;
          tt._s_tt                 ; notification = уведомление
          *drop._s_DROP
          *align._s_ALIGN
@@ -640,17 +640,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *bar._s_BAR
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          tab._s_TAB               ; 
-         ;
+                                  ;
          *box._s_BOX              ; checkbox; optionbox
          *combobox._s_BUTTONS     ; combobox
                                   ;
          *group._s_WIDGET         ; = Option( ) group widget
          *string._s_WIDGET        ; = SpinBar( ) string box
-            
+         
          *parentmenu._s_WIDGET
          *childmenu._s_WIDGET       ; = ComboBox( ) PopupMenuBar( ) List view box
-          *popup._s_WIDGET         ; = ComboBox( ) list view box
-         ;*toolbar._s_WIDGET          ; 
+         *popup._s_WIDGET           ; = ComboBox( ) list view box
+                                    ;*toolbar._s_WIDGET          ; 
          
          ;                           
          BarWidth.w               ; bar v size
@@ -706,9 +706,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CANVAS
       Structure _s_CANVAS
-         drawing.q                 ;
-         repaint.b
-         *fontID                  ; current drawing fontID
+         post.b
          *gadgetID                ; canvas handle
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
@@ -716,11 +714,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
-        drawmode.b
-        repaint.b
-        canvas._s_canvas
-        *widget._s_WIDGET
-        List *children._s_WIDGET( ) ; widget( )\
+         repaint.b
+         drawmode.b
+         canvas._s_canvas
+         *widget._s_WIDGET
       EndStructure
       
       ;--     STICKY
@@ -734,27 +731,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     STRUCT
       Structure _s_STRUCT
-         repaint.b
-         
-         *drawingIMG
-         
-         *opened._s_WIDGET             ; last-list opened element
-         
-         *widget._s_WIDGET             ; enumerate widget
+         *fontID                       ; current drawing fontID
          *root._s_ROOT                 ; enumerate root
          *drawingroot._s_ROOT
-        
+         *opened._s_WIDGET             ; last opened-list element
          *popup._s_WIDGET              
+         *widget._s_WIDGET             ; enumerate widget
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
-         event._s_EVENTDATA            ; widgetEvent( )\ 
          
-         List *children._s_WIDGET( )  ; post events list
-         List *events._s_EVENTDATA( )  ; post events list
+         List *events._s_EVENTDATA( ) ; __events( )
+         List *children._s_WIDGET( )  ; __widgets( )
          Map *roots._s_ROOT( )   
          
+         ;*drawingIMG
          List *intersect._s_WIDGET( )
          grabintersectimage.i
          
@@ -762,11 +754,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          quit.b ; quit from main loop
          loop.b
          repost.b
-         
-         ;;*main._s_ROOT 
+         event._s_EVENTDATA            ; widgetEvent( )\ 
       EndStructure
-      
-      ;Global *event._s_events = Allocatestructure(_s_events)
       ;}
       
       ;Debug SizeOf(_s_WIDGET) ; 5952 - cursor 5924 - color 3924
@@ -776,6 +765,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --6g-uf0--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 733
+; FirstLine = 709
+; Folding = ---------0
 ; EnableXP

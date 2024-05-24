@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global *this.allocate( widget )
    Global NewList Images.IMAGES( )
-   Declare Canvas_Draw( canvas.i, List Images.IMAGES( ) )
+   Declare Canvas_Draw( )
    
    Macro Area_Draw( _this_, _objects_ )
       ;\\
@@ -60,12 +60,13 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       ;
       Resize( _parent_, _x_, _y_, _width_, _height_ )
+      PostRepaint( _parent_\root )
    EndMacro                                                  
    
    Macro Area_Bind( _parent_, _callback_ )
       If _callback_
          Bind( _parent_, _callback_, #__event_ScrollChange )
-         Bind( _parent_, _callback_, #__event_Draw )
+         Bind( _parent_\root, _callback_, #__event_Draw )
       EndIf
    EndMacro                                                  
    
@@ -74,10 +75,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEventType( )
          Case #__event_Draw
-            ;             StartVectorDrawing( CanvasVectorOutput( EventWidget( )\root\canvas\gadget ))
-            ;             TranslateCoordinates(EventWidget( )\x[#__c_frame], EventWidget( )\y[#__c_frame])
-            ;             Button_DrawCallback(EventWidget( ), EventWidget( )\width[#__c_frame], EventWidget( )\height[#__c_frame], EventWidget( )\data)
-            ;             StopVectorDrawing( )
+            If is_root_( EventWidget( ) )
+               Canvas_Draw( )
+            EndIf
             
          Case #__event_ScrollChange
             change = WidgetEventData( )
@@ -100,39 +100,32 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;-
-   Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
+   Procedure Canvas_Draw( )
       Protected round
+      ;\\
+      DrawingMode( #PB_2DDrawing_Default )
+      Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
       
-      If StartReDraw( Root( ) )
-         ReDraw( )
-         
-         ;\\
-         DrawingMode( #PB_2DDrawing_Default )
-         Box( 0, 0, OutputWidth( ), OutputHeight( ), RGB( 255,255,255 ) )
-         
-         ;\\
-         If GetGadgetState(5)
-            UnclipOutput()
-            DrawingMode( #PB_2DDrawing_Outlined )
-            ForEach Images( )
-               round = Bool(Images( )\alphatest And ImageDepth( Images( )\img ) > 31) * 50
-               RoundBox( Images( )\x, Images( )\y, Images( )\width, Images( )\height,round, round, RGB( 255,255,0 )) ; draw all images with z-order
-            Next
-            ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len )
-            ;ClipOutput(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ) )
-         EndIf
-         
-         ;\\
-         DrawingMode( #PB_2DDrawing_AlphaBlend )
+      ;\\
+      If GetGadgetState(5)
+         UnclipOutput()
+         DrawingMode( #PB_2DDrawing_Outlined )
          ForEach Images( )
-            DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
+            round = Bool(Images( )\alphatest And ImageDepth( Images( )\img ) > 31) * 50
+            RoundBox( Images( )\x, Images( )\y, Images( )\width, Images( )\height,round, round, RGB( 255,255,0 )) ; draw all images with z-order
          Next
-         
-         ;\\
-         Area_Draw( *this, Images( ) )
-         
-         StopReDraw( )
+         ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len )
+         ;ClipOutput(*this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ) )
       EndIf
+      
+      ;\\
+      DrawingMode( #PB_2DDrawing_AlphaBlend )
+      ForEach Images( )
+         DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
+      Next
+      
+      ;\\
+      Area_Draw( *this, Images( ) )
    EndProcedure
    
    Procedure.i Canvas_HitTest( List Images.IMAGES( ), mouse_x, mouse_y )
@@ -274,7 +267,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
       If Repaint
-         Canvas_Draw( MyCanvas, Images( ) ) 
+         If StartDrawingRoot( *this\root )
+            ;ReDraw( )
+            Canvas_Draw( ) 
+            StopDrawingRoot( )
+         EndIf
       EndIf
    EndProcedure
    
@@ -353,64 +350,59 @@ CompilerIf #PB_Compiler_IsMainFile
    Define hButton = GetAttribute(*this\Scroll\h, #__bar_buttonsize)
    ;Debug *this\Scroll\v\width
    
+   ;    Procedure Repaint( *callback )
+   ;       *callback
+   ;    EndProcedure
+   ;    
+   ;    Repaint( Canvas_Draw( )  )
+   
    Repeat
       Event = WaitWindowEvent( )
       
-      If event = #PB_Event_Repaint
-         ;          Select EventType( )
-         ;             Case #PB_EventType_Repaint
-         If EventData( )
-            Canvas_Draw( MyCanvas, Images( ) ) 
-         EndIf
+      If Event = #PB_Event_Gadget
          
-         ;          EndSelect
+         Select EventGadget()
+            Case 2
+               If GetGadgetState(2)
+                  SetGadgetText(2, "vertical bar")
+                  SetGadgetState(3, GetAttribute(*this\scroll\v, #__bar_invert))
+               Else
+                  SetGadgetText(2, "horizontal bar")
+                  SetGadgetState(3, GetAttribute(*this\scroll\h, #__bar_invert))
+               EndIf
+               PostRepaint( *this\root )
+               
+            Case 3
+               If GetGadgetState(2)
+                  SetAttribute(*this\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
+                  SetWindowTitle(0, Str(GetState(*this\scroll\v)))
+               Else
+                  SetAttribute(*this\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
+                  SetWindowTitle(0, Str(GetState(*this\scroll\h)))
+               EndIf
+               PostRepaint( *this\root )
+               
+            Case 4
+               If GetGadgetState(2)
+                  SetAttribute(*this\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
+                  SetWindowTitle(0, Str(GetState(*this\scroll\v)))
+               Else
+                  SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
+                  SetWindowTitle(0, Str(GetState(*this\scroll\h)))
+               EndIf
+               PostRepaint( *this\root )
+               
+            Case 5
+               PostRepaint( *this\root )
+              
+         EndSelect
+         
       EndIf
-      
-      Select Event
-         Case #PB_Event_Gadget
-            Select EventGadget()
-               Case 2
-                  If GetGadgetState(2)
-                     SetGadgetText(2, "vertical bar")
-                     SetGadgetState(3, GetAttribute(*this\scroll\v, #__bar_invert))
-                  Else
-                     SetGadgetText(2, "horizontal bar")
-                     SetGadgetState(3, GetAttribute(*this\scroll\h, #__bar_invert))
-                  EndIf
-                  
-               Case 3
-                  If GetGadgetState(2)
-                     SetAttribute(*this\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
-                     SetWindowTitle(0, Str(GetState(*this\scroll\v)))
-                  Else
-                     SetAttribute(*this\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
-                     SetWindowTitle(0, Str(GetState(*this\scroll\h)))
-                  EndIf
-                  ; Canvas_Draw(MyCanvas, Images( ))
-                  PostRepaint( Root( ) )
-                  
-               Case 4
-                  If GetGadgetState(2)
-                     SetAttribute(*this\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
-                     SetWindowTitle(0, Str(GetState(*this\scroll\v)))
-                  Else
-                     SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
-                     SetWindowTitle(0, Str(GetState(*this\scroll\h)))
-                  EndIf
-                  ; Canvas_Draw(MyCanvas, Images( ))
-                  PostRepaint( Root( ) )
-                  
-               Case 5
-                  ; Canvas_Draw(MyCanvas, Images( ))
-                  PostRepaint( Root( ) )
-                  
-            EndSelect
-      EndSelect
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 67
-; Folding = ---------
+; CursorPosition = 63
+; FirstLine = 22
+; Folding = --+r----
 ; EnableXP

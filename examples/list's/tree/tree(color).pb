@@ -28,7 +28,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetItemColor(0, 7, #PB_Gadget_BackColor, $FFFF00)
     
     SetItemFont(*w, 3, font1)
-    SetItemFont(*w, 7, font2)
+    SetItemFont(*w, 4, font1)
+    ;SetItemFont(*w, 7, font2)
     
     ;     ; index-3 item default text-color 
     ;     SetItemColor(*w, 3, #__Color_Front, $FF00FF00)
@@ -61,5 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 30
+; FirstLine = 10
 ; Folding = -
 ; EnableXP

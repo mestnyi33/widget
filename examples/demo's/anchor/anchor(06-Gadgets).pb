@@ -36,10 +36,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       FillVectorOutput( )
    ;    EndProcedure
    
-   Declare DrawCallback( *ew )
-   
    ;-\\
-   Procedure Button_DrawCallback(*Object._s_widget, Width.d, Height.d, DataValue.i)
+   Procedure Button_DrawCallback(*Object._s_widget, x.d,y.d,width.d,height.d, DataValue.i)
       Protected Text.s = GetText(*Object)
       Protected Hue = DataValue
       
@@ -50,6 +48,9 @@ CompilerIf #PB_Compiler_IsMainFile
          enter = 0
          press = 0
       EndIf
+      
+      SaveVectorState()
+      TranslateCoordinates( x,y )
       
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
@@ -122,6 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
          DrawVectorParagraph(Text, Width, Height, #PB_VectorParagraph_Center)
       EndIf
       
+      ;
+      RestoreVectorState()
    EndProcedure
    
    Procedure Button_Events( )
@@ -134,9 +137,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__event_Draw
-               DrawCallback( *ew )
-;                TranslateCoordinates(*ew\x[#__c_frame], *ew\y[#__c_frame] )
-;                Button_DrawCallback(*ew, *ew\width[#__c_frame], *ew\height[#__c_frame], *ew\data)
+            Button_DrawCallback(*ew, *ew\x[#__c_frame], *ew\y[#__c_frame], *ew\width[#__c_frame], *ew\height[#__c_frame], *ew\data)
                
            EndSelect
    EndProcedure
@@ -161,10 +162,10 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    ;-\\ 
    ;
-   Procedure CheckBox_DrawCallback(*Object._s_widget, Width.d, Height.d, DataValue.i)
+   Procedure CheckBox_DrawCallback(*Object._s_widget, x.d,y.d,width.d,height.d, DataValue.i)
       Protected Text.s = GetText(*Object)
       Protected State.i = GetState(*Object)
-      Protected Y.i = Int((Height-19)/2)
+      Protected yi.i = Int((Height-19)/2)
       Protected Hue = 205
       
       Protected enter = Bool(*object\enter > 0)
@@ -175,14 +176,17 @@ CompilerIf #PB_Compiler_IsMainFile
          press = 0
       EndIf
       
+      SaveVectorState()
+      TranslateCoordinates( x,y )
+      
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
       VectorSourceColor($FFF0F0F0)
       FillPath( )
       
       ; Box background
-      AddPathBox(0, Y, 19, 19)
-      VectorSourceLinearGradient(0.0, Y, 0.0, Y+19)
+      AddPathBox(0, yi, 19, 19)
+      VectorSourceLinearGradient(0.0, yi, 0.0, yi+19)
       If press
          VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
@@ -197,38 +201,38 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; Box frame
       If *object\disable
-         AddPathBox(0.5, Y+0.5, 18, 18)
+         AddPathBox(0.5, yi+0.5, 18, 18)
          VectorSourceColor(HSVA(0, 0, $D0))
          StrokePath(1)
-         AddPathBox(1.5, Y+1.5, 16, 16)
+         AddPathBox(1.5, yi+1.5, 16, 16)
          VectorSourceColor(HSVA(0, 0, $F0))
          StrokePath(1)
       ElseIf press
-         AddPathBox(0.5, Y+0.5, 18, 18)
+         AddPathBox(0.5, yi+0.5, 18, 18)
          VectorSourceColor(HSVA(Hue, 100, $80))
          StrokePath(1)
-         AddPathBox(1.5, Y+1.5, 16, 16)
+         AddPathBox(1.5, yi+1.5, 16, 16)
          VectorSourceColor(HSVA(Hue, 50, $FF))
          StrokePath(1)
       ElseIf enter
-         AddPathBox(0.5, Y+0.5, 18, 18)
+         AddPathBox(0.5, yi+0.5, 18, 18)
          VectorSourceColor(HSVA(0, 0, $A0))
          StrokePath(1)
-         AddPathBox(1.5, Y+1.5, 16, 16)
+         AddPathBox(1.5, yi+1.5, 16, 16)
          VectorSourceColor(HSVA(Hue, 10, $FF))
          StrokePath(1)
       Else
-         AddPathBox(0.5, Y+0.5, 18, 18)
+         AddPathBox(0.5, yi+0.5, 18, 18)
          VectorSourceColor(HSVA(0, 0, $A0))
          StrokePath(1)
-         AddPathBox(1.5, Y+1.5, 16, 16)
+         AddPathBox(1.5, yi+1.5, 16, 16)
          VectorSourceColor(HSVA(0, 0, $FF))
          StrokePath(1)
       EndIf
       
       ; Check
       If State
-         MovePathCursor(9.5, Y+10.5+Bool(*object\press))
+         MovePathCursor(9.5, yi+10.5+Bool(*object\press))
          AddPathLine(10.5, -10.5, #PB_Path_Relative)
          AddPathLine(2.5, 2.5, #PB_Path_Relative)
          AddPathLine(-13, 13, #PB_Path_Relative)
@@ -261,6 +265,8 @@ CompilerIf #PB_Compiler_IsMainFile
          ;DrawVectorText(Text)
       EndIf
       
+      ;
+      RestoreVectorState()
    EndProcedure
    
    Procedure CheckBox_Events( )
@@ -274,9 +280,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__event_Draw
-              DrawCallback( *ew )
-;                TranslateCoordinates(*ew\x[#__c_frame], *ew\y[#__c_frame])
-;                CheckBox_DrawCallback(*ew, *ew\width[#__c_frame], *ew\height[#__c_frame], 0)
+            CheckBox_DrawCallback(*ew, *ew\x[#__c_frame], *ew\y[#__c_frame], *ew\width[#__c_frame], *ew\height[#__c_frame], 0)
               
       EndSelect
    EndProcedure
@@ -297,21 +301,6 @@ CompilerIf #PB_Compiler_IsMainFile
                                                               ;a_mode(*Object, #__a_size|#__a_position)               ; Add handles if you want to edit the buttons.
       
       ProcedureReturn *Object
-   EndProcedure
-   
-   ;-\\
-   Procedure DrawCallback( *ew._s_widget )
-     If *ew\root\drawmode & 1<<1
-       SaveVectorState()
-       TranslateCoordinates(*ew\x[#__c_frame], *ew\y[#__c_frame])
-       If *ew\class = "CheckBox"
-         CheckBox_DrawCallback(*ew, *ew\width[#__c_frame], *ew\height[#__c_frame], 0)
-       EndIf
-       If *ew\class = "Button"
-         Button_DrawCallback(*ew, *ew\width[#__c_frame], *ew\height[#__c_frame], 0)
-       EndIf
-       RestoreVectorState()
-     EndIf
    EndProcedure
    
    ; ----------------------------------------------
@@ -390,6 +379,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = 2-9f--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 127
+; FirstLine = 225
+; Folding = 0-+f-
 ; EnableXP

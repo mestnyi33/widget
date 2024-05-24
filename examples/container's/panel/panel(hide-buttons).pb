@@ -20,17 +20,20 @@ EndProcedure
 If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   *container = Panel(8, 8, 284, 184-32, #__flag_nobuttons)
   AddItem( *container, -1, "Panel 0")
+  Text( 10,10,100,20,"Page 0")
   ;
   AddItem( *container, -1, "Panel 1")
   Define h = height( *container, #__c_inner )
+  Text( 10,10,100,20,"Page 1")
   
   Button(10, h-34*2, 80, 24,"remove")
   Button(10, h-34*3, 80, 24,"add")
   Button(10, h-34*1, 80, 24,"clear")
   ;
   AddItem ( *container, -1,"Panel 2")
-  Button(10, 10, 80, 24,"Button 3")
-  Button(95, 10, 80, 24,"Button 4")
+  Text( 10,10,100,20,"Page 2")
+  Button(10, 50, 80, 24,"Button 3")
+  Button(95, 50, 80, 24,"Button 4")
   ;
   CloseList( )
   
@@ -41,6 +44,7 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9
+; CursorPosition = 35
+; FirstLine = 4
 ; Folding = -
 ; EnableXP
