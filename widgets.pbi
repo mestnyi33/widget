@@ -935,23 +935,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro draw_font_( _this_ )
          ; drawing font
-         If _this_\text\fontID  
+        If _this_\root And _this_\root\text\fontID  
+          If CurrentFontID( _this_ ) <> _this_\root\text\fontID
+            CurrentFontID( _this_ ) = _this_\root\text\fontID
+            
+            ;; Debug "draw current font - " + #PB_Compiler_Procedure  + " " +  _this_ + " fontID - "+ _this_\text\fontID
+            DrawingFont( _this_\root\text\fontID )
+            _this_\TextChange( ) = #True
+          EndIf
+        EndIf
+        If _this_\text\fontID  
             If CurrentFontID( _this_ ) <> _this_\text\fontID
                CurrentFontID( _this_ ) = _this_\text\fontID
                
                ;; Debug "draw current font - " + #PB_Compiler_Procedure  + " " +  _this_ + " fontID - "+ _this_\text\fontID
                DrawingFont( _this_\text\fontID )
                _this_\TextChange( ) = #True
-            EndIf
-         Else
-            If _this_\root And _this_\root\text\fontID  
-               If CurrentFontID( _this_ ) <> _this_\root\text\fontID
-                  CurrentFontID( _this_ ) = _this_\root\text\fontID
-                  
-                  ;; Debug "draw current font - " + #PB_Compiler_Procedure  + " " +  _this_ + " fontID - "+ _this_\text\fontID
-                  DrawingFont( _this_\root\text\fontID )
-                  _this_\TextChange( ) = #True
-               EndIf
             EndIf
          EndIf
          
@@ -24741,9 +24740,7 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 979
-; FirstLine = 918
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---f+-------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

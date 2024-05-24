@@ -114,7 +114,8 @@ Procedure events_wbuttons()
 EndProcedure
 
 ; Shows using of several panels...
-If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322+50, 0, 322+50, 220)
+OpenWindow(0, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If Open(0, 322+50, 0, 322+50, 220)
   Define text.s, *g
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     LoadFont(5, "Arial", 18)
@@ -272,8 +273,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 209
-; FirstLine = 194
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ----
 ; EnableXP
