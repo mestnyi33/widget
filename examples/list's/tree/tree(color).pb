@@ -9,6 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
   Global *w._S_widget
   Define i
+  Define font = LoadFont(#PB_Any, "Helvetica", 15)
   Define font1 = LoadFont(#PB_Any, "Helvetica", 25, #PB_Font_Italic)
   Define font2 = LoadFont(#PB_Any, "Helvetica", 18, #PB_Font_Bold)
   
@@ -23,10 +24,18 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*w, -1, "Text_"+Str(i))     ;+Chr(10)+"Text 2")
     Next
     
+    SetGadgetFont(0, FontID(font))
+;     SetGadgetItemFont(0, 3, FontID(font1))
+;     SetGadgetItemFont(0, 4, FontID(font1))
+;     SetGadgetItemFont(0, 7, FontID(font2))
+    
     SetGadgetItemColor(0, #PB_All, #PB_Gadget_FrontColor, $0000FF)
     SetGadgetItemColor(0, 3, #PB_Gadget_BackColor, $00FFFF)
     SetGadgetItemColor(0, 7, #PB_Gadget_BackColor, $FFFF00)
     
+    
+    ;\\
+    SetFont(*w, font)
     SetItemFont(*w, 3, font1)
     SetItemFont(*w, 4, font1)
     SetItemFont(*w, 7, font2)

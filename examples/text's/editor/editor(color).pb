@@ -6,11 +6,13 @@ CompilerIf #PB_Compiler_IsMainFile
 UseLib(widget)
 Global *w._S_widget
 Define i
+Define font = LoadFont(#PB_Any, "Helvetica", 15)
 Define font1 = LoadFont(#PB_Any, "Helvetica", 25, #PB_Font_Italic)
 Define font2 = LoadFont(#PB_Any, "Helvetica", 18, #PB_Font_Bold)
 
 If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     EditorGadget(0, 10, 10, 180, 230)
+    SetGadgetFont(0, FontID(font))
     
     Open(0, 200, 10, 180, 230);, "", #__flag_borderless)
     *w = Editor(0, 0, 180, 230)
@@ -24,6 +26,7 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetGadgetItemColor(0, 3, #PB_Gadget_BackColor, $00FFFF)
     SetGadgetItemColor(0, 7, #PB_Gadget_BackColor, $FFFF00)
     
+    SetFont(*w, font)
     SetItemFont(*w, 3, font1)
     SetItemFont(*w, 7, font2)
     
@@ -57,8 +60,6 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     WaitClose( )
   EndIf
   CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 23
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP

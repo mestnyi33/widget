@@ -6987,7 +6987,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If *this\EnteredTab( )\itemindex <> #PB_Ignore
                   draw_font_( *this\EnteredTab( ), *this\text\fontID )
-                           bar_item_draw_( *this\EnteredTab( ), 0, x, y, round, [*this\EnteredTab( )\ColorState( )] )
+                  bar_item_draw_( *this\EnteredTab( ), 0, x, y, round, [*this\EnteredTab( )\ColorState( )] )
                EndIf
             EndIf
          EndIf
@@ -15342,19 +15342,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i SetFont( *this._s_WIDGET, FontID.i )
-         Protected result
-         
-         If *this\text\fontID <> FontID
+        Protected result
+        
+        If IsFont( FontID )
+          FontID = FontID( FontID )
+          
+          If *this\text\fontID <> FontID
             *this\text\fontID = FontID
-            
-            If *this\type = #__type_Editor
-               *this\TextChange( ) = 1
-               
-            EndIf
-            
             result = #True
-         EndIf
-         
+          EndIf
+        EndIf
+        
          ProcedureReturn result
       EndProcedure
       

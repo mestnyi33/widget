@@ -212,18 +212,18 @@ If Open(0, 322+50, 0, 322+50, 220)
   SetItemText(*g, 4, text+"_4 (25)")
   
   Button(10, 145, 60, 24,"remove")
-  SetFont(Button(75, 145, 100, 24,"add (18)"), FontID(5))
-  SetFont(Button(180, 145, 100, 24,"add (25)"), FontID(6))
-  SetFont(Button(285, 145, 60, 24,"clear"), FontID(#Font18R))
+  SetFont(Button(75, 145, 100, 24,"add (18)"), 5)
+  SetFont(Button(180, 145, 100, 24,"add (25)"), 6)
+  SetFont(Button(285, 145, 60, 24,"clear"), #Font18R)
   
   AddItem (GetWidget(0), -1,"Panel 2")
-  SetFont(Button(10, 15, 100, 24,"Button 2_1"), FontID(5))
+  SetFont(Button(10, 15, 100, 24,"Button 2_1"), 5)
   Button(115, 15, 100, 24,"Button 2_2")
   
   AddItem (GetWidget(0), -1,"Panel 3")
   Button(10, 15, 100, 24,"Button 3_1")
-  *b = Button(10+110, 15, 100, 24,"automatically resize button when changing font", #__Button_MultiLine)
-  SetFont(*b, FontID(5))
+  *b = Button(10+110, 15, 100, 24,"automatically resize button when changing font", #__flag_textMultiLine)
+  SetFont(*b, 5)
   
   ;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
   ; set auto font size
