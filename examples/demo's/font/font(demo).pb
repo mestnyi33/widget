@@ -36,7 +36,7 @@ If OpenWindow(#WinTemp, 0, 0, 100, 100, "", #PB_Window_Tool | #PB_Window_Invisib
   CloseWindow(#WinTemp)
 EndIf
 
-Global fs = 10
+Global fs = 15
 Global igFS18.i = (((fs * 100) / dgDpiY) + Bool(#PB_Compiler_OS=#PB_OS_MacOS)*(fs-5) - Bool(#PB_Compiler_OS=#PB_OS_Linux))
 
 LoadFont(#Font18R, "Arial Unicode MS Regular", igFS18, #PB_Font_HighQuality)
@@ -273,6 +273,8 @@ If Open(0, 322+50, 0, 322+50, 220)
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 38
+; FirstLine = 23
 ; Folding = ----
 ; EnableXP

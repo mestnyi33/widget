@@ -1,5 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
+;XIncludeFile "../../../widgets-font.pbi" 
+
    CompilerIf #PB_Compiler_IsMainFile 
    EnableExplicit
    UseLIB(widget)
@@ -29,11 +31,18 @@
    *w = Panel( 10, 10, 424 - 20, 352 - 20) ; , #__flag_autosize )
    BarPosition( *w\TabBox( ), 1, 100 )
    For i = 1 To 100;0000
-      If (i & 5)
+      If (i & 2) 
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
-         SetItemFont(*w, i, 6)
+         ;SetItemFont(*w, i, 6)
       Else
          AddItem(*w, i, "text-" + Str(i))
+      EndIf
+   Next 
+   i=0
+   For i = 1 To 100;0000
+      If (i & 2) 
+         SetItemFont(*w, i, 6)
+         ;Debug i
       EndIf
    Next
    ;\\Close( )
@@ -52,6 +61,7 @@
          AddItem(*w, i, "text-" + Str(i))
       EndIf
    Next
+   SetFont(*w, 5)
    ;\\Close( )
    
    ;\\ 
@@ -77,6 +87,7 @@
          AddItem(*w, i, "text-" + Str(i))
       EndIf
    Next
+   SetFont(*w, 5)
    ;\\Close( )
    
    
@@ -90,6 +101,7 @@
          AddItem(*w, i, "text-" + Str(i))
       EndIf
    Next
+   SetFont(*w, 6)
    ;\\Close( )
    
    Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
@@ -109,9 +121,7 @@
    WaitClose( )
    
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 33
-; FirstLine = 17
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP
