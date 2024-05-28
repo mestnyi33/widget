@@ -731,7 +731,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     STRUCT
       Structure _s_STRUCT
-         ;;Map *mapfontID( )  
+         Map *mapfontID( )  
          
          *fontID                       ; current drawing fontID
          *root._s_ROOT                 ; enumerate root
@@ -767,6 +767,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 733
+; FirstLine = 724
 ; Folding = ---------0
 ; EnableXP

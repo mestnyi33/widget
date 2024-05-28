@@ -922,9 +922,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;__gui\mapfontID( Str(_address_) ) = _font_ID_
       EndMacro
-      Macro GetCurrentFontID( _address_ )
-        __gui\fontID ;  _address_\text\fontID    
-      EndMacro
       Macro CurrentFontID( )
         __gui\fontID    
       EndMacro
@@ -7180,9 +7177,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If Not *this\hide And *this\color\_alpha
                If is_integral_( *this )
-                  ; draw_font( *this, GetCurrentFontID( *this\parent ) )
-                  If GetFontID( *this ) <> GetCurrentFontID( *this\parent )
-                     SetFontID( *this, GetCurrentFontID( *this\parent ))
+                  ; draw_font( *this , CurrentFontID( ) );, GetFontID( *this\parent ) )
+                  If GetFontID( *this ) <> CurrentFontID( )
+                     SetFontID( *this, CurrentFontID( ))
                   EndIf
                EndIf
                
@@ -10039,9 +10036,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-            If GetCurrentFontID( *rowLine )
+            If GetFontID( *rowLine )
                If RootReDrawing( *this\root )
-                  DrawingFont( GetCurrentFontID( *rowLine ) )
+                  DrawingFont( GetFontID( *rowLine ) )
                EndIf
             EndIf
          CompilerEndIf
@@ -10254,9 +10251,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *line 
             CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-               If GetCurrentFontID( *line )
+               If GetFontID( *line )
                   If RootReDrawing( *this\root )
-                     DrawingFont( GetCurrentFontID( *line ) )
+                     DrawingFont( GetFontID( *line ) )
                   EndIf
                EndIf
             CompilerEndIf
@@ -10403,9 +10400,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *rowLine = *this\FocusedLine( )
             ;\\
             CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-               If GetCurrentFontID( *rowLine )
+               If GetFontID( *rowLine )
                   If RootReDrawing( *this\root )
-                     DrawingFont( GetCurrentFontID( *rowLine ) )
+                     DrawingFont( GetFontID( *rowLine ) )
                   EndIf
                EndIf
             CompilerEndIf
@@ -10768,9 +10765,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-            If GetCurrentFontID( e_rows( ) )
+            If GetFontID( e_rows( ) )
                If RootReDrawing( *this\root )
-                  DrawingFont( GetCurrentFontID( e_rows( ) ) )
+                  DrawingFont( GetFontID( e_rows( ) ) )
                EndIf
             EndIf
          CompilerEndIf
@@ -11704,7 +11701,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\ToolTipRow( )\gadget      = CanvasGadget( #PB_Any, 0, 0, *this\ToolTipRow( )\width, *this\ToolTipRow( )\height )
                *this\ToolTipRow( )\color       = *this\__items( )\color
                *this\ToolTipRow( )\text        = *this\__items( )\text
-               SetFontID( *this\ToolTipRow( ), GetCurrentFontID( *this\__items( ) ))
+               
                *this\ToolTipRow( )\text\x      = - ( *this\inner_width( ) - ( *this\__items( )\text\x - *this\__items( )\x )) + 1
                *this\ToolTipRow( )\text\y      = ( *this\__items( )\text\y - *this\__items( )\y ) + *this\scroll\v\bar\page\pos
                
@@ -12336,7 +12333,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; properties
                If *this\flag & #__tree_property
-                  If *parent_row And Not *parent_row\sublevel And Not GetCurrentFontID( *parent_row )
+                  If *parent_row And Not *parent_row\sublevel And Not GetFontID( *parent_row )
                      *parent_row\color\back     = $FFF9F9F9
                      *parent_row\color\back[1]  = *parent_row\color\back
                      *parent_row\color\back[2]  = *parent_row\color\back
@@ -12541,7 +12538,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; properties
                If *this\flag & #__tree_property
-                  If *parent_row And Not *parent_row\sublevel And Not GetCurrentFontID( *parent_row )
+                  If *parent_row And Not *parent_row\sublevel And Not GetFontID( *parent_row )
                      *parent_row\color\back     = $FFF9F9F9
                      *parent_row\color\back[1]  = *parent_row\color\back
                      *parent_row\color\back[2]  = *parent_row\color\back
@@ -18339,7 +18336,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                    *this\__lines( )\text\String.s, *this\text\rotate, *this\color\front[state] ) ; *this\__lines( )\color\font )
                   
                   If *this\mode\Lines
-                     Protected i, count = Bool( func::GetFontSize( GetCurrentFontID( *this\__lines( ) ) ) > 13 )
+                     Protected i, count = Bool( func::GetFontSize( GetFontID( *this\__lines( ) ) ) > 13 )
                      For i = 0 To count
                         Line( x + *this\__lines( )\x + *this\__lines( )\text\x, y + *this\__lines( )\y + *this\__lines( )\text\y + *this\__lines( )\text\height - count + i - 1, *this\__lines( )\text\width, 1, *this\color\front[state] )
                      Next
@@ -18599,7 +18596,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\root\drawmode & 1<<2
                      ;\\ init drawing font
-                     draw_font( *this, GetCurrentFontID( *this\root ) )
+                     draw_font( *this, GetFontID( *this\root ) )
                      ;
                      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                         If CurrentFontID( )
@@ -24586,7 +24583,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4------------------------------------------------------------------------------------v-fv---8-v4---v7+f-+------v----8-----4+Pd--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 11175
+; FirstLine = 10592
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----8------------------------------------------------------------------------------------4-v4---0-48---Xd-vf-------4----0-----b-nu--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
