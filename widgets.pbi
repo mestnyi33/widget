@@ -537,25 +537,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro ; Returns activeed gadget
       
       ;-
-      Macro GetFontID( _address_ )
-         _address_\text\fontID    
-      EndMacro
-      Macro SetFontID( _address_, _font_ID_ )
-         _address_\text\fontID = _font_ID_ 
-         
-         ;__gui\mapfontID( Str(_address_) ) = _font_ID_
-      EndMacro
-     Macro GetCurrentFontID( _address_ )
-        __gui\fontID ;  _address_\text\fontID    
-      EndMacro
-       Macro CurrentFonts( )
-        __gui\fontID    
-     EndMacro
-     
-     Macro CurrentFontID( _font_ )
-       __gui\mapfontID( Str(_font_) )   
-     EndMacro
-     
       Macro CurrentCursor( )
          mouse( )\cursor
       EndMacro
@@ -929,28 +910,44 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
-      Macro draw_mode_( _mode_ )
-         DrawingMode( _mode_ )
-      EndMacro
-      
       Macro draw_mode_alpha_( _mode_ )
          draw_mode_( _mode_ | #PB_2DDrawing_AlphaBlend )
       EndMacro
       
-      Macro draw_font_( _address_, _font_id_ )
-         If Not GetFontID( _address_ )
-            If _font_id_
+      Macro GetFontID( _address_ )
+        _address_\text\fontID    
+      EndMacro
+      Macro SetFontID( _address_, _font_ID_ )
+        _address_\text\fontID = _font_ID_ 
+        
+        ;__gui\mapfontID( Str(_address_) ) = _font_ID_
+      EndMacro
+      Macro GetCurrentFontID( _address_ )
+        __gui\fontID ;  _address_\text\fontID    
+      EndMacro
+      Macro CurrentFontID( )
+        __gui\fontID    
+      EndMacro
+      
+      ;-
+      Macro draw_mode_( _mode_ )
+        DrawingMode( _mode_ )
+      EndMacro
+      
+      Macro draw_font( _address_, _font_id_ = 0 )
+         If _font_id_ > 0
+            If Not GetFontID( _address_ )
                SetFontID( _address_, _font_id_ )
                _address_\TextChange( ) = #True
             EndIf
          EndIf
          ;
          If GetFontID( _address_ ) And
-            CurrentFonts( ) <> GetFontID( _address_ )
-            CurrentFonts( ) = GetFontID( _address_ )
+            CurrentFontID( ) <> GetFontID( _address_ )
+            CurrentFontID( ) = GetFontID( _address_ )
             
-            ; Debug "draw current font - " + #PB_Compiler_Procedure ; + " " +  _address_ + CurrentFonts( )
-            DrawingFont( CurrentFonts( ) )
+            ; Debug "draw current font - " + #PB_Compiler_Procedure ; + " " +  _address_ + CurrentFontID( )
+            DrawingFont( CurrentFontID( ) )
             _address_\TextChange( ) = #True
          EndIf
          ;
@@ -6694,9 +6691,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *items( )\hide
                               Continue
                            EndIf
-                           
                            ;
-                           draw_font_( *items( ), GetCurrentFontID( *this ) )
+                           draw_font( *items( ), GetCurrentFontID( *this ) )
                            
                            ; init items position
                            If *bar\vertical
@@ -6720,17 +6716,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;Debug  "scroll width="+*this\width;*this\scroll_width( )
                   ForEach *items( )
-                     ; if not visible then skip
                      If *items( )\hide
                         Continue
                      EndIf
                      
+                     ;\\
+                     draw_font( *items( ), GetFontID( *this ) )
+                     
                      index = ListIndex( *items( ) ) ; *items( )\_index
                      
-                     ;
-                     ;;Debug ""+*this\class+" "+index
-                     draw_font_( *items( ), GetFontID( *this ) )
-                           
                      ; init items position
                      If *bar\vertical
                         *items( )\y = *bar\max + pos
@@ -6944,16 +6938,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; draw all visible items
          ForEach *items( )
-            draw_font_( *items( ), GetCurrentFontID( *this ) )
+            If *items( )\hide 
+              *items( )\visible = 0
+              Continue
+            EndIf
+            ;
+            draw_font( *items( ), GetCurrentFontID( *this ) )
                            
             ; real visible items
             If vertical
-               *items( )\visible = Bool( Not *items( )\hide And
-                                         (( y + *items( )\y + *items( )\height ) > *this\inner_y( ) And
+               *items( )\visible = Bool( (( y + *items( )\y + *items( )\height ) > *this\inner_y( ) And
                                           ( y + *items( )\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ))
             Else
-               *items( )\visible = Bool( Not *items( )\hide And
-                                         (( x + *items( )\x + *items( )\width ) > *this\inner_x( ) And
+               *items( )\visible = Bool( (( x + *items( )\x + *items( )\width ) > *this\inner_x( ) And
                                           ( x + *items( )\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ))
             EndIf
             ;
@@ -7008,7 +7005,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\EnteredTab( )\visible 
                ;
                If *this\EnteredTab( )\itemindex <> #PB_Ignore
-                  draw_font_( *this\EnteredTab( ), GetCurrentFontID( *this ) )
+                  draw_font( *this\EnteredTab( ), GetCurrentFontID( *this ) )
                   bar_item_draw_( *this\bar\vertical, *this\EnteredTab( ), x, y, round, [*this\EnteredTab( )\ColorState( )] )
                EndIf
             EndIf
@@ -7021,7 +7018,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected._s_TABS *activeTAB = *this\FocusedTab( )
             ;   
             If *this\FocusedTab( )\itemindex <> #PB_Ignore
-               draw_font_( *this\FocusedTab( ), GetCurrentFontID( *this ) )
+               draw_font( *this\FocusedTab( ), GetCurrentFontID( *this ) )
                   ;
                If *this\child 
                   If *this\parent
@@ -7182,7 +7179,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If Not *this\hide And *this\color\_alpha
                If is_integral_( *this )
-                  ; draw_font_( *this, GetCurrentFontID( *this\parent ) )
+                  ; draw_font( *this, GetCurrentFontID( *this\parent ) )
                   If GetFontID( *this ) <> GetCurrentFontID( *this\parent )
                      SetFontID( *this, GetCurrentFontID( *this\parent ))
                   EndIf
@@ -11178,7 +11175,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;;*this\__lines( )\text\width = TextWidth( *this\__lines( )\text\string )
                         
                         ; drawing item font
-                        draw_font_( *this\__lines( ), GetCurrentFontID( *this ) )
+                        draw_font( *this\__lines( ), GetFontID( *this ) )
                
                         ;; editor
                         *this\__lines_index( ) = ListIndex( *this\__lines( ))
@@ -11647,7 +11644,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *color = *this\color
                EndIf
                
-               ;_draw_font_( *this )
                draw_mode_alpha_( #PB_2DDrawing_Default )
                draw_box_( 0, 1, *this\width, *this\height - 2, *color\back[*color\state] )
                draw_mode_( #PB_2DDrawing_Transparent )
@@ -11757,279 +11753,124 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   PushListPosition( *this\__items( ))
                   ForEach *this\__items( )
-                     *this\__items_index( ) = ListIndex( *this\__items( ))
-                     
-                     If *this\__items( )\hide
-                        *this\__items( )\visible = 0
-                     Else
+                    *this\__items_index( ) = ListIndex( *this\__items( ))
+                    
+                    If *this\__items( )\hide
+                      *this\__items( )\visible = 0
+                      Continue
+                    EndIf
+                    
+                    ;\\ init drawing item font
+                    draw_font( *this\__items( ), GetFontID( *this ) )
+                    
+                    ;\\ draw items height
+                    CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+                      CompilerIf Subsystem("qt")
+                        *this\__items( )\height = *this\__items( )\text\height - 1
+                      CompilerElse
+                        *this\__items( )\height = *this\__items( )\text\height + 3
+                      CompilerEndIf
+                    CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+                      *this\__items( )\height = *this\__items( )\text\height + 4
+                    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+                      If *this\type = #__type_ListView
+                        *this\__items( )\height = *this\__items( )\text\height
+                      Else
+                        *this\__items( )\height = *this\__items( )\text\height + 2
+                      EndIf
+                    CompilerEndIf
+                    
+                    *this\__items( )\y = *this\scroll_height( )
+                    
+                    If *this\row\column = 0
+                      ;\\ check box size
+                      If ( *this\mode\check = #__m_checkselect Or
+                           *this\mode\check = #__m_optionselect )
+                        *this\__items( )\RowBox( )\width  = boxsize
+                        *this\__items( )\RowBox( )\height = boxsize
+                      EndIf
+                      
+                      ;\\ collapse box size
+                      If ( *this\mode\Lines Or *this\mode\Buttons ) And
+                         Not ( *this\__items( )\sublevel And *this\mode\check = #__m_optionselect )
+                        *this\__items( )\RowButton( )\width  = buttonsize
+                        *this\__items( )\RowButton( )\height = buttonsize
+                      EndIf
+                      
+                      ;\\ sublevel position
+                      *this\row\sublevelpos = *this\__items( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\check ) * (boxpos + boxsize) + Bool( *this\mode\Lines Or *this\mode\Buttons ) * ( buttonpos + buttonsize )
+                      
+                      ;\\ check & option box position
+                      If ( *this\mode\check = #__m_checkselect Or
+                           *this\mode\check = #__m_optionselect )
                         
-                        ;\\ drawing item font
-                        draw_font_( *this\__items( ), GetFontID( *this ) )
-               
-                        ;\\ draw items height
-                        CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-                           CompilerIf Subsystem("qt")
-                              *this\__items( )\height = *this\__items( )\text\height - 1
-                           CompilerElse
-                              *this\__items( )\height = *this\__items( )\text\height + 3
-                           CompilerEndIf
-                        CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-                           *this\__items( )\height = *this\__items( )\text\height + 4
-                        CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                           If *this\type = #__type_ListView
-                              *this\__items( )\height = *this\__items( )\text\height
-                           Else
-                              *this\__items( )\height = *this\__items( )\text\height + 2
-                           EndIf
-                        CompilerEndIf
-                        
-                        *this\__items( )\y = *this\scroll_height( )
-                        
-                        If *this\row\column = 0
-                           ;\\ check box size
-                           If ( *this\mode\check = #__m_checkselect Or
-                                *this\mode\check = #__m_optionselect )
-                              *this\__items( )\RowBox( )\width  = boxsize
-                              *this\__items( )\RowBox( )\height = boxsize
-                           EndIf
-                           
-                           ;\\ collapse box size
-                           If ( *this\mode\Lines Or *this\mode\Buttons ) And
-                              Not ( *this\__items( )\sublevel And *this\mode\check = #__m_optionselect )
-                              *this\__items( )\RowButton( )\width  = buttonsize
-                              *this\__items( )\RowButton( )\height = buttonsize
-                           EndIf
-                           
-                           ;\\ sublevel position
-                           *this\row\sublevelpos = *this\__items( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\check ) * (boxpos + boxsize) + Bool( *this\mode\Lines Or *this\mode\Buttons ) * ( buttonpos + buttonsize )
-                           
-                           ;\\ check & option box position
-                           If ( *this\mode\check = #__m_checkselect Or
-                                *this\mode\check = #__m_optionselect )
-                              
-                              If *this\__items( )\ParentRow( ) And *this\mode\check = #__m_optionselect
-                                 *this\__items( )\RowBox( )\x = *this\row\sublevelpos - *this\__items( )\RowBox( )\width
-                              Else
-                                 *this\__items( )\RowBox( )\x = boxpos
-                              EndIf
-                              *this\__items( )\RowBox( )\y = ( *this\__items( )\height ) - ( *this\__items( )\height + *this\__items( )\RowBox( )\height ) / 2
-                           EndIf
-                           
-                           ;\\ expanded & collapsed box position
-                           If ( *this\mode\Lines Or *this\mode\Buttons ) And Not ( *this\__items( )\sublevel And *this\mode\check = #__m_optionselect )
-                              
-                              If *this\mode\check = #__m_optionselect
-                                 *this\__items( )\RowButton( )\x = *this\row\sublevelpos - 10
-                              Else
-                                 *this\__items( )\RowButton( )\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
-                              EndIf
-                              
-                              *this\__items( )\RowButton( )\y = ( *this\__items( )\height ) - ( *this\__items( )\height + *this\__items( )\RowButton( )\height ) / 2
-                           EndIf
-                           
-                           ;\\ image position
-                           If *this\__items( )\image\id
-                              *this\__items( )\image\x = *this\row\sublevelpos + *this\image\padding\x + 2
-                              *this\__items( )\image\y = ( *this\__items( )\height - *this\__items( )\image\height ) / 2
-                              
-                              If *this\type = #__type_ListIcon
-                                 *this\row\sublevelpos = *this\__items( )\image\x
-                              EndIf
-                           Else
-                              If *this\type = #__type_ListIcon
-                                 ;*this\row\sublevelpos = *this\__items( )\x
-                              EndIf
-                           EndIf
-                           
-                        EndIf
-                        
-                        If *this\row\column = 0
-                           *this\__items( )\x = *this\columns( )\x
+                        If *this\__items( )\ParentRow( ) And *this\mode\check = #__m_optionselect
+                          *this\__items( )\RowBox( )\x = *this\row\sublevelpos - *this\__items( )\RowBox( )\width
                         Else
-                           *this\__items( )\x = *this\columns( )\x + *this\row\sublevelpos + *this\MarginLine( )\width
+                          *this\__items( )\RowBox( )\x = boxpos
+                        EndIf
+                        *this\__items( )\RowBox( )\y = ( *this\__items( )\height ) - ( *this\__items( )\height + *this\__items( )\RowBox( )\height ) / 2
+                      EndIf
+                      
+                      ;\\ expanded & collapsed box position
+                      If ( *this\mode\Lines Or *this\mode\Buttons ) And Not ( *this\__items( )\sublevel And *this\mode\check = #__m_optionselect )
+                        
+                        If *this\mode\check = #__m_optionselect
+                          *this\__items( )\RowButton( )\x = *this\row\sublevelpos - 10
+                        Else
+                          *this\__items( )\RowButton( )\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
                         EndIf
                         
-                        ;\\ text position
-                        If *this\__items( )\text\string
-                           If *this\row\column > 0
-                              *this\__items( )\text\x = *this\text\padding\x
-                           Else
-                              *this\__items( )\text\x = *this\row\sublevelpos + *this\MarginLine( )\width + *this\text\padding\x
-                           EndIf
-                           *this\__items( )\text\y = ( *this\__items( )\height - *this\__items( )\text\height ) / 2
-                        EndIf
+                        *this\__items( )\RowButton( )\y = ( *this\__items( )\height ) - ( *this\__items( )\height + *this\__items( )\RowButton( )\height ) / 2
+                      EndIf
+                      
+                      ;\\ image position
+                      If *this\__items( )\image\id
+                        *this\__items( )\image\x = *this\row\sublevelpos + *this\image\padding\x + 2
+                        *this\__items( )\image\y = ( *this\__items( )\height - *this\__items( )\image\height ) / 2
                         
-                        ;\\ vertical scroll max value
-                        *this\scroll_height( ) + *this\__items( )\height + Bool( *this\__items_index( ) <> *this\countitems - 1 ) * *this\mode\GridLines
-                        
-                        ;\\ horizontal scroll max value
                         If *this\type = #__type_ListIcon
-                           If *this\scroll_width( ) < ( *this\row\sublevelpos + *this\text\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
-                              *this\scroll_width( ) = ( *this\row\sublevelpos + *this\text\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
-                           EndIf
-                        Else
-                           If *this\scroll_width( ) < ( *this\__items( )\x + *this\__items( )\text\x + *this\__items( )\text\width + *this\mode\fullSelection + *this\text\padding\x * 2 ) ; - *this\inner_x( )
-                              *this\scroll_width( ) = ( *this\__items( )\x + *this\__items( )\text\x + *this\__items( )\text\width + *this\mode\fullSelection + *this\text\padding\x * 2 ) ; - *this\inner_x( )
-                           EndIf
+                          *this\row\sublevelpos = *this\__items( )\image\x
                         EndIf
-                     EndIf
+                      Else
+                        If *this\type = #__type_ListIcon
+                          ;*this\row\sublevelpos = *this\__items( )\x
+                        EndIf
+                      EndIf
+                      
+                    EndIf
+                    
+                    If *this\row\column = 0
+                      *this\__items( )\x = *this\columns( )\x
+                    Else
+                      *this\__items( )\x = *this\columns( )\x + *this\row\sublevelpos + *this\MarginLine( )\width
+                    EndIf
+                    
+                    ;\\ text position
+                    If *this\__items( )\text\string
+                      If *this\row\column > 0
+                        *this\__items( )\text\x = *this\text\padding\x
+                      Else
+                        *this\__items( )\text\x = *this\row\sublevelpos + *this\MarginLine( )\width + *this\text\padding\x
+                      EndIf
+                      *this\__items( )\text\y = ( *this\__items( )\height - *this\__items( )\text\height ) / 2
+                    EndIf
+                    
+                    ;\\ vertical scroll max value
+                    *this\scroll_height( ) + *this\__items( )\height + Bool( *this\__items_index( ) <> *this\countitems - 1 ) * *this\mode\GridLines
+                    
+                    ;\\ horizontal scroll max value
+                    If *this\type = #__type_ListIcon
+                      If *this\scroll_width( ) < ( *this\row\sublevelpos + *this\text\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
+                        *this\scroll_width( ) = ( *this\row\sublevelpos + *this\text\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
+                      EndIf
+                    Else
+                      If *this\scroll_width( ) < ( *this\__items( )\x + *this\__items( )\text\x + *this\__items( )\text\width + *this\mode\fullSelection + *this\text\padding\x * 2 ) ; - *this\inner_x( )
+                        *this\scroll_width( ) = ( *this\__items( )\x + *this\__items( )\text\x + *this\__items( )\text\width + *this\mode\fullSelection + *this\text\padding\x * 2 )  ; - *this\inner_x( )
+                      EndIf
+                    EndIf
                   Next
                   PopListPosition( *this\__items( ))
-                  
-                  ;\\
-                  If *this\mode\gridlines
-                     ; *this\scroll_height( ) - *this\mode\gridlines
-                  EndIf
-               EndIf
-            EndIf
-         EndWith
-         
-      EndProcedure
-      
-      Procedure.l _update_items_( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
-         Protected state.b, x.l, y.l
-         
-         With *this
-            If Not *this\hide
-               ;\\ update coordinate
-               If _change_ > 0
-                  ; Debug "   " + #PB_Compiler_Procedure + "( )"
-                  
-                  ;\\ if the item list has changed
-                  *this\scroll_width( ) = 0
-                  If ListSize( *this\columns( ) )
-                     *this\scroll_height( ) = *this\columns( )\height
-                  Else
-                     *this\scroll_height( ) = 0
-                  EndIf
-                  
-                  ; reset item z - order
-                  Protected buttonpos = 6
-                  Protected buttonsize = 9
-                  Protected boxpos = 4
-                  Protected boxsize = 11
-                  Protected bs = Bool( *this\fs )
-                  
-                  ;\\
-                  PushListPosition( *items( ))
-                  ForEach *items( )
-                     *items( )\index = ListIndex( *items( ))
-                     
-                     If *items( )\hide
-                        *items( )\visible = 0
-                     Else
-                        ;\\ drawing item font
-                        draw_font_( *items( ), GetCurrentFontID( *this ) )
-               
-                        ;\\ draw items height
-                        CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-                           CompilerIf Subsystem("qt")
-                              *items( )\height = *items( )\text\height - 1
-                           CompilerElse
-                              *items( )\height = *items( )\text\height + 3
-                           CompilerEndIf
-                        CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-                           *items( )\height = *items( )\text\height + 4
-                        CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                           If *this\type = #__type_ListView
-                              *items( )\height = *items( )\text\height
-                           Else
-                              *items( )\height = *items( )\text\height + 2
-                           EndIf
-                        CompilerEndIf
-                        
-                        *items( )\y = *this\scroll_height( )
-                        
-                        If *this\row\column = 0
-                           ;\\ check box size
-                           If ( *this\mode\check = #__m_checkselect Or
-                                *this\mode\check = #__m_optionselect )
-                              *items( )\RowBox( )\width  = boxsize
-                              *items( )\RowBox( )\height = boxsize
-                           EndIf
-                           
-                           ;\\ collapse box size
-                           If ( *this\mode\Lines Or *this\mode\Buttons ) And
-                              Not ( *items( )\sublevel And *this\mode\check = #__m_optionselect )
-                              *items( )\RowButton( )\width  = buttonsize
-                              *items( )\RowButton( )\height = buttonsize
-                           EndIf
-                           
-                           ;\\ sublevel position
-                           *this\row\sublevelpos = *items( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\check ) * (boxpos + boxsize) + Bool( *this\mode\Lines Or *this\mode\Buttons ) * ( buttonpos + buttonsize )
-                           
-                           ;\\ check & option box position
-                           If ( *this\mode\check = #__m_checkselect Or
-                                *this\mode\check = #__m_optionselect )
-                              
-                              If *items( )\ParentRow( ) And *this\mode\check = #__m_optionselect
-                                 *items( )\RowBox( )\x = *this\row\sublevelpos - *items( )\RowBox( )\width
-                              Else
-                                 *items( )\RowBox( )\x = boxpos
-                              EndIf
-                              *items( )\RowBox( )\y = ( *items( )\height ) - ( *items( )\height + *items( )\RowBox( )\height ) / 2
-                           EndIf
-                           
-                           ;\\ expanded & collapsed box position
-                           If ( *this\mode\Lines Or *this\mode\Buttons ) And Not ( *items( )\sublevel And *this\mode\check = #__m_optionselect )
-                              
-                              If *this\mode\check = #__m_optionselect
-                                 *items( )\RowButton( )\x = *this\row\sublevelpos - 10
-                              Else
-                                 *items( )\RowButton( )\x = *this\row\sublevelpos - (( buttonpos + buttonsize ) - 4)
-                              EndIf
-                              
-                              *items( )\RowButton( )\y = ( *items( )\height ) - ( *items( )\height + *items( )\RowButton( )\height ) / 2
-                           EndIf
-                           
-                           ;\\ image position
-                           If *items( )\image\id
-                              *items( )\image\x = *this\row\sublevelpos + *this\image\padding\x + 2
-                              *items( )\image\y = ( *items( )\height - *items( )\image\height ) / 2
-                              
-                              If *this\type = #__type_ListIcon
-                                 *this\row\sublevelpos = *items( )\image\x
-                              EndIf
-                           Else
-                              If *this\type = #__type_ListIcon
-                                 ;*this\row\sublevelpos = *items( )\x
-                              EndIf
-                           EndIf
-                           
-                        EndIf
-                        
-                        If *this\row\column = 0
-                           *items( )\x = *this\columns( )\x
-                        Else
-                           *items( )\x = *this\columns( )\x + *this\row\sublevelpos + *this\MarginLine( )\width
-                        EndIf
-                        
-                        ;\\ text position
-                        If *items( )\text\string
-                           If *this\row\column > 0
-                              *items( )\text\x = *this\text\padding\x
-                           Else
-                              *items( )\text\x = *this\row\sublevelpos + *this\MarginLine( )\width + *this\text\padding\x
-                           EndIf
-                           *items( )\text\y = ( *items( )\height - *items( )\text\height ) / 2
-                        EndIf
-                        
-                        ;\\ vertical scroll max value
-                        *this\scroll_height( ) + *items( )\height + Bool( *items( )\index <> *this\countitems - 1 ) * *this\mode\GridLines
-                        
-                        ;\\ horizontal scroll max value
-                        If *this\type = #__type_ListIcon
-                           If *this\scroll_width( ) < ( *this\row\sublevelpos + *this\text\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
-                              *this\scroll_width( ) = ( *this\row\sublevelpos + *this\text\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
-                           EndIf
-                        Else
-                           If *this\scroll_width( ) < ( *items( )\x + *items( )\text\x + *items( )\text\width + *this\mode\fullSelection + *this\text\padding\x * 2 ) ; - *this\inner_x( )
-                              *this\scroll_width( ) = ( *items( )\x + *items( )\text\x + *items( )\text\width + *this\mode\fullSelection + *this\text\padding\x * 2 ) ; - *this\inner_x( )
-                           EndIf
-                        EndIf
-                     EndIf
-                  Next
-                  PopListPosition( *items( ))
                   
                   ;\\
                   If *this\mode\gridlines
@@ -12119,58 +11960,60 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          PushListPosition( *items( ))
          ForEach *items( )
-            If *items( )\visible
-               ;\\ init real drawing font
-               draw_font_( *items( ), GetCurrentFontID( *this ) )
-               
-               ;\\
-               state = *items( )\ColorState( )
-               X     = row_x_( *this, *items( ) )
-               Y     = row_y_( *this, *items( ) )
-               Xs    = x - _scroll_x_
-               Ys    = y - _scroll_y_
-               
-               ;\\ Draw selector back
-               If *items( )\color\back[state]
-                  draw_mode_alpha_( #PB_2DDrawing_Default )
-                  If *this\flag & #__Flag_FullSelection
-                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
-                  Else
-                     draw_roundbox_( x, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
-                  EndIf
-               EndIf
-               
-               ;\\ Draw items image
-               If *items( )\image\id
-                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawAlphaImage( *items( )\image\id, xs + *items( )\image\x, ys + *items( )\image\y, *items( )\color\_alpha )
-                  ; draw_background_image_(*items( ), xs, ys )
-               EndIf
-               
-               ;\\ Draw items text
-               If *items( )\text\string.s
-                  draw_mode_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( xs + *items( )\text\x, ys + *items( )\text\y, *items( )\text\string.s, *this\text\rotate, *items( )\color\front[state] )
-               EndIf
-               
-               ;\\ Draw selector frame
-               If *items( )\color\frame[state]
-                  draw_mode_( #PB_2DDrawing_Outlined )
-                  If *this\flag & #__Flag_FullSelection
-                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\frame[state] )
-                  Else
-                     draw_roundbox_( x, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\frame[state] )
-                  EndIf
-               EndIf
-               
-               ;\\ Horizontal line
-               If *this\mode\GridLines And
-                  ;*items( )\color\line And
-                  *items( )\color\line <> *items( )\color\back
-                  draw_mode_alpha_( #PB_2DDrawing_Default )
-                  draw_box_( x, ys + *items( )\height, *items( )\width, *this\mode\GridLines, $fff0f0f0 )
-               EndIf
-            EndIf
+           If Not *items( )\visible
+             Continue
+           EndIf
+           
+           ;\\ init real drawing font
+           draw_font( *items( ), GetCurrentFontID( *this ) )
+           
+           ;\\
+           state = *items( )\ColorState( )
+           X     = row_x_( *this, *items( ) )
+           Y     = row_y_( *this, *items( ) )
+           Xs    = x - _scroll_x_
+           Ys    = y - _scroll_y_
+           
+           ;\\ Draw selector back
+           If *items( )\color\back[state]
+             draw_mode_alpha_( #PB_2DDrawing_Default )
+             If *this\flag & #__Flag_FullSelection
+               draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
+             Else
+               draw_roundbox_( x, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
+             EndIf
+           EndIf
+           
+           ;\\ Draw items image
+           If *items( )\image\id
+             draw_mode_alpha_( #PB_2DDrawing_Transparent )
+             DrawAlphaImage( *items( )\image\id, xs + *items( )\image\x, ys + *items( )\image\y, *items( )\color\_alpha )
+             ; draw_background_image_(*items( ), xs, ys )
+           EndIf
+           
+           ;\\ Draw items text
+           If *items( )\text\string.s
+             draw_mode_( #PB_2DDrawing_Transparent )
+             DrawRotatedText( xs + *items( )\text\x, ys + *items( )\text\y, *items( )\text\string.s, *this\text\rotate, *items( )\color\front[state] )
+           EndIf
+           
+           ;\\ Draw selector frame
+           If *items( )\color\frame[state]
+             draw_mode_( #PB_2DDrawing_Outlined )
+             If *this\flag & #__Flag_FullSelection
+               draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\frame[state] )
+             Else
+               draw_roundbox_( x, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\frame[state] )
+             EndIf
+           EndIf
+           
+           ;\\ Horizontal line
+           If *this\mode\GridLines And
+              ;*items( )\color\line And
+             *items( )\color\line <> *items( )\color\back
+             draw_mode_alpha_( #PB_2DDrawing_Default )
+             draw_box_( x, ys + *items( )\height, *items( )\width, *this\mode\GridLines, $fff0f0f0 )
+           EndIf
          Next
          
          
@@ -18755,11 +18598,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\root\drawmode & 1<<2
                      ;\\ init drawing font
-                     draw_font_( *this, GetCurrentFontID( *this\root ) )
+                     draw_font( *this, GetCurrentFontID( *this\root ) )
                      ;
                      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                        If GetCurrentFontID( *this )
-                           DrawingFont( GetCurrentFontID( *this ) )
+                        If CurrentFontID( )
+                           DrawingFont( CurrentFontID( ) )
                         EndIf
                      CompilerEndIf
                      ;
@@ -24743,6 +24586,6 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-fv---8-v4---v7+f-+------v----8-----4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4------------------------------------------------------------------------------------v-fv---8-v4---v7+f-+------v----8-----4+Pd--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
