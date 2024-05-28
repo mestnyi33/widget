@@ -944,9 +944,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If GetFontID( _address_ ) And
             CurrentFontID( ) <> GetFontID( _address_ )
+             Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(_address_) + " " + CurrentFontID( ) +" "+ GetFontID( _address_ )
             CurrentFontID( ) = GetFontID( _address_ )
             
-            ; Debug "draw current font - " + #PB_Compiler_Procedure ; + " " +  _address_ + CurrentFontID( )
             DrawingFont( CurrentFontID( ) )
             _address_\TextChange( ) = #True
          EndIf
@@ -957,6 +957,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             _address_\text\height = TextHeight( "A" )
+            
             If _address_\text\invert And
                _address_\text\vertical
                _address_\text\rotate = 270
@@ -6692,7 +6693,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               Continue
                            EndIf
                            ;
-                           draw_font( *items( ), GetCurrentFontID( *this ) )
+                           draw_font( *items( ));, GetCurrentFontID( *this ) )
                            
                            ; init items position
                            If *bar\vertical
@@ -6943,7 +6944,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               Continue
             EndIf
             ;
-            draw_font( *items( ), GetCurrentFontID( *this ) )
+            draw_font( *items( ));, GetCurrentFontID( *this ) )
                            
             ; real visible items
             If vertical
@@ -7005,7 +7006,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\EnteredTab( )\visible 
                ;
                If *this\EnteredTab( )\itemindex <> #PB_Ignore
-                  draw_font( *this\EnteredTab( ), GetCurrentFontID( *this ) )
+                  draw_font( *this\EnteredTab( ));, GetCurrentFontID( *this ) )
                   bar_item_draw_( *this\bar\vertical, *this\EnteredTab( ), x, y, round, [*this\EnteredTab( )\ColorState( )] )
                EndIf
             EndIf
@@ -7018,7 +7019,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected._s_TABS *activeTAB = *this\FocusedTab( )
             ;   
             If *this\FocusedTab( )\itemindex <> #PB_Ignore
-               draw_font( *this\FocusedTab( ), GetCurrentFontID( *this ) )
+               draw_font( *this\FocusedTab( ));, GetCurrentFontID( *this ) )
                   ;
                If *this\child 
                   If *this\parent
@@ -11175,7 +11176,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;;*this\__lines( )\text\width = TextWidth( *this\__lines( )\text\string )
                         
                         ; drawing item font
-                        draw_font( *this\__lines( ), GetFontID( *this ) )
+                        draw_font( *this\__lines( ));, GetFontID( *this ) )
                
                         ;; editor
                         *this\__lines_index( ) = ListIndex( *this\__lines( ))
@@ -11965,7 +11966,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
            EndIf
            
            ;\\ init real drawing font
-           draw_font( *items( ), GetCurrentFontID( *this ) )
+           draw_font( *items( ));, GetCurrentFontID( *this ) )
            
            ;\\
            state = *items( )\ColorState( )
@@ -14212,7 +14213,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i GetFont( *this._s_WIDGET )
-         ProcedureReturn GetCurrentFontID( *this )
+         ProcedureReturn GetFontID( *this )
       EndProcedure
       
       Procedure.i GetData( *this._s_WIDGET )
@@ -15220,7 +15221,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If IsFont( FontID )
           FontID = FontID( FontID )
           
-          If GetCurrentFontID( *this ) <> FontID
+          If GetFontID( *this ) <> FontID
             SetFontID( *this, FontID )
             result = #True
           EndIf
@@ -16593,7 +16594,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             
-            result = GetCurrentFontID( *this\__items( ) )
+            result = GetFontID( *this\__items( ) )
          EndIf
          
          ProcedureReturn result
@@ -16791,7 +16792,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *TabBox
             If is_item_( *TabBox, item ) And
                SelectElement( *TabBox\__tabs( ), Item ) And
-              GetCurrentFontID( *TabBox\__tabs( ) ) <> FontID
+              GetFontID( *TabBox\__tabs( ) ) <> FontID
               SetFontID( *TabBox\__tabs( ), FontID )
                ;       *this\__items( )\TextChange( ) = 1
                ;       *this\WidgetChange( ) = 1
@@ -16801,7 +16802,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\row
                If is_item_( *this, item ) And
                   SelectElement( *this\__items( ), Item ) And
-                 GetCurrentFontID( *this\__items( ) ) <> FontID
+                 GetFontID( *this\__items( ) ) <> FontID
                  SetFontID( *this\__items( ), FontID )
                   ;       *this\__items( )\TextChange( ) = 1
                   ;       *this\WidgetChange( ) = 1
@@ -24585,7 +24586,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 14217
+; FirstLine = 13201
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4------------------------------------------------------------------------------------v-fv---8-v4---v7+f-+------v----8-----4+Pd--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
