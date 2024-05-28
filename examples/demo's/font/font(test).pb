@@ -186,8 +186,6 @@ CompilerEndIf
 ;  draw current font - Draw 4370939408 4300426464 4299401872
 ;  draw current font - Draw 4320347664 4299401872 4299355456
 ;  draw current font - Draw 4320369680 4299355456 4299401872
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 187
-; FirstLine = 149
-; Folding = --
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = -
 ; EnableXP

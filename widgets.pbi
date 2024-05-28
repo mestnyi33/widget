@@ -935,7 +935,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro draw_font( _address_, _font_id_ = 0 )
-         If _font_id_ > 0
+         If _font_id_
             If Not GetFontID( _address_ )
                SetFontID( _address_, _font_id_ )
                _address_\TextChange( ) = #True
@@ -944,7 +944,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If GetFontID( _address_ ) And
             CurrentFontID( ) <> GetFontID( _address_ )
-             Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(_address_) + " " + CurrentFontID( ) +" "+ GetFontID( _address_ )
+            ; Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(_address_) + " " + CurrentFontID( ) +" "+ GetFontID( _address_ )
             CurrentFontID( ) = GetFontID( _address_ )
             
             DrawingFont( CurrentFontID( ) )
@@ -6693,7 +6693,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               Continue
                            EndIf
                            ;
-                           draw_font( *items( ));, GetCurrentFontID( *this ) )
+                           draw_font( *items( ) )
                            
                            ; init items position
                            If *bar\vertical
@@ -6944,7 +6944,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               Continue
             EndIf
             ;
-            draw_font( *items( ));, GetCurrentFontID( *this ) )
+            draw_font( *items( ) )
                            
             ; real visible items
             If vertical
@@ -7006,7 +7006,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\EnteredTab( )\visible 
                ;
                If *this\EnteredTab( )\itemindex <> #PB_Ignore
-                  draw_font( *this\EnteredTab( ));, GetCurrentFontID( *this ) )
+                  draw_font( *this\EnteredTab( ) )
                   bar_item_draw_( *this\bar\vertical, *this\EnteredTab( ), x, y, round, [*this\EnteredTab( )\ColorState( )] )
                EndIf
             EndIf
@@ -7019,7 +7019,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected._s_TABS *activeTAB = *this\FocusedTab( )
             ;   
             If *this\FocusedTab( )\itemindex <> #PB_Ignore
-               draw_font( *this\FocusedTab( ));, GetCurrentFontID( *this ) )
+               draw_font( *this\FocusedTab( ) )
                   ;
                If *this\child 
                   If *this\parent
@@ -11966,7 +11966,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
            EndIf
            
            ;\\ init real drawing font
-           draw_font( *items( ));, GetCurrentFontID( *this ) )
+           draw_font( *items( ) )
            
            ;\\
            state = *items( )\ColorState( )
@@ -24586,9 +24586,7 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 14217
-; FirstLine = 13201
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4------------------------------------------------------------------------------------v-fv---8-v4---v7+f-+------v----8-----4+Pd--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
