@@ -683,7 +683,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       Macro RootReDrawing( _root_ )
-         Bool(widget::__gui\drawingroot <> _root_) : Debug "  ---- RootReDrawing ----  "
+         Bool(widget::__gui\drawingroot <> _root_) : Debug "  ---- Root ReDrawing ----  "
          StopDrawingRoot( )
          StartDrawingRoot( _root_ )
       EndMacro
@@ -928,6 +928,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro draw_mode_( _mode_ )
         DrawingMode( _mode_ )
+      EndMacro
+      
+      Macro DrawingFont_( _this_ )
+        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+            If RootReDrawing( _this_\root )
+              If CurrentFontID( )
+                 DrawingFont(CurrentFontID( ))
+               EndIf
+             EndIf
+         CompilerEndIf
       EndMacro
       
       Macro draw_font( _address_, _font_id_ = 0 )
@@ -10034,14 +10044,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "edit_sel_row_text - " + *rowLine\item_index( ) + " " + mode
          
          ;\\
-         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-            If GetFontID( *rowLine )
-               If RootReDrawing( *this\root )
-                  DrawingFont( GetFontID( *rowLine ) )
-               EndIf
-            EndIf
-         CompilerEndIf
-         
+         DrawingFont_( *this )
          
          *this\root\repaint = #True
          ;\\ *rowLine\ColorState( ) = #__s_2
@@ -10249,14 +10252,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected Distance.f, MinDistance.f = Infinity( )
          
          If *line 
-            CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-               If GetFontID( *line )
-                  If RootReDrawing( *this\root )
-                     DrawingFont( GetFontID( *line ) )
-                  EndIf
-               EndIf
-            CompilerEndIf
-            
+            DrawingFont_( *this )
+           
             mouse_x = mouse( )\x - row_x_( *this, *line ) - *line\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
             For i = 0 To *line\text\len
@@ -10398,13 +10395,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Chr.s
             *rowLine = *this\FocusedLine( )
             ;\\
-            CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-               If GetFontID( *rowLine )
-                  If RootReDrawing( *this\root )
-                     DrawingFont( GetFontID( *rowLine ) )
-                  EndIf
-               EndIf
-            CompilerEndIf
+            DrawingFont_( *this )
             
             If *rowLine
                Count = CountString( Chr.s, #LF$)
@@ -10763,13 +10754,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-            If GetFontID( e_rows( ) )
-               If RootReDrawing( *this\root )
-                  DrawingFont( GetFontID( e_rows( ) ) )
-               EndIf
-            EndIf
-         CompilerEndIf
+         DrawingFont_( *this )
          
          e_rows( )\item_index( )       = position
          e_rows( )\text\len    = string_len
@@ -24594,9 +24579,7 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 24548
-; FirstLine = 23698
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----8------------------------------------------------------------------------------------4-v4---0-48------vf-------4----------b-nu---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v0---
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4------------------------------------------------------------------------------------0fv--f--0+-----f-+------v----------4+Pd---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8---
 ; EnableXP
 ; Executable = widgets2.app
