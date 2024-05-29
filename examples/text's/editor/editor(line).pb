@@ -54,11 +54,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select eventtype
       Case #__event_Focus
-        String.s = "focus "+Str(EventWidget( )\index-1)+" "+eventtype
+        String.s = "focus "+Str(GetIndex(EventWidget( )))+" "+eventtype
       Case #__event_LostFocus
-        String.s = "lostfocus "+Str(EventWidget( )\index-1)+" "+eventtype
+        String.s = "lostfocus "+Str(GetIndex(EventWidget( )))+" "+eventtype
       Case #__event_Change
-        String.s = "change "+Str(EventWidget( )\index-1)+" "+eventtype
+        String.s = "change "+Str(GetIndex(EventWidget( )))+" "+eventtype
     EndSelect
     
     If eventtype = #__event_Focus
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
-  If Open(#PB_Any, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     StringGadget(0, 8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
     StringGadget(1, 8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric)
     StringGadget(2, 8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget")
@@ -174,8 +174,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 37
-; FirstLine = 34
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = ---
 ; EnableXP

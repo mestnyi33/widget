@@ -421,7 +421,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If _root_\canvas\post = 0
                   _root_\canvas\post = 1
                   If Not widget::Send( _root_, constants::#__event_Repaint )
-                     PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
+                    PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
                   EndIf
                EndIf
             EndIf
@@ -573,12 +573,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro EventWidget( ): WidgetEvent( )\widget: EndMacro
       
       ;-
-      Macro WindowEvent( )
-         events::WaitEvent( PB(WindowEvent)( ) )
-      EndMacro
-      Macro WaitWindowEvent( _waittime_ = )
-         events::WaitEvent( PB(WaitWindowEvent)( _waittime_ ) )
-      EndMacro
+;       Macro WindowEvent( )
+;          events::WaitEvent( PB(WindowEvent)( ) )
+;       EndMacro
+;       Macro WaitWindowEvent( _waittime_ = )
+;          events::WaitEvent( PB(WaitWindowEvent)( _waittime_ ) )
+;       EndMacro
       Macro WaitEvent( _callback_, _eventtype_ = #PB_All )
          widget::Bind( #PB_All, _callback_, _eventtype_ )
          widget::WaitCloses( )
@@ -686,6 +686,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Bool(widget::__gui\drawingroot <> _root_) : Debug "  ---- Root ReDrawing ----  "
          StopDrawingRoot( )
          StartDrawingRoot( _root_ )
+      EndMacro
+      
+      Macro DrawingFont_2( _this_ )
+        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+            If RootReDrawing( _this_\root )
+              If CurrentFontID( )
+                 DrawingFont(CurrentFontID( ))
+               EndIf
+             EndIf
+         CompilerEndIf
+      EndMacro
+      
+      Macro DrawingFont_( _this_ )
+;         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+;             If RootReDrawing( _this_\root )
+;               If CurrentFontID( )
+;                  DrawingFont(CurrentFontID( ))
+;                EndIf
+;              EndIf
+;          CompilerEndIf
       EndMacro
       
       
@@ -909,6 +929,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro CurrentFontID( )
+        __gui\fontID    
+      EndMacro
       Macro GetFontID( _address_ )
         _address_\text\fontID    
       EndMacro
@@ -916,9 +939,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _address_\text\fontID = _font_ID_ 
         
         ;__gui\mapfontID( Str(_address_) ) = _font_ID_
-      EndMacro
-      Macro CurrentFontID( )
-        __gui\fontID    
       EndMacro
       
       ;-
@@ -928,16 +948,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro draw_mode_( _mode_ )
         DrawingMode( _mode_ )
-      EndMacro
-      
-      Macro DrawingFont_( _this_ )
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-            If RootReDrawing( _this_\root )
-              If CurrentFontID( )
-                 DrawingFont(CurrentFontID( ))
-               EndIf
-             EndIf
-         CompilerEndIf
       EndMacro
       
       Macro draw_font( _address_, _font_id_ = 0 )
@@ -950,7 +960,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If GetFontID( _address_ ) And
             CurrentFontID( ) <> GetFontID( _address_ )
-            ; Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(_address_) + " " + CurrentFontID( ) +" "+ GetFontID( _address_ )
+             Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(_address_) + " " + CurrentFontID( ) +" "+ GetFontID( _address_ )
             CurrentFontID( ) = GetFontID( _address_ )
             
             DrawingFont( CurrentFontID( ) )
@@ -10044,7 +10054,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "edit_sel_row_text - " + *rowLine\item_index( ) + " " + mode
          
          ;\\
-         DrawingFont_( *this )
+         DrawingFont_2( *this )
          
          *this\root\repaint = #True
          ;\\ *rowLine\ColorState( ) = #__s_2
@@ -21861,7 +21871,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ; ;                   If Root( )\class = "Popup( )"
-                  ;                      Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\widget\x +" "+ Popup( )\widget\y +" "+ Popup( )\widget\width +" "+ Popup( )\widget\height
+                                        Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\widget\x +" "+ Popup( )\widget\y +" "+ Popup( )\widget\width +" "+ Popup( )\widget\height
                   ; ; ; ;                      ForEach __widgets( ) 
                   ; ; ; ;                         If __widgets( )\root = Root()
                   ; ; ; ;                            Debug "    "+__widgets( )\class
@@ -22874,6 +22884,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          widget( ) = *root
+         PostEventRepaint( *root )
          ProcedureReturn *root
       EndProcedure
       
@@ -24579,9 +24590,7 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 930
-; FirstLine = 933
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4------------------------------------------------------------------------------------0fv--f--0+-----f-+------v----------4+Pd---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8---
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----8------------------------------------------------------------------------------------+v4--v--e------vf-------4----------b-nu------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------------------------v0---
 ; EnableXP
 ; Executable = widgets2.app
