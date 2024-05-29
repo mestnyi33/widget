@@ -36,18 +36,18 @@ CompilerIf #PB_Compiler_IsMainFile
                   setcolor(eventwidget(), #__color_frame, $ff0000ff)
                EndIf
                
+            Case #__event_mouseleave : Debug "leave "+eventwidget()\class 
+               If Not eventwidget()\press
+                  setcolor(eventwidget(), #__color_frame, $ff00ff00)
+               EndIf
+               
+               
             Case #__event_mousemove
                If drag
                   ;Debug " "+eventwidget() +" "+ enteredwidget()+" "+pressedwidget()
                ;   resize(drag,mouse()\x-deltax, mouse()\y-deltay, #PB_Ignore, #PB_Ignore)
                   resize(drag,DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
                EndIf
-               
-            Case #__event_mouseleave : Debug "leave "+eventwidget()\class 
-               If Not eventwidget()\press
-                  setcolor(eventwidget(), #__color_frame, $ff00ff00)
-               EndIf
-               
                
             Case #__event_keyup
                drag = 0
@@ -74,7 +74,12 @@ CompilerIf #PB_Compiler_IsMainFile
       *g13 = Container( x+50,y+50,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g13,"*g13") 
       *g14 = Container( x+70,y+70,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g14,"*g14") 
       ;*g15 = Container( x+90,y+90,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g15,"*g15") 
-      *g15 = tree( x+90,y+90,size,size ) : setclass(*g15,"*g15") : AddItem(*g15, -1, "item-1") : AddItem(*g15, -1, "item-2") : AddItem(*g15, -1, "item-3")
+      *g15 = tree( x+90,y+90,size,size ) : setclass(*g15,"*g15") 
+      Define i
+      For i=0 To 10
+         AddItem(*g15, -1, "item-"+Str(i)) 
+      Next
+      
       
       
       ;\\
@@ -104,7 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 75
-; FirstLine = 66
+; CursorPosition = 44
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
