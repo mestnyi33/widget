@@ -931,6 +931,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;__gui\mapfontID( Str(_address_) ) = _font_ID_
       EndMacro
+      Macro ChangeFontID( _address_, _font_ID_ )
+         Bool( GetFontID( _address_ ) <> _font_ID_ )
+         SetFontID( _address_, _font_ID_ )
+      EndMacro
       
       ;-
       Macro draw_mode_alpha_( _mode_ )
@@ -1261,7 +1265,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;{
       ; Requester
       Global resize_one
-      Declare.b bar_tab_update_items_( *this._s_WIDGET, List *items._s_TABS( ) )
+      Declare.b bar_tab_update_items_( *this._s_WIDGET, List *items._s_ITEMS( ) )
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare.i bar_tab_SetState( *this, item.l )
       Declare   bar_mdi_resize( *this, x.l, y.l, width.l, height.l )
@@ -6519,7 +6523,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\countitems + 1
          
          ;\\
-         *this\bar\_s.allocate( TABS, ( ))
+         *this\bar\_s.allocate( ITEMS, ( ))
          *this\__tabs( )\color       = _get_colors_( )
          *this\__tabs( )\height      = *this\height - 1
          *this\__tabs( )\text\string = Text.s
@@ -6646,7 +6650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.b bar_tab_update_items_( *this._s_WIDGET, List *items._s_TABS( ) )
+      Procedure.b bar_tab_update_items_( *this._s_WIDGET, List *items._s_ITEMS( ) )
          With *this
             Protected index
             Protected typ = 0
@@ -6937,7 +6941,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       
-      Procedure DrawTABITEMS( *this._s_WIDGET, vertical, x,y, round, List *items._s_TABS( ) )
+      Procedure DrawTABITEMS( *this._s_WIDGET, vertical, x,y, round, List *items._s_ITEMS( ) )
          Protected._s_BAR *bar = *this\bar
          Protected._s_BUTTONS *BB1, *BB2, *SB
          *SB  = *bar\button
@@ -7023,7 +7027,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; draw key-focus visible item
          If *this\FocusedTab( ) And
             *this\FocusedTab( )\visible
-            Protected._s_TABS *activeTAB = *this\FocusedTab( )
+            Protected._s_ITEMS *activeTAB = *this\FocusedTab( )
             ;   
             If *this\FocusedTab( )\itemindex <> #PB_Ignore
                draw_font( *this\FocusedTab( ) )
@@ -7177,7 +7181,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected backcolor
          
          With *this
-            Protected._s_TABS *activeTAB = *this\FocusedTab( )
+            Protected._s_ITEMS *activeTAB = *this\FocusedTab( )
             Protected._s_BAR *bar = *this\bar
             Protected._s_BUTTONS *BB1, *BB2, *SB
             *SB  = *bar\button
@@ -7188,8 +7192,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not *this\hide And *this\color\_alpha
                If is_integral_( *this )
                   ; draw_font( *this , CurrentFontID( ) );, GetFontID( *this\parent ) )
-                  If GetFontID( *this ) <> CurrentFontID( )
-                     SetFontID( *this, CurrentFontID( ))
+                  If ChangeFontID( *this, CurrentFontID( ))
                   EndIf
                EndIf
                
@@ -16772,22 +16775,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *TabBox
-            If is_item_( *TabBox, item ) And
-               SelectElement( *TabBox\__tabs( ), Item ) And
-              GetFontID( *TabBox\__tabs( ) ) <> FontID
-              SetFontID( *TabBox\__tabs( ), FontID )
-               ;       *this\__items( )\text\TextChange( ) = 1
-               ;       *this\WidgetChange( ) = 1
+            If is_no_select_item_( *TabBox\__tabs( ), Item )
+               ProcedureReturn #False
+            EndIf
+            ;
+            If ChangeFontID( *TabBox\__tabs( ), FontID )
                result = #True
             EndIf
          Else
             If *this\row
-               If is_item_( *this, item ) And
-                  SelectElement( *this\__items( ), Item ) And
-                 GetFontID( *this\__items( ) ) <> FontID
-                 SetFontID( *this\__items( ), FontID )
-                  ;       *this\__items( )\text\TextChange( ) = 1
-                  ;       *this\WidgetChange( ) = 1
+               If is_no_select_item_( *this\__items( ), Item )
+                  ProcedureReturn #False
+               EndIf
+               ;
+               If ChangeFontID( *this\__items( ), FontID )
                   result = #True
                EndIf
             EndIf
@@ -21411,7 +21412,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__event_Drop,
                     #__event_DragStart
                   
-                  *this\root\repaint = #True
+                  If *this\row
+                     *this\root\repaint = #True
+                  EndIf
             EndSelect
             
             ;\\ items events
@@ -24579,7 +24582,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----0-----------------------------------------------------------------------------------f-48--4-fv------4v-------8----------t-T4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4z-v-0tt-jv------------------------------------------4--8-----------------------------------------------------------------------4----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 6525
+; FirstLine = 6522
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----8------------------------------------------------------------------------------------+v4--v--e------vf-------4----------b-nu--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------e+-0vvt0f90------------------------------------------0--+-----------------------------------------------------------------------0---
 ; EnableXP
 ; Executable = widgets2.app

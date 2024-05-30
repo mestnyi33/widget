@@ -342,7 +342,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     TABS
-      Structure _s_TABS Extends _s_BOX
+      Structure _s_ITEMS Extends _s_BOX
          index.l     ; Index of new list element
          itemindex.l
          
@@ -356,7 +356,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMoveMin.i
          OffsetMoveMax.i
          
-         *parent._s_rows
+         ;*root._s_WIDGET
+         *parent._s_ROWS
          childrens.w ; Row( )\ ; rows( )\ ; row\
          sublevel.w
          
@@ -364,7 +365,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     ROWS
-      Structure _s_ROWS Extends _s_TABS
+      Structure _s_ROWS Extends _s_ITEMS
          checkbox._s_BOX ; \box[1]\ -> \checkbox\
          buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
          
@@ -411,11 +412,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *tt._s_tt
          
-         ;box._s_buttons
-         List *_s._s_rows( )
-         List lines._s_rows( )
          List items._s_rows( )
-         
       EndStructure
       ;--     BAR
       Structure _s_PAGE
@@ -447,8 +444,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *button._s_buttons[3]
          
-         List *_s._s_tabs( )
-         List *draws._s_tabs( )
+         List *_s._s_ITEMS( )
       EndStructure
       ;--     SCROLL
       Structure _s_SCROLL Extends _s_COORDINATE
@@ -504,29 +500,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; *widget._s_WIDGET
       EndStructure
       
-      
-      ;     ;--     items
-      ;     structure _s_items extends _s_coordinate
-      ;       index.l
-      ;       *parent._s_items
-      ;       draw.b
-      ;       hide.b
-      ;
-      ;       image._s_image
-      ;       text._s_text[4]
-      ;       box._s_buttons[2]
-      ;       color._s_color
-      ;
-      ;       ;state.b
-      ;       round.a
-      ;
-      ;       sublevel.w
-      ;       childrens.l
-      ;       sublevelsize.l
-      ;
-      ;       *data      ; set/get item data
-      ;     Endstructure
-      ;
       
       ;--     COLUMN
       Structure _s_COLUMN Extends _s_COORDINATE
@@ -767,6 +740,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 415
+; FirstLine = 400
 ; Folding = ---------0
 ; EnableXP

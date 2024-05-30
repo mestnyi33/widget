@@ -10,7 +10,7 @@
       #window
    EndEnumeration
    
-   Define i, *w._s_WIDGET
+   Define i, *w._s_WIDGET, count = 10
    
    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     LoadFont(5, "Arial", 18)
@@ -28,7 +28,7 @@
    
    Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
    *w = Tree( 10, 10, 424 - 20, 352 - 20) ; , #__flag_autosize )
-   For i = 1 To 100;0000
+   For i = 1 To count
       If (i & 2) 
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
          ;SetItemFont(*w, i, 6)
@@ -37,7 +37,8 @@
       EndIf
    Next 
    i=0
-   For i = 1 To 100;0000
+   Debug "----"
+   For i = 1 To count
       If (i & 2) 
          SetItemFont(*w, i, 6)
          ;Debug i
@@ -51,7 +52,7 @@
    ;\\ 
    Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
    *w = Tree( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
-   For i = 1 To 100;0000
+   For i = 1 To count
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
       Else
@@ -64,7 +65,7 @@
    ;\\ 
    Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
    *w = Tree( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
-   For i = 1 To 100;0000
+   For i = 1 To count
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
       Else
@@ -75,7 +76,7 @@
    
    Define *root2._s_WIDGET = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
    *w = Tree( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
-   For i = 1 To 100;0000
+   For i = 1 To count
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
       Else
@@ -88,7 +89,7 @@
    
    Define *root3._s_WIDGET = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
    *w = Tree( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
-   For i = 1 To 100;0000
+   For i = 1 To count
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
       Else
@@ -100,7 +101,7 @@
    
    Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
    *w = Tree( 10, 10, 200 - 20, 600 - 20) ; , #__flag_autosize )
-   For i = 1 To 100;0000
+   For i = 1 To count
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
       Else
@@ -186,6 +187,8 @@ CompilerEndIf
 ;  draw current font - Draw 4370939408 4300426464 4299401872
 ;  draw current font - Draw 4320347664 4299401872 4299355456
 ;  draw current font - Draw 4320369680 4299355456 4299401872
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 42
+; FirstLine = 19
+; Folding = --
 ; EnableXP
