@@ -377,7 +377,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro item_index( )
          index
       EndMacro
-      Macro __tabs( ): bar\_s( ): EndMacro
+      ;Macro __tabs: bar\_s: EndMacro
+      Macro __tabs: tab\items: EndMacro
       Macro __rows( ): columns( )\items( ): EndMacro
       Macro __lines( ): __rows( ) : EndMacro    ; row\lines( )
       Macro __lines_index( )
@@ -6523,7 +6524,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\countitems + 1
          
          ;\\
-         *this\bar\_s.allocate( ITEMS, ( ))
+         *this\__tabs.allocate( ITEMS, ( ))
          *this\__tabs( )\color       = _get_colors_( )
          *this\__tabs( )\height      = *this\height - 1
          *this\__tabs( )\text\string = Text.s
@@ -12035,10 +12036,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If Not (*this\mode\Buttons And *items( )\childrens)
                         Line((xs + *items( )\RowButton( )\x + *items( )\RowButton( )\width / 2), (ys + *items( )\height / 2), 7, 1, *items( )\color\line )
                      Else
-                        If Bool( Not *items( )\RowButtonState( ))
-                           ;  LineXY((xs + *buttonBox\x+2), (ys + 9), (x + *buttonBox\x + *buttonBox\width / 2-1), ys + *items( )\height-1, *items( )\color\line )
-                           LineXY((xs + *buttonBox\x - 1), (ys + 10), (xs + *buttonBox\x + *buttonBox\width / 2 - 1), ys + *items( )\height - 1, *items( )\color\line )
-                           ;  LineXY((xs + *buttonBox\x-2), (ys + 12), (x + *buttonBox\x + *buttonBox\width / 2-1), ys + *items( )\height-1, *items( )\color\line )
+                        If *this\row\sublevelsize = 6
+                           If Bool( Not *items( )\RowButtonState( ))
+                              LineXY((xs + *buttonBox\x - 1), (ys + 10), (xs + *buttonBox\x + *buttonBox\width / 2 - 1), ys + *items( )\height - 1, *items( )\color\line )
+                           EndIf
                         EndIf
                      EndIf
                   EndIf
@@ -13653,7 +13654,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   
                   If ( *this\mode\Lines Or *this\mode\Buttons Or *this\mode\check ) And Not ( *this\flag & #__tree_property Or *this\flag & #__tree_OptionBoxes )
-                     *this\row\sublevelsize = 6;18
+                     *this\row\sublevelsize = 18
                   Else
                      *this\row\sublevelsize = 0
                   EndIf
@@ -24583,8 +24584,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 6525
-; FirstLine = 6522
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----8------------------------------------------------------------------------------------+v4--v--e------vf-------4----------b-nu--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------e+-0vvt0f90------------------------------------------0--+-----------------------------------------------------------------------0---
+; CursorPosition = 13656
+; FirstLine = 12807
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----8-------------------------------------------------------------------------------------v4--v--e------vf-------4----------8-nu-----+------v------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------09-8ffb8-58------------------------------------------8--0-----------------------------------------------------------------------8----
 ; EnableXP
 ; Executable = widgets2.app

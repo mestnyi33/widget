@@ -327,20 +327,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          hide.b
       EndStructure
       
-      ;--     TAB
-      Structure _s_TAB
-         *widget._s_WIDGET
-         
-         state.c
-         index.c
-         addindex.c
-         
-         ; tab
-         *entered._s_rows
-         *pressed._s_rows
-         *focused._s_rows
-      EndStructure
-      
       ;--     TABS
       Structure _s_ITEMS Extends _s_BOX
          index.l     ; Index of new list element
@@ -362,6 +348,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
          sublevel.w
          
          *data  ; set/get item data
+      EndStructure
+      
+      ;--     TAB
+      Structure _s_TAB
+         *widget._s_WIDGET
+         
+         state.c
+         index.c
+         addindex.c
+         
+         ; tab
+         *entered._s_rows
+         *pressed._s_rows
+         *focused._s_rows
+         
+          List *items._s_ITEMS( )
       EndStructure
       
       ;--     ROWS
@@ -412,7 +414,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *tt._s_tt
          
-         List items._s_rows( )
+         List lines._s_rows( )
       EndStructure
       ;--     BAR
       Structure _s_PAGE
@@ -444,7 +446,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *button._s_buttons[3]
          
-         List *_s._s_ITEMS( )
+        ; List *_s._s_ITEMS( )
       EndStructure
       ;--     SCROLL
       Structure _s_SCROLL Extends _s_COORDINATE
@@ -741,7 +743,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 415
-; FirstLine = 400
+; CursorPosition = 416
+; FirstLine = 387
 ; Folding = ---------0
 ; EnableXP
