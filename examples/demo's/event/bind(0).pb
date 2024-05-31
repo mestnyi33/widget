@@ -10,23 +10,23 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_gadgets()
     Protected *ew._s_widget = EventWidget( )
-    Debug ""+Str(*ew\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
+    Debug ""+Str(GetIndex( *ew ))+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
   EndProcedure
   
   Procedure events_widgets()
     Protected *ew._s_widget = EventWidget( )
     ; ClearDebugOutput()
-    Debug " "+Str(*ew\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
+    Debug " "+Str(GetIndex( *ew ))+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
   EndProcedure
   
   Procedure events_windows()
     Protected *ew._s_widget = EventWidget( )
-    Debug "   "+Str(*ew\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
+    Debug "   "+Str(GetIndex( *ew ))+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
   EndProcedure
   
   Procedure events_roots()
     Protected *ew._s_widget = EventWidget( )
-    Debug "     "+Str(*ew\index - 1)+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
+    Debug "     "+Str(GetIndex( *ew ))+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
   EndProcedure
   
   
@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 58
+; CursorPosition = 28
+; FirstLine = 9
 ; Folding = --
 ; EnableXP

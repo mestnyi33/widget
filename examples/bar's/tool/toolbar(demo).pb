@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess )
       
       ;      a_init(root( ))
-            Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+      Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
       ; *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
       ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
@@ -163,6 +163,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 77
-; FirstLine = 62
+; FirstLine = 67
 ; Folding = --
 ; EnableXP

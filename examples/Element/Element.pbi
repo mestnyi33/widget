@@ -25,14 +25,14 @@ EndMacro
 Macro OptionElement( _element_, _x_, _y_, _width_, _height_, _text_, _flag_=0 )
    Option(_x_, _y_, _width_, _height_, _text_, _flag_)
    If _element_ >= 0
-      widget( )\index = _element_
+      widget( )\_id = _element_
    EndIf
 EndMacro
 
 Macro CheckBoxElement( _element_, _x_, _y_, _width_, _height_, _text_, _flag_=0 )
    CheckBox(_x_, _y_, _width_, _height_, _text_, _flag_)
    If _element_ >= 0
-      widget( )\index = _element_
+      widget( )\_id = _element_
    EndIf
 EndMacro
 
@@ -44,9 +44,8 @@ Macro WaitCloseElement( _element_=0 )
    WaitClose( _element_ )
 EndMacro
 
-
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 5
-; Folding = f-
+; CursorPosition = 34
+; FirstLine = 9
+; Folding = --
 ; EnableXP

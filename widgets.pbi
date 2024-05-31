@@ -3,6 +3,7 @@
 ; (__)\          )\/\
 ;      ||------w||
 ;      ||       ||
+;https://github.com/mestnyi33/widget/commits/macos/?after=24cf91f4b5a08e4a496f764416578125334e97ab+1154
 ; 43025500559246
 ; Regex Trim(Arguments)
 ; https://regex101.com/r/zxBLgG/2
@@ -661,6 +662,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro StartDrawingRoot( _root_ )
          Bool(widget::__gui\drawingroot <> _root_)
+         ;Debug "StartDrawingRoot "+_root_\class
          StopDrawingRoot( )
          If Not _root_\drawmode 
             _root_\drawmode | 1<<2
@@ -675,6 +677,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       Macro StopDrawingRoot( )
          If widget::__gui\drawingroot 
+            ;Debug "StopDrawingRoot "+widget::__gui\drawingroot\class
             If widget::__gui\drawingroot\drawmode & 1<<2
                StopDrawing( )
             EndIf
@@ -4664,189 +4667,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *root
       EndProcedure
       
-      Procedure.i _DisplayPopup( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
-         Protected width
-         Protected height
-         Protected mode = 0
-         
-         ;\\
-         If *this
-            ;\\ hide current popup widget
-            Hide( *this, *this\hide ! 1 )
-            
-            ;\\
-            If *display
-               ;                If x = #PB_Ignore
-               ;                   x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\x + 1
-               ;                Else
-               ;                   x + *display\x + 1
-               ;                EndIf
-               ;                If y = #PB_Ignore
-               ;                   y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + *display\y + *display\height
-               ;                Else
-               ;                   y + *display\y + 1
-               ;                EndIf
-               If x = #PB_Ignore
-                  x = *display\screen_x( )
-               EndIf
-               If y = #PB_Ignore
-                  y = *display\screen_y( ) + *display\screen_height( )
-               EndIf
-               
-               y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
-               x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
-               
-               
-               ;\\ ComboBox
-               If *display\ComboButton( )
-                  If *this\hide
-                     *display\ComboButton( )\arrow\direction = 2
-                  Else
-                     *display\ComboButton( )\arrow\direction = 3
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ hide previews popup widget
-            If Popup( )
-               If Popup( )\widget
-                  If Popup( )\widget <> *this
-                     ChangeParent( Popup( )\widget, Popup( )\parent )
-                     Hide( Popup( )\widget, #True )
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\hide
-               If Popup( )
-                  Debug "display - hide"
-                  Popup( )\widget = #Null
-                  If PressedWidget( ) = *this
-                     PressedWidget( ) = *display
-                  EndIf
-                  HideWindow( Popup( )\canvas\window, #True, #PB_Window_NoActivate )
-               EndIf
-            Else
-               ;\\
-               If Popup( )
-                  If Popup( )\widget
-                     Debug "display - resize"
-                  Else
-                     Debug "display - show"; +" "+ Popup( )\width +" "+ Popup( )\height
-                     HideWindow( Popup( )\canvas\window, #False, #PB_Window_NoActivate )
-                  EndIf
-               Else
-                  Debug "display - create "
-                  Popup( ) = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess )
-               EndIf
-               
-               ;\\
-               If *this\row
-                  Debug "" + *this\root\class + " " + *display\root\class
-                  If *this\root = *display\root
-                     Debug "display - update"
-                     
-                     RootReDrawing( *this\root )
-                     update_items_( *this, *this\__items( ) )
-                     
-                     If *this\scroll And 
-                        ( *this\scroll\v Or *this\scroll\h )
-                        bar_area_update( *this )
-                     EndIf
-                     *this\autosize = 0
-                     Resize( *this, #PB_Ignore, #PB_Ignore, *this\root\width, *this\root\height )
-                     *this\autosize = 1
-                  EndIf
-                  
-                  ;\\
-                  If *this\scroll And
-                     *this\scroll\v And
-                     Not *this\scroll\v\hide
-                     width = *this\scroll\v\width
-                  EndIf
-                  width + *this\scroll_width( )
-                  
-                  ;                   ;\\
-                  ;                   ForEach *this\__items( )
-                  ;                      height + *this\__items( )\height
-                  ;                      
-                  ;                      If mode
-                  ;                         If *this\__items( )\focus
-                  ;                            y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\__items( ) ) - *this\__items( )\height / 2 )
-                  ;                         EndIf
-                  ;                      EndIf
-                  ;                      
-                  ;                      If ( ListIndex(*this\__items( )) + 1 ) >= 10
-                  ;                         Break
-                  ;                      EndIf
-                  ;                   Next
-                  
-                  ; test
-                  PushListPosition( *this\__rows( ) ) 
-                  If ListSize( *this\__rows( ) ) > 9
-                     SelectElement( *this\__rows( ), 9 )
-                  Else
-                     LastElement( *this\__rows( ) ) 
-                  EndIf
-                  height = ( *this\__rows( )\y + *this\__rows( )\height ) 
-                  PopListPosition( *this\__rows( ) ) 
-                  
-               Else
-                  height = *this\inner_height( )
-               EndIf
-               
-               ;\\
-               width + *this\fs * 2
-               height + *this\fs * 2
-               
-               ;\\
-               If width < *display\width - 2
-                  width = *display\width - 2
-               EndIf
-               
-               ;\\
-               If mode
-                  x = GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + Mouse( )\x - width / 2
-               EndIf
-               
-               ;\\
-               ; StickyWindow( window, #True )
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  ; var windowLevel: UIWindow.Level { get set } ; stay on top
-                  CocoaMessage(0, WindowID(Popup( )\canvas\window), "setLevel:", 3)
-                  ; Debug CocoaMessage(0, WindowID(Popup( )\canvas\window), "level")
-               CompilerEndIf
-               
-               ;\\
-               Popup( )\widget = *this
-               Popup( )\parent = *display
-               ChangeParent( *this, Popup( ) )
-               PostRepaint( Popup( ) )
-               
-               ;\\
-               If *display\round
-                  x + *display\round
-                  width - *display\round * 2
-               EndIf
-               
-               ;\\
-               If Popup( )\width = width And
-                  Popup( )\height = height
-                  ; Debug ""+ WindowWidth( Popup( )\canvas\window ) +" "+  WindowHeight( Popup( )\canvas\window ) +" "+Popup( )\width +" "+ Popup( )\height
-                  Resize( Popup( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-               EndIf
-               
-               ;           ;\\
-               ;           CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-               ;             ResizeWindow( Popup( )\canvas\window, x, y, width-6, height-29 )
-               ;           CompilerElse
-               ResizeWindow( Popup( )\canvas\window, x, y, width, height )
-               ;           CompilerEndIf
-               ProcedureReturn #True
-            EndIf
-         EndIf
-      EndProcedure
       Procedure.i DisplayPopup( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
          Protected width
          Protected height
@@ -4917,7 +4737,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\root = *display\root
                      Debug "display - update"
                      
-                     RootReDrawing( *this\root )
+                     ;RootReDrawing( *this\root )
                      update_items_( *this, *this\__items( ) )
                      
                      If *this\scroll And 
@@ -5018,7 +4838,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                ;\\
                ;                ResizeWindow( Popup( )\canvas\window, x, y, width, height )
                ;                ResizeGadget( Popup( )\canvas\gadget, 0, 0, width, height)
-               
+                     
                Resize( Popup( ), x, y, width, height)
                
                ProcedureReturn #True
@@ -5341,7 +5161,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      SetParent( *this, *displayRoot )
                   EndIf
                   
-                  RootReDrawing( *this\root )
+                  ;RootReDrawing( *this\root )
                   If *this\row
                      update_items_( *this, *this\__rows( ) )
                   Else
@@ -24584,8 +24404,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 13656
-; FirstLine = 12807
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----8-------------------------------------------------------------------------------------v4--v--e------vf-------4----------8-nu-----+------v------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------09-8ffb8-58------------------------------------------8--0-----------------------------------------------------------------------8----
+; CursorPosition = 664
+; FirstLine = 675
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----0-------------------------------------------------------------------------------------48--4-fv------4v-------8----------0-T4----f-------4------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------e+-0vvt0f90------------------------------------------0--+-----------------------------------------------------------------------0---
 ; EnableXP
 ; Executable = widgets2.app

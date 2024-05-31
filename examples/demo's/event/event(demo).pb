@@ -75,9 +75,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure OpenDemo( id, flag=0 )
       Static x,y
-      Open( id, x,y,200,200,"window_"+Str(id), #PB_Window_SystemMenu);|flag)
-      Button(40,40,200-80,55, "")
-      Button( 40,110,200-80,55, "")
+      Open( id, x,y,200,200,"win"+Str(id), #PB_Window_SystemMenu);|flag)
+      Button(40,40,200-80,55, "win"+Str(id)+"-btn1")
+      Button( 40,110,200-80,55, "win"+Str(id)+"-btn2")
       
       Bind( root(), @_events())
       x + 100
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 49
-; FirstLine = 38
+; CursorPosition = 79
+; FirstLine = 58
 ; Folding = --
 ; EnableXP

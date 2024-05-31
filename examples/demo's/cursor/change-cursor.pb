@@ -18,6 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Splitter_4 = Splitter(10, 10, 410, 210, Splitter_0, Splitter_1, #PB_Splitter_Vertical)
       
+      SetCursor(Splitter_4, #PB_Cursor_Hand)
       
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
@@ -26,5 +27,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 20
 ; Folding = -
 ; EnableXP
