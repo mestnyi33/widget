@@ -11,6 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global tree_view
   Global *this._s_widget
+  Global *root._S_widget
   Global NewMap Widgets.i()
   Global.i Window_0, Canvas_0, gEvent, gQuit, x=10,y=10
   
@@ -72,12 +73,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn SetAlignment( *this, mode, left, top, right, bottom )
   EndProcedure
   
-  ; proportional
-  Procedure example_1()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 30, 30, 190, 200, "proportional-alignment (alexample_1)", #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
-    SetColor(*w, #__color_back, $FFACE3FF )
+  Procedure example_1( )
+    *root = Open( #PB_Any, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
+    Canvas_0 = GetGadget(*root)
+    Window_0 = GetWindow(*root)
+    SetColor(*root, #__color_back, $FFACE3FF )
     
     Widgets(Hex(2)) = Button(55, 5, 80, 20, "center")   ; center \2     align_proportional_horizontal
     Widgets(Hex(3)) = Button(55, 25, 80, 20, "right")   ; right         #right
@@ -117,11 +117,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
   EndProcedure
   
-  ; auto alignment
-  Procedure example_2()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 310, 30, 190, 200, "alignment-auto-indent", #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
+  Procedure example_2( )
+    *root = Open( #PB_Any, 310, 30, 190, 200, #PB_Compiler_Procedure+"(alignment-auto-indent)", #PB_Window_SizeGadget)
+    Canvas_0 = GetGadget(*root)
+    Window_0 = GetWindow(*root)
     
     Widgets(Hex(10)) = Button(0, 0, 90, 50, "left&center&right")      
     Widgets(Hex(11)) = Button(0, 0, 90, 50, "top&center&bottom")      
@@ -157,15 +156,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     bind(root(), @events())
-    
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,260)
   EndProcedure
   
-  ; auto docking
-  Procedure example_3()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 250, 330, 390, 200, "gadget-auto-dock", #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
+  Procedure example_3( )
+    *root = Open( #PB_Any, 250, 330, 390, 200, #PB_Compiler_Procedure+"(gadget-auto-dock)", #PB_Window_SizeGadget)
+    Canvas_0 = GetGadget(*root)
+    Window_0 = GetWindow(*root)
     
     Widgets(Hex(1)) = Button(0, 0, 60, 20, "left1")  
     Widgets(Hex(2)) = Button(0, 0, 80, 40, "top1")   
@@ -220,11 +217,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
   
-  Procedure example_4()
+  Procedure example_4( )
     ;ProcedureReturn 
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 450, 460, 390, 200, "window-auto-dock", #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
+    *root = Open( #PB_Any, 450, 460, 390, 200, #PB_Compiler_Procedure+"(window-auto-dock)", #PB_Window_SizeGadget)
+    Canvas_0 = GetGadget(*root)
+    Window_0 = GetWindow(*root)
     
     Widgets(Hex(1)) = Window(0, 0, 60, 20, "left1", #__flag_nogadgets)  
     Widgets(Hex(2)) = Window(0, 0, 80, 40, "top1", #__flag_nogadgets)   
@@ -278,11 +275,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
   
-  ; 
-  Procedure example_5()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 850, 460, 390, 200, "auto-alignment", #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
+  Procedure example_5( )
+    *root = Open( #PB_Any, 850, 460, 390, 200, #PB_Compiler_Procedure+"(auto-alignment)", #PB_Window_SizeGadget)
+    Canvas_0 = GetGadget(*root)
+    Window_0 = GetWindow(*root)
     
     Widgets(Hex(1)) = Button(0, 0, 60, 20, "left1")  
     Widgets(Hex(2)) = Button(0, 0, 80, 40, "top1")   
@@ -334,13 +330,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
   
-  Procedure example_6()
+  Procedure example_6( )
     Protected width = 460
     Protected height = 200
     
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 620, 30, width, height, "Proportional", #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
+    *root = Open( #PB_Any, 620, 30, width, height, #PB_Compiler_Procedure+"(Proportional)", #PB_Window_SizeGadget)
+    Canvas_0 = GetGadget(*root)
+    Window_0 = GetWindow(*root)
     
     ;\\
     Widgets(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
@@ -411,13 +407,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 490,390)
   EndProcedure
   
-  Procedure example_7()
+  Procedure example_7( )
     Protected width = 384
     Protected height = 144
     
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 320, 130, width, height, "indent-auto-alignment (example_2)", #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
+    *root = Open( #PB_Any, 320, 130, width, height, #PB_Compiler_Procedure+"(indent-auto-alignment (example_2))", #PB_Window_SizeGadget)
+    Canvas_0 = GetGadget(*root)
+    Window_0 = GetWindow(*root)
     
     ;\\
     Widgets(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
@@ -455,19 +451,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 690,490)
   EndProcedure
   
-  example_1()
-  example_2()
-  example_3()
-  example_4()
-   example_5()
-  example_6()
-  example_7()
-  
-  
+  ;
   Procedure example_demo()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 20, 540, 250, 410, "test", #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
+    *root = Open( #PB_Any, 20, 540, 250, 410, "test", #PB_Window_SizeGadget)
+    Canvas_0 = GetGadget(*root)
+    Window_0 = GetWindow(*root)
     
     ;     ;\\
     ;     tree_view = Tree(0, 0, 0, 0, #__flag_autosize)   
@@ -483,11 +471,21 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetAlignment(tree_button1, 0, 1,0,1,1 )
     SetAlignment(tree_button2, 0, 1,0,1,1 )
-    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,400)
+    
     bind(root(), @events())
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,400)
   EndProcedure
   
-  example_demo()
+  example_1()
+  example_2()
+  example_3()
+  example_4()
+  example_5()
+  example_6()
+  example_7()
+  
+  example_demo( )
+  
   WaitClose( )
   ;   Repeat
   ;     gEvent= WaitWindowEvent()
@@ -501,7 +499,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 57
-; Folding = --B+
+; CursorPosition = 457
+; FirstLine = 385
+; Folding = 0---
 ; EnableXP

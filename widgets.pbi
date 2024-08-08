@@ -15776,28 +15776,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If right = #__align_auto And bottom = #__align_auto
                right  = 1
                bottom = 1
-               mode | #__align_auto
+               If mode & #__align_auto = 0
+                  mode = 0
+               EndIf
             EndIf
          EndIf
          
          ;\\
          If mode & #__align_auto = #__align_auto
             If left = 0 And top = 0 And right = 0 And bottom = 0
-               If mode & #__align_left : left = #__align_auto
-               ElseIf mode & #__align_top : top = #__align_auto
-               ElseIf mode & #__align_right : right = #__align_auto
-               ElseIf mode & #__align_bottom : bottom = #__align_auto
-               Else
+               If mode & #__align_left 
+                  left = #__align_auto
+               EndIf
+               If mode & #__align_top 
+                  top = #__align_auto
+               EndIf
+               If mode & #__align_right 
+                  right = #__align_auto
+               EndIf
+               If mode & #__align_bottom 
+                  bottom = #__align_auto
+               EndIf
+               If left = 0 And top = 0 And right = 0 And bottom = 0
                   left   = #__align_auto
                   top    = #__align_auto
                   right  = #__align_auto
                   bottom = #__align_auto
                EndIf
             Else
-               If left > 0 : left = #True : EndIf
-               If top > 0 : top = #True : EndIf
-               If right > 0 : right = #True : EndIf
-               If bottom > 0 : bottom = #True : EndIf
+               If left > 0 : left = 1 : EndIf
+               If top > 0 : top = 1 : EndIf
+               If right > 0 : right = 1 : EndIf
+               If bottom > 0 : bottom = 1 : EndIf
                
                If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__align_auto : EndIf
                If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__align_auto : EndIf
@@ -15809,16 +15819,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If mode & #__align_full = #__align_full
             If left = 0 And top = 0 And right = 0 And bottom = 0
-               If mode & #__align_left : left = #__align_full
-               ElseIf mode & #__align_top : top = #__align_full
-               ElseIf mode & #__align_right : right = #__align_full
-               ElseIf mode & #__align_bottom : bottom = #__align_full
-               Else
+;                If mode & #__align_left : left = #__align_full
+;                ElseIf mode & #__align_top : top = #__align_full
+;                ElseIf mode & #__align_right : right = #__align_full
+;                ElseIf mode & #__align_bottom : bottom = #__align_full
+;                Else
+;                   left   = #__align_full
+;                   top    = #__align_full
+;                   right  = #__align_full
+;                   bottom = #__align_full
+;                EndIf
+               
+               If mode & #__align_left 
+                  left = #__align_full
+               EndIf
+               If mode & #__align_top 
+                  top = #__align_full
+               EndIf
+               If mode & #__align_right 
+                  right = #__align_full
+               EndIf
+               If mode & #__align_bottom 
+                  bottom = #__align_full
+               EndIf
+               If left = 0 And top = 0 And right = 0 And bottom = 0
                   left   = #__align_full
                   top    = #__align_full
                   right  = #__align_full
                   bottom = #__align_full
                EndIf
+            
             Else
                ;                If left > 0 : left = #__align_full : EndIf
                ;                If top > 0 : top = #__align_full : EndIf
@@ -15839,30 +15869,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If left = #__align_full
             left   = #__align_auto
-            top    = #True
-            bottom = #True
+            top    = 1
+            bottom = 1
             flag | #__align_full
          EndIf
          If right = #__align_full
             right  = #__align_auto
-            top    = #True
-            bottom = #True
+            top    = 1
+            bottom = 1
             flag | #__align_full
          EndIf
          If top = #__align_full
             top   = #__align_auto
-            left  = #True
-            right = #True
+            left  = 1
+            right = 1
             flag | #__align_full
          EndIf
          If bottom = #__align_full
             bottom = #__align_auto
-            left   = #True
-            right  = #True
+            left   = 1
+            right  = 1
             flag | #__align_full
          EndIf
-         If mode And
-            left > 0 And top > 0 And right > 0 And bottom > 0
+         If mode And left > 0 And top > 0 And right > 0 And bottom > 0
             flag | #__align_full
          EndIf
          
@@ -15876,7 +15905,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                top    = #__align_proportional
                bottom = #__align_proportional
             EndIf
-            
+            ;
             If left And left <> #__align_proportional
                If right = 0
                   left = 0
@@ -15901,23 +15930,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                top = #__align_proportional
             EndIf
-            
+            ;
             If mode & #__align_right
                left = #__align_proportional
             EndIf
-            
             If mode & #__align_left
                right = #__align_proportional
             EndIf
-            
             If mode & #__align_top
                bottom = #__align_proportional
             EndIf
-            
             If mode & #__align_bottom
                top = #__align_proportional
             EndIf
-            
+            ;
             mode = 0
          EndIf
          
@@ -15991,7 +16017,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               If mode
+               ; Debug ""+mode +" - "+ left+" "+top+" "+right+" "+bottom
+               If mode = 0
+                  *this\align\x = *this\container_x( )
+                  *this\align\y = *this\container_y( )
+                  ;\\
+                  If *this\type = #__type_window
+                     *this\align\width  = *this\inner_width( )
+                     *this\align\height = *this\inner_height( )
+                  Else
+                     *this\align\width  = *this\frame_width( )
+                     *this\align\height = *this\frame_height( )
+                  EndIf
+                  
+               Else
                   ;\\ full horizontal
                   If *this\align\right And *this\align\left
                      *this\align\x     = 0
@@ -16043,14 +16082,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ;\\ auto stick change
                   If *this\parent\align
-                     If left = #__align_auto And
-                        *this\parent\align\autodock\x
+                     If left = #__align_auto And *this\parent\align\autodock\x
                         left = - *this\parent\align\autodock\x
                      EndIf
-                     If right = #__align_auto And
-                        *this\parent\align\autodock\width
+                     If right = #__align_auto And *this\parent\align\autodock\width
                         right = - *this\parent\align\autodock\width
                      EndIf
+                     If top = #__align_auto And *this\parent\align\autodock\y
+                        top = - *this\parent\align\autodock\y
+                     EndIf
+                     If bottom = #__align_auto And *this\parent\align\autodock\height
+                        bottom = - *this\parent\align\autodock\height
+                     EndIf
+                     ;
                      If left < 0 Or right < 0
                         If left And right
                            *this\align\x - left
@@ -16058,15 +16102,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Else
                            *this\align\x - left + right
                         EndIf
-                     EndIf
-                     
-                     If top = #__align_auto And
-                        *this\parent\align\autodock\y
-                        top = - *this\parent\align\autodock\y
-                     EndIf
-                     If bottom = #__align_auto And
-                        *this\parent\align\autodock\height
-                        bottom = - *this\parent\align\autodock\height
                      EndIf
                      If top < 0 Or bottom < 0
                         If top And bottom
@@ -16133,19 +16168,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               If Not mode
-                  *this\align\x = *this\container_x( )
-                  *this\align\y = *this\container_y( )
-                  ;\\
-                  If *this\type = #__type_window
-                     *this\align\width  = *this\inner_width( )
-                     *this\align\height = *this\inner_height( )
-                  Else
-                     *this\align\width  = *this\frame_width( )
-                     *this\align\height = *this\frame_height( )
-                  EndIf
-               EndIf
-               
                ; update parent children's coordinate
                Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                PostRepaint( *this\root )
@@ -22410,6 +22432,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "- resize - os - window -"
          ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
          PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( canvas ) * 2 ) ; bug
+         ;PostEventRepaint( root())
       EndProcedure
       
       Procedure EventRepaint( )
@@ -22673,8 +22696,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If g
             SetWindowData( Window, Canvas )
             
-            If flag & #PB_Canvas_Container = #PB_Canvas_Container
-               ; BindEvent( #PB_Event_MoveWindow, @EventResize( ), Window )
+            If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
             EndIf
             
@@ -24411,7 +24433,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4-------------------------------------------------------------------------------------fv--f--0+-----f-+------v----------4-Pd-----0------f------------------------------------------------------------------------------------------------------------------------------------------------------------------v------------------------------------------86-4-+33-x4------------------------------------------4--8-----------------------------------------------------------------------4----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 15830
+; FirstLine = 14964
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4-------------------------------------------------------------------------------------fv--f--0+-----f-+------v----------4-Pd-----0------f-----------------------------------------------------------------------------------------------------8-------+--VVzd-r5---------------------------------------------+-----------------------------------------vn-f-8bb-Hf------------------------------------------f--v------------8v8----bt-f--8+-----v--------------------------------------f----
 ; EnableXP
 ; Executable = widgets2.app

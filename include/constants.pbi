@@ -211,7 +211,6 @@
       #__align_full         = 1 << 7
       #__align_auto         = 1 << 8 ; #__flag_autoSize
       
-      
       ;-
       ;-\\ Bar
       #__bar_minus      = 1
@@ -873,7 +872,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 135
-; FirstLine = 128
+; CursorPosition = 213
+; FirstLine = 194
 ; Folding = ----
 ; EnableXP
