@@ -443,9 +443,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Opened( ): widget::__gui\opened: EndMacro ; object list opened container
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
-      Macro ParentBar( ): parentmenu: EndMacro
-      Macro PopupBar( ): childmenu: EndMacro ; parent\
-      Macro ComboBar( ): childmenu: EndMacro
+      
+      Macro ParentMenu( ): parent: EndMacro ; _s_ROWS( )
+      Macro ParentRow( ): parent: EndMacro ; _s_ROWS( )
+      
+      Macro ParentBar( ): parent_menu: EndMacro
+      Macro PopupBar( ): popup_menu: EndMacro ; parent\
+      Macro ComboBar( ): popup_menu: EndMacro
       
       ;-
       Macro ToggleBoxState( ): ToggleBox( )\state: EndMacro
@@ -503,7 +507,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro FocusedRowIndex( ): row\id[0]: EndMacro
       
       ;-
-      Macro ParentRow( ): parent: EndMacro
       Macro LeavedRow( ): row\leaved: EndMacro  ; Returns mouse entered widget
       Macro EnteredRow( ): row\entered: EndMacro; Returns mouse entered widget
       Macro PressedRow( ): row\pressed: EndMacro; Returns key focus item address
@@ -959,7 +962,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If GetFontID( _address_ ) And
             CurrentFontID( ) <> GetFontID( _address_ )
-             Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(_address_) + " " + CurrentFontID( ) +" "+ GetFontID( _address_ )
+            ; Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(_address_) + " " + CurrentFontID( ) +" "+ GetFontID( _address_ )
             CurrentFontID( ) = GetFontID( _address_ )
             
             DrawingFont( CurrentFontID( ) )
@@ -4965,24 +4968,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   BarItem( item, text.s, image = - 1 )
-         Protected sublevel
-         Protected._s_ROWS  *item, *parent
+         Protected._s_ROWS  *item, *menu
          ;
          If menu( )
             ; get the address of the last item
             ; to make it the parent of the current item
             If menu( )\ParentBar( )
-               *parent = menu( )\ParentBar( )\__tabs( )
-               sublevel = *parent\sublevel + 1
+               *menu = menu( )\ParentBar( )\__tabs( )
             EndIf
             ;
             *item = BarButton( item, image, 0, text.s )
             ;
-            If *parent
-               *item\sublevel = sublevel
-               *item\parent = *parent
-               *item\parent\childrens + 1
-               *item\parent\data = menu( )
+            If *menu
+               *item\sublevel = *menu\sublevel + 1
+               *menu\childrens + 1
+               *menu\ParentMenu( ) = menu( )
             EndIf
          EndIf
          ;
@@ -5099,13 +5099,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   HidePopupMenuBar( *this._s_WIDGET )
-         While *this
-            If *this 
-               Hide( *this, #True )
-               HideWindow( GetWindow( *this\root ), #True )
-            EndIf
-            *this = *this\PopupBar( )
-         Wend
+         Protected *PopupBar._s_WIDGET = *this\PopupBar( )
+         If *PopupBar And
+            Not *PopupBar\hidden
+            ;
+            *this\PopupBar( ) = #Null
+            *this\root\repaint = #True
+            ;
+            While *PopupBar
+               If *PopupBar 
+                  Hide( *PopupBar, #True )
+                  HideWindow( GetWindow( *PopupBar\root ), #True )
+               EndIf
+               *PopupBar = *PopupBar\PopupBar( )
+            Wend
+            ;
+            ProcedureReturn #True
+         EndIf
       EndProcedure
       
       Procedure   DisplayPopupMenuBar( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
@@ -5118,6 +5128,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this
+            If *display\EnteredTab( )
+               DoEvents( *display, #__event_StatusChange, *display\EnteredTab( )\index, *display\EnteredTab( ) )
+            EndIf
             If *this\hidden
                Hide( *this, #False )
             EndIf
@@ -12865,18 +12878,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\EnteredRow( )\ColorState( ) = #__s_0
                      *this\EnteredRow( )\ColorState( ) = #__s_1
-                     
-                     ; Post event item status change
-                     If *this\anchors
-                        *this\root\repaint = #True
-                     Else
-                        ;DoEvents( *this, #__event_StatusChange, *this\EnteredRow( )\index, *this\EnteredRow( ) )
-                     EndIf
                   Else
                      If *this\EnteredRow( )\RowButton( )\enter
                         Send( *this, #__event_Up, *this\EnteredRow( )\index, *this\EnteredRow( ) )
-                        ;                      Else
-                        ;                         Send( *this, #__event_LeftClick, *this\EnteredRow( )\index, *this\EnteredRow( ) )
                      EndIf
                   EndIf
                EndIf
@@ -14834,11 +14838,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Else
                            *this\FocusedRow( )\RowFocus( 1 )
                            *this\FocusedRow( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
-                           If *this\anchors
-                              *this\root\repaint = #True
-                           Else
-                              ;DoEvents( *this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ) )
-                           EndIf
                         EndIf
                         
                         PostRepaint( *this\root )
@@ -15703,7 +15702,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                PostRepaint( *parent\root )
-               PostRepaint( *lastParent\root )
+               If *parent\root <> *lastParent\root
+                  PostRepaint( *lastParent\root )
+               EndIf
             EndIf
          EndIf
          
@@ -19334,25 +19335,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If *this
             If Not a_index( )
-               ;             If *this\row
-               ;                If *this\type = #__type_Editor Or
-               ;                   *this\type = #__type_string
-               ;
-               ;                   DoEvent_Lines( *this, #__event_MouseMove, mouse_x, mouse_y )
-               ;                Else
-               ;                   DoEvent_Items( *this, #__event_MouseMove, mouse_x, mouse_y )
-               ;                EndIf
-               ;             EndIf
-               
                If Not mouse( )\press
                   ;\\
                   DoEvent_Button( *this, #__event_MouseMove, mouse_x, mouse_y )
                EndIf
-               
-               ;                   ;\\
-               ;                   If *this\tab
-               ;                      DoEvent_Tab( *this, #__event_MouseMove, mouse_x, mouse_y )
-               ;                   EndIf
             EndIf
          EndIf
          
@@ -19494,13 +19480,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; Debug "scroll h stop bottom"
                   EndIf
                EndIf
-            EndIf
-            
-            If result = 1
-               ;Debug 888
-               ; If Not *this\anchors
-               ;   DoEvents( *this, #__event_StatusChange )
-               ; EndIf
             EndIf
          EndIf
          
@@ -20354,11 +20333,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;\\ update non-focus status
                         If Not ( *this\LeavedRow( ) = #Null And *item = *this\FocusedRow( ) And
                                  Not ( *this\press And Not *this\mode\clickSelect And Not *this\mode\multiSelect ) )
-                           ; Debug " items status change enter"
+                           ; Debug " enter-items status change"
                            
-                           If *this\anchors
-                              *this\root\repaint = #True
-                           Else
+                           If Not *this\anchors
                               DoEvents(*this, #__event_StatusChange, *item\index, *item)
                            EndIf
                         Else
@@ -20371,11 +20348,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ElseIf *this\press = 0 And
                       Not ( *this\LeavedRow( ) = *this\FocusedRow( ) And 
                             Not ( *this\press And Not *this\mode\clickSelect And Not *this\mode\multiSelect ))
-                  ; Debug " items status change leave"
+                  ; Debug " leave-items status change"
                   
-                  If *this\anchors
-                     *this\root\repaint = #True
-                  Else
+                  If Not *this\anchors
                      If *this\FocusedRow( )
                         DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
                      ElseIf *this\LeavedRow( )
@@ -20436,12 +20411,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If eventtype = #__event_MouseEnter
-               If *this\FocusedRow( ) And ;*this\press = 0 And
-                  Not ( *this\EnteredRow( ) And *this\FocusedRow( ) <> *this\EnteredRow( ) )
-                  ; If Not *this\anchors
-                  ;	  DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
-                  ; EndIf
-               EndIf
             EndIf
             
             ;\\ ok
@@ -20472,8 +20441,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;\\
                      If *this\FocusedRow( )\ScrollToActive( - 1 )
                         *this\FocusedRow( )\ScrollToActive( 1 )
-                     Else
-                        ; DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
                      EndIf
                   EndIf
                EndIf
@@ -20541,7 +20508,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Else
                            *this\PressedRow( )\ColorState( ) = #__s_1
                         EndIf
-                        
+                        ;
+                        ; status-change
                         ; If Not *this\anchors
                         ;    DoEvents(*this, #__event_StatusChange, *this\PressedRow( )\index, *this\PressedRow( ))
                         ; EndIf
@@ -20553,20 +20521,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\FocusedRow( ) And
                               *this\FocusedRow( )\ColorState( ) = #__s_2
                               *this\FocusedRow( )\ColorState( ) = #__s_3
-                              If *this\anchors
-                                 *this\root\repaint = #True
-                              Else
-                                 ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
+                              ;
+                              ; status-lostfocus
+                              If Not *this\anchors
+                                 If *this\LeavedRow( ) <> *this\FocusedRow( )
+                                    *this\LeavedRow( ) = *this\FocusedRow( )
+                                    DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
+                                 EndIf
                               EndIf
                            EndIf
                            
-                           If *this\anchors
-                              *this\root\repaint = #True
-                           Else
-                              ;DoEvents(*this, #__event_StatusChange, *this\PressedRow( )\index, *this\PressedRow( ))
+                           ; status-focus
+                           If Not *this\anchors
+                              DoEvents(*this, #__event_StatusChange, *this\PressedRow( )\index, *this\PressedRow( ))
                            EndIf
                         EndIf
                      EndIf
+                     ;
                   EndIf
                EndIf
             EndIf
@@ -20674,13 +20645,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Else
                         If *this\EnteredRow( ) And
                            *this\EnteredRow( )\enter
-                           
+                           ;
                            If Not *this\mode\multiSelect
                               If *this\FocusedRow( ) And
                                  *this\FocusedRow( ) <> *this\EnteredRow( )
-                                 *this\FocusedRow( )\enter       = 0
+                                 *this\FocusedRow( )\enter         = 0
                                  *this\FocusedRow( )\RowFocus( 0 )
                                  *this\FocusedRow( )\ColorState( ) = #__s_0
+                                 DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
                               EndIf
                            EndIf
                            
@@ -20695,26 +20667,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                            EndIf
                         EndIf
-                        
+                        ;
                         *this\PressedRow( )\press = 0
                         *this\PressedRow( )       = #Null
-                        
+                        ;
                         If *this\FocusedRow( )
-                           ;; *this\FocusedRowIndex( )        = *this\FocusedRow( )\index
-                           *this\FocusedRow( )\ColorState( ) = #__s_2
-                           
                            If *this\FocusedRow( )\press
                               *this\FocusedRow( )\press = 0
-                           Else
-                              If Not *this\mode\multiSelect
-                                 If *this\anchors
-                                    *this\root\repaint = #True
-                                 Else
-                                    ;DoEvents(*this, #__event_StatusChange, *this\FocusedRow( )\index, *this\FocusedRow( ))
-                                 EndIf
-                              EndIf
                            EndIf
-                           
+                           ;
+                           *this\FocusedRow( )\ColorState( ) = #__s_2
+                           ;
                            If *this\FocusedRow( )\RowFocus( 0 )
                               *this\FocusedRow( )\RowFocus( 1 )
                               
@@ -20722,6 +20685,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               DoEvents(*this, #__event_Change, *this\FocusedRow( )\index, *this\FocusedRow( ))
                            EndIf
                         EndIf
+                        ;
                      EndIf
                   EndIf
                   
@@ -20816,7 +20780,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure DoEvent_Tab( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected repaint, *tabRow._s_ROWS, mode_type = 0
-         Static *tableave._s_ROWS
+         Static *tabmenu._s_ROWS
          
          If eventtype = #__event_MouseEnter
             ;Debug "  Enter - "+*this\class
@@ -20830,6 +20794,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_Focus
             ;Debug "  Focus - "+*this\class ;+" "+ GetActive( )\class
          EndIf
+         ; 
          If eventtype = #__event_LostFocus
             ;Debug "  LostFocus - "+*this\class
             
@@ -20840,20 +20805,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             ;
-            If *this\PopupBar( ) And 
-               *this\PopupBar( )\hidden = #False
-               
-               If *tableave
-                  *tableave\toggle = 0
-                  *tableave = 0
+            If HidePopupMenuBar( *this )
+               If *tabmenu
+                  *tabmenu\toggle = 0
+                  *tabmenu = 0
                EndIf
-               
-               ;                If GetActiveGadget( ) <> *this\root\canvas\gadget
-               ;                   Debug "---------------- "
-               ;                  SetActiveGadget( *this\root\canvas\gadget )
-               ;                EndIf
-               HidePopupMenuBar( *this\PopupBar( ) )
-               *this\PopupBar( ) = 0
             EndIf
          EndIf
          
@@ -20863,7 +20819,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *tabRow = *this\EnteredTab( )
                ;
                If *tabRow
-                  If *tabRow\data
+                  If *tabRow\ParentMenu( )
                      If *tabRow\childrens 
                         If Not *this\PopupBar( )
                            If *this\FocusedTab( )
@@ -20884,7 +20840,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If *tabRow
                   If *tabRow\childrens 
-                     If *tabRow\data
+                     If *tabRow\ParentMenu( )
                         If *this\FocusedTab( )
                            *this\FocusedTab( )\RowFocus( 0 )
                            *this\FocusedTab( ) = 0
@@ -20896,17 +20852,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Else
                            ;
                            *tabRow\toggle ! 1
-                           *tableave = *tabRow
+                           *tabmenu = *tabRow
                         EndIf
                         ;
-                        If *this\PopupBar( ) And 
-                           *this\PopupBar( )\hidden = #False
-                           HidePopupMenuBar( *this\PopupBar( ) )
-                           *this\PopupBar( ) = 0
-                        Else
-                           ;
-                           DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
-                           DisplayPopupMenuBar( *tabRow\data, *this, 
+                        If Not HidePopupMenuBar( *this )
+                           DisplayPopupMenuBar( *tabRow\ParentMenu( ), *this, 
                                                 *this\screen_x( ) + *tabRow\x, 
                                                 *this\screen_y( ) + *tabRow\y + *tabRow\height)
                         EndIf
@@ -20966,11 +20916,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If is_menu_( *this )
                         If *this\enter 
                            If Not *this\EnteredTab( )\focus
-                              If *this\PopupBar( ) And 
-                                 *this\PopupBar( )\hidden = #False
-                                 HidePopupMenuBar( *this\PopupBar( ) )
-                                 *this\PopupBar( ) = 0
-                              EndIf 
+                              HidePopupMenuBar( *this )
                            EndIf 
                         EndIf 
                      EndIf
@@ -20980,60 +20926,60 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   If *this\enter 
                      If *tabRow 
-                        ;\\ hide popup menu bar
-                        If is_menu_( *this ) Or ( Not is_menu_( *this ) And *tabRow\childrens)
-                           If *this\PopupBar( ) And 
-                              *this\PopupBar( )\hidden = #False
-                              HidePopupMenuBar( *this\PopupBar( ) )
-                              *this\PopupBar( ) = 0
-                           EndIf
-                        EndIf
-                        
                         ;\\ entered tabs
                         If Entered( *tabRow )
+                        ;\\ hide popup menu bar
+                        HidePopupMenuBar( *this )
+                        
                            *this\root\repaint = #True
                            
                            ;\\ show popup bar
                            If *tabRow\childrens
+                              ;\\ entered menu items
+                              ;
                               ;\\ change focused tab
-                              ; If *tabRow
-                              ; If *tabRow\childrens
                               If *this\FocusedTab( )
-                                 ;Debug *this\enter 
                                  *this\FocusedTab( )\RowFocus( 0 )
                                  
                                  *this\FocusedTab( ) = *tabRow
                                  *this\FocusedTab( )\RowFocus( 1 )
                               EndIf
-                              ; EndIf
-                              ; EndIf
-                              ;If *tabRow
-                              If *tableave
-                                 If *tableave\toggle
-                                    *tableave\toggle = 0
-                                    
-                                    *tableave = *tabRow
-                                    *tableave\toggle = 1
+                              ;
+                              ;\\ change toggle state
+                              If *tabmenu
+                                 If *tabmenu\toggle
+                                    *tabmenu\toggle = 0
+                                 EndIf
+                                 If *tabRow\toggle = 0
+                                    *tabRow\toggle = 1
+                                    *tabmenu = *tabRow
                                  EndIf
                               EndIf
-                              ;EndIf
                               ;
-                              If *tabRow\data
+                              If *tabRow\ParentMenu( )
                                  If *this\bar\vertical
                                     ;Debug "  show MENUBAR "+ClassFromEvent(eventtype)
-                                    DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
-                                    DisplayPopupMenuBar( *tabRow\data, *this, 
+                                    DisplayPopupMenuBar( *tabRow\ParentMenu( ), *this, 
                                                          *this\screen_width( ) - 5, *tabRow\y )
                                  Else
-                                    If *tabRow\focus Or *tabRow\toggle
+                                    If *tabRow\focus Or 
+                                       *tabRow\toggle
                                        ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
-                                       DoEvents( *this, #__event_StatusChange, *tabRow\index, *tabRow )
-                                       DisplayPopupMenuBar( *tabRow\data, *this, 
+                                       DisplayPopupMenuBar( *tabRow\ParentMenu( ), *this, 
                                                             *this\screen_x( ) + *tabRow\x, 
                                                             *this\screen_y( ) + *tabRow\y + *tabRow\height )
                                     EndIf
                                  EndIf
                               EndIf
+                              ;
+                              ;\\ entered toolbar buttons
+                           ElseIf *this\type = #__type_toolBar
+                              If *tabmenu
+                                 If *tabmenu\toggle
+                                    *tabmenu\toggle = 0
+                                 EndIf
+                              EndIf
+                              ;
                            EndIf
                         EndIf
                      EndIf
@@ -21166,11 +21112,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If is_innerside_( *this, mouse( )\x, mouse( )\y )
                If *this\enter = 1
                   *this\EnterInner( )
-                  *this\root\repaint = 1
                EndIf
             ElseIf *this\EnterInner( )
                *this\enter        = 1
-               *this\root\repaint = 1
             EndIf
          EndIf
          
@@ -21678,7 +21622,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ post repaint canvas
          If Not *this\disable
             If *this\root\repaint = 1
-               ; Debug ""+*this\class+" "+*this\ColorState( ) +" "+ ClassFromEvent(eventtype)
+               ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(eventtype)
                PostEventRepaint( *this\root )
                *this\root\repaint = 0
             EndIf
@@ -24434,8 +24378,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 15830
-; FirstLine = 14964
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----4-------------------------------------------------------------------------------------fv--f--0+-----f-+------v----------4-Pd-----0------f-----------------------------------------------------------------------------------------------------8-------+--VVzd-r5---------------------------------------------+-----------------------------------------vn-f-8bb-Hf------------------------------------------f--v------------8v8----bt-f--8+-----v--------------------------------------f----
+; CursorPosition = 20930
+; FirstLine = 20810
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------48---------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

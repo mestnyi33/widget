@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define Value = *Tree
     widget::AddItem(*Tree, #_pi_group_0, "common")
     widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
-    widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
+    widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #PB_GadgetType_String, 1)
     widget::AddItem(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
     
     widget::AddItem(*Tree, #_pi_group_1, "layout")
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define Value = *Tree1
     widget::AddItem(*Tree1, #_pi_group_0, "common")
     widget::AddItem(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
-    widget::AddItem(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
+    widget::AddItem(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #PB_GadgetType_String, 1)
     widget::AddItem(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
     
     widget::AddItem(*Tree1, #_pi_group_1, "layout")
@@ -71,6 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 53
+; FirstLine = 34
 ; Folding = -
 ; EnableXP

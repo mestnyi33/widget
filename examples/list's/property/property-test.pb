@@ -23,8 +23,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndEnumeration
   
   
-  Macro GetItem( _this_ )
-     _this_\EnteredRow( )\index  
+  Macro GetItem( _address_ )
+     _address_\EnteredRow( )  
   EndMacro
   
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
@@ -36,12 +36,58 @@ CompilerIf #PB_Compiler_IsMainFile
      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
      
      Select WidgetEventType( )
-        Case #__event_Down
-           SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
+;         Case #__event_Focus;, #__event_LostFocus
+; ;            If GetItem( *first )
+; ;              ; SetItemState(*second, GetItem( *first )\index , GetItemState(*first, GetItem( *first )\index  ) )
+; ;            EndIf
+;            Debug 888
+;            If *first\EnteredRow( )
+;               Debug 777
+;               SelectElement(*second\__rows( ), *first\EnteredRow( )\index)
+;               *second\__rows( )\color = *first\EnteredRow( )\color
+;            EndIf
+; ;            If *first\EnteredRow( )
+; ;               SelectElement(*second\__rows( ), *first\EnteredRow( )\index)
+; ;               *second\__rows( )\color = *first\EnteredRow( )\color
+; ;            EndIf
+;            
+;        Case #__event_LostFocus;#__event_Down
+; ;            If GetItem( *first )
+; ;              ; SetItemState(*second, GetItem( *first )\index , GetItemState(*first, GetItem( *first )\index  ) )
+; ;            EndIf
+;           Debug 333
+;           If *first\FocusedRow( )
+;              Debug 222
+;              SelectElement(*second\__rows( ), *first\FocusedRow( )\index)
+;               *second\__rows( )\color = *first\FocusedRow( )\color
+;            EndIf
+; ;            If *first\EnteredRow( )
+; ;               SelectElement(*second\__rows( ), *first\EnteredRow( )\index)
+; ;               *second\__rows( )\color = *first\EnteredRow( )\color
+; ;            EndIf
            
         Case #__event_StatusChange
+           If *first\LeavedRow( )
+              SelectElement(*second\__rows( ), *first\LeavedRow( )\index)
+              *second\__rows( )\color = *first\LeavedRow( )\color
+           EndIf
            If *first\EnteredRow( )
-              SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
+              SelectElement(*second\__rows( ), *first\EnteredRow( )\index)
+              *second\__rows( )\color = *first\EnteredRow( )\color
+              
+              ; CopyStructure( *first\__rows( )\color, *second\__rows( )\color, _s_COLOR )
+              ;SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
+           EndIf
+           
+           Debug 7788888
+           
+           If *second\LeavedRow( )
+              SelectElement(*first\__rows( ), *second\LeavedRow( )\index)
+              *first\__rows( )\color = *second\LeavedRow( )\color
+           EndIf
+           If *second\EnteredRow( )
+              SelectElement(*first\__rows( ), *second\EnteredRow( )\index)
+              *first\__rows( )\color = *second\EnteredRow( )\color
            EndIf
            
      EndSelect
@@ -75,6 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
      SetData(*first, *second)
      
      Bind(*first, @Property_Events( ))
+     Bind(*second, @Property_Events( ))
      ProcedureReturn *this
   EndProcedure
   
@@ -83,7 +130,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define Value = *Tree
     AddItem_(*Tree, #_pi_group_0, "common")
     AddItem_(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
-    AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
+    AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #PB_GadgetType_String, 1)
     AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
     
     AddItem_(*Tree, #_pi_group_1, "layout")
@@ -100,7 +147,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define Value = *Tree1
     AddItem_(*Tree1, #_pi_group_0, "common")
     AddItem_(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
-    AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
+    AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #PB_GadgetType_String, 1)
     AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
     
     AddItem_(*Tree1, #_pi_group_1, "layout")
@@ -121,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 14
+; CursorPosition = 67
+; FirstLine = 54
 ; Folding = --
 ; EnableXP

@@ -300,6 +300,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
          *cursor [2]                ; current visible cursor
+         ;;state.b
          press.b                    ; mouse buttons state
          change.b                   ; mouse moved state
          click.a                    ; mouse clicked count
@@ -343,11 +344,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMoveMax.i
          
          ;*root._s_WIDGET
-         *parent._s_ROWS
          childrens.w ; Row( )\ ; rows( )\ ; row\
          sublevel.w
          
          *data  ; set/get item data
+         
+         *parent._s_ROWS
       EndStructure
       
       ;--     TAB
@@ -622,9 +624,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *group._s_WIDGET         ; = Option( ) group widget
          *string._s_WIDGET        ; = SpinBar( ) string box
          
-         *parentmenu._s_WIDGET
-         *childmenu._s_WIDGET       ; = ComboBox( ) PopupMenuBar( ) List view box
-         *popup._s_WIDGET           ; = ComboBox( ) list view box
+         *parent_menu._s_WIDGET
+         *popup_menu._s_WIDGET       ; = ComboBox( ) PopupMenuBar( ) List view box
                                     ;*toolbar._s_WIDGET          ; 
          
          ;                           
@@ -743,7 +744,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 416
-; FirstLine = 387
+; CursorPosition = 351
+; FirstLine = 333
 ; Folding = ---------0
 ; EnableXP

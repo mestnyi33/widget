@@ -122,9 +122,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   *_6 = Button(30,90,160,25,"Button >>(Window)")
   
-  *PANEL0 = Button(30,120,160,20,"Button >>(Panel (0))") 
-  *PANEL1 = Button(30,140,160,20,"Button >>(Panel (1))") 
-  *PANEL2 = Button(30,160,160,20,"Button >>(Panel (2))") 
+  *PANEL0 = Button(30,120,160,20-4,"Button >>(Panel (0))") 
+  *PANEL1 = Button(30,140-4,160,20-4,"Button >>(Panel (1))") 
+  *PANEL2 = Button(30,160-4*2,160,20-4,"Button >>(Panel (2))") 
   
   *PANEL = Panel(10,180,200,160) 
   AddItem(*PANEL,-1,"Panel") 
@@ -218,7 +218,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 210
-; FirstLine = 156
+; CursorPosition = 126
+; FirstLine = 69
 ; Folding = -0
 ; EnableXP
