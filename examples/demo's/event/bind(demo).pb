@@ -9,11 +9,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_widgets( )
-    If WidgetEventType() <> #__event_MouseMove And 
+     If WidgetEventType() <> #__event_MouseMove And 
        WidgetEventType() <> #__event_Draw And 
        WidgetEventType() <> #__event_StatusChange
       
-      If Type( EventWidget( ) ) = #PB_GadgetType_Button
+      If EventWidget( )\type = #__Type_Button
         ; ClearDebugOutput()
         Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
       EndIf
@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
        WidgetEventType() <> #__event_Draw And
        WidgetEventType() <> #__event_StatusChange
       
-      If Type( EventWidget( ) ) = #PB_GadgetType_Button
+      If EventWidget( )\type = #__Type_Button
         Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
       EndIf
       
@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
        WidgetEventType() <> #__event_Draw And
        WidgetEventType() <> #__event_StatusChange
       
-      If Type( EventWidget( ) ) = #PB_GadgetType_Button
+      If EventWidget( )\type = #__Type_Button
         Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
       EndIf
     EndIf
@@ -59,8 +59,11 @@ CompilerIf #PB_Compiler_IsMainFile
         Bind(#PB_All, @events_roots())
         Bind(Window(80, 100, 300, 280, "Window_2", Editable|#PB_Window_SystemMenu), @events_windows())
         ;SetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
+        Define *butt = Button(10,  10, 280, 80, "post event for one procedure", Editable)
+        Bind(*butt, @events_widgets(), #__event_MouseEnter)
+        Bind(*butt, @events_widgets(), #__event_MouseLeave)
         
-        Bind(Button(10,  10, 280, 80, "post event for one procedure", Editable), @events_widgets())
+        ;Bind(Button(10,  10, 280, 80, "post event for one procedure", Editable), @events_widgets())
         Bind(Button(10, 100, 280, 80, "post event for to two procedure", Editable), @events_widgets())
         Bind(Button(10, 190, 280, 80, "post event for all procedures", Editable), @events_widgets())
         
@@ -81,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 55
+; CursorPosition = 64
+; FirstLine = 48
 ; Folding = ---
 ; EnableXP

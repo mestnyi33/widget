@@ -51,7 +51,7 @@ Module events
    EndProcedure
    
    Procedure SetScrollEvent( gadget )
-      g_signal_connect_data_(GadgetID(gadget), @"change-value", @ChangeHandler(), 0, #Null, 0)
+      g_signal_connect_data_(GadgetID(gadget), "change-value", @ChangeHandler(), 0, #Null, 0)
       g_signal_connect_(GadgetID(gadget), "scroll-event", @signal_scroll_event_cb(), gadget)
    EndProcedure
    
@@ -108,7 +108,8 @@ Module events
       ;       BindEvent( #PB_Event_SizeWindow, @Events( ) )
    EndProcedure
 EndModule
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 86
+; IDE Options = PureBasic 5.73 LTS (Linux - x64)
+; CursorPosition = 53
+; FirstLine = 44
 ; Folding = ---
 ; EnableXP

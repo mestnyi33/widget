@@ -41,17 +41,24 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *menu._s_widget
    ;-
    Procedure Handler()
+      Protected event = __event( ) ; *event\type ; events( ) ; GetEvent( )
       
-      Debug "  - "+GetActiveGadget( )+" "+GetActiveWindow( )
-      ForEach __roots( )
-         Debug ""+__roots( )\canvas\gadget +" "+ __roots( )\canvas\window +" "+ __roots( )\class +" "+ __roots( )\focus
-         
-         If StartEnumerate( __roots( ) )
-            Debug "   "+ widget( )\class +" "+ widget( )\focus
-            StopEnumerate( )
-         EndIf
-      Next
-      Debug ""
+      If event = #__event_LeftClick
+         Debug " -777- event "
+      EndIf
+      
+      If event = #__event_MouseEnter
+         Debug "  - "+GetActiveGadget( )+" "+GetActiveWindow( )
+         ForEach __roots( )
+            Debug ""+__roots( )\canvas\gadget +" "+ __roots( )\canvas\window +" "+ __roots( )\class +" "+ __roots( )\focus
+            
+            If StartEnumerate( __roots( ) )
+               Debug "   "+ widget( )\class +" "+ widget( )\focus
+               StopEnumerate( )
+            EndIf
+         Next
+         Debug ""
+      EndIf
       
    EndProcedure
    
@@ -104,8 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
    MenuItem(2, "title-1-item-2")
    
    MenuTitle("Title-2")
-   MenuItem(5, "title-2-item-1")
-   MenuItem(6, "title-2-item-2")
+;    MenuItem(5, "title-2-item-1")
+;    MenuItem(6, "title-2-item-2")
    
    MenuTitle("Title-event-test")
    MenuItem(7, "test")
@@ -119,9 +126,11 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 7, @TestHandler())
    BindMenuEvent(0, 8, @QuitHandler())
    
+   ButtonGadget(777, 10, 220, 80, 35, "-777-" )
+   Bind(Button( 10, 220, 80, 35, "-777-" ), @handler( ), #__event_LeftClick)  : SetClass(widget(), "-777-" )
    
    ;\\
-   *menu = CreateMenuBar( root( ) ) : SetClass(menu(), "root_MenuBar" )
+   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -151,8 +160,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(2, "title-1-item-2")
    
    BarTitle("Title-2")
-   BarItem(5, "title-2-item-1")
-   BarItem(6, "title-2-item-2")
+;    BarItem(5, "title-2-item-1")
+;    BarItem(6, "title-2-item-2")
    
    BarTitle("Title-event-test")
    BarItem(7, "test")
@@ -177,7 +186,7 @@ CompilerIf #PB_Compiler_IsMainFile
    String( 10, 100, 80, 35, "String1" )
    String( 10, 140, 80, 35, "String2" )
    
-   *menu = CreateMenuBar( *window ) : SetClass(menu(), "window_MenuBar" )
+   *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -207,8 +216,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(2, "title-1-item-2")
    
    BarTitle("Title-2")
-   BarItem(5, "title-2-item-1")
-   BarItem(6, "title-2-item-2")
+;    BarItem(5, "title-2-item-1")
+;    BarItem(6, "title-2-item-2")
    
    BarTitle("Title-event-test")
    BarItem(7, "test")
@@ -225,10 +234,15 @@ CompilerIf #PB_Compiler_IsMainFile
    Define Event
    Repeat
       Event = WaitWindowEvent()
+      If Event = #PB_Event_Gadget
+         If EventGadget() = 777
+            Debug " -777- event "
+         EndIf
+      EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 129
-; FirstLine = 112
-; Folding = -
+; CursorPosition = 43
+; FirstLine = 37
+; Folding = --
 ; EnableXP

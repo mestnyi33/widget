@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
-; 2097 - time post widget
 ; 65 - time bind widget
+; 2097 - time post widget
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -74,7 +74,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
-; FirstLine = 5
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP

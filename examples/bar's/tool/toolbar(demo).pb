@@ -83,32 +83,34 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If *toolbar
          OpenBar("Menu")
-         BarItem(11, "Open")
-         BarItem(12, "Save")
-         ;BarItem(13, "Save as...")
-         OpenBar("Save as...")
-         BarItem(15, "Save as BMP")
-         BarItem(16, "Save as PNG")
-         BarItem(17, "Save as JPG")
+           BarItem(11, "Open")
+           BarItem(12, "Save")
+           ; BarItem(13, "Save as...")
+           OpenBar("Save as...")
+             BarItem(15, "Save as BMP")
+             BarItem(16, "Save as PNG")
+             BarItem(17, "Save as JPG")
+           CloseBar( )
+           BarSeparator( )
+           BarItem(14, "Quit")
          CloseBar( )
-         BarSeparator( )
-         BarItem(14, "Quit")
+           
+         OpenBar("-Menu-")
          CloseBar( )
          
-           
          OpenBar("2Menu")
-         BarItem(21, "2Open")
-         BarItem(22, "2Save")
-         BarItem(23, "2Save as...")
-         BarSeparator( )
-         BarItem(24, "2Quit")
+           BarItem(21, "2Open")
+           BarItem(22, "2Save")
+           BarItem(23, "2Save as...")
+           BarSeparator( )
+           BarItem(24, "2Quit")
          CloseBar( )
          
          
          BarSeparator( )
          BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New") ;: Debug widget( )\class
          BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-         ;BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
+         BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
          BarSeparator( )
          
          
@@ -166,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 124
+; CursorPosition = 97
+; FirstLine = 75
 ; Folding = --
 ; EnableXP

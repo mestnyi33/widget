@@ -75,12 +75,12 @@ CompilerIf #PB_Compiler_IsMainFile
     *sp_0 = splitter(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
     *sp_1 = splitter(10, 10, 360, 360+25, *f_2, *sp_0)
     
-    *f_4 = window(370+10, 10, 180,  70, "form_4", #__flag_BorderLess)
+    *f_4 = window(370+10, 10, 180,  70, "form_4 BorderLess", #__flag_BorderLess)
     button(5, 5, 80, 20, "Butt_4_0")
-    *f_5 = window(370+10, 130+10, 180,  70, "form_6", #PB_Window_SizeGadget)
+    *f_5 = window(370+10, 130+10, 180,  70, "form_6 SizeGadget", #PB_Window_SizeGadget)
     button(5, 5, 80, 20, "Butt_6_0")
     
-    *f_6 = window(370+10, 130+10+130, 180,  70, "form_8", #PB_Window_TitleBar)
+    *f_6 = window(370+10, 130+10+130, 180,  70, "form_8 TitleBar", #PB_Window_TitleBar)
     button(5, 5, 80, 20, "Butt_8_0")
     
     *f_7 = window(370+10+190, 10, 180,  70, "form_5 SystemMenu", #PB_Window_SystemMenu)
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 71
+; CursorPosition = 83
+; FirstLine = 63
 ; Folding = -
 ; EnableXP

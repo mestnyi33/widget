@@ -3,90 +3,45 @@ XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  UseLib(Widget)
-  
-  Global.i gEvent, gQuit, *but, *win
-  
-  Procedure events_gadgets()
-    Protected *ew._s_widget = EventWidget( )
-    Debug ""+Str(GetIndex( *ew ))+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
-  EndProcedure
-  
-  Procedure events_widgets()
-    Protected *ew._s_widget = EventWidget( )
-    ; ClearDebugOutput()
-    Debug " "+Str(GetIndex( *ew ))+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
-  EndProcedure
-  
-  Procedure events_windows()
-    Protected *ew._s_widget = EventWidget( )
-    Debug "   "+Str(GetIndex( *ew ))+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
-  EndProcedure
-  
-  Procedure events_roots()
-    Protected *ew._s_widget = EventWidget( )
-    Debug "     "+Str(GetIndex( *ew ))+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
-  EndProcedure
-  
-  
-  Procedure Window_0()
-    If OpenWindow(0, 0, 0, 500, 500, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      Define Editable ; = #__flag_AnchorsGadget
-      
+   EnableExplicit
+   UseLib(Widget)
+   
+   Global *test._s_widget
+   
+   Procedure events_1()
+      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 1event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
+   EndProcedure
+   
+   Procedure events_2()
+      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 2event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
+   EndProcedure
+   
+   
+   If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       If Open(0, 10,10, 480, 480)
-        ; Bind(#PB_All, @events_roots())
-        Window(80, 100, 300, 280, "Window_2", Editable)
-        ;;Bind(widget(), @events_windows())
-        
-        Define *id._s_widget = Button(10,  10, 280, 80, "post event for one procedure", Editable)
-        Button(10, 100, 280, 80, "post event for to two procedure", Editable)
-        Button(10, 190, 280, 80, "post event for all procedures", Editable)
-        
-        ; post all default events
-        ;Bind(id, @events_widgets())
-        
-        ; post this events
-        Bind(*id, @events_gadgets(), #__event_MouseEnter)
-       ; Bind(id, @events_widgets(), #__event_MouseEnter)
-        Bind(*id, @events_widgets(), #__event_MouseLeave)
-        ; Bind(id, @events_widgets(), #__event_LeftButtonDown)
-        Bind(*id, @events_widgets(), #__event_LeftClick)
-        
-;         Debug @events_widgets()
-;         
-;         ForEach *id\bind()
-;           Debug ""+ *id\bind() +" "+ *id\bind()\events();\call() ;+""
-;         Next
+         Window(80, 100, 300, 280, "Window_2")
+         
+         
+         *test = Button(10,  10, 280, 170, "test events")
+         Button(10, 190, 135, 80, "Bind")
+         Button(155, 190, 135, 80, "Unbind")
+         
+         ; post all default events
+         ;Bind(id, @events_widgets())
+         
+         ; post this events
+         Bind(*test, @events_1(), #__event_MouseEnter)
+         Bind(*test, @events_2(), #__event_MouseLeave)
+         ;
+         Bind(*test, @events_1(), #__event_LeftDown)
+         Bind(*test, @events_2(), #__event_LeftDown)
+         
       EndIf
-    EndIf
-  EndProcedure
-  
-  Window_0()
-  
-  Repeat
-    gEvent= WaitWindowEvent()
-    
-    Select gEvent
-      Case #PB_Event_CloseWindow
-        gQuit= #True
-        
-        ;       Case #PB_Event_Gadget;Widget
-        ;         Debug ""+gettext(EventWidget()) +" "+ WidgetEvent() ;+" "+ *Value\This +" "+ *Value\event
-        ;         
-        ;         Select EventWidget()
-        ;           Case *but
-        ;             
-        ;             Debug *but
-        ;             
-        ;         EndSelect
-        ;         
-    EndSelect
-    
-  Until gQuit
+      
+      WaitClose( )
+   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 28
-; FirstLine = 9
-; Folding = --
+; CursorPosition = 1
+; Folding = -
 ; EnableXP

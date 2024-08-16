@@ -396,7 +396,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
       Select class
          Case "window"    
             is_window = #True
-            If Type( *parent ) = #__Type_MDI
+            If __type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag )
                Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
             Else
@@ -795,7 +795,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, toolbarbutton )
    
    Select toolbarbutton
       Case 1
-         If Type( *e_widget ) = #__type_ToolBar
+         If __type( *e_widget ) = #__type_ToolBar
             If GetItemState( *e_widget, toolbarbutton )  
                ; group
                group_select = *e_widget
@@ -1024,7 +1024,7 @@ Procedure ide_events( )
       Case #__event_LeftClick
          ide_menu_events( *e_widget, WidgetEventItem( ) )
          
-;          If type( *e_widget ) = #__type_ToolBar
+;          If __type( *e_widget ) = #__type_ToolBar
 ;             If *e_widget\EnteredTab( )
 ;                ide_menu_events( *e_widget, *e_widget\EnteredTab( )\itemindex )
 ;             EndIf
@@ -1080,7 +1080,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) 
    ;    ; TEMP
-   ;    If Type(widget( )) = #__type_Button
+   ;    If __type(widget( )) = #__type_Button
    ;       SetState(widget( ), 1) 
    ;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
    ;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
@@ -1246,7 +1246,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;
    ;\\\ ide events binds
    ;
-   If Type( w_ide_toolbar ) = #__type_ToolBar
+   If __type( w_ide_toolbar ) = #__type_ToolBar
       Bind( w_ide_toolbar, @ide_events( ), #__event_LeftClick )
    EndIf
    Bind( w_ide_inspector_view, @ide_events( ) )
@@ -1256,7 +1256,6 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;
    Bind( w_ide_inspector_elements, @ide_events( ), #__event_Change )
    Bind( w_ide_inspector_elements, @ide_events( ), #__event_StatusChange )
-   ;
    Bind( w_ide_inspector_elements, @ide_events( ), #__event_LeftClick )
    Bind( w_ide_inspector_elements, @ide_events( ), #__event_MouseEnter )
    Bind( w_ide_inspector_elements, @ide_events( ), #__event_MouseLeave )
@@ -1407,6 +1406,7 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -----------0-0-v4O-----
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2
+; Folding = -----------------------
 ; EnableXP

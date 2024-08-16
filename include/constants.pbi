@@ -498,11 +498,13 @@
          #__event_minimize
          #__event_restore
          #__event_close
-         #__event_free
          
          ;          #__event_titlechange ;
          ;          #__event_closeItem
          ;          #__event_sizeitem
+         
+         #__event_free
+         #__event_count
       EndEnumeration
       
       EnumerationBinary
@@ -872,7 +874,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 213
-; FirstLine = 194
+; CursorPosition = 506
+; FirstLine = 484
 ; Folding = ----
 ; EnableXP

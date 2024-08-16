@@ -344,12 +344,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMoveMax.i
          
          ;*root._s_WIDGET
+         *parent._s_ROWS
          childrens.w ; Row( )\ ; rows( )\ ; row\
          sublevel.w
          
          *data  ; set/get item data
-         
-         *parent._s_ROWS
+         *menu._s_WIDGET
       EndStructure
       
       ;--     TAB
@@ -536,21 +536,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *attach._s_BOUNDATTACH
       EndStructure
       
-      ;--     EVENT
-      Structure _s_EVENTDATA
-         *widget._s_ROOT   ; eventWidget( )
-         *type             ; eventType( )
-         *item             ; eventItem( )
-         *data             ; eventData( )
-      EndStructure
-      Structure _s_EVENT Extends _s_EVENTDATA
-         *function.EventFunc
-      EndStructure
-      
       Structure RESIZEINFO Extends _s_COORDINATE
          flag.c
          clip.b
-         event.b
+         send.b
          hide.b
          change.b
          nochildren.b
@@ -571,8 +560,25 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;          ;children.b
       ;       EndStructure
       
+      ;--     EVENT
+      Structure _s_EVENTDATA
+         *widget._s_ROOT   ; eventWidget( )
+         *type             ; eventType( )
+         *item             ; eventItem( )
+         *data             ; eventData( )
+      EndStructure
+      Structure _s_HOOK Extends _s_EVENTDATA
+         *function.EventFunc
+      EndStructure
+      
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
+         hashook.b
+         *hookmask._s_HOOK[constants::#__event_count]
+         ;hookmask.b[constants::#__event_count]
+         List *hook._s_HOOK( ) ; hook of events
+         
+         
          ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
          resize.RESIZEINFO                 
@@ -625,9 +631,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *string._s_WIDGET        ; = SpinBar( ) string box
          
          *parent_menu._s_WIDGET
-         *popup_menu._s_WIDGET       ; = ComboBox( ) PopupMenuBar( ) List view box
-                                    ;*toolbar._s_WIDGET          ; 
          
+         StructureUnion
+            *popupBar._s_WIDGET       ; = PopupBar( ) List view box
+            *comboBar._s_WIDGET       ; = ComboBox( ) List view box
+         EndStructureUnion
+         ;
          ;                           
          BarWidth.w               ; bar v size
          BarHeight.w              ; bar h size
@@ -669,9 +678,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          color._s_color[4]
          
          List columns._s_column( )
-         List *events._s_EVENT( )
-         event.b
-         eventmask.q
          
          *root._s_ROOT
          *window._s_WIDGET
@@ -720,8 +726,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
          
-         List *events._s_EVENTDATA( ) ; __events( )
-         List *children._s_WIDGET( )  ; __widgets( )
+         List *widgets._s_WIDGET( )    ; __widgets( )
          Map *roots._s_ROOT( )   
          
          ;*drawingIMG
@@ -729,10 +734,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          grabintersectimage.i
          
          ;\\ event\
-         quit.b ; quit from main loop
-         loop.b
-         repost.b
-         event._s_EVENTDATA            ; widgetEvent( )\ 
+         events_quit.b ; quit from main loop
+         events_loop.b
+         events_queue_exit.b
+         
+         List *events_queue._s_EVENTDATA( )  ; __events( )
+         event._s_EVENTDATA                  ; widgetEvent( )\ 
       EndStructure
       ;}
       
@@ -744,7 +751,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 351
-; FirstLine = 333
-; Folding = ---------0
+; CursorPosition = 577
+; FirstLine = 561
+; Folding = --------f9
 ; EnableXP
