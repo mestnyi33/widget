@@ -2678,8 +2678,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If Not Send( *this, eventtype )
-               DoEvents( *this, eventtype )
+            If Not Send( *this, eventtype, *button, *data )
+               DoEvents( *this, eventtype, *button, *data )
             EndIf
             
             ;\\
@@ -2689,7 +2689,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
          Else
-            Post( *this, eventtype )
+            Post( *this, eventtype, *button, *data )
          EndIf
          
       EndProcedure
@@ -5245,12 +5245,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  If Not *this\hashook 
+                  If Not *this\haseventhook 
                      If *this\ParentMenu( )
                         ; Debug ""+*this\parent\class +" "+ *this\ParentMenu( )\class
-                        ForEach *this\ParentMenu( )\hook( )
-                           ; Debug 999
-                           Bind( *this, *this\ParentMenu( )\hook( )\function, *this\ParentMenu( )\hook( )\type, *this\ParentMenu( )\hook( )\item )
+                        Define i
+                        For i = 0 To #__event_Free
+                           If *this\ParentMenu( )\eventhook[i]
+                              ; Debug 999
+                              Bind( *this, *this\ParentMenu( )\eventhook[i]\function, i, *this\ParentMenu( )\eventhook[i]\item )
+                           EndIf
                         Next
                      EndIf
                   EndIf
@@ -18983,16 +18986,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.i Send( *this._s_ROOT, eventtype.l, *button = #PB_All, *data = #Null )
-         Protected result, function, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
-         
+      Procedure.i Post( *this._s_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
          If *this > 0
             If test_event_send
                Static test
-               Debug ""+*this\class + " - Send( test "+test +" ) "+ ClassFromEvent(eventtype)
+               Debug ""+*this\class + " - Post( test "+test +" ) "+ ClassFromEvent(eventtype)
                test + 1
             EndIf
+      
+            If *this And is_integral_( *this )
+               If Popup( ) And Popup( )\widget
+                  *this = Popup( )\parent
+               EndIf
+            EndIf
             
+            ; Debug "post - "+*this\class +" "+ ClassFromEvent(eventtype)
+            If __gui\events_queue_exit = 1
+               ; __gui\repost = - 1 ; 
+            EndIf
+            
+            If AddElement( __events( ) )
+               __events( )        = AllocateStructure( _s_EVENTDATA )
+               __events( )\widget = *this
+               __events( )\type   = eventtype
+               __events( )\item   = *button
+               __events( )\data   = *data
+               ProcedureReturn __events( )
+            EndIf
+         EndIf
+      EndProcedure
+      
+      Procedure.i Send( *this._s_ROOT, eventtype.l, *button = #PB_All, *data = #Null )
+         Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
+         
+         If *this > 0
             If __gui\events_queue_exit >= 0
                If __gui\events_queue_exit = 0
                   Post( *this, eventtype, *button, *data )
@@ -19020,7 +19047,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ;\\
+                  ;\\ 
                   __widget = EventWidget( )
                   __type   = WidgetEventType( )
                   __item   = WidgetEventItem( )
@@ -19038,60 +19065,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   If Not is_root_( *this )
                      ;\\ first call (current-widget) bind event function
-                     If ListSize( *this\hook( ) )
-                        ForEach *this\hook( )
-                           If ( *this\hook( )\type = #PB_All Or *this\hook( )\type = eventtype ) And
-                              ( *this\hook( )\item = #PB_All Or *this\hook( )\item = *button )
-                              
-                              function = *this\hook( )\function( )
-                              If function
-                                 result = function
-                              EndIf
-                              Break
-                           EndIf
-                        Next
+                     If *this\eventshook(Str(eventtype)+" "+Str(*button))
+                         result = *this\eventshook( )\function( )
+                     ElseIf *this\eventshook(Str(eventtype)+" "+Str(#PB_All)) 
+                         result = *this\eventshook( )\function( )
                      EndIf
                      
                      ;\\ second call (current-widget-window) bind event function
-                     If function <> #PB_Ignore
-                        If *this\window And
-                           ListSize( *this\window\hook( ) ) And
-                           Not is_window_( *this ) And Not is_root_(*this\window )
-                           
-                           ForEach *this\window\hook( )
-                              If ( *this\window\hook( )\type = #PB_All Or *this\window\hook( )\type = eventtype ) And
-                                 ( *this\window\hook( )\item = #PB_All Or *this\window\hook( )\item = *button )
-                                 
-                                 function = *this\window\hook( )\function( )
-                                 If Not result
-                                    If function
-                                       result = function
-                                    EndIf
-                                 EndIf
-                                 Break
-                              EndIf
-                           Next
+                     If result <> #PB_Ignore
+                        If *this\window
+                           If *this\window\eventshook(Str(eventtype)+" "+Str(*button)) 
+                              result = *this\window\eventshook( )\function( )
+                           EndIf
                         EndIf
                      EndIf
                   EndIf
                   
                   ;\\ theard call (current-widget-root) bind event function
-                  If function <> #PB_Ignore
-                     If *this\root And
-                        ListSize( *this\root\hook( ) )
-                        ForEach *this\root\hook( )
-                           If ( *this\root\hook( )\type = #PB_All Or *this\root\hook( )\type = eventtype ) And
-                              ( *this\root\hook( )\item = #PB_All Or *this\root\hook( )\item = *button )
-                              
-                              function = *this\root\hook( )\function( )
-                              If Not result
-                                 If function
-                                    result = function
-                                 EndIf
-                              EndIf
-                              Break
-                           EndIf
-                        Next
+                  If result <> #PB_Ignore
+                     If *this\root
+                        If *this\root\eventshook(Str(eventtype)+" "+Str(*button)) 
+                           result = *this\root\eventshook( )\function( )
+                        EndIf
                      EndIf
                   EndIf
                   
@@ -19125,7 +19120,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
-                  EventWidget( ) = __widget
+                  EventWidget( )       = __widget
                   WidgetEventType( )   = __type
                   WidgetEventItem( )   = __item
                   WidgetEventData( )   = __data
@@ -19134,36 +19129,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ProcedureReturn result
-      EndProcedure
-      
-      Procedure.i Post( *this._s_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
-         If *this > 0
-            If test_event_send
-               Static test
-               Debug ""+*this\class + " - Post( test "+test +" ) "+ ClassFromEvent(eventtype)
-               test + 1
-            EndIf
-      
-            If *this And is_integral_( *this )
-               If Popup( ) And Popup( )\widget
-                  *this = Popup( )\parent
-               EndIf
-            EndIf
-            
-            ; Debug "post - "+*this\class +" "+ ClassFromEvent(eventtype)
-            If __gui\events_queue_exit = 1
-               ; __gui\repost = - 1 ; 
-            EndIf
-            
-            If AddElement( __events( ) )
-               __events( )        = AllocateStructure( _s_EVENTDATA )
-               __events( )\widget = *this
-               __events( )\type   = eventtype
-               __events( )\item   = *button
-               __events( )\data   = *data
-               ProcedureReturn __events( )
-            EndIf
-         EndIf
       EndProcedure
       
       Procedure.i Bind( *this._s_WIDGET, *callback, eventtype.l = #PB_All, item.l = #PB_All )
@@ -19176,40 +19141,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PopMapPosition(__roots( ))
             ProcedureReturn #PB_All
          EndIf
-         
          ;
          If *this > 0
-            *this\hashook = 1
-            If test_event_send
-               Static test
-               Debug ""+*this\class + " - Bend( test "+test +" ) "+ ClassFromEvent(eventtype)
-               test + 1
-            EndIf
-            
-            ; is bind event callback
-            ForEach *this\hook( )
-               If *this\hook( )\function = *callback And
-                  *this\hook( )\type = eventtype And
-                  *this\hook( )\item = item
-                  ProcedureReturn *this\hook( )
-               EndIf
-            Next
-            
+            *this\haseventhook = 1
             ;
-            LastElement( *this\hook( ))
-            If AddElement( *this\hook( ))
-               *this\hook( )          = AllocateStructure( _s_HOOK )
-               *this\hook( )\function = *callback
-               *this\hook( )\type     = eventtype
-               *this\hook( )\item     = item
-               ProcedureReturn 1
+            If eventtype = #PB_All 
+               Define i
+               For i = 0 To #__event_count - 1
+                  If i = #__event_Draw
+                     Continue
+                  EndIf
+                  Bind( *this, *callback, i, item )
+               Next
+            Else
+               If eventtype >= 0  
+                  If Not FindMapElement( *this\eventshook( ), Str(eventtype)+" "+Str(item) )
+                     AddMapElement(*this\eventshook( ), Str(eventtype)+" "+Str(item))
+                     *this\eventshook.allocate( HOOK, ( ))
+                  EndIf
+                  *this\eventshook( )\function = *callback
+               EndIf
             EndIf
          EndIf
-         
       EndProcedure
       
       Procedure.i Unbind( *this._s_WIDGET, *callback, eventtype.l = #PB_All, item.l = #PB_All )
-         
+         ;
          If *this = #PB_All
             PushMapPosition(__roots( ))
             ForEach __roots( )
@@ -19218,24 +19175,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PopMapPosition(__roots( ))
             ProcedureReturn #PB_All
          EndIf
-         
+         ;
          If *this > 0
-            If test_event_send
-               Static test
-               Debug ""+*this\class + " - Unbind( test "+test +" ) "+ ClassFromEvent(eventtype)
-               test + 1
-            EndIf
-      
-            If ListSize( *this\hook( ) )
-               ForEach *this\hook( )
-                  If *this\hook( )\function = *callback And
-                     *this\hook( )\type = eventtype And
-                     *this\hook( )\item = item
-                     DeleteElement( *this\hook( ) )
-                     Break
-                  EndIf
-               Next
-            EndIf
          EndIf
       EndProcedure
       
@@ -21447,6 +21388,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          
          ;\\ before post-widget-events drop
+         ;\\
          If *this\row And
             *this\EnteredRow( ) And
             *this\EnteredRow( )\enter
@@ -21464,7 +21406,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
               *data   = *this\EnteredRow( )
            EndIf
          EndIf
-         
          
          ;\\ mouse wheel horizontal
          If eventtype = #__event_MouseWheelX
@@ -23025,9 +22966,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this
             If Not Send( *this, #__event_free )
                ; еще не проверял
-               If ListSize( *this\hook( ) )
-                  ; Debug "free-events " + *this\hook( )
-                  ClearList( *this\hook( ) )
+               If  *this\haseventhook
+                  Define i
+                  For i = 0 To #__event_free
+                     If *this\eventhook[i]
+                        ; Debug "free-events " + *this\eventhook[i]
+                        Unbind( *this, *this\eventhook[i]\function, i, *this\eventhook[i]\item )
+                     EndIf
+                  Next
                EndIf
                
                ;\\
@@ -24369,7 +24315,7 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21467
-; FirstLine = 21264
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----8---------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24315
+; FirstLine = 24279
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -569,14 +569,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       Structure _s_HOOK Extends _s_EVENTDATA
          *function.EventFunc
+         Map *buttons( )
       EndStructure
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-         hashook.b
-         *hookmask._s_HOOK[constants::#__event_count]
-         ;hookmask.b[constants::#__event_count]
-         List *hook._s_HOOK( ) ; hook of events
+;          Map *eventshook._s_HOOK( )
+;          
+          haseventhook.b
+;          *eventhook._s_HOOK[constants::#__event_count]
+;          ; TEMP
+;          hashook.b
+;          List *hook._s_HOOK( ) ; hook of events
          
          
          ;          size.SIZEINFO                 
@@ -751,7 +755,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 577
-; FirstLine = 561
+; CursorPosition = 686
+; FirstLine = 675
 ; Folding = --------f9
 ; EnableXP

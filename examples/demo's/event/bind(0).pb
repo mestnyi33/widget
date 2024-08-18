@@ -22,7 +22,12 @@ CompilerIf #PB_Compiler_IsMainFile
          Window(80, 100, 300, 280, "Window_2")
          
          
-         *test = Button(10,  10, 280, 170, "test events")
+         *test = Tree(10,  10, 280, 170)
+         AddItem( *test, -1, "item-0" )
+         AddItem( *test, -1, "item-1" )
+         AddItem( *test, -1, "item-2" )
+         AddItem( *test, -1, "item-3" )
+         ;
          Button(10, 190, 135, 80, "Bind")
          Button(155, 190, 135, 80, "Unbind")
          
@@ -36,12 +41,19 @@ CompilerIf #PB_Compiler_IsMainFile
          Bind(*test, @events_1(), #__event_LeftDown)
          Bind(*test, @events_2(), #__event_LeftDown)
          
+;          Bind(*test, @events_1(), #__event_LeftUp)
+;          Bind(*test, @events_2(), #__event_LeftUp)
+         
+         Bind(*test, @events_1(), #__event_LeftUp, 1)
+         Bind(*test, @events_2(), #__event_LeftUp, 2)
+         
       EndIf
       
       WaitClose( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 44
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
