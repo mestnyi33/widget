@@ -583,7 +583,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
 ;          List *hook._s_HOOK( ) ; hook of events
          
          
-         ;          size.SIZEINFO                 
+            redraw.b
+      ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
          resize.RESIZEINFO                 
          
@@ -687,7 +688,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *window._s_WIDGET
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
-         main.b                   ; is root
       EndStructure
       
       ;--     CANVAS
@@ -704,6 +704,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          drawmode.b
          canvas._s_canvas
          *widget._s_WIDGET
+         
+         *contex
       EndStructure
       
       ;--     STICKY
@@ -755,7 +757,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 686
-; FirstLine = 675
-; Folding = --------f9
+; CursorPosition = 707
+; FirstLine = 695
+; Folding = --------f0
 ; EnableXP
