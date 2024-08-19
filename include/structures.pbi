@@ -148,7 +148,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          state.b
          
          hide.b
-         enter.b
+         StructureUnion
+            enter.b
+            mouseenter.b
+            mouseenterframe.b
+            mouseenterinner.b
+         EndStructureUnion
          focus.b
          press.b
          disable.b
@@ -583,7 +588,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
 ;          List *hook._s_HOOK( ) ; hook of events
          
          
-            redraw.b
+          redraw.b
       ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
          resize.RESIZEINFO                 
@@ -742,9 +747,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;\\ event\
          events_quit.b ; quit from main loop
          events_loop.b
-         events_queue_exit.b
+         event_queue_exit.b
          
-         List *events_queue._s_EVENTDATA( )  ; __events( )
+         Map *eventhook._s_HOOk( )
+         List *eventqueue._s_EVENTDATA( )  ; __events( )
          event._s_EVENTDATA                  ; widgetEvent( )\ 
       EndStructure
       ;}
@@ -757,7 +763,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 707
-; FirstLine = 695
+; CursorPosition = 143
+; FirstLine = 142
 ; Folding = --------f0
 ; EnableXP

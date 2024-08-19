@@ -4,6 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    Uselib(widget)
+   ;test_draw_contex = 0
    
    Global object, object1, object2, object3, parent
    Declare CustomEvents( )
@@ -128,7 +129,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 110
-; FirstLine = 89
-; Folding = -
+; CursorPosition = 6
+; Folding = --
 ; EnableXP
