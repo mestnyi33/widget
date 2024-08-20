@@ -741,8 +741,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Map *roots._s_ROOT( )   
          
          ;*drawingIMG
-         List *intersect._s_WIDGET( )
-         grabintersectimage.i
+         ;List *intersect._s_WIDGET( )
          
          ;\\ event\
          events_quit.b ; quit from main loop
@@ -763,7 +762,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 142
+; CursorPosition = 743
+; FirstLine = 709
 ; Folding = --------f0
 ; EnableXP
