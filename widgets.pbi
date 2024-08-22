@@ -2368,7 +2368,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this = *this\parent
             EndIf
             
-            If *this\mouseenter = 1
+            If *this\mouseenter > 0
                ;\\ first - draw backgraund color
                draw_mode_alpha_( #PB_2DDrawing_Default )
                If *this\drop
@@ -3425,7 +3425,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             If a_entered( ) <> *this
-               If a_entered( )\mouseenter = 1
+               If a_entered( )\mouseenter > 0
                   ; Debug 33333
                   If a_index
                      a_entered( )\mouseenter = 0
@@ -3447,7 +3447,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; 
             If Not *this\mouseenter
                *this\mouseenterframe =- 1
-            ElseIf *this\mouseenter = 1
+            ElseIf *this\mouseenter > 0
                *this\mouseenterframe =- 1
                DoEvents( *this, #__event_MouseLeave, #PB_All, 111  )
             EndIf
@@ -3610,7 +3610,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      If *this\child And 
                         *this\parent And 
-                        *this\parent\mouseenter = 1
+                        *this\parent\mouseenter > 0
                         ;Debug "child parent leave "+*this\parent\enter ;
                         DoEvents( *this\parent, #__event_MouseLeave, #PB_All, 444  )
                      EndIf
@@ -3620,14 +3620,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      ; 
                      If a_entered( ) 
-                        If a_entered( )\mouseenter = 1
+                        If a_entered( )\mouseenter > 0
                            If Not is_integral_( *this )
                               a_entered( )\mouseenter = 0
                               DoEvents( a_entered( ), #__event_MouseLeave, #PB_All, 333 )
                            EndIf
                         Else
                            If EnteredWidget( )  
-                              If EnteredWidget( )\mouseenter = 1
+                              If EnteredWidget( )\mouseenter > 0
                                  EnteredWidget( )\mouseenter = 0
                                  DoEvents( EnteredWidget( ), #__event_MouseLeave, #PB_All, 555 )
                               EndIf
@@ -3924,7 +3924,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               ;
                               If *this\anchors And *this\anchors\mode 
-                                 If a_entered( ) = *this And *this\mouseenter = 1
+                                 If a_entered( ) = *this And *this\mouseenter > 0
                                     ; Debug " a_hide "+ *this\class +" "+ *this\mouseenter 
                                     a_hide( *this )
                                     a_entered( )       = a_focused( )
@@ -19358,10 +19358,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If EnteredWidget( ) <> *this
             LeavedWidget( ) = EnteredWidget( )
             EnteredWidget( ) = *this
+            
             ;
             If LeavedWidget( ) And ;LeavedWidget( )\root = *root And 
-               LeavedWidget( )\mouseenter = 1 
+               LeavedWidget( )\mouseenter > 0
                LeavedWidget( )\mouseenter = 0
+                
                DoEvents( LeavedWidget( ), #__event_MouseLeave )
                ;
                If is_integral_( LeavedWidget( ) ) And
@@ -21013,7 +21015,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          ;\\ entered position state
-         If *this\mouseenter = 1
+         If *this\mouseenter > 0
             If is_innerside_( *this, mouse( )\x, mouse( )\y )
                If *this\mouseenter = 1
                   *this\mouseenterinner = 2
@@ -21189,7 +21191,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not ( *this\ToggleBox( ) And *this\ToggleBoxState( ))
                      Select eventtype
                         Case #__event_MouseEnter
-                           If *this\mouseenter = 1
+                           If *this\mouseenter 
                               If *this\press
                                  *this\ColorState( ) = #__s_2
                               Else
@@ -21203,7 +21205,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ; EndIf
                            
                         Case #__event_Down
-                           If *this\mouseenter = 1
+                           If *this\mouseenter 
                               If mouse( )\buttons & #PB_Canvas_LeftButton
                                  *this\ColorState( ) = #__s_2
                               EndIf
@@ -21216,7 +21218,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                         Case #__event_Up
                            If mouse( )\buttons & #PB_Canvas_LeftButton
-                              If *this\mouseenter = 1
+                              If *this\mouseenter
                                  *this\ColorState( ) = #__s_1
                               Else
                                  *this\ColorState( ) = #__s_0
@@ -21233,7 +21235,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   If eventtype = #__event_Up
                      If mouse( )\buttons & #PB_Canvas_LeftButton
-                        If *this\mouseenter = 1
+                        If *this\mouseenter 
                            If *this\ToggleBox( )
                               SetState( *this, Bool( *this\ToggleBoxState( ) ! 1 ))
                            EndIf
@@ -21473,7 +21475,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Else
                            ; если внутри виджета покинули область где надо менять курсор
                            If EnteredWidget( )
-                              If EnteredWidget( )\mouseenter = 1
+                              If EnteredWidget( )\mouseenter > 0
                                  DoCurrentCursor( EnteredWidget( ), cursor::#__cursor_Default, 5 )
                               Else
                                  ;Debug *this\mouseenter
@@ -24257,8 +24259,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18902
-; FirstLine = 17924
-; Folding = ------------------------------------------------------------------------v--------u--80--00-4-----+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------v-t4-4-------f---vv+-------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3415
+; FirstLine = 3412
+; Folding = ------------------------------------------------------------------------v--------u--80--00-4-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v4---------f---vv+---------------------------------------------------------8---------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
