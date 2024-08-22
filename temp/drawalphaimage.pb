@@ -37,12 +37,12 @@ If OpenWindow(0, 100, 200, 300, 200, "2D Drawing Test")
       StopDrawing()
     EndIf
     
-;     If StartDrawing(CanvasOutput(0))
-;       DrawingMode(#PB_2DDrawing_AllChannels)
-;       Box(0,0, OutputWidth(),OutputHeight(), $FF79C7D7)
-;       DrawAlphaImage(ImageID(5), 0,0)
-;       StopDrawing()
-;     EndIf
+    If StartDrawing(CanvasOutput(0))
+      DrawingMode(#PB_2DDrawing_AlphaBlend)
+      Box(0,0, OutputWidth(),OutputHeight(), $FF79C7D7)
+      DrawAlphaImage(ImageID(5), 0,0)
+      StopDrawing()
+    EndIf
   EndIf
 
   
@@ -59,7 +59,8 @@ If OpenWindow(0, 100, 200, 300, 200, "2D Drawing Test")
 EndIf
 
 End   ; All the opened windows are closed automatically by PureBasic
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 41
+; FirstLine = 1
 ; Folding = -
 ; EnableXP

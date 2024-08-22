@@ -304,23 +304,24 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
-         *cursor [2]                ; current visible cursor
-         ;;state.b
-         press.b                    ; mouse buttons state
-         change.b                   ; mouse moved state
-         click.a                    ; mouse clicked count
-         buttons.a                  ; mouse clicked button
+         *cursor                 ; current visible cursor
+         
+         click.a                 ; mouse clicked count
+         press.b                 ; mouse buttons state
+         change.b                ; mouse moved state
+         buttons.a               ; mouse clicked button
          dragstart.b
+         
          interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
          
          steps.a
+         anchors._s_TRANSFORM    ;
+         selector._s_SELECTOR    ; a_selector( )
          
          *drag._s_DRAG           ;
                                  ;
          wheel._s_POINT          ;
          delta._s_POINT          ;
-         anchors._s_TRANSFORM    ;
-         selector._s_SELECTOR    ; a_selector( )
                                  ;
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
@@ -693,6 +694,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *window._s_WIDGET
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
+         *contex
       EndStructure
       
       ;--     CANVAS
@@ -710,7 +712,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          canvas._s_canvas
          *widget._s_WIDGET
          
-         *contex
       EndStructure
       
       ;--     STICKY
@@ -737,20 +738,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
          
-         List *widgets._s_WIDGET( )    ; __widgets( )
          Map *roots._s_ROOT( )   
+         List *widgets._s_WIDGET( )    ; __widgets( )
          
          ;*drawingIMG
          ;List *intersect._s_WIDGET( )
          
          ;\\ event\
-         events_quit.b ; quit from main loop
-         events_loop.b
-         event_queue_exit.b
+         event._s_EVENTDATA                ; widgetEvent( )\ 
+         eventquit.b                       ; quit from main loop
+         eventloop.b
+         eventexit.b
          
          Map *eventhook._s_HOOk( )
          List *eventqueue._s_EVENTDATA( )  ; __events( )
-         event._s_EVENTDATA                  ; widgetEvent( )\ 
       EndStructure
       ;}
       
@@ -762,7 +763,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 743
-; FirstLine = 709
+; CursorPosition = 742
+; FirstLine = 713
 ; Folding = --------f0
 ; EnableXP

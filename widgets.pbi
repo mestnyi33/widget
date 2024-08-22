@@ -108,7 +108,7 @@ CompilerEndIf
 ;-  >>>
 CompilerIf Not Defined( Widget, #PB_Module )
    DeclareModule Widget
-      Global test_draw_contex = 1
+      Global test_draw_contex = 0
       Global test_event_send = 0
       Global test_focus = 0
       Global test_scrollbars_resize = 0
@@ -412,7 +412,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro PostEventRepaint( _root_ )
          If _root_
             ; Debug #PB_Compiler_Procedure
-            If widget::__gui\events_loop
+            If widget::__gui\eventloop
                If Not widget::Send( _root_, constants::#__event_Repaint )
                   ; Debug "PostEventRepaint - ReDraw"
                   If widget::StartDrawingRoot( _root_ )
@@ -2657,7 +2657,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          
          ;\\
-         If __gui\event_queue_exit = 1
+         If __gui\eventexit = 1
             If eventtype = #__event_Focus
                If GetActiveGadget( ) <> *this\root\canvas\gadget
                   SetActiveGadget( *this\root\canvas\gadget )
@@ -5535,6 +5535,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          
          *this\redraw = 1
+         If *this\parent 
+            *this\parent\redraw = 1
+         EndIf
          
          ;                   If Not *this\child
          ;                      Debug " resize - "+*this\class +" "+x +" "+ y +" "+ width +" "+ height
@@ -18440,6 +18443,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ; Debug " redraw - " + *this\class
             EndIf
             
+            If *this\contex
+               DrawAlphaImage( ImageID( *this\contex ), *this\x, *this\y )
+               ;*this\contex = 0
+               ProcedureReturn 0
+            EndIf
+            
             ;\\ draw belowe drawing
             If Not *this\hide
                ;Debug "DRAW( "+*this\class +" "+ *this\mouseenter
@@ -18890,7 +18899,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                      EndIf
-                     ;
+                     ;                       
                      StopEnumerate( )
                   EndIf
                   
@@ -19046,8 +19055,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0
-            If __gui\event_queue_exit >= 0
-               If __gui\event_queue_exit = 0
+            If __gui\eventexit >= 0
+               If __gui\eventexit = 0
                   Post( *this, eventtype, *button, *data )
                   
                Else
@@ -21530,7 +21539,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ChangeCurrentCanvas( eventdata )
                EndIf
                If Root( )\canvas\post = 1
-                  If __gui\event_queue_exit <> 1
+                  If __gui\eventexit <> 1
                      Repost( )
                   EndIf
                   
@@ -21587,7 +21596,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If event = #PB_Event_ActivateWindow
-            If __gui\event_queue_exit = 1
+            If __gui\eventexit = 1
                If Not EnteredWidget( )
                   ForEach __roots( )
                      If __roots( )\canvas\window = EventWindow( )
@@ -22868,7 +22877,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  __gui\events_quit =  - 1
+                  __gui\eventquit =  - 1
                EndIf
                
                ;\\
@@ -22887,7 +22896,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         FocusedGadget( ) =  - 1
                      EndIf
                      
-                     If __gui\events_quit =  - 1
+                     If __gui\eventquit =  - 1
                         FreeGadget( canvas )
                         CloseWindow( window )
                         ResetMap( __roots( ) )
@@ -23082,7 +23091,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Debug " FREE - " + *this\class + " " + *this\address
                   
                   If Not MapSize( __roots( ) )
-                     __gui\events_quit = 1
+                     __gui\eventquit = 1
                   EndIf
                EndIf
                
@@ -23096,8 +23105,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected *root._s_ROOT, __widget, __type, __item, __data
          
          ;\\
-         If __gui\event_queue_exit <> 1
-            __gui\event_queue_exit = 1
+         If __gui\eventexit <> 1
+            __gui\eventexit = 1
             
             ;\\ send posted events (queue events) 
             If ListSize( __gui\eventqueue( ) )
@@ -23175,7 +23184,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ send posted events
-         If __gui\event_queue_exit <> 1
+         If __gui\eventexit <> 1
             Repost( )
          EndIf
          
@@ -23186,7 +23195,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             Repeat
                Select WaitWindowEvent( waittime )
-                  Case #PB_Event_CloseWindow : __gui\events_quit =  - 1
+                  Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
                      Protected window = PB(EventWindow)( )
                      Protected canvas = PB(GetWindowData)( window )
                      
@@ -23203,9 +23212,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;\\
                      If MapSize( __roots( ) )
                         ; ChangeCurrentRoot( )
-                        __gui\events_quit = 0
+                        __gui\eventquit = 0
                      Else
-                        __gui\events_quit = 1
+                        __gui\eventquit = 1
                      EndIf
                      
                   Case #PB_Event_RestoreWindow
@@ -23226,8 +23235,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                EndSelect
                
-               If __gui\events_quit
-                  __gui\events_quit = 0
+               If __gui\eventquit
+                  __gui\eventquit = 0
                   Debug "---------break-QUIT-------- " + IsWindow(Root( )\canvas\window)
                   Break
                EndIf
@@ -23238,7 +23247,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ForEver
             
             ;\\
-            If Not __gui\events_quit
+            If Not __gui\eventquit
                If IsWindow( PB(EventWindow)( ))
                   Debug "  - end cicle - yes event window"
                   PB(CloseWindow)( PB(EventWindow)( ))
@@ -23252,10 +23261,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure WaitQuit( *root._s_ROOT = #Null )
          
-         __gui\events_loop + 1
+         __gui\eventloop + 1
          
          ;\\ send posted events
-         If __gui\event_queue_exit <> 1
+         If __gui\eventexit <> 1
             Repost( )
          EndIf
          
@@ -23298,7 +23307,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure PostQuit( *root._s_ROOT = #Null )
          Debug "post( QUIT)"
          
-         __gui\events_loop = 0
+         __gui\eventloop = 0
          
          ;\\
          ;          If *root > 0
@@ -23358,11 +23367,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null )
-         If __gui\events_loop > 3
+         If __gui\eventloop > 3
             ProcedureReturn 0
          EndIf
-         __gui\events_loop   = 1
-         __gui\event_queue_exit = 0
+         __gui\eventloop   = 1
+         __gui\eventexit = 0
          
          Protected result, x, y, width = 400, height = 120
          Protected img = - 1, f1 = - 1, f2 = 8
@@ -24259,8 +24268,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3415
-; FirstLine = 3412
-; Folding = ------------------------------------------------------------------------v--------u--80--00-4-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v4---------f---vv+---------------------------------------------------------8---------------------------------------------------------------------------
+; CursorPosition = 23373
+; FirstLine = 22275
+; Folding = ------------------------------------------------------------------------v--------u--80--00-4-----+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------e-f--------0---+7---------------------------------------------------------v---------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
