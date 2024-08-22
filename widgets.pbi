@@ -18697,7 +18697,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          ;\\
          If *root
             If Not ( a_transform( ) And a_transform( )\grab )
-               If *root\contex
+               If *root\contex 
                   DrawAlphaImage( ImageID( *root\contex ), 0,0)
                   ;DrawImage( ImageID( *root\contex ), 0,0)
                Else
@@ -21034,7 +21034,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         
          ;\\
          If eventtype = #__event_cursor
             Protected cursor, result
@@ -21105,6 +21104,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
             EndSelect
                
+            ;\\
+            If test_draw_contex
+;                If *this\redraw
+;                   If *this\parent
+;                      If StartEnumerate( *this\parent )
+;                         If *this <> __widgets( ) And
+;                            *this\_id < __widgets( )\_id
+;                            ;
+;                            If is_intersect_( *this, __widgets( ) )
+;                               ; Debug __widgets( )\class
+;                               __widgets( )\redraw = 1
+;                            EndIf
+;                         EndIf
+;                         StopEnumerate( )
+;                      EndIf
+;                   EndIf
+;                EndIf
+            EndIf
+         
             ;\\ items events
             If *this\type = #__type_Editor Or
                *this\type = #__type_string
@@ -21544,7 +21562,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ; ;                   If Root( )\class = "Popup( )"
-                  Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\widget\x +" "+ Popup( )\widget\y +" "+ Popup( )\widget\width +" "+ Popup( )\widget\height
+                  ;Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\widget\x +" "+ Popup( )\widget\y +" "+ Popup( )\widget\width +" "+ Popup( )\widget\height
                                                       ; ; ; ;                      ForEach __widgets( ) 
                                                       ; ; ; ;                         If __widgets( )\root = Root()
                                                       ; ; ; ;                            Debug "    "+__widgets( )\class
@@ -23370,7 +23388,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If __gui\eventloop > 3
             ProcedureReturn 0
          EndIf
-         __gui\eventloop   = 1
+         __gui\eventloop = 1
          __gui\eventexit = 0
          
          Protected result, x, y, width = 400, height = 120
@@ -24268,8 +24286,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23373
-; FirstLine = 22275
-; Folding = ------------------------------------------------------------------------v--------u--80--00-4-----+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------e-f--------0---+7---------------------------------------------------------v---------------------------------------------------------------------------
+; CursorPosition = 110
+; FirstLine = 107
+; Folding = ------------------------------------------------------------------------v--------u--80--00-4-----+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------f++4e-f40v+----0---+7---------------------------------------------------------f---------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
