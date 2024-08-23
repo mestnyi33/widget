@@ -251,10 +251,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     ANCHORS
-      Structure _s_A_BUTTONS Extends _s_COORDINATE
-         state.b
-      EndStructure
-      ;
       Structure _s_SELECTOR Extends _s_COORDINATE
          type.a
          
@@ -264,6 +260,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          backcolor.i
          framecolor.i
+      EndStructure
+      ;
+      Structure _s_A_BUTTONS Extends _s_COORDINATE
+         state.b
+      EndStructure
+      ;
+      Structure _s_ANCHORS
+         pos.b;w 
+         size.a;c
+         mode.a;i
+         *id._s_A_BUTTONS[constants::#__a_moved + 1]
       EndStructure
       ;
       Structure _s_A_GROUP Extends _s_COORDINATE
@@ -277,14 +284,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *grid_image
          grid_type.l
          *grid_widget
-      EndStructure
-      ;
-      Structure _s_ANCHORS
-         hide.b ;????
-         pos.w 
-         size.c
-         mode.i
-         *id._s_A_BUTTONS[constants::#__a_moved + 1]
       EndStructure
       ;--     TRANSFORM
       Structure _s_TRANSFORM
@@ -315,7 +314,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
          
          steps.a
-         anchors._s_TRANSFORM    ;
+         anchors._s_TRANSFORM    ; a_anchors( )
          selector._s_SELECTOR    ; a_selector( )
          
          *drag._s_DRAG           ;
@@ -763,7 +762,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 742
-; FirstLine = 713
-; Folding = --------f0
+; CursorPosition = 316
+; FirstLine = 264
+; Folding = ---f----f0
 ; EnableXP

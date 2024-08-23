@@ -28,6 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		Debug "events_tab"
 		SetState(*panel, GetState(*tab))
 	EndProcedure
+	
 	*tab = widget::Tab(10, 30, 830, 30)
 	For i=0 To 10
 		widget::AddItem(*tab, -1, "Tab "+Str(i))
@@ -116,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
 	End
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 14
+; CursorPosition = 31
+; FirstLine = 47
 ; Folding = --
 ; EnableXP

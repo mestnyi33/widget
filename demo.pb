@@ -7,6 +7,29 @@
 EnableExplicit
 UseLib(widget)
 
+test_draw_contex = 0
+
+Global i, *test._s_widget
+
+Procedure events( )
+   Protected event = __event( ) ; *event\type ; events( ) ; GetEvent( )
+   Protected *this._s_widget = EventWidget( )
+   
+   ;\\
+   If event = #__event_MouseEnter
+      If *this\parent
+         Debug " -enter- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEvent( )\data
+      EndIf
+   EndIf
+   
+   ;\\
+   If event = #__event_MouseLeave
+      If *this\parent
+         Debug " -leave- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEvent( )\data
+      EndIf
+   EndIf
+EndProcedure
+
 UsePNGImageDecoder()
 
 Global img1 = 1
@@ -26,6 +49,8 @@ Procedure scrolled( )
 EndProcedure
 
 If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   Bind(#PB_All, @events( ))
+   
    ;a_init(root( ), 0)
    ;
    ;id("Container") = Container(0, 0, 0, 0, #__flag_AutoSize) 
@@ -106,7 +131,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 85
-; FirstLine = 68
-; Folding = -
+; CursorPosition = 53
+; FirstLine = 36
+; Folding = --
 ; EnableXP

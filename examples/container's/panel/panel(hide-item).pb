@@ -13,8 +13,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure HideItem( *this._s_widget, item.l, state.b )
     If *this\type = #__type_panel
       If *this\tab
-        SelectElement( *this\tab\widget\bar\_s( ), item )
-        *this\tab\widget\bar\_s( )\hide = state
+        SelectElement( *this\tab\widget\__tabs( ), item )
+        *this\tab\widget\__tabs( )\hide = state
         ;*this\state\repaint = #True
         ;PostCanvasRepaint(*this) ;
       EndIf
@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
      
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 18
-; FirstLine = 14
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

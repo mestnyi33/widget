@@ -874,7 +874,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 506
-; FirstLine = 484
+; CursorPosition = 676
+; FirstLine = 643
 ; Folding = ----
 ; EnableXP

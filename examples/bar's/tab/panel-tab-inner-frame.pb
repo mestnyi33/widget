@@ -54,22 +54,22 @@ SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
 ; --- Attachment ---
 ; You can attach an object on another object directly during creation or later with AttachObject
 
-*Object1 = Object(50, 50, 300, 100, "Simple attachment", RGBA(192, 64, 128, alpha1))
+*Object1 = a_object(50, 50, 300, 100, "Simple attachment", RGBA(192, 64, 128, alpha1))
 
 ;OpenList( *Object1 )
-*Object2 = Object(0, 120, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
+*Object2 = a_object(0, 120, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
 ;widget()\child =- 1
 ;SetParent( *Object2, *Object1 )
 ;CloseList( )
 
-*Object3 = Object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
+*Object3 = a_object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
 ; ;widget()\x = 110
 ; ; widget()\y
 ; widget()\child =- 1
 ; widget()\parent = *Object1
 ; ;SetParent( *Object3, *Object1 )
 ; Debug ""+widget()\text\string+" "+widget()\x+" "+widget()\y+" "+widget()\width+" "+widget()\height
-;AttachObject(#Object3, #Object1, #Attachment_X) ; Attach object 3 to object 1 but just the x-position
+;Attacha_object(#Object3, #Object1, #Attachment_X) ; Attach object 3 to object 1 but just the x-position
 
 
 ; --- Panel container ---
@@ -84,17 +84,17 @@ SetFrame(widget(), 12)
 ;AddObjectHandle(#Object4, #Handle_Custom1, CatchImage(#PB_Any, ?resultset_previous), #Alignment_Top | #Alignment_Left, 32, 16) ; This is the handle to swap the frame
 ;AddObjectHandle(#Object4, #Handle_Custom2, CatchImage(#PB_Any, ?resultset_next), #Alignment_Top | #Alignment_Right, -32, 16)   ; This is the handle to swap the frame
 
-;SetObjectDrawingCallback(#Object_Default, @DrawAnObject(), RGBa(0, 64, 128))
+;SetObjectDrawingCallback(#Object_Default, @DrawAna_object(), RGBa(0, 64, 128))
 
 ; AddObjectFrame(#Object4, 0, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ; Add some frames and set the view box for their child objects
 ; AddObjectFrame(#Object4, 1, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ;   as well as the inner area size to bound the childs.
 ; AddObjectFrame(#Object4, 2, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32)
 AddItem( *Object4, 0, "panel-item-0" )
-*Object5 = Object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
+*Object5 = a_object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
 AddItem( *Object4, 1, "panel-item-1" )
-*Object6 = Object( 150, 150, 140, 100, "parent-item-1", RGBA(0, 64, 128, alpha1));, #Object4, 1) ; Attach object 6 directly to object 1 into the second frame
+*Object6 = a_object( 150, 150, 140, 100, "parent-item-1", RGBA(0, 64, 128, alpha1));, #Object4, 1) ; Attach object 6 directly to object 1 into the second frame
 AddItem( *Object4, 2, "panel-item-2" )
-*Object7 = Object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
+*Object7 = a_object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
 CloseList( )
 SetState(*Object4, 2)
 
@@ -116,15 +116,15 @@ SetColor(widget()\scroll\h, #__color_Frame, RGB(128, 192, 64))
 ; AddObjectHandle(#Object8, #Handle_Custom3, CatchImage(#PB_Any, ?arrow_left), #Alignment_Bottom | #Alignment_Left, 16, -12) ; This is the handle the change the visible area
 ; AddObjectHandle(#Object8, #Handle_Custom4, CatchImage(#PB_Any, ?arrow_right), #Alignment_Bottom | #Alignment_Right, -40, -12) ; This is the handle the change the visible area
 
-; SetObjectDrawingCallback(#Object_Default, @DrawAnObject(), RGBa(64, 128, 0))
+; SetObjectDrawingCallback(#Object_Default, @DrawAna_object(), RGBa(64, 128, 0))
 
 ; Attach some objects to #Object8
 ;;AddObjectFrame(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
 OpenList( *Object8 )
-Object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
-Object( 200, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0) 
-Object( 50, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
-Object( 200, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
+a_object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
+a_object( 200, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0) 
+a_object( 50, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
+a_object( 200, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 CloseList( )
 
 
@@ -310,6 +310,7 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3
+; CursorPosition = 168
+; FirstLine = 104
 ; Folding = -
 ; EnableXP
