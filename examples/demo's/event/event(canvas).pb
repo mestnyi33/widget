@@ -51,17 +51,24 @@ CompilerIf #PB_Compiler_IsMainFile
          Debug " -leave- "+*this\class +" ("+ *this\enter +") " + WidgetEvent( )\data
          DrawCanvasFrame(*this\root\canvas\gadget, 0)
       EndIf
+      
+      If event = #__event_MouseMove
+         Debug " -move- "+*this\class +" "+ Str(CanvasMousex(*this\root\canvas\gadget)) +" "+ Str(CanvasMousey(*this\root\canvas\gadget)) +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height 
+      EndIf
    EndProcedure
    
    If Open(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       Bind(#PB_All, @events( ))
       
+      Debug WindowX( root()\canvas\window, #PB_Window_InnerCoordinate ) ; 518
+      Debug GadgetX( root()\canvas\gadget, #PB_Gadget_ScreenCoordinate ) ; 518
       
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.10 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 63
+; FirstLine = 38
 ; Folding = ---
 ; EnableXP
 ; DPIAware
