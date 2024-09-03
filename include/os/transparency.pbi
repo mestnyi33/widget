@@ -34,9 +34,9 @@ Procedure.i SetWindowTransparency( Window, Transparency.a = 255 )
             SetLayeredWindowAttributes_( windowID, 0, Transparency, #LWA_ALPHA )
             
 ;             ;\\
-;             SetWindowColor(Window,#Blue)
-;             SetWindowLong_(windowID, #GWL_EXSTYLE, #WS_EX_LAYERED | #WS_EX_TOPMOST)
-;             SetLayeredWindowAttributes_(windowID,#Blue,0,#LWA_COLORKEY)
+            SetWindowColor(Window,#Blue)
+            SetWindowLong_(windowID, #GWL_EXSTYLE, #WS_EX_LAYERED | #WS_EX_TOPMOST)
+            SetLayeredWindowAttributes_(windowID,#Blue,255,#LWA_COLORKEY|#LWA_ALPHA)
 
             ProcedureReturn #True
          EndIf
@@ -56,7 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until EventID = #PB_Event_CloseWindow
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 30
+; FirstLine = 27
 ; Folding = --
 ; EnableXP

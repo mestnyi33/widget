@@ -117,6 +117,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global test_startdrawing      = 0
       Global test_clip              = 0
       Global test_buttons_draw      = 0
+      Global DrawingDC = 0
       
       EnableExplicit
       UseModule constants
@@ -667,10 +668,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _root_\drawmode | 1<<2
          EndIf
          If _root_\drawmode & 1<<1
-            StartVectorDrawing( CanvasVectorOutput( _root_\canvas\gadget ))
+            DrawingDC = StartVectorDrawing( CanvasVectorOutput( _root_\canvas\gadget ))
          EndIf
          If _root_\drawmode & 1<<2
-            StartDrawing( CanvasOutput( _root_\canvas\gadget ))
+            DrawingDC = StartDrawing( CanvasOutput( _root_\canvas\gadget ))
          EndIf
          widget::__gui\drawingroot = _root_
       EndMacro
@@ -4610,12 +4611,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected WindowID
          Protected ParentID
          Protected *root._s_ROOT
-         
+         Protected invisible.b
          ;\\
          If *display
             ParentID = WindowID( *display\root\canvas\window )
          EndIf
-         
+         ;
+         If flags & #PB_Window_Invisible
+            flags &~ #PB_Window_Invisible
+            invisible = 1
+         EndIf
+         ;
          ;\\
          CompilerIf #PB_Compiler_OS = #PB_OS_Windows
             Static win = 200
@@ -4624,33 +4630,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
          CompilerElse
             *root = Open( #PB_Any, 0, 0, 1, 1, "", flags | #PB_Window_Invisible | #PB_Window_Tool, ParentID )
          CompilerEndIf
-         
-         ;\\
-         Window   = GetWindow( *root )
+         ;
+         Window = GetWindow( *root )
          WindowID = WindowID( Window )
-         
-         ;\\
-         *root\window = *root
-         
+         ;
          ;\\
          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            If CocoaMessage(0, WindowID, "hasShadow") = 0
-               CocoaMessage(0, WindowID, "setHasShadow:", 1)
-            EndIf
-            
-            ;\\
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            If GetClassLongPtr_( WindowID, #GCL_STYLE ) & #CS_DROPSHADOW = 0
-               SetClassLongPtr_( WindowID, #GCL_STYLE, #CS_DROPSHADOW )
-            EndIf
-            
+            ; var windowLevel: UIWindow.Level { get set } ; stay on top
+            CocoaMessage(0, WindowID, "setLevel:", 3)
+            ; Debug CocoaMessage(0, WindowID, "level")
          CompilerElse
-            
+            StickyWindow( window, #True )
          CompilerEndIf
-         
+         ;
          ;\\ Important is #PB_Window_Invisible and
          ;\\ HideWindow( )... Without them, there is no shadow....
-         HideWindow( Window, #False, #PB_Window_NoActivate)
+         If Not invisible
+            HideWindow( WindowID, #False, #PB_Window_NoActivate)
+         EndIf
+         ;
+         *root\window = *root
          ProcedureReturn *root
       EndProcedure
       
@@ -4808,14 +4807,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Popup( ) = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess )
                   SetClass( Popup( ), "Popup( )" ) 
                EndIf
-               
-               ;\\
-               ; StickyWindow( window, #True )
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  ; var windowLevel: UIWindow.Level { get set } ; stay on top
-                  CocoaMessage(0, WindowID(Popup( )\canvas\window), "setLevel:", 3)
-                  ; Debug CocoaMessage(0, WindowID(Popup( )\canvas\window), "level")
-               CompilerEndIf
                
                ;*this\child = 0
                ;\\
@@ -5252,14 +5243,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      y = GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ) + ( Mouse( )\y - row_y_( *this, *this\FocusedTab( ) ) - *this\FocusedTab( )\height / 2 )
                   EndIf
                EndIf
-               
-               ;\\
-               ; StickyWindow( window, #True )
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  ; var windowLevel: UIWindow.Level { get set } ; stay on top
-                  CocoaMessage(0, WindowID(*this\root\canvas\window), "setLevel:", 3)
-                  ; Debug CocoaMessage(0, WindowID(*this\root\canvas\window), "level")
-               CompilerEndIf
                
                ;\\
                Debug "popup resize width="+width +" height="+ height
@@ -11224,7 +11207,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf 
                
                If e_rows( )\text\string.s
-                  DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
+                  If DrawingDC And #PB_Compiler_OS = #PB_OS_Windows
+                     ; GetDC_(*this\root\canvas\gadgetID)
+                     SetBkMode_(DrawingDC, #TRANSPARENT)
+                     SetTextColor_(DrawingDC, e_rows( )\color\front & $FFFFFF | e_rows( )\color\alpha << 24 )
+                     TextOut_(DrawingDC, Text_x, Text_Y, e_rows( )\text\string.s,Len(e_rows( )\text\string.s))
+                  Else
+                     DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
+                  EndIf
                EndIf
                
                If e_rows( )\color\front[2] <> *this\color\front
@@ -22419,11 +22409,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                canvasflag | #PB_Canvas_Container
             EndIf
             If Window = #PB_Any
-               Window = 500 + MapSize( __roots( ) )
+               Window = 300 + MapSize( __roots( ) )
             EndIf
             ;
             w = OpenWindow( Window, x, y, width, height, title$, flag, *parentID )
-            If Window = - 1 : Window = w : w = WindowID( Window ) : EndIf
+            If Window = #PB_Any 
+               Window = w 
+               w = WindowID( Window ) 
+            EndIf
             ;
             If flag & #PB_Window_BorderLess = #PB_Window_BorderLess
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -24287,9 +24280,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 791
-; FirstLine = 790
-; Folding = ------------------------------------------------------------------------------------4+-4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4f4DAAg4a--+--0-+-----------------------------------------------
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 4618
+; FirstLine = 4517
+; Folding = ------------------------------------------------------------------------------------4+-4--------------------------8---0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v8BAAwbt-f---+f------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
