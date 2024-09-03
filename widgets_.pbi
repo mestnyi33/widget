@@ -4268,7 +4268,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If *this\anchors
             If eventtype = #__event_MouseEnter
-               *this\root\repaint = #True
+               If is_integral_( *this )
+                  a_entered( ) = *this\parent
+               Else
+                  a_entered( ) = *this 
+               EndIf
+               a_entered( )\root\repaint = #True
             EndIf
             
             If eventtype = #__event_MouseLeave
@@ -18536,16 +18541,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ;\\
-                     If *this\mouseenter
-                        ;\\ draw entered anchors
-                        If Not *this\focus
-                           If Not *this\haschildren 
-                              If *this\anchors And *this\anchors\mode
+                     ;\\ draw entered anchors
+                     If Not *this\focus
+                        If Not *this\haschildren 
+                           If *this\anchors And *this\anchors\mode
+                              If *this = a_entered( )
                                  a_draw( *this )
                               EndIf
                            EndIf
                         EndIf
+                     EndIf
                         
+                     If *this\mouseenter
                         ;\\ draw drag & drop
                         If mouse( )\drag And
                            Not *this\disable
@@ -23558,7 +23565,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16864
-; FirstLine = 16437
-; Folding = -------------------------------------------------------------4----------------------4++88----f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-n-----------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4274
+; FirstLine = 3844
+; Folding = -------------------------------------------------------------4----------------------4++88----f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0f+-----------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
