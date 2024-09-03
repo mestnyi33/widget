@@ -610,8 +610,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 494
-; FirstLine = 225
-; Folding = -v7------------
+; IDE Options = PureBasic 6.10 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 10
+; Folding = -v+------------
 ; EnableXP

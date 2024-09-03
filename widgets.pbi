@@ -108,6 +108,7 @@ CompilerEndIf
 ;-  >>>
 CompilerIf Not Defined( Widget, #PB_Module )
    DeclareModule Widget
+      Global test_draw_repaint = 0
       Global test_draw_contex = 0
       Global test_event_send = 0
       Global test_focus = 0
@@ -11207,14 +11208,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf 
                
                If e_rows( )\text\string.s
-                  If DrawingDC And #PB_Compiler_OS = #PB_OS_Windows
+                  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                      ; GetDC_(*this\root\canvas\gadgetID)
                      SetBkMode_(DrawingDC, #TRANSPARENT)
                      SetTextColor_(DrawingDC, e_rows( )\color\front & $FFFFFF | e_rows( )\color\alpha << 24 )
                      TextOut_(DrawingDC, Text_x, Text_Y, e_rows( )\text\string.s,Len(e_rows( )\text\string.s))
-                  Else
+                  CompilerElse
                      DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
-                  EndIf
+                  CompilerEndIf
                EndIf
                
                If e_rows( )\color\front[2] <> *this\color\front
@@ -21554,8 +21555,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ; ;                   If Root( )\class = "Popup( )"
-                  ;Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\widget\x +" "+ Popup( )\widget\y +" "+ Popup( )\widget\width +" "+ Popup( )\widget\height
-                                                      ; ; ; ;                      ForEach __widgets( ) 
+                  If test_draw_repaint
+                     Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\widget\x +" "+ Popup( )\widget\y +" "+ Popup( )\widget\width +" "+ Popup( )\widget\height
+                  EndIf
+                  ; ; ; ;                      ForEach __widgets( ) 
                                                       ; ; ; ;                         If __widgets( )\root = Root()
                                                       ; ; ; ;                            Debug "    "+__widgets( )\class
                                                       ; ; ; ;                         EndIf
@@ -24280,9 +24283,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 4618
-; FirstLine = 4517
-; Folding = ------------------------------------------------------------------------------------4+-4--------------------------8---0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v8BAAwbt-f---+f------------------------------------------------
+; IDE Options = PureBasic 6.10 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 21560
+; FirstLine = 21343
+; Folding = ------------------------------------------------------------------------------------4+-4--------------------------8---0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f4DAAg4a--+--0-+-----------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app

@@ -6,6 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseLib(Widget)
    test_draw_contex = 0
+   test_draw_repaint = 1
    
    Global i, *test._s_widget
    
@@ -59,9 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 33
+; IDE Options = PureBasic 6.10 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 8
 ; Folding = ---
 ; EnableXP
 ; DPIAware
