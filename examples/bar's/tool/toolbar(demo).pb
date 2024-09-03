@@ -15,7 +15,6 @@
 ;                  BarToolTip( *address, item, text.s ) - ToolBarToolTip( #ToolBar, Button, Text$ )
 
 
-;XIncludeFile "../../../widgets.pbi" 
 XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -33,13 +32,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug WidgetEventItem( )
    EndProcedure
    
-   Procedure ToolBarGadgetEvents( )
+   Procedure PB_ToolBarEvents( )
       Debug EventMenu( )
    EndProcedure
    
    ;SetGadgetFont(#PB_All, LoadFont(1,"Arial", 50))
    
-   If OpenWindow(0, 100, 200, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
+   If OpenWindow(0, 100, 200, 520, 380, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
       
       ;If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
       ;If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
@@ -67,13 +66,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       DisableToolBarButton(0, 2, 1) ; Disable the button '2'
-      BindEvent( #PB_Event_Menu, @ToolBarGadgetEvents( ))
-      
+      BindEvent( #PB_Event_Menu, @PB_ToolBarEvents( ))
    EndIf
    
-   
-   If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess )
-      ;      a_init(root( ))
+   If Open( 0, 0, ToolBarHeight( 0 ), 520, 380 )
+   ;If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
       Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
       ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
@@ -167,8 +164,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 82
-; FirstLine = 75
-; Folding = --
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 34
+; Folding = f-
 ; EnableXP

@@ -121,7 +121,6 @@
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3
-; Folding = --
+; IDE Options = PureBasic 6.04 LTS (Linux - x64)
+; Folding = -
 ; EnableXP
