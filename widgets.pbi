@@ -557,14 +557,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
       Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y[_mode_]: EndMacro ; Returns mouse y
       Macro CanvasMouseX( _canvas_ )
-         ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
-         DesktopMouseX( ) - GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate )
-         ; WindowMouseX( EventWindow( ) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
+            GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
+            ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
+            ;DesktopMouseX( ) - GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate )
       EndMacro
       Macro CanvasMouseY( _canvas_ )
-         ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
-         DesktopMouseY( ) - GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate )
-         ; WindowMouseY( window ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
+            GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
+            ;WindowMouseY(  ID::Window(ID::GetWindowID(GadgetID(_canvas_)))  ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
+            ;DesktopMouseY( ) - GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate )
       EndMacro
       
       
@@ -24284,7 +24284,7 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 561
+; CursorPosition = 559
 ; FirstLine = 551
 ; Folding = ------------------------------------------------------------------------------------4+-4--------------------------8---0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f4DAAg4a--+--0-+-----------------------------------------------
 ; EnableXP

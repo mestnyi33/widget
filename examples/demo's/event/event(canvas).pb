@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       If event = #__event_MouseMove
-         Debug " -move- "+*this\class +" "+ Str(CanvasMousex(*this\root\canvas\gadget)) +" "+ Str(CanvasMousey(*this\root\canvas\gadget)) +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height 
+         Debug " -move- "+*this\class +" "+ DesktopMouseX( ) +" "+ Str(CanvasMousey(*this\root\canvas\gadget)) +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height 
       EndIf
    EndProcedure
    
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 63
+; CursorPosition = 55
 ; FirstLine = 38
 ; Folding = ---
 ; EnableXP
