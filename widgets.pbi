@@ -5496,6 +5496,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          
+         Define _dpiScaleFactorX.d
+         Define _dpiScaleFactorY.d
+         
+         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+            _dpiScaleFactorX.d = GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96
+            _dpiScaleFactorY.d = GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96
+         CompilerEndIf
+         
+         ;          Macro dpiX(_num_) : (_num_ * _dpiScaleFactorX) : EndMacro
+         ;          Macro dpiY(_num_) : (_num_ * _dpiScaleFactorY) : EndMacro
+         
+         
+         If width <> #PB_Ignore
+            width = width * _dpiScaleFactorX
+         EndIf
+         If height <> #PB_Ignore
+            height = height * _dpiScaleFactorY
+         EndIf
+         
          *this\redraw = 1
          If *this\parent 
             *this\parent\redraw = 1
@@ -22511,7 +22530,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If width Or height
-               Resize( *root, #PB_Ignore, #PB_Ignore, width, height )
+              Resize( *root, #PB_Ignore, #PB_Ignore, width, height )
             EndIf
             
             ;\\
@@ -24284,8 +24303,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 559
-; FirstLine = 551
-; Folding = ------------------------------------------------------------------------------------4+-4--------------------------8---0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f4DAAg4a--+--0-+-----------------------------------------------
+; CursorPosition = 5515
+; FirstLine = 5290
+; Folding = ------------------------------------------------------------------------------------4+-4--------------------------8---0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8eAAA9W8-4--v-4-----------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
