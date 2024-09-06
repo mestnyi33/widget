@@ -71,8 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.10 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 62
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 12
 ; FirstLine = 36
 ; Folding = ---
 ; EnableXP
