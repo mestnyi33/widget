@@ -4647,7 +4647,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ Important is #PB_Window_Invisible and
          ;\\ HideWindow( )... Without them, there is no shadow....
          If Not invisible
-            HideWindow( WindowID, #False, #PB_Window_NoActivate)
+            HideWindow( Window, #False, #PB_Window_NoActivate)
          EndIf
          ;
          *root\window = *root
@@ -5492,28 +5492,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Bool( *this\draw_width( ) > 0 And *this\draw_height( ) > 0 )
       EndProcedure
       
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+         Global _dpiScaleFactorX.d = GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96
+         Global _dpiScaleFactorY.d = GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96
+      CompilerEndIf
+      
       Procedure.b Resize( *this._s_WIDGET, x.l, y.l, width.l, height.l )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          
-         Define _dpiScaleFactorX.d
-         Define _dpiScaleFactorY.d
-         
          CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-            _dpiScaleFactorX.d = GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96
-            _dpiScaleFactorY.d = GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96
+            If _dpiScaleFactorX
+               If x <> #PB_Ignore
+                 x = x * _dpiScaleFactorX
+               EndIf
+               If width <> #PB_Ignore
+                 width = width * _dpiScaleFactorX
+               EndIf
+            EndIf
+            If _dpiScaleFactorY
+               If y <> #PB_Ignore
+                  y = y * _dpiScaleFactorY
+               EndIf
+               If height <> #PB_Ignore
+                  height = height * _dpiScaleFactorY
+               EndIf
+            EndIf
          CompilerEndIf
-         
-         ;          Macro dpiX(_num_) : (_num_ * _dpiScaleFactorX) : EndMacro
-         ;          Macro dpiY(_num_) : (_num_ * _dpiScaleFactorY) : EndMacro
-         
-         
-         If width <> #PB_Ignore
-            width = width * _dpiScaleFactorX
-         EndIf
-         If height <> #PB_Ignore
-            height = height * _dpiScaleFactorY
-         EndIf
          
          *this\redraw = 1
          If *this\parent 
@@ -15422,6 +15427,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *parent
+            If tabindex < 0
+               tabindex = *parent\TabAddIndex( )
+            EndIf
+            ;
             If *parent\container = 0 And *parent\child
                Debug "SetParent("
                *parent = *parent\parent
@@ -15430,10 +15439,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\parent = *parent And
                *this\TabIndex( ) = tabindex
                ProcedureReturn #False
-            EndIf
-            ;
-            If tabindex < 0
-               tabindex = *parent\TabAddIndex( )
             EndIf
             ;
             ;\\ get the last widget to add it after it
@@ -24302,9 +24307,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 5515
-; FirstLine = 5290
-; Folding = ------------------------------------------------------------------------------------4+-4--------------------------8---0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8eAAA9W8-4--v-4-----------------------------------------------
+; IDE Options = PureBasic 6.10 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 4643
+; FirstLine = 4542
+; Folding = ------------------------------------------------------------------------------------4+-4--------------------------8---0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------dPAAAer0-8--4-8-----------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
