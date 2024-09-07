@@ -2706,6 +2706,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;-\\  ANCHORs
+      Structure _s_CURSORDATA
+         cursor.i[#__a_moved + 1]
+      EndStructure
+      
+      DataSection
+         CURSORDATA:
+         Data.i cursor::#__cursor_Default          ; 0
+         Data.i cursor::#__cursor_Left             ; 1=#__a_left
+         Data.i cursor::#__cursor_Up               ; 2=#__a_top
+         Data.i cursor::#__cursor_Right            ; 3=#__a_right
+         Data.i cursor::#__cursor_Down             ; 4=#__a_bottom
+         Data.i cursor::#__cursor_LeftUp           ; 5=#__a_left_top
+         Data.i cursor::#__cursor_RightUp          ; 6=#__a_right_top
+         Data.i cursor::#__cursor_RightDown        ; 7=#__a_right_bottom
+         Data.i cursor::#__cursor_LeftDown         ; 8=#__a_left_bottom
+         Data.i cursor::#__cursor_Arrows           ; 9=#__a_moved
+      EndDataSection
+      
+      Global *CURSORDATA._s_CURSORDATA = ?CURSORDATA
+      
       Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
          Macro a_grid_change( _this_ )
             If a_transform( )\grid_widget <> _this_
@@ -2903,10 +2923,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                Else
                   If _address_[#__a_moved] ; moved
-                     _address_[#__a_moved]\x      = _x_
-                     _address_[#__a_moved]\y      = _y_
-                     _address_[#__a_moved]\width  = _this_\anchors\size * 2
-                     _address_[#__a_moved]\height = _this_\anchors\size * 2
+                     _address_[#__a_moved]\x      = _this_\inner_x( ) ; _x_ 
+                     _address_[#__a_moved]\y      = _this_\inner_y( ) ; _y_
+                     _address_[#__a_moved]\width  = _this_\inner_width( )  ; _this_\anchors\size * 2
+                     _address_[#__a_moved]\height = _this_\inner_height( )  ; _this_\anchors\size * 2
                   EndIf
                EndIf
             EndIf
@@ -3186,13 +3206,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure a_add( *this._s_WIDGET )
-         Structure _s_CURSORDATA
-            cursor.i[#__a_moved+1]
-         EndStructure
-         
          Protected a_index
-         Protected *CURSORDATA._s_CURSORDATA = ?CURSORDATA
-      
+         
          If Not a_index( )
             If *this\container <> 3
                *this\resize\send = #True
@@ -3245,19 +3260,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next a_index
          EndIf
          
-          DataSection
-            CURSORDATA:
-            Data.i cursor::#__cursor_Default          ; 0
-            Data.i cursor::#__cursor_Left             ; 1=#__a_left
-            Data.i cursor::#__cursor_Up               ; 2=#__a_top
-            Data.i cursor::#__cursor_Right            ; 3=#__a_right
-            Data.i cursor::#__cursor_Down             ; 4=#__a_bottom
-            Data.i cursor::#__cursor_LeftUp           ; 5=#__a_left_top
-            Data.i cursor::#__cursor_RightUp          ; 6=#__a_right_top
-            Data.i cursor::#__cursor_RightDown        ; 7=#__a_right_bottom
-            Data.i cursor::#__cursor_LeftDown         ; 8=#__a_left_bottom
-            Data.i cursor::#__cursor_Arrows           ; 9=#__a_moved
-         EndDataSection
       EndProcedure
       
       Procedure a_create( *this._s_WIDGET, mode )
@@ -5505,24 +5507,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          
-         If Not mouse( )\press
-            If Not *this\noscale
-               If _dpiScaleFactorX
-                  If x <> #PB_Ignore
-                     x = x * _dpiScaleFactorX
-                  EndIf
-                  If width <> #PB_Ignore
-                     width = width * _dpiScaleFactorX
-                  EndIf
-               EndIf
-               If _dpiScaleFactorY
-                  If y <> #PB_Ignore
-                     y = y * _dpiScaleFactorY
-                  EndIf
-                  If height <> #PB_Ignore
-                     height = height * _dpiScaleFactorY
-                  EndIf
-               EndIf
+         If width <> #PB_Ignore
+            If _dpiScaleFactorX
+               width = width * _dpiScaleFactorX
+            EndIf
+         EndIf
+         If height <> #PB_Ignore
+            If _dpiScaleFactorY
+               height = height * _dpiScaleFactorY
             EndIf
          EndIf
          
@@ -9283,7 +9275,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                *bar\page\PageChange( ) = *bar\page\pos - ScrollPos
                *bar\page\pos      = ScrollPos
-         
                
                ; Debug ""+ScrollPos +" "+ *bar\page\end +" "+ *bar\thumb\len +" "+ *bar\thumb\end +" "+ *bar\page\pos +" "+ Str(*bar\page\end-*bar\min[2])
                
@@ -15480,8 +15471,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                EndIf
             EndIf
             ;
-            If *parent\type = #__type_Splitter
-               If tabindex > 0
+            If tabindex > 0
+               If *parent\type = #__type_Splitter
                   If tabindex % 2
                      *parent\FirstWidget( ) = *this
                      *parent\split_1( )    = *this
@@ -15498,10 +15489,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               
-               *this\noscale = 1
-            Else
-               *this\noscale = 0
             EndIf
             ;
             *this\TabIndex( ) = tabindex
@@ -16950,7 +16937,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\_id   =- 1
                *this\address = *parent\address
                ChangeParent( *this, *parent )
-               *this\noscale = 1
             Else
                *this\text\string = Text
                SetParent( *this, *parent, #PB_Default )
@@ -17611,11 +17597,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf *this\type = #__type_MDI Or
                    *this\type = #__type_ScrollArea
                
-               If _dpiScaleFactorX And _dpiScaleFactorY
-                  bar_area_create_( *this, 1, *param_1 * _dpiScaleFactorX, *param_2 * _dpiScaleFactorY, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
-               Else
-                  bar_area_create_( *this, 1, *param_1, *param_2, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
-               EndIf
+               bar_area_create_( *this, 1, *param_1, *param_2, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
             ElseIf *this\type = #__type_Image
                bar_area_create_( *this, 1, *this\image\width, *this\image\height, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
             EndIf
@@ -24325,9 +24307,8 @@ CompilerEndIf
 ; Executable = widgets2.app
 
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 5525
-; FirstLine = 5264
-; Folding = ---------------------------------------------------------------vv7------------------v0-v--------------------------4---8------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v20----f----fH0--------------------------------------------------------++3e-vt0f90------------------------------------------------------8eAAA9W8-4--v-4-----------------------------------------------
+; CursorPosition = 24307
+; FirstLine = 24270
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = widgets2.app

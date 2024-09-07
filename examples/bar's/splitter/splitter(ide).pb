@@ -165,8 +165,9 @@ CompilerEndIf
 ;   Bind(-1,-1)
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
 ; CursorPosition = 13
 ; Folding = -
 ; EnableXP
+; DPIAware
 ; Executable = splitter(ide).exe

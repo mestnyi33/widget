@@ -654,6 +654,8 @@
       #__a_right_bottom = 7
       #__a_left_bottom  = 8
       #__a_moved        = 9
+      #__a_moved2       = 10
+      #__a_count        = 11
       
       ; a_selector( )
       #__a_line_left    = 0
@@ -873,8 +875,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 676
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 656
 ; FirstLine = 643
 ; Folding = ----
 ; EnableXP

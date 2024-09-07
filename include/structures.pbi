@@ -270,7 +270,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          pos.b;w 
          size.a;c
          mode.a;i
-         *id._s_A_BUTTONS[constants::#__a_moved + 1]
+         *id._s_A_BUTTONS[constants::#__a_count]
       EndStructure
       ;
       Structure _s_A_GROUP Extends _s_COORDINATE
@@ -294,7 +294,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          line._s_A_BUTTONS[4]                ; a_line( )
          
          ;
-         cursor.a[constants::#__a_moved + 1] ;
+         cursor.a[constants::#__a_count] ;
                                              ;
          *transform._s_TRANSFORMDATA         ;
          
@@ -581,7 +581,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_WIDGET Extends _s_STATE
 ;          Map *eventshook._s_HOOK( )
 ;          
-          haseventhook.b
+         noscale.b
+         
+         haseventhook.b
 ;          *eventhook._s_HOOK[constants::#__event_count]
 ;          ; TEMP
 ;          hashook.b
@@ -761,8 +763,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 316
-; FirstLine = 264
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 585
+; FirstLine = 561
 ; Folding = ---f----f0
 ; EnableXP

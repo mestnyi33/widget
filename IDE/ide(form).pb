@@ -1406,7 +1406,8 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 14
 ; Folding = -----------------------
 ; EnableXP
+; DPIAware

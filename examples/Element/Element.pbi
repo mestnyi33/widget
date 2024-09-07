@@ -47,5 +47,7 @@ EndMacro
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 34
 ; FirstLine = 9
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
+; DPIAware
