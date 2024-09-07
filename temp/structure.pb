@@ -60,11 +60,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
          
          ;inline.b
-         StructureUnion
-            check.b
-            Checkboxes.b
-         EndStructureUnion
-         AlwaysSelection.b
+         check.b
          
          lines.b
          buttons.b
@@ -148,10 +144,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_STATE
          round.a
          
-         StructureUnion
-         toggle.b[3]
-         checked.b[3]
-      EndStructureUnion
+         toggle.b
          state.b
          
          hide.b
@@ -167,10 +160,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BOX
       Structure _s_BOX Extends _s_STATE
-         y.l[3]
-         x.l[3]
-         width.l[3]
-         height.l[3]
+         y.l
+         x.l
+         width.l
+         height.l
       EndStructure
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_BOX
@@ -239,10 +232,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     IMAGE
       Structure _s_image Extends _s_COORDINATE
-         StructureUnion
-            *id  ; - ImageID( )
-            *imageID
-         EndStructureUnion
+         *id  ; - ImageID( )
          *img ; - Image( )
          
          ;;*output;transparent.b
@@ -345,17 +335,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     TABS
       Structure _s_ITEMS Extends _s_BOX
-         StructureUnion
-            buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
-            box._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
-         EndStructureUnion
-         change.b
-         drawing.b
-         
          index.l     ; Index of new list element
          itemindex.l
          
          visible.b
+         buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
          
          text._s_text
          image._s_image
@@ -393,6 +377,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ROWS
       Structure _s_ROWS Extends _s_ITEMS
          checkbox._s_BOX ; \box[1]\ -> \checkbox\
+         
          
          *first._s_rows           ;TEMP first elemnt in the list
          *after._s_rows           ;TEMP first elemnt in the list
@@ -528,10 +513,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     COLUMN
       Structure _s_COLUMN Extends _s_COORDINATE
          index.i
-         
-         drawing.b
-         hide.b
-         state.b
          
          text._s_TEXT
          image._s_image
@@ -672,13 +653,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          BarWidth.w               ; bar v size
          BarHeight.w              ; bar h size
          MenuBarHeight.w
+         ToolBarHeight.w
          StatusBarHeight.w
          
-         StructureUnion
-         ToolBarHeight.w
-         TabHeight.i
-         EndStructureUnion
-         index.b[3]
          
          ; placing layout
          first._s_OBJECTTYPE
@@ -787,7 +764,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 538
-; FirstLine = 527
+; CursorPosition = 764
+; FirstLine = 729
 ; Folding = ----------
 ; EnableXP

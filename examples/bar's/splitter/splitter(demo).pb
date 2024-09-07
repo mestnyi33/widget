@@ -24,7 +24,9 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 230,0, 230,200)
+If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    Open(0, 230,0, 230,200)
+    
     #Button1  = 0
     #Button2  = 1
     #Splitter = 2
@@ -55,8 +57,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_Sys
 ;       EndIf
 ;     Until event = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 29
+; FirstLine = 13
 ; Folding = -
 ; EnableXP

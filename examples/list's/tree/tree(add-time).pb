@@ -1,4 +1,5 @@
-﻿; macos
+﻿
+; macos
 ; update_items_( )
 ; 2303
 ; 2559
@@ -27,8 +28,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(Widget)
   EnableExplicit
   Define *w,a, Event
-  Define gLN=5000
+  Define gLN=1500
   Define LN=gLN
+  
+  test_redraw_items = 0
 
   If Open(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
     *w = Tree(270, 10, 250, 680, #__Tree_NoLines|#__Tree_NoButtons) 
@@ -68,8 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 47
-; FirstLine = 37
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 33
+; FirstLine = 24
 ; Folding = --
 ; EnableXP
