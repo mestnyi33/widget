@@ -2,7 +2,7 @@
 ExamineDesktops()
 
 If OpenWindow(0, 0, 0, 600, 400, "Modal Window", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  dummywin = OpenWindow(#PB_Any, 0, 0, DesktopWidth(0),DesktopHeight(0), "", #PB_Window_BorderLess ,WindowID(0))
+  dummywin = OpenWindow(#PB_Any, 0, 0, 600, 400, "", #PB_Window_BorderLess ,WindowID(0))
   SetWindowLongPtr_(WindowID(dummywin),#GWL_EXSTYLE,GetWindowLongPtr_(WindowID(dummywin),#GWL_EXSTYLE)|#WS_EX_LAYERED) 
   SetLayeredWindowAttributes_(WindowID(dummywin),0,1,#LWA_ALPHA)
   
@@ -76,7 +76,7 @@ EndIf
 ;   CloseWindow(dummywin)
 ; EndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 4
 ; Folding = -
 ; EnableXP

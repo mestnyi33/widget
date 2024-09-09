@@ -343,8 +343,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          hide.b
       EndStructure
       
-      ;--     TABS
+      ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
+         *columnaddress
+         columnindex.i
+         
          StructureUnion
             buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
             box._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
@@ -374,22 +377,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *menu._s_WIDGET
       EndStructure
       
-      ;--     TAB
-      Structure _s_TAB
-         *widget._s_WIDGET
-         
-         state.c
-         index.c
-         addindex.c
-         
-         ; tab
-         *entered._s_rows
-         *pressed._s_rows
-         *focused._s_rows
-         
-          List *items._s_ITEMS( )
-      EndStructure
-      
       ;--     ROWS
       Structure _s_ROWS Extends _s_ITEMS
          checkbox._s_BOX ; \box[1]\ -> \checkbox\
@@ -412,6 +399,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *last._s_rows            ; last draw-elemnt in the list
          List *_s._s_rows( )      ; all draw-elements
       EndStructure
+      
       ;--     ROW
       Structure _s_ROW
          id.i[4]
@@ -438,6 +426,23 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          List lines._s_rows( )
       EndStructure
+      
+      ;--     TAB
+      Structure _s_TAB
+         *widget._s_WIDGET
+         
+         state.c
+         index.c
+         addindex.c
+         
+         ; tab
+         *entered._s_rows
+         *pressed._s_rows
+         *focused._s_rows
+         
+          List *items._s_ITEMS( )
+      EndStructure
+      
       ;--     BAR
       Structure _s_PAGE
          pos.l
@@ -529,13 +534,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_COLUMN Extends _s_COORDINATE
          index.i
          
+         text._s_TEXT
+         image._s_image
+         
+         
+         ;--TEMP---
          drawing.b
          hide.b
          state.b
          
-         text._s_TEXT
-         image._s_image
-         
+         Map string.s( )
          ;List *items._s_rows( )
          List items._s_rows( )
       EndStructure
@@ -787,7 +795,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 538
-; FirstLine = 527
-; Folding = ----------
+; CursorPosition = 546
+; FirstLine = 494
+; Folding = -----r----
 ; EnableXP

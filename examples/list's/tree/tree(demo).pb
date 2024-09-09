@@ -581,8 +581,9 @@ EndProcedure
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
 ; CursorPosition = 572
-; FirstLine = 392
+; FirstLine = 389
 ; Folding = f-b------
 ; EnableXP
+; DPIAware

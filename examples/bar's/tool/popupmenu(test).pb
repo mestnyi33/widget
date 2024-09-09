@@ -74,14 +74,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Define windowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
-   ContainerGadget( #PB_Any, 10, 35, 80, 80, #PB_Container_Flat ) 
-   StringGadget( #PB_Any, 10, 10, 80, 35, "String1" )
-   StringGadget( #PB_Any, 10, 50, 80, 35, "String2" )
-   CloseGadgetList( )
-   StringGadget( #PB_Any, 10, 120, 80, 35, "String1" )
-   StringGadget( #PB_Any, 10, 160, 80, 35, "String2" )
+   Define windowID = OpenWindow( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    
+   Open(0, 50,50,400,250)
    CreateMenu(0, WindowID(0))
    MenuTitle("Title-1")
    MenuItem(1, "title-1-item-1")
@@ -126,9 +121,6 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 7, @TestHandler())
    BindMenuEvent(0, 8, @QuitHandler())
    
-   ButtonGadget(777, 10, 220, 80, 35, "-777-" )
-   Bind(Button( 10, 220, 80, 35, "-777-" ), @handler( ), #__event_LeftClick)  : SetClass(widget(), "-777-" )
-   
    ;\\
    *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    
@@ -172,65 +164,29 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(9, "title-4-item-1")
    BarItem(10, "title-4-item-2")
    
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
-   
    ;\\
-   Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
-   Bind(Button( 415, 220, 80, 35, "Button2" ), @handler( ), #__event_MouseEnter)  : SetClass(widget(), "Button2" )
-   Define *window._s_widget = Window(100, 50, 300, 200, "menu click test", #PB_Window_SystemMenu)
-   Container( 10, 10, 80, 80, #PB_Container_Flat )
-   String( 10, 10, 80, 35, "String1" )
-   String( 10, 50, 80, 35, "String2" )
-   CloseList( )
-   String( 10, 100, 80, 35, "String1" )
-   String( 10, 140, 80, 35, "String2" )
-   
-   *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
-   
-   BarTitle("Title-1")
-   BarItem(1, "title-1-item-1")
-   BarSeparator( )   
-   ;
-   OpenBar("title-1-sub-item")
-   BarItem(3, "title-1-item")
-   BarSeparator( )
-   ;
-   OpenBar("title-2-sub-item")   
-   BarItem(13, "title-2-item")
-   BarSeparator( )
-   ;
-   OpenBar("title-3-sub-item")   
-   BarItem(23, "title-3-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(14, "title-2-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(4, "title-1-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(2, "title-1-item-2")
-   
-   BarTitle("Title-2")
-;    BarItem(5, "title-2-item-1")
-;    BarItem(6, "title-2-item-2")
-   
-   BarTitle("Title-event-test")
-   BarItem(7, "test")
-   BarSeparator( )
-   BarItem(8, "quit")
-   
-   BarTitle("Title-4")
-   BarItem(9, "title-4-item-1")
-   BarItem(10, "title-4-item-2")
-   
+   Define a
+   ComboBox(100, 10, 250, 21, #PB_ComboBox_Editable)
+    For a = 1 To 31
+      AddItem(widget(), -1,"ComboBox item " + Str(a))
+    Next
+    
+    ComboBox(100, 40, 250, 21, #PB_ComboBox_Image)
+    AddItem(widget(), -1, "ComboBox item with image1", (0))
+    AddItem(widget(), -1, "ComboBox item with image2", (1))
+    AddItem(widget(), -1, "ComboBox item with image3", (2))
+    
+    ComboBox(100, 70, 250, 21)
+    AddItem(widget(), -1, "ComboBox editable...1")
+    AddItem(widget(), -1, "ComboBox editable...2")
+    AddItem(widget(), -1, "ComboBox editable...3")
+    
+    SetState(getwidget(0), 2)
+    SetState(getwidget(1), 1)
+    SetState(getwidget(2), 0)    ; set (beginning with 0) the third item as active one
+      
    Bind(*menu, @TestHandler(), -1, 7)
    Bind(*menu, @QuitHandler(), -1, 8)
-   
    
    
    Define Event
@@ -244,8 +200,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 206
+; CursorPosition = 168
+; FirstLine = 164
 ; Folding = --
 ; EnableXP
-; DPIAware

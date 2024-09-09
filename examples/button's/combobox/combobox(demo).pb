@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If eventtype = #__event_Draw Or eventtype = #__event_MouseMove
       ProcedureReturn 
     EndIf
-    If EventWidget( ) = EventWidget( )\_root( )
+    If EventWidget( ) = EventWidget( )\root
       ProcedureReturn 
     EndIf
     
@@ -131,6 +131,8 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( ) 
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 53
+; FirstLine = 43
 ; Folding = ---
 ; EnableXP
