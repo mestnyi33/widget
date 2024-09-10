@@ -1459,7 +1459,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i MDI( x.l, y.l, width.l, height.l, flag.q = 0 )
       
       ; menu
-      Declare.i DisplayPopup( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
+      Declare.i DisplayPopupMenuBar( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
       Declare.i DisplayPopupMenuBar( *this, *display, x.l = #PB_Ignore, y.l = #PB_Ignore )
       Declare   BarPosition( *this, position.i, size.i = #PB_Default )
       Declare   CreateBar( type.b = #Null, *parent = #Null, flag.q = #Null )
@@ -4924,13 +4924,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Not invisible
             HideWindow( Window, #False, #PB_Window_NoActivate)
          EndIf
-         ;
-         *root\window = *root
          ProcedureReturn *root
       EndProcedure
       
       Procedure   DisplayPopupMenuBar( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
-         ; ProcedureReturn DisplayPopup( *this, *display, x, y )
+         ; ProcedureReturn DisplayPopupMenuBar( *this, *display, x, y )
          Protected width = #PB_Ignore
          Protected height = #PB_Ignore
          
@@ -4940,58 +4938,71 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this
-            If *display\EnteredTab( )
-               DoEvents( *display, #__event_StatusChange, *display\EnteredTab( )\index, *display\EnteredTab( ) )
-            EndIf
-            If *this\hidden
-               Hide( *this, #False )
+            ;\\ hide current popup widget
+            Hide( *this, *this\hide ! 1 )
+            
+            Debug 6666
+            If *this\hide
+               *this\root\widget = #Null
+               
+               Debug "display - hide"
+               If PressedWidget( ) = *this
+                  PressedWidget( ) = *display
+                  PostRepaint( *display\root )
+               EndIf
+               HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
+               ProcedureReturn 0
+            Else
+               If *this\root\widget
+                  Debug "display - resize"
+               Else
+                  Debug "display - show"
+               EndIf
             EndIf
             
             ;\\
-            If *display
-               *display\popupBar = *this
-               ;
-               If x = #PB_Ignore
-                  x = *display\screen_x( ) 
+            If Not *display
+               ProcedureReturn 0
+            EndIf
+            
+            *display\popupBar = *this
+            
+            If *display\EnteredTab( )
+               DoEvents( *display, #__event_StatusChange, *display\EnteredTab( )\index, *display\EnteredTab( ) )
+            EndIf
+            
+            ;\\ ComboBox
+            If *display\ComboButton( )
+               If *this\hide
+                  *display\ComboButton( )\arrow\direction = 2
+               Else
+                  *display\ComboButton( )\arrow\direction = 3
                EndIf
-               If y = #PB_Ignore
-                  y = (*display\screen_y( ) + *display\screen_height( )) 
+            EndIf
+            
+            ;\\
+            If Not *this\root\widget
+               ;Debug "displayBar - create " + *this\class +" "+ *this\root
+               *displayRoot = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible )
+               
+               If is_integral_( *this )
+                  *displayRoot\TabBox( ) = *this
+                  ChangeParent( *this, *displayRoot )
+               Else
+                  SetParent( *this, *displayRoot )
                EndIf
                
-               ;
-               ;\\ ComboBox
-               If *display\ComboButton( )
-                  If *this\hide
-                     *display\ComboButton( )\arrow\direction = 2
-                  Else
-                     *display\ComboButton( )\arrow\direction = 3
-                  EndIf
-               EndIf
+               *this\root\window = 0
+               Popup( ) = *this\root
                
                ;\\
-               If Not *this\root\widget
-                  ;Debug "displayBar - create " + *this\class +" "+ *this\root
-                  *displayRoot = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible )
-                  *displayRoot\window = 0
-                  
-                  ;\\
-                  *displayRoot\parent = *display
-                  *displayRoot\class = "Root_"+*this\class
-                  *displayRoot\widget = *this
-                  
-                  *this\autosize = 1
-                  
-                  If is_integral_( *this )
-                     *displayRoot\TabBox( ) = *this
-                     ChangeParent( *this, *displayRoot )
-                  Else
-                     SetParent( *this, *displayRoot )
-                  EndIf
-                  
-                  If Not widget::__gui\drawingroot
-                     StartDrawingRoot( *this\root )
-                  EndIf
-                  
+               *this\root\parent = *display
+               *this\root\widget = *this
+               *this\root\class = "Root_"+*this\class
+               
+               *this\autosize = 1
+               
+               If StartDrawingRoot( *this\root )
                   If *this\type = #__type_TabBar Or
                      *this\type = #__type_ToolBar Or 
                      *this\type = #__type_Menu 
@@ -5001,85 +5012,64 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      update_items_( *this, *this\__rows( ) )
                   EndIf
                   StopDrawingRoot()
-                  
-                  If *this\scroll And 
-                     ( *this\scroll\v Or *this\scroll\h )
-                     bar_area_update( *this )
-                  EndIf
-                  
-                  ;\\
-                  width = *this\scroll_width( )
-                  height = 0
-                  
-                  ;\\
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or 
-                     *this\type = #__type_Menu 
-                     
-                     ;                      height = 1 ; pos
-                     ;                      PushListPosition( *this\__tabs( ) ) 
-                     ;                      ForEach *this\__tabs( )
-                     ;                         height + *this\__tabs( )\height + 1 ; pos
-                     ;                                                             ;
-                     ;                         If *this\__tabs( )\itemindex  = #PB_Ignore
-                     ;                            height + 2 ; separator_step 
-                     ;                         Else
-                     ;                            index + 1
-                     ;                         EndIf
-                     ;                         
-                     ;                         If index >= 9
-                     ;                            Break
-                     ;                         EndIf
-                     ;                      Next
-                     ;                      PopListPosition( *this\__tabs( ) ) 
-                     
-                     PushListPosition( *this\__tabs( ) ) 
-                     If ListSize( *this\__tabs( ) ) > 9
-                        SelectElement( *this\__tabs( ), 9 )
-                     Else
-                        LastElement( *this\__tabs( ) ) 
-                     EndIf
-                     height = ( *this\__tabs( )\y + *this\__tabs( )\height )
-                     PopListPosition( *this\__tabs( ) ) 
-                     
-                     
-                     ;Debug "   scroll "+height +" "+ *this\scroll_height( )
-                  ElseIf *this\row
-                     ForEach *this\__rows( )
-                        height + *this\__rows( )\height
-                        
-                        If ( ListIndex(*this\__rows( )) + 1 ) >= 10
-                           Break
-                        EndIf
-                     Next
-                  EndIf
-                  
-                  ;\\
-                  If *display\type = #__type_ComboBox
-                     ;\\
-                     width + *this\fs * 2
-                     height + *this\fs * 2
-                     
-                     If width < *display\width - 2
-                        width = *display\width - 2
-                     EndIf
-                  EndIf
-                  
-                  ;\\
-                  If *display\round
-                     width - *display\round * 2
-                  EndIf
-                  
                EndIf
-            EndIf
             
-            If *this\root\widget   
-               ;\\
-               If *display\round
-                  x + *display\round
+               If *this\scroll And 
+                  ( *this\scroll\v Or *this\scroll\h )
+                  bar_area_update( *this )
                EndIf
                
                ;\\
+               width = *this\scroll_width( )
+               If *this\scroll And
+                  *this\scroll\v ;And Not *this\scroll\v\hide
+                  
+                  width + *this\scroll\v\width + 4
+               EndIf
+               height = 0
+               
+               ;\\
+               If *display\type = #__type_ComboBox
+                  If width < *display\width 
+                     width = *display\width 
+                  EndIf
+               EndIf
+               
+               ;\\
+               If *this\type = #__type_TabBar Or
+                  *this\type = #__type_ToolBar Or 
+                  *this\type = #__type_Menu 
+                  
+                  PushListPosition( *this\__tabs( ) ) 
+                  If ListSize( *this\__tabs( ) ) > 9
+                     SelectElement( *this\__tabs( ), 9 )
+                  Else
+                     LastElement( *this\__tabs( ) ) 
+                  EndIf
+                  height = ( *this\__tabs( )\y + *this\__tabs( )\height ) + 1
+                  PopListPosition( *this\__tabs( ) ) 
+                  
+               ElseIf *this\row
+                  
+                  PushListPosition( *this\__rows( ) ) 
+                  If ListSize( *this\__rows( ) ) > 9
+                     SelectElement( *this\__rows( ), 9 )
+                  Else
+                     LastElement( *this\__rows( ) ) 
+                  EndIf
+                  height = ( *this\__rows( )\y + *this\__rows( )\height )
+                  PopListPosition( *this\__rows( ) ) 
+                  
+               EndIf
+               
+               ;\\
+               If *display\round
+                  width - *display\round * 2
+               EndIf
+               
+            EndIf
+            
+            If *this\root\widget   
                If mode
                   x = Mouse( )\x - width / 2
                   
@@ -5089,14 +5079,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ListSize( *this\__tabs( ) ) And *this\FocusedTab( )\focus
                      y = ( Mouse( )\y - row_y_( *this, *this\FocusedTab( ) ) - *this\FocusedTab( )\height / 2 )
                   EndIf
+               Else
+                  If x = #PB_Ignore
+                     x = *display\screen_x( ) 
+                  EndIf
+                  If y = #PB_Ignore
+                     y = (*display\screen_y( ) + *display\screen_height( )) 
+                  EndIf
+                  
+                  ;\\
+                  If *display\round
+                     x + *display\round
+                  EndIf
                EndIf
-               
-               ;                ;\\
-               ;                Popup( ) = *displayRoot
-               ;                Popup( )\widget = *this
-               ;                Popup( )\parent = *display
-               ;                ChangeParent( *this, Popup( ) )
-               
                ;
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                   x / _dpiScaleFactorX
@@ -5108,7 +5103,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      height / _dpiScaleFactorY
                   EndIf
                CompilerEndIf
-               
                ;
                y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
                x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
@@ -5117,7 +5111,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Debug "popup resize width="+width +" height="+ height
                ResizeWindow( *this\root\canvas\window, x, y, width, height )
                ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
-               ; Resize( *this\root, x, y, width, height )
+               ;Resize( *this\root, x, y, width, height )
                HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
                PostRepaint( *this\root )
                
@@ -5127,206 +5121,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
       EndProcedure
-      
-      Procedure.i DisplayPopup( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
-         ProcedureReturn DisplayPopupMenuBar( *this, *display, x, y )
-         Protected width = #PB_Ignore
-         Protected height = #PB_Ignore
-         
-         Protected index
-         Protected mode = 0
-         
-         ;\\
-         If *this
-            ;\\ hide current popup widget
-            Hide( *this, *this\hide ! 1 )
-            
-            ;\\
-            If *display
-               ;                If x = #PB_Ignore
-               ;                   x = *display\x + 1
-               ;                Else
-               ;                   x + *display\x + 1
-               ;                EndIf
-               ;                If y = #PB_Ignore
-               ;                   y = *display\y + *display\height
-               ;                Else
-               ;                   y + *display\y + 1
-               ;                EndIf
-               
-               If x = #PB_Ignore
-                  x = *display\screen_x( ) 
-               EndIf
-               If y = #PB_Ignore
-                  y = (*display\screen_y( ) + *display\screen_height( )) 
-               EndIf
-               
-               ;\\ ComboBox
-               If *display\ComboButton( )
-                  If *this\hide
-                     *display\ComboButton( )\arrow\direction = 2
-                  Else
-                     *display\ComboButton( )\arrow\direction = 3
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ hide previews popup widget
-            If Popup( )
-               If Popup( )\widget
-                  If Popup( )\widget <> *this
-                     ChangeParent( Popup( )\widget, Popup( )\parent )
-                     Hide( Popup( )\widget, #True )
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\hide
-               If Popup( )
-                  Debug "display - hide"
-                  Popup( )\widget = #Null
-                  If PressedWidget( ) = *this
-                     PressedWidget( ) = *display
-                  EndIf
-                  HideWindow( Popup( )\canvas\window, #True, #PB_Window_NoActivate )
-               EndIf
-            Else
-               ;\\
-               If *this\row
-                  Debug "" + *this\root\class + " " + *display\root\class
-                  If *this\root = *display\root
-                     Debug "display - update"
-                     
-                     If StartDrawingRoot( *this\root )
-                        If *this\type = #__type_TabBar Or
-                           *this\type = #__type_ToolBar Or 
-                           *this\type = #__type_Menu 
-                           
-                           bar_tab_update_items_( *this, *this\__tabs( ) )
-                        ElseIf *this\row
-                           update_items_( *this, *this\__rows( ) )
-                        EndIf
-                        StopDrawingRoot()
-                     EndIf
-                     
-                     If *this\scroll And 
-                        ( *this\scroll\v Or *this\scroll\h )
-                        bar_area_update( *this )
-                     EndIf
-                     ;                      *this\autosize = 0
-                     ;                      Resize( *this, #PB_Ignore, #PB_Ignore, *this\root\width, *this\root\height )
-                     *this\autosize = 1
-                  EndIf
-                  
-                  ;\\
-                  If *this\scroll And
-                     *this\scroll\v And
-                     Not *this\scroll\v\hide
-                     width = *this\scroll\v\width
-                  EndIf
-                  width + *this\scroll_width( )
-                  
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or 
-                     *this\type = #__type_Menu 
-                     
-                     PushListPosition( *this\__tabs( ) ) 
-                     If ListSize( *this\__tabs( ) ) > 9
-                        SelectElement( *this\__tabs( ), 9 )
-                     Else
-                        LastElement( *this\__tabs( ) ) 
-                     EndIf
-                     height = ( *this\__tabs( )\y + *this\__tabs( )\height )
-                     PopListPosition( *this\__tabs( ) ) 
-                     
-                  ElseIf *this\row
-                     
-                     PushListPosition( *this\__rows( ) ) 
-                     If ListSize( *this\__rows( ) ) > 9
-                        SelectElement( *this\__rows( ), 9 )
-                     Else
-                        LastElement( *this\__rows( ) ) 
-                     EndIf
-                     height = ( *this\__rows( )\y + *this\__rows( )\height )
-                     PopListPosition( *this\__rows( ) ) 
-                     
-                  EndIf
-                  ;                   
-               Else
-                  height = *this\inner_height( )
-               EndIf
-               
-               ;\\
-               width + *this\fs * 2
-               height + *this\fs * 2
-               
-               ;\\
-               If width < *display\width - 2
-                  width = *display\width - 2
-               EndIf
-               
-               ;\\
-               If mode
-                  x = Mouse( )\x - width / 2
-               EndIf
-               
-               ;\\
-               If *display\round
-                  x + *display\round
-                  width - *display\round * 2
-               EndIf
-               
-               ;\\
-               If Popup( )
-                  If Popup( )\widget
-                     Debug "display - resize"
-                  Else
-                     Debug "display - show"; +" "+ Popup( )\width +" "+ Popup( )\height
-                     HideWindow( Popup( )\canvas\window, #False, #PB_Window_NoActivate )
-                  EndIf
-               Else
-                  Debug "display - create "
-                  Popup( ) = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess )
-                  SetClass( Popup( ), "Popup( )" ) 
-               EndIf
-               
-               ;*this\child = 0
-               ;\\
-               Popup( )\widget = *this
-               Popup( )\parent = *display
-               ChangeParent( *this, Popup( ) )
-               ;SetParent( *this, Popup( ) )
-               
-               ;
-               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                  x / _dpiScaleFactorX
-                  y / _dpiScaleFactorY
-                  If width <> #PB_Ignore
-                     width / _dpiScaleFactorX
-                  EndIf
-                  If height <> #PB_Ignore
-                     height / _dpiScaleFactorY
-                  EndIf
-               CompilerEndIf
-               
-               y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
-               x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
-               
-               ;                ;\\
-               ;                               ResizeWindow( Popup( )\canvas\window, x, y, width, height )
-               ;                               ResizeGadget( Popup( )\canvas\gadget, 0, 0, width, height)
-               ; Resize( Popup( ), 0, 0, width, height)
-               
-               Resize( Popup( ), x, y, width, height)
-               
-               PostEventRepaint( Popup( ) )
-               
-               ProcedureReturn #True
-            EndIf
-         EndIf
-      EndProcedure
-      
       
       ;-
       Macro clip_output_( _address_, _mode_ = [#__c_draw] )
@@ -5570,8 +5364,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If is_root_window_( *this )
             ResizeWindow( *this\root\canvas\window, x, y, width, height )
             ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height)
-            width * _dpiScaleFactorX
-            height * _dpiScaleFactorY
+            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               width * _dpiScaleFactorX
+               height * _dpiScaleFactorY
+            CompilerEndIf
+            
             ;             width = PB(GadgetWidth)( *this\root\canvas\gadget )
             ;             height = PB(GadgetHeight)( *this\root\canvas\gadget )
             x = 0
@@ -7078,6 +6875,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected._s_ITEMS *activeTAB = *this\FocusedTab( )
             Protected._s_BAR *bar = *this\bar
             Protected._s_BUTTONS *BB1, *BB2, *SB
+            If Not *bar
+               ProcedureReturn 0
+            EndIf
+            
             *SB  = *bar\button
             *BB1 = *bar\button[1]
             *BB2 = *bar\button[2]
@@ -21702,7 +21503,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If eventtype = #__event_Down
                      If mouse( )\buttons & #PB_Canvas_LeftButton
                         If *this\comboBar
-                           DisplayPopup( *this\comboBar, *this )
+                           DisplayPopupMenuBar( *this\comboBar, *this )
                         EndIf
                      EndIf
                   EndIf
@@ -21829,7 +21630,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            SetText( Popup( )\parent, GetItemText( *this, GetState( *this ) ) )
                            
                            If IsWindow( GetWindow( *this\root ) )
-                              DisplayPopup( *this, Popup( )\parent )
+                              DisplayPopupMenuBar( *this, Popup( )\parent )
                               SetActiveWindow( GetWindow( GetRoot( Popup( )\parent ) ) )
                            EndIf
                            ;                            EndIf
@@ -21843,7 +21644,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            ;\\
                            If Not is_integral_( *this )
-                              DisplayPopup( Popup( )\widget, *this )
+                              DisplayPopupMenuBar( Popup( )\widget, *this )
                            EndIf
                         EndIf
                      EndIf
@@ -24783,11 +24584,10 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 24784
-; FirstLine = 24752
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 5059
+; FirstLine = 5037
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
