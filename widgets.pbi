@@ -786,7 +786,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro is_menu_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_menu ) : EndMacro
       ; Macro is_gadget_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type > 0 ) : EndMacro
       Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
-      Macro is_root_window_( _this_ ) : Bool( _this_ = _this_\root And _this_\root\window ): EndMacro
       
       Macro is_child_( _this_, _parent_ )
          Bool( _this_\parent = _parent_ And Not ( _parent_\TabBox( ) And _this_\TabIndex( ) <> _parent_\TabBox( )\TabState( ) ))
@@ -4488,10 +4487,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\hidden <> state
             *this\hidden = state
             
-            If is_root_window_( *this )
-               HideWindow( *this\root\canvas\window, state, flags ) 
-            EndIf
-            
             ; *this\hide = HideState( *this )
             
             If *this\parent
@@ -4901,44 +4896,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure   CreatePopupWindow( *display._s_WIDGET = 0, flags.q = 0 )
-         Protected Window
-         Protected WindowID
-         Protected ParentID
-         Protected *root._s_ROOT
-         Protected invisible.b
-         ;\\
-         If *display
-            ParentID = WindowID( *display\root\canvas\window )
-         EndIf
-         ;
-         If flags & #PB_Window_Invisible
-            flags &~ #PB_Window_Invisible
-            invisible = 1
-         EndIf
-         ;
-         ;\\
-         *root = Open( #PB_Any, 0, 0, 1, 1, "", flags | #PB_Window_Invisible | #PB_Window_Tool, ParentID )
-         Window = GetWindow( *root )
-         WindowID = WindowID( Window )
-         ;
-         ;\\
-         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            ; var windowLevel: UIWindow.Level { get set } ; stay on top
-            CocoaMessage(0, WindowID, "setLevel:", 3)
-            ; Debug CocoaMessage(0, WindowID, "level")
-         CompilerElse
-            StickyWindow( window, #True )
-         CompilerEndIf
-         ;
-         ;\\ Important is #PB_Window_Invisible and
-         ;\\ HideWindow( )... Without them, there is no shadow....
-         If Not invisible
-            HideWindow( Window, #False, #PB_Window_NoActivate)
-         EndIf
-         ProcedureReturn *root
-      EndProcedure
-      
       Procedure.i DisplayPopupMenuBar( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
          ;ProcedureReturn DisplayPopupMenuBar( *this, *display, x, y )
          Protected width = #PB_Ignore
@@ -4993,9 +4950,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If Not *this\root\widget
                Debug "displayBar - create " + *this\class +" "+ *this\root
-               *displayRoot = CreatePopupWindow( *display, #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible )
-               *displayRoot\window = 0
+               *displayRoot = Open( #PB_Any, 0, 0, 1, 1, "", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool,  WindowID( *display\root\canvas\window ) )
+               Protected Window = GetWindow( *displayRoot )
+               Protected WindowID = WindowID( Window )
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  ; var windowLevel: UIWindow.Level { get set } ; stay on top
+                  CocoaMessage(0, WindowID, "setLevel:", 3)
+                  ; Debug CocoaMessage(0, WindowID, "level")
+               CompilerElse
+                  StickyWindow( window, #True )
+               CompilerEndIf
                
+               ;\\
                If is_integral_( *this )
                   If *this\type = #__type_TabBar Or
                      *this\type = #__type_ToolBar Or 
@@ -5016,7 +4982,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                *this\autosize = 1
                
+               ;Resize( *this, 0,0,500,500)
                If StartDrawingRoot( *this\root )
+                  ;\\ init drawing font
+                  draw_font( *this, GetFontID( *this\root ) )
+                  ;
+                  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                     If CurrentFontID( )
+                        DrawingFont( CurrentFontID( ) )
+                     EndIf
+                  CompilerEndIf
+                  ;
                   If *this\type = #__type_TabBar Or
                      *this\type = #__type_ToolBar Or 
                      *this\type = #__type_Menu 
@@ -5025,6 +5001,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ElseIf *this\row
                      update_items_( *this, *this\__rows( ) )
                   EndIf
+                  ;
                   StopDrawingRoot()
                EndIf
                
@@ -5038,7 +5015,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   width + *this\scroll\v\width + 4
                   ;EndIf
                EndIf
-               width + *this\scroll_width( )
+               width + *this\scroll_width( ) 
                
                ;\\
                If *display\type = #__type_ComboBox
@@ -5051,7 +5028,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *display\round
                   width - *display\round * 2
                EndIf
-               
+               Debug width
                ;\\
                If *this\type = #__type_TabBar Or
                   *this\type = #__type_ToolBar Or 
@@ -5088,17 +5065,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   x = Mouse( )\x - width / 2
                   
                   If ListSize( *this\__rows( ) ) And *this\FocusedRow( )\focus
-                     y = ( Mouse( )\y - row_y_( *this, *this\FocusedRow( ) ) - *this\FocusedRow( )\height / 2 )
+                     y = Mouse( )\y - row_y_( *this, *this\FocusedRow( ) ) - *this\FocusedRow( )\height / 2
                   EndIf
                   If ListSize( *this\__tabs( ) ) And *this\FocusedTab( )\focus
-                     y = ( Mouse( )\y - row_y_( *this, *this\FocusedTab( ) ) - *this\FocusedTab( )\height / 2 )
+                     y = Mouse( )\y - row_y_( *this, *this\FocusedTab( ) ) - *this\FocusedTab( )\height / 2
                   EndIf
                Else
                   If x = #PB_Ignore
                      x = *display\screen_x( ) 
                   EndIf
                   If y = #PB_Ignore
-                     y = (*display\screen_y( ) + *display\screen_height( )) 
+                     y = *display\screen_y( ) + *display\screen_height( )
                   EndIf
                   
                   ;\\
@@ -5126,9 +5103,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If width <> #PB_Ignore
                   Debug "displayBar - size (width="+width +" height="+ height +")"
                EndIf
+               ;
                ResizeWindow( *this\root\canvas\window, x, y, width, height )
                ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
-               ;Resize( *this\root, x, y, width, height )
                
                ;
                HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
@@ -5379,36 +5356,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\parent\redraw = 1
          EndIf
          
-         If is_root_window_( *this )
-            ResizeWindow( *this\root\canvas\window, x, y, width, height )
-            ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height)
-            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-               width * _dpiScaleFactorX
-               height * _dpiScaleFactorY
-            CompilerEndIf
-            
-            ;             width = PB(GadgetWidth)( *this\root\canvas\gadget )
-            ;             height = PB(GadgetHeight)( *this\root\canvas\gadget )
-            x = 0
-            y = 0 
-         Else
-            If Not mouse( )\dragstart ; mouse( )\press ; 
-               If Not *this\noscale
-                  If _dpiScaleFactorX
-                     If x <> #PB_Ignore
-                        x = x * _dpiScaleFactorX
-                     EndIf
-                     If width <> #PB_Ignore
-                        width = width * _dpiScaleFactorX
-                     EndIf
+         ;
+         If Not mouse( )\dragstart ; mouse( )\press ; 
+            If Not *this\noscale
+               If _dpiScaleFactorX
+                  If x <> #PB_Ignore
+                     x = x * _dpiScaleFactorX
                   EndIf
-                  If _dpiScaleFactorY
-                     If y <> #PB_Ignore
-                        y = y * _dpiScaleFactorY
-                     EndIf
-                     If height <> #PB_Ignore
-                        height = height * _dpiScaleFactorY
-                     EndIf
+                  If width <> #PB_Ignore
+                     width = width * _dpiScaleFactorX
+                  EndIf
+               EndIf
+               If _dpiScaleFactorY
+                  If y <> #PB_Ignore
+                     y = y * _dpiScaleFactorY
+                  EndIf
+                  If height <> #PB_Ignore
+                     height = height * _dpiScaleFactorY
                   EndIf
                EndIf
             EndIf
@@ -21659,8 +21623,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If *this <> Popup( )
                         If *this\root <> Popup( )\root
-                           ;Debug ""+Popup( )\root\parent\class
-                           DisplayPopupMenuBar( Popup( ), Popup( )\root\parent )
+                           DisplayPopupMenuBar( Popup( ), *combobox )
                         EndIf 
                      EndIf
                   EndIf
@@ -22028,11 +21991,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; PushMapPosition( __roots( ) )
                If ChangeCurrentCanvas( GadgetID( eventgadget ) )
-                  If Not is_root_window_( Root( ) )
-                     Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
-                  EndIf
+                  Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                EndIf
                ; PopMapPosition( __roots( ) )
+               
                If EnteredCanvasID
                   If EnteredCanvasID <> Root( )\canvas\gadgetID
                      ChangeCurrentCanvas( EnteredCanvasID )
@@ -24668,9 +24630,9 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 5394
-; FirstLine = 5378
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 5003
+; FirstLine = 4975
+; Folding = ----------------------------------------------------------------------------------------------------------------------f4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
