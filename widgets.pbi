@@ -4929,20 +4929,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ hide current popup widget
                Hide( *this, *this\hide ! 1 )
                
-               Debug "popupBar - hide "+*this\class +" "+ *this\hide
-                  ;
                If *this\hide
+                  Debug "comboBar - hide "+*this\class +" "+ *this\hide
+                  ;
                   *display\ComboButton( )\arrow\direction = 2
                   
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
                   Popup( ) = #Null
                   ProcedureReturn - 1
                Else
+                  Debug "comboBar - show"
                   *display\ComboButton( )\arrow\direction = 3
                EndIf
             Else
                If *this\hide
-                  Debug "display - show"
+                  Debug "menuBar - show"
                   Hide( *this, #False )
                EndIf
             EndIf
@@ -5006,13 +5007,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               width = 0
+               width = *this\fs*2
+               height = *this\fs*2
+               
+               ;\\
                If *this\scroll And 
                   *this\scroll\v 
                   ;bar_area_update( *this )
                   
                   ;If Not *this\scroll\v\hide
-                  width + *this\scroll\v\width + 4
+                  width + *this\scroll\v\width 
                   ;EndIf
                EndIf
                width + *this\scroll_width( ) 
@@ -5028,7 +5032,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *display\round
                   width - *display\round * 2
                EndIf
-               Debug width
+               
                ;\\
                If *this\type = #__type_TabBar Or
                   *this\type = #__type_ToolBar Or 
@@ -5040,18 +5044,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      LastElement( *this\__tabs( ) ) 
                   EndIf
-                  height = ( *this\__tabs( )\y + *this\__tabs( )\height ) + 1
+                  height + ( *this\__tabs( )\y + *this\__tabs( )\height ) + 1
                   PopListPosition( *this\__tabs( ) ) 
                   
                ElseIf *this\row
-                  
                   PushListPosition( *this\__rows( ) ) 
                   If ListSize( *this\__rows( ) ) > 9
                      SelectElement( *this\__rows( ), 9 )
                   Else
                      LastElement( *this\__rows( ) ) 
                   EndIf
-                  height = ( *this\__rows( )\y + *this\__rows( )\height )
+                  height + ( *this\__rows( )\y + *this\__rows( )\height )
                   PopListPosition( *this\__rows( ) ) 
                EndIf
             EndIf
@@ -5098,11 +5101,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
                x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
                
-               ;\\
-               Debug "displayBar - move (x="+x +" y="+ y +")"
-               If width <> #PB_Ignore
-                  Debug "displayBar - size (width="+width +" height="+ height +")"
-               EndIf
+;                ;\\
+;                Debug "displayBar - move (x="+x +" y="+ y +")"
+;                If width <> #PB_Ignore
+;                   Debug "displayBar - size (width="+width +" height="+ height +")"
+;                EndIf
                ;
                ResizeWindow( *this\root\canvas\window, x, y, width, height )
                ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
@@ -19591,7 +19594,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this = *this\StringBox( )
             EndIf
          EndIf
-         
          ;
          ;\\ entered anchor index
          If a_atpoint( *this ) 
@@ -21613,25 +21615,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this <> Popup( )\root\parent
                   If eventtype = #__event_Down
                      Protected *combobox._S_WIDGET = Popup( )\root\parent
-                     
-                     If *this = Popup( )
-                        If IsWindow( *combobox\root\canvas\window )
-                           DisableWindow(*this\root\canvas\window, 1)
-                           SetActiveWindow( *combobox\root\canvas\window )
+                     If *combobox And *combobox\type = #__type_ComboBox
+                        If *this = Popup( )
+                           If IsWindow( *combobox\root\canvas\window )
+                              DisableWindow(*this\root\canvas\window, 1)
+                              SetActiveWindow( *combobox\root\canvas\window )
+                           EndIf
                         EndIf
-                     EndIf
-                     
-                     If *this <> Popup( )
-                        If *this\root <> Popup( )\root
-                           DisplayPopupMenuBar( Popup( ), *combobox )
-                        EndIf 
+                        
+                        If *this <> Popup( )
+                           If *this\root <> Popup( )\root
+                              DisplayPopupMenuBar( Popup( ), *combobox )
+                           EndIf 
+                        EndIf
                      EndIf
                   EndIf
                   
                   If eventtype = #__event_up
                      If *this = Popup( )
                         *combobox = Popup( )\root\parent
-                        If *combobox
+                        If *combobox And *combobox\type = #__type_ComboBox
                            SetText( *combobox, GetItemText( *this, GetState( *this ) ) )
                            DisplayPopupMenuBar( *this, *combobox )
                            PostRepaint( *combobox\root )
@@ -21988,18 +21991,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If eventtype = #__event_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               
-               ; PushMapPosition( __roots( ) )
+               Debug eventgadget
+; ;               *root = Root( )
+               ;PushMapPosition( __roots( ) )
                If ChangeCurrentCanvas( GadgetID( eventgadget ) )
                   Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                EndIf
-               ; PopMapPosition( __roots( ) )
-               
-               If EnteredCanvasID
-                  If EnteredCanvasID <> Root( )\canvas\gadgetID
-                     ChangeCurrentCanvas( EnteredCanvasID )
-                  EndIf
-               EndIf
+               ;PopMapPosition( __roots( ) )
+; ; ;                ;Root( ) = *root
+; ; ;                ChangeCurrentCanvas( *root\canvas\gadgetID )
+;                If EnteredCanvasID
+;                   If EnteredCanvasID <> Root( )\canvas\gadgetID
+;                      ChangeCurrentCanvas( EnteredCanvasID )
+;                   EndIf
+;                EndIf
                ProcedureReturn event
             EndIf
             
@@ -22697,6 +22702,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                canvasflag | #PB_Canvas_Container
             EndIf
+            ;
+            ; then bug in windows
             If Window = #PB_Any
                Window = 300 + MapSize( __roots( ) )
             EndIf
@@ -22712,16 +22719,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If CocoaMessage(0, w, "hasShadow") = 0
                      CocoaMessage(0, w, "setHasShadow:", 1)
                   EndIf
-                  
                CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
                   If GetClassLongPtr_( w, #GCL_STYLE ) & #CS_DROPSHADOW = 0
                      SetClassLongPtr_( w, #GCL_STYLE, #CS_DROPSHADOW )
                   EndIf
                   SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
-                  ;SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE)|#WS_EX_NOPARENTNOTIFY) 
-                  
+                  SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE)|#WS_EX_NOPARENTNOTIFY) 
                CompilerElse
-                  
+                ;  
                CompilerEndIf
             EndIf
             ;
@@ -22759,7 +22764,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             g = GadgetID( Canvas )
          Else
             g = CanvasGadget( Canvas, x, y, width, height, canvasflag )
-            If Canvas = - 1 : Canvas = g : g = GadgetID( Canvas ) : EndIf
+            If Canvas = - 1 : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
          EndIf
          ;
          If UseGadgetList And w <> UseGadgetList
@@ -24630,9 +24635,9 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 5003
-; FirstLine = 4975
-; Folding = ----------------------------------------------------------------------------------------------------------------------f4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21620
+; FirstLine = 21397
+; Folding = -----------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f02------------------------------------------------------------------------d----bt-f-----------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app

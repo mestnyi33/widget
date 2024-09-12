@@ -202,9 +202,7 @@ Procedure EventTypeCallback(windowID, uMsg, wParam, lParam)
     Debug "#WM_MBUTTONDOWN "+id::gadget(windowID)
   ElseIf uMsg = #WM_MBUTTONUP
     Debug "#WM_MBUTTONUP "+id::gadget(windowID)
-  ElseIf uMsg = #WM_MOUSEHOVER
-    Debug "#WM_MOUSEHOVER "+id::gadget(windowID)
-  ElseIf uMsg = #WM_MOUSEMOVE
+  ElseIf uMsg = #WM_MOUSEFIRST
     ;  Debug "#WM_MOUSEMOVE "+id::gadget(windowID)
     
     
@@ -215,6 +213,8 @@ Procedure EventTypeCallback(windowID, uMsg, wParam, lParam)
           TRACK\dwHoverTime = 10
           TrackMouseEvent_(@TRACK)
       
+  ElseIf uMsg = #WM_MOUSEHOVER
+    Debug "#WM_MOUSEHOVER "+id::gadget(windowID)
   ElseIf uMsg = #WM_MOUSELEAVE
     Debug "#WM_MOUSELEAVE "+id::gadget(windowID)
   ElseIf uMsg = #WM_CREATE
@@ -243,14 +243,7 @@ Procedure OpenWindowCallback_(windowID, uMsg, wParam, lParam)
   ElseIf uMsg = #WM_MOUSEHOVER
     Debug "#WM_MOUSEHOVER "
   ElseIf uMsg = #WM_MOUSEMOVE
-    ;  Debug "#WM_MOUSEMOVE "
-;     Protected mouseleave.TRACKMOUSEEVENT
-;       mouseleave\cbSize = SizeOf(mouseleave)
-;       mouseleave\dwFlags = #TME_LEAVE|#TME_HOVER
-;       mouseleave\hwndTrack = windowID
-;       ;mouseleave\dwHoverTime = 1
-;       TrackMouseEvent_(@mouseleave)
-      
+     
       Protected TRACK.TRACKMOUSEEVENT
           TRACK\cbSize = SizeOf(TRACK)
           TRACK\dwFlags = #TME_HOVER|#TME_LEAVE
@@ -301,7 +294,7 @@ Procedure OpenWindow_(window, x, y, width, height, title.s, flags = 0, parentID 
   RegisterClassEx_(@wc) 
   
   If flags & #PB_Window_BorderLess = #PB_Window_BorderLess
-    uFlags = #WS_VISIBLE | #WS_POPUP
+    uFlags = #WS_VISIBLE | #WS_POPUP | #WS_BORDER
   EndIf
   
   ; #WS_POPUPWINDOW = #WS_POPUP | #WS_BORDER | #WS_SYSMENU
@@ -502,7 +495,8 @@ Repeat
     Debug " pb_window_leftclick"
   EndIf
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 3
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 296
+; FirstLine = 286
 ; Folding = -------
 ; EnableXP
