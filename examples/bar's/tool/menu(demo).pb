@@ -131,6 +131,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   SetColor( *menu, #__color_back, $FFF7FEE2 )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -187,6 +188,7 @@ CompilerIf #PB_Compiler_IsMainFile
    String( 10, 140, 80, 35, "String2" )
    
    *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
+   SetColor( *menu, #__color_back, $FFDFDFDF )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -243,9 +245,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 206
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 190
+; FirstLine = 173
 ; Folding = --
 ; EnableXP
 ; DPIAware
