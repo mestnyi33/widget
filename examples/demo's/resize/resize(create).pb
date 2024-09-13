@@ -5,12 +5,17 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib( WIDGET )
   
+  Global *menu
+  
   Procedure Events()
     Static DraggedGadget
     
     Protected eventobject = EventWidget( )
     
     Select WidgetEventType( )
+      Case #__event_RightButtonUp
+        DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+        
       Case #__event_DragStart
         DraggedGadget = eventobject
         
@@ -50,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case  8: result = ComboBox(x,y,width,height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
       Case  9: result = Image(x,y,width,height,0,#PB_Image_Border|flags) 
       Case 10: result = HyperLink(x,y,width,height,"HyperLink",0, flags) 
-      Case 11: result = Container(x,y,width,height,#PB_Container_Flat|flags): Button(0,0,80,y,"Button1"): Button(10,50,80,y,"Button2"): CloseList() ; Container
+      Case 11: result = Container(x,y,width,height,#PB_Container_Flat|flags): Button(0,0,80,y,"Button1"):SetClass(widget(),GetText(widget())): Button(10,50,80,y,"Button2"):SetClass(widget(),GetText(widget())): CloseList() ; Container
       Case 12: result = ListIcon(x,y,width,height,"",88, flags) 
         ;Case 13: result = IPAddress(x,y,width,height) 
         ;Case 14: result = ProgressBar(x,y,width,height,0,5)
@@ -84,6 +89,19 @@ CompilerIf #PB_Compiler_IsMainFile
     SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
     ;a_init( root())
     
+    *menu = CreatePopupMenuBar( )
+    If *menu                  ; creation of the pop-up menu begins...
+       BarItem(1, "Open")     ; You can use all commands for creating a menu
+       BarItem(2, "Save")     ; just like in a normal menu...
+       BarItem(3, "Save as")
+       BarItem(4, "Quit")
+       BarSeparator( )
+       OpenBar("Recent files")
+       BarItem(5, "PureBasic.exe")
+       BarItem(6, "Test.txt")
+       CloseBar( )
+    EndIf
+    
     Define widget = CreateWidget( #PB_GadgetType_Container )
     ;     ; CreateWidget( #PB_GadgetType_Editor )
     ;     Resize(Root(), 50,50,50,50)
@@ -99,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 32
+; CursorPosition = 57
+; FirstLine = 43
 ; Folding = --
 ; EnableXP

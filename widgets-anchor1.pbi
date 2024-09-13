@@ -23877,7 +23877,61 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\ Open Root0
    Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-   ;BindWidgetEvent( *root2, @BindEvents( ) )
+   Define *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root0_MenuBar" )
+   SetColor( *menu, #__color_back, $FFC8ECF0 )
+   
+   BarTitle("Title-1")
+   BarItem(1, "title-1-item-1")
+   BarSeparator( )   
+   ;
+   OpenBar("title-1-sub-item")
+   BarItem(3, "title-1-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-2-sub-item")   
+   BarItem(13, "title-2-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-3-sub-item")   
+   BarItem(23, "title-3-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(14, "title-2-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(4, "title-1-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(2, "title-1-item-2")
+   
+   BarTitle("Title-2")
+;    BarItem(5, "title-2-item-1")
+;    BarItem(6, "title-2-item-2")
+   
+   BarTitle("Title-event-test")
+   BarItem(7, "test")
+   BarSeparator( )
+   BarItem(8, "quit")
+   
+   BarTitle("Title-4")
+   BarItem(9, "title-4-item-1")
+   BarItem(10, "title-4-item-2")
+   
+   Procedure TestHandler()
+      Debug "Test menu event"
+   EndProcedure
+   
+   Procedure QuitHandler()
+      Debug "Quit menu event"
+      ; End
+   EndProcedure
+   
+   Bind(*menu, @TestHandler(), -1, 7)
+   Bind(*menu, @QuitHandler(), -1, 8)
+  ;BindWidgetEvent( *root2, @BindEvents( ) )
    
    Global *button_panel = Panel(10, 10, 200 + 60, 200)
    Define Text.s, m.s   = #LF$, a
@@ -24315,9 +24369,9 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 4851
-; FirstLine = 4835
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 24367
+; FirstLine = 24329
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

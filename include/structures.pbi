@@ -743,6 +743,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          repaint.b
          drawmode.b
          canvas._s_canvas
+         
+         ; TEMP
+         *widget._s_WIDGET
       EndStructure
       
       ;--     STICKY
@@ -794,7 +797,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 745
+; CursorPosition = 750
 ; FirstLine = 702
 ; Folding = -----r----
 ; EnableXP

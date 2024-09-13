@@ -301,8 +301,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro bar_area_create_( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _scrollbar_size_, _mode_ = #True )
          If Not _parent_\scroll\bars
             _parent_\scroll\bars = 1
-            _parent_\scroll\v    = Create( _parent_, _parent_\class + "-" + _parent_\_id + "-vertical", #__type_ScrollBar, 0, 0, _scrollbar_size_, _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, #__scroll_buttonsize, 7, _scroll_step_ )
-            _parent_\scroll\h    = Create( _parent_, _parent_\class + "-" + _parent_\_id + "-horizontal", #__type_ScrollBar, 0, 0, _width_, _scrollbar_size_, #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * #__scroll_buttonsize, 7, _scroll_step_ )
+            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\_id + "]", #__type_ScrollBar, 0, 0, _scrollbar_size_, _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, #__scroll_buttonsize, 7, _scroll_step_ )
+            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\_id + "]", #__type_ScrollBar, 0, 0, _width_, _scrollbar_size_, #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * #__scroll_buttonsize, 7, _scroll_step_ )
          EndIf
       EndMacro
       
@@ -4558,7 +4558,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Procedure ChangeParent( *this._s_WIDGET, *parent._s_WIDGET )
+      Procedure ReParent( *this._s_WIDGET, *parent._s_WIDGET )
          ;\\
          If Not is_integral_( *this )
             If *parent\container
@@ -4970,7 +4970,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *displayRoot\TabBox( ) = *this
                   EndIf
                   
-                  ChangeParent( *this, *displayRoot )
+                  ReParent( *this, *displayRoot )
                Else
                   SetParent( *this, *displayRoot )
                EndIf
@@ -5351,6 +5351,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.b Resize( *this._s_WIDGET, x.l, y.l, width.l, height.l )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
+         Debug "resize - "+*this\class +" ("+ x +" "+ y +" "+ width +" "+ height +")"
+         
          
          *this\redraw = 1
          If *this\parent 
@@ -5401,18 +5403,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this\autosize
-            If *this\parent
-               If *this <> *this\parent
-                  x      = *this\parent\inner_x( )
-                  Y      = *this\parent\inner_y( )
-                  width  = *this\parent\inner_width( )
-                  height = *this\parent\inner_height( )
-               EndIf
+            If *this\parent And 
+               *this\parent <> *this 
+               x      = *this\parent\inner_x( )
+               Y      = *this\parent\inner_y( )
+               width  = *this\parent\inner_width( )
+               height = *this\parent\inner_height( )
             EndIf
-            ; Debug "auto_resize_"+*this\class +" "+ x +" "+ y +" "+ width +" "+ height
-            *this\resize\clip = 1
-            *this\root\repaint = #True
-            
          Else
             ;\\ move & size steps
             If mouse( )\steps > 1 And *this\anchors And *this\anchors\mode
@@ -5672,10 +5669,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\inner_height( ) = *this\container_height( )
          EndIf
          
-         ;;Debug "resize_"+*this\class +" "+ height +" "+ iheight +" "+ *this\inner_height( ) +" "+ *this\fs[2]
-         
-         ;          Debug ""+Bool( Change_width Or Change_height ) +" "+
-         ;                Bool( *this\resize\width Or *this\resize\height )
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height )
             If ( Change_width Or Change_height )
@@ -5889,6 +5882,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            ;\\
+            If Popup( ) And
+               Popup( )\root = *this
+               Resize( Popup( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            EndIf
+            
             ;
             ;\\ Post Event
             If *this\resize\send
@@ -6042,13 +6041,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             If *this\resize\clip <> #True
                *this\resize\clip = #True
-            EndIf
-         EndIf
-         
-         ;\\
-         If Popup( )
-            If Popup( )\root = *this
-               Resize( Popup( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             EndIf
          EndIf
          
@@ -15527,7 +15519,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             ;\\
-            ChangeParent( *this, *parent )
+            ReParent( *this, *parent )
             ;
             ;\\ TODO
             SetTypeCount( *this )
@@ -16821,7 +16813,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\child
                *this\_id   =- 1
                *this\address = *parent\address
-               ChangeParent( *this, *parent )
+               ReParent( *this, *parent )
                *this\noscale = 1
             Else
                *this\text\string = Text
@@ -19197,12 +19189,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                test + 1
             EndIf
             
-            If *this And is_integral_( *this )
-               If Popup( ) 
-                  *this = Popup( )\parent
-               EndIf
-            EndIf
-            
             ; Debug "post - "+*this\class +" "+ ClassFromEvent(eventtype)
             
             If AddElement( __gui\eventqueue( ) )
@@ -19225,12 +19211,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Post( *this, eventtype, *button, *data )
                   
                Else
-                  If *this And is_integral_( *this )
-                     If Popup( )
-                        *this = Popup( )\parent
-                     EndIf
-                  EndIf
-                  
                   ;\\ 
                   
                   If *this\type = #__type_Menu Or *this\type = #__type_ToolBar
@@ -21286,9 +21266,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__event_Drop,
                     #__event_DragStart
                   
-                  If *this\row
+                 ; If *this\row
                      *this\root\repaint = #True
-                  EndIf
+                 ; EndIf
                   
                   *this\redraw = 1
                   *this\root\contex = 0
@@ -24541,9 +24521,9 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19228
-; FirstLine = 19164
-; Folding = -----------------------------------------------------------------------------------------------------------------------44--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f02------------------------------------------------------------------------d----bt-f----------------------------------------------+------
+; CursorPosition = 22691
+; FirstLine = 21638
+; Folding = ----f+-----------------------------------------------------------------------------------------------------------------44--------v4--+--bbF---Xc-+b8-8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr8----------------------------------------------------------------f02------------------------------------------------------------------------u----t3-v---------------------------------------------f-------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
