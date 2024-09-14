@@ -144,7 +144,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Bind(*menu, @TestHandler(), -1, 7)
       Bind(*menu, @QuitHandler(), -1, 8)
-      
+      ;
       *menu = CreatePopupMenuBar( )
       If *menu                  ; creation of the pop-up menu begins...
          BarItem(1, "Open")     ; You can use all commands for creating a menu
@@ -174,6 +174,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; CursorPosition = 147
-; FirstLine = 86
+; FirstLine = 94
 ; Folding = -+
 ; EnableXP

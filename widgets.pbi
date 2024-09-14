@@ -4892,7 +4892,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *PopupBar\root\parent
                         *PopupBar\root\parent\popupBar = #Null
                      EndIf
-                     Debug " HidePopupMenuBar - "+ *PopupBar\class
+                     Debug " Hide PopupMenuBar - "+ *PopupBar\class
                      HideWindow( GetWindow( *PopupBar\root ), #True, #PB_Window_NoActivate )
                      Hide( *PopupBar, #True )
                   EndIf
@@ -21049,7 +21049,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *tab\toggle ! 1
                         *tabmenu = *tab
                      EndIf
-                     ;
+                     
+                     Debug "hide then down"
                      If Not HidePopupMenuBar( *this\popupBar )
                         If *tab\menu\hide
                            DisplayPopupMenuBar( *tab\menu, *this, 
@@ -21115,7 +21116,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If is_menu_( *this )
                         If *this\mouseenter 
                            If Not *this\EnteredTab( )\focus
-                              HidePopupMenuBar( *this\popupBar )
+                              If *this\popupBar And Not *this\popupBar\hide
+                                 Debug "hede then leaved"
+                                 HidePopupMenuBar( *this\popupBar )
+                              EndIf
                            EndIf 
                         EndIf 
                      EndIf
@@ -21133,13 +21137,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\type = #__type_Menu Or *this\type = #__type_ToolBar
                               ;\\ hide popup menu bar
                               ; If *this\type = #__type_Menu Or *tab\childrens
-                              If *tab\menu And *tab\menu\hide
-                              ;If *tab\menu <> *this\popupBar
-                                 HidePopupMenuBar( *this\popupBar )
-                              ;EndIf
+                              If *this\popupBar And Not *this\popupBar\hide
+                                 If *tab\menu <> *this\popupBar
+                                    Debug "hide last entered"
+                                    HidePopupMenuBar( *this\popupBar )
+                                 EndIf
+                              EndIf
                               ; EndIf
                               ;
-                              ;\\ change focused tab
+                              If *tab\menu And *tab\menu\hide
+                               ;\\ change focused tab
                               If *this\type = #__type_Menu
                                  If *this\FocusedTab( )
                                     *this\FocusedTab( )\RowFocus( 0 )
@@ -21789,8 +21796,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If ActiveWindow( ) = __roots( )
                         Root( ) = __roots( )
                         Debug "Deactivate - "+Root( )\class
+                        
 ;                         If Popup( )
-;                            HidePopupMenuBar( Popup( ) )
+
 ;                         EndIf
                         SetDeactive( Root( ) )
                         ActiveWindow( ) = 0
@@ -24537,9 +24545,9 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 4895
-; FirstLine = 4636
-; Folding = -----6-------------------------------------------------------------------------------------------------------v-v+4-9----44--------v4--+--bbF---Xc-+b8-8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr8----------------------------------------------------------------f02--------------------------------------------D---v---------------------0-8BAAYr0-8---------------------------------------------4-------
+; CursorPosition = 21155
+; FirstLine = 20066
+; Folding = -----6-------------------------------------------------------------------------------------------------------v-v+4-9----44--------v4--+--bbF---Xc-+b8-8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr8----------------------------------------------------------------f02--------------------------------------------D---v---------------------v-fPAAAbt-f----------------------------------------------+------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
