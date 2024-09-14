@@ -2,13 +2,13 @@
 XIncludeFile "../events.pbi"
 
 Module events
-  Procedure Events( )
+   Procedure Events( )
     Protected eventgadget
     Protected eventtype
     
     If *setcallback
-      Select Event( ) 
-        Case #PB_Event_Gadget
+;       Select Event( ) 
+;         Case #PB_Event_Gadget
           eventtype = EventType( )
           EventGadget = EventGadget( )
           
@@ -45,12 +45,15 @@ Module events
             
           EndIf
        
-      EndSelect
+;       EndSelect
     EndIf
   EndProcedure
   
   Procedure.i WaitEvent( event.i, second.i = 0 )
-    ProcedureReturn event
+;      If event
+;         WaitWindowEventValue = event
+;      EndIf
+     ProcedureReturn event
   EndProcedure
   
   Procedure   SetCallBack(*callback)
@@ -64,6 +67,7 @@ Module events
     ;       BindEvent( #PB_Event_SizeWindow, @Events( ) )
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = v-
+; IDE Options = PureBasic 5.46 LTS (Windows - x64)
+; CursorPosition = 54
+; Folding = n-
 ; EnableXP
