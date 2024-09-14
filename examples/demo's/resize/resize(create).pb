@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEventType( )
          Case #__event_RightButtonUp
             DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-            
+               
          Case #__event_DragStart
             DraggedGadget = eventobject
             
@@ -96,8 +96,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
-   If Open(OpenWindow(#PB_Any, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+   If Open(0, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+      SetClass(root( ), "[main-root]" )
       ;a_init( root())
       
 ;       ;\\
@@ -172,8 +173,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 94
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 106
+; FirstLine = 41
 ; Folding = -+
 ; EnableXP
