@@ -72,6 +72,1680 @@
 ; # - В группе (ProcedureName) - название процедуры
 ; # - В группе (ProcArguments) - перечень всех аргументов найденной процедуры
 
+CompilerIf Not Defined(constants, #PB_Module)
+   DeclareModule constants
+      Macro _check_(_variable_, _constant_, _state_ = #True)
+         Bool(_state_ = Bool(((_variable_) & _constant_) = _constant_))
+      EndMacro
+      
+      ;- - CONSTANTs
+      CompilerIf Not Defined(PB_canvas_container, #PB_Constant)
+         #PB_Canvas_Container = 1 << 5
+      CompilerEndIf
+      
+      
+      
+      ;-\\ DD
+      ;#PB_Drag_Resize = - 1; #PB_Drag_Move
+      
+      ;{
+      
+      Enumeration - 1
+         #SelectionStyle_Default
+         #SelectionStyle_none
+         #SelectionStyle_solid
+         #SelectionStyle_Dotted
+         #SelectionStyle_Dashed
+      EndEnumeration
+      #SelectionStyle_mode       = $100
+      #SelectionStyle_completely = 0
+      #SelectionStyle_partially  = $100
+      #SelectionStyle_ignore     = #PB_Ignore
+      
+      Enumeration 1
+         #Boundary_minX
+         #Boundary_minY
+         #Boundary_maxX
+         #Boundary_maxY
+         #Boundary_minWidth
+         #Boundary_minHeight
+         #Boundary_maxWidth
+         #Boundary_maxHeight
+      EndEnumeration
+      #Boundary_ignore         = - $80000000    ; 0b10000000...
+      #Boundary_Default        = - $7FFFFFFF    ; 0b01111111...
+      #Boundary_none           = $3FFFFFFF      ; 0b00111111...
+      #Boundary_parentSize     = $60000000      ; 0b01100000...
+      #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
+      
+      
+      ;
+      ;\\ default values
+      ;
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+         #__splitter_buttonsize = 9
+      CompilerEndIf
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+         #__splitter_buttonsize = 9;4
+      CompilerEndIf
+      CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+         #__splitter_buttonsize = 9;4;4
+      CompilerEndIf
+      
+      
+      #__panel_height = 24 ;+ 4
+      #__panel_width  = 85
+      
+      #__menu_height = 25
+      
+      #__scroll_border = 2
+      #__scroll_buttonsize = 16
+      
+      #__arrow_type = 1 ; ;-1 ;0 ;1
+      #__arrow_size = 4 ;
+      
+      #__sOC = SizeOf(Character)
+      
+      ;-\\ edit errors
+      Enumeration 1
+         #__error_text_input
+         #__error_text_back
+         #__error_text_return
+      EndEnumeration
+      
+      ;-\\ edit selection
+      #__sel_to_line   = 1
+      #__sel_to_first  = 2
+      #__sel_to_remove = - 1
+      #__sel_to_last   = - 2
+      #__sel_to_set    = 5
+      
+      ;-\\ Coordinate (pos & size)
+      Enumeration _c_coordinate
+         #__c_screen    = 0 ; screen
+         #__c_frame     = 1 ; frame screen
+         #__c_inner     = 2 ; inner screen
+         #__c_container = 3 ; container
+         #__c_required  = 4 ; required
+         #__c_window    = 5 ; window
+         #__c_draw      = 6 ; clip screen
+         #__c_draw1     = 7 ; clip frame
+         #__c_draw2     = 8 ; clip inner
+         #__c_restore   = 9
+         #__c
+      EndEnumeration
+      
+      ;-\\ Color
+      Enumeration 1
+         #__color_front
+         #__color_back
+         #__color_line
+         #__color_titlefront
+         #__color_titleback
+         #__color_graytext
+         #__color_frame
+         #__color_fore
+      EndEnumeration
+      
+      ;-\\ Color (state)
+      Enumeration
+         #__s_0
+         #__s_1
+         #__s_2
+         #__s_3
+      EndEnumeration
+      
+      ;-\\ Attribute
+      #__displayMode = 1 << 13
+      ;   #PB_image = 1<<13
+      ;   #PB_text = 1<<14
+      ;   #PB_flag = 1<<15
+      ;   #PB_state = 1<<16
+      
+      ;-\\ resize-state
+      EnumerationBinary
+         #__resize_restore
+         #__resize_minimize
+         #__resize_maximize
+      EndEnumeration
+      
+      ;-\\ create-flags
+      EnumerationBinary 1<<18 
+         ; text
+         #__flag_textnumeric
+         #__flag_textreadonly
+         #__flag_textlowercase
+         #__flag_textuppercase
+         #__flag_textpassword
+         #__flag_textwordwrap
+         #__flag_textmultiline
+         ;
+         #__flag_textleft
+         #__flag_texttop
+         #__flag_textright
+         #__flag_textbottom
+         #__flag_textcenter
+         #__flag_textinline
+         
+         
+         ; list
+         #__flag_fullselection
+         #__flag_nolines
+         #__flag_nobuttons
+         #__flag_checkboxes
+         #__flag_gridlines
+         #__flag_threeState
+         #__flag_clickselect
+         #__flag_multiselect
+         
+         
+         ; element
+         #__flag_child
+         #__flag_invert
+         #__flag_vertical
+         ;#__flag_transparent
+         ;#__flag_invisible
+         #__flag_noscrollbars
+         #__flag_autoSize
+         
+         ;frame
+         #__flag_borderless
+         #__flag_borderflat
+         #__flag_bordersingle
+         #__flag_borderraised
+         #__flag_borderdouble
+         ;#__flag_sizegadget
+         #__flag_anchorsgadget
+         
+         #__flag_limit
+      EndEnumeration
+      
+      ;\\
+      #__flag_nogadgets = #__flag_nobuttons
+      #__flag_numeric = #__flag_textnumeric
+      #__flag_wordwrap = #__flag_textwordwrap
+      #__flag_readonly = #__flag_textreadonly
+      #__flag_lowercase = #__flag_textlowercase
+      #__flag_uppercase = #__flag_textuppercase
+      #__flag_password = #__flag_textpassword
+      #__flag_center = #__flag_textcenter
+      #__flag_multiline = #__flag_textmultiline
+      
+      ;     #__flag_autoright  = #__flag_autosize | #__flag_right
+      ;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
+      
+      ;- \\ align-ment
+      #__align_none         = 0
+      #__align_left         = 1 << 1 
+      #__align_top          = 1 << 2 
+      #__align_right        = 1 << 3 
+      #__align_bottom       = 1 << 4 
+      #__align_center       = 1 << 5 
+      #__align_proportional = 1 << 6
+      #__align_full         = 1 << 7
+      #__align_auto         = 1 << 8 ; #__flag_autoSize
+      
+      ;-
+      ;-\\ Bar
+      #__bar_minus      = 1
+      #__bar_minimum    = 1
+      #__bar_maximum    = 2
+      #__bar_pagelength = 3
+      #__bar_scrollstep = 5
+      ;
+      ;\\ binary
+      #__bar_buttonsize = 8
+      #__bar_direction  = 16
+      #__bar_invert     = #__flag_invert
+      #__bar_vertical   = #__flag_vertical
+      #__bar_nobuttons  = #__flag_nogadgets
+      ;
+      #__bar_horizontal = 2
+      
+      
+      ;-\\ Text
+      #__text_invert    = #__flag_invert
+      #__text_vertical  = #__flag_vertical
+      ;
+      #__text_left      = #__flag_textleft
+      #__text_top       = #__flag_texttop
+      #__text_right     = #__flag_textright
+      #__text_bottom    = #__flag_textbottom
+      #__text_center    = #__flag_textcenter
+      ;
+      #__text_multiline = #__flag_textmultiline
+      #__text_wordwrap  = #__flag_textwordwrap
+      #__text_numeric   = #__flag_textnumeric
+      #__text_password  = #__flag_textpassword
+      #__text_readonly  = #__flag_textreadonly
+      #__text_lowercase = #__flag_textlowercase
+      #__text_uppercase = #__flag_textuppercase
+      
+      
+      
+      
+      ;-\\ Image
+      #__image_released   = 1
+      #__image_pressed    = 2
+      #__image_background = 3
+      #__image_left       = #__flag_textleft
+      #__image_top        = #__flag_texttop
+      #__image_center     = #__flag_textcenter
+      #__image_right      = #__flag_textright
+      #__image_bottom     = #__flag_textbottom
+      
+      ;-\\ MDI
+      #__mdi_editable = #__flag_anchorsgadget ; win - 4294967296
+      
+      ;-\\ Window
+      ; caption bar buttons
+      #__wb_close = 1
+      #__wb_maxi  = 2
+      #__wb_mini  = 3
+      #__wb_help  = 4
+      
+      #__window_frame_size     = 4
+      #__window_caption_height = 24
+      ;     #__window_nogadgets = #__flag_nogadgets
+      ;     #__window_borderless = #__flag_borderless
+      ;     #__window_systemmenu = #__flag_systemmenu
+      ;     #__window_sizegadget = #__flag_sizegadget
+      ;     #__window_screencentered = #__align_center
+      
+;       #__window_normal         = #PB_Window_Normal
+;       #__window_maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
+;       #__window_minimize       = #PB_Window_Minimize       ; Opens the window minimized.
+      
+      #__window_child          = #__flag_child
+      #__window_systemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
+      
+      #__window_minimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_systemMenu is automatically added.
+      #__window_maximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_systemMenu is automatically added.
+                                                           ; (MacOS only ; #PB_window_sizeGadget will be also automatically added).
+      #__window_sizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
+      #__window_invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
+      #__window_titleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
+      #__window_tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
+      #__window_borderLess     = #PB_Window_BorderLess     ; Creates a window without any borders.
+      #__window_screenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
+      #__window_windowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
+      #__window_noGadgets      = #PB_Window_NoGadgets      ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+      #__window_noActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
+                                                           ;     #__window_closeGadget    = #PB_window_noActivate<<2
+                                                           ;     #__window_close          = #PB_window_noActivate<<2
+                                                           ;#PB_window                 = #PB_window_noActivate<<2
+      
+      ;-\\  Spin
+      #__spin_barsize  = #__scroll_buttonsize + 5
+      #__spin_vertical = #__bar_vertical
+      #__spin_left     = 1 << 1
+      #__spin_right    = 1 << 2
+      #__spin_plus     = 1 << 3
+      
+      ;     ;-
+      ; Debug #PB_checkbox_Unchecked ; 0
+      ; Debug #PB_checkbox_checked   ; 1
+      ; Debug #PB_checkbox_inbetween ; -1
+      ; Debug #PB_checkBox_threeState ; 4
+      
+      ;-\\ ListView
+      ; list mode
+      #__m_checkselect  = 1
+      #__m_clickselect  = 2
+      #__m_multiselect  = 3
+      #__m_optionselect = 4
+      
+      ;-\\ Tree
+      #__tree_nolines     = #__flag_nolines
+      #__tree_nobuttons   = #__flag_nogadgets
+      #__tree_checkboxes  = #__flag_checkboxes
+      #__tree_threestate  = #__flag_threeState
+      #__tree_collapse    = 32
+      #__tree_optionboxes = 64
+      
+      #__tree_property = #__flag_numeric
+      #__tree_listview = #__flag_readonly
+      #__tree_toolbar  = #__flag_password
+      
+      
+      ;     ; tree state
+      ;     #__tree_selected  = #PB_Tree_Selected   ; 1
+      ;     #__tree_expanded  = #PB_Tree_Expanded   ; 2 ; развернуто
+      ;     #__tree_checked   = #PB_Tree_Checked    ; 4
+      ;     #__tree_collapsed = #PB_Tree_Collapsed  ; 8 ; свернуто
+      ;     #__tree_inbetween = #PB_Tree_Inbetween  ; 16
+      
+      ;     Флаги для изменения поведения гаджета. Это может быть комбинация следующих значений:
+      ;     #PB_Tree_AlwaysShowSelection : даже если гаджет не активирован, выделение остается видимым.
+      ;     #PB_Tree_NoLines : скрыть маленькие линии между узлами.
+      ;     #PB_Tree_NoButtons : скрыть кнопки узлов «+».
+      ;     #PB_Tree_CheckBoxes : добавьте флажок перед каждым элементом.
+      ;     #PB_Tree_ThreeState : Флажки могут иметь промежуточное состояние.
+      ;     Флаг #PB_Tree_ThreeState можно использовать в сочетании с флагом #PB_Tree_CheckBoxes,
+      ;     чтобы получить флажки, которые могут иметь состояние «включено», «выключено» и «промежуточное».
+      ;     Пользователь может выбрать только состояния «включено» или «выключено».
+      ;     Промежуточное состояние можно установить программно с помощью функции SetGadgetItemState().
+      ;     ;
+      
+      ; LIST_ELEMENT
+      ;         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      ;           Debug #PB_ListView_MultiSelect  ; 1
+      ;           Debug #PB_ListView_ClickSelect  ; 2
+      ;
+      ;           Debug #PB_Tree_AlwaysShowSelection ; 0
+      ;           Debug #PB_Tree_NoLines    ; 1
+      ;           Debug #PB_Tree_Selected   ; 1
+      ;           Debug #PB_Tree_SubLevel   ; 1
+      ;           Debug #PB_Tree_NoButtons  ; 2
+      ;           Debug #PB_Tree_Expanded   ; 2
+      ;           Debug #PB_Tree_CheckBoxes ; 4
+      ;           Debug #PB_Tree_Checked    ; 4
+      ;           Debug #PB_Tree_ThreeState ; 8
+      ;           Debug #PB_Tree_Collapsed  ; 8
+      ;           Debug #PB_Tree_Inbetween  ; 16
+      ;
+      ;           Debug #PB_ListIcon_AlwaysShowSelection ; 0
+      ;           Debug #PB_ListIcon_Selected   ; 1
+      ;           Debug #PB_ListIcon_Checked    ; 2
+      ;
+      ;           Debug #PB_ListIcon_CheckBoxes ; 2
+      ;           Debug #PB_ListIcon_Inbetween  ; 4
+      ;           Debug #PB_ListIcon_ThreeState ; 8
+      ;         CompilerEndIf
+      
+      ;-\\ ListIcon
+      ;     Флаги для изменения поведения гаджета. Это может быть комбинация следующих значений:
+      ;     #PB_ListIcon_CheckBoxes : Отображать флажки в первом столбце.
+      ;     #PB_ListIcon_ThreeState : Флажки могут иметь промежуточное состояние.
+      ;     #PB_ListIcon_MultiSelect : включить множественный выбор.
+      ;     #PB_ListIcon_GridLines : Отображение линий-разделителей между строками и столбцами (не поддерживается в Mac OSX).
+      ;     #PB_ListIcon_HeaderDragDrop : порядок столбцов можно изменить с помощью перетаскивания.
+      ;     #PB_ListIcon_FullRowSelect : выделение охватывает всю строку, а не первый столбец (только для Windows).
+      ;     #PB_ListIcon_AlwaysShowSelection: выбор по-прежнему виден, даже если гаджет не активирован (только для Windows).
+      ;     Флаг #PB_ListIcon_ThreeState можно использовать в сочетании с флагом #PB_ListIcon_CheckBoxes, чтобы получить флажки,
+      ;     которые могут иметь состояние «включено», «выключено» и «промежуточное».
+      ;     Пользователь может выбрать только состояния «включено» или «выключено».
+      ;     Промежуточное состояние можно установить программно с помощью функции SetItemState( ).
+      ;
+      ; - GetAttribute() Со следующим атрибутом:
+      ;     #PB_ListIcon_ColumnCount : 3     возвращает количество столбцов в гаджете.
+      ;     #PB_ListIcon_DisplayMode : 2     возвращает текущий режим отображения гаджета (только для Windows)
+      ; - SetAttribute() Со следующим атрибутом:
+      ;     #PB_ListIcon_DisplayMode : Изменяет отображение гаджета (только для Windows).
+      ;                                Это может быть одна из следующих констант (только для Windows):
+      ;     #PB_ListIcon_LargeIcon : 0      Режим больших значков
+      ;     #PB_ListIcon_SmallIcon : Режим малых значков
+      ;     #PB_ListIcon_List      : Режим значка списка
+      ;     #PB_ListIcon_Report    : Режим отчета (столбцы, режим по умолчанию)
+      
+      ;       ;-\\ Editor
+      ;       ;#__editor_inline = #__flag_inLine
+      ;       #__editor_readonly = #__flag_readonly
+      ;       #__editor_wordwrap = #__flag_textwordwrap
+      ;       ;#__editor_nomultiline   = #__flag_nolines
+      ;       ;#__editor_numeric       = #__flag_numeric | #__text_multiline
+      ;       ;#__editor_fullselection = #__flag_fullselection
+      ;       ;#__editor_gridlines     = #__flag_gridLines
+      ;       ;#__editor_borderless    = #__flag_borderless
+      ;       
+      ; ;       ;-\\ String
+      ;       #__string_right     = #__text_right
+      ;       #__string_center    = #__text_center
+      ;       #__string_numeric   = #__text_numeric
+      ;       #__string_password  = #__text_password
+      ;       #__string_readonly  = #__text_readonly
+      ;       #__string_uppercase = #__text_uppercase
+      ;       #__string_lowercase = #__text_lowercase
+      ;       #__string_multiline = #__text_multiline
+      ;       ;#__string_borderless = #__flag_borderless
+      
+      ;-\\ Button
+      #__button_toggle    = #PB_Button_Toggle
+      #__button_default   = #PB_Button_Default
+      #__button_multiline = #PB_Button_MultiLine
+      #__button_left      = #__flag_textleft
+      #__button_right     = #__flag_textright
+      #__button_vertical  = #__flag_vertical
+      #__button_invert    = #__flag_invert
+      
+      
+      ;       If (#__flag_limit >> 1) > 2147483647 ; 8589934592
+      ;          Debug "Исчерпан лимит в x32 (" + Str(#__flag_limit >> 1) + ")"
+      ;       EndIf
+      
+      
+      ;-\\ event-type
+      CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
+         #PB_EventType_Resize = 6
+      CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
+         #PB_EventType_ReturnKey = 7
+      CompilerEndIf
+      Enumeration #PB_EventType_FirstCustomValue
+         #PB_EventType_Drop
+         #PB_EventType_Repaint
+         #PB_EventType_MouseWheelX
+         #PB_EventType_MouseWheelY
+      EndEnumeration
+      
+      
+      Enumeration 1
+         #__event_create
+         #__event_enter
+         #__event_focus
+         #__event_down
+         #__event_middledown
+         #__event_leftdown
+         #__event_rightdown
+         #__event_dragstart
+         #__event_mousemove
+         #__event_wheel
+         #__event_wheelx
+         #__event_wheely
+         #__event_leave
+         #__event_drop
+         #__event_up
+         #__event_middleup
+         #__event_leftup
+         #__event_rightup
+         #__event_leftclick
+         #__event_rightclick
+         #__event_left2click
+         #__event_right2click
+         #__event_left3click
+         #__event_right3click
+         #__event_lostfocus
+         #__event_resizebegin
+         #__event_resize
+         #__event_resizeend
+         #__event_change
+         #__event_statuschange
+         #__event_scrollchange
+         #__event_cursor
+         #__event_keydown
+         #__event_input
+         #__event_return
+         #__event_keyup
+         #__event_draw
+         #__event_repaint
+         #__event_maximize
+         #__event_minimize
+         #__event_restore
+         #__event_close
+         
+         ;          #__event_titlechange ;
+         ;          #__event_closeItem
+         ;          #__event_sizeitem
+         
+         #__event_free
+         #__event_count
+      EndEnumeration
+      
+      EnumerationBinary
+         #__eventmask_create       = 1 << #__event_create
+         #__eventmask_enter        = 1 << #__event_enter
+         #__eventmask_focus        = 1 << #__event_focus
+         #__eventmask_down         = 1 << #__event_down
+         #__eventmask_middledown   = 1 << #__event_middledown
+         #__eventmask_leftdown     = 1 << #__event_leftdown
+         #__eventmask_rightdown    = 1 << #__event_rightdown
+         #__eventmask_dragstart    = 1 << #__event_dragstart
+         #__eventmask_mousemove    = 1 << #__event_mousemove
+         #__eventmask_wheel        = 1 << #__event_wheel
+         #__eventmask_wheelx       = 1 << #__event_wheelx
+         #__eventmask_wheely       = 1 << #__event_wheely
+         #__eventmask_leave        = 1 << #__event_leave
+         #__eventmask_drop         = 1 << #__event_drop
+         #__eventmask_up           = 1 << #__event_up
+         #__eventmask_middleup     = 1 << #__event_middleup
+         #__eventmask_leftup       = 1 << #__event_leftup
+         #__eventmask_rightup      = 1 << #__event_rightup
+         #__eventmask_leftclick    = 1 << #__event_leftclick
+         #__eventmask_rightclick   = 1 << #__event_rightclick
+         #__eventmask_left2click   = 1 << #__event_left2click
+         #__eventmask_right2click  = 1 << #__event_right2click
+         #__eventmask_left3click   = 1 << #__event_left3click
+         #__eventmask_right3click  = 1 << #__event_right3click
+         #__eventmask_lostfocus    = 1 << #__event_lostfocus
+         #__eventmask_resizebegin  = 1 << #__event_resizebegin
+         #__eventmask_resize       = 1 << #__event_resize
+         #__eventmask_resizeend    = 1 << #__event_resizeend
+         #__eventmask_change       = 1 << #__event_change
+         #__eventmask_statuschange = 1 << #__event_statuschange
+         #__eventmask_scrollchange = 1 << #__event_scrollchange
+         #__eventmask_cursorchange = 1 << #__event_cursor
+         #__eventmask_keydown      = 1 << #__event_keydown
+         #__eventmask_input        = 1 << #__event_input
+         #__eventmask_return       = 1 << #__event_return
+         #__eventmask_keyup        = 1 << #__event_keyup
+         #__eventmask_draw         = 1 << #__event_draw
+         #__eventmask_repaint      = 1 << #__event_repaint
+         #__eventmask_maximize     = 1 << #__event_maximize
+         #__eventmask_minimize     = 1 << #__event_minimize
+         #__eventmask_restore      = 1 << #__event_restore
+         #__eventmask_close        = 1 << #__event_close
+         #__eventmask_free         = 1 << #__event_free  ; Destroy
+      EndEnumeration
+      
+      ; TEMP
+      #__event_mouseenter  = #__event_enter
+      #__event_mouseleave  = #__event_leave
+      #__event_mousewheel  = #__event_wheel
+      #__event_mousewheelX = #__event_wheelx
+      #__event_mousewheely = #__event_wheely
+      ;
+      #__event_leftbuttondown   = #__event_leftdown
+      #__event_middlebuttondown = #__event_middledown
+      #__event_rightbuttondown  = #__event_rightdown
+      #__event_leftbuttonup     = #__event_leftup
+      #__event_middlebuttonup   = #__event_middleup
+      #__event_rightbuttonup    = #__event_rightup
+      #__event_leftdoubleclick  = #__event_left2click
+      #__event_rightdoubleclick = #__event_right2click
+      ;
+      #__event_returnkey    = #__event_return
+      ;
+      ;       #__event_maximizewindow = #__event_maximize
+      ;       #__event_minimizewindow = #__event_minimize
+      ;       #__event_restorewindow = #__event_restore
+      ;       #__event_closewindow = #__event_close
+      
+      ;-\\ create-type
+      Enumeration - 1
+         #__type_all
+         #__type_Unknown       = #PB_GadgetType_Unknown       ; 0
+         #__type_button        = #PB_GadgetType_Button        ; 1
+         #__type_string        = #PB_GadgetType_String        ; 2
+         #__type_text          = #PB_GadgetType_Text          ; 3
+         #__type_checkBox      = #PB_GadgetType_CheckBox      ; 4
+         #__type_Option        = #PB_GadgetType_Option        ; 5
+         #__type_listView      = #PB_GadgetType_ListView      ; 6
+         #__type_frame         = #PB_GadgetType_Frame         ; 7
+         #__type_comboBox      = #PB_GadgetType_ComboBox      ; 8
+         #__type_image         = #PB_GadgetType_Image         ; 9
+         #__type_HyperLink     = #PB_GadgetType_HyperLink     ; 10
+         #__type_container     = #PB_GadgetType_Container     ; 11
+         #__type_listIcon      = #PB_GadgetType_ListIcon      ; 12
+         #__type_iPAddress     = #PB_GadgetType_IPAddress     ; 13
+         #__type_progressBar   = #PB_GadgetType_ProgressBar   ; 14
+         #__type_scrollBar     = #PB_GadgetType_ScrollBar     ; 15
+         #__type_scrollArea    = #PB_GadgetType_ScrollArea    ; 16
+         #__type_trackBar      = #PB_GadgetType_TrackBar      ; 17
+         #__type_web           = #PB_GadgetType_Web           ; 18
+         #__type_buttonImage   = #PB_GadgetType_ButtonImage   ; 19
+         #__type_calendar      = #PB_GadgetType_Calendar      ; 20
+         #__type_Date          = #PB_GadgetType_Date          ; 21
+         #__type_Editor        = #PB_GadgetType_Editor        ; 22
+         #__type_ExplorerList  = #PB_GadgetType_ExplorerList  ; 23
+         #__type_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
+         #__type_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
+         #__type_spin          = #PB_GadgetType_Spin          ; 26
+         #__type_tree          = #PB_GadgetType_Tree          ; 27
+         #__type_panel         = #PB_GadgetType_Panel         ; 28
+         #__type_splitter      = #PB_GadgetType_Splitter      ; 29
+         #__type_MDI           = #PB_GadgetType_MDI           ; 30
+         #__type_scintilla     = #PB_GadgetType_Scintilla     ; 31
+         #__type_shortcut      = #PB_GadgetType_Shortcut      ; 32
+         #__type_canvas        = #PB_GadgetType_Canvas        ; 33
+         #__type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
+         
+         #__type_tabBar = 50
+         #__type_toolBar
+         #__type_statusBar
+         
+         #__type_toggled
+         #__type_property
+         #__type_imageButton
+         #__type_stringButton
+         
+         #__type_menu
+         #__type_popupMenu
+         #__type_window
+         #__type_message
+         #__type_root
+         
+         #__type_Hiasm
+      EndEnumeration
+      
+      ;}
+      
+      
+      
+      #__text_update = - 124
+      
+      
+      
+      ;-\\ Anchors
+      #__a_anchors_size = 7
+      
+      ; a_index( )
+      #__a_left         = 1
+      #__a_top          = 2
+      #__a_right        = 3
+      #__a_bottom       = 4
+      #__a_left_top     = 5
+      #__a_right_top    = 6
+      #__a_right_bottom = 7
+      #__a_left_bottom  = 8
+      #__a_moved        = 9
+      #__a_moved2       = 10
+      #__a_count        = 11
+      
+      ; a_selector( )
+      #__a_line_left    = 0
+      #__a_line_top     = 1
+      #__a_line_right   = 2
+      #__a_line_bottom  = 3
+      
+      ; a_set( ) flags
+      EnumerationBinary 1
+         #__a_position ; положение
+         #__a_width    ; по ширине
+         #__a_height   ; по высоте
+         #__a_corner   ; по углам
+         #__a_zoom     ; по растянутый
+         #__a_nodraw
+      EndEnumeration
+      ;
+      #__a_edge = #__a_width | #__a_height ; по крайам
+      #__a_size = #__a_corner | #__a_edge
+      #__a_full = #__a_position | #__a_size
+      
+      ;-
+      ;- GLOBAL
+      ;-
+      ; ;
+      ; ;   #PB_window_titleBar
+      ; ;   #PB_window_borderLess
+      ; ;   #PB_window_systemMenu
+      ; ;   #PB_window_maximizeGadget
+      ; ;   #PB_window_minimizeGadget
+      ; ;   #PB_window_screenCentered
+      ; ;   #PB_window_sizeGadget
+      ; ;   #PB_window_windowCentered
+      ; ;   #PB_window_tool
+      ; ;   #PB_window_normal
+      ; ;   #PB_window_minimize
+      ; ;   #PB_window_maximize
+      ; ;   #PB_window_invisible
+      ; ;   #PB_window_noActivate
+      ; ;   #PB_window_noGadgets
+      ; ;
+      ; ;   #PB_button_Default
+      ; ;   #PB_button_toggle
+      ; ;   #PB_button_left
+      ; ;   #PB_button_center
+      ; ;   #PB_button_right
+      ; ;   #PB_button_multiLine
+      ; ;
+      ; ;   #PB_string_borderLess
+      ; ;   #PB_string_numeric
+      ; ;   #PB_string_password
+      ; ;   #PB_string_readOnly
+      ; ;   #PB_string_lowerCase
+      ; ;   #PB_string_UpperCase
+      ; ;
+      ; ;   #PB_text_left
+      ; ;   #PB_text_center
+      ; ;   #PB_text_right
+      ; ;   #PB_text_border
+      ; ;
+      ; ;   #PB_checkBox_right
+      ; ;   #PB_checkBox_center
+      ; ;   #PB_checkBox_threeState
+      ; ;
+      ; ;   #PB_listView_multiSelect
+      ; ;   #PB_listView_clickSelect
+      ; ;
+      ; ;   #PB_frame_single
+      ; ;   #PB_frame_Double
+      ; ;   #PB_frame_flat
+      ; ;
+      ; ;   #PB_comboBox_Editable
+      ; ;   #PB_comboBox_lowerCase
+      ; ;   #PB_comboBox_UpperCase
+      ; ;   #PB_comboBox_image
+      ; ;
+      ; ;   #PB_image_border
+      ; ;   #PB_image_raised
+      ; ;
+      ; ;   #PB_HyperLink_Underline
+      ; ;
+      ; ;   #PB_listIcon_checkBoxes
+      ; ;   #PB_listIcon_threeState
+      ; ;   #PB_listIcon_multiSelect
+      ; ;   #PB_listIcon_GridLines
+      ; ;   #PB_listIcon_fullRowSelect
+      ; ;   #PB_listIcon_HeaderDragDrop
+      ; ;   #PB_listIcon_alwaysShowSelection
+      ; ;
+      ; ;   #PB_progressBar_smooth
+      ; ;   #PB_progressBar_vertical
+      ; ;
+      ; ;   #PB_scrollBar_vertical
+      ; ;
+      ; ;   #PB_container_borderLess
+      ; ;   #PB_container_flat
+      ; ;   #PB_container_raised
+      ; ;   #PB_container_single
+      ; ;   #PB_container_Double
+      ; ;
+      ; ;   #PB_scrollArea_borderLess
+      ; ;   #PB_scrollArea_flat
+      ; ;   #PB_scrollArea_raised
+      ; ;   #PB_scrollArea_single
+      ; ;   #PB_scrollArea_center
+      ; ;
+      ; ;   #PB_trackBar_ticks
+      ; ;   #PB_trackBar_vertical
+      ; ;
+      ; ;   #PB_calendar_borderless
+      ; ;
+      ; ;   #PB_Date_UpDown
+      ; ;
+      ; ;   #PB_Editor_readOnly
+      ; ;   #PB_Editor_wordWrap
+      ; ;
+      ; ;   #PB_Explorer_borderLess
+      ; ;   #PB_Explorer_alwaysShowSelection
+      ; ;   #PB_Explorer_multiSelect
+      ; ;   #PB_Explorer_GridLines
+      ; ;   #PB_Explorer_HeaderDragDrop
+      ; ;   #PB_Explorer_fullRowSelect
+      ; ;   #PB_Explorer_noFiles
+      ; ;   #PB_Explorer_noFolders
+      ; ;   #PB_Explorer_noParentFolder
+      ; ;   #PB_Explorer_noDirectoryChange
+      ; ;   #PB_Explorer_noDriveRequester
+      ; ;   #PB_Explorer_noSort
+      ; ;   #PB_Explorer_noMyDocuments
+      ; ;   #PB_Explorer_autoSort
+      ; ;   #PB_Explorer_HiddenFiles
+      ; ;
+      ; ;   #PB_tree_alwaysShowSelection
+      ; ;   #PB_tree_noLines
+      ; ;   #PB_tree_noButtons
+      ; ;   #PB_tree_checkBoxes
+      ; ;   #PB_tree_threeState
+      ; ;
+      ; ;   #PB_splitter_vertical
+      ; ;   #PB_splitter_separator
+      ; ;   #PB_splitter_firstFixed
+      ; ;   #PB_splitter_secondFixed
+      ; ;
+      ; ;   #PB_canvas_border
+      ; ;   #PB_canvas_container
+      ; ;   #PB_canvas_clipMouse
+      ; ;   #PB_canvas_Keyboard
+      ; ;   #PB_canvas_DrawFocus
+      ; ;
+      
+      ;- \\ ToolBar
+      CompilerIf Not Defined(PB_toolBar_small, #PB_Constant)
+         #PB_ToolBar_Small = 1 << 0
+      CompilerEndIf
+      CompilerIf Not Defined(PB_ToolBar_Large, #PB_Constant)
+         #PB_ToolBar_Large = 1 << 1;??? 2
+      CompilerEndIf
+      CompilerIf Not Defined(PB_ToolBar_Text, #PB_Constant)
+         #PB_ToolBar_Text = 1 << 2;??? 4
+      CompilerEndIf
+      CompilerIf Not Defined(PB_ToolBar_InlineText, #PB_Constant)
+         #PB_ToolBar_InlineText = 1 << 3;??? 8
+      CompilerEndIf
+;     
+;      #PB_ToolBar_child
+;       #PB_ToolBar_vertical
+      #PB_ToolBar_Buttons = 1<<4
+      #PB_ToolBar_Left    = 1<<5
+      #PB_ToolBar_Right   = 1<<6
+      #PB_ToolBar_Bottom  = 1<<7
+      
+;       Debug #PB_ToolBar_Small
+;       Debug #PB_ToolBar_Large
+;       Debug #PB_ToolBar_Text ; Text will be displayed below the button
+;       Debug #PB_ToolBar_InlineText
+;       Debug #PB_ToolBar_Buttons
+;       ;
+;       Debug ""
+;       Debug #PB_ToolBar_Normal
+;       Debug #PB_ToolBar_Toggle
+
+
+
+
+      
+      ;- \\ Message
+      CompilerIf Not Defined(PB_messageRequester_info, #PB_Constant)
+         #PB_MessageRequester_Info = 1 << 2
+      CompilerEndIf
+      CompilerIf Not Defined(PB_messageRequester_Error, #PB_Constant)
+         #PB_MessageRequester_Error = 1 << 3
+      CompilerEndIf
+      CompilerIf Not Defined(PB_messageRequester_warning, #PB_Constant)
+         #PB_MessageRequester_Warning = 1 << 4
+      CompilerEndIf
+      CompilerIf Not Defined(PB_MessageRequester_Error, #PB_Constant)
+         #PB_MessageRequester_Error = 1 << 5;  8
+      CompilerEndIf
+      
+      #__message_Cancel = #PB_MessageRequester_Cancel           ; 2
+      #__message_Info = #PB_MessageRequester_Info               ; 4
+      #__message_Error = #PB_MessageRequester_Error             ; 8
+      #__message_Warning = 32;#PB_MessageRequester_Warning
+      #__message_ScreenCentered = 256;#PB_Window_ScreenCentered ; 64
+      ;#__message_WindowCentered = #PB_Window_WindowCentered ; 256
+      
+      #__message_Ok = #PB_MessageRequester_Ok                   ; 0
+      #__message_YesNo = #PB_MessageRequester_YesNo             ; 1
+      #__message_YesNoCancel = #PB_MessageRequester_YesNoCancel ; 2
+      #__message_Yes = #PB_MessageRequester_Yes                 ; 6
+      #__message_No = #PB_MessageRequester_No                   ; 7
+      
+      
+   EndDeclareModule
+   Module Constants
+   EndModule
+   
+   ;UseModule Constants
+CompilerEndIf
+
+; StructureUnion
+;   b.b[0]    ; BYTE    : 8 Bit signed    [-128..127]
+;   a.a[0]    ; ASCII   : 8 Bit unsigned  [0..255]
+;
+;   w.w[0]    ; WORD    : 2 Byte signed   [-32768..32767]
+;   c.c[0]    ; CAHR    : 2 Byte unsigned [0..65535]
+;   u.u[0]    ; UNICODE : 2 Byte unsigned [0..65535]
+;
+;   l.l[0]    ; LONG    : 4 Byte signed   [-2147483648..2147483647]
+;   q.q[0]    ; QUAD    : 8 Byte signed   [-9223372036854775808..9223372036854775807]
+;
+;   f.f[0]    ; FLOAT   : 4 Byte
+;   d.d[0]    ; DOUBLE  : 8 Byte float
+;   i.i[0]    ; INTEGER : 4 or 8 Byte INT, depending on System
+;   *p.TUPtr[0] ; Pointer for TUPtr (it's possible and it's done in PB-IDE Source) This can be used as a PointerPointer like the C **Pointer
+; EndStructureUnion
+
+;-
+CompilerIf Not Defined(Structures, #PB_Module)
+   DeclareModule Structures
+      ;-- PROTOTIPEs
+      ; Prototype DrawFunc(*this)
+      Prototype EventFunc( ) ;*this=#Null, *event=#PB_All, *item=#PB_Any, *data=#NUL )
+      
+      ;{
+      ;-- STRUCTUREs
+      ;--     POINT
+      Structure _s_POINT
+         y.l
+         x.l
+      EndStructure
+      ;--     SIZE
+      Structure _s_SIZE
+         width.l
+         height.l
+      EndStructure
+      ;--     COORDINATE
+      Structure _s_COORDINATE Extends _s_SIZE
+         y.l
+         x.l
+      EndStructure
+      ;--     MODE
+      Structure _s_mode
+         ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
+         ;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+         ;       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+         ;       sizeGadget.b     ; 12845056   - #PB_Window_sizeGadget      ; Adds the sizeable feature To a Window.
+         ;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
+         ;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
+         ;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry.
+         ;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
+         ;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
+         ;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
+         ;                        ;                X,Y parameters are ignored.
+         ;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
+         ;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
+         ;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList( ) can be used To do this later.
+         ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
+         
+         ;inline.b
+         StructureUnion
+            check.b
+            Checkboxes.b
+         EndStructureUnion
+         AlwaysSelection.b
+         
+         lines.b
+         buttons.b
+         gridLines.b
+         fullSelection.b
+         clickSelect.b
+         multiSelect.b
+         collapsed.b
+         threeState.b
+      EndStructure
+      Structure _s_ANIMATION
+         Value.i
+         Min.i
+         Max.i
+         Delay.i
+         Enter.i
+         Leave.i
+      EndStructure
+      ;--     OBJECTTYPE
+      Structure _s_OBJECTTYPE
+         *root._s_ROOT
+         *row._s_ROWS
+         *widget._s_WIDGET
+         *button._s_BUTTONS
+      EndStructure
+      ;--     D&D
+      Structure _s_DROP
+         format.l
+         actions.b
+         private.i
+         
+         *imageID
+         
+         ;*value
+         StructureUnion
+            string.s
+            files.s
+         EndStructureUnion
+      EndStructure
+      Structure _s_DRAG Extends _s_DROP
+         y.l
+         x.l
+         width.l
+         height.l
+         ;state.b
+      EndStructure
+      ;--     KEYBOARD
+      Structure _s_KEYBOARD ; Ok
+         *window._S_WIDGET  ; active window element ; FocusedWindow( )\
+         *widget._S_WIDGET  ; keyboard focus element ; GetActive( )\
+         change.b
+         input.c
+         key.l[2]
+      EndStructure
+      ;--     COLOR
+      Structure _s_COLOR
+         state.b ; entered; selected; disabled;
+         front.i[4]
+         line.i[4]
+         fore.i[4]
+         back.i[4]
+         frame.i[4]
+         _alpha.a[2]
+         *alpha._s_color
+      EndStructure
+      ;--     ALIGN
+      Structure _s_ALIGN Extends _s_COORDINATE
+         left.b
+         top.b
+         right.b
+         bottom.b
+         autodock._s_COORDINATE
+      EndStructure
+      ;--     ARROW
+      Structure _s_ARROW
+         size.a
+         type.b
+         direction.b
+      EndStructure
+      ;--     STATE
+      Structure _s_STATE
+         round.a
+         
+         StructureUnion
+         toggle.b[3]
+         checked.b[3]
+      EndStructureUnion
+         state.b
+         
+         hide.b
+         StructureUnion
+            enter.b
+            mouseenter.b
+            mouseenterframe.b
+            mouseenterinner.b
+         EndStructureUnion
+         focus.b
+         press.b
+         disable.b
+      EndStructure
+      ;--     BOX
+      Structure _s_BOX Extends _s_STATE
+         y.l[3]
+         x.l[3]
+         width.l[3]
+         height.l[3]
+      EndStructure
+      ;--     BUTTONS
+      Structure _s_BUTTONS Extends _s_BOX
+         index.l     ; Index of new list element
+         size.l
+         noFocus.a
+         arrow._s_arrow
+         color._s_color[4]
+      EndStructure
+      
+      ;--     CARET
+      Structure _s_CARET Extends _s_COORDINATE
+         mode.i
+         
+         pos.l[3]
+         time.l
+         
+         change.b
+      EndStructure
+      
+      ;--     edit
+      Structure _s_edit Extends _s_COORDINATE
+         pos.l
+         len.l
+         
+         string.s
+         change.b
+         
+         *color._s_color
+      EndStructure
+      
+      ;--     syntax
+      Structure _s_syntax
+         List *word._s_edit( )
+      EndStructure
+      
+      ;--     TEXT
+      Structure _s_TEXT Extends _s_edit
+         ;     ;     Char.c
+         *fontID ; .i[2]
+         
+         ;StructureUnion
+         pass.b
+         lower.b
+         upper.b
+         numeric.b
+         ;EndStructureUnion
+         
+         editable.b
+         multiline.b
+         
+         invert.b
+         vertical.b
+         
+         edit._s_edit[4]
+         caret._s_caret
+         syntax._s_syntax
+         
+         ; short._s_edit ; ".."
+         ; short._s_text ; сокращенный текст
+         
+         rotate.f
+         align._s_align
+         padding._s_point
+      EndStructure
+      
+      ;--     IMAGE
+      Structure _s_image Extends _s_COORDINATE
+         StructureUnion
+            *id  ; - ImageID( )
+            *imageID
+         EndStructureUnion
+         *img ; - Image( )
+         
+         ;;*output;transparent.b
+         change.b
+         depth.a
+         size.w  ; icon small/large
+         
+         ;;rotate.f
+         align._s_align
+         padding._s_point
+         ;
+         ;
+         ;       *pressed._s_image
+         ;       *released._s_image
+         ;       *background._s_image
+      EndStructure
+      
+      ;--     ANCHORS
+      Structure _s_SELECTOR Extends _s_COORDINATE
+         type.a
+         
+         dot_ted.a
+         dot_line.a
+         dot_space.a
+         
+         backcolor.i
+         framecolor.i
+      EndStructure
+      ;
+      Structure _s_A_BUTTONS Extends _s_COORDINATE
+         state.b
+      EndStructure
+      ;
+      Structure _s_ANCHORS
+         pos.b;w 
+         size.a;c
+         mode.a;i
+         *id._s_A_BUTTONS[constants::#__a_count]
+      EndStructure
+      ;
+      Structure _s_A_GROUP Extends _s_COORDINATE
+         *widget._s_WIDGET
+      EndStructure
+      ;
+      Structure _s_TRANSFORMDATA
+         List *group._s_A_GROUP( )
+         *grab ; grab image handle
+         
+         *grid_image
+         grid_type.l
+         *grid_widget
+      EndStructure
+      ;--     TRANSFORM
+      Structure _s_TRANSFORM
+         index.a                             ; a_index( )
+         *main._s_WIDGET                     ; a_main( )
+         *enter._s_WIDGET                    ; a_entered( )
+         *focus._s_WIDGET                    ; a_focused( )
+         line._s_A_BUTTONS[4]                ; a_line( )
+         
+         ;
+         cursor.a[constants::#__a_count] ;
+                                             ;
+         *transform._s_TRANSFORMDATA         ;
+         
+         backcolor.l[3]
+         framecolor.l[3]
+      EndStructure
+      ;--     MOUSE
+      Structure _s_MOUSE Extends _s_POINT
+         *cursor                 ; current visible cursor
+         
+         click.a                 ; mouse clicked count
+         press.b                 ; mouse buttons state
+         change.b                ; mouse moved state
+         buttons.a               ; mouse clicked button
+         dragstart.b
+         
+         interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
+         
+         steps.a
+         anchors._s_TRANSFORM    ; a_anchors( )
+         selector._s_SELECTOR    ; a_selector( )
+         
+         *drag._s_DRAG           ;
+                                 ;
+         wheel._s_POINT          ;
+         delta._s_POINT          ;
+                                 ;
+         entered._s_OBJECTTYPE   ; mouse entered element
+         pressed._s_OBJECTTYPE   ; mouse button's pushed element
+         
+         *widget._s_WIDGET[2]
+      EndStructure
+      ;;--     margin
+      Structure _s_margin Extends _s_coordinate
+         color._s_color
+         hide.b
+      EndStructure
+      
+      ;--     ITEMS
+      Structure _s_ITEMS Extends _s_BOX
+         *columnaddress
+         columnindex.i
+         
+         StructureUnion
+            buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
+            box._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
+         EndStructureUnion
+         change.b
+         drawing.b
+         
+         index.l     ; Index of new list element
+         itemindex.l
+         
+         visible.b
+         
+         text._s_text
+         image._s_image
+         color._s_color
+         
+         OffsetMove.i
+         OffsetMoveMin.i
+         OffsetMoveMax.i
+         
+         ;*root._s_WIDGET
+         *parent._s_ROWS
+         childrens.w ; Row( )\ ; rows( )\ ; row\
+         sublevel.w
+         
+         *data  ; set/get item data
+         *menu._s_WIDGET
+      EndStructure
+      
+      ;--     ROWS
+      Structure _s_ROWS Extends _s_ITEMS
+         checkbox._s_BOX ; \box[1]\ -> \checkbox\
+         
+         *first._s_rows           ;TEMP first elemnt in the list
+         *after._s_rows           ;TEMP first elemnt in the list
+         *before._s_rows          ;TEMP first elemnt in the list
+         *last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
+         
+         *OptionGroupRow._s_rows ; option group row
+         
+         ; edit
+         margin._s_edit
+         
+         ;*data  ; set/get item data
+      EndStructure
+      
+      Structure _s_VISIBLEITEMS
+         *first._s_rows           ; first draw-elemnt in the list
+         *last._s_rows            ; last draw-elemnt in the list
+         List *_s._s_rows( )      ; all draw-elements
+      EndStructure
+      
+      ;--     ROW
+      Structure _s_ROW
+         id.i[4]
+         
+         column.a
+         sublevelcolumn.a
+         sublevelpos.a
+         sublevelsize.a
+         ;
+         *focused._s_rows         ; focused item
+         *pressed._s_rows         ; pushed item
+         *entered._s_rows         ; entered item
+         *leaved._s_rows          ; leaved item
+         
+         *first._s_rows           ; first elemnt in the list
+         *last._s_rows            ; last elemnt in the list
+         *added._s_rows           ; last added last element
+         
+         visible._s_VISIBLEITEMS
+         
+         margin._s_margin
+         
+         *tt._s_tt
+         
+         List lines._s_rows( )
+      EndStructure
+      
+      ;--     TAB
+      Structure _s_TAB
+         *widget._s_WIDGET
+         
+         state.c
+         index.c
+         addindex.c
+         
+         ; tab
+         *entered._s_rows
+         *pressed._s_rows
+         *focused._s_rows
+         
+          List *items._s_ITEMS( )
+      EndStructure
+      
+      ;--     BAR
+      Structure _s_PAGE
+         pos.l
+         len.l
+         *end
+         change.w
+      EndStructure
+      Structure _S_THUMB Extends _s_BUTTONS
+         pos.l
+         len.l
+         *end
+         change.w
+      EndStructure
+      Structure _s_BAR
+         max.l
+         min.l[3]   ; fixed min[1&2] bar size
+         fixed.l[3] ; fixed bar[1&2] position (splitter)
+         
+         invert.b
+         vertical.b
+         direction.b
+         
+         percent.f
+         
+         page._s_page
+         area._s_page
+         thumb._s_thumb
+         
+         *button._s_buttons[3]
+         
+        ; List *_s._s_ITEMS( )
+      EndStructure
+      ;--     SCROLL
+      Structure _s_SCROLL Extends _s_COORDINATE
+         bars.b
+         align._s_align
+         
+         state.b          ; set state status
+         
+         increment.f      ; scrollarea
+         *v._s_WIDGET     ; vertical scrollbar
+         *h._s_WIDGET     ; horizontal scrollbar
+      EndStructure
+      
+      ;--     caption
+      Structure _s_caption
+         y.l;[5]
+         x.l;[5]
+         height.l;[5]
+         width.l ;[5]
+         
+         button._s_buttons[5]
+         color._s_color
+         
+         interact.b
+         hide.b
+         round.b
+         _padding.b
+      EndStructure
+      
+      ;--     line_
+      Structure _s_line_
+         v._s_coordinate
+         h._s_coordinate
+      EndStructure
+      
+      ;--     tt
+      Structure _s_tt Extends _s_coordinate
+         window.i
+         gadget.i
+         
+         visible.b
+         
+         text._s_text
+         image._s_image
+         color._s_color
+      EndStructure
+      
+      ;--     popup
+      Structure _s_popup
+         gadget.i
+         window.i
+         
+         ; *widget._s_WIDGET
+      EndStructure
+      
+      
+      ;--     COLUMN
+      Structure _s_COLUMN Extends _s_COORDINATE
+         index.i
+         
+         text._s_TEXT
+         image._s_image
+         
+         
+         ;--TEMP---
+         drawing.b
+         hide.b
+         state.b
+         
+         Map string.s( )
+         ;List *items._s_rows( )
+         List items._s_rows( )
+      EndStructure
+      
+      ;--     BOUNDS
+      Structure _s_BOUNDATTACH
+         mode.a
+         *parent._s_WIDGET
+      EndStructure
+      Structure _s_BOUNDMOVE
+         min._s_POINT
+         max._s_POINT
+      EndStructure
+      Structure _s_BOUNDSIZE
+         min._s_SIZE
+         max._s_SIZE
+      EndStructure
+      Structure _s_BOUNDS
+         children.b
+         *move._s_BOUNDMOVE
+         *size._s_BOUNDSIZE
+         *attach._s_BOUNDATTACH
+      EndStructure
+      
+      Structure RESIZEINFO Extends _s_COORDINATE
+         flag.c
+         clip.b
+         send.b
+         hide.b
+         change.b
+         nochildren.b
+      EndStructure
+      
+      ;       Structure SIZEINFO Extends _s_SIZE
+      ;          change.b
+      ;          start.b
+      ;          stop.b
+      ;          send.b
+      ;          ;children.b
+      ;       EndStructure
+      ;       Structure MOVEINFO Extends _s_POINT
+      ;          change.b
+      ;          start.b
+      ;          stop.b
+      ;          send.b
+      ;          ;children.b
+      ;       EndStructure
+      
+      ;--     EVENT
+      Structure _s_EVENTDATA
+         *widget._s_ROOT   ; eventWidget( )
+         *type             ; eventType( )
+         *item             ; eventItem( )
+         *data             ; eventData( )
+      EndStructure
+      Structure _s_HOOK Extends _s_EVENTDATA
+         *function.EventFunc
+         Map *buttons( )
+      EndStructure
+      
+      ;--     WIDGET
+      Structure _s_WIDGET Extends _s_STATE
+;          Map *eventshook._s_HOOK( )
+;          
+         noscale.b
+         
+         haseventhook.b
+;          *eventhook._s_HOOK[constants::#__event_count]
+;          ; TEMP
+;          hashook.b
+;          List *hook._s_HOOK( ) ; hook of events
+         
+         
+         popup.b
+         redraw.b
+      ;          size.SIZEINFO                 
+         ;          move.MOVEINFO                 
+         resize.RESIZEINFO                 
+         
+         _id.i      ; - widget index
+         
+         y.l[constants::#__c]
+         x.l[constants::#__c]
+         height.l[constants::#__c]
+         width.l[constants::#__c]
+         ;
+         type.c
+         class.s
+         ;
+         level.c
+         ;
+         create.b
+         change.b
+         hidden.b                 ; hide state
+                                  ; transporent.b
+                                  ; dragged.b              ;
+         autosize.b
+         container.b              ; is container
+                                  ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
+                                  ; container =- 1         ; if the not has children ( Splitter( ); Frame( ))
+                                  ;
+         child.b                  ; is the widget composite?
+         haschildren.l            ; if the has children
+         countitems.l             ; count items
+                                  ;                        ;*Draw.DrawFunc          ; Function to Draw
+         caption._s_caption
+         ;
+         fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
+         bs.a                     ; border size
+                                  ;                        ;
+         tt._s_tt                 ; notification = уведомление
+         *drop._s_DROP
+         *align._s_ALIGN
+         ;
+         *anchors._s_ANCHORS
+         ;
+         *bar._s_BAR
+         *row._s_ROW              ; multi-text; buttons; lists; - gadgets
+         tab._s_TAB               ; 
+                                  ;
+         *box._s_BOX              ; checkbox; optionbox
+         *combobox._s_BUTTONS     ; combobox
+                                  ;
+         *group._s_WIDGET         ; = Option( ) group widget
+         *string._s_WIDGET        ; = SpinBar( ) string box
+         
+         *parent_menu._s_WIDGET
+         
+         StructureUnion
+            *popupBar._s_WIDGET       ; = PopupBar( ) List view box
+            *comboBar._s_WIDGET       ; = ComboBox( ) List view box
+         EndStructureUnion
+         ;
+         ;                           
+         BarWidth.w               ; bar v size
+         BarHeight.w              ; bar h size
+         MenuBarHeight.w
+         StatusBarHeight.w
+         
+         StructureUnion
+         ToolBarHeight.w
+         TabHeight.i
+         EndStructureUnion
+         index.b[3]
+         
+         ; placing layout
+         first._s_OBJECTTYPE
+         after._s_OBJECTTYPE
+         before._s_OBJECTTYPE
+         last._s_OBJECTTYPE
+         ;
+         bounds._s_BOUNDS
+         scroll._s_SCROLL            ; vertical & horizontal scrollbars
+         text._s_TEXT
+         ;
+         *gadget._s_WIDGET[3]
+         ; \root\gadget[0] - active gadget
+         ; \gadget[0] - window active child gadget
+         ; \gadget[1] - splitter( ) first gadget
+         ; \gadget[2] - splitter( ) second gadget
+         
+         image._s_image[4]
+         ; \image[0] - draw image
+         ; \image[1] - released image
+         ; \image[2] - pressed image
+         ; \image[3] - background image
+         
+         flag.q
+         *data
+         *cursor[4] ;
+         
+         *errors
+         notify.l ; оповестить об изменении
+         
+         mode._s_mode            ; drawing mode
+         color._s_color[4]
+         
+         List columns._s_column( )
+         
+         *root._s_ROOT
+         *window._s_WIDGET
+         *parent._s_WIDGET
+         *address                 ; widget( )\ list address
+         *contex
+      EndStructure
+      
+      ;--     CANVAS
+      Structure _s_CANVAS
+         post.b
+         *gadgetID                ; canvas handle
+         window.i                 ; canvas window
+         gadget.i                 ; canvas gadget
+      EndStructure
+      
+      ;--     ROOT
+      Structure _s_ROOT Extends _s_WIDGET
+         repaint.b
+         drawmode.b
+         canvas._s_canvas
+         
+         ; TEMP
+         *widget._s_WIDGET
+      EndStructure
+      
+      ;--     STICKY
+      Structure _s_STICKY
+         *box._s_ROOT                  ; popup root element
+         *message._s_WIDGET            ; message window element
+         *tooltip._s_WIDGET            ; tool tip element
+         *window._s_ROOT               ; top level window element
+         *bar._s_ROOT
+      EndStructure
+      
+      ;--     STRUCT
+      Structure _s_STRUCT
+         Map *mapfontID( )  
+         
+         *fontID                       ; current drawing fontID
+         ;*root._s_ROOT                 ; enumerate root
+         *drawingroot._s_ROOT
+         *opened._s_WIDGET             ; last opened-list element
+         *popup._s_WIDGET              
+         *widget._s_WIDGET             ; enumerate widget
+         
+         mouse._s_mouse                ; mouse( )\
+         keyboard._s_keyboard          ; keyboard( )\
+         sticky._s_STICKY              ; sticky( )\
+         
+         Map *roots._s_ROOT( )   
+         List *widgets._s_WIDGET( )    ; __widgets( )
+         
+         ;*drawingIMG
+         ;List *intersect._s_WIDGET( )
+         
+         ;\\ event\
+         event._s_EVENTDATA                ; widgetEvent( )\ 
+         eventquit.b                       ; quit from main loop
+         eventloop.b
+         eventexit.b
+         
+         Map *eventhook._s_HOOk( )
+         List *eventqueue._s_EVENTDATA( )  ; __events( )
+      EndStructure
+      ;}
+      
+      ;Debug SizeOf(_s_WIDGET) ; 5952 - cursor 5924 - color 3924
+   EndDeclareModule
+   
+   Module Structures
+      
+   EndModule
+CompilerEndIf
 
 ; ver: 3.0.0.1 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -79,18 +1753,18 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
    #path = ""
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-   #path = "";Z:\Documents\GitHub\Widget\"
+   #path = "C:\Users\user\Documents\GitHub\widget";Z:\Documents\GitHub\Widget\"
 CompilerEndIf
 
 IncludePath #path
 
-CompilerIf Not Defined( constants, #PB_Module )
-   XIncludeFile "include/constants.pbi"
-CompilerEndIf
-
-CompilerIf Not Defined( structures, #PB_Module )
-   XIncludeFile "include/structures.pbi"
-CompilerEndIf
+; CompilerIf Not Defined( constants, #PB_Module )
+;    XIncludeFile "include/constants.pbi"
+; CompilerEndIf
+; 
+; CompilerIf Not Defined( structures, #PB_Module )
+;    XIncludeFile "include/structures.pbi"
+; CompilerEndIf
 
 CompilerIf Not Defined( func, #PB_Module )
    XIncludeFile "include/func.pbi"
@@ -130,11 +1804,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PB(ResizeGadget)(_event_gadget_,_x_,_y_,_width_,_height_)
             ;
             If PB(GadgetType)(_event_gadget_) = #PB_GadgetType_Canvas
-               ; PushMapPosition( __roots( ) )
+               ; PushMapPosition( Root( ) )
                If Widget::ChangeCurrentCanvas( GadgetID( _event_gadget_ ) )
                   Widget::Resize( Widget::Root( ), 0, 0, _width_, _height_)
                EndIf
-               ; PopMapPosition( __roots( ) )
+               ; PopMapPosition( Root( ) )
             EndIf
          EndMacro
       CompilerEndIf
@@ -410,21 +2084,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;Macro __gui\eventqueue( ): widget::__gui\eventqueue( ): EndMacro
-      Macro __roots( ): widget::__gui\roots( ): EndMacro
+      Macro Root( ): widget::__gui\roots( ): EndMacro
       Macro __widgets( ): __gui\widgets( ): EndMacro
       
       ;-\\
       Macro widget( ): widget::__gui\widget: EndMacro ; Returns current-root last added widget
-      Macro Root( ): widget::__gui\root: EndMacro
+      ;Macro Root( ): widget::__gui\root: EndMacro
       ; Macro FirstRoot( ): first\root: EndMacro
       Macro LastRoot( ): last\root: EndMacro
       Macro AfterRoot( ): after\root: EndMacro
       Macro BeforeRoot( ): before\root: EndMacro
       ;
-      Macro ChangeCurrentCanvas( _canvasID_ )
-         FindMapElement( widget::__roots( ), Str( _canvasID_ ) )
-         widget::Root( ) = widget::__roots( )
-         ;Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class
+      Macro ChangeCurrentCanvas( _canvasID_, _text_="" )
+         FindMapElement( widget::Root( ), Str( _canvasID_ ) )
+         
+         If _text_ <> ""
+            Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class +" "+ _text_
+         EndIf
       EndMacro
       Macro PostEventRepaint( _root_ )
          If _root_
@@ -2704,7 +4380,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\root <> Root( )
-               ChangeCurrentCanvas( *this\root\canvas\gadgetID )
+               ChangeCurrentCanvas( *this\root\canvas\gadgetID, ClassFromEvent(eventtype) )
             EndIf
             
             ;\\
@@ -2715,7 +4391,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If EnteredWidget( ) And
                EnteredWidget( )\root <> Root( )
-               ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+               ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID, ClassFromEvent(eventtype)+"2" )
             EndIf
             
          Else
@@ -4937,7 +6613,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Hide( *this, *this\hide ! 1 )
                
                If *this\hide
-                  Debug "comboBar - hide "+*this\class +" "+ *this\hide
+                 ; Debug "comboBar - hide "+*this\class +" "+ *this\hide
                   ;
                   *display\ComboButton( )\arrow\direction = 2
                   
@@ -4957,7 +6633,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Else
                If *this\hide
-                  Debug "menuBar - show "+*this\class
+                 ; Debug "menuBar - show "+*this\class
                   Hide( *this, #False )
                EndIf
             EndIf
@@ -4965,7 +6641,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\popup = 0
                *this\popup = 1
-               Debug "displayBar - create " + *this\class +" "+ *this\root
+               ;Debug "displayBar - create " + *this\class +" "+ *this\root
                *displayRoot = Open( #PB_Any, 0, 0, 1, 1, "", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool,  WindowID( *display\root\canvas\window ) )
                *displayRoot\parent = *display
                *displayRoot\class = "["+*this\class+"]"+"-root" ; "Root_"+
@@ -5071,7 +6747,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   height + ( *this\__rows( )\y + *this\__rows( )\height )
                   PopListPosition( *this\__rows( ) ) 
                EndIf
-            EndIf
+             EndIf
             
             ;\\
             If *this\popup  
@@ -5128,6 +6804,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
                DisableWindow( *this\root\canvas\window, #False)
                PostRepaint( *this\root )
+               
+               ChangeCurrentCanvas( *display\root\canvas\gadgetID )
                ProcedureReturn #True
             EndIf
             
@@ -5367,7 +7045,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.b Resize( *this._s_WIDGET, x.l, y.l, width.l, height.l )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
-         Debug "resize - "+*this\class +" ("+ x +" "+ y +" "+ width +" "+ height +")"
+         ;Debug "resize - "+*this\class +" ("+ x +" "+ y +" "+ width +" "+ height +")"
          
          
          *this\redraw = 1
@@ -6446,7 +8124,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *bar\max         + seperator_step * 2
                         Else
                            ;
-                           Debug "why "+*items( )\height +" ?"
+                           ;;Debug "why "+*items( )\height +" ?"
                            *items( )\height = 0
                            ;
                            If *items( )\image\height
@@ -19339,11 +21017,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i Bind( *this._s_WIDGET, *callback, eventtype.l = #PB_All, item.l = #PB_All )
          ;
          If *this = #PB_All
-            PushMapPosition(__roots( ))
-            ForEach __roots( )
-               Bind( __roots( ), *callback, eventtype, item )
+            PushMapPosition(Root( ))
+            ForEach Root( )
+               Bind( Root( ), *callback, eventtype, item )
             Next
-            PopMapPosition(__roots( ))
+            PopMapPosition(Root( ))
             ProcedureReturn #PB_All
          EndIf
          ;
@@ -19376,11 +21054,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i Unbind( *this._s_WIDGET, *callback, eventtype.l = #PB_All, item.l = #PB_All )
          ;
          If *this = #PB_All
-            PushMapPosition(__roots( ))
-            ForEach __roots( )
-               UnBind( __roots( ), *callback, eventtype, item )
+            PushMapPosition(Root( ))
+            ForEach Root( )
+               UnBind( Root( ), *callback, eventtype, item )
             Next
-            PopMapPosition(__roots( ))
+            PopMapPosition(Root( ))
             ProcedureReturn #PB_All
          EndIf
          ;
@@ -21747,24 +23425,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If event = #PB_Event_Repaint
             If eventdata
+               PushMapPosition( Root( ) )
                If eventdata <> Root( )\canvas\gadgetID
-                  ChangeCurrentCanvas( eventdata )
+                  ChangeCurrentCanvas( eventdata, "repaint" )
                EndIf
+               
                If Root( )\canvas\post = 1
                   If __gui\eventexit <> 1
                      Repost( )
                   EndIf
                   
-                  ; ;                   If Root( )\class = "Popup( )"
                   If test_draw_repaint
                      Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                   EndIf
-                  ; ; ; ;                      ForEach __widgets( ) 
-                  ; ; ; ;                         If __widgets( )\root = Root()
-                  ; ; ; ;                            Debug "    "+__widgets( )\class
-                  ; ; ; ;                         EndIf
-                  ; ; ; ;                      Next
-                  ; ;                   EndIf
                   
                   If Not __gui\drawingroot
                      StartDrawingRoot( Root( ) )
@@ -21773,19 +23446,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   StopDrawingRoot( )
                   
                   Root( )\canvas\post = 0
-                  
-                  ;                   Debug "-----s----"
-                  ;                   If StartEnumerate( Root() )
-                  ;                      Debug ""+widget( )\class +" "+ widget( )\x +" "+ widget( )\y +" "+ widget( )\height +" "+ widget( )\width
-                  ;                      StopEnumerate( )
-                  ;                   EndIf
-                  ;                   Debug "------e----"
                EndIf
-               If EnteredCanvasID
-                  If EnteredCanvasID <> Root( )\canvas\gadgetID
-                     ChangeCurrentCanvas( EnteredCanvasID )
-                  EndIf
-               EndIf
+               PopMapPosition( Root( ) )
             EndIf
             ProcedureReturn event
          EndIf
@@ -21793,10 +23455,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If event = #PB_Event_DeactivateWindow
             If ActiveWindow( )
-               ForEach __roots( )
-                  If __roots( )\canvas\window = EventWindow( )
-                     If ActiveWindow( ) = __roots( )
-                        Root( ) = __roots( )
+               ForEach Root( )
+                  If Root( )\canvas\window = EventWindow( )
+                     If ActiveWindow( ) = Root( )
                         Debug "Deactivate - "+Root( )\class
                         
 ;                         If Popup( )
@@ -21816,9 +23477,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If event = #PB_Event_ActivateWindow
             If __gui\eventexit = 1
                If Not EnteredWidget( )
-                  ForEach __roots( )
-                     If __roots( )\canvas\window = EventWindow( )
-                        Root( ) = __roots( )
+                  ForEach Root( )
+                     If Root( )\canvas\window = EventWindow( )
+                        Root( ) = Root( )
                         ; Debug "Activate - "+Root( )\class
                         SetActive( Root( ) )
                         Break
@@ -21902,15 +23563,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If eventtype = #__event_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                Debug "resize - canvas ["+eventgadget+"]"
-; ;               *root = Root( )
-               ;PushMapPosition( __roots( ) )
+               PushMapPosition( Root( ) )
                If Not ( Root( ) And Root( )\canvas\gadget = eventgadget )
-                  ChangeCurrentCanvas( GadgetID( eventgadget ) )
+                  ChangeCurrentCanvas( GadgetID( eventgadget ), "resize" )
                EndIf   
                Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
-               
-               ;PopMapPosition( __roots( ) )
-; ; ;                ;Root( ) = *root
+               PopMapPosition( Root( ) )
                ProcedureReturn event
             EndIf
             
@@ -21920,8 +23578,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If IsGadget( eventgadget ) And
                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
                      EnteredCanvasID = GadgetID( eventgadget )
-                     If Not ( Root( ) And Root( )\canvas\gadgetID = EnteredCanvasID )
-                        ChangeCurrentCanvas( EnteredCanvasID )
+                     If Not ( Root( ) And Root( )\canvas\gadget = eventgadget )
+                        ChangeCurrentCanvas( EnteredCanvasID, "enter" )
                      EndIf
                   EndIf
                EndIf
@@ -21932,7 +23590,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If PressedWidget( ) And
                   Root( ) <> PressedWidget( )\root
                   eventgadget = PressedWidget( )\root\canvas\gadget
-                  ChangeCurrentCanvas( GadgetID( eventgadget ) )
+                  ChangeCurrentCanvas( GadgetID( eventgadget ), "leave" )
                EndIf
                EnteredCanvasID = #Null
             EndIf
@@ -21942,10 +23600,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                eventtype = #__event_RightButtonDown Or
                eventtype = #__event_MiddleButtonDown
                ;
-               If EnteredCanvasID
-                  If EnteredCanvasID <> Root( )\canvas\gadgetID
-                     ChangeCurrentCanvas( EnteredCanvasID )
-                  EndIf
+               If EnteredCanvasID And 
+                  EnteredCanvasID <> Root( )\canvas\gadgetID
+                  ChangeCurrentCanvas( EnteredCanvasID, ClassFromEvent(eventtype) )
                EndIf
             EndIf
             
@@ -22010,9 +23667,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;             If Root( )
-            ;                Debug " "+Root( )\class +" "+ ClassFromEvent(eventtype) +" "+ Root( )\canvas\gadget +" "+ eventgadget
-            ;             EndIf
+;                         If Root( )
+;                            Debug " "+Root( )\class +" "+ ClassFromEvent(eventtype) +" "+ Root( )\canvas\gadget +" "+ eventgadget
+;                         EndIf
             
             ;\\
             ;\\
@@ -22564,7 +24221,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\root\BeforeRoot( ) = Opened( )\root
                   
                   If is_root_( *this )
-                     ChangeCurrentCanvas(*this\root\canvas\GadgetID )
+                     ChangeCurrentCanvas(*this\root\canvas\GadgetID, "open list" )
                   EndIf
                EndIf
             EndIf
@@ -22583,10 +24240,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure Open( window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
-         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_ROOT 
+         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList
          
          ; init
-         If Not MapSize( __roots( ) )
+         If Not MapSize( Root( ) )
             events::SetCallback( @EventHandler( ) )
          EndIf
          
@@ -22613,7 +24270,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ; then bug in windows
             If Window = #PB_Any
-               Window = 300 + MapSize( __roots( ) )
+               Window = 300 + MapSize( Root( ) )
             EndIf
             ;
             w = OpenWindow( Window, x, y, width, height, title$, flag, *parentID )
@@ -22680,57 +24337,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
-         If Not FindMapElement( __roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
-            result     = AddMapElement( __roots( ), Str( g ) )
-            __roots( ) = AllocateStructure( _s_root )
-            Root( )    = __roots( )
-            *root      = __roots( )
-            
-            
-            ;
-            *root\root      = *root
-            
-            *root\container = 1
-            *root\address   = result
-            *root\type      = #__type_Container
-            
-            *root\class     = "Root"
-            ;*root\window   = *root
-            ;*root\parent   = Opened( )
-            
-            ;
-            *root\color       = _get_colors_( )
-            SetFontID( *root, PB_( GetGadgetFont )( #PB_Default ))
-            
-            ;
-            *root\canvas\GadgetID = g
-            *root\canvas\window   = Window
-            *root\canvas\gadget   = Canvas
+         If Not ChangeCurrentCanvas(g)
+            result                  = AddMapElement( Root( ), Str( g ) )
+            Root( )                 = AllocateStructure( _s_root )
+            Root( )\address         = result
+            Root( )\container       = 1
+            Root( )\class           = "Root"
+            Root( )\type            = #__type_Container
+            Root( )\root            = Root( )
+            Root( )\canvas\GadgetID = g
+            Root( )\canvas\window   = Window
+            Root( )\canvas\gadget   = Canvas
+            Root( )\color           = _get_colors_( )
             
             ;\\
-            Post( *root, #__event_create )
-            
-            ;\\
-            If width Or height
-               Resize( *root, #PB_Ignore, #PB_Ignore, width, height )
-            EndIf
+            SetFontID( Root( ), PB_( GetGadgetFont )( #PB_Default ))
             
             ;\\
             If flag & #PB_Window_NoGadgets = #False
                If Opened( )
-                  Opened( )\AfterRoot( ) = *root
+                  Opened( )\AfterRoot( ) = Root( )
                EndIf
-               *root\BeforeRoot( ) = Opened( )
+               Root( )\BeforeRoot( ) = Opened( )
                
-               Opened( ) = *root
-               ; OpenList( *root)
+               Opened( ) = Root( )
+               ; OpenList( Root( ))
             EndIf
             
             ;\\
+            Post( Root( ), #__event_create )
+            
+            ;\\
             If flag & #PB_Window_NoActivate
-               *root\focus =- 1
+               Root( )\focus =- 1
             Else
-               SetActive( *root )
+               SetActive( Root( ) )
+            EndIf
+            
+            ;\\
+            If width Or height
+               Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height )
             EndIf
             
             ;\\
@@ -22772,9 +24418,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             CompilerEndIf
          EndIf
          
-         widget( ) = *root
-         PostEventRepaint( *root )
-         ProcedureReturn *root
+         widget( ) = Root( )
+         PostEventRepaint( Root( ) )
+         ProcedureReturn Root( )
       EndProcedure
       
       Procedure.i Window( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, *parent._s_WIDGET = 0 )
@@ -22790,7 +24436,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Static pos_x.l, pos_y.l
             
             Protected *this._s_WIDGET
-            If MapSize( __roots( ) )
+            If MapSize( Root( ) )
                If Not ListSize( __widgets( ) ) And
                   Flag & #__flag_autosize = #__flag_autosize
                   
@@ -22987,7 +24633,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
          
-         If MapSize( __roots( ) )
+         If MapSize( Root( ) )
             Protected canvas = Root( )\canvas\gadget
          EndIf
          ;
@@ -23014,22 +24660,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          SetGadgetData( Gadget, *this )
          
-         If IsGadget(canvas)
-            ; CloseList( )
-            ;Debug ""+Gadget+" "+canvas
-            ChangeCurrentCanvas( GadgetID(canvas) )
-            ; OpenList( Root( ) )
-         EndIf
+;          If IsGadget(canvas)
+;             ; CloseList( )
+;             ;Debug ""+Gadget+" "+canvas
+;             ChangeCurrentCanvas( GadgetID(canvas), "gadget" )
+;             ; OpenList( Root( ) )
+;          EndIf
          
          ProcedureReturn g
       EndProcedure
       
       ;       Procedure   ChangeCurrentRoot( )
-      ;          If MapSize( __roots( ) )
-      ;             If MapKey( __roots( ) ) = ""
-      ;                ResetMap( __roots( ) )
-      ;                NextMapElement( __roots( ) )
-      ;                Root( ) = __roots( )
+      ;          If MapSize( Root( ) )
+      ;             If MapKey( Root( ) ) = ""
+      ;                ResetMap( Root( ) )
+      ;                NextMapElement( Root( ) )
+      ;                Root( ) = Root( )
       ;             EndIf
       ;             ProcedureReturn 1
       ;          EndIf
@@ -23058,8 +24704,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If is_window
-            ForEach __roots( )
-               Root( ) = __roots( )
+            ForEach Root( )
+               Root( ) = Root( )
                window  = Root( )\canvas\window
                canvas  = Root( )\canvas\gadget
                
@@ -23116,7 +24762,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If __gui\eventquit =  - 1
                         FreeGadget( canvas )
                         CloseWindow( window )
-                        ResetMap( __roots( ) )
+                        ResetMap( Root( ) )
                      Else
                         PostEvent( #PB_Event_CloseWindow, window, #PB_Default )
                      EndIf
@@ -23300,14 +24946,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               If __roots( ) = *this
-                  __roots( )\address = #Null
-                  DeleteMapElement( __roots( ) )
-                  ; DeleteMapElement( __roots( ), MapKey( __roots( ) ) )
-                  ; ResetMap( __roots( ) )
+               If Root( ) = *this
+                  Root( )\address = #Null
+                  DeleteMapElement( Root( ) )
+                  ; DeleteMapElement( Root( ), MapKey( Root( ) ) )
+                  ; ResetMap( Root( ) )
                   Debug " FREE - " + *this\class + " " + *this\address
                   
-                  If Not MapSize( __roots( ) )
+                  If Not MapSize( Root( ) )
                      __gui\eventquit = 1
                   EndIf
                EndIf
@@ -23338,12 +24984,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   If *root <> Root( )
                      If *repaint
-                        If ChangeCurrentCanvas( *repaint\canvas\gadgetID )
+                        If ChangeCurrentCanvas( *repaint\canvas\gadgetID,"repost1" )
                            *repaint\canvas\post = 0
                            PostEventRepaint( *repaint )
                         EndIf
                      EndIf
-                     If ChangeCurrentCanvas( *root\canvas\gadgetID )
+                     If ChangeCurrentCanvas( *root\canvas\gadgetID,"repost2" )
                         *repaint = Root( )
                         ; Debug "    change canvas "
                      EndIf
@@ -23383,7 +25029,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If EnteredWidget( ) And
                EnteredWidget( )\root <> Root( )
                ; Debug " Change Current Canvas "
-               ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+               ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID,"repost3" )
             EndIf
             
             Debug "     -     "
@@ -23408,7 +25054,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If MapSize( __roots( ) )
+         If MapSize( Root( ) )
             ;\\
             ;ChangeCurrentRoot( )
             
@@ -23419,7 +25065,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Protected window = PB(EventWindow)( )
                      Protected canvas = PB(GetWindowData)( window )
                      
-                     If ChangeCurrentCanvas( PB(GadgetID)(canvas))
+                     If ChangeCurrentCanvas( PB(GadgetID)(canvas),"waitclose")
                         Debug "Wait close.... " + Root( )\address + " " + Root( )\canvas\window + " " + window + " - " + EventGadget( ) + " " + EventData( )
                         
                         Send( Root( ), #__event_Close, window, mainWindow )
@@ -23430,7 +25076,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ;\\
-                     If MapSize( __roots( ) )
+                     If MapSize( Root( ) )
                         ; ChangeCurrentRoot( )
                         __gui\eventquit = 0
                      Else
@@ -23460,7 +25106,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Debug "---------break-QUIT-------- " + IsWindow(Root( )\canvas\window)
                   Break
                EndIf
-               If Not MapSize( __roots( ) )
+               If Not MapSize( Root( ) )
                   Debug "---------break-MAP---------"
                   Break
                EndIf
@@ -23490,14 +25136,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          ;          If *root > 0
-         ;             PushMapPosition( __roots( ) )
-         ;             ForEach __roots( )
-         ;                If __roots( ) <> *root
-         ;                   DisableWindow( __roots( )\canvas\window, #True )
-         ;                   GetAtPoint( __roots( ), - 1, - 1, __widgets( ) )
+         ;             PushMapPosition( Root( ) )
+         ;             ForEach Root( )
+         ;                If Root( ) <> *root
+         ;                   DisableWindow( Root( )\canvas\window, #True )
+         ;                   GetAtPoint( Root( ), - 1, - 1, __widgets( ) )
          ;                EndIf
          ;             Next
-         ;             PopMapPosition( __roots( ) )
+         ;             PopMapPosition( Root( ) )
          ;          EndIf
          
          ;\\ start main loop
@@ -23531,13 +25177,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          ;          If *root > 0
-         ;             PushMapPosition( __roots( ) )
-         ;             ForEach __roots( )
-         ;                If __roots( ) <> *root
-         ;                   DisableWindow( __roots( )\canvas\window, #False )
+         ;             PushMapPosition( Root( ) )
+         ;             ForEach Root( )
+         ;                If Root( ) <> *root
+         ;                   DisableWindow( Root( )\canvas\window, #False )
          ;                EndIf
          ;             Next
-         ;             PopMapPosition( __roots( ) )
+         ;             PopMapPosition( Root( ) )
          ;          EndIf
          
          ;\\ stop main loop
@@ -23832,722 +25478,180 @@ EndMacro
 
 
 ;-
-
-;-
-CompilerIf #PB_Compiler_IsMainFile = 99
-   Uselib(widget)
-   
-   Global MDI, MDI_splitter, Splitter
-   
-   If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      
-      MDI        = MDI(10, 10, 680, 260);, #PB_MDI_AutoSize) ; as they will be sized automatically
-      Define *g0 = AddItem(MDI, -1, "form_0")
-      ; 		Button(10,10,80,80,"button_0")
-      ; 		
-      ; 		Define *g1 = AddItem(MDI, -1, "form_1")
-      ; 		Button(10,10,80,80,"button_1")
-      ; 		
-      ; 		Define *g2 = AddItem(MDI, -1, "form_2")
-      ; 		Button(10,10,80,80,"button_2")
-      Resize(*g0, 190, 190, #PB_Ignore, #PB_Ignore)
-      
-      Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
-   EndIf
-   
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile 
-   
+CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLIB(widget)
+   Uselib( WIDGET )
    
-   Enumeration
-      #window_0
-      #window
-   EndEnumeration
-   
-   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      LoadFont(6, "Arial", 21)
-      
-   CompilerElse
-      LoadFont(6, "Arial", 17)
-      
-   CompilerEndIf
-   
-   ;-\\ ANCHORS
-   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
-   
-   Procedure anchor_events( )
-      Protected change
-      Protected *this._s_widget = EventWidget( )
-      
-      Select WidgetEventType( )
-         Case #__event_Create
-            ;             If Not *this\child
-            ;                If *this\index > 0 And  *this\index < 5
-            ;                   Debug "8476575788484 "+*this\class
-            ;                   a_set( *this, #__a_full )
-            ;                EndIf 
-            ;             EndIf 
-            
-         Case #__event_LeftClick
-            Select *this
-               Case frame_color
-                  
-               Case back_color
-                  
-            EndSelect
-            
-         Case #__event_Focus
-            change = 1
-            
-         Case #__event_StatusChange
-            Debug "a_StatusChange"
-            If size_value
-               SetState(size_value, *this\anchors\size )
-            EndIf
-            
-            If pos_value
-               SetState(pos_value, *this\anchors\pos )
-            EndIf
-            
-            If grid_value
-               SetState(grid_value, mouse( )\steps )
-            EndIf
-            
-            change = 1
-            
-         Case #__event_Change
-            Select *this
-               Case size_value
-                  If a_focused( )\anchors\size <> GetState(*this)
-                     a_set( a_focused( ), #__a_full, GetState(*this), a_focused( )\anchors\pos )
-                  EndIf
-                  
-               Case pos_value
-                  If a_focused( )\anchors\pos <> GetState(*this)
-                     a_set( a_focused( ), #__a_full, a_focused( )\anchors\size, GetState(*this))
-                  EndIf
-                  
-               Case grid_value
-                  mouse( )\steps = GetState(grid_value)
-                  
-            EndSelect
-            
-            change = 1
-            
-      EndSelect
-      
-      If change
-         If a_focused( )
-            SetState(grid_value, mouse( )\steps )
-            SetState(size_value, a_focused( )\anchors\size )
-            SetState(pos_value, a_focused( )\anchors\pos )
-            
-            SetText(grid_text, Str(mouse( )\steps) )
-            SetText(size_text, Str(a_focused( )\anchors\size) )
-            SetText(pos_text, Str(a_focused( )\anchors\pos) )
-         EndIf
-      EndIf
-      
-   EndProcedure
-   
-   OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
-   
-   Define i
-   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
-   Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
-   
-   ;    
-   ;    
-   ;    Define *toolbar = ToolBar( *root )
-   ;     
-   ;     If *toolbar
-   ;       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-   ;       ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
-   ;       ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
-   ;       
-   ;       Separator( )
-   ;       
-   ;       ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-   ;       ; ToolTip(*toolbar, 3, "Cut")
-   ;       
-   ;       ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-   ;       ; ToolTip(*toolbar, 4, "Copy")
-   ;       
-   ;       ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-   ;       ; ToolTip(*toolbar, 5, "Paste")
-   ;       
-   ;       Separator( )
-   ;       
-   ;       ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-   ;       ; ToolTip(*toolbar, 6, "Find a document")
-   ;    EndIf
-   
-   ;BindWidgetEvent( *root, @BindEvents( ) )
-   view = Container(10, 10, 406, 238, #PB_Container_Flat)
-   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
-   a_init( view, 8 )
-   
-   Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
-   
-   If *toolbar
-      ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-      ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-      ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
-      
-      Separator( )
-      
-      ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-      ; ToolTip(*toolbar, 3, "Cut")
-      
-      ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-      ; ToolTip(*toolbar, 4, "Copy")
-      
-      ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-      ; ToolTip(*toolbar, 5, "Paste")
-      
-      Separator( )
-      
-      ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-      ; ToolTip(*toolbar, 6, "Find a document")
-   EndIf
-   
-   Define *a0._s_WIDGET = Button( 10, 10, 60, 60, "Button" )
-   Define *a1._s_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
-   ;Define *a2._s_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
-   Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
-   Define *a3._s_WIDGET = image( 150, 110, 60, 60, -1 )
-   
-   a_set( *a3, -1, 10)
-   
-   CloseList( )
-   size_value  = Track(56, 262, 240, 26, 0, 30)
-   pos_value   = Track(56, 292, 240, 26, 0, 30)
-   grid_value  = Track(56, 320, 240, 26, 0, 30)
-   back_color  = Button(304, 264, 112, 32, "BackColor")
-   frame_color = Button(304, 304, 112, 32, "FrameColor")
-   size_text   = Text(8, 256, 40, 24, "0")
-   pos_text    = Text(8, 288, 40, 24, "0")
-   grid_text   = Text(8, 320, 40, 24, "0")
-   
-   If a_focused( )
-      SetState(grid_value, mouse( )\steps )
-      SetState(size_value, a_focused( )\anchors\size )
-      SetState(pos_value, a_focused( )\anchors\pos )
-      
-      SetText(grid_text, Str(mouse( )\steps) )
-      SetText(size_text, Str(a_focused( )\anchors\size) )
-      SetText(pos_text, Str(a_focused( )\anchors\pos) )
-   EndIf
-   
-   
-   Bind( Root( ), @anchor_events( ) )
-   
-   ;\\Close( )
-   
-   
-   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   
-   ;\\ Open Root0
-   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-   Define *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root0_MenuBar" )
-   SetColor( *menu, #__color_back, $FFC8ECF0 )
-   
-   BarTitle("Title-1")
-   BarItem(1, "title-1-item-1")
-   BarSeparator( )   
-   ;
-   OpenBar("title-1-sub-item")
-   BarItem(3, "title-1-item")
-   BarSeparator( )
-   ;
-   OpenBar("title-2-sub-item")   
-   BarItem(13, "title-2-item")
-   BarSeparator( )
-   ;
-   OpenBar("title-3-sub-item")   
-   BarItem(23, "title-3-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(14, "title-2-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(4, "title-1-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(2, "title-1-item-2")
-   
-   BarTitle("Title-2")
-;    BarItem(5, "title-2-item-1")
-;    BarItem(6, "title-2-item-2")
-   
-   BarTitle("Title-event-test")
-   BarItem(7, "test")
-   BarSeparator( )
-   BarItem(8, "quit")
-   
-   BarTitle("Title-4")
-   BarItem(9, "title-4-item-1")
-   BarItem(10, "title-4-item-2")
+   Global *menu
    
    Procedure TestHandler()
+      ;ClearDebugOutput()
       Debug "Test menu event"
    EndProcedure
    
    Procedure QuitHandler()
+      ;ClearDebugOutput()
       Debug "Quit menu event"
       ; End
    EndProcedure
    
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
-   
-   Global *button_panel = Panel(10, 10, 200 + 60, 200)
-   Define Text.s, m.s   = #LF$, a
-   AddItem(*button_panel, -1, "1")
-   *g = Editor(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
-   ;*g                 = Editor(10, 10, 200 + 60, 200, #__flag_gridlines);, #__flag_autosize)
-   Text.s = "This is a long line." + m.s +
-            "Who should show." + m.s +
-            m.s +
-            m.s +
-            m.s +
-            "I have to write the text in the box or not." + m.s +
-            m.s +
-            m.s +
-            m.s +
-            "The string must be very long." + m.s +
-            "Otherwise it will not work."
-   
-   SetText(*g, Text.s)
-   For a = 0 To 2
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   AddItem(*g, 7 + a, "_")
-   For a = 4 To 6
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   
-   ;\\
-   AddItem(*button_panel, -1, "2")
-   *g = Tree(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
-   a  = - 1
-   AddItem(*g, a, "This is a long line.")
-   AddItem(*g, a, "Who should show.")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "I have to write the text in the box or not.")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "The string must be very long.")
-   AddItem(*g, a, "Otherwise it will not work.")
-   For a = 0 To 2
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   AddItem(*g, 7 + a, "_")
-   For a = 4 To 6
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   ;\\
-   AddItem(*button_panel, -1, "3")
-   *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__Flag_FullSelection | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
-   For a = 1 To 2
-      AddColumn(*g, a, "Column_" + Str(a + 1), 90)
-   Next
-   For a = 0 To 15
-      AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
-   Next
-   
-   SetState(*button_panel, 2)
-   CloseList( ) ; close panel lists
-   
-   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__text_password | #__text_right)
-   
-   ;\\
-   Global *button_item1, *button_item2
-   Procedure button_tab_events( )
-      Select GetText( EventWidget( ) )
-         Case "1"
-            SetState(*button_panel, 0)
-            SetState(*button_item2, 0)
-         Case "2"
-            SetState(*button_panel, 1)
-            SetState(*button_item1, 0)
-      EndSelect
-   EndProcedure 
-   
-   *button_item1 = Button( 220, 220, 25, 50, "1", #PB_Button_Toggle)
-   *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #PB_Button_Toggle)
-   Bind(*button_item1, @button_tab_events( ), #__event_Down )
-   Bind(*button_item2, @button_tab_events( ), #__event_Down )
-   ;\\Close( )
-   
-   ;\\
-   Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
-   ;BindWidgetEvent( *root1, @BindEvents( ) )
-   
-   ;\\Close( )
-   
-   Define *root2._s_WIDGET = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
-   ;BindWidgetEvent( *root2, @BindEvents( ) )
-   
-   HyperLink( 10, 10, 80, 40, "HyperLink", RGB(105, 245, 44) )
-   String( 60, 20, 60, 40, "String" )
-   *w = ComboBox( 108, 30, 152, 40, #PB_ComboBox_Editable )
-   For i = 1 To 100;0000
-      AddItem(*w, i, "text-" + Str(i))
-   Next
-   SetState( *w, 3 )
-   ;\\Close( )
-   
-   
-   Define *root3._s_WIDGET = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
-   ;BindWidgetEvent( *root3, @BindEvents( ) )
-   ;\\Close( )
-   
-   Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
-   ;BindWidgetEvent( *root4, @BindEvents( ) )
-   ;\\Close( )
-   
-   
-   
-   Define count = 2;0000
-   #st          = 1
-   Global mx    = #st, my = #st
-   
-   Define time = ElapsedMilliseconds( )
-   
-   Global *c, *p, *panel._s_WIDGET
-   Procedure hide_show_panel_events( )
-      Select WidgetEventType( )
-         Case #__event_LeftClick
-            
-            Select GetText( EventWidget( ) )
-               Case "hide_children"
-                  hide(*p, 1)
-                  ; Disable(*c, 1)
-                  
-               Case "show_children"
-                  hide(*p, 0)
-                  
-               Case "hide_parent"
-                  hide(*c, GetState( EventWidget( ) ))
-                  
-            EndSelect
-            
-            ;         ;Case #__event_LeftButtonUp
-            ;         ClearDebugOutput( )
-            ;         If StartEnumerate(*panel);Root( ))
-            ;           If Not hide(widget( )) ;And GetParent(widget( )) = *panel
-            ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
-            ;           EndIf
-            ;           StopEnumerate( )
-            ;         EndIf
-            
-            
-      EndSelect
-   EndProcedure
-   
-   OpenList( *root1 )
-   *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
-   AddItem( *panel, -1, "item_1" )
-   ;Button( 20,20, 80,80, "item_1")
-   *g = Editor(0, 0, 0, 0, #__flag_autosize)
-   For a = 0 To 2
-      AddItem(*g, a, "Line " + Str(a))
-   Next
-   AddItem(*g, 3 + a, "")
-   AddItem(*g, 4 + a, ~"define W_0 = Window( 282, \"Window_0\" )")
-   AddItem(*g, 5 + a, "")
-   For a = 6 To 8
-      AddItem(*g, a, "Line " + Str(a))
-   Next
-   
-   AddItem( *panel, -1, "(hide&show)-test" ) : SetItemFont(*panel, 1, 6)
-   ; Button( 10,10, 80,80, "item_2")
-   Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
-   Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
-   Bind(Option( 5, 55, 95, 22, "show_children", #PB_Button_Toggle ), @hide_show_panel_events( ))
-   ;SetState(widget( ), 1)
-   
-   *c = Panel(110, 5, 150, 155)
-   AddItem(*c, -1, "0")
-   *p = Panel(10, 5, 150, 65)
-   AddItem(*p, -1, "item-1")
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 25, "butt1")
-   CloseList( )
-   CloseList( )
-   AddItem(*p, -1, "item-2")
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 25, "butt2")
-   CloseList( )
-   CloseList( )
-   AddItem(*c, -1, "1")
-   CloseList( )
-   
-   Container(10, 75, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 45, "butt1")
-   CloseList( )
-   CloseList( )
-   CloseList( )
-   CloseList( )
-   
-   AddItem( *panel, -1, "(enter&leave)-test" )
-   
-   Procedure enter_leave_containers_events( )
-      Protected repaint
-      Protected colorback = colors::*this\blue\fore,
-                colorframe = colors::*this\blue\frame,
-                colorback1 = $ff00ff00,
-                colorframe1 = $ff0000ff
+   Procedure Events()
+      Static DraggedGadget
+      
+      Protected eventobject = EventWidget( )
       
       Select WidgetEventType( )
-         Case #__event_MouseEnter,
-              #__event_MouseLeave,
-              #__event_MouseMove
+         Case #__event_RightButtonUp
+            DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+               
+         Case #__event_DragStart
+            DraggedGadget = eventobject
             
-            If EventWidget( ) <> Root( )
-               If EventWidget( )\mouseenter
-                  If EventWidget( )\color\frame <> colorframe1
-                     repaint                    = 1
-                     EventWidget( )\color\frame = colorframe1
-                  EndIf
-                  
-                  If EventWidget( )\mouseenterinner = 2
-                     If EventWidget( )\color\back <> colorback1
-                        repaint                   = 1
-                        EventWidget( )\color\back = colorback1
-                     EndIf
-                  Else
-                     If EventWidget( )\color\back = colorback1
-                        repaint                   = 1
-                        EventWidget( )\color\back = colorback
-                     EndIf
-                  EndIf
-               Else
-                  If EventWidget( )\color\back <> colorback
-                     repaint                   = 1
-                     EventWidget( )\color\back = colorback
-                  EndIf
-                  If EventWidget( )\color\frame = colorframe1
-                     repaint                    = 1
-                     EventWidget( )\color\frame = colorframe
-                  EndIf
-               EndIf
+         Case #__event_LeftButtonUp
+            DraggedGadget = 0
+            
+         Case #__event_ResizeBegin
+            Debug ""+GetClass(eventobject) + " event( RESIZEBEGIN )" 
+            
+         Case #__event_Resize
+            Debug ""+GetClass(eventobject) + " event( RESIZE )" 
+            
+         Case #__event_ResizeEnd
+            Debug ""+GetClass(eventobject) + " event( RESIZEEND )" 
+            
+         Case #__event_MouseMove
+            If DraggedGadget 
+               ;Debug Root()\canvas\resizebeginwidget ;GetClass(DraggedGadget)
+               Resize(DraggedGadget, Mouse()\x-Mouse()\delta\x, Mouse()\y-Mouse()\delta\y, #PB_Ignore, #PB_Ignore)
+               ;Debug Root()\canvas\resizebeginwidget
             EndIf
             
       EndSelect
-      
-      If repaint
-         ; Debug "change state"
-      EndIf
    EndProcedure
    
-   SetText(ScrollArea(5, 5, 210, 210, 500, 500, 1, editable), "4")
-   SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets | editable), "5")
-   SetText(Container(40, 20, 180, 180, editable), "6")
-   Define seven = Container(20, 20, 180, 180, editable)
-   SetText(seven, "      7")
+   Procedure CreateWidget( *type )
+      Protected result, x=50, y=50, width = 400, height = 300, flags ;= #__flag_autosize
+      
+      Select *type
+         Case  1: result = Button(x,y,width,height,"Button", flags) 
+         Case  2: result = String(x,y,width,height,"String", flags) 
+         Case  3: result = Text(x,y,width,height,"Text", #PB_Text_Border|flags) 
+         Case  4: result = Option(x,y,width,height,"Option", flags) 
+         Case  5: result = CheckBox(x,y,width,height,"CheckBox", flags) 
+         Case  6: result = ListView(x,y,width,height, flags) 
+         Case  7: result = Frame(x,y,width,height,"Frame", flags) 
+         Case  8: result = ComboBox(x,y,width,height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
+         Case  9: result = Image(x,y,width,height,0,#PB_Image_Border|flags) 
+         Case 10: result = HyperLink(x,y,width,height,"HyperLink",0, flags) 
+         Case 11: result = Container(x,y,width,height,#PB_Container_Flat|flags): Button(0,0,80,y,"Button1"):SetClass(widget(),GetText(widget())): Button(10,50,80,y,"Button2"):SetClass(widget(),GetText(widget())): CloseList() ; Container
+         Case 12: result = ListIcon(x,y,width,height,"",88, flags) 
+            ;Case 13: result = IPAddress(x,y,width,height) 
+            ;Case 14: result = ProgressBar(x,y,width,height,0,5)
+            ;Case 15: result = ScrollBar(x,y,width,height,5,335,9)
+         Case 16: result = ScrollArea(x,y,width,height,width*2,height*2,9,#PB_ScrollArea_Flat|flags): Button(0,0,80,30,"Button"): CloseList()
+            ;Case 17: result = TrackBar(x,y,width,height,0,5)
+            ;Case 18: result = Web(x,y,width,height,"") ; bug 531 linux
+         Case 19: result = ButtonImage(x,y,width,height,0, flags)
+            ;Case 20: result = Calendar(x,y,width,height) 
+            ;Case 21: result = Date(x,y,width,height)
+         Case 22: result = Editor(x,y,width,height, flags):  AddItem(result,-1,"Editor")
+            ;Case 23: result = ExplorerList(x,y,width,height,"")
+            ;Case 24: result = ExplorerTree(x,y,width,height,"")
+            ;Case 25: result = ExplorerCombo(x,y,width,height,"")
+         Case 26: result = Spin(x,y,width,height,0,5,#PB_Spin_Numeric|flags)
+         Case 27: result = Tree(x,y,width,height, flags) :  AddItem(result,-1,"Tree"):  AddItem(result,-1,"SubLavel",0,1)
+         Case 28: result = Panel(x,y,width,height, flags): AddItem(result,-1,"Panel"): CloseList()
+         Case 29 
+            result = Splitter(x,y,width,height,Button(0,0,0,0,"1"),Button(0,0,0,0,"2"), flags)
+            
+         Case height: result = MDI(x,y,width,height, flags)
+            ; Case 31: result = Scintilla(x,y,width,height,0, flags)
+            ; Case 32: result = Shortcut(x,y,width,height,0, flags)
+            ; Case 33: result = Canvas(x,y,width,height, flags) 
+      EndSelect
+      
+      ProcedureReturn result
+   EndProcedure
    
-   SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets | editable), "     8")
-   SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets | editable), "     9")
-   SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets | editable), "     10")
-   
-   CloseList( ) ; 7
-   CloseList( ) ; 6
-   SetText(Container(10, 45, 70, 180, editable), "11")
-   SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets | editable), "12")
-   SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets | editable), "13")
-   SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets | editable), "14")
-   
-   SetText(Container(10, 45, 70, 180, editable), "15")
-   SetText(Container(10, 5, 70, 180, editable), "16")
-   SetText(Container(10, 5, 70, 180, editable), "17")
-   SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets | editable), "18")
-   CloseList( ) ; 17
-   CloseList( ) ; 16
-   CloseList( ) ; 15
-   CloseList( ) ; 11
-   CloseList( ) ; 1
-   
-   ;\\
-   OpenList( seven )
-   ;   Define split_1 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   Define split_2 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   Define split_3 = Splitter(5, 80, 180, 50,split_1,split_2,editable)
-   ;   Define split_4 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   SetText(Splitter(5, 80, 180, 50,split_3,split_4,#PB_Splitter_Vertical|editable), "10-1")
-   SetText(Container( - 5, 80, 180, 50, #__Flag_NoGadgets | editable), "container-7")
-   CloseList( ) ; 7
-   
-   ;\\
-   If *panel\root
-      If StartEnumerate( *panel, 2 )
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseEnter)
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseMove)
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseLeave)
-         StopEnumerate( )
+   If Open(0, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+      SetClass(root( ), "[main-root]" )
+      ;a_init( root())
+      
+;       ;\\
+      *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+      SetColor( *menu, #__color_back, $FFF7FEE2 )
+      
+      BarTitle("Title-1")
+      BarItem(1, "title-1-item-1")
+      BarSeparator( )
+      
+      OpenBar("title-1-sub-item")
+      BarItem(3, "title-1-item")
+      BarSeparator( )
+      ;
+      OpenBar("title-2-sub-item")   
+      BarItem(13, "title-2-item")
+      BarSeparator( )
+      ;
+      OpenBar("title-3-sub-item")   
+      BarItem(23, "title-3-item")
+      CloseBar( ) 
+      ;
+      BarSeparator( )
+      BarItem(14, "title-2-item")
+      CloseBar( ) 
+      ;
+      BarSeparator( )
+      BarItem(4, "title-1-item")
+      CloseBar( ) 
+      ;
+      BarSeparator( )
+      BarItem(2, "title-1-item-2")
+      
+      BarTitle("Title-(no_items)")
+      
+      BarTitle("Title-(event_test)")
+      BarItem(7, "test")
+      BarSeparator( )
+      BarItem(8, "quit")
+      
+      BarTitle("Title-4")
+      BarItem(9, "item-1(4)")
+      BarItem(10, "item-2(4)")
+      
+      Bind(*menu, @TestHandler(), -1, 7)
+      Bind(*menu, @QuitHandler(), -1, 8)
+      ;
+      *menu = CreatePopupMenuBar( )
+      If *menu                  ; creation of the pop-up menu begins...
+         BarItem(1, "Open")     ; You can use all commands for creating a menu
+         BarItem(2, "Save")     ; just like in a normal menu...
+         BarItem(3, "Save as")
+         BarItem(4, "Quit")
+         BarSeparator( )
+         OpenBar("Recent files")
+         BarItem(5, "PureBasic.exe")
+         BarItem(6, "Test.txt")
+         CloseBar( )
       EndIf
+      
+      Define widget = CreateWidget( #PB_GadgetType_Container )
+      ;     ; CreateWidget( #PB_GadgetType_Editor )
+      ;     Resize(Root(), 50,50,50,50)
+      ;     Resize(Root(), 60,50,50,50)
+      ;     Resize(Root(), 70,50,50,50)
+      ;     Resize(Root(), 80,50,50,50)
+      ;     Resize(Root(), 90,50,50,50)
+      
+      ;Bind( widget, @Events())
+      Bind( #PB_All, @Events())
+      
+      WaitClose( )
    EndIf
-   
-   ;\\
-   ;OpenList( *panel )
-   AddItem( *panel, -1, "item_4" )
-   Button( 30, 30, 80, 80, "item_4")
-   AddItem( *panel, -1, "item_5" )
-   Button( 40, 40, 80, 80, "item_5")
-   CloseList( ) ; *panel
-   CloseList( ) ; *root1
-   
-   ; SetState( *panel, 2 )
-   
-   ;\\\
-   OpenList( *root2 )
-   SetText(*root2, "*root2" )
-   ;   ;Define *p3._s_WIDGET = Container( 80,80, 150,150 )
-   ;   Define *p3._s_WIDGET = ScrollArea( 80,80, 150+30,150+30, 300,300 )
-   ;   SetText(*p3, "12" )
-   ;   SetText(Container( 40,-30, 50,50, #__Flag_NoGadgets ), "13" )
-   ;
-   ;   Define *p2._s_WIDGET = Container( 40,40, 70,70 ) : SetText(*p2, "4" )
-   ;   SetText(Container( 5,5, 70,70 ), "5" )
-   ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "6")
-   ;   CloseList( )
-   ;   Define *c1._s_WIDGET = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetText(*c1, "3" )
-   ;   CloseList( )
-   ;
-   ;   SetText(Container( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
-   ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
-   ;   SetText(Container( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
-   ;   CloseList( )
-   ;   CloseList( )
-   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
-   ;   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-   ;   Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-   ;   Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-   
-   
-   Button_2 = ComboBox( 20, 20, 150, 40)
-   For i = 1 To 100;0000
-      AddItem(Button_2, i, "text-" + Str(i))
-   Next
-   SetState( Button_2, 3 )
-   
-   ;Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-   Button_3   = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-   Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-   widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-   widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-   ;Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-   Button_4   = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
-   Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
-   Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-   Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
-   Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-   Splitter_5 = widget::Splitter(10, 80, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
-   SetState(Splitter_5, 50)
-   SetState(Splitter_4, 50)
-   SetState(Splitter_3, 40)
-   SetState(Splitter_1, 50)
-   
-   Spin(10, 210, 250, 25, 25, 30, #__text_right )
-   Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
-   
-   ;\\
-   OpenList( *root3 )
-   Define *tree = Tree( 10, 20, 150, 200, #__tree_checkboxes)
-   For i = 1 To 100;0000
-      AddItem(*tree, i, "text-" + Str(i))
-   Next
-   SetState(*tree, 5 - 1)
-   Container( 70, 180, 80, 80): CloseList( )
-   SetItemFont(*tree, 1, 6)
-   SetItemFont(*tree, 4, 6)
-   
-   ;\\
-   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_multiselect) ; |#__flag_gridlines
-   SetColor( *w, #__color_back, $FF07EAF6 )
-   For i = 1 To 10;00000
-      AddItem(*w, i, "text-" + Str(i))
-   Next
-   SetState(*w, i - 1 )
-   SetItemFont(*w, 4, 6)
-   SetItemFont(*w, 5, 6)
-   
-   ;\\
-   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_clickselect )
-   For i = 1 To 100;0000
-      If (i & 5)
-         AddItem(*w, i, "text-" + Str(i), -1, 1 )
-      Else
-         AddItem(*w, i, "text-" + Str(i))
-      EndIf
-   Next
-   SetFont(*w, 6)
-   
-   Debug "--------  time --------- " + Str(ElapsedMilliseconds( ) - time)
-   
-   
-   ;\\
-   Define *window._s_WIDGET
-   Define i, y = 5
-   OpenList( *root4 )
-   For i = 1 To 4
-      Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
-      ;Container(5, y, 150, 95 + 2)
-      If i = 2
-         Disable( widget( ), 1)
-      EndIf
-      Container(5, 5, 120 + 2, 85 + 2) ;, #PB_Container_Flat)
-      If i = 3
-         CheckBox(10, 10, 100, 30, "CheckBox_" + Trim(Str(i + 10)))
-         SetState( widget( ), 1 )
-      ElseIf i = 4
-         Option(10, 10, 100, 30, "Option_" + Trim(Str(i + 10)))
-      Else
-         Button(10, 10, 100, 30, "Button_" + Trim(Str(i + 10)))
-      EndIf
-      If i = 3
-         Disable( widget( ), 1)
-      EndIf
-      If i = 4 Or i = 3
-         Option(10, 45, 100, 30, "Option_" + Trim(Str(i + 20)))
-         SetState( widget( ), 1 )
-      Else
-         Button(10, 45, 100, 30, "Button_" + Trim(Str(i + 20)))
-      EndIf
-      If i = 3
-         Disable( widget( ), 1)
-      EndIf
-      CloseList( )
-      ;CloseList( )
-      y + 130
-   Next
-   
-   WaitClose( )
-   
 CompilerEndIf
-; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
-; EnableXP
-; Executable = widgets2.app
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 21909
-; FirstLine = 20747
-; Folding = -----6-------------------------------------------------------------------------------------------------------v-v+4-9----44--------v4--+--bbF---Xc-+b8-8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr8----------------------------------------------------------------f02--------------------------------------------D---v---------------------v-fPAAA-a--+--------------------------------------------X0------
+; CursorPosition = 1714
+; FirstLine = 1706
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-ttK------------------------
 ; EnableXP
-; DPIAware
-; Executable = widgets2.app
