@@ -21035,21 +21035,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *tab = *this\EnteredTab( )
                ;
                If *tab
-                  If *tab\childrens 
-                     If *this\FocusedTab( )
-                        *this\FocusedTab( )\RowFocus( 0 )
-                        *this\FocusedTab( ) = 0
-                     EndIf
+                  If *this\FocusedTab( )
+                     *this\FocusedTab( )\RowFocus( 0 )
+                     *this\FocusedTab( ) = 0
+                  EndIf
+                  ;
+                  If is_menu_( *this )
+                     *this\FocusedTab( ) = *tab
+                     *this\FocusedTab( )\RowFocus( 1 )
+                  Else
                      ;
-                     If is_menu_( *this )
-                        *this\FocusedTab( ) = *tab
-                        *this\FocusedTab( )\RowFocus( 1 )
-                     Else
-                        ;
-                        *tab\toggle ! 1
-                        *tabmenu = *tab
-                     EndIf
-                     
+                     *tab\toggle ! 1
+                     *tabmenu = *tab
+                  EndIf
+                  
+                  ;\\
+                  If *tab\childrens 
                      Debug "hide then down"
                      If Not HidePopupMenuBar( *this\popupBar )
                         If *tab\menu\hide
@@ -21145,8 +21146,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               ; EndIf
                               ;
-                              If *tab\menu And *tab\menu\hide
-                               ;\\ change focused tab
+                              ;\\ change focused tab
                               If *this\type = #__type_Menu
                                  If *this\FocusedTab( )
                                     *this\FocusedTab( )\RowFocus( 0 )
@@ -21168,7 +21168,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     EndIf
                                  EndIf
                               EndIf
+                              
                               ;
+                              If *tab\menu And *tab\menu\hide
                                  If *this\bar\vertical
                                     ;Debug "  show POPUPMENUBAR "+ClassFromEvent(eventtype)
                                     DisplayPopupMenuBar( *tab\menu, *this, 
@@ -24545,8 +24547,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 4959
-; FirstLine = 4692
+; CursorPosition = 21132
+; FirstLine = 20075
 ; Folding = -----6-------------------------------------------------------------------------------------------------------v-v+4-9----44--------v4--+--bbF---Xc-+b8-8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr8----------------------------------------------------------------f02--------------------------------------------D---v---------------------v-fPAAAbt-f----------------------------------------------+------
 ; EnableXP
 ; DPIAware
