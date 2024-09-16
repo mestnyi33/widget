@@ -108,6 +108,8 @@ CompilerEndIf
 ;-  >>>
 CompilerIf Not Defined( Widget, #PB_Module )
    DeclareModule Widget
+      Global test_canvas_events
+      
       Global test_redraw_items = 1
       Global test_draw_repaint = 0
       Global test_draw_contex = 0
@@ -2693,7 +2695,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If __gui\eventexit = 1
             If eventtype = #__event_Focus
                If GetActiveGadget( ) <> *this\root\canvas\gadget
-                  SetActiveGadget( *this\root\canvas\gadget )
+                  ; SetActiveGadget( *this\root\canvas\gadget )
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                      ; Debug " - makeFirstResponder "+*this\root\canvas\gadget
@@ -13052,63 +13054,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result.s
       EndProcedure
       
-      Procedure.s ClassFromPBEvent( event.i )
-         Protected result.s
-         
-         Select event
-;             Case #pb_eventtype_cursor : result.s = "#pb_eventtype_Cursor"
-;             Case #pb_eventtype_free : result.s = "#pb_eventtype_Free"
-;             Case #pb_eventtype_drop : result.s = "#pb_eventtype_Drop"
-;             Case #pb_eventtype_create : result.s = "#pb_eventtype_Create"
-;             Case #pb_eventtype_Draw : result.s = "#pb_eventtype_Draw"
-;                ;Case #__event_SizeItem : result.s = "#__event_SizeItem"
-;                
-;             Case #pb_eventtype_repaint : result.s = "#pb_eventtype_Repaint"
-;             Case #pb_eventtype_resizeend : result.s = "#pb_eventtype_ResizeEnd"
-;             Case #pb_eventtype_scrollchange : result.s = "#pb_eventtype_ScrollChange"
-;                
-;             Case #pb_eventtype_close : result.s = "#pb_eventtype_CloseWindow"
-;             Case #pb_eventtype_maximize : result.s = "#pb_eventtype_MaximizeWindow"
-;             Case #pb_eventtype_minimize : result.s = "#pb_eventtype_MinimizeWindow"
-;             Case #pb_eventtype_restore : result.s = "#pb_eventtype_RestoreWindow"
-               
-            Case #PB_EventType_MouseEnter : result.s = "#pb_eventtype_MouseEnter"       ; The mouse cursor entered the gadget
-            Case #PB_EventType_MouseLeave : result.s = "#pb_eventtype_MouseLeave"       ; The mouse cursor left the gadget
-            Case #PB_EventType_MouseMove : result.s = "#pb_eventtype_MouseMove"         ; The mouse cursor moved
-            Case #PB_EventType_MouseWheel : result.s = "#pb_eventtype_MouseWheel"       ; The mouse wheel was moved
-            Case #PB_EventType_LeftButtonDown : result.s = "#pb_eventtype_LeftButtonDown"   ; The left mouse button was pressed
-            Case #PB_EventType_LeftButtonUp : result.s = "#pb_eventtype_LeftButtonUp"       ; The left mouse button was released
-            Case #PB_EventType_LeftClick : result.s = "#pb_eventtype_LeftClick"             ; A click With the left mouse button
-            ;Case #pb_eventtype_Left2Click : result.s = "#pb_eventtype_LeftDoubleClick"      ; A double-click With the left mouse button
-            Case #PB_EventType_RightButtonDown : result.s = "#pb_eventtype_RightButtonDown" ; The right mouse button was pressed
-            Case #PB_EventType_RightButtonUp : result.s = "#pb_eventtype_RightButtonUp"     ; The right mouse button was released
-            Case #PB_EventType_RightClick : result.s = "#pb_eventtype_RightClick"           ; A click With the right mouse button
-           ; Case #pb_eventtype_Right2Click : result.s = "#pb_eventtype_RightDoubleClick"    ; A double-click With the right mouse button
-                                                                                  ;Case #__event_MiddleButtonDown : result.s = "#__event_MiddleButtonDown" ; The middle mouse button was pressed
-                                                                                  ;Case #__event_MiddleButtonUp : result.s = "#__event_MiddleButtonUp"     ; The middle mouse button was released
-            Case #PB_EventType_Focus : result.s = "#pb_eventtype_Focus"                     ; The gadget gained keyboard focus
-            Case #PB_EventType_LostFocus : result.s = "#pb_eventtype_LostFocus"             ; The gadget lost keyboard focus
-            Case #PB_EventType_KeyDown : result.s = "#pb_eventtype_KeyDown"                 ; A key was pressed
-            Case #PB_EventType_KeyUp : result.s = "#pb_eventtype_KeyUp"                     ; A key was released
-            Case #PB_EventType_Input : result.s = "#pb_eventtype_Input"                     ; Text input was generated
-            Case #PB_EventType_Resize : result.s = "#pb_eventtype_Resize"                   ; The gadget has been resized
-            Case #PB_EventType_StatusChange : result.s = "#pb_eventtype_StatusChange"
-               ;Case #__event_TitleChange : result.s = "#__event_TitleChange"
-            Case #PB_EventType_Change : result.s = "#pb_eventtype_Change"
-            Case #PB_EventType_DragStart : result.s = "#pb_eventtype_DragStart"
-;             Case #pb_eventtype_ReturnKey : result.s = "#pb_eventtype_returnKey"
-               ;Case #__event_CloseItem : result.s = "#__event_CloseItem"
-               
-            Case #PB_EventType_Down : result.s = "#pb_eventtype_Down"
-            Case #PB_EventType_Up : result.s = "#pb_eventtype_Up"
-;                
-;             Case #pb_eventtype_mousewheelX : result.s = "#pb_eventtype_MouseWheelX"
-;             Case #pb_eventtype_mousewheelY : result.s = "#pb_eventtype_MouseWheelY"
-         EndSelect
-         
-         ProcedureReturn result.s
-      EndProcedure
-      
       ;-
       Procedure.i AddColumn( *this._s_WIDGET, position.l, text.s, width.l, image.i = -1 )
          Protected *columns._s_COLUMN
@@ -15138,9 +15083,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            If GetActiveGadget( ) <> *active\root\canvas\gadget
-               SetActiveGadget( *active\root\canvas\gadget )
-            EndIf
+;             If GetActiveGadget( ) <> *active\root\canvas\gadget
+;                SetActiveGadget( *active\root\canvas\gadget )
+;             EndIf
             
             ;Debug "---focus--- "+*this\class
             ;\\ deactivate
@@ -21786,18 +21731,54 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure CanvasEvents( )
-         Debug "CanvasEvents - " + EventGadget( ) +" "+ ClassFromPBEvent( EventType( ) )
-         ;          If  Event( ) = #PB_Event_Repaint
-         ;             If EventData( )
-         ;                EventHandler( #PB_Event_Repaint, EventGadget( ), EventType( ), EventData( ) )
-         ;             EndIf
-         ;          Else
+         Protected eventtype = EventType( )
+         Protected eventGadget = EventGadget( )
+         
+         If Not test_canvas_events
+            Debug "CanvasEvents - " + EventGadget( ) +" "+ ClassFromEvent( EventType( ) )
+         EndIf
+         
          EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
-         ;             EventHandler( Event( ), EventGadget( ), EventType( ), EventData( ) )
-         ;          EndIf
       EndProcedure
       
       Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
+         
+         If test_canvas_events
+            Select event
+               Case #PB_Event_ActivateWindow
+                  Debug "active -> "+ EventWindow() 
+                  
+               Case #PB_Event_DeactivateWindow
+                  Debug "deactive -> "+ EventWindow()
+                  
+               Case #PB_Event_Gadget
+                  Select EventType()
+                      Case #PB_EventType_MouseEnter
+                           ChangeCurrentCanvas( GadgetID( eventgadget ) )
+                           
+                        
+                     Case #PB_EventType_Focus
+                        Debug "focus -> " +" "+ Root( )\class
+                        
+                     Case #PB_EventType_LostFocus
+                        Debug "lostfocus -> " +" "+ Root( )\class
+                        
+                     Case #PB_EventType_LeftButtonDown
+                        Debug "down -> " +" "+ Root( )\class
+                        
+                     Case #PB_EventType_LeftButtonUp
+                        Debug "up -> " +" "+ Root( )\class
+                        
+                     Case #PB_EventType_LeftClick
+                        Debug "click -> " +" "+ Root( )\class
+                        
+                  EndSelect
+                  
+            EndSelect
+            ProcedureReturn 0
+         EndIf
+         
+         
          Static EnteredCanvasID
          Protected *root._s_ROOT, repaint, mouse_x , mouse_y
          
@@ -22789,16 +22770,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                SetActive( *root )
             EndIf
-            
-            ;\\ bug
-            BindEvent( #PB_Event_Repaint, @EventRepaint( ));, Window )
-            BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
-            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
          EndIf
          
          If g
             SetWindowData( Window, Canvas )
             
+            ;\\
+            ; BindGadgetEvent( Canvas, @CanvasEvents( ))
+            BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
+            BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
+            BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
+            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
             If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
             EndIf
@@ -23473,17 +23455,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                Select WaitWindowEvent( waittime )
 ;                   Case #PB_Event_ActivateWindow
-;                      ;PushMapPosition( __roots( ) )
 ;                      EventActivate( )
-;                      ;PopMapPosition( __roots( ) )
 ;                   Case #PB_Event_DeactivateWindow
 ;                      EventDeactive( )
 ;                   Case #PB_Event_Repaint
 ;                      EventRepaint( )
-                                         
-                  Case #PB_Event_Gadget
-                    CanvasEvents( )
- 
+                     
                   Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
                      Protected window = PB(EventWindow)( )
                      Protected canvas = PB(GetWindowData)( window )
@@ -24613,10 +24590,10 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 23485
-; FirstLine = 21707
-; Folding = -----6-------------------------------------------------------------------------------------------------------v-v+4-9----44--------v4--+--bbF---Xc-+b8-8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------tu-----------------------------------------------------------------2X--------------------------------------------P9---+-----------------------HAAgft-f---------------------------------------------r+-------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 22776
+; FirstLine = 21519
+; Folding = -----6-------------------------------------------------------------------------------------------------------v-v+4-9----44--------v4--+--bbF---Xc-+b8-8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v20----------------------------------------------------------------v+7--------------------------------------------h---4-------------------------BAA5X8-4-----------------------9---------------------u-------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app

@@ -24375,17 +24375,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
+            BindGadgetEvent( Canvas, @CanvasEvents( ))
+;             ;BindEvent( #PB_Event_Gadget, @CanvasEvents( ));, Window )
+            ; BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
             BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
+            If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
+               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+            EndIf
          EndIf
          
          If g
             SetWindowData( Window, Canvas )
-            
-            If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
-               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
-            EndIf
             
             ;\\ z - order
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -25056,6 +25057,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Repeat
                
                Select WaitWindowEvent( waittime )
+                  Case #PB_Event_ActivateWindow
+                     ;Debug 444
+                     ;EventActivate( )
+                  Case #PB_Event_DeactivateWindow
+                     ;EventDeactive( )
+                     
+                  Case #PB_Event_Repaint
+                    EventRepaint( )
+                     
+                  Case #PB_Event_Gadget
+                    ;CanvasEvents( )
+                     
                   Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
                      Protected window = PB(EventWindow)( )
                      Protected canvas = PB(GetWindowData)( window )
@@ -25646,7 +25659,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2101
-; FirstLine = 2097
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24377
+; FirstLine = 24361
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------7-----------------------
 ; EnableXP
