@@ -2,6 +2,7 @@
 
 
 CompilerIf #PB_Compiler_IsMainFile 
+   test_canvas_events = 1
    
    EnableExplicit
    UseLIB(widget)
@@ -361,7 +362,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;BindWidgetEvent( *root4, @BindEvents( ) )
    ;\\Close( )
    
-   
+
    
    Define count = 2;0000
    #st          = 1
@@ -689,5 +690,7 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = AAAAAAg
+; CursorPosition = 683
+; FirstLine = 576
+; Folding = BA+----
 ; EnableXP

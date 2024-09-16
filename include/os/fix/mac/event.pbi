@@ -75,16 +75,15 @@ Module events
                   ;
                   Gadget = CocoaMessage(0, View, "tag")
                   If IsGadget( Gadget )
-                     If eType = #NSLeftMouseDown Or eType = #NSRightMouseDown
-                        If GetActiveGadget() <> Gadget 
-                           ;;Debug CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "focusView")
-                           ; If GetActiveWindow() <> EventWindow()
+                     If GetActiveGadget( ) <> Gadget 
+                        If GetActiveGadget() 
                            SetActiveGadget( #PB_Default )
-                           SetActiveGadget( Gadget )
-                           ; EndIf
                         EndIf
-                        
-                     ElseIf eType = #NSScrollWheel
+                        SetActiveGadget( Gadget )
+                        objc_setAssociatedObject_( Window, "focus_bug_fixed", Gadget, 0 ) 
+                     EndIf
+                     
+                     If eType = #NSScrollWheel
                         Window = EventWindow( )
                         scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
                         scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
@@ -103,7 +102,49 @@ Module events
                            CompilerEndIf
                         EndIf
                      EndIf
+                  Else
+                     gadget = objc_getAssociatedObject_( Window, "focus_bug_fixed")
+                     If GetActiveGadget( ) <> Gadget
+                        If GetActiveGadget( )
+                           SetActiveGadget( #PB_Default )
+                        EndIf
+                        If IsGadget( Gadget )
+                           SetActiveGadget( Gadget )
+                        EndIf
+                     EndIf
                   EndIf
+                  
+;                   If IsGadget( Gadget )
+;                      If eType = #NSLeftMouseDown Or eType = #NSRightMouseDown
+;                         If GetActiveGadget() <> Gadget 
+;                            ;FocusedGadget( ) = Gadget
+;                            ;;Debug CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "focusView")
+;                            ; If GetActiveWindow() <> EventWindow()
+;                            SetActiveGadget( #PB_Default )
+;                            SetActiveGadget( Gadget )
+;                            ; EndIf
+;                         EndIf
+;                         
+;                      ElseIf eType = #NSScrollWheel
+;                         Window = EventWindow( )
+;                         scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
+;                         scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
+;                         
+;                         If scrollX And Not scrollY
+;                            ; Debug "X - scroll"
+;                            CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
+;                               PostEvent( #PB_Event_Gadget, Window, Gadget, constants::#PB_EventType_MouseWheelX, scrollX )
+;                            CompilerEndIf
+;                         EndIf
+;                         
+;                         If scrollY And Not scrollX
+;                            ; Debug "Y - scroll"
+;                            CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
+;                               PostEvent( #PB_Event_Gadget, window, Gadget, constants::#PB_EventType_MouseWheelY, scrollY )
+;                            CompilerEndIf
+;                         EndIf
+;                      EndIf
+;                   EndIf
                EndIf
             EndIf
          EndIf
@@ -539,8 +580,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 274
-; Folding = -v+-------0-
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 54
+; FirstLine = 75
+; Folding = ----f----------
 ; EnableXP

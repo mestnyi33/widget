@@ -42,7 +42,6 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
    EndIf
    
    ; callback function
-   
    ProcedureC eventTapFunction(proxy, type, event, refcon)
       Protected Gadget, NSClass, NSEvent, Window, View, Point.NSPoint
       
@@ -65,11 +64,22 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   ;
                   Gadget = CocoaMessage(0, View, "tag")
                   If IsGadget( Gadget )
-                     If GetActiveGadget() <> Gadget 
-                        ; If GetActiveWindow() <> EventWindow()
+                     If GetActiveGadget( ) <> Gadget 
+                        If GetActiveGadget() 
                            SetActiveGadget( #PB_Default )
+                        EndIf
+                        SetActiveGadget( Gadget )
+                        objc_setAssociatedObject_( Window, "focus_bug_fixed", Gadget, 0 ) 
+                     EndIf
+                  Else
+                     gadget = objc_getAssociatedObject_( Window, "focus_bug_fixed")
+                     If GetActiveGadget( ) <> Gadget
+                        If GetActiveGadget( )
+                           SetActiveGadget( #PB_Default )
+                        EndIf
+                        If IsGadget( Gadget )
                            SetActiveGadget( Gadget )
-                        ; EndIf
+                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -79,6 +89,42 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       EndIf
       
    EndProcedure
+   
+   
+   Procedure CanvasEvents( )
+      ;;Debug "ttyui"
+      Select EventType()
+         Case #PB_EventType_Focus
+            Debug "--focus - "+EventGadget() +" "+ EventData()
+            ;SetActiveGadget(EventGadget())
+            
+         Case #PB_EventType_LostFocus
+            Debug "--lostfocus - "+EventGadget() +" "+ EventData()
+            
+         Case #PB_EventType_LeftButtonDown
+            Debug "--down - "+EventGadget()
+            
+         Case #PB_EventType_LeftButtonUp
+            Debug "--up - "+EventGadget()
+            
+      EndSelect
+   EndProcedure
+   
+   ;    ;
+   Procedure EventActivate( )
+      Debug "--active - "+ EventWindow() +" "+ GetActiveGadget( )
+   EndProcedure
+   
+   Procedure EventDeactive( )
+      Debug "--deactive - "+ EventWindow() 
+   EndProcedure
+   
+   BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
+   BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
+   
+   ; BindGadgetEvent( Canvas, @CanvasEvents( ))
+   BindEvent( #PB_Event_Gadget, @CanvasEvents( ));, Window )
+   
 CompilerEndIf
 
 
@@ -94,45 +140,45 @@ CompilerIf #PB_Compiler_IsMainFile
       y + 100
    EndProcedure
    
-   
-   
    Open(1, #PB_Window_NoActivate)
    Open(2, #PB_Window_NoActivate)
    Open(3, #PB_Window_NoActivate)
    
-   Define event
+   
+   Define event, Window, gadget
    Repeat
       event = WaitWindowEvent(1)
       
       Select event
          Case #PB_Event_ActivateWindow
-            Debug "active - "+ EventWindow()
+            Debug "active - "+ EventWindow() +" "+ GetActiveGadget( )
+            
          Case #PB_Event_DeactivateWindow
-            Debug "deactive - "+ EventWindow()
+            Debug "deactive - "+ EventWindow() 
             
          Case #PB_Event_Gadget
-            Select EventType()
-               Case #PB_EventType_Focus
-                  Debug "focus - "+EventGadget() +" "+ EventData()
-                  ;SetActiveGadget(EventGadget())
-                  
-               Case #PB_EventType_LostFocus
-                  Debug "lostfocus - "+EventGadget() +" "+ EventData()
-                  
-               Case #PB_EventType_LeftButtonDown
-                  Debug "down - "+EventGadget()
-                  
-               Case #PB_EventType_LeftButtonUp
-                  Debug "up - "+EventGadget()
-                  
-            EndSelect
+            ;             Select EventType()
+            ;                Case #PB_EventType_Focus
+            ;                   Debug "focus - "+EventGadget() +" "+ EventData()
+            ;                   ;SetActiveGadget(EventGadget())
+            ;                   
+            ;                Case #PB_EventType_LostFocus
+            ;                   Debug "lostfocus - "+EventGadget() +" "+ EventData()
+            ;                   
+            ;                Case #PB_EventType_LeftButtonDown
+            ;                   Debug "down - "+EventGadget()
+            ;                   
+            ;                Case #PB_EventType_LeftButtonUp
+            ;                   Debug "up - "+EventGadget()
+            ;                   
+            ;             EndSelect
             
       EndSelect
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 94
-; FirstLine = 87
-; Folding = ---
+; CursorPosition = 146
+; FirstLine = 125
+; Folding = ----
 ; EnableXP

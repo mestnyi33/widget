@@ -4370,7 +4370,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If __gui\eventexit = 1
             If eventtype = #__event_Focus
                If GetActiveGadget( ) <> *this\root\canvas\gadget
-                  SetActiveGadget( *this\root\canvas\gadget )
+                  ;SetActiveGadget( *this\root\canvas\gadget )
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                      ; Debug " - makeFirstResponder "+*this\root\canvas\gadget
@@ -16815,10 +16815,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            If GetActiveGadget( ) <> *active\root\canvas\gadget
-               SetActiveGadget( *active\root\canvas\gadget )
-            EndIf
             
+;             If GetActiveGadget( ) <> *active\root\canvas\gadget
+;                SetActiveGadget( *active\root\canvas\gadget )
+;             EndIf
+             
             ;Debug "---focus--- "+*this\class
             ;\\ deactivate
             If GetActive( )
@@ -24176,46 +24177,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure CanvasEvents( )
-         Protected eventtype = EventType( )
-         Protected eventGadget = EventGadget( )
-         Protected focusedGadget = FocusedGadget( )
+         ;Debug "CanvasEvents - " + EventGadget +" "+ ClassFromPBEvent( EventType )
          
-         Debug "CanvasEvents - " + EventGadget +" "+ ClassFromPBEvent( EventType )
-         
-         
-         If #PB_EventType_Resize = eventtype
-            EventHandler( #PB_Event_Gadget, EventGadget, eventtype, EventData( ))
-         EndIf
-         
-         
-         If EventType = #PB_EventType_Focus 
-            ;Debug "f "+FocusedGadget +" "+ PressedGadget( )
-            If focusedGadget = - 1
-               EventHandler( #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-            EndIf
-            
-         ElseIf EventType = #PB_EventType_LostFocus
-            ; Debug "l "+FocusedGadget +" "+ PressedGadget( )
-            If focusedGadget = - 1
-               EventHandler( #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-            EndIf
-            
-         ElseIf (EventType = #PB_EventType_KeyDown Or
-                 EventType = #PB_EventType_KeyUp Or
-                 EventType = #PB_EventType_Input)
-            
-            EventHandler( #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-         Else
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               If focusedGadget = - 1
-                  EventHandler( #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-               EndIf
-               
-            CompilerElse
-               EventHandler(  #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-            CompilerEndIf
-         EndIf
-         
+         EventHandler(  #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
       EndProcedure
       
       Procedure EventResize( )
@@ -24223,7 +24187,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "- resize - os - window -"
          ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
          PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( canvas ) * 2 ) ; bug
-                                                                                                                                                                                                 ;PostEventRepaint( root())
       EndProcedure
       
       Procedure EventRepaint( )
@@ -24479,12 +24442,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
 ;             ;\\
-             BindGadgetEvent( Canvas, @CanvasEvents( ))
+             ;BindGadgetEvent( Canvas, @CanvasEvents( ))
 ;             ;BindEvent( #PB_Event_Gadget, @CanvasEvents( ));, Window )
 ;             
-             BindEvent( #PB_Event_Repaint, @EventRepaint( ));, Window )
-             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
-             BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
+             ;BindEvent( #PB_Event_Repaint, @EventRepaint( ));, Window )
+             ;BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
+             ;BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
+             
+             If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
+               BindEvent( #PB_Event_SizeWindow, @EventResize( ));, Window )
+            EndIf
          EndIf
          If *root1
             Root( ) = *root1
@@ -24493,10 +24460,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If g
             SetWindowData( Window, Canvas )
-            
-            If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
-               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
-            EndIf
             
             ;\\ z - order
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -25169,14 +25132,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Select WaitWindowEvent( waittime )
                   Case #PB_Event_ActivateWindow
                      ;Debug 444
-                     ;EventActivate( )
+                     EventActivate( )
+                     
                   Case #PB_Event_DeactivateWindow
-                     ;EventDeactive( )
+                     EventDeactive( )
+                     
                   Case #PB_Event_Repaint
-                   ; EventRepaint( )
+                     EventRepaint( )
                      
                   Case #PB_Event_Gadget
-                   ;CanvasEvents( )
+                     CanvasEvents( )
                      
                   Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
                      Protected window = PB(EventWindow)( )
@@ -25767,8 +25732,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 23477
-; FirstLine = 2797
-; Folding = AAAOAAAAAAAAo5BAgDu+f-----------DnPA9-----PAAAAAAAAgBAAAEAAAAAAAAAAAAAAGFBAAAAAAy-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAACABAAAwUGAgAAAAAwAEAAAAAAAAAAA5-HAAAAAAAAAAAAAAEAAAAAQGARAAgAAAAABAAAAAAAAAAAAAAAA9AAAAAAAAAAAAAAAACAAAAAwAAAAAAAAAAAAAAAAAAAAYCAAAACAAAAAAAOAAAAAAAAAAAAAAAAAAw6AAAAAAAAAAAAAAAAwDAAAAAAAAAAAYgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA69EgzGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAQACGgDAAAAAAAAAAAA+-----------------------4-HApVAgB1PEAAgIEwYAAAAAA9HzBAAAg--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 4372
+; FirstLine = 1218
+; Folding = AAAOAAAAAAAAo5BAgDu+f-----------DnPA9-----PAAAAAAAAgBAAAEAAAAAAAAAAAAAA+FBAAAAAAy-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAACABAAAwUGAgAAAAAwAEAAAAAAAAAAA5-HAAAAAAAAAAAAAAEAAAAAQGARAAgAAAAABAAAAAAAAAAAAAAAA9AAAAAAAAAAAAAAAACAAAAAwAAAAAAAAAAAAAAAAAAAAYCAAAACAAAAAAAOAAAAAAAAAAAAAAAAAAw6AAAAAAAAAAAAAAAAwDAAAAAAAAAAAYgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA69EgzGAAAAAAAAAAAwTIAAAAAAAAAAAAAAAAAA+Hw-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAIABDwBAAAAAAAAAAAA08-----------------------Dg1KAwA7fCAAQECYMAAAAAA+j6AAAAw--
 ; EnableXP
