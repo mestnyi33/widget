@@ -340,69 +340,8 @@ Module events
          If eType = #NSKeyUp
             Debug "eventtap key up"
          EndIf
-         
-         ;           If eType = #PB_EventType_Resize
-         ;             ; CallCFunctionFast(refcon, #PB_Event_Gadget, EventGadget( ), #PB_EventType_Resize)
-         ;           EndIf
-         ;           CompilerIf Defined(PB_EventType_Repaint, #PB_Constant) And Defined(constants, #PB_Module)
-         ;             If eType = #PB_EventType_Repaint
-         ;               CallCFunctionFast(refcon, #PB_Event_Gadget, EventGadget( ), #PB_EventType_Repaint)
-         ;             EndIf
-         ;           CompilerEndIf
-         ;           
       EndIf
       
-   EndProcedure
-   
-   Procedure GadgetEvents( )
-      If *setcallback
-         Protected eventtype = EventType( )
-         Protected eventGadget = EventGadget( )
-         
-         If #PB_EventType_Resize = eventtype
-            CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, eventtype, EventData( ))
-         EndIf
-         
-         If EventType = #PB_EventType_Focus 
-            ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
-            If FocusedGadget( ) = - 1
-               CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-            EndIf
-         ElseIf EventType = #PB_EventType_LostFocus
-            ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
-            If FocusedGadget( ) = - 1
-               CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-            EndIf
-         ElseIf (EventType = #PB_EventType_KeyDown Or
-                 EventType = #PB_EventType_KeyUp Or
-                 EventType = #PB_EventType_Input)
-            
-            CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-         Else
-            
-            If FocusedGadget( ) = - 1
-               CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData( ) )
-            EndIf
-         EndIf
-      EndIf
-   EndProcedure
-   
-   Procedure ResizeEvents( )
-      If *setcallback
-         CallFunctionFast(*setcallback, #PB_Event_SizeWindow, #PB_All, #PB_All, EventData( ) )
-      EndIf
-   EndProcedure
-   
-   Procedure ActivateEvents( )
-      If *setcallback
-         CallFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_All, EventData( ) )
-      EndIf
-   EndProcedure
-   
-   Procedure DeactivateEvents( )
-      If *setcallback
-         CallFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_All, EventData( ) )
-      EndIf
    EndProcedure
    
    Procedure.i WaitEvent( event.i, second.i = 0 )
@@ -460,7 +399,7 @@ Module events
       
       Protected mask, EventTap
       mask = #NSMouseMovedMask | #NSScrollWheelMask
-      mask | #NSMouseEnteredMask | #NSMouseExitedMask  ;| #NSCursorUpdateMask
+     ; mask | #NSMouseEnteredMask | #NSMouseExitedMask  ;| #NSCursorUpdateMask
       mask | #NSLeftMouseDownMask | #NSLeftMouseUpMask | #NSOtherMouseUpMask
       mask | #NSRightMouseDownMask | #NSRightMouseDownMask | #NSOtherMouseDownMask
       mask | #NSLeftMouseDraggedMask | #NSRightMouseDraggedMask | #NSOtherMouseDraggedMask 
@@ -489,17 +428,7 @@ Module events
       
       ;\\
       ; CFRelease_(eventTap)
-      
-      If *callback
-         ;       ;\\
-         BindEvent( #PB_Event_Gadget, @GadgetEvents( ) )
-         CompilerIf #PB_Compiler_IsMainFile ; TEST
-            BindEvent( #PB_Event_ActivateWindow, @ActivateEvents( ) )
-            BindEvent( #PB_Event_DeactivateWindow, @DeactivateEvents( ) )
-            ;       BindEvent( #PB_Event_SizeWindow, @ResizeEvents( ) )
-         CompilerEndIf
-      EndIf
-   EndProcedure
+    EndProcedure
 EndModule
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -610,7 +539,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.10 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 10
-; Folding = -v+------------
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 342
+; FirstLine = 274
+; Folding = -v+-------0-
 ; EnableXP

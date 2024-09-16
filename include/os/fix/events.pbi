@@ -4,7 +4,6 @@
 DeclareModule events
   EnableExplicit
   UseModule constants
-   
   
   Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
     ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
@@ -17,18 +16,6 @@ DeclareModule events
     ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
   EndMacro
   
-  ;   Macro ResizeGadget(_gadget_,_x_,_y_,_width_,_height_)
-  ;     PB(ResizeGadget)(_gadget_,_x_,_y_,_width_,_height_)
-  ; ;     
-  ; ;     If *setcallback ;And GadgetType(_gadget_) = #PB_GadgetType_Canvas
-  ; ;       CompilerIf #PB_Compiler_IsMainFile
-  ; ;        ; Debug "resize - " + _gadget_
-  ; ;       CompilerEndIf
-  ; ;       
-  ; ;       CallCFunctionFast(*setcallback, #PB_Event_Gadget, _gadget_, #PB_EventType_Resize)
-  ; ;     EndIf
-  ;   EndMacro
-  
   ;-
   Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
   
@@ -37,20 +24,12 @@ DeclareModule events
   Macro FocusedGadget() : events::*focused : EndMacro
   Macro PressedGadget() : events::*pressed : EndMacro
   
-  ;   Macro SetActiveGadget( _gadget_ )
-  ;     Bool( FocusedGadget( ) <> _gadget_ ) 
-  ;     FocusedGadget( ) = _gadget_
-  ;     PB(SetActiveGadget)( _gadget_ ) 
-  ;   EndMacro
-  
   DraggedGadget() =- 1 
   EnteredGadget() =- 1 
   PressedGadget() =- 1 
   FocusedGadget() =- 1 
   
-  Declare.i WaitEvent(event.i, second.i=0)
-  ;   Declare DrawCanvasFrame(gadget, color)
-  ;   Declare DrawCanvasBack(gadget, color)
+  ;Declare.i WaitEvent(event.i, second.i=0)
   Declare SetCallBack(*callback)
 EndDeclareModule
 
@@ -289,8 +268,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
-; CursorPosition = 135
-; FirstLine = 72
-; Folding = +------
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 31
+; Folding = -------
 ; EnableXP
