@@ -1,4 +1,4 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
    Procedure.s ClassName( handle.i )
       Protected Result
       CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
@@ -109,13 +109,13 @@ EndProcedure
 
 Open(1, #PB_Window_NoActivate)
 Open(2, #PB_Window_NoActivate)
-Open(3, #PB_Window_NoActivate)
+;Open(3, #PB_Window_NoActivate)
 
 Define gadget, down
 Repeat
    event = WaitWindowEvent(1)
    
-   CompilerIf #PB_Compiler_IsMainFile
+   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       If down
          If Not CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
             If IsGadget(down)
@@ -134,7 +134,7 @@ Repeat
       Case #PB_Event_ActivateWindow
          Debug "active - "+ EventWindow() 
          
-         CompilerIf #PB_Compiler_IsMainFile
+         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             gadget = gadget(WindowID(EventWindow()))
             If IsGadget(gadget)
                SetActiveGadget(gadget)
@@ -209,8 +209,8 @@ Until event = #PB_Event_CloseWindow
 ; deactive - 3
 ; active - 1
 ; deactive - 1
-; IDE Options = PureBasic 6.10 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 125
-; FirstLine = 15
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 111
+; FirstLine = 8
 ; Folding = 4---
 ; EnableXP

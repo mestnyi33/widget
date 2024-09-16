@@ -89,43 +89,43 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       EndIf
       
    EndProcedure
-   
-   
-   Procedure CanvasEvents( )
-      ;;Debug "ttyui"
-      Select EventType()
-         Case #PB_EventType_Focus
-            Debug "--focus - "+EventGadget() +" "+ EventData()
-            ;SetActiveGadget(EventGadget())
-            
-         Case #PB_EventType_LostFocus
-            Debug "--lostfocus - "+EventGadget() +" "+ EventData()
-            
-         Case #PB_EventType_LeftButtonDown
-            Debug "--down - "+EventGadget()
-            
-         Case #PB_EventType_LeftButtonUp
-            Debug "--up - "+EventGadget()
-            
-      EndSelect
-   EndProcedure
-   
-   ;    ;
-   Procedure EventActivate( )
-      Debug "--active - "+ EventWindow() +" "+ GetActiveGadget( )
-   EndProcedure
-   
-   Procedure EventDeactive( )
-      Debug "--deactive - "+ EventWindow() 
-   EndProcedure
-   
-   BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
-   BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
-   
-   ; BindGadgetEvent( Canvas, @CanvasEvents( ))
-   BindEvent( #PB_Event_Gadget, @CanvasEvents( ));, Window )
-   
 CompilerEndIf
+
+
+
+;    Procedure CanvasEvents( )
+;       ;;Debug "ttyui"
+;       Select EventType()
+;          Case #PB_EventType_Focus
+;             Debug "--focus - "+EventGadget() +" "+ EventData()
+;             ;SetActiveGadget(EventGadget())
+;             
+;          Case #PB_EventType_LostFocus
+;             Debug "--lostfocus - "+EventGadget() +" "+ EventData()
+;             
+;          Case #PB_EventType_LeftButtonDown
+;             Debug "--down - "+EventGadget()
+;             
+;          Case #PB_EventType_LeftButtonUp
+;             Debug "--up - "+EventGadget()
+;             
+;       EndSelect
+;    EndProcedure
+;    
+;    ;    ;
+;    Procedure EventActivate( )
+;       Debug "--active - "+ EventWindow() +" "+ GetActiveGadget( )
+;    EndProcedure
+;    
+;    Procedure EventDeactive( )
+;       Debug "--deactive - "+ EventWindow() 
+;    EndProcedure
+;    
+;    BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
+;    BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
+;    
+;    ; BindGadgetEvent( Canvas, @CanvasEvents( ))
+;    BindEvent( #PB_Event_Gadget, @CanvasEvents( ));, Window )
 
 
 ; *** test ***
@@ -157,28 +157,28 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "deactive - "+ EventWindow() 
             
          Case #PB_Event_Gadget
-            ;             Select EventType()
-            ;                Case #PB_EventType_Focus
-            ;                   Debug "focus - "+EventGadget() +" "+ EventData()
-            ;                   ;SetActiveGadget(EventGadget())
-            ;                   
-            ;                Case #PB_EventType_LostFocus
-            ;                   Debug "lostfocus - "+EventGadget() +" "+ EventData()
-            ;                   
-            ;                Case #PB_EventType_LeftButtonDown
-            ;                   Debug "down - "+EventGadget()
-            ;                   
-            ;                Case #PB_EventType_LeftButtonUp
-            ;                   Debug "up - "+EventGadget()
-            ;                   
-            ;             EndSelect
+            Select EventType()
+               Case #PB_EventType_Focus
+                  Debug "focus - "+EventGadget() +" "+ EventData()
+                  ;SetActiveGadget(EventGadget())
+                  
+               Case #PB_EventType_LostFocus
+                  Debug "lostfocus - "+EventGadget() +" "+ EventData()
+                  
+               Case #PB_EventType_LeftButtonDown
+                  Debug "down - "+EventGadget()
+                  
+               Case #PB_EventType_LeftButtonUp
+                  Debug "up - "+EventGadget()
+                  
+            EndSelect
             
       EndSelect
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 146
-; FirstLine = 125
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 178
+; FirstLine = 142
 ; Folding = ----
 ; EnableXP
