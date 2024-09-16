@@ -24479,24 +24479,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
 ;             ;\\
-             BindGadgetEvent( Canvas, @CanvasEvents( ))
+           ;  BindGadgetEvent( Canvas, @CanvasEvents( ))
 ;             ;BindEvent( #PB_Event_Gadget, @CanvasEvents( ));, Window )
 ;             
-             BindEvent( #PB_Event_Repaint, @EventRepaint( ));, Window )
+            ; BindEvent( #PB_Event_Repaint, @EventRepaint( ));, Window )
              BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
              BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
-         EndIf
-         If *root1
+             
+             If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
+                BindEvent( #PB_Event_SizeWindow, @EventResize( ));, Window )
+             EndIf
+          EndIf
+          If *root1
             Root( ) = *root1
          EndIf
          PopMapPosition( __roots( ) )
          
          If g
             SetWindowData( Window, Canvas )
-            
-            If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
-               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
-            EndIf
             
             ;\\ z - order
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -25172,11 +25172,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;EventActivate( )
                   Case #PB_Event_DeactivateWindow
                      ;EventDeactive( )
+                     
                   Case #PB_Event_Repaint
-                   ; EventRepaint( )
+                    EventRepaint( )
                      
                   Case #PB_Event_Gadget
-                   ;CanvasEvents( )
+                    CanvasEvents( )
                      
                   Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
                      Protected window = PB(EventWindow)( )
@@ -25768,7 +25769,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 23477
-; FirstLine = 2797
-; Folding = AAAOAAAAAAAAo5BAgDu+f-----------DnPA9-----PAAAAAAAAgBAAAEAAAAAAAAAAAAAAGFBAAAAAAy-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAACABAAAwUGAgAAAAAwAEAAAAAAAAAAA5-HAAAAAAAAAAAAAAEAAAAAQGARAAgAAAAABAAAAAAAAAAAAAAAA9AAAAAAAAAAAAAAAACAAAAAwAAAAAAAAAAAAAAAAAAAAYCAAAACAAAAAAAOAAAAAAAAAAAAAAAAAAw6AAAAAAAAAAAAAAAAwDAAAAAAAAAAAYgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA69EgzGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAQACGgDAAAAAAAAAAAA+-----------------------4-HApVAgB1PEAAgIEwYAAAAAA9HzBAAAg--
+; CursorPosition = 24489
+; FirstLine = 3628
+; Folding = AAAOAAAAAAAAo5BAgDu+f-----------DnPA9-----PAAAAAAAAgBAAAEAAAAAAAAAAAAAAGFBAAAAAAy-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAACABAAAwUGAgAAAAAwAEAAAAAAAAAAA5-HAAAAAAAAAAAAAAEAAAAAQGARAAgAAAAABAAAAAAAAAAAAAAAA9AAAAAAAAAAAAAAAACAAAAAwAAAAAAAAAAAAAAAAAAAAYCAAAACAAAAAAAOAAAAAAAAAAAAAAAAAAw6AAAAAAAAAAAAAAAAwDAAAAAAAAAAAYgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA69EgzGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAQACGgDAAAAAAAAAAAA+-----------------------4-HApVAgB1-EAAgIEwYAAAAAA9HzBAAAg--
 ; EnableXP
