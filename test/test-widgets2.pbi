@@ -352,9 +352,9 @@ CompilerIf Not Defined(constants, #PB_Module)
       ;     #__window_sizegadget = #__flag_sizegadget
       ;     #__window_screencentered = #__align_center
       
-;       #__window_normal         = #PB_Window_Normal
-;       #__window_maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
-;       #__window_minimize       = #PB_Window_Minimize       ; Opens the window minimized.
+      ;       #__window_normal         = #PB_Window_Normal
+      ;       #__window_maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
+      ;       #__window_minimize       = #PB_Window_Minimize       ; Opens the window minimized.
       
       #__window_child          = #__flag_child
       #__window_systemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
@@ -893,27 +893,27 @@ CompilerIf Not Defined(constants, #PB_Module)
       CompilerIf Not Defined(PB_ToolBar_InlineText, #PB_Constant)
          #PB_ToolBar_InlineText = 1 << 3;??? 8
       CompilerEndIf
-;     
-;      #PB_ToolBar_child
-;       #PB_ToolBar_vertical
+      ;     
+      ;      #PB_ToolBar_child
+      ;       #PB_ToolBar_vertical
       #PB_ToolBar_Buttons = 1<<4
       #PB_ToolBar_Left    = 1<<5
       #PB_ToolBar_Right   = 1<<6
       #PB_ToolBar_Bottom  = 1<<7
       
-;       Debug #PB_ToolBar_Small
-;       Debug #PB_ToolBar_Large
-;       Debug #PB_ToolBar_Text ; Text will be displayed below the button
-;       Debug #PB_ToolBar_InlineText
-;       Debug #PB_ToolBar_Buttons
-;       ;
-;       Debug ""
-;       Debug #PB_ToolBar_Normal
-;       Debug #PB_ToolBar_Toggle
-
-
-
-
+      ;       Debug #PB_ToolBar_Small
+      ;       Debug #PB_ToolBar_Large
+      ;       Debug #PB_ToolBar_Text ; Text will be displayed below the button
+      ;       Debug #PB_ToolBar_InlineText
+      ;       Debug #PB_ToolBar_Buttons
+      ;       ;
+      ;       Debug ""
+      ;       Debug #PB_ToolBar_Normal
+      ;       Debug #PB_ToolBar_Toggle
+      
+      
+      
+      
       
       ;- \\ Message
       CompilerIf Not Defined(PB_messageRequester_info, #PB_Constant)
@@ -932,9 +932,9 @@ CompilerIf Not Defined(constants, #PB_Module)
       #__message_Cancel = #PB_MessageRequester_Cancel           ; 2
       #__message_Info = #PB_MessageRequester_Info               ; 4
       #__message_Error = #PB_MessageRequester_Error             ; 8
-      #__message_Warning = 32;#PB_MessageRequester_Warning
-      #__message_ScreenCentered = 256;#PB_Window_ScreenCentered ; 64
-      ;#__message_WindowCentered = #PB_Window_WindowCentered ; 256
+      #__message_Warning = 32                                   ;#PB_MessageRequester_Warning
+      #__message_ScreenCentered = 256                           ;#PB_Window_ScreenCentered ; 64
+                                                                ;#__message_WindowCentered = #PB_Window_WindowCentered ; 256
       
       #__message_Ok = #PB_MessageRequester_Ok                   ; 0
       #__message_YesNo = #PB_MessageRequester_YesNo             ; 1
@@ -1099,9 +1099,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          round.a
          
          StructureUnion
-         toggle.b[3]
-         checked.b[3]
-      EndStructureUnion
+            toggle.b[3]
+            checked.b[3]
+         EndStructureUnion
          state.b
          
          hide.b
@@ -1255,8 +1255,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ;
          cursor.a[constants::#__a_count] ;
-                                             ;
-         *transform._s_TRANSFORMDATA         ;
+                                         ;
+         *transform._s_TRANSFORMDATA     ;
          
          backcolor.l[3]
          framecolor.l[3]
@@ -1300,7 +1300,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          StructureUnion
             buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
-            box._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
+            box._s_BOX      ; \box[0]\ -> \button\ -> \collapsebox\
          EndStructureUnion
          change.b
          drawing.b
@@ -1390,7 +1390,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *pressed._s_rows
          *focused._s_rows
          
-          List *items._s_ITEMS( )
+         List *items._s_ITEMS( )
       EndStructure
       
       ;--     BAR
@@ -1423,7 +1423,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *button._s_buttons[3]
          
-        ; List *_s._s_ITEMS( )
+         ; List *_s._s_ITEMS( )
       EndStructure
       ;--     SCROLL
       Structure _s_SCROLL Extends _s_COORDINATE
@@ -1556,20 +1556,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-;          Map *eventshook._s_HOOK( )
-;          
+         ;          Map *eventshook._s_HOOK( )
+         ;          
          noscale.b
          
          haseventhook.b
-;          *eventhook._s_HOOK[constants::#__event_count]
-;          ; TEMP
-;          hashook.b
-;          List *hook._s_HOOK( ) ; hook of events
+         ;          *eventhook._s_HOOK[constants::#__event_count]
+         ;          ; TEMP
+         ;          hashook.b
+         ;          List *hook._s_HOOK( ) ; hook of events
          
          
          popup.b
          redraw.b
-      ;          size.SIZEINFO                 
+         ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
          resize.RESIZEINFO                 
          
@@ -1634,8 +1634,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          StatusBarHeight.w
          
          StructureUnion
-         ToolBarHeight.w
-         TabHeight.i
+            ToolBarHeight.w
+            TabHeight.i
          EndStructureUnion
          index.b[3]
          
@@ -1712,7 +1712,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Map *mapfontID( )  
          
          *fontID                       ; current drawing fontID
-         ;*root._s_ROOT                 ; enumerate root
+                                       ;*root._s_ROOT                 ; enumerate root
          *drawingroot._s_ROOT
          *opened._s_WIDGET             ; last opened-list element
          *popup._s_WIDGET              
@@ -1749,7 +1749,7 @@ CompilerEndIf
 
 ; ver: 3.0.0.1 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-   #path = "";/Users/As/Documents/GitHub/widget/"
+   #path = "/Users/as/Documents/GitHub/widget/";/Users/As/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
    #path = ""
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -2089,8 +2089,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-\\
       Macro widget( ): widget::__gui\widget: EndMacro ; Returns current-root last added widget
-      ;Macro Root( ): widget::__gui\root: EndMacro
-      ; Macro FirstRoot( ): first\root: EndMacro
+                                                      ;Macro Root( ): widget::__gui\root: EndMacro
+                                                      ; Macro FirstRoot( ): first\root: EndMacro
       Macro LastRoot( ): last\root: EndMacro
       Macro AfterRoot( ): after\root: EndMacro
       Macro BeforeRoot( ): before\root: EndMacro
@@ -2099,7 +2099,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          FindMapElement( widget::Root( ), Str( _canvasID_ ) )
          
          If _text_ <> ""
-            Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class +" "+ _text_
+            Debug ""+ MacroExpandedCount +" "+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class +" "+ _text_
          EndIf
       EndMacro
       Macro PostEventRepaint( _root_ )
@@ -2276,19 +2276,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro EventWidget( ): WidgetEvent( )\widget: EndMacro
       
       ;-
-;       CompilerIf #PB_Compiler_Version =< 546
-;          Macro WindowEvent( )
-;             events::WaitEvent( PB(WindowEvent)( ) )
-;          EndMacro
-;          Macro WaitWindowEvent( _waittime_ = )
-;             events::WaitEvent( PB(WaitWindowEvent)( _waittime_ ) )
-;          EndMacro
-;       CompilerEndIf
+      ;       CompilerIf #PB_Compiler_Version =< 546
+      ;          Macro WindowEvent( )
+      ;             events::WaitEvent( PB(WindowEvent)( ) )
+      ;          EndMacro
+      ;          Macro WaitWindowEvent( _waittime_ = )
+      ;             events::WaitEvent( PB(WaitWindowEvent)( _waittime_ ) )
+      ;          EndMacro
+      ;       CompilerEndIf
       Macro WaitEvent( _callback_, _eventtype_ = #PB_All )
          widget::Bind( #PB_All, _callback_, _eventtype_ )
          widget::WaitClose( )
       EndMacro
-     
+      
       ;-
       Global *before_start_enumerate_widget._s_WIDGET
       Macro StartEnumerate( _parent_, _item_ = #PB_All )
@@ -6613,7 +6613,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Hide( *this, *this\hide ! 1 )
                
                If *this\hide
-                 ; Debug "comboBar - hide "+*this\class +" "+ *this\hide
+                  ; Debug "comboBar - hide "+*this\class +" "+ *this\hide
                   ;
                   *display\ComboButton( )\arrow\direction = 2
                   
@@ -6633,11 +6633,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Else
                If *this\hide
-                 ; Debug "menuBar - show "+*this\class
+                  ; Debug "menuBar - show "+*this\class
                   Hide( *this, #False )
                EndIf
             EndIf
-              
+            
             ;\\
             If *this\popup = 0
                *this\popup = 1
@@ -6645,7 +6645,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *displayRoot = Open( #PB_Any, 0, 0, 1, 1, "", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool,  WindowID( *display\root\canvas\window ) )
                *displayRoot\parent = *display
                *displayRoot\class = "["+*this\class+"]"+"-root" ; "Root_"+
-               ;\\
+                                                                ;\\
                Protected Window = GetWindow( *displayRoot )
                Protected WindowID = WindowID( Window )
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -6661,15 +6661,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\type = #__type_TabBar Or
                      *this\type = #__type_ToolBar Or 
                      *this\type = #__type_Menu 
-                        
-                        *displayRoot\TabBox( ) = *this
+                     
+                     *displayRoot\TabBox( ) = *this
                   EndIf
                   
                   ReParent( *this, *displayRoot )
                Else
                   SetParent( *this, *displayRoot )
                EndIf
-                   
+               
                
                *this\autosize = 1
                
@@ -6747,13 +6747,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   height + ( *this\__rows( )\y + *this\__rows( )\height )
                   PopListPosition( *this\__rows( ) ) 
                EndIf
-             EndIf
+            EndIf
             
             ;\\
             If *this\popup  
                Popup( ) = *this
                *display\popupBar = *this
-            
+               
                If mode
                   x = Mouse( )\x - width / 2
                   
@@ -6791,11 +6791,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
                x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
                
-;                ;\\
-;                Debug "displayBar - move (x="+x +" y="+ y +")"
-;                If width <> #PB_Ignore
-;                   Debug "displayBar - size (width="+width +" height="+ height +")"
-;                EndIf
+               ;                ;\\
+               ;                Debug "displayBar - move (x="+x +" y="+ y +")"
+               ;                If width <> #PB_Ignore
+               ;                   Debug "displayBar - size (width="+width +" height="+ height +")"
+               ;                EndIf
                ;
                ResizeWindow( *this\root\canvas\window, x, y, width, height )
                ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
@@ -8599,7 +8599,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; draw lines
                If *this\type = #__type_TabBar
-
+                  
                   ; Navigation
                   Protected fabe_pos, fabe_out, button_size = 20, round = 0, Size = 60
                   backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\ColorState( )]
@@ -22670,8 +22670,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_LostFocus
             ;Debug "  LostFocus - "+*this\class
             If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or 
-                     *this\type = #__type_Menu 
+               *this\type = #__type_ToolBar Or 
+               *this\type = #__type_Menu 
                
                If is_menu_( *this )
                   If *this\FocusedTab( )
@@ -22679,13 +22679,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\FocusedTab( ) = 0
                   EndIf
                EndIf
-;                ;
-;                If HidePopupMenuBar( *this\popupBar )
-;                   If *tabmenu
-;                      *tabmenu\toggle = 0
-;                      *tabmenu = 0
-;                   EndIf
-;                EndIf
+               ;                ;
+               ;                If HidePopupMenuBar( *this\popupBar )
+               ;                   If *tabmenu
+               ;                      *tabmenu\toggle = 0
+               ;                      *tabmenu = 0
+               ;                   EndIf
+               ;                EndIf
             EndIf
          EndIf
          
@@ -22733,8 +22733,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If Not HidePopupMenuBar( *this\popupBar )
                         If *tab\menu\hide
                            DisplayPopupMenuBar( *tab\menu, *this, 
-                                             *this\screen_x( ) + *tab\x, 
-                                             *this\screen_y( ) + *tab\y + *tab\height)
+                                                *this\screen_x( ) + *tab\x, 
+                                                *this\screen_y( ) + *tab\y + *tab\height)
                         EndIf
                      EndIf
                   Else
@@ -22965,9 +22965,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__event_Drop,
                     #__event_DragStart
                   
-                 ; If *this\row
-                     *this\root\repaint = #True
-                 ; EndIf
+                  ; If *this\row
+                  *this\root\repaint = #True
+                  ; EndIf
                   
                   *this\redraw = 1
                   *this\root\contex = 0
@@ -23182,7 +23182,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If bar_Events( *this, eventtype )
                      *this\root\repaint = #True
                   EndIf
-                     ;\\
+                  ;\\
                Case #__type_combobox
                   If eventtype = #__event_Down
                      If mouse( )\buttons & #PB_Canvas_LeftButton
@@ -23426,26 +23426,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If event = #PB_Event_Repaint
             If eventdata
                PushMapPosition( Root( ) )
-               If eventdata <> Root( )\canvas\gadgetID
-                  ChangeCurrentCanvas( eventdata, "repaint" )
-               EndIf
-               
-               If Root( )\canvas\post = 1
-                  If __gui\eventexit <> 1
-                     Repost( )
+               If ChangeCurrentCanvas( eventdata, "repaint" )
+                  If Root( )\canvas\post = 1
+                     If __gui\eventexit <> 1
+                        Repost( )
+                     EndIf
+                     
+                     If test_draw_repaint
+                        Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+                     EndIf
+                     
+                     If Not __gui\drawingroot
+                        StartDrawingRoot( Root( ) )
+                     EndIf
+                     ReDraw( )
+                     StopDrawingRoot( )
+                     
+                     Root( )\canvas\post = 0
                   EndIf
-                  
-                  If test_draw_repaint
-                     Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
-                  EndIf
-                  
-                  If Not __gui\drawingroot
-                     StartDrawingRoot( Root( ) )
-                  EndIf
-                  ReDraw( )
-                  StopDrawingRoot( )
-                  
-                  Root( )\canvas\post = 0
                EndIf
                PopMapPosition( Root( ) )
             EndIf
@@ -23460,9 +23458,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If ActiveWindow( ) = Root( )
                         Debug "Deactivate - "+Root( )\class
                         
-;                         If Popup( )
-
-;                         EndIf
+                        ;                         If Popup( )
+                        
+                        ;                         EndIf
                         SetDeactive( Root( ) )
                         ActiveWindow( ) = 0
                         Break
@@ -23564,10 +23562,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                Debug "resize - canvas ["+eventgadget+"]"
                PushMapPosition( Root( ) )
-               If Not ( Root( ) And Root( )\canvas\gadget = eventgadget )
-                  ChangeCurrentCanvas( GadgetID( eventgadget ), "resize" )
+               If ChangeCurrentCanvas( GadgetID( eventgadget ), "resize" )
+                  Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                EndIf   
-               Resize( Root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                PopMapPosition( Root( ) )
                ProcedureReturn event
             EndIf
@@ -23578,9 +23575,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If IsGadget( eventgadget ) And
                      GadgetType( eventgadget ) = #PB_GadgetType_Canvas
                      EnteredCanvasID = GadgetID( eventgadget )
-                     If Not ( Root( ) And Root( )\canvas\gadget = eventgadget )
-                        ChangeCurrentCanvas( EnteredCanvasID, "enter" )
-                     EndIf
+                     ChangeCurrentCanvas( EnteredCanvasID, "enter" )
                   EndIf
                EndIf
             EndIf
@@ -23667,9 +23662,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-;                         If Root( )
-;                            Debug " "+Root( )\class +" "+ ClassFromEvent(eventtype) +" "+ Root( )\canvas\gadget +" "+ eventgadget
-;                         EndIf
+            ;                         If Root( )
+            ;                            Debug " "+Root( )\class +" "+ ClassFromEvent(eventtype) +" "+ Root( )\canvas\gadget +" "+ eventgadget
+            ;                         EndIf
             
             ;\\
             ;\\
@@ -24291,7 +24286,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
                   SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE)|#WS_EX_NOPARENTNOTIFY) 
                CompilerElse
-                ;  
+                  ;  
                CompilerEndIf
             EndIf
             ;
@@ -24660,12 +24655,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          SetGadgetData( Gadget, *this )
          
-;          If IsGadget(canvas)
-;             ; CloseList( )
-;             ;Debug ""+Gadget+" "+canvas
-;             ChangeCurrentCanvas( GadgetID(canvas), "gadget" )
-;             ; OpenList( Root( ) )
-;          EndIf
+         ;          If IsGadget(canvas)
+         ;             ; CloseList( )
+         ;             ;Debug ""+Gadget+" "+canvas
+         ;             ChangeCurrentCanvas( GadgetID(canvas), "gadget" )
+         ;             ; OpenList( Root( ) )
+         ;          EndIf
          
          ProcedureReturn g
       EndProcedure
@@ -25503,7 +25498,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEventType( )
          Case #__event_RightButtonUp
             DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-               
+            
          Case #__event_DragStart
             DraggedGadget = eventobject
             
@@ -25578,7 +25573,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetClass(root( ), "[main-root]" )
       ;a_init( root())
       
-;       ;\\
+      ;       ;\\
       *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
       SetColor( *menu, #__color_back, $FFF7FEE2 )
       
@@ -25650,8 +25645,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 1714
-; FirstLine = 1706
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-ttK------------------------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2101
+; FirstLine = 2097
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

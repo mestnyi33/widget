@@ -1749,7 +1749,7 @@ CompilerEndIf
 
 ; ver: 3.0.0.1 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-   #path = "";/Users/As/Documents/GitHub/widget/"
+   #path = "/Users/as/Documents/GitHub/widget/";/Users/As/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
    #path = ""
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -2100,7 +2100,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget::Root( ) = widget::__roots( )
          
          If _text_ <> ""
-            Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class +" "+ _text_
+            Debug ""+ MacroExpandedCount +" "+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class +" "+ _text_
          EndIf
       EndMacro
       Macro PostEventRepaint( _root_ )
@@ -23424,12 +23424,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If event = #PB_Event_Repaint
             If eventdata
-               PushMapPosition( __roots( ) )
                *root = Root( )
                If eventdata <> Root( )\canvas\gadgetID
+                  PushMapPosition( __roots( ) )
                   ChangeCurrentCanvas( eventdata, "repaint" )
+                  PopMapPosition( __roots( ) )
                EndIf
-               
+               Debug 777
                If Root( )\canvas\post = 1
                   If __gui\eventexit <> 1
                      Repost( )
@@ -23448,7 +23449,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Root( )\canvas\post = 0
                EndIf
                Root( ) = *root
-               PopMapPosition( __roots( ) )
             EndIf
             ProcedureReturn event
          EndIf
@@ -24391,9 +24391,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
-            BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
-            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
+            ;BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
+            ;BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
+            ;BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
          EndIf
          If *root1
             Root( ) = *root1
@@ -25114,6 +25114,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         SetWindowState( window, #PB_Window_Normal )
                      EndIf
                      
+                  Case #PB_Event_ActivateWindow
+                     EventActivate( )
+                  Case #PB_Event_DeactivateWindow
+                     EventDeactive( )
+                  Case #PB_Event_Repaint
+                     EventRepaint( )
+                  
                EndSelect
                
                If __gui\eventquit
@@ -25665,8 +25672,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 24363
-; FirstLine = 2047
-; Folding = AAAAAAAAAAAAA5BAgDu+H-----------DnPA9-----PAAAAAAAAABAAAEAAAAAAAAAAAAAAGFBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAwUGAgAAAAAwAEAAAAAAAAAAA5-HAAAAAAAAAAAAAAEAAAAAQGARAAgAAAAABAAAAAAAAAAAAAAAA9AAAAAAAAAAAAAAAACAAAAAwAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAAw6AAAAAAAAAAAAAAAAwDAAAAAAAAAAAYgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-D5fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfBQAAA+fAAAwBAAAAAAAAAAAAAQaFAYA0DAAAIAAAAAAAAAA-xcAAAA5--
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 24395
+; FirstLine = 3017
+; Folding = AAAOAAAAAAAAo5BAgDu+f-----------DnPA9-----PAAAAAAAAgBAAAEAAAAAAAAAAAAAAGFBAAAAAAy-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAACABAAAwUGAgAAAAAwAEAAAAAAAAAAA5-HAAAAAAAAAAAAAAEAAAAAQGARAAgAAAAABAAAAAAAAAAAAAAAA9AAAAAAAAAAAAAAAACAAAAAwAAAAAAAAAAAAAAAAAAAAYCAAAACAAAAAAAOAAAAAAAAAAAAAAAAAAw6AAAAAAAAAAAAAAAAwDAAAAAAAAAAAYgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQOPB5sBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-D5fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEggB5AAAAAAAAAAAAAfBQAAA+fAAAwBAAAAAAAAAAAYBQaFAYA0DBAAICBMEAAAAAA-xcAAAA5--
 ; EnableXP

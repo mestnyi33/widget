@@ -1749,7 +1749,7 @@ CompilerEndIf
 
 ; ver: 3.0.0.1 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-   #path = "";/Users/As/Documents/GitHub/widget/"
+   #path = "/Users/as/Documents/GitHub/widget/";/Users/As/Documents/GitHub/widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
    #path = ""
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -2099,7 +2099,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          FindMapElement( widget::Root( ), Str( _canvasID_ ) )
          
          If _text_ <> ""
-            Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class +" "+ _text_
+            Debug ""+ MacroExpandedCount +" "+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class +" "+ _text_
          EndIf
       EndMacro
       Macro PostEventRepaint( _root_ )
@@ -25648,8 +25648,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 6387
-; FirstLine = 6352
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 2101
+; FirstLine = 2097
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

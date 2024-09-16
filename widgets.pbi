@@ -21819,7 +21819,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ForEach __roots( )
                      If __roots( )\canvas\window = EventWindow( )
                         Root( ) = __roots( )
-                        ; Debug "Activate - "+Root( )\class
+                        Debug "Activate - "+Root( )\class
                         SetActive( Root( ) )
                         Break
                      EndIf
@@ -22733,10 +22733,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                SetActive( *root )
             EndIf
             
-            ;\\
-            BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
-            BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
-            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
+            ;\\ bug
+            BindEvent( #PB_Event_Repaint, @EventRepaint( ));, Window )
+            BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
+            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
          EndIf
          
          If g
@@ -23415,6 +23415,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Repeat
                
                Select WaitWindowEvent( waittime )
+;                   Case #PB_Event_ActivateWindow
+;                      EventActivate( )
+;                   Case #PB_Event_DeactivateWindow
+;                      EventDeactive( )
+;                   Case #PB_Event_Repaint
+;                      EventRepaint( )
+                     
                   Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
                      Protected window = PB(EventWindow)( )
                      Protected canvas = PB(GetWindowData)( window )
@@ -24544,10 +24551,10 @@ CompilerEndIf
 ; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 21909
-; FirstLine = 20747
-; Folding = -----6-------------------------------------------------------------------------------------------------------v-v+4-9----44--------v4--+--bbF---Xc-+b8-8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr8----------------------------------------------------------------f02--------------------------------------------D---v---------------------v-fPAAA-a--+--------------------------------------------X0------
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 22736
+; FirstLine = 21457
+; Folding = -----6-------------------------------------------------------------------------------------------------------v-v+4-9----44--------v4--+--bbF---Xc-+b8-8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr8----------------------------------------------------------------f02--------------------------------------------D---v------------------------BAA5X8-4---------------------------------------------q-------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
