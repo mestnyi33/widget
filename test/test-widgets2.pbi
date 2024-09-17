@@ -1,4 +1,38 @@
-﻿;  ^^
+﻿; #__event_Repaint
+; Container Event( RESIZE )
+;      -     
+; 4 EventHandler ChangeCurrentCanvas [main-root] repaint
+; 6 EventHandler ChangeCurrentCanvas [main-root] enter
+; 4 EventHandler ChangeCurrentCanvas [main-root] repaint
+; 4 EventHandler ChangeCurrentCanvas [main-root] repaint
+; hide then down
+; resize - canvas [4299683336]
+; 5 EventHandler ChangeCurrentCanvas [Title-1]-root resize
+; 4 EventHandler ChangeCurrentCanvas [main-root] repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [main-root] repaint
+; 4 EventHandler ChangeCurrentCanvas [main-root] repaint
+; 6 EventHandler ChangeCurrentCanvas [Title-1]-root enter
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; resize - canvas [4301422984]
+; 5 EventHandler ChangeCurrentCanvas [title-1-sub-item]-root resize
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [title-1-sub-item]-root repaint
+; hede then leaved
+;  Hide PopupMenuBar - title-1-sub-item
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+; 4 EventHandler ChangeCurrentCanvas [Title-1]-root repaint
+
+
+
+;  ^^
 ; (oo)\__________
 ; (__)\          )\/\
 ;      ||------w||
@@ -14730,6 +14764,85 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result.s
       EndProcedure
       
+      Procedure FromPBEvent( eventtype )
+         Protected result = #PB_All
+         
+         ; from PB event to widget event 
+         If eventtype = #PB_EventType_LeftClick
+            result = #__event_LeftClick
+         EndIf
+         If eventtype = #PB_EventType_RightClick
+            result = #__event_RightClick
+         EndIf
+         ;
+         If eventtype = #PB_EventType_LeftDoubleClick
+            result = #__event_Left2Click
+         EndIf
+         If eventtype = #PB_EventType_RightDoubleClick
+            result = #__event_Right2Click
+         EndIf
+         ;
+         If eventtype = #PB_EventType_Resize
+            result = #__event_Resize
+         EndIf
+         ;
+         If eventtype = #PB_EventType_MouseEnter
+            result = #__event_MouseEnter
+         EndIf
+         If eventtype = #PB_EventType_MouseMove
+            result = #__event_MouseMove
+         EndIf
+         If eventtype = #PB_EventType_MouseLeave
+            result = #__event_MouseLeave
+         EndIf
+         ;
+         If eventtype = #PB_EventType_KeyDown
+            result = #__event_KeyDown
+         EndIf
+         If eventtype = #PB_EventType_Input
+            result = #__event_Input
+         EndIf
+         If eventtype = #PB_EventType_KeyUp
+            result = #__event_KeyUp
+         EndIf
+         ;
+         If eventtype = #PB_EventType_LeftButtonDown
+            result = #__event_LeftButtonDown
+         EndIf
+         If eventtype = #PB_EventType_MiddleButtonDown
+            result = #__event_MiddleButtonDown
+         EndIf
+         If eventtype = #PB_EventType_RightButtonDown
+            result = #__event_RightButtonDown
+         EndIf
+         ;
+         If eventtype = #PB_EventType_LeftButtonUp
+            result = #__event_LeftButtonUp
+         EndIf
+         If eventtype = #PB_EventType_MiddleButtonUp
+            result = #__event_MiddleButtonUp
+         EndIf
+         If eventtype = #PB_EventType_RightButtonUp
+            result = #__event_RightButtonUp
+         EndIf
+         ;
+         If eventtype = #PB_EventType_Focus
+            result = #__event_Focus
+         EndIf
+         If eventtype = #PB_EventType_LostFocus
+            result = #__event_LostFocus
+         EndIf
+         ;
+         If eventtype = #PB_EventType_MouseWheelX
+            result = #__event_MouseWheelX
+         EndIf
+         If eventtype = #PB_EventType_MouseWheelY
+            result = #__event_MouseWheelY
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
       ;-
       Procedure.i AddColumn( *this._s_WIDGET, position.l, text.s, width.l, image.i = -1 )
          Protected *columns._s_COLUMN
@@ -23407,15 +23520,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure CanvasEvents( )
-         Debug "CanvasEvents - " + EventGadget( ) +" "+ ClassFromEvent( EventType( ) )
-         ;          If  Event( ) = #PB_Event_Repaint
-         ;             If EventData( )
-         ;                EventHandler( #PB_Event_Repaint, EventGadget( ), EventType( ), EventData( ) )
-         ;             EndIf
-         ;          Else
+        ; Debug "CanvasEvents - " + EventGadget( ) +" "+ ClassFromEvent( FromPBEvent(EventType( )) )
          EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
-         ;             EventHandler( Event( ), EventGadget( ), EventType( ), EventData( ) )
-         ;          EndIf
       EndProcedure
       
       Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
@@ -23494,6 +23600,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #PB_EventType_LeftClick
                eventtype = #__event_LeftClick
             EndIf
+            If eventtype = #PB_EventType_RightClick
+               eventtype = #__event_RightClick
+            EndIf
             If eventtype = #PB_EventType_LeftDoubleClick
                eventtype = #__event_Left2Click
             EndIf
@@ -23504,6 +23613,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #PB_EventType_Resize
                eventtype = #__event_Resize
             EndIf
+            ;
             If eventtype = #PB_EventType_MouseEnter
                eventtype = #__event_MouseEnter
             EndIf
@@ -23550,13 +23660,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #PB_EventType_LostFocus
                eventtype = #__event_LostFocus
             EndIf
-            ;
-            If eventtype = #PB_EventType_MouseWheelX
-               eventtype = #__event_MouseWheelX
-            EndIf
-            If eventtype = #PB_EventType_MouseWheelY
-               eventtype = #__event_MouseWheelY
-            EndIf
+;             ;
+;             If eventtype = #PB_EventType_MouseWheelX
+;                eventtype = #__event_MouseWheelX
+;             EndIf
+;             If eventtype = #PB_EventType_MouseWheelY
+;                eventtype = #__event_MouseWheelY
+;             EndIf
             
             ;\\
             If eventtype = #__event_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -24375,8 +24485,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            BindGadgetEvent( Canvas, @CanvasEvents( ))
-;             ;BindEvent( #PB_Event_Gadget, @CanvasEvents( ));, Window )
+             BindGadgetEvent( Canvas, @CanvasEvents( ))
+            ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             ; BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
             BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
@@ -25058,16 +25168,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                Select WaitWindowEvent( waittime )
                   Case #PB_Event_ActivateWindow
-                     ;Debug 444
                      ;EventActivate( )
+                     
                   Case #PB_Event_DeactivateWindow
                      ;EventDeactive( )
                      
                   Case #PB_Event_Repaint
-                    EventRepaint( )
+                     EventRepaint( )
                      
                   Case #PB_Event_Gadget
-                    ;CanvasEvents( )
+                     ;CanvasEvents( )
                      
                   Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
                      Protected window = PB(EventWindow)( )
@@ -25659,7 +25769,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 24377
-; FirstLine = 24361
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------7-----------------------
+; CursorPosition = 23522
+; FirstLine = 23092
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------X0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf4-------------------------f----X------------------------
 ; EnableXP
