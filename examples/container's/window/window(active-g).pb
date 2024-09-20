@@ -2,6 +2,8 @@
 ;XIncludeFile "../../../widget-events.pbi" 
 Uselib(widget)
 
+test_focus_show = 1
+
 Procedure active()
   Protected *ew._s_widget = EventWidget( )
   If *ew\type > 0
@@ -79,8 +81,7 @@ If Open(0, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | 
 EndIf
 
 End  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 35
-; FirstLine = 19
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 5
 ; Folding = --
 ; EnableXP

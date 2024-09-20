@@ -4,6 +4,8 @@ XIncludeFile "../../../widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    Uselib( WIDGET )
+   test_event_resize = 1
+   test_draw_repaint = 1
    
    Global *menu
    
@@ -96,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
-   If Open(0, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If Open(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
       SetClass(root( ), "[main-root]" )
       ;a_init( root())
@@ -173,8 +175,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 106
-; FirstLine = 41
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 100
+; FirstLine = 49
 ; Folding = -+
 ; EnableXP

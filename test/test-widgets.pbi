@@ -2143,7 +2143,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro Opened( ): widget::__gui\opened: EndMacro ; object list opened container
       Macro Popup( ): widget::__gui\sticky\box: EndMacro
-      Macro PopupParent( ): Popup( )\root\parent: EndMacro
+      ;Macro PopupParent( ): Popup( )\root\parent: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       
       Macro ParentRow( ): parent: EndMacro ; _s_ROWS( )
@@ -2276,20 +2276,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro WidgetEventItem( ): WidgetEvent( )\item: EndMacro
       Macro EventWidget( ): WidgetEvent( )\widget: EndMacro
       
-      ;-
-;       CompilerIf #PB_Compiler_Version =< 546
-;          Macro WindowEvent( )
-;             events::WaitEvent( PB(WindowEvent)( ) )
-;          EndMacro
-;          Macro WaitWindowEvent( _waittime_ = )
-;             events::WaitEvent( PB(WaitWindowEvent)( _waittime_ ) )
-;          EndMacro
-;       CompilerEndIf
-      Macro WaitEvent( _callback_, _eventtype_ = #PB_All )
-         widget::Bind( #PB_All, _callback_, _eventtype_ )
-         widget::WaitClose( )
-      EndMacro
-     
       ;-
       Global *before_start_enumerate_widget._s_WIDGET
       Macro StartEnumerate( _parent_, _item_ = #PB_All )
@@ -4370,7 +4356,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If __gui\eventexit = 1
             If eventtype = #__event_Focus
                If GetActiveGadget( ) <> *this\root\canvas\gadget
-                  SetActiveGadget( *this\root\canvas\gadget )
+;                   SetActiveGadget( *this\root\canvas\gadget )
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                      ; Debug " - makeFirstResponder "+*this\root\canvas\gadget
@@ -6581,13 +6567,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i DisplayPopupMenuBar( *this._s_WIDGET, *display._s_WIDGET, x.l = #PB_Ignore, y.l = #PB_Ignore )
+         ;ProcedureReturn 0
          ;ProcedureReturn DisplayPopupMenuBar( *this, *display, x, y )
          Protected width = #PB_Ignore
          Protected height = #PB_Ignore
          
          Protected index
          Protected mode = 0
-         Protected *displayRoot._s_ROOT
+         Protected canvas = *display\root\canvas\gadget
          
          ;\\
          If *this
@@ -6604,11 +6591,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ ComboBox
             If *display\ComboButton( )
-               ;\\ hide previews popup widget
-               If Popup( ) And 
-                  Popup( ) <> *this
-                  DisplayPopupMenuBar( Popup( ), Popup( )\root\parent )
-               EndIf
+;                ;\\ hide previews popup widget
+;                If Popup( ) And 
+;                   Popup( ) <> *this
+;                   DisplayPopupMenuBar( Popup( ), Popup( )\root\parent )
+;                EndIf
                
                ;\\ hide current popup widget
                Hide( *this, *this\hide ! 1 )
@@ -6619,14 +6606,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *display\ComboButton( )\arrow\direction = 2
                   
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
-                  ;
-                  If *this = Popup( )
-                     If PressedWidget( ) = *this
-                        PressedWidget( ) = *display
-                     EndIf
-                  EndIf
-                  ;
-                  Popup( ) = #Null 
+;                   ;
+;                   If *this = Popup( )
+;                      If PressedWidget( ) = *this
+;                         PressedWidget( ) = *display
+;                      EndIf
+;                   EndIf
+;                   ;
+;                   Popup( ) = #Null 
                   ProcedureReturn - 1
                Else
                   Debug "comboBar - show"
@@ -6640,39 +6627,44 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
               
             ;\\
+              If *this\root\popup = 0
+               *this\root\popup = 1
+               ;Debug "displayBar - create " + *this\class +" "+ *this\root #PB_Window_NoActivate | 
+               Popup( ) = Open( #PB_Any, 0,0,0,0, "", #PB_Window_NoGadgets|#PB_Window_SystemMenu|#PB_Window_Maximize,  WindowID( *display\root\canvas\window ) )
+               Popup( )\parent = *display
+               Popup( )\class = "["+*this\class+"]"+"-root" ; "Root_"+
+               ;Resize(Popup(), 0,0, 500,500)
+               ;\\
+               Protected Window = GetWindow( Popup( ) )
+               Protected WindowID = WindowID( Window )
+               
+;             ;\\
+;                If is_integral_( *this )
+;                   If *this\type = #__type_TabBar Or
+;                      *this\type = #__type_ToolBar Or 
+;                      *this\type = #__type_Menu 
+;                         
+                         Popup( )\TabBox( ) = *this
+;                   EndIf
+;                   
+;                 ;  ReParent( *this, Popup( ) )
+;                Else
+;                EndIf
+;                    
+;                ;*this\child = 0
+;                SetParent( *display, Popup( ) )
+;                Resize(*display,
+;                       GadgetX( canvas, #PB_Gadget_ScreenCoordinate )+*display\container_x( ),
+;                       GadgetY( canvas, #PB_Gadget_ScreenCoordinate )+*display\container_y( ), #PB_Ignore, #PB_Ignore )
+;                
+               ;SetParent( *this, *display )
+               ;ReParent( *this, Popup( ) )
+            EndIf
+            
+            
             If *this\popup = 0
                *this\popup = 1
-               ;Debug "displayBar - create " + *this\class +" "+ *this\root
-               *displayRoot = Open( #PB_Any, 0, 0, 1, 1, "", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool,  WindowID( *display\root\canvas\window ) )
-               *displayRoot\parent = *display
-               *displayRoot\class = "["+*this\class+"]"+"-root" ; "Root_"+
-               ;\\
-               Protected Window = GetWindow( *displayRoot )
-               Protected WindowID = WindowID( Window )
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  ; var windowLevel: UIWindow.Level { get set } ; stay on top
-                  CocoaMessage(0, WindowID, "setLevel:", 3)
-                  ; Debug CocoaMessage(0, WindowID, "level")
-               CompilerElse
-                  StickyWindow( window, #True )
-               CompilerEndIf
-               
-               ;\\
-               If is_integral_( *this )
-                  If *this\type = #__type_TabBar Or
-                     *this\type = #__type_ToolBar Or 
-                     *this\type = #__type_Menu 
-                        
-                        *displayRoot\TabBox( ) = *this
-                  EndIf
-                  
-                  ReParent( *this, *displayRoot )
-               Else
-                  SetParent( *this, *displayRoot )
-               EndIf
-                   
-               
-               *this\autosize = 1
+              ;*this\autosize = 1
                
                ;Resize( *this, 0,0,500,500)
                If StartDrawingRoot( *this\root )
@@ -6752,7 +6744,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\popup  
-               Popup( ) = *this
+;                Popup( ) = *this
                *display\popupBar = *this
             
                If mode
@@ -6789,21 +6781,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                CompilerEndIf
                ;
-               y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
-               x + GadgetX( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
+               y + GadgetY( canvas, #PB_Gadget_ScreenCoordinate )
+               x + GadgetX( canvas, #PB_Gadget_ScreenCoordinate )
                
 ;                ;\\
 ;                Debug "displayBar - move (x="+x +" y="+ y +")"
 ;                If width <> #PB_Ignore
 ;                   Debug "displayBar - size (width="+width +" height="+ height +")"
 ;                EndIf
-               ;
-               ResizeWindow( *this\root\canvas\window, x, y, width, height )
-               ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
+;                ;
+;                ResizeWindow( *this\root\canvas\window, x, y, width, height )
+;                ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
+;                
+;                ;
+;                HideWindow( *this\root\canvas\window, #False);, #PB_Window_NoActivate )
+;                DisableWindow( *this\root\canvas\window, #False)
+             ;  x + 50;*display\container_x( )
+               ;y + *display\container_y( )
                
-               ;
-               HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
-               DisableWindow( *this\root\canvas\window, #False)
+               ; Resize(*display, 9, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+               Resize(*this, 0, 0, 100, 100 )
+               ;Resize(*this, x, y, width, height )
+               
                PostRepaint( *this\root )
                ProcedureReturn #True
             EndIf
@@ -7575,11 +7574,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\
-            If Popup( ) And
-               Popup( )\root = *this
-               Resize( Popup( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            EndIf
+;             ;\\
+;             If Popup( ) And
+;                Popup( )\root = *this
+;                Resize( Popup( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+;             EndIf
             
             ;
             ;\\ Post Event
@@ -16815,9 +16814,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            If GetActiveGadget( ) <> *active\root\canvas\gadget
-               SetActiveGadget( *active\root\canvas\gadget )
-            EndIf
+;             If GetActiveGadget( ) <> *active\root\canvas\gadget
+;                SetActiveGadget( *active\root\canvas\gadget )
+;             EndIf
             
             ;Debug "---focus--- "+*this\class
             ;\\ deactivate
@@ -20879,10 +20878,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ;\\ draw current-popup-widget
             If Popup( )
-               If Popup( )\root = *root
+               If Popup( ) <> *root
                   ;Debug "popup - draw " + *root\class
                   
-                  Draw( Popup( ) )
+                  ReDraw( Popup( ) )
                EndIf
             EndIf
             
@@ -21138,11 +21137,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure GetAtPoint( *root._s_ROOT, mouse_x, mouse_y, List *List._s_WIDGET( ) )
          Protected i, a_index, Repaint, *this._s_WIDGET, *e._s_WIDGET
          
-         ;\\ get at point address
-         If Popup( ) And 
-            Popup( )\root = *root
-            *this = Popup( )
-         Else
+;          ;\\ get at point address
+;          If Popup( ) And 
+;             Popup( )\root = *root
+;             *this = Popup( )
+;          Else
             If *root\haschildren
                If ListSize( *list( ))
                   LastElement( *list( ))
@@ -21187,7 +21186,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Until PreviousElement( *list( )) = #False
                EndIf
             EndIf
-         EndIf
+;          EndIf
          ;
          ;\\ root no enumWidget
          If Not *this
@@ -24171,6 +24170,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If mouse( )\change <> #False
                mouse( )\change = #False
             EndIf
+            ProcedureReturn #PB_Event_Gadget
          EndIf
          
       EndProcedure
@@ -24483,8 +24483,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;             ;BindEvent( #PB_Event_Gadget, @CanvasEvents( ));, Window )
 ;             
             ; BindEvent( #PB_Event_Repaint, @EventRepaint( ));, Window )
-             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
-             BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
+;              BindEvent( #PB_Event_ActivateWindow, @EventActivate( ));, Window )
+;              BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ));, Window )
              
              If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
                 BindEvent( #PB_Event_SizeWindow, @EventResize( ));, Window )
@@ -25168,10 +25168,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                Select WaitWindowEvent( waittime )
                   Case #PB_Event_ActivateWindow
-                     ;Debug 444
-                     ;EventActivate( )
+                     EventActivate( )
+                     
                   Case #PB_Event_DeactivateWindow
-                     ;EventDeactive( )
+                     EventDeactive( )
                      
                   Case #PB_Event_Repaint
                     EventRepaint( )
@@ -25596,11 +25596,69 @@ EndMacro
 
 
 ;-
+;                                                                     - PB 
+;                                                PopupMenu( [flags] ) - CreatePopupMenu( #Menu )
+;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
+;
+;                                           Menu( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
+;                                                                       CreateImageMenu( #Menu, WindowID [, Flags] )
+; 
+;                        DisplayPopup( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
+;                                                                     - IsMenu( #Menu )
+;                                                                     - MenuID( #Menu )
+; 
+;                                                     Title( Title$ ) - MenuTitle( Title$ )
+;                                 GetItemText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
+;                         SetItemText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
+; 
+;                                                    Free( *address ) - FreeMenu( #Menu )
+;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
+;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
+;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
+;                                                    Hide( *address ) - HideMenu( #Menu, State )
+;                                             Separator( [*address] ) - MenuBar( )
+;                                                  Height( *address ) - MenuHeight( )
+;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
+;
+;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
+;                                        OpenItem( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
+;                                                        CloseItem( ) - CloseSubMenu( )
+; 
+;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
+;                               SetItemText( *address, item, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
+;
+;                      Bind( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                    UnBind( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
+
+;XIncludeFile "../../../widgets.pbi" 
+
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib( WIDGET )
+   Uselib(widget)
    
-   Global *menu
+   Define *menu._s_widget
+   ;-
+   Procedure Handler()
+      Protected event = __event( ) ; *event\type ; events( ) ; GetEvent( )
+      
+      If event = #__event_LeftClick
+         Debug " -777- event "
+      EndIf
+      
+      If event = #__event_MouseEnter
+         Debug "  - "+GetActiveGadget( )+" "+GetActiveWindow( )
+         ForEach __roots( )
+            Debug ""+__roots( )\canvas\gadget +" "+ __roots( )\canvas\window +" "+ __roots( )\class +" "+ __roots( )\focus
+            
+            If StartEnumerate( __roots( ) )
+               Debug "   "+ widget( )\class +" "+ widget( )\focus
+               StopEnumerate( )
+            EndIf
+         Next
+         Debug ""
+      EndIf
+      
+   EndProcedure
    
    Procedure TestHandler()
       ;ClearDebugOutput()
@@ -25613,163 +25671,94 @@ CompilerIf #PB_Compiler_IsMainFile
       ; End
    EndProcedure
    
-   Procedure Events()
-      Static DraggedGadget
-      
-      Protected eventobject = EventWidget( )
-      
-      Select WidgetEventType( )
-         Case #__event_RightButtonUp
-            DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-               
-         Case #__event_DragStart
-            DraggedGadget = eventobject
-            
-         Case #__event_LeftButtonUp
-            DraggedGadget = 0
-            
-         Case #__event_ResizeBegin
-            Debug ""+GetClass(eventobject) + " event( RESIZEBEGIN )" 
-            
-         Case #__event_Resize
-            Debug ""+GetClass(eventobject) + " event( RESIZE )" 
-            
-         Case #__event_ResizeEnd
-            Debug ""+GetClass(eventobject) + " event( RESIZEEND )" 
-            
-         Case #__event_MouseMove
-            If DraggedGadget 
-               ;Debug Root()\canvas\resizebeginwidget ;GetClass(DraggedGadget)
-               Resize(DraggedGadget, Mouse()\x-Mouse()\delta\x, Mouse()\y-Mouse()\delta\y, #PB_Ignore, #PB_Ignore)
-               ;Debug Root()\canvas\resizebeginwidget
-            EndIf
-            
-      EndSelect
-   EndProcedure
+   ;\\
+   Define windowID = OpenWindow( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    
-   Procedure CreateWidget( *type )
-      Protected result, x=50, y=50, width = 400, height = 300, flags ;= #__flag_autosize
-      
-      Select *type
-         Case  1: result = Button(x,y,width,height,"Button", flags) 
-         Case  2: result = String(x,y,width,height,"String", flags) 
-         Case  3: result = Text(x,y,width,height,"Text", #PB_Text_Border|flags) 
-         Case  4: result = Option(x,y,width,height,"Option", flags) 
-         Case  5: result = CheckBox(x,y,width,height,"CheckBox", flags) 
-         Case  6: result = ListView(x,y,width,height, flags) 
-         Case  7: result = Frame(x,y,width,height,"Frame", flags) 
-         Case  8: result = ComboBox(x,y,width,height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
-         Case  9: result = Image(x,y,width,height,0,#PB_Image_Border|flags) 
-         Case 10: result = HyperLink(x,y,width,height,"HyperLink",0, flags) 
-         Case 11: result = Container(x,y,width,height,#PB_Container_Flat|flags): Button(0,0,80,y,"Button1"):SetClass(widget(),GetText(widget())): Button(10,50,80,y,"Button2"):SetClass(widget(),GetText(widget())): CloseList() ; Container
-         Case 12: result = ListIcon(x,y,width,height,"",88, flags) 
-            ;Case 13: result = IPAddress(x,y,width,height) 
-            ;Case 14: result = ProgressBar(x,y,width,height,0,5)
-            ;Case 15: result = ScrollBar(x,y,width,height,5,335,9)
-         Case 16: result = ScrollArea(x,y,width,height,width*2,height*2,9,#PB_ScrollArea_Flat|flags): Button(0,0,80,30,"Button"): CloseList()
-            ;Case 17: result = TrackBar(x,y,width,height,0,5)
-            ;Case 18: result = Web(x,y,width,height,"") ; bug 531 linux
-         Case 19: result = ButtonImage(x,y,width,height,0, flags)
-            ;Case 20: result = Calendar(x,y,width,height) 
-            ;Case 21: result = Date(x,y,width,height)
-         Case 22: result = Editor(x,y,width,height, flags):  AddItem(result,-1,"Editor")
-            ;Case 23: result = ExplorerList(x,y,width,height,"")
-            ;Case 24: result = ExplorerTree(x,y,width,height,"")
-            ;Case 25: result = ExplorerCombo(x,y,width,height,"")
-         Case 26: result = Spin(x,y,width,height,0,5,#PB_Spin_Numeric|flags)
-         Case 27: result = Tree(x,y,width,height, flags) :  AddItem(result,-1,"Tree"):  AddItem(result,-1,"SubLavel",0,1)
-         Case 28: result = Panel(x,y,width,height, flags): AddItem(result,-1,"Panel"): CloseList()
-         Case 29 
-            result = Splitter(x,y,width,height,Button(0,0,0,0,"1"),Button(0,0,0,0,"2"), flags)
-            
-         Case height: result = MDI(x,y,width,height, flags)
-            ; Case 31: result = Scintilla(x,y,width,height,0, flags)
-            ; Case 32: result = Shortcut(x,y,width,height,0, flags)
-            ; Case 33: result = Canvas(x,y,width,height, flags) 
-      EndSelect
-      
-      ProcedureReturn result
-   EndProcedure
+   Open(0, 50,50,400,250)
    
-   If Open(0, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
-      SetClass(root( ), "[main-root]" )
-      ;a_init( root())
+   ;\\
+   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   
+   BarTitle("Title-1")
+   BarItem(1, "title-1-item-1")
+   BarSeparator( )
+   
+   OpenBar("title-1-sub-item")
+   BarItem(3, "title-1-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-2-sub-item")   
+   BarItem(13, "title-2-item")
+   BarSeparator( )
+   ;
+   OpenBar("title-3-sub-item")   
+   BarItem(23, "title-3-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(14, "title-2-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(4, "title-1-item")
+   CloseBar( ) 
+   ;
+   BarSeparator( )
+   BarItem(2, "title-1-item-2")
+   
+   BarTitle("Title-2")
+;    BarItem(5, "title-2-item-1")
+;    BarItem(6, "title-2-item-2")
+   
+   BarTitle("Title-event-test")
+   BarItem(7, "test")
+   BarSeparator( )
+   BarItem(8, "quit")
+   
+   BarTitle("Title-4")
+   BarItem(9, "title-4-item-1")
+   BarItem(10, "title-4-item-2")
+   
+   ;\\
+   Define a
+   ComboBox(100, 10, 250, 21, #PB_ComboBox_Editable)
+    For a = 1 To 31
+      AddItem(widget(), -1,"ComboBox item " + Str(a))
+    Next
+    
+    ComboBox(100, 40, 250, 21, #PB_ComboBox_Image)
+    AddItem(widget(), -1, "ComboBox item with image1", (0))
+    AddItem(widget(), -1, "ComboBox item with image2", (1))
+    AddItem(widget(), -1, "ComboBox item with image3", (2))
+    
+    ComboBox(100, 70, 250, 21)
+    AddItem(widget(), -1, "ComboBox editable...1")
+    AddItem(widget(), -1, "ComboBox editable...2")
+    AddItem(widget(), -1, "ComboBox editable...3")
+    
+    SetState(getwidget(0), 2)
+    SetState(getwidget(1), 1)
+    SetState(getwidget(2), 0)    ; set (beginning with 0) the third item as active one
       
-;       ;\\
-      *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
-      SetColor( *menu, #__color_back, $FFF7FEE2 )
+   Bind(*menu, @TestHandler(), -1, 7)
+   Bind(*menu, @QuitHandler(), -1, 8)
+   
+   
+   Define Event
+   Repeat
+      Event = WaitWindowEvent() 
       
-      BarTitle("Title-1")
-      BarItem(1, "title-1-item-1")
-      BarSeparator( )
+      EventHandler( event, EventGadget(), EventType(), EventData() )
       
-      OpenBar("title-1-sub-item")
-      BarItem(3, "title-1-item")
-      BarSeparator( )
-      ;
-      OpenBar("title-2-sub-item")   
-      BarItem(13, "title-2-item")
-      BarSeparator( )
-      ;
-      OpenBar("title-3-sub-item")   
-      BarItem(23, "title-3-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(14, "title-2-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(4, "title-1-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(2, "title-1-item-2")
-      
-      BarTitle("Title-(no_items)")
-      
-      BarTitle("Title-(event_test)")
-      BarItem(7, "test")
-      BarSeparator( )
-      BarItem(8, "quit")
-      
-      BarTitle("Title-4")
-      BarItem(9, "item-1(4)")
-      BarItem(10, "item-2(4)")
-      
-      Bind(*menu, @TestHandler(), -1, 7)
-      Bind(*menu, @QuitHandler(), -1, 8)
-      ;
-      *menu = CreatePopupMenuBar( )
-      If *menu                  ; creation of the pop-up menu begins...
-         BarItem(1, "Open")     ; You can use all commands for creating a menu
-         BarItem(2, "Save")     ; just like in a normal menu...
-         BarItem(3, "Save as")
-         BarItem(4, "Quit")
-         BarSeparator( )
-         OpenBar("Recent files")
-         BarItem(5, "PureBasic.exe")
-         BarItem(6, "Test.txt")
-         CloseBar( )
+      If Event = #PB_Event_Gadget
+         If EventGadget() = 777
+            Debug " -777- event "
+         EndIf
       EndIf
-      
-      Define widget = CreateWidget( #PB_GadgetType_Container )
-      ;     ; CreateWidget( #PB_GadgetType_Editor )
-      ;     Resize(Root(), 50,50,50,50)
-      ;     Resize(Root(), 60,50,50,50)
-      ;     Resize(Root(), 70,50,50,50)
-      ;     Resize(Root(), 80,50,50,50)
-      ;     Resize(Root(), 90,50,50,50)
-      
-      ;Bind( widget, @Events())
-      Bind( #PB_All, @Events())
-      
-      WaitClose( )
-   EndIf
+   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 24489
-; FirstLine = 3628
-; Folding = AAAOAAAAAAAAo5BAgDu+f-----------DnPA9-----PAAAAAAAAgBAAAEAAAAAAAAAAAAAAGFBAAAAAAy-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAACABAAAwUGAgAAAAAwAEAAAAAAAAAAA5-HAAAAAAAAAAAAAAEAAAAAQGARAAgAAAAABAAAAAAAAAAAAAAAA9AAAAAAAAAAAAAAAACAAAAAwAAAAAAAAAAAAAAAAAAAAYCAAAACAAAAAAAOAAAAAAAAAAAAAAAAAAw6AAAAAAAAAAAAAAAAwDAAAAAAAAAAAYgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA69EgzGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAQACGgDAAAAAAAAAAAA+-----------------------4-HApVAgB1-EAAgIEwYAAAAAA9HzBAAAg--
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 6633
+; FirstLine = 1431
+; Folding = AAAOAAAAAAAAo5BAgDu+f-----------hzHA------DAAAAAAAAYAAAABAAAAAAAAAAAAAgXRAAAAAAg9PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAgAQAAAAMeAQAEAAAYACAAAAAAAAAAA9-DQAAAAAAAAAAAAABAAAAAkBQEAAIAAAAQAAAAAAAAAAAAAAAAAPAAAAAAAAAAAAAAAgAAAAAAMAAAAAAAAAAAAAAAAAAAAmAAAAgAAAAAAAgDAAAAAAAAAAAAAAAAAAcOAAAAAAAAAAAAAAAA9AAAAAAAAAAAAGIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQJIABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQOPB5sBAAAAAAAAAAAMEDOAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAKAAAAAAAAgBAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAABIYAOAAAAw-HAAAAA5-----------------------f-fAkWBAGQ-TAAAiQAjBAAAAAwfMHAAAA7-
 ; EnableXP

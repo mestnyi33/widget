@@ -3000,6 +3000,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;{
       ; Requester
       Global resize_one
+      Declare   CanvasEvents( )
+      
       Declare.b bar_tab_update_items_( *this._s_WIDGET, List *items._s_ITEMS( ) )
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare.i bar_tab_SetState( *this, item.l )
@@ -6678,8 +6680,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;Debug "displayBar - create " + *this\class +" "+ *this\root
                *displayRoot = Open( #PB_Any, 0, 0, 1, 1, "", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool,  WindowID( *display\root\canvas\window ) )
                *displayRoot\parent = *display
-               *displayRoot\class = "["+*this\class+"]"+"-root" ; "Root_"+
-                                                                ;\\
+               *displayRoot\class = "["+*this\class+"]"+"-root" 
+               
+               ;\\
+               Protected canvas= GetGadget( *displayRoot )
                Protected Window = GetWindow( *displayRoot )
                Protected WindowID = WindowID( Window )
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -6690,6 +6694,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   StickyWindow( window, #True )
                CompilerEndIf
                
+               
+                          ;             ;\\
+              BindGadgetEvent( Canvas, @CanvasEvents( ))
+;             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
+;             ; BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
+;             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
+;             BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
+;             If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
+;                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+;             EndIf
                ;\\
                If is_integral_( *this )
                   If *this\type = #__type_TabBar Or
@@ -6839,7 +6853,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                DisableWindow( *this\root\canvas\window, #False)
                PostRepaint( *this\root )
                
-               ChangeCurrentCanvas( *display\root\canvas\gadgetID )
+               ;ChangeCurrentCanvas( *display\root\canvas\gadgetID )
                ProcedureReturn #True
             EndIf
             
@@ -24484,15 +24498,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Resize( Root( ), #PB_Ignore, #PB_Ignore, width, height )
             EndIf
             
-            ;\\
-             BindGadgetEvent( Canvas, @CanvasEvents( ))
-            ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
-            ; BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
-            BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
-            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
-            If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
-               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
-            EndIf
+            ;             ;\\
+;               BindGadgetEvent( Canvas, @CanvasEvents( ))
+;             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
+;             ; BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
+;             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
+;             BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
+;             If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
+;                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+;             EndIf
          EndIf
          
          If g
@@ -24526,6 +24540,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          widget( ) = Root( )
          PostEventRepaint( Root( ) )
+        
          ProcedureReturn Root( )
       EndProcedure
       
@@ -25146,7 +25161,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Static mainWindow = - 1
          Protected result
          Protected *ew._s_WIDGET
-         
+         Protected window = root( )\canvas\window
+                     Protected canvas = root( )\canvas\gadget
+                     
+          ;\\
+             BindGadgetEvent( Canvas, @CanvasEvents( ))
+            ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
+            ; BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
+            BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
+            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
+;             If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
+;             ;   BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+;             EndIf
+            
          ;\\
          If *root
             mainWindow = *root\canvas\window
@@ -25180,8 +25207,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;CanvasEvents( )
                      
                   Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
-                     Protected window = PB(EventWindow)( )
-                     Protected canvas = PB(GetWindowData)( window )
+                      window = PB(EventWindow)( )
+                      canvas = PB(GetWindowData)( window )
                      
                      If ChangeCurrentCanvas( PB(GadgetID)(canvas),"waitclose")
                         Debug "Wait close.... " + Root( )\address + " " + Root( )\canvas\window + " " + window + " - " + EventGadget( ) + " " + EventData( )
@@ -25768,8 +25795,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23522
-; FirstLine = 23092
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------X0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf4-------------------------f----X------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 23709
+; FirstLine = 23236
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------X0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f4-------------------------f----r---8+--8-----f----------
 ; EnableXP

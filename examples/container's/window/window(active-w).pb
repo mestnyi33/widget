@@ -1,5 +1,6 @@
 ﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
+test_focus_show = 1
 
 Procedure active()
   If EventWidget( )\type = #__type_Window
@@ -56,7 +57,7 @@ Bind(#PB_All, @deactive_0(), #__event_LostFocus)
 EndIf
 
 End  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 3
 ; Folding = r-
 ; EnableXP
