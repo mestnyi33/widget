@@ -617,7 +617,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
 ;          List *hook._s_HOOK( ) ; hook of events
          
          
-         popup.b
          redraw.b
       ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
@@ -670,12 +669,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *group._s_WIDGET         ; = Option( ) group widget
          *string._s_WIDGET        ; = SpinBar( ) string box
          
-         *parent_menu._s_WIDGET
-         
          StructureUnion
             *popupBar._s_WIDGET       ; = PopupBar( ) List view box
             *comboBar._s_WIDGET       ; = ComboBox( ) List view box
          EndStructureUnion
+         popup.b
          ;
          ;                           
          BarWidth.w               ; bar v size
@@ -728,6 +726,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
          *contex
+         
+         ; TEMP
+         *parent_menu._s_WIDGET
       EndStructure
       
       ;--     CANVAS
@@ -743,6 +744,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          repaint.b
          drawmode.b
          canvas._s_canvas
+         *menu._s_WIDGET
          
          ; TEMP
          *widget._s_WIDGET
@@ -797,7 +799,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 750
-; FirstLine = 702
+; CursorPosition = 676
+; FirstLine = 611
 ; Folding = -----r----
 ; EnableXP
