@@ -1,4 +1,4 @@
-﻿XIncludeFile "test-widgets2.pbi" 
+﻿XIncludeFile "../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -111,9 +111,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(*menu, @TestHandler(), -1, 7)
    Bind(*menu, @QuitHandler(), -1, 8)
    
-   PostEvent(-1, -1, -1, -1, 8 )
-   Debug EventGadget()
-   ; WaitClose( )
+   ;PostEvent(-1, -1, -1, -1, 8 )
+   ;Debug EventGadget()
+   WaitClose( )
    
    Define Event
    Repeat
@@ -128,8 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 123
+; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; CursorPosition = 115
 ; FirstLine = 93
 ; Folding = --
 ; EnableXP
