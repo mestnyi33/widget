@@ -426,44 +426,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro LastRoot( ): last\root: EndMacro
       Macro AfterRoot( ): after\root: EndMacro
       Macro BeforeRoot( ): before\root: EndMacro
-      ;
-      Macro ChangeCurrentCanvas( _canvasID_ )
-         FindMapElement( widget::__roots( ), Str( _canvasID_ ) )
-         widget::Root( ) = widget::__roots( )
-         ;Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class
-      EndMacro
-      Macro PostEventRepaint( _root_ )
-         If _root_
-            ; Debug #PB_Compiler_Procedure
-            If widget::__gui\eventloop
-               If Not widget::Send( _root_, constants::#__event_Repaint )
-                  ; Debug "PostEventRepaint - ReDraw"
-                  If widget::StartDrawingRoot( _root_ )
-                     widget::ReDraw( )
-                     widget::StopDrawingRoot( )
-                  EndIf
-               EndIf
-            Else
-               If _root_\canvas\post = 0
-                  _root_\canvas\post = 1
-                  If Not widget::Send( _root_, constants::#__event_Repaint )
-                     PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-      EndMacro
-      Macro PostRepaint( _root_ )
-         ;Debug #PB_Compiler_Procedure
-         PostEventRepaint( _root_ )
-      EndMacro
-      
-      Macro Repaint( _root_ )
-         If widget::StartDrawingRoot( _root_ )
-            widget::ReDraw( _root_ )
-            widget::StopDrawingRoot( )
-         EndIf
-      EndMacro
       
       ;-
       Macro Mouse( ): widget::__gui\mouse: EndMacro
@@ -573,11 +535,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro ; Returns activeed gadget
       
       ;-
+      Macro MouseButtons( ): mouse( )\buttons: EndMacro
+      Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
+      Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y[_mode_]: EndMacro ; Returns mouse y
+                                                                            ;-
+      Macro Cursor( _this_ )
+         _this_\cursor[3]
+      EndMacro
       Macro CurrentCursor( )
          mouse( )\cursor
       EndMacro
-      Macro Cursor( _this_ )
-         _this_\cursor[3]
+      
+      ;-
+      Macro ChangeCurrentCanvas( _canvasID_ )
+         FindMapElement( widget::__roots( ), Str( _canvasID_ ) )
+         widget::Root( ) = widget::__roots( )
+         ;Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::Root( )\class
       EndMacro
       Macro OpenCanvas( _canvas_ = #PB_Any )
          Open( ID::Window(UseGadgetList(0)), 0,0,0,0, "", #PB_Canvas_Container, 0, _canvas_ )
@@ -585,10 +558,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro CloseCanvas( )
          CloseGadgetList( )
       EndMacro
-      ;-
-      Macro MouseButtons( ): mouse( )\buttons: EndMacro
-      Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
-      Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y[_mode_]: EndMacro ; Returns mouse y
       Macro CanvasMouseX( _canvas_ )
          GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
          ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
@@ -608,16 +577,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro WidgetEventData( ): WidgetEvent( )\data: EndMacro
       Macro WidgetEventItem( ): WidgetEvent( )\item: EndMacro
       Macro EventWidget( ): WidgetEvent( )\widget: EndMacro
-      
-      ;-
-      ;       CompilerIf #PB_Compiler_Version =< 546
-      ;          Macro WindowEvent( )
-      ;             events::WaitEvent( PB(WindowEvent)( ) )
-      ;          EndMacro
-      ;          Macro WaitWindowEvent( _waittime_ = )
-      ;             events::WaitEvent( PB(WaitWindowEvent)( _waittime_ ) )
-      ;          EndMacro
-      ;       CompilerEndIf
+      ;
       Macro WaitEvent( _callback_, _eventtype_ = #PB_All )
          widget::Bind( #PB_All, _callback_, _eventtype_ )
          widget::WaitClose( )
@@ -691,11 +651,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget( ) = *before_start_enumerate_widget
       EndMacro
       
-      
       ;-
       Macro StartDrawingRoot( _root_ )
          Bool(widget::__gui\drawingroot <> _root_)
-         ;Debug "StartDrawingRoot "+_root_\class
+         ;
          StopDrawingRoot( )
          If Not _root_\drawmode 
             _root_\drawmode | 1<<2
@@ -720,22 +679,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
             widget::__gui\drawingroot = #Null
          EndIf
       EndMacro
-      Macro RootReDrawing( _root_ )
-         Bool(widget::__gui\drawingroot <> _root_) : Debug "  ---- Root ReDrawing ----  "
-         StopDrawingRoot( )
-         StartDrawingRoot( _root_ )
-      EndMacro
-      
       Macro DrawingFont_( _this_ )
          CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-            If RootReDrawing( _this_\root )
+            If StartDrawingRoot( _this_\root ) : Debug "  ---- Root ReDrawing ----  " 
                If CurrentFontID( )
                   DrawingFont(CurrentFontID( ))
                EndIf
             EndIf
          CompilerEndIf
       EndMacro
+      Macro Repaint( _root_ )
+         If Not widget::__gui\drawingroot
+            widget::StartDrawingRoot( _root_ )
+         EndIf
+         widget::ReDraw( _root_ )
+         widget::StopDrawingRoot( )
+      EndMacro
       
+      ;-
+      Macro PostEventRepaint( _root_ )
+         If _root_
+            ; Debug #PB_Compiler_Procedure
+            If widget::__gui\eventloop
+               If Not widget::Send( _root_, constants::#__event_Repaint )
+                  ; Debug "PostEventRepaint - ReDraw"
+                  Repaint( _root_ )
+               EndIf
+            Else
+               If _root_\canvas\post = 0
+                  _root_\canvas\post = 1
+                  If Not widget::Send( _root_, constants::#__event_Repaint )
+                     PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+      EndMacro
+      Macro PostRepaint( _root_ )
+         ;Debug #PB_Compiler_Procedure
+         PostEventRepaint( _root_ )
+      EndMacro
       
       ;-
       Macro MidF(_string_, _start_pos_, _length_ = -1)
@@ -19491,7 +19474,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Procedure GetAtPoint( *root._s_ROOT, mouse_x, mouse_y, List *List._s_WIDGET( ) )
          Protected i, a_index, Repaint, *this._s_WIDGET, *e._s_WIDGET
-         Debug ""+*root\class+" "+*root\haschildren
+         ;Debug ""+*root\class+" "+*root\haschildren
          ;\\ get at point address
          If Popup( ) And 
             Popup( )\root = *root
@@ -21886,31 +21869,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Repost( )
                   EndIf
                   
-                  ; ;                   If Root( )\class = "Popup( )"
                   If test_draw_repaint
                      Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                   EndIf
-                  ; ; ; ;                      ForEach __widgets( ) 
-                  ; ; ; ;                         If __widgets( )\root = Root()
-                  ; ; ; ;                            Debug "    "+__widgets( )\class
-                  ; ; ; ;                         EndIf
-                  ; ; ; ;                      Next
-                  ; ;                   EndIf
                   
-                  If Not __gui\drawingroot
-                     StartDrawingRoot( Root( ) )
-                  EndIf
-                  ReDraw( )
-                  StopDrawingRoot( )
-                  
+                  Repaint( Root( ) )
                   Root( )\canvas\post = 0
-                  
-                  ;                   Debug "-----s----"
-                  ;                   If StartEnumerate( Root() )
-                  ;                      Debug ""+widget( )\class +" "+ widget( )\x +" "+ widget( )\y +" "+ widget( )\height +" "+ widget( )\width
-                  ;                      StopEnumerate( )
-                  ;                   EndIf
-                  ;                   Debug "------e----"
                EndIf
                If EnteredCanvasID
                   If EnteredCanvasID <> Root( )\canvas\gadgetID
@@ -24045,15 +24009,15 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_StatusChange
             Debug "a_StatusChange"
-            If size_value
+            If size_value And *this\anchors
                SetState(size_value, *this\anchors\size )
             EndIf
             
-            If pos_value
+            If pos_value And *this\anchors
                SetState(pos_value, *this\anchors\pos )
             EndIf
             
-            If grid_value
+            If grid_value And *this\anchors
                SetState(grid_value, mouse( )\steps )
             EndIf
             
@@ -24131,7 +24095,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
    a_init( view, 8 )
    
-   Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
+  Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
    
    If *toolbar
       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
@@ -24193,7 +24157,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\ Open Root0
    Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-   Define *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root0_MenuBar" )
+  ;BindWidgetEvent( *root2, @BindEvents( ) )
+    Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
    SetColor( *menu, #__color_back, $FFC8ECF0 )
    
    BarTitle("Title-1")
@@ -24247,8 +24212,25 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Bind(*menu, @TestHandler(), -1, 7)
    Bind(*menu, @QuitHandler(), -1, 8)
-   ;BindWidgetEvent( *root2, @BindEvents( ) )
    
+   *menu = CreatePopupMenuBar( )
+   If *menu                  ; creation of the pop-up menu begins...
+      BarItem(1, "Open")     ; You can use all commands for creating a menu
+      BarItem(2, "Save")     ; just like in a normal menu...
+      BarItem(3, "Save as")
+      BarItem(4, "event-Quit")
+      BarSeparator( )
+      OpenBar("Recent files")
+      BarItem(5, "PureBasic.exe")
+      BarItem(6, "event-Test")
+      CloseBar( )
+   EndIf
+   
+   Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
+   Bind(*menu, @QuitHandler(), #__event_LeftClick, 4)
+   
+   
+   ;\\
    Global *button_panel = Panel(10, 10, 200 + 60, 200)
    Define Text.s, m.s   = #LF$, a
    AddItem(*button_panel, -1, "1")
@@ -24313,9 +24295,12 @@ CompilerIf #PB_Compiler_IsMainFile
    *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__text_password | #__text_right)
    
    ;\\
-   Global *button_item1, *button_item2
+   Global *button_item1, *button_item2, *button_menu
    Procedure button_tab_events( )
       Select GetText( EventWidget( ) )
+         Case "popup menu"
+            DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+            
          Case "1"
             SetState(*button_panel, 0)
             SetState(*button_item2, 0)
@@ -24325,6 +24310,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure 
    
+   *button_menu = Button( 180, 5, 87, 25, "popup menu")
+   Bind(*button_menu, @button_tab_events( ), #__event_Down )
    *button_item1 = Button( 220, 220, 25, 50, "1", #PB_Button_Toggle)
    *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #PB_Button_Toggle)
    Bind(*button_item1, @button_tab_events( ), #__event_Down )
@@ -24681,14 +24668,13 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; Folding = --------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v+---------------------------------------------------------------------------------------------------------------------------------
-; EnableXP
-; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 24686
-; FirstLine = 24650
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 19476
+; FirstLine = 19374
+; Folding = ----------------------A0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------f----------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
