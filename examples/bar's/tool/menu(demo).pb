@@ -1,36 +1,36 @@
 ﻿;                                                                     - PB 
-;                                                PopupMenu( [flags] ) - CreatePopupMenu( #Menu )
-;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
-;
-;                                           Menu( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
-;                                                                       CreateImageMenu( #Menu, WindowID [, Flags] )
-; 
-;                        DisplayPopup( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
 ;                                                                     - IsMenu( #Menu )
 ;                                                                     - MenuID( #Menu )
+;                                                    Free( *address ) - FreeMenu( #Menu )
+;                                                    Hide( *address ) - HideMenu( #Menu, State )
+;                                                  Height( *address ) - MenuHeight( )
 ; 
-;                                                     Title( Title$ ) - MenuTitle( Title$ )
+;                                             PopupMenuBar( [flags] ) - CreatePopupMenu( #Menu )
+;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
+;
+;                                        MenuBar( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
+;                                                                       CreateImageMenu( #Menu, WindowID [, Flags] )
+; 
+;                 DisplayPopupMenuBar( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
+;
+;                                                     BarSeparator( ) - MenuBar( )
+;                                                  BarTitle( Title$ ) - MenuTitle( Title$ )
+;                                      BarItem( item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
+;                                         OpenBar( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
+;                                                         CloseBar( ) - CloseSubMenu( )
+; 
+; 
 ;                                 GetItemText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
 ;                         SetItemText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
-; 
-;                                                    Free( *address ) - FreeMenu( #Menu )
+;
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
-;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
-;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
-;                                                    Hide( *address ) - HideMenu( #Menu, State )
-;                                             Separator( [*address] ) - MenuBar( )
-;                                                  Height( *address ) - MenuHeight( )
-;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
-;
-;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
-;                                        OpenItem( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
-;                                                        CloseItem( ) - CloseSubMenu( )
-; 
 ;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
+;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                               SetItemText( *address, item, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
+;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
 ;
-;                      Bind( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
-;                    UnBind( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                              Bind( *address, @callback( ), 0, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                            UnBind( *address, @callback( ), 0, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
 
 XIncludeFile "../../../widgets.pbi" 
 
@@ -245,9 +245,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 190
-; FirstLine = 173
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 13
 ; Folding = --
 ; EnableXP
 ; DPIAware

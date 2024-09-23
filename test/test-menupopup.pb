@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseLIB(widget)
    
-   Global  *menu, *button_menu
+   Global._S_WIDGET  *menu, *button_menu
    
    Open(0, 0, 0, 300, 200, "popup menu test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    *menu = CreatePopupMenuBar( )
@@ -34,18 +34,44 @@ CompilerIf #PB_Compiler_IsMainFile
    *button_menu = Button( 10, 5, 120, 25, "popup menu")
 ;    Bind(*button_menu, @button_tab_events( ), #__event_Down )
    
+   Debug "------->>--------"
+   ForEach *menu\__tabs( )
+      Debug ""+
+            *menu\__tabs( )\text\string +" "+
+            *menu\__tabs( )\x +" "+
+            *menu\__tabs( )\y +" "+
+            *menu\__tabs( )\width +" "+
+            *menu\__tabs( )\height
+      
+   Next
+   Debug "-------<<--------"
+   
    Repaint(root( ))
      ;; Root( )\canvas\post = 0
                
    DisplayPopupMenuBar( *menu, *button_menu, 10, 32 )
-            
+   ;DisplayPopupMenuBar( *menu, root(), 10, 32 )
+   
+   
+   Debug "------->>--------"
+   ForEach *menu\__tabs( )
+      Debug ""+
+            *menu\__tabs( )\text\string +" "+
+            *menu\__tabs( )\x +" "+
+            *menu\__tabs( )\y +" "+
+            *menu\__tabs( )\width +" "+
+            *menu\__tabs( )\height
+      
+   Next
+   Debug "-------<<--------"
+   
    WaitClose( )
    
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 6
+; CursorPosition = 51
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
 ; DPIAware

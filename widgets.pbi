@@ -583,6 +583,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          widget::WaitClose( )
       EndMacro
       
+      Macro BindEvents(_callback_, _this_=#PB_Any, _item_=#PB_All, _event_=0 ) 
+         Bind( _this_, _callback_, _event_, _item_ )
+      EndMacro
+      
       ;-
       Global *before_start_enumerate_widget._s_WIDGET
       Macro StartEnumerate( _parent_, _item_ = #PB_All )
@@ -4706,41 +4710,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   BarButton( button.i, image.i, mode.i = 0, text.s = #Null$ )
          Protected *item._s_ROWS 
          Protected *this._s_WIDGET = widget( )
-         
+         ;
          If *this
-            *item = AddItem( *this, - 1, text, image, mode)
+            *item = AddItem( *this, #PB_Any, text, image, mode)
             *item\itemindex = button
-            
-            ;             If *this\parent
-            ;                If *item\text\string
-            ;                   
-            ;                   If *this\type = #__type_ToolBar
-            ;                      If Not *this\flag & #PB_Toolbar_InlineText
-            ;                         If *this\flag & #PB_Toolbar_Small 
-            ;                            *this\parent\TabBoxSize( ) = 25 + 20 
-            ;                            ;                   ElseIf *this\flag & #PB_Toolbar_Large 
-            ;                            ;                      *this\parent\TabBoxSize( ) = 45
-            ;                            ;                   Else ; If flag & #PB_Toolbar_Normal 
-            ;                            ;                      *this\parent\TabBoxSize( ) = 35
-            ;                            
-            ;                            ;                      If *this\flag & #PB_Toolbar_Left
-            ;                            ;                         *this\parent\fs[1] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
-            ;                            ;                      ElseIf *this\flag & #PB_Toolbar_Right
-            ;                            ;                         *this\parent\fs[3] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
-            ;                            ;                      ElseIf *this\flag & #PB_Toolbar_Bottom
-            ;                            ;                         *this\parent\fs[4] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
-            ;                            ;                      Else
-            ;                            *this\parent\fs[2] = *this\parent\barHeight + *this\parent\MenuBarHeight + *this\parent\TabBoxSize( ) + 2
-            ;                            ;                      EndIf
-            ;                            Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            ;                            ;   Debug *this\parent\TabBoxSize( )
-            ;                            
-            ;                         EndIf
-            ;                      EndIf
-            ;                   EndIf
-            ;                EndIf
-            ;             EndIf
          EndIf
+         ;
          ProcedureReturn *item
       EndProcedure
       
@@ -24672,9 +24647,9 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 19476
-; FirstLine = 19374
-; Folding = ----------------------A0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------f----------------------------------------------------------------
+; CursorPosition = 585
+; FirstLine = 567
+; Folding = ----------------------B7-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------+---------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
