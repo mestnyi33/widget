@@ -13,8 +13,8 @@
   ;- blue - (синие цвета)
   With *this\blue                        
     \state = 0
-    \_alpha[0] = 255
-    \_alpha[1] = 255
+    \_alpha = 255
+    
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
      
     ; Цвета по умолчанию
@@ -53,8 +53,8 @@
   ;- green - (зеленые цвета)
   With *this\green                          
     \state = 0
-    \_alpha[0] = 255
-    \_alpha[1] = 255
+    \_alpha = 255
+    
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
@@ -85,8 +85,8 @@
   ;- red - (красные цвета)
   With *this\red                          
     \state = 0
-    \_alpha[0] = 255
-    \_alpha[1] = 255
+    \_alpha = 255
+    
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
@@ -118,8 +118,8 @@
   ;- grey - (серые цвета)
   With *this\grey                          
     \state = 0
-    \_alpha[0] = 255
-    \_alpha[1] = 255
+    \_alpha = 255
+    
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
@@ -155,8 +155,8 @@
   ;- grey1 - (серые цвета)
   With *this\grey1                          
     \state = 0
-    \_alpha[0] = 255
-    \_alpha[1] = 255
+    \_alpha = 255
+    
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
@@ -188,8 +188,8 @@
   ;- grey2 - (серые цвета)
   With *this\grey2                         
     \state = 0
-    \_alpha[0] = 255
-    \_alpha[1] = 255
+    \_alpha = 255
+    
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; - Серые цвета
@@ -286,6 +286,7 @@ EndModule
 ;     
 ; CompilerEndSelect
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 191
 ; Folding = -
 ; EnableXP

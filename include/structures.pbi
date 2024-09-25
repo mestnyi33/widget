@@ -122,12 +122,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     COLOR
       Structure _s_COLOR
          state.b ; entered; selected; disabled;
-         front.i[4]
-         line.i[4]
-         fore.i[4]
-         back.i[4]
-         frame.i[4]
-         _alpha.a[2]
+         front.l[4]
+         line.l[4]
+         fore.l[4]
+         back.l[4]
+         frame.l[4]
+         _alpha.a
          *alpha._s_color
       EndStructure
       ;--     ALIGN
@@ -798,8 +798,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 676
-; FirstLine = 611
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 130
+; FirstLine = 121
 ; Folding = -----r----
 ; EnableXP
