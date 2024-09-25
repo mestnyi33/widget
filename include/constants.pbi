@@ -442,11 +442,18 @@
       
       ;-\\ event-type
       CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
-         #PB_EventType_Resize = 6
+        #PB_EventType_Resize = 6
       CompilerEndIf
       CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
-         #PB_EventType_ReturnKey = 7
+        #PB_EventType_ReturnKey = 7
       CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_CloseItem, #PB_Constant)
+        #PB_EventType_CloseItem = 65535
+      CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_SizeItem, #PB_Constant)
+        #PB_EventType_SizeItem = 65534
+      CompilerEndIf
+      
       Enumeration #PB_EventType_FirstCustomValue
          #PB_EventType_Drop
          #PB_EventType_Repaint
@@ -875,8 +882,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 656
-; FirstLine = 643
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 453
+; FirstLine = 437
 ; Folding = ----
 ; EnableXP
