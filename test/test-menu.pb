@@ -117,6 +117,20 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Bind(*menu, @TestHandler(), -1, 7)
   Bind(*menu, @QuitHandler(), -1, 8)
+  
+  Define i, *combobox._S_WIDGET = ComboBox( 10, 125, 120, 25)
+   AddItem(*combobox, -1, "combo")
+   For i = 0 To 9
+      AddItem(*combobox, -1, "item_"+Str(i))
+   Next
+   SetState(*combobox, 0)
+   
+   Repaint(root( ))
+   
+   
+   DisplayPopupMenuBar( *combobox\PopupBar( ), *menu, 10, 190 )
+   ;DisplayPopupMenuBar( *combobox\PopupBar( ), *combobox, 10, 150 )
+   
 ;   
 ;   SetActive( *menu )
 ;   SetActiveGadget( *menu\root\canvas\gadget )
@@ -387,8 +401,8 @@ CompilerIf #PB_Compiler_IsMainFile = 555
 CompilerEndIf
    
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 27
+; CursorPosition = 128
+; FirstLine = 95
 ; Folding = X---
 ; EnableXP
 ; DPIAware

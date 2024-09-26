@@ -1,18 +1,22 @@
-﻿XIncludeFile "../widgets.pbi" 
+﻿; fixed
+XIncludeFile "../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile 
    
    EnableExplicit
    UseLIB(widget)
-   test_event_resize = 1
+   ;test_event_resize = 1
+   test_atpoint = 1
+   test_draw_repaint = 1
+   test_event_entered = 1
    
    Global._S_WIDGET  *menu, *button_menu
    
    Open(0, 0, 0, 300, 200, "popup menu test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    *menu = CreatePopupMenuBar( )
    If *menu                  ; creation of the pop-up menu begins...
-      SetColor(*menu, #__Color_Back, RGB(213, 213, 213))
-      SetItemColor(*menu, -1, #__Color_Back, $FFBF33C3, 1)
+      ;SetColor(*menu, #__Color_Back, RGB(213, 213, 213))
+      ;SetItemColor(*menu, -1, #__Color_Back, $FFBF33C3, 1)
    
       BarItem(1, "Open")     ; You can use all commands for creating a menu
       BarItem(2, "Save")     ; just like in a normal menu...
@@ -39,8 +43,18 @@ CompilerIf #PB_Compiler_IsMainFile
    *button_menu = Button( 10, 5, 120, 25, "popup menu")
    Bind(*button_menu, @button_tab_events( ), #__event_Down )
    
+   Define i, *combobox._S_WIDGET = ComboBox( 10, 125, 120, 25)
+   AddItem(*combobox, -1, "combo")
+   For i = 0 To 5;9
+      AddItem(*combobox, -1, "item_"+Str(i))
+   Next
+   SetState(*combobox, 0)
+   
    Repaint(root( ))
    
+   
+   DisplayPopupMenuBar( *combobox\PopupBar( ), *button_menu, 10, 190 )
+   ;DisplayPopupMenuBar( *combobox\PopupBar( ), *combobox, 10, 150 )
    
    DisplayPopupMenuBar( *menu, *button_menu, 140, 20 )
    ;DisplayPopupMenuBar( *menu, root(), 10, 32 )
@@ -68,9 +82,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 28
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 11
 ; Folding = -
 ; EnableXP
 ; DPIAware
