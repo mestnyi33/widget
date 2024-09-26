@@ -1301,6 +1301,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-  -----------------
     ;-   DECLARE_globals
     ;-  -----------------
+    Global _dpiScaleFactorX.d
+    Global _dpiScaleFactorY.d
+     Declare.l update_items_( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
+   
     Global _macro_call_count_
     Global __gui._s_STRUCT
     ;Global NewMap *roots._s_ROOT( )
@@ -1527,9 +1531,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
   EndDeclareModule
   
   Module Widget
-    Global _dpiScaleFactorX.d
-    Global _dpiScaleFactorY.d
-    
     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       _dpiScaleFactorX = GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96
       _dpiScaleFactorY = GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96
@@ -1549,7 +1550,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.b bar_tab_draw( *this )
     
     Declare.b bar_area_update( *this._s_WIDGET )
-    Declare.l update_items_( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
     Declare.l update_visible_items_( *this._s_WIDGET, List *items._s_ROWS( ), visible_height.l = 0 )
     Declare.l draw_items_( *this._s_WIDGET, List *items._s_ROWS( ) )
     Declare   Text_Update( *this._s_WIDGET )
@@ -5438,6 +5438,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\autosize
         If *this\parent And 
            *this\parent <> *this 
+           
           x      = *this\parent\inner_x( )
           Y      = *this\parent\inner_y( )
           width  = *this\parent\inner_width( )
@@ -5577,9 +5578,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\
         If x = #PB_Ignore
-          x = *this\container_x( )
+           x = *this\container_x( )
         Else
-          If *this\parent
+           If *this\parent And 
+              *this\parent\container
             If Not *this\child
               x + *this\parent\scroll_x( )
             EndIf
@@ -5589,7 +5591,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If y = #PB_Ignore
           y = *this\container_y( )
         Else
-          If *this\parent
+           If *this\parent And 
+              *this\parent\container
             If Not *this\child
               y + *this\parent\scroll_y( )
             EndIf
@@ -5662,7 +5665,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;          If Not Change_width And *this\inner_width( ) <> iwidth : Change_width = iwidth - *this\inner_width( ) : EndIf
       ;          If Not Change_height And *this\inner_height( ) <> iheight : Change_height = iheight - *this\inner_height( ) : EndIf
       
-      ;\\
+        
+       ;\\
       If Change_x
         *this\resize\x = Change_x
         *this\frame_x( )  = x
@@ -5729,7 +5733,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\StringBox( )
           Resize( *this\StringBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
         EndIf
-        
+         
         ;\\ resize vertical&horizontal scrollbars
         If *this\scroll And
            *this\scroll\v And
@@ -5794,7 +5798,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ if the integral tab bar
         If *this\TabBox( )
-          ;If *this\container
+           ;If *this\container
+           ;;Debug ""+*this\class +" "+ x
             *this\inner_x( ) = x ; - *this\fs - *this\fs[1]
             *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
             
@@ -16706,7 +16711,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.l SetItemColor( *this._s_WIDGET, Item.l, ColorType.l, Color.l, Column.l = 0 )
-      Protected result, alpha.a
+      Protected result, alpha.a = Alpha( Color )
       
       ;
       If *this\row And ListSize( *this\__items( ) ) ;*this\type = #__type_Tree Or *this\type = #__type_Editor
@@ -16720,6 +16725,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Else
           If is_item_( *this, item ) And SelectElement( *this\__items( ), Item )
             set_color_( result, *this\__items( )\color, ColorType, Color, alpha, [Column] )
+          EndIf
+        EndIf
+      EndIf
+       Debug 55
+          
+      If ListSize( *this\__tabs( ) ) ;*this\type = #__type_Tree Or *this\type = #__type_Editor
+        If Item = #PB_All
+          PushListPosition( *this\__tabs( ))
+          ForEach *this\__tabs( )
+            set_color_( result, *this\__tabs( )\color, ColorType, Color, alpha, [Column] )
+          Next
+          PopListPosition( *this\__tabs( ))
+          
+        Else
+           If is_item_( *this, item ) And SelectElement( *this\__tabs( ), Item )
+            set_color_( result, *this\__tabs( )\color, ColorType, Color, alpha, [Column] )
           EndIf
         EndIf
       EndIf
@@ -24684,9 +24705,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24326
-; FirstLine = 23808
-; Folding = --------------------------------------------------------------------------------------t---------------------------------dy00--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v+0-e---0vz------f----------------------------------------------------------------8-------8-------------------------------------------------------4-------
+; CursorPosition = 16731
+; FirstLine = 16070
+; Folding = --------------------------------------------------------------------------------------t----------------------+-------f--dy00------0-v4--+-------rW9--v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------2v-48--v-d+------8---------------------------------------------------------------f-------f--------------------------------------------------------+-------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
