@@ -109,8 +109,6 @@ CompilerEndIf
 CompilerIf Not Defined( Widget, #PB_Module )
    DeclareModule Widget
       Global test_canvas_events
-      Global test_atpoint
-      Global test_event_entered
       
       Global test_event_send = 0
       Global test_event_resize
@@ -268,30 +266,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       Macro MenuBar( _parent_ = 0, _flags_ = 0 )
       ;          CreateBar( #__type_Menu, _parent_, _flags_ )
       ;       EndMacro
-      Macro AlphaState( ) 
-         color\_alpha ; << 24
-      EndMacro
-      
-      Macro AlphaState24( ) 
-         color\_alpha << 24
-      EndMacro
-      
-      Macro ColorAlphaState( ) 
-         color\_alpha
-      EndMacro
-      
-      Macro ColorAlphaColor( ) 
-         color\alpha
-      EndMacro
-      
-      Macro AlphaColor( ) 
-         color\alpha ; << 24
-      EndMacro
-      
-      Macro AlphaColor24( ) 
-         color\alpha << 24
-      EndMacro
-      
       Macro ToolBar( _parent_, _flags_ = 0 )
          CreateBar( #__type_ToolBar, _parent_, _flags_ )
       EndMacro
@@ -445,7 +419,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro __roots( ): widget::__gui\roots( ): EndMacro
       Macro __widgets( ): __gui\widgets( ): EndMacro
       
-      
       ;-\\
       Macro widget( ): widget::__gui\widget: EndMacro ; Returns current-root last added widget
       Macro Root( ): widget::__gui\root: EndMacro
@@ -460,7 +433,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro Opened( ): widget::__gui\opened: EndMacro ; object list opened container
-                                                      ;Macro Popup( ): widget::__gui\sticky\box: EndMacro
+      Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro PopupWindow( ): widget::__gui\sticky\window: EndMacro
       
       ;Macro PopupParent( ): Popup( )\root\parent: EndMacro
@@ -563,14 +536,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro MouseButtons( ): mouse( )\buttons: EndMacro
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-         Macro GetMouseX( _mode_ = #__c_screen ): ( mouse( )\x / _dpiScaleFactorX ): EndMacro ; Returns mouse x
-         Macro GetMouseY( _mode_ = #__c_screen ): ( mouse( )\y / _dpiScaleFactorY ): EndMacro ; Returns mouse y
-      CompilerElse
-         Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x : EndMacro ; Returns mouse x
-         Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y : EndMacro ; Returns mouse y
-      CompilerEndIf
-      ;-
+      Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
+      Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y[_mode_]: EndMacro ; Returns mouse y
+                                                                            ;-
       Macro Cursor( _this_ )
          _this_\cursor[3]
       EndMacro
@@ -1097,8 +1065,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro draw_gradient_( _vertical_, _address_, _color_fore_, _color_back_, _mode_ = )
-         BackColor( _color_fore_ & $FFFFFF | _address_\AlphaState24( ) )
-         FrontColor( _color_back_ & $FFFFFF | _address_\AlphaState24( ) )
+         BackColor( _color_fore_ & $FFFFFF | _address_\color\_alpha << 24 )
+         FrontColor( _color_back_ & $FFFFFF | _address_\color\_alpha << 24 )
          
          If _vertical_  ; _address_\vertical
             LinearGradient( _address_\x#_mode_, _address_\y#_mode_, ( _address_\x#_mode_ + _address_\width#_mode_ ), _address_\y#_mode_ )
@@ -1205,20 +1173,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro draw_arrows( _address_, _type_ )
          Arrow( _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
                 _address_\y + ( _address_\height - _address_\arrow\size ) / 2, _address_\arrow\size, _type_,
-                _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ), _address_\arrow\type )
+                _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24, _address_\arrow\type )
       EndMacro
       
       Macro draw_box( _address_, _color_type_, _mode_ = )
          draw_roundbox_( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_,
-                         _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+                         _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
       EndMacro
       
       Macro draw_box_button( _address_, _color_type_ )
          ;draw_box( _address_, _color_type_)
          If Not _address_\hide
-            draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+            draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+            draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+            draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
       EndMacro
       
@@ -1226,11 +1194,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; close button
          If Not _address_\hide
             If _address_\ColorState( )
-               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-               Line( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
                
-               Line( _address_\x - 1 + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-               Line( _address_\x + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+               Line( _address_\x - 1 + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
             EndIf
             
             draw_box_button( _address_, color\frame )
@@ -1240,11 +1208,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro draw_maximize_button( _address_, _size_ )
          If Not _address_\hide
             If _address_\ColorState( )
-               Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+               Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
                
-               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-               Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+               Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
             EndIf
             
             draw_box_button( _address_, color\frame )
@@ -1254,11 +1222,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro draw_minimize_button( _address_, _size_ )
          If Not _address_\hide
             If _address_\ColorState( )
-               Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-               Line( _address_\x + 0 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+               Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x + 0 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
                
-               Line( _address_\x - 1 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-               Line( _address_\x - 2 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+               Line( _address_\x - 1 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
+               Line( _address_\x - 2 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
             EndIf
             
             draw_box_button( _address_, color\frame )
@@ -1268,7 +1236,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro draw_help_button( _address_, _size_ )
          If Not _address_\hide
             draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height,
-                            _address_\round, _address_\round, _address_\color\frame[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+                            _address_\round, _address_\round, _address_\color\frame[_address_\ColorState( )] & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
       EndMacro
       
@@ -1298,7 +1266,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro draw_background_image_( _this_, _x_, _y_, _mode_ = )
          ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         DrawAlphaImage( _this_\image#_mode_\id, _x_ + _this_\image#_mode_\x + _this_\scroll_x( ), _y_ + _this_\image#_mode_\y + _this_\scroll_y( ), _this_\ColorAlphaState( ) )
+         DrawAlphaImage( _this_\image#_mode_\id, _x_ + _this_\image#_mode_\x + _this_\scroll_x( ), _y_ + _this_\image#_mode_\y + _this_\scroll_y( ), _this_\color\_alpha )
       EndMacro
       
       ;     Macro Close( )
@@ -1308,10 +1276,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-  -----------------
       ;-   DECLARE_globals
       ;-  -----------------
-      Global _dpiScaleFactorX.d
-      Global _dpiScaleFactorY.d
-      Declare.l update_items_( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
-      
       Global _macro_call_count_
       Global __gui._s_STRUCT
       ;Global NewMap *roots._s_ROOT( )
@@ -1323,14 +1287,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;{
       ; Requester
       Global resize_one
-      
-      Declare   CanvasEvents( )
-      Declare   EventRepaint( )
-      Declare   EventActivate( )
-      Declare   EventDeactivate( )
-      Declare   EventResize( )
-      
-      
       Declare.b bar_tab_update_items_( *this._s_WIDGET, List *items._s_ITEMS( ) )
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare.i bar_tab_SetState( *this, item.l )
@@ -1546,6 +1502,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
    EndDeclareModule
    
    Module Widget
+      Global _dpiScaleFactorX.d
+      Global _dpiScaleFactorY.d
+      
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
          _dpiScaleFactorX = GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96
          _dpiScaleFactorY = GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96
@@ -1565,6 +1524,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.b bar_tab_draw( *this )
       
       Declare.b bar_area_update( *this._s_WIDGET )
+      Declare.l update_items_( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
       Declare.l update_visible_items_( *this._s_WIDGET, List *items._s_ROWS( ), visible_height.l = 0 )
       Declare.l draw_items_( *this._s_WIDGET, List *items._s_ROWS( ) )
       Declare   Text_Update( *this._s_WIDGET )
@@ -2354,7 +2314,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;     ProcedureReturn (( Bool( *value>Max ) * Max ) + ( Bool( Grid And *value<Max ) * ( Round(( *value/Grid ), #PB_round_nearest ) * Grid ) ))
       EndProcedure
       
-      Procedure Draw_Datted( x, Y, SourceColor.l, TargetColor.l )
+      Procedure Draw_Datted( x, Y, SourceColor, TargetColor )
          Static Len.b
          Protected Color,
                    Dot = a_selector( )\dot_ted,
@@ -2952,19 +2912,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If _address_ <> a_selector( )
             If _this_
-               If _address_[#__a_moved]         ; moved
-                  If _this_\anchors\mode & #__a_zoom ; _this_\type = #__type_window
+               If _this_\anchors\mode & #__a_zoom ; _this_\type = #__type_window
+                  If _address_[#__a_moved]        ; moved
                      _address_[#__a_moved]\x      = _x_ + _address_[#__a_left]\width
                      _address_[#__a_moved]\y      = _y_ + _address_[#__a_top]\height
                      _address_[#__a_moved]\width  = _width_ - ( _address_[#__a_left]\width + _address_[#__a_right]\width )
                      _address_[#__a_moved]\height = ( _this_\fs + _this_\barHeight ) - _address_[#__a_top]\height / 2
-                  Else
-                     If _this_\container
-                        _address_[#__a_moved]\x      = _x_
-                        _address_[#__a_moved]\y      = _y_
-                        _address_[#__a_moved]\width  = _this_\anchors\size * 2
-                        _address_[#__a_moved]\height = _this_\anchors\size * 2
-                     EndIf
+                  EndIf
+               Else
+                  If _address_[#__a_moved] ; moved
+                     _address_[#__a_moved]\x      = _x_
+                     _address_[#__a_moved]\y      = _y_
+                     _address_[#__a_moved]\width  = _this_\anchors\size * 2
+                     _address_[#__a_moved]\height = _this_\anchors\size * 2
                   EndIf
                EndIf
             EndIf
@@ -4004,15 +3964,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If mouse( )\buttons & #PB_Canvas_LeftButton
                ;\\ set current
                If a_entered( )
-                  If *this\anchors
-                     If Not *this\container
-                        If Not a_index( ) 
-                           a_index( )  = #__a_moved
-                        EndIf
-                     EndIf
-                     a_delta( a_entered( ) )
-                     *pressed = a_entered( )
-                  EndIf
+                  a_delta( a_entered( ) )
+                  *pressed = a_entered( )
                EndIf
                ;
                If a_transform( ) 
@@ -4024,7 +3977,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               
             EndIf
          EndIf
          
@@ -4937,11 +4889,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ ComboBox
             If *display\ComboButton( )
-               ;           ;\\ hide previews popup widget
-               ;           If Popup( ) And 
-               ;              Popup( ) <> *this
-               ;             DisplayPopupMenuBar( Popup( ), Popup( )\root\parent )
-               ;           EndIf
+               ;\\ hide previews popup widget
+               If Popup( ) And 
+                  Popup( ) <> *this
+                  DisplayPopupMenuBar( Popup( ), Popup( )\root\parent )
+               EndIf
                
                ;\\ hide current popup widget
                Hide( *this, *this\hide ! 1 )
@@ -4953,18 +4905,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
                   ;
-                  If *this\popup
+                  If *this = Popup( )
                      If PressedWidget( ) = *this
                         PressedWidget( ) = *display
                      EndIf
                   EndIf
-                  ;             ;
-                  ;             Popup( ) = #Null 
+                  ;
+                  Popup( ) = #Null 
                   ProcedureReturn - 1
                Else
                   Debug "comboBar - show"
                   *display\ComboButton( )\arrow\direction = 3
                EndIf
+               ; Popup( ) = *this
             Else
                If *this\hide
                   Debug "menuBar - show "+*this\class
@@ -5001,7 +4954,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   StickyWindow( window, #True )
                CompilerEndIf
                
-               *displayRoot\TabBox( ) = *this
                
                ;\\
                If is_integral_( *this )
@@ -5009,6 +4961,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\type = #__type_ToolBar Or 
                      *this\type = #__type_Menu 
                      
+                     *displayRoot\TabBox( ) = *this
                   EndIf
                   
                   ReParent( *this, *displayRoot )
@@ -5043,45 +4996,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\type = #__type_TabBar Or
-                  *this\type = #__type_ToolBar Or 
-                  *this\type = #__type_Menu 
-                  
-                  height = 1
-                  width = 0
-                  PushListPosition( *this\__tabs( ) ) 
-                  If ListSize( *this\__tabs( ) ) > 9
-                     SelectElement( *this\__tabs( ), 9 )
-                  Else
-                     LastElement( *this\__tabs( ) ) 
-                  EndIf
-                  height + ( *this\__tabs( )\y + *this\__tabs( )\height )
-                  PopListPosition( *this\__tabs( ) ) 
-                  
-               ElseIf *this\row
-                  width = *this\text\padding\x + 1 ;*this\fs*2
-                  height = *this\text\padding\y + *this\fs*2
-                  PushListPosition( *this\__rows( ) ) 
-                  If ListSize( *this\__rows( ) ) > 9
-                     SelectElement( *this\__rows( ), 9 )
-                  Else
-                     LastElement( *this\__rows( ) ) 
-                  EndIf
-                  height + ( *this\__rows( )\y + *this\__rows( )\height )
-                  PopListPosition( *this\__rows( ) ) 
-               EndIf
-               
+               width = 0
+               height = 0
                
                ;\\
                If *this\scroll And 
                   *this\scroll\v 
                   ;bar_area_update( *this )
-                  ;Debug *this\scroll\v\hide
+                  
                   ;If Not *this\scroll\v\hide
                   width + *this\scroll\v\width 
                   ;EndIf
                EndIf
-               width + *this\scroll_width( )
+               width + *this\scroll_width( ) 
                
                ;\\
                If *display\type = #__type_ComboBox
@@ -5094,11 +5021,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *display\round
                   width - *display\round * 2
                EndIf
+               
+               ;\\
+               If *this\type = #__type_TabBar Or
+                  *this\type = #__type_ToolBar Or 
+                  *this\type = #__type_Menu 
+                  
+                  PushListPosition( *this\__tabs( ) ) 
+                  If ListSize( *this\__tabs( ) ) > 9
+                     SelectElement( *this\__tabs( ), 9 )
+                  Else
+                     LastElement( *this\__tabs( ) ) 
+                  EndIf
+                  height + ( *this\__tabs( )\y + *this\__tabs( )\height ) + 1
+                  PopListPosition( *this\__tabs( ) ) 
+                  
+               ElseIf *this\row
+                  PushListPosition( *this\__rows( ) ) 
+                  If ListSize( *this\__rows( ) ) > 9
+                     SelectElement( *this\__rows( ), 9 )
+                  Else
+                     LastElement( *this\__rows( ) ) 
+                  EndIf
+                  height + ( *this\__rows( )\y + *this\__rows( )\height )
+                  PopListPosition( *this\__rows( ) ) 
+               EndIf
+               
             EndIf
             
             ;\\
             If *this\popup  
-               ; Popup( ) = *this
+               Popup( ) = *this
                *display\ParentMenu( ) = *this
                ;*this\root\TabBox( ) = *this
                
@@ -5113,25 +5066,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                Else
                   If x = #PB_Ignore
-                     x = *display\screen_x( ) / _dpiScaleFactorX
+                     x = *display\screen_x( ) 
                   EndIf
                   If y = #PB_Ignore
-                     y = ( *display\screen_y( ) + *display\screen_height( ) ) / _dpiScaleFactorY
+                     y = *display\screen_y( ) + *display\screen_height( )
                   EndIf
+                  
+                  ;\\
                   If *display\round
-                     x = *display\round
+                     x + *display\round
                   EndIf
                EndIf
                ;
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                 ; x / _dpiScaleFactorX
-                 ; y / _dpiScaleFactorY
-                 If width <> #PB_Ignore
-                    width / _dpiScaleFactorX
-                 EndIf
-                 If height <> #PB_Ignore
-                    height / _dpiScaleFactorY
-                 EndIf
+                  x / _dpiScaleFactorX
+                  y / _dpiScaleFactorY
+                  If width <> #PB_Ignore
+                     width / _dpiScaleFactorX
+                  EndIf
+                  If height <> #PB_Ignore
+                     height / _dpiScaleFactorY
+                  EndIf
                CompilerEndIf
                ;
                y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
@@ -5399,6 +5354,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Debug "resize - "+*this\class +" ("+ x +" "+ y +" "+ width +" "+ height +")"
          EndIf
          
+         
          *this\redraw = 1
          If *this\parent 
             *this\parent\redraw = 1
@@ -5450,7 +5406,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\autosize
             If *this\parent And 
                *this\parent <> *this 
-               
                x      = *this\parent\inner_x( )
                Y      = *this\parent\inner_y( )
                width  = *this\parent\inner_width( )
@@ -5591,19 +5546,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If x = #PB_Ignore
                x = *this\container_x( )
-            ElseIf *this\parent And *this\parent\container
-               If Not *this\child
-                  x + *this\parent\scroll_x( )
+            Else
+               If *this\parent
+                  If Not *this\child
+                     x + *this\parent\scroll_x( )
+                  EndIf
+                  *this\container_x( ) = x
                EndIf
-               *this\container_x( ) = x
             EndIf
             If y = #PB_Ignore
                y = *this\container_y( )
-            ElseIf *this\parent And *this\parent\container
-               If Not *this\child
-                  y + *this\parent\scroll_y( )
+            Else
+               If *this\parent
+                  If Not *this\child
+                     y + *this\parent\scroll_y( )
+                  EndIf
+                  *this\container_y( ) = y
                EndIf
-               *this\container_y( ) = y
             EndIf
             
             ;\\
@@ -5670,7 +5629,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Not Change_height And *this\container_height( ) <> iheight : Change_height = iheight - *this\container_height( ) : EndIf
          ;          If Not Change_width And *this\inner_width( ) <> iwidth : Change_width = iwidth - *this\inner_width( ) : EndIf
          ;          If Not Change_height And *this\inner_height( ) <> iheight : Change_height = iheight - *this\inner_height( ) : EndIf
-         
          
          ;\\
          If Change_x
@@ -5804,35 +5762,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ if the integral tab bar
             If *this\TabBox( )
-               ;If *this\container
-               ;;Debug ""+*this\class +" "+ x
-               *this\inner_x( ) = x ; - *this\fs - *this\fs[1]
-               *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
-               
-               ;\\
-               If *this\TabBox( )\autosize
-                  Resize( *this\TabBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
-               Else
-                  If *this\TabBox( )\bar\vertical
-                     If *this\fs[1]
-                        Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
-                     EndIf
-                     If *this\fs[3]
-                        Resize( *this\TabBox( ), *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
-                     EndIf
+               If *this\container
+                  *this\inner_x( ) = x ; - *this\fs - *this\fs[1]
+                  *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
+                  
+                  ;\\
+                  If *this\TabBox( )\autosize
+                     Resize( *this\TabBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
                   Else
-                     If *this\fs[2]
-                        Resize( *this\TabBox( ), *this\fs, *this\fs + *this\barHeight, *this\inner_width( ), *this\fs[2] - *this\barHeight - 1 )
-                     EndIf
-                     If *this\fs[4]
-                        Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                     If *this\TabBox( )\bar\vertical
+                        If *this\fs[1]
+                           Resize( *this\TabBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
+                        EndIf
+                        If *this\fs[3]
+                           Resize( *this\TabBox( ), *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
+                        EndIf
+                     Else
+                        If *this\fs[2]
+                           Resize( *this\TabBox( ), *this\fs, *this\fs + *this\barHeight, *this\inner_width( ), *this\fs[2] - *this\barHeight - 1 )
+                        EndIf
+                        If *this\fs[4]
+                           Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                        EndIf
                      EndIf
                   EndIf
+                  
+                  *this\inner_x( ) + *this\fs + *this\fs[1]
+                  *this\inner_y( ) + *this\fs + *this\fs[2]
                EndIf
-               
-               *this\inner_x( ) + *this\fs + *this\fs[1]
-               *this\inner_y( ) + *this\fs + *this\fs[2]
-               ;EndIf
             EndIf
             
             ;\\
@@ -5926,11 +5883,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            ;         ;\\
-            ;         If Popup( ) And
-            ;            Popup( )\root = *this
-            ;           Resize( Popup( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            ;         EndIf
+            ;\\
+            If Popup( ) And
+               Popup( )\root = *this
+               Resize( Popup( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            EndIf
             
             ;
             ;\\ Post Event
@@ -6622,31 +6579,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; Draw back
          If _flag_ = 1
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
-            draw_gradientbox_( 0, _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\fore#_mode_, _address_\color\back#_mode_, _round_, _address_\AlphaState( ) )
+            draw_gradientbox_( 0, _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\fore#_mode_, _address_\color\back#_mode_, _round_, _address_\color\_alpha )
          EndIf
          ;
          ; Draw items image
          If _address_\image\id
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawAlphaImage( _address_\image\id, _x_ + _address_\image\x, _y_ + _address_\image\y, _address_\ColorAlphaState( ) )
+            DrawAlphaImage( _address_\image\id, _x_ + _address_\image\x, _y_ + _address_\image\y, _address_\color\_alpha )
          EndIf
          ;
          ; Draw items text
          If _address_\text\string
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
+            DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
          
          If _vertical_ > 0
             If _address_\childrens
-               DrawText( _x_ + _address_\text\x + _address_\text\width + 20, _y_ + _address_\text\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
+               DrawText( _x_ + _address_\text\x + _address_\text\width + 20, _y_ + _address_\text\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
             EndIf
          EndIf
          ;          
          ; Draw frame
          If _flag_ = 1
             draw_mode_alpha_( #PB_2DDrawing_Outlined )
-            draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
+            draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame#_mode_ & $FFFFFF | _address_\color\_alpha << 24 )
          EndIf
       EndMacro
       
@@ -6679,7 +6636,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;no &~ entered &~ focused
             If *items( )\visible 
                If *items( )\itemindex = #PB_Ignore
-                  draw_roundbox_( x + *items( )\x, y + *items( )\y, *items( )\width, *items( )\height, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\AlphaState24( ) )
+                  draw_roundbox_( x + *items( )\x, y + *items( )\y, *items( )\width, *items( )\height, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\color\_alpha << 24 )
                Else
                   If is_menu_( *this )
                      If *this\flag & #PB_ToolBar_InlineText
@@ -6902,7 +6859,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB2 = *bar\button[2]
             
             ;\\
-            If Not *this\hide And *this\AlphaState( )
+            If Not *this\hide And *this\color\_alpha
                If is_integral_( *this )
                   ; draw_font( *this , CurrentFontID( ) );, GetFontID( *this\parent ) )
                   If ChangeFontID( *this, CurrentFontID( ))
@@ -6912,16 +6869,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\color\back <> - 1
                   ; Draw scroll bar background
                   draw_mode_alpha_( #PB_2DDrawing_Default )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back & $FFFFFF | *this\AlphaState24( ) )
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back & $FFFFFF | *this\color\_alpha << 24 )
                EndIf
                ; ;                ;
                ; ;                If *this\flag & #PB_Toolbar_InlineText
                ; ;                            *this\image\width = 32 - 4
                ; ;                   draw_mode_alpha_( #PB_2DDrawing_Default )
                ; ;                   If *this\bar\vertical
-               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\image\width, *this\height, *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\AlphaState24( ) )
+               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\image\width, *this\height, *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\color\_alpha << 24 )
                ; ;                   Else
-               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\width, *this\image\height, *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\AlphaState24( ) )
+               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\width, *this\image\height, *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\color\_alpha << 24 )
                ; ;                   EndIf
                ; ;                EndIf
                ;
@@ -7012,7 +6969,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      draw_gradient_( *bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
                   Else
                      draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\ColorState( )] & $FFFFFF | *BB2\AlphaState24( ) )
+                     draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\ColorState( )] & $FFFFFF | *BB2\color\_alpha << 24 )
                   EndIf
                EndIf
                If Not *BB1\hide
@@ -7022,7 +6979,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      draw_gradient_( *bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
                   Else
                      draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\ColorState( )] & $FFFFFF | *BB1\AlphaState24( ) )
+                     draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\ColorState( )] & $FFFFFF | *BB1\color\_alpha << 24 )
                   EndIf
                EndIf
                
@@ -7030,7 +6987,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Draw buttons frame
                If Not *BB1\hide
-                  draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\ColorState( )] & $FFFFFF | *BB1\AlphaState24( ) )
+                  draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\ColorState( )] & $FFFFFF | *BB1\color\_alpha << 24 )
                   
                   ; Draw arrows
                   If Not *BB1\hide And *BB1\arrow\size
@@ -7038,7 +6995,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                If Not *BB2\hide
-                  draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\ColorState( )] & $FFFFFF | *BB2\AlphaState24( ) )
+                  draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\ColorState( )] & $FFFFFF | *BB2\color\_alpha << 24 )
                   
                   ; Draw arrows
                   If *BB2\arrow\size
@@ -7068,7 +7025,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;         DrawImage( ImageID( DownImage ), *BB2\x, *BB2\y )
             ;         ProcedureReturn
             
-            If *this\AlphaState( )
+            If *this\color\_alpha
                ; Draw scroll bar background
                If *this\color\back <> - 1
                   draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -7109,15 +7066,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\type = #__type_ScrollBar
                   If *bar\vertical
                      If (*bar\page\len + Bool(*this\round ) * (*this\width / 4 )) = *this\frame_height( )
-                        Line(*this\frame_x( ), *this\frame_y( ), 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+                        Line(*this\frame_x( ), *this\frame_y( ), 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
                      Else
-                        Line(*this\frame_x( ), *this\frame_y( ) + *BB1\round, 1, *this\height - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+                        Line(*this\frame_x( ), *this\frame_y( ) + *BB1\round, 1, *this\height - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
                      EndIf
                   Else
                      If (*bar\page\len + Bool(*this\round ) * (*this\height / 4 )) = *this\frame_width( )
-                        Line(*this\frame_x( ), *this\frame_y( ), *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+                        Line(*this\frame_x( ), *this\frame_y( ), *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
                      Else
-                        Line(*this\frame_x( ) + *BB1\round, *this\frame_y( ), *this\frame_width( ) - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+                        Line(*this\frame_x( ) + *BB1\round, *this\frame_y( ), *this\frame_width( ) - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\color\_alpha << 24 ) ; $FF000000 ) ;
                      EndIf
                   EndIf
                EndIf
@@ -7146,7 +7103,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *SB\arrow\size
                         draw_mode_alpha_( #PB_2DDrawing_Default )
                         ;                 Arrow(*SB\x + (*SB\width -*SB\arrow\size )/2, *SB\y + (*SB\height -*SB\arrow\size )/2,
-                        ;                       *SB\arrow\size, *SB\arrow\direction, *SB\color\front[*SB\ColorState( )]&$FFFFFF |*SB\AlphaState24( ), *SB\arrow\type )
+                        ;                       *SB\arrow\size, *SB\arrow\direction, *SB\color\front[*SB\ColorState( )]&$FFFFFF |*SB\color\_alpha<<24, *SB\arrow\type )
                         
                         draw_arrows( *SB, *SB\arrow\direction )
                      EndIf
@@ -7154,13 +7111,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; Draw thumb lines
                      draw_mode_alpha_( #PB_2DDrawing_Default )
                      If *bar\vertical
-                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - 3, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + 3, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - 3, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + 3, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
                      Else
-                        Line(*SB\x + *SB\width / 2 - 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                        Line(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                        Line(*SB\x + *SB\width / 2 + 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                        Line(*SB\x + *SB\width / 2 - 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
+                        Line(*SB\x + *SB\width / 2 + 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
                      EndIf
                   EndIf
                   
@@ -11027,7 +10984,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                   ;                      ; GetDC_(*this\root\canvas\gadgetID)
                   ;                      SetBkMode_(DrawingDC, #TRANSPARENT)
-                  ;                      SetTextColor_(DrawingDC, e_rows( )\color\front & $FFFFFF | e_rows( )\AlphaColor24( ) )
+                  ;                      SetTextColor_(DrawingDC, e_rows( )\color\front & $FFFFFF | e_rows( )\color\alpha << 24 )
                   ;                      TextOut_(DrawingDC, Text_x, Text_Y, e_rows( )\text\string.s,Len(e_rows( )\text\string.s))
                   ;                   CompilerElse
                   DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
@@ -11533,7 +11490,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\__items_index( ) % 2 = 0
                If *this\__items( )\color\back = 0
                   ; Debug *this\color\back;*this\__items_index( )
-                  *this\__items( )\color\back = $FFF3F3F3;*this\__items( )\color\back[1] ; *this\color\back & $FFFFFF | *this\AlphaState24( )
+                  *this\__items( )\color\back = $FFF3F3F3;*this\__items( )\color\back[1] ; *this\color\back & $FFFFFF | *this\color\_alpha << 24
                EndIf
             EndIf
             
@@ -11610,7 +11567,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ Draw items image
             If *items( )\image\id
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *items( )\image\id, xs + *items( )\image\x, ys + *items( )\image\y, *items( )\AlphaState( ) )
+               DrawAlphaImage( *items( )\image\id, xs + *items( )\image\x, ys + *items( )\image\y, *items( )\color\_alpha )
                ; draw_background_image_(*items( ), xs, ys )
             EndIf
             
@@ -11655,10 +11612,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ForEach *items( )
                   If *items( )\visible And Not *items( )\hide
-                     If *items( )\last
-                        *buttonBox = *items( )\last\RowButton( )
-                     EndIf
-                     
+                     *buttonBox = *items( )\last\RowButton( )
                      Xs         = row_x_( *this, *items( ) ) - _scroll_x_
                      Ys         = row_y_( *this, *items( ) ) - _scroll_y_
                      ; Debug " 9999 "+*items( )\text\string
@@ -11797,7 +11751,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ Draw background
-            If *this\AlphaState( )
+            If *this\color\_alpha
                draw_mode_alpha_( #PB_2DDrawing_Default )
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back )
             EndIf
@@ -11805,7 +11759,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ Draw background image
             If *this\image\id
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\AlphaState( ) )
+               DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\color\_alpha )
                ; draw_background_image_(*this, 0, 0 )
             EndIf
             
@@ -14434,7 +14388,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure.l SetColor( *this._s_WIDGET, ColorType.l, Color.l, Column.l = 0 )
-         *this\ColorAlphaColor( ).allocate( COLOR )
+         *this\color\alpha.allocate( COLOR )
          Protected result.l, alpha.a = Alpha( Color )
          
          If Not alpha
@@ -15164,7 +15118,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this\popup
+            If Popup( ) = *this
                ; Debug " Popup( setActive ) "
                ProcedureReturn 0
             EndIf
@@ -16717,7 +16671,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.l SetItemColor( *this._s_WIDGET, Item.l, ColorType.l, Color.l, Column.l = 0 )
-         Protected result, alpha.a = Alpha( Color )
+         Protected result, alpha.a
          
          ;
          If *this\row And ListSize( *this\__items( ) ) ;*this\type = #__type_Tree Or *this\type = #__type_Editor
@@ -16908,7 +16862,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\autosize = 1
                   ; set transparent parent
                   *parent\color\back      = - 1
-                  *parent\ColorAlphaState( ) = 0
+                  *parent\color\_alpha    = 0
+
                EndIf
             EndIf
             
@@ -17067,9 +17022,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            *this\ColorAlphaState( ) = 255
-            *this\color\fore[#__s_0] = - 1
-            *this\color\back[#__s_0] = $ffffffff ; _get_colors_( )\fore
+            *this\color\_alpha        = 255
+            *this\color\fore[#__s_0]  = - 1
+            *this\color\back[#__s_0]  = $ffffffff ; _get_colors_( )\fore
             *this\color\front[#__s_0] = _get_colors_( )\front
             *this\color\frame[#__s_0] = _get_colors_( )\frame
             
@@ -17242,7 +17197,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; - Create Spin
             If *this\type = #__type_Spin
                *this\color\back   = - 1
-               *this\ColorAlphaState( ) = 255
+               *this\color\_alpha = 255
                *this\color\back   = $FFFFFFFF
                
                *BB1\color = _get_colors_( )
@@ -17955,7 +17910,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
                   DrawAlphaImage( *this\image\id,
                                   *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\image\x,
-                                  *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\image\y - 2, *this\AlphaState( ) )
+                                  *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\image\y - 2, *this\color\_alpha )
                   ; draw_background_image_(*this, *this\frame_x( ) + *this\bs, *this\frame_y( ) + *this\bs )
                EndIf
                
@@ -17975,7 +17930,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                  DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
                   
                   ;             draw_mode_alpha_( #PB_2DDrawing_Outlined )
                   ;             draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\caption\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
@@ -18018,7 +17973,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; draw background
             If \Color\Back<>-1
                DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-               RoundBox(\X[2], \Y[2], \Width[2], \Height[2], \round, \round, $FFFFFF&$FFFFFF|\AlphaColor24( ))
+               RoundBox(\X[2], \Y[2], \Width[2], \Height[2], \round, \round, $FFFFFF&$FFFFFF|\color\alpha<<24)
             EndIf
             
             ; ;       If \width[2]>1;(\box\width[1]+\box\width[2]+4)
@@ -18155,13 +18110,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; Draw string
                      If *icolumns\text\string.s
                         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                        DrawText(*icolumns\text\x, *icolumns\text\y, *icolumns\text\string.s, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|\AlphaColor24( ))
+                        DrawText(*icolumns\text\x, *icolumns\text\y, *icolumns\text\string.s, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|\color\alpha<<24)
                      EndIf
                      
                      ; Draw grid line
                      If \mode\GridLines
                         DrawingMode( #PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                        Line(*icolumns\X-n, *icolumns\Y+*icolumns\Height + GridLines, *columns\width+n+1 + (\width[2]-(*columns\x-\x[2]+*columns\width)), 1, \Color\Frame&$FFFFFF|\AlphaColor24( ))                   ; top
+                        Line(*icolumns\X-n, *icolumns\Y+*icolumns\Height + GridLines, *columns\width+n+1 + (\width[2]-(*columns\x-\x[2]+*columns\width)), 1, \Color\Frame&$FFFFFF|\color\alpha<<24)                   ; top
                      EndIf
                      ;EndIf
                   EndIf
@@ -18179,12 +18134,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      If FirstColumn And n
-                        draw_gradientbox_( 0, \x[2], *columns\Y, n, *columns\Height, \Color\Fore[0]&$FFFFFF|\AlphaColor24( ), \Color\Back[0]&$FFFFFF|\AlphaColor24( ), \round, \AlphaColor( ))
+                        draw_gradientbox_( 0, \x[2], *columns\Y, n, *columns\Height, \Color\Fore[0]&$FFFFFF|\color\alpha<<24, \Color\Back[0]&$FFFFFF|\color\alpha<<24, \round, \color\alpha)
                      ElseIf ListIndex(\columns()) = ListSize(\columns()) - 1
-                        draw_gradientbox_( 0, *columns\X+*columns\Width, *columns\Y, 1 + (\width[2]-(*columns\x-\x[2]+*columns\width)), *columns\Height, \Color\Fore[0]&$FFFFFF|\AlphaColor24( ), \Color\Back[0]&$FFFFFF|\AlphaColor24( ), \round, \AlphaColor( ))
+                        draw_gradientbox_( 0, *columns\X+*columns\Width, *columns\Y, 1 + (\width[2]-(*columns\x-\x[2]+*columns\width)), *columns\Height, \Color\Fore[0]&$FFFFFF|\color\alpha<<24, \Color\Back[0]&$FFFFFF|\color\alpha<<24, \round, \color\alpha)
                      EndIf
                      
-                     draw_gradientbox_( 0, *columns\X, *columns\Y, *columns\Width, *columns\Height, \Color\Fore[*columns\State], Bool(*columns\State <> 2) * \Color\Back[*columns\State] + (Bool(*columns\State = 2) * \Color\Front[*columns\State]), \round, \AlphaColor( ))
+                     draw_gradientbox_( 0, *columns\X, *columns\Y, *columns\Width, *columns\Height, \Color\Fore[*columns\State], Bool(*columns\State <> 2) * \Color\Back[*columns\State] + (Bool(*columns\State = 2) * \Color\Front[*columns\State]), \round, \color\alpha)
                   EndIf
                   
                   ; Draw string
@@ -18196,19 +18151,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; Draw image
                   If *columns\image\imageID
                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                     DrawAlphaImage(*columns\image\imageID, *columns\image\x, *columns\image\y, \AlphaColor( ))
+                     DrawAlphaImage(*columns\image\imageID, *columns\image\x, *columns\image\y, \color\alpha)
                   EndIf
                   
                   ; Draw line 
                   If FirstColumn And n
-                     Line(*columns\X-1, *columns\Y, 1, *columns\height + Bool(\mode\GridLines) * \height[1], \Color\Frame&$FFFFFF|\AlphaColor24( ))                     ; left
+                     Line(*columns\X-1, *columns\Y, 1, *columns\height + Bool(\mode\GridLines) * \height[1], \Color\Frame&$FFFFFF|\color\alpha<<24)                     ; left
                   EndIf
-                  Line(*columns\X+*columns\width, *columns\Y, 1, *columns\height + Bool(\mode\GridLines) * \height[1], \Color\Frame&$FFFFFF|\AlphaColor24( ))      ; right
-                  Line(\x[2], *columns\Y+*columns\Height-1, \width[2], 1, \Color\Frame&$FFFFFF|\AlphaColor24( ))                                                   ; bottom
+                  Line(*columns\X+*columns\width, *columns\Y, 1, *columns\height + Bool(\mode\GridLines) * \height[1], \Color\Frame&$FFFFFF|\color\alpha<<24)      ; right
+                  Line(\x[2], *columns\Y+*columns\Height-1, \width[2], 1, \Color\Frame&$FFFFFF|\color\alpha<<24)                                                   ; bottom
                   
                   If *columns\State = 2
                      DrawingMode( #PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                     RoundBox(*columns\X, *columns\Y+1, *columns\Width, *columns\Height-2, \round, \round, \Color\Frame[*columns\State]&$FFFFFF|\AlphaColor24( ))
+                     RoundBox(*columns\X, *columns\Y+1, *columns\Width, *columns\Height-2, \round, \round, \Color\Frame[*columns\State]&$FFFFFF|\color\alpha<<24)
                   EndIf
                EndIf
                
@@ -18232,7 +18187,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; 1 - frame
             If \Color\Frame<>-1
                DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-               RoundBox(\X, \Y, \Width, \Height, \round, \round, \Color\Frame&$FFFFFF|\AlphaColor24( ))
+               RoundBox(\X, \Y, \Width, \Height, \round, \round, \Color\Frame&$FFFFFF|\color\alpha<<24)
             EndIf
             
          EndWith
@@ -18279,7 +18234,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ Draw background
-            If *this\AlphaState( )
+            If *this\color\_alpha
                draw_mode_alpha_( #PB_2DDrawing_Default )
                draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
             EndIf
@@ -18287,7 +18242,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ Draw background image
             If *this\image\id
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\AlphaState( ) )
+               DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\color\_alpha )
                ; draw_background_image_(*this, 0,0)
             EndIf
             
@@ -18317,7 +18272,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ Draw items image
                If *this\columns( )\image\id
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawAlphaImage( *this\columns( )\image\id, x + *this\columns( )\image\x, y + *this\columns( )\image\y, *this\AlphaState( ) )
+                  DrawAlphaImage( *this\columns( )\image\id, x + *this\columns( )\image\x, y + *this\columns( )\image\y, *this\color\_alpha )
                   ; draw_background_image_(*this\columns( ), x, y)
                EndIf
                
@@ -18465,7 +18420,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ draw image
             If *this\image\id
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\image\id, x + *this\image\x, y + *this\image\y, *this\AlphaState( ) )
+               DrawAlphaImage( *this\image\id, x + *this\image\x, y + *this\image\y, *this\color\_alpha )
                ; draw_background_image_(*this, x,y)
             EndIf
             
@@ -18473,7 +18428,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\fs
                draw_mode_( #PB_2DDrawing_Outlined )
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ),
-                               *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\AlphaState24( ) )
+                               *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\color\_alpha << 24 )
             EndIf
             
             ;\\ draw frame defaul focus widget
@@ -18481,13 +18436,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\flag & #PB_Button_Default
                   draw_mode_( #PB_2DDrawing_Outlined )
                   draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ),
-                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\color\_alpha << 24 )
                   If *this\round
                      draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ), *this\inner_width( ) + 2, *this\inner_height( ),
-                                     *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+                                     *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\color\_alpha << 24 )
                   EndIf
                   draw_roundbox_( *this\x, *this\y, *this\width, *this\height,
-                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\color\_alpha << 24 )
                EndIf
             EndIf
             
@@ -18518,7 +18473,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
                DrawText( *this\frame_x( ) + *this\text\x,
                          *this\frame_y( ) + *this\text\y,
-                         *this\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+                         *this\text\string, *this\color\front[state] & $FFFFFF | *this\color\_alpha << 24 )
             EndIf
          EndIf
          
@@ -18529,7 +18484,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             Arrow( *this\ComboButton( )\x + ( *this\ComboButton( )\width - *this\ComboButton( )\arrow\size * 2 - 4 ),
                    *this\ComboButton( )\y + ( *this\ComboButton( )\height - *this\ComboButton( )\arrow\size ) / 2, *this\ComboButton( )\arrow\size, *this\ComboButton( )\arrow\direction,
-                   *this\ComboButton( )\color\front[state] & $FFFFFF | *this\ComboButton( )\AlphaState24( ), *this\ComboButton( )\arrow\type )
+                   *this\ComboButton( )\color\front[state] & $FFFFFF | *this\ComboButton( )\color\_alpha << 24, *this\ComboButton( )\arrow\type )
          EndIf
          
          ; frame draw
@@ -18605,7 +18560,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\image\id
                   DrawAlphaImage( *this\image\id,
                                   *this\inner_x( ) + *this\scroll_x( ) + *this\image\x,
-                                  *this\inner_y( ) + *this\scroll_y( ) + *this\image\y, *this\AlphaState( ) )
+                                  *this\inner_y( ) + *this\scroll_y( ) + *this\image\y, *this\color\_alpha )
                   ; draw_background_image_(*this, *this\inner_x( ), *this\inner_y( ) )
                EndIf
             EndIf
@@ -18615,7 +18570,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
                DrawText( *this\inner_x( ) + *this\scroll_x( ) + *this\text\x,
                          *this\inner_y( ) + *this\scroll_y( ) + *this\text\y,
-                         *this\text\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                         *this\text\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\color\_alpha << 24 )
             EndIf
             
             
@@ -18802,7 +18757,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               draw_mode_alpha_( #PB_2DDrawing_Transparent )
                               DrawText( *this\inner_x( ) + *this\scroll_x( ) + *this\text\x,
                                         *this\inner_y( ) + *this\scroll_y( ) + *this\text\y,
-                                        *this\text\string, *this\color\front & $FFFFFF | *this\AlphaState24( ) )
+                                        *this\text\string, *this\color\front & $FFFFFF | *this\color\_alpha << 24 )
                            EndIf
                            
                         Case #__type_ToolBar,
@@ -18818,21 +18773,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndSelect
                      
                      ;\\
-                     ;               If *this\TabBox( ) And
-                     ;                  *this\TabBox( )\countitems
-                     ;                 bar_tab_draw( *this\TabBox( ) )
-                     ;                 ; clip_output_( *this, [#__c_draw] )
-                     ;               EndIf
                      If *this\TabBox( ) And
                         *this\TabBox( )\countitems
-                        Select *this\TabBox( )\type
-                           Case #__type_ToolBar,
-                                #__type_TabBar, 
-                                #__type_Menu
-                              bar_tab_draw( *this\TabBox( ) )
-                           Default
-                              draw( *this\TabBox( ) ) ; clip_output_( *this, [#__c_draw] )
-                        EndSelect
+                        bar_tab_draw( *this\TabBox( ) )
+                        ; clip_output_( *this, [#__c_draw] )
                      EndIf
                      
                      ;\\
@@ -19245,14 +19189,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             ;
-            ;         ;\\ draw current-popup-widget
-            ;         If Popup( )
-            ;           If Popup( )\root = *root
-            ;             ;Debug "popup - draw " + *root\class
-            ;             
-            ;             Draw( Popup( ) )
-            ;           EndIf
-            ;         EndIf
+            ;\\ draw current-popup-widget
+            If Popup( )
+               If Popup( )\root = *root
+                  ;Debug "popup - draw " + *root\class
+                  
+                  Draw( Popup( ) )
+               EndIf
+            EndIf
             
             ;\\ TEMP
             If *root\drawmode & 1<<2
@@ -19505,50 +19449,55 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Procedure GetAtPoint( *root._s_ROOT, mouse_x, mouse_y, List *List._s_WIDGET( ) )
          Protected i, a_index, Repaint, *this._s_WIDGET, *e._s_WIDGET
-         
+         ;Debug ""+*root\class+" "+*root\haschildren
          ;\\ get at point address
-         If *root\haschildren
-            If ListSize( *list( ))
-               LastElement( *list( ))
-               Repeat
-                  If *list( )\address And
-                     *list( )\hide = 0 And
-                     *list( )\root = *root And 
-                     is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
-                     is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_draw] )
-                     ;
-                     ;                      ;\\ get alpha
-                     ;                      If *list( )\anchors = 0 And
-                     ;                         ( *list( )\image[#__image_background]\id And
-                     ;                           *list( )\image[#__image_background]\depth > 31 And
-                     ;                           is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_inner] ) And
-                     ;                           StartDrawing( ImageOutput( *list( )\image[#__image_background]\img )))
-                     ;                         
-                     ;                         draw_mode_( #PB_2DDrawing_AlphaChannel )
-                     ;                         If Not Alpha( Point( ( mouse( )\x - *list( )\inner_x( ) ) - 1,
-                     ;                                              ( mouse( )\y - *list( )\inner_y( ) ) - 1 ) )
-                     ;                            StopDrawing( )
-                     ;                            Continue
-                     ;                         Else
-                     ;                            StopDrawing( )
-                     ;                         EndIf
-                     ;                      EndIf
-                     
-                     ;\\ если переместили виджет то его исключаем
-                     If DragState( )
-                        If is_drag_move( )
-                           If PressedWidget( ) = *list( )
-                              Continue
+         If Popup( ) And 
+            Popup( )\root = *root
+            *this = Popup( )
+         Else
+            If *root\haschildren
+               If ListSize( *list( ))
+                  LastElement( *list( ))
+                  Repeat
+                     If *list( )\address And
+                        *list( )\hide = 0 And
+                        *list( )\root = *root And 
+                        is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
+                        is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_draw] )
+                        ;
+                        ;                      ;\\ get alpha
+                        ;                      If *list( )\anchors = 0 And
+                        ;                         ( *list( )\image[#__image_background]\id And
+                        ;                           *list( )\image[#__image_background]\depth > 31 And
+                        ;                           is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_inner] ) And
+                        ;                           StartDrawing( ImageOutput( *list( )\image[#__image_background]\img )))
+                        ;                         
+                        ;                         draw_mode_( #PB_2DDrawing_AlphaChannel )
+                        ;                         If Not Alpha( Point( ( mouse( )\x - *list( )\inner_x( ) ) - 1,
+                        ;                                              ( mouse( )\y - *list( )\inner_y( ) ) - 1 ) )
+                        ;                            StopDrawing( )
+                        ;                            Continue
+                        ;                         Else
+                        ;                            StopDrawing( )
+                        ;                         EndIf
+                        ;                      EndIf
+                        
+                        ;\\ если переместили виджет то его исключаем
+                        If DragState( )
+                           If is_drag_move( )
+                              If PressedWidget( ) = *list( )
+                                 Continue
+                              EndIf
+                              EnteredWidget( ) =  *list( )
+                              ProcedureReturn 0
                            EndIf
-                           EnteredWidget( ) =  *list( )
-                           ProcedureReturn 0
                         EndIf
+                        
+                        *this = *list( )
+                        Break
                      EndIf
-                     
-                     *this = *list( )
-                     Break
-                  EndIf
-               Until PreviousElement( *list( )) = #False
+                  Until PreviousElement( *list( )) = #False
+               EndIf
             EndIf
          EndIf
          ;
@@ -19587,10 +19536,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this = *this\scroll\h
                EndIf
             EndIf
-         EndIf
-         
-         If test_atpoint
-            Debug ""+*root\class+" "+*root\haschildren ;+" "+ *this\class
          EndIf
          ;
          ;\\ entered anchor index
@@ -19682,8 +19627,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this = a_entered( ) And 
                   *this\mouseenterframe =- 1
                   ;
-                  If ( is_atpoint_( *this, mouse_x, mouse_y, [#__c_frame] ) And
-                       is_atpoint_( *this, mouse_x, mouse_y, [#__c_draw] ))
+                  If ( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_frame] ) And
+                       is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ))
                      ;
                      *this\mouseenter = 1
                      Debug "(>)"
@@ -21153,9 +21098,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Debug "hide then down"
                      If Not HidePopupMenuBar( *this\ParentMenu( ) )
                         If *tab\menu\hide
+                           Popup( ) = *this
                            DisplayPopupMenuBar( *tab\menu, *this, 
-                                                (*this\screen_x( ) + *tab\x) / _dpiScaleFactorX, 
-                                                (*this\screen_y( ) + *tab\y + *tab\height) / _dpiScaleFactorY)
+                                                *this\screen_x( ) + *tab\x, 
+                                                *this\screen_y( ) + *tab\y + *tab\height)
                         EndIf
                      EndIf
                   Else
@@ -21273,7 +21219,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *this\bar\vertical
                                     ;Debug "  show POPUPMENUBARS "+ClassFromEvent(eventtype)
                                     DisplayPopupMenuBar( *tab\menu, *this, 
-                                                         (*this\screen_width( ) - 5) / _dpiScaleFactorX, *tab\y / _dpiScaleFactorY )
+                                                         *this\screen_width( ) - 5, *tab\y )
                                     If test_event_resize
                                        ;  ChangeCurrentCanvas( *this\root\canvas\gadgetID )
                                        Debug "  ------  "+Root( )\class +" "+ *this\root\class
@@ -21285,8 +21231,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        *tab\toggle
                                        ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
                                        DisplayPopupMenuBar( *tab\menu, *this, 
-                                                            (*this\screen_x( ) + *tab\x) / _dpiScaleFactorX, 
-                                                            (*this\screen_y( ) + *tab\y + *tab\height) / _dpiScaleFactorY )
+                                                            *this\screen_x( ) + *tab\x, 
+                                                            *this\screen_y( ) + *tab\y + *tab\height )
                                        
                                     EndIf
                                  EndIf
@@ -21316,14 +21262,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Not *this
             ProcedureReturn 0
          EndIf
-         If test_event_entered
-            If eventtype = #__event_MouseEnter
-               Debug " enter "+ *this\class
-            EndIf
-            If eventtype = #__event_MouseLeave
-               Debug " leave "+ *this\class
-            EndIf
-         EndIf
+         ;          If eventtype = #__event_MouseEnter
+         ;             Debug 8888
+         ;          EndIf
+         
          ;
          ;\\ entered position state
          If *this\mouseenter > 0
@@ -21627,38 +21569,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndSelect
             
             ;\\
-            ; If Popup( )
-            If eventtype = #__event_Down Or eventtype = #__event_up
-               Protected *combobox._S_WIDGET = *this\root\parent
-               If *this <> *combobox
-                  If *combobox And *combobox\type = #__type_ComboBox
-                     ;
-                     If eventtype = #__event_Down
-                        If *this\popup
-                           If IsWindow( *combobox\root\canvas\window )
-                              DisableWindow(*this\root\canvas\window, 1)
-                              SetActiveWindow( *combobox\root\canvas\window )
+            If Popup( )
+               If eventtype = #__event_Down Or eventtype = #__event_up
+                  Protected *combobox._S_WIDGET = Popup( )\root\parent
+                  If *this <> *combobox
+                     If *combobox And *combobox\type = #__type_ComboBox
+                        ;
+                        If eventtype = #__event_Down
+                           If *this = Popup( )
+                              If IsWindow( *combobox\root\canvas\window )
+                                 DisableWindow(*this\root\canvas\window, 1)
+                                 SetActiveWindow( *combobox\root\canvas\window )
+                              EndIf
+                           EndIf
+                           
+                           If *this <> Popup( )
+                              If *this\root <> Popup( )\root
+                                 DisplayPopupMenuBar( Popup( ), *combobox )
+                              EndIf 
                            EndIf
                         EndIf
-                        
-                        If Not *this\popup
-                           ;                     If *this\root <> Popup( )\root
-                           ;                       DisplayPopupMenuBar( Popup( ), *combobox )
-                           ;                     EndIf 
-                        EndIf
-                     EndIf
-                     ;
-                     If eventtype = #__event_up
-                        If *this\popup
-                           SetText( *combobox, GetItemText( *this, GetState( *this ) ) )
-                           DisplayPopupMenuBar( *this, *combobox )
-                           PostRepaint( *combobox\root )
+                        ;
+                        If eventtype = #__event_up
+                           If *this = Popup( )
+                              SetText( *combobox, GetItemText( *this, GetState( *this ) ) )
+                              DisplayPopupMenuBar( *this, *combobox )
+                              PostRepaint( *combobox\root )
+                           EndIf
                         EndIf
                      EndIf
                   EndIf
                EndIf
             EndIf
-            ; EndIf
             
          EndIf
          
@@ -21843,9 +21785,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected eventGadget = EventGadget( )
          
          If test_event_canvas
-            If eventtype <> #PB_EventType_MouseMove
-               Debug "CanvasEvents - " + EventGadget( ) +" "+ ClassFromPBEvent( EventType( ) )
-            EndIf
+            Debug "CanvasEvents - " + EventGadget( ) +" "+ ClassFromPBEvent( EventType( ) )
          EndIf
          
          EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
@@ -21865,18 +21805,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Select EventType()
                      Case #PB_EventType_MouseEnter
                         ChangeCurrentCanvas( GadgetID( eventgadget ) )
-                        Debug "enter -> " +" "+ Root( )\class
-                        
-                     Case #PB_EventType_MouseLeave
-                        ChangeCurrentCanvas( GadgetID( eventgadget ) )
-                        Debug "leave -> " +" "+ Root( )\class
                         
                      Case #PB_EventType_Focus
                         ChangeCurrentCanvas( GadgetID( eventgadget ) )
                         Debug "focus -> " +" "+ Root( )\class
                         
                      Case #PB_EventType_LostFocus
-                        ChangeCurrentCanvas( GadgetID( eventgadget ) )
                         Debug "lostfocus -> " +" "+ Root( )\class
                         
                      Case #PB_EventType_LeftButtonDown
@@ -21884,7 +21818,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Debug "down -> " +" "+ Root( )\class
                         
                      Case #PB_EventType_LeftButtonUp
-                        ChangeCurrentCanvas( GadgetID( eventgadget ) )
                         Debug "up -> " +" "+ Root( )\class
                         
                         ;                      Case #PB_EventType_LeftClick
@@ -21912,14 +21845,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If test_draw_repaint
-                   ;  Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+                     Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                   EndIf
                   
                   Repaint( Root( ) )
                   Root( )\canvas\post = 0
-               EndIf
-               If test_draw_repaint
-                 Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                EndIf
                If EnteredCanvasID
                   If EnteredCanvasID <> Root( )\canvas\gadgetID
@@ -22074,7 +22004,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   eventgadget = PressedWidget( )\root\canvas\gadget
                   ChangeCurrentCanvas( GadgetID( eventgadget ) )
                EndIf
-              ; EnteredCanvasID = #Null
+               EnteredCanvasID = #Null
             EndIf
             
             ;\\
@@ -22627,7 +22557,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EventHandler( #PB_Event_ActivateWindow, #PB_Default, #PB_Default, #Null )
       EndProcedure
       
-      Procedure EventDeactivate( )
+      Procedure EventDeactive( )
          EventHandler( #PB_Event_DeactivateWindow, #PB_Default, #PB_Default, #Null )
       EndProcedure
       
@@ -22882,7 +22812,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
-            BindEvent( #PB_Event_DeactivateWindow, @EventDeactivate( ), Window )
+            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
             If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
             EndIf
@@ -24140,7 +24070,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
    a_init( view, 8 )
    
-   Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
+  Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
    
    If *toolbar
       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
@@ -24202,8 +24132,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\ Open Root0
    Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-   ;BindWidgetEvent( *root2, @BindEvents( ) )
-   Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
+  ;BindWidgetEvent( *root2, @BindEvents( ) )
+    Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
    SetColor( *menu, #__color_back, $FFC8ECF0 )
    
    BarTitle("Title-1")
@@ -24344,7 +24274,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure button_tab_events( )
       Select GetText( EventWidget( ) )
          Case "popup menu"
-            DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
+            DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
             
          Case "1"
             SetState(*button_panel, 0)
@@ -24355,7 +24285,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure 
    
-   *button_menu = Button( 120, 5, 150, 25, "popup menu")
+   *button_menu = Button( 180, 5, 87, 25, "popup menu")
    Bind(*button_menu, @button_tab_events( ), #__event_Down )
    *button_item1 = Button( 220, 220, 25, 50, "1", #PB_Button_Toggle)
    *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #PB_Button_Toggle)
@@ -24713,10 +24643,19 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
+
+
+
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 4009
-; FirstLine = 823
-; Folding = ADQAAcw2------------8B9BA9-----PAAAAAAAAABAAAEAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAwPAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAA+-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwDAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAA5AAAAAAAAAAAAAAAAAAAnDAAAAAAAAAAAAAAAAPAAAAAAAAAAAADEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-A+HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAwACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
+; CursorPosition = 585
+; FirstLine = 567
+; Folding = ----------------------B7-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------+---------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 24654
+; FirstLine = 24621
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; EnableXP
+; DPIAware
