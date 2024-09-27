@@ -563,9 +563,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro MouseButtons( ): mouse( )\buttons: EndMacro
-      Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x[_mode_]: EndMacro ; Returns mouse x
-      Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y[_mode_]: EndMacro ; Returns mouse y
-                                                                            ;-
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+         Macro GetMouseX( _mode_ = #__c_screen ): ( mouse( )\x / _dpiScaleFactorX ): EndMacro ; Returns mouse x
+         Macro GetMouseY( _mode_ = #__c_screen ): ( mouse( )\y / _dpiScaleFactorY ): EndMacro ; Returns mouse y
+      CompilerElse
+         Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x : EndMacro ; Returns mouse x
+         Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y : EndMacro ; Returns mouse y
+      CompilerEndIf
+      ;-
       Macro Cursor( _this_ )
          _this_\cursor[3]
       EndMacro
@@ -5100,27 +5105,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                Else
                   If x = #PB_Ignore
-                     x = *display\screen_x( ) 
+                     x = *display\screen_x( ) / _dpiScaleFactorX
                   EndIf
                   If y = #PB_Ignore
-                     y = *display\screen_y( ) + *display\screen_height( )
+                     y = ( *display\screen_y( ) + *display\screen_height( ) ) / _dpiScaleFactorY
                   EndIf
-                  
-                  ;\\
                   If *display\round
-                     x + *display\round
+                     x = *display\round
                   EndIf
                EndIf
                ;
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                  x / _dpiScaleFactorX
-                  y / _dpiScaleFactorY
-                  If width <> #PB_Ignore
-                     width / _dpiScaleFactorX
-                  EndIf
-                  If height <> #PB_Ignore
-                     height / _dpiScaleFactorY
-                  EndIf
+                 ; x / _dpiScaleFactorX
+                 ; y / _dpiScaleFactorY
+                 If width <> #PB_Ignore
+                    width / _dpiScaleFactorX
+                 EndIf
+                 If height <> #PB_Ignore
+                    height / _dpiScaleFactorY
+                 EndIf
                CompilerEndIf
                ;
                y + GadgetY( *display\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )
@@ -21143,8 +21146,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If Not HidePopupMenuBar( *this\ParentMenu( ) )
                         If *tab\menu\hide
                            DisplayPopupMenuBar( *tab\menu, *this, 
-                                                *this\screen_x( ) + *tab\x, 
-                                                *this\screen_y( ) + *tab\y + *tab\height)
+                                                (*this\screen_x( ) + *tab\x) / _dpiScaleFactorX, 
+                                                (*this\screen_y( ) + *tab\y + *tab\height) / _dpiScaleFactorY)
                         EndIf
                      EndIf
                   Else
@@ -21262,7 +21265,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *this\bar\vertical
                                     ;Debug "  show POPUPMENUBARS "+ClassFromEvent(eventtype)
                                     DisplayPopupMenuBar( *tab\menu, *this, 
-                                                         *this\screen_width( ) - 5, *tab\y )
+                                                         (*this\screen_width( ) - 5) / _dpiScaleFactorX, *tab\y / _dpiScaleFactorY )
                                     If test_event_resize
                                        ;  ChangeCurrentCanvas( *this\root\canvas\gadgetID )
                                        Debug "  ------  "+Root( )\class +" "+ *this\root\class
@@ -21274,8 +21277,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        *tab\toggle
                                        ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
                                        DisplayPopupMenuBar( *tab\menu, *this, 
-                                                            *this\screen_x( ) + *tab\x, 
-                                                            *this\screen_y( ) + *tab\y + *tab\height )
+                                                            (*this\screen_x( ) + *tab\x) / _dpiScaleFactorX, 
+                                                            (*this\screen_y( ) + *tab\y + *tab\height) / _dpiScaleFactorY )
                                        
                                     EndIf
                                  EndIf
@@ -21899,13 +21902,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If test_draw_repaint
-                     Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+                   ;  Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                   EndIf
                   
                   Repaint( Root( ) )
                   Root( )\canvas\post = 0
                EndIf
-               If EnteredCanvasID
+                  Debug "   REPAINT " + Root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+                  If EnteredCanvasID
                   If EnteredCanvasID <> Root( )\canvas\gadgetID
                      ChangeCurrentCanvas( EnteredCanvasID )
                   EndIf
@@ -22049,7 +22053,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               Debug "enter canvas"
+               Debug "enter canvas " + EnteredCanvasID +" "+ Root( )\class
             EndIf
             
             ;\\
@@ -22060,7 +22064,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ChangeCurrentCanvas( GadgetID( eventgadget ) )
                EndIf
                EnteredCanvasID = #Null
-               Debug "leave canvas"
+               Debug "leave canvas " + EnteredCanvasID +" "+ Root( )\class
             EndIf
             
             ;\\
@@ -24330,7 +24334,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure button_tab_events( )
       Select GetText( EventWidget( ) )
          Case "popup menu"
-            DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+            DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
             
          Case "1"
             SetState(*button_panel, 0)
@@ -24701,9 +24705,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 21874
-; FirstLine = 21803
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21904
+; FirstLine = 21482
+; Folding = -----------------------------------------------------------------+-vN-----7-------40-fv------f3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------uHAAA-t-------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
