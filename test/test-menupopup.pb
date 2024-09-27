@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure button_tab_events( )
       Select GetText( EventWidget( ) )
          Case "popup menu"
-            DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+            DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
             
             
       EndSelect
@@ -82,9 +82,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 24
+
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
 ; DPIAware
