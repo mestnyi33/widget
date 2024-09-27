@@ -9,6 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;test_atpoint = 1
    ;test_draw_repaint = 1
    ;test_event_entered = 1
+   test_event_canvas = 1
    
    Global._S_WIDGET  *menu, *button_menu
    
@@ -82,8 +83,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 12
 ; Folding = -
 ; EnableXP
 ; DPIAware

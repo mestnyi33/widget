@@ -1,0 +1,43 @@
+﻿IncludePath "../"
+XIncludeFile "widgets.pbi"
+
+;- EXAMPLE
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   UseLib(Widget)
+   test_canvas_events = 1
+   
+   Procedure OpenTest( id, flag=0 )
+      Static x,y
+      OpenWindow( id, x,y,200,200,"window_"+Str(id), #PB_Window_SystemMenu|flag)
+      Open( id, 40,40,200-80,55) : SetClass(root( ), Str(id))
+      Open( id, 40,110,200-80,55) : SetClass(root( ), "1"+Str(id))
+      x + 100
+      y + 100
+   EndProcedure
+   
+   
+   OpenTest(1, #PB_Window_NoActivate)
+   OpenTest(2, #PB_Window_NoActivate)
+   OpenTest(3, #PB_Window_NoActivate)
+   
+   Define *this._S_WIDGET = Open( 4, 0,0,1,1,"popup", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool, WindowID(3)) ; bug in windows width < 150
+   
+   Define x=330, y=300, width=200, height=100
+   ResizeWindow( *this\root\canvas\window, x, y, width, height )
+   ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
+   
+   ;
+   HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
+   DisableWindow( *this\root\canvas\window, #False)
+   
+   SetActiveGadget(-1)
+   
+   WaitClose( )
+   
+CompilerEndIf
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 37
+; FirstLine = 1
+; Folding = -
+; EnableXP

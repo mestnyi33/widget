@@ -1323,6 +1323,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;{
       ; Requester
       Global resize_one
+      
+      Declare   CanvasEvents( )
+      Declare   EventRepaint( )
+      Declare   EventActivate( )
+      Declare   EventDeactivate( )
+      Declare   EventResize( )
+      
+      
       Declare.b bar_tab_update_items_( *this._s_WIDGET, List *items._s_ITEMS( ) )
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare.i bar_tab_SetState( *this, item.l )
@@ -5796,7 +5804,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ if the integral tab bar
             If *this\TabBox( )
-               ;If *this\container
+               If *this\container
                ;;Debug ""+*this\class +" "+ x
                *this\inner_x( ) = x ; - *this\fs - *this\fs[1]
                *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
@@ -5824,7 +5832,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                *this\inner_x( ) + *this\fs + *this\fs[1]
                *this\inner_y( ) + *this\fs + *this\fs[2]
-               ;EndIf
+               EndIf
             EndIf
             
             ;\\
@@ -19674,8 +19682,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this = a_entered( ) And 
                   *this\mouseenterframe =- 1
                   ;
-                  If ( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_frame] ) And
-                       is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ))
+                  If ( is_atpoint_( *this, mouse_x, mouse_y, [#__c_frame] ) And
+                       is_atpoint_( *this, mouse_x, mouse_y, [#__c_draw] ))
                      ;
                      *this\mouseenter = 1
                      Debug "(>)"
@@ -21835,7 +21843,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected eventGadget = EventGadget( )
          
          If test_event_canvas
-            Debug "CanvasEvents - " + EventGadget( ) +" "+ ClassFromPBEvent( EventType( ) )
+            If eventtype <> #PB_EventType_MouseMove
+               Debug "CanvasEvents - " + EventGadget( ) +" "+ ClassFromPBEvent( EventType( ) )
+            EndIf
          EndIf
          
          EventHandler( #PB_Event_Gadget, EventGadget( ), EventType( ), EventData( ) )
@@ -22055,7 +22065,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               Debug "enter canvas " + EnteredCanvasID +" "+ Root( )\class
             EndIf
             
             ;\\
@@ -22065,8 +22074,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   eventgadget = PressedWidget( )\root\canvas\gadget
                   ChangeCurrentCanvas( GadgetID( eventgadget ) )
                EndIf
-               EnteredCanvasID = #Null
-               Debug "leave canvas " + EnteredCanvasID +" "+ Root( )\class
+              ; EnteredCanvasID = #Null
             EndIf
             
             ;\\
@@ -22619,7 +22627,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EventHandler( #PB_Event_ActivateWindow, #PB_Default, #PB_Default, #Null )
       EndProcedure
       
-      Procedure EventDeactive( )
+      Procedure EventDeactivate( )
          EventHandler( #PB_Event_DeactivateWindow, #PB_Default, #PB_Default, #Null )
       EndProcedure
       
@@ -22874,7 +22882,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
-            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
+            BindEvent( #PB_Event_DeactivateWindow, @EventDeactivate( ), Window )
             If canvasflag & #PB_Canvas_Container = #PB_Canvas_Container
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
             EndIf
@@ -24705,10 +24713,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 21912
-; FirstLine = 21483
-; Folding = -----------------------------------------------------------------+-vN-----7-------40-fv------f3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------dPAAA+b-------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 5834
+; FirstLine = 5802
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
