@@ -95,6 +95,62 @@
       EndIf
       ProcedureReturn handle
    EndProcedure
+CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+   Procedure CallbackHandler(hWnd, uMsg, wParam, lParam) 
+      Static enter.b
+      Protected text.s, sysProc = GetProp_(hWnd, "sysProc")
+      
+      Select uMsg
+;          Case #WM_MOUSEFIRST
+;             Protected TRACK.TRACKMOUSEEVENT
+;             TRACK\cbSize = SizeOf(TRACK)
+;             TRACK\dwFlags = #TME_HOVER|#TME_LEAVE
+;             TRACK\hwndTrack = hWnd
+;             TRACK\dwHoverTime = 1
+;             TrackMouseEvent_(@TRACK)
+;             
+;          Case #WM_MOUSELEAVE
+;             enter = 0
+;             text = "leave gadget #" + Str(GetDlgCtrlID_(hWnd))
+;             
+;          Case #WM_MOUSEHOVER
+;             If enter = 0
+;                enter = 1
+;                text = "enter gadget #" + Str(GetDlgCtrlID_(hWnd))
+;             EndIf
+            
+         Case #WM_SETFOCUS
+            text = "Focus on gadget #" + Str(GetDlgCtrlID_(hWnd))
+         Case #WM_KILLFOCUS
+            text = "Lost focus on gadget #" + Str(GetDlgCtrlID_(hWnd))
+;             
+;          Case #WM_LBUTTONDOWN
+;             text = "Left button down on gadget #" + Str(GetDlgCtrlID_(hWnd))
+;          Case #WM_LBUTTONUP
+;             text = "Left button up on gadget #" + Str(GetDlgCtrlID_(hWnd))
+;          Case #WM_LBUTTONDBLCLK
+;             text = "Left button click on gadget #" + Str(GetDlgCtrlID_(hWnd))
+;          Case #WM_RBUTTONDOWN
+;             text = "Right button down on gadget #" + Str(GetDlgCtrlID_(hWnd))
+;          Case #WM_RBUTTONUP
+;             text = "Right button up on gadget #" + Str(GetDlgCtrlID_(hWnd))
+;          Case #WM_RBUTTONDBLCLK
+;             text = "Right button click on gadget #" + Str(GetDlgCtrlID_(hWnd))
+      EndSelect
+      
+      If text
+         Debug text
+      EndIf
+      
+      ProcedureReturn CallWindowProc_(sysProc, hWnd, uMsg, wParam, lParam)
+   EndProcedure 
+   
+   Procedure BindCallBack(hWnd)
+      Protected sysProc = SetWindowLongPtr_(hWnd, #GWL_WNDPROC, @CallbackHandler())
+      SetProp_(hWnd, "sysProc", sysProc)
+   EndProcedure
+   
+   
 CompilerEndIf
 
 Procedure Open( id, flag=0 )
@@ -102,6 +158,12 @@ Procedure Open( id, flag=0 )
    OpenWindow( id, x,y,200,200,"window_"+Str(id), #PB_Window_SystemMenu|flag)
    CanvasGadget( id, 40,40,200-80,55, #PB_Canvas_Keyboard | #PB_Canvas_Container) : CloseGadgetList()
    CanvasGadget( 10+id, 40,110,200-80,55, #PB_Canvas_Keyboard)
+   
+   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      BindCallBack( GadgetID(id))
+      BindCallBack( GadgetID(10+id))
+   CompilerEndIf
+   
    x + 100
    y + 100
 EndProcedure
@@ -129,7 +191,7 @@ Repeat
          EndIf
       EndIf
    CompilerEndIf
-
+   
    Select event
       Case #PB_Event_ActivateWindow
          Debug "active - "+ EventWindow() 
@@ -142,7 +204,7 @@ Repeat
                down = gadget
             EndIf
          CompilerEndIf
-
+         
       Case #PB_Event_DeactivateWindow
          Debug "deactive - "+ EventWindow()
          
@@ -160,8 +222,8 @@ Repeat
             Case #PB_EventType_LeftButtonUp
                Debug "up - "+EventGadget()
                
-            Case #PB_EventType_LeftClick
-               Debug "click - "+EventGadget()
+               ;             Case #PB_EventType_LeftClick
+               ;                Debug "click - "+EventGadget()
                
          EndSelect
          
@@ -209,8 +271,8 @@ Until event = #PB_Event_CloseWindow
 ; deactive - 3
 ; active - 1
 ; deactive - 1
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 8
-; Folding = 4---
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 119
+; FirstLine = 97
+; Folding = -----
 ; EnableXP

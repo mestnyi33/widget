@@ -3,6 +3,15 @@
 ; (__)\          )\/\
 ;      ||------w||
 ;      ||       ||
+;        _
+;       /(|
+;      (  :
+;     __\  \  _____
+;   (____)  `|
+;  (____)|   |
+;   (____).__|
+;    (___)__.|_____
+;
 ;https://github.com/mestnyi33/widget/commits/macos/?after=24cf91f4b5a08e4a496f764416578125334e97ab+1154
 ; 43025500559246
 ; Regex Trim(Arguments)
@@ -252,6 +261,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare.i EnableDrop( *this, Format.l, Actions.b, PrivateType.i = 0 )
       
+;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;          Macro BindGadgetEvent( _gadget_, _callback_, _eventtype_=#PB_All )
+;             Events::BindGadget( _gadget_, _callback_, _eventtype_)
+;          EndMacro
+;       CompilerEndIf
       
       ;-
       Macro allocate( _struct_name_, _struct_type_ = )
@@ -21852,6 +21866,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure EventHandler( event = - 1, eventgadget = - 1, eventtype = - 1, eventdata = 0 )
+         ;Debug ""+ event +" "+ eventgadget +" "+ eventtype
          
          If test_canvas_events
             Select event
@@ -21972,16 +21987,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If event = #PB_Event_Gadget
             ; from PB event to widget event 
-            If eventtype = #PB_EventType_LeftClick
-               eventtype = #__event_LeftClick
-            EndIf
-            If eventtype = #PB_EventType_LeftDoubleClick
-               eventtype = #__event_Left2Click
-            EndIf
-            If eventtype = #PB_EventType_RightDoubleClick
-               eventtype = #__event_Right2Click
-            EndIf
-            ;
             If eventtype = #PB_EventType_Resize
                eventtype = #__event_Resize
             EndIf
@@ -22074,7 +22079,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   eventgadget = PressedWidget( )\root\canvas\gadget
                   ChangeCurrentCanvas( GadgetID( eventgadget ) )
                EndIf
-              ; EnteredCanvasID = #Null
+               EnteredCanvasID = #Null
             EndIf
             
             ;\\
@@ -22354,6 +22359,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
+;             ElseIf eventtype = #__event_Left2Click Or
+;                    eventtype = #__event_Right2Click
+;                
+;                If EnteredWidget( )
+;                   mouse( )\click = 2
+;                   DoEvents( EnteredWidget( ), eventtype )
+;                EndIf
+               
             ElseIf eventtype = #__event_LeftButtonDown Or
                    eventtype = #__event_MiddleButtonDown Or
                    eventtype = #__event_RightButtonDown
@@ -22417,7 +22430,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   Static ClickTime.q
                   Protected ElapsedMilliseconds.q = ElapsedMilliseconds( )
-                  If DoubleClickTime( ) > ( ElapsedMilliseconds - ClickTime ) + Bool( #PB_Compiler_OS = #PB_OS_Windows ) * 492
+                  If DoubleClickTime( ) > ( ElapsedMilliseconds - ClickTime ) ;+ Bool( #PB_Compiler_OS = #PB_OS_Windows ) * 492
                      mouse( )\click + 1
                   Else
                      mouse( )\click = 1
@@ -22878,8 +22891,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetWindowData( Window, Canvas )
             
             ;\\
-            BindGadgetEvent( Canvas, @CanvasEvents( ))
-            ;BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
+            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               Events::BindGadget( Canvas, @EventHandler( ))
+            CompilerElse
+               BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseEnter )
+               BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseLeave )
+            CompilerEndIf
+            
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_Resize )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseMove )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LeftButtonDown )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LeftButtonUp )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_RightButtonDown )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_RightButtonUp )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MiddleButtonDown )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MiddleButtonUp )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_Focus )
+            BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LostFocus )
+            
+            ; BindGadgetEvent( Canvas, @CanvasEvents( ))
+            ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
             BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
             BindEvent( #PB_Event_DeactivateWindow, @EventDeactivate( ), Window )
@@ -24714,9 +24745,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 4009
-; FirstLine = 823
-; Folding = ADQAAcw2------------8B9BA9-----PAAAAAAAAABAAAEAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAwPAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAA+-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwDAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAA5AAAAAAAAAAAAAAAAAAAnDAAAAAAAAAAAAAAAAPAAAAAAAAAAAADEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-A+HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAwACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
+; CursorPosition = 22912
+; FirstLine = 1818
+; Folding = ADQAIcw2-------------B9BA9-----PAAAAAAAAABAAAEAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAwPAAAAAAAAAAAAAAAQAAAAAAAAAAAs4AAAAAAAAYAAAAAAAAAAAAA+-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwDAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAA5AAAAAAAAAAAAAAAAAAAnDAAAAAAAAAAAAAAAAPAAAAAAAAAAAADEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-A+HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQGAAwAAAWBAAAcQAAAIAAPA5-BAAAAFMGQgRAAAAAAAAAAAAAAAAAAAAAAAAAAAAw
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app

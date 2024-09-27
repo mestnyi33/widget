@@ -448,6 +448,6 @@ Until event = #PB_Event_CloseWindow
 ;   2 #PB_EventType_LeftButtonUp 
 ;   2 #PB_EventType_LeftClick 
 ;   2 #PB_EventType_LeftDoubleClick 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = --v-----t-
 ; EnableXP

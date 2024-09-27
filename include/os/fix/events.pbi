@@ -5,6 +5,10 @@ DeclareModule events
   EnableExplicit
   UseModule constants
   
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+     Declare BindGadget( gadget, *callBack, eventtype = #PB_All )
+  CompilerEndIf
+
   Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
     ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
     DesktopMouseX() - GadgetX(_canvas_, _mode_)
@@ -268,7 +272,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 31
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 8
 ; Folding = -------
 ; EnableXP
