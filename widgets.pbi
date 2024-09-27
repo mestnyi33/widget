@@ -21852,12 +21852,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Select EventType()
                      Case #PB_EventType_MouseEnter
                         ChangeCurrentCanvas( GadgetID( eventgadget ) )
+                        Debug "enter -> " +" "+ Root( )\class
+                        
+                     Case #PB_EventType_MouseLeave
+                        ChangeCurrentCanvas( GadgetID( eventgadget ) )
+                        Debug "leave -> " +" "+ Root( )\class
                         
                      Case #PB_EventType_Focus
                         ChangeCurrentCanvas( GadgetID( eventgadget ) )
                         Debug "focus -> " +" "+ Root( )\class
                         
                      Case #PB_EventType_LostFocus
+                        ChangeCurrentCanvas( GadgetID( eventgadget ) )
                         Debug "lostfocus -> " +" "+ Root( )\class
                         
                      Case #PB_EventType_LeftButtonDown
@@ -21865,6 +21871,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Debug "down -> " +" "+ Root( )\class
                         
                      Case #PB_EventType_LeftButtonUp
+                        ChangeCurrentCanvas( GadgetID( eventgadget ) )
                         Debug "up -> " +" "+ Root( )\class
                         
                         ;                      Case #PB_EventType_LeftClick
@@ -24694,9 +24701,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 19581
-; FirstLine = 19514
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------------------------------------v----------------------------------------------------------------
+; CursorPosition = 21874
+; FirstLine = 21803
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
