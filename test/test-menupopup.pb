@@ -42,6 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    *button_menu = Button( 10, 5, 120, 25, "popup menu")
    Bind(*button_menu, @button_tab_events( ), #__event_Down )
+   Button( 140, 5, 150, 25, "button")
    
    Define i, *combobox._S_WIDGET = ComboBox( 10, 125, 120, 25)
    AddItem(*combobox, -1, "combo")
@@ -53,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Repaint(root( ))
    
    
-   DisplayPopupMenuBar( *combobox\PopupBar( ), *button_menu, 10, 190 )
+   DisplayPopupMenuBar( *combobox\PopupBar( ), *button_menu, 10, 125+25 )
    ;DisplayPopupMenuBar( *combobox\PopupBar( ), *combobox, 10, 150 )
    
    DisplayPopupMenuBar( *menu, *button_menu, 140, 20 )
@@ -81,9 +82,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 44
+; FirstLine = 24
 ; Folding = -
 ; EnableXP
 ; DPIAware
