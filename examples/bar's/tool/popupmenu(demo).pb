@@ -6,7 +6,6 @@ CompilerIf #PB_Compiler_IsMainFile
    Uselib(widget)
    
    Global *menu._s_WIDGET
-   
    ;-
    Procedure TestHandler()
       Debug "Test menu event"
@@ -18,11 +17,14 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure ClickHandler( )
-      ;Debug " "+mouse( )\x +" "+ mouse( )\y 
+      Debug " "+DesktopMouseX();mouse( )\x +" "+ mouse( )\y 
       If is_root_( EventWidget( ))
-         DisplayPopupMenu( 0, WindowID(EventWindow()))
+         DisplayPopupMenu( 0, WindowID(EventWindow()), DesktopMouseX(), DesktopMouseY())
       Else
-         DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+         ; DisplayPopupMenuBar( *menu, EventWidget( ), DesktopMouseX(), DesktopMouseY() )
+         ; DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+         DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
+            
       EndIf
    EndProcedure
    
@@ -30,7 +32,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Define window = GetWindow(Open( 1, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu))
    ;Define container = ContainerGadget( #PB_Any, 10, 10, 300-20, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
    
-   
+   Debug " gadget_x = "+ GadgetX(GetGadget( Root( )), #PB_Gadget_ScreenCoordinate)
+         
 ;    CreatePopupMenu( 0 )
 ;    MenuItem(1, "Open")      ; You can use all commands for creating a menu
 ;    MenuItem(2, "Save")      ; just like in a normal menu...
@@ -148,8 +151,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 6
+; CursorPosition = 23
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
 ; DPIAware
