@@ -301,6 +301,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       Macro MenuBar( _parent_ = 0, _flags_ = 0 )
       ;          CreateBar( #__type_Menu, _parent_, _flags_ )
       ;       EndMacro
+      
+      Macro MouseEnter( _this_, _mode_=2 )
+         _this_\enter = _mode_
+      EndMacro
+      
       Macro AlphaState( ) 
          color\_alpha ; << 24
       EndMacro
@@ -2463,7 +2468,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ first - draw backgraund color
                draw_mode_alpha_( #PB_2DDrawing_Default )
                If *this\drop
-                  If *this\mouseenterinner = 2
+                  If MouseEnter( *this )
                      If DragState( ) = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                         
@@ -2476,7 +2481,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
                   EndIf
                Else
-                  If *this\press And *this\mouseenterinner = 2
+                  If *this\press And MouseEnter( *this )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff00ff )
                   Else
                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $100000ff )
@@ -2486,7 +2491,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ second - draw frame color
                draw_mode_( #PB_2DDrawing_Outlined )
                If *this\drop
-                  If *this\mouseenterinner = 2
+                  If MouseEnter( *this )
                      If DragState( ) = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                         
@@ -2499,7 +2504,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ffff0000 )
                   EndIf
                Else
-                  If *this\press And *this\mouseenterinner = 2
+                  If *this\press And MouseEnter( *this )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff00ff )
                   Else
                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ff0000ff )
@@ -4100,7 +4105,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If *this\container > 0 And
-                  *this\mouseenterinner = 2
+                  MouseEnter( *this )
                   
                   If Not a_index( )
                      a_grid_change( *this )
@@ -20538,7 +20543,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ search at point entered items
             If Not Mouse( )\drag Or *this\drop
-               If *this\mouseenterinner = 2
+               If MouseEnter( *this )
                   If ListSize( *this\VisibleRows( ) )
                      If *this\EnteredRow( ) And
                         *this\EnteredRow( )\visible And
@@ -21148,13 +21153,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\FocusedTab( ) = 0
                   EndIf
                EndIf
-               ;                ;
-               ;                If HidePopupMenuBar( *this\ParentMenu( ) )
-               ;                   If *tabmenu
-               ;                      *tabmenu\toggle = 0
-               ;                      *tabmenu = 0
-               ;                   EndIf
-               ;                EndIf
+               ;
+               If HidePopupMenuBar( *this\ParentMenu( ) )
+                  If *tabmenu
+                     *tabmenu\toggle = 0
+                     *tabmenu = 0
+                  EndIf
+               EndIf
             EndIf
          EndIf
          
@@ -21223,7 +21228,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ get at point items 
             If Not mouse( )\press
                ; if enter inner coordinate                           ;
-               If *this\mouseenterinner = 2
+               If MouseEnter( *this )
                   If ListSize( *this\__tabs( ) )
                      If *this\EnteredTab( ) And
                         *this\EnteredTab( )\visible And
@@ -21260,7 +21265,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If is_menu_( *this )
                         If *this\mouseenter 
                            If Not *this\EnteredTab( )\focus
-                              If *this\ParentMenu( ) And Not *this\ParentMenu( )\hide
+                              If *this\ParentMenu( ) And
+                                 Not *this\ParentMenu( )\hide
                                  Debug "hede then leaved"
                                  HidePopupMenuBar( *this\ParentMenu( ) )
                               EndIf
@@ -21363,9 +21369,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\mouseenter > 0
             If is_innerside_( *this, mouse( )\x, mouse( )\y )
                If *this\mouseenter = 1
-                  *this\mouseenterinner = 2
+                  MouseEnter( *this )
                EndIf
-            ElseIf *this\mouseenterinner = 2
+            ElseIf MouseEnter( *this )
                *this\mouseenter        = 1
             EndIf
          EndIf
@@ -21623,7 +21629,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      eventtype = #__event_MouseEnter Or
                      eventtype = #__event_MouseLeave
                      
-                     If *this\mouseenterinner = 2
+                     If MouseEnter( *this )
                         If *this\ColorState( ) <> #__s_1
                            *this\ColorState( ) = #__s_1
                         EndIf
@@ -21782,7 +21788,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not a_index( )
                   ;\\ after post&send drag-start-event
                   If mouse( )\drag
-                     If *this\drop And *this\mouseenterinner = 2 And 
+                     If *this\drop And MouseEnter( *this ) And 
                         *this\drop\format = mouse( )\drag\format And
                         *this\drop\actions & mouse( )\drag\actions And
                         ( *this\drop\private = mouse( )\drag\private Or
@@ -21825,11 +21831,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         DoCurrentCursor( PressedWidget( ), Cursor( PressedWidget( ) ), 2 )
                      EndIf
                   Else
-                     If *this\mouseenterinner = 2
+                     If MouseEnter( *this )
                         DoCurrentCursor( *this, Cursor( *this ), 1 )
                      Else
                         If EnteredWidget( ) And
-                           EnteredWidget( )\mouseenterinner = 2
+                           MouseEnter( EnteredWidget( ) )
                            ;
                            If PressedWidget( ) And
                               PressedWidget( )\root <> EnteredWidget( )\root
@@ -24550,7 +24556,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      EventWidget( )\color\frame = colorframe1
                   EndIf
                   
-                  If EventWidget( )\mouseenterinner = 2
+                  If MouseEnter( EventWidget( ) )
                      If EventWidget( )\color\back <> colorback1
                         repaint                   = 1
                         EventWidget( )\color\back = colorback1
@@ -24765,9 +24771,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 5174
-; FirstLine = 5117
-; Folding = --8---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 305
+; FirstLine = 268
+; Folding = --8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app

@@ -555,15 +555,17 @@ Procedure widget_events( )
               ; ChangeCursor( *e_widget, #PB_Cursor_Arrows )
             EndIf
          Else
-            If Not a_index( )
-               If IsContainer( *e_widget )
-                  If GetState( w_ide_inspector_elements) > 0 
-                     If DragDropPrivate( #_DD_CreateNew )
-                        ChangeCursor( *e_widget, #PB_Cursor_Cross )
-                     EndIf
-                  Else
-                     If DragDropPrivate( #_DD_Group )
-                        ChangeCursor( *e_widget, #PB_Cursor_Cross )
+            If IsContainer( *e_widget ) 
+               If MouseEnter( *e_widget )
+                  If Not a_index( )
+                     If GetState( w_ide_inspector_elements) > 0 
+                        If DragDropPrivate( #_DD_CreateNew )
+                           ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                        EndIf
+                     Else
+                        If DragDropPrivate( #_DD_Group )
+                           ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -1406,8 +1408,9 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 14
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 561
+; FirstLine = 552
 ; Folding = -----------------------
 ; EnableXP
 ; DPIAware

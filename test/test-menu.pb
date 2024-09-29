@@ -5,20 +5,13 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseLIB(widget)
   
-<<<<<<< Updated upstream
   test_draw_repaint = 1
   
-=======
->>>>>>> Stashed changes
   Enumeration
     #window_0
     #window
   EndEnumeration
   
-<<<<<<< Updated upstream
-  ;-\\ ANCHORS
-  Global view
-=======
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     LoadFont(6, "Arial", 21)
     
@@ -104,16 +97,14 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
   EndProcedure
->>>>>>> Stashed changes
-  
+
   OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
   
   Define i
   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
   Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
   
-<<<<<<< Updated upstream
-=======
+
   ;    
   ;    
   ;    Define *toolbar = ToolBar( *root )
@@ -139,13 +130,13 @@ CompilerIf #PB_Compiler_IsMainFile
   ;       ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
   ;       ; ToolTip(*toolbar, 6, "Find a document")
   ;    EndIf
-  
->>>>>>> Stashed changes
+
+
   ;BindWidgetEvent( *root, @BindEvents( ) )
   view = Container(10, 10, 406, 238, #PB_Container_Flat)
   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
   a_init( view, 8 )
-<<<<<<< Updated upstream
+
   Define *a0._s_WIDGET = Button( 10, 10, 60, 60, "Button" )
   CloseList( )
   
@@ -175,7 +166,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   
 ;   
   a_set( *a0, -1, 10)
-=======
+
   
   Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
   
@@ -231,25 +222,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Bind( Root( ), @anchor_events( ) )
->>>>>>> Stashed changes
   
-  ;\\Close( )
-  
-  
-<<<<<<< Updated upstream
   OpenWindow(#window, 0, 0, 400, 300, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-=======
-  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
->>>>>>> Stashed changes
-  
+ 
   ;\\ Open Root0
   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
   ;BindWidgetEvent( *root2, @BindEvents( ) )
-<<<<<<< Updated upstream
   Global *menu._S_WIDGET = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
-=======
-  Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
->>>>>>> Stashed changes
+  
   SetColor( *menu, #__color_back, $FFC8ECF0 )
   
   BarTitle("Title-1")
@@ -304,7 +284,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Bind(*menu, @TestHandler(), -1, 7)
   Bind(*menu, @QuitHandler(), -1, 8)
   
-<<<<<<< Updated upstream
+
   Define i, *combobox._S_WIDGET = ComboBox( 10, 125, 120, 25)
    AddItem(*combobox, -1, "combo")
    For i = 0 To 9
@@ -366,7 +346,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   ;\\Close( )
 ;   
 
-=======
+
   *menu = CreatePopupMenuBar( )
   If *menu                  ; creation of the pop-up menu begins...
     BarItem(1, "Open")      ; You can use all commands for creating a menu
@@ -499,9 +479,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;BindWidgetEvent( *root4, @BindEvents( ) )
   ;\\Close( )
   
-  
->>>>>>> Stashed changes
-  WaitClose( )
+   WaitClose( )
   
 CompilerEndIf
 
@@ -722,19 +700,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    
 CompilerEndIf
    
-<<<<<<< Updated upstream
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 95
-; Folding = X---
-=======
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 385
-; FirstLine = 362
-; Folding = ---r---
->>>>>>> Stashed changes
-; EnableXP
-; DPIAware
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = -------
+; CursorPosition = 99
+; Folding = ---8---
 ; EnableXP

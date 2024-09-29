@@ -180,3 +180,4 @@ CompilerEndIf
 ; FirstLine = 49
 ; Folding = -+
 ; EnableXP
+; DPIAware
