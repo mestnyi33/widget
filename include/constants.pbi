@@ -499,8 +499,9 @@
          #__event_input
          #__event_return
          #__event_keyup
-         #__event_draw
-         #__event_repaint
+         #__event_Draw
+         #__event_ReDraw
+         #__event_Repaint
          #__event_maximize
          #__event_minimize
          #__event_restore
@@ -509,7 +510,6 @@
          ;          #__event_titlechange ;
          ;          #__event_closeItem
          ;          #__event_sizeitem
-         
          #__event_free
          #__event_count
       EndEnumeration
@@ -882,8 +882,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 453
-; FirstLine = 437
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 498
+; FirstLine = 484
 ; Folding = ----
 ; EnableXP

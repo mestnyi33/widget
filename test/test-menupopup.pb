@@ -13,7 +13,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global._S_WIDGET  *menu, *button_menu
    
-   Open(0, 0, 0, 300, 200, "popup menu test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   OpenWindow(0, 0, 0, 300, 200, "popup menu test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   Open(0, 10, 10, 280, 180)
    *menu = CreatePopupMenuBar( )
    If *menu                  ; creation of the pop-up menu begins...
       ;SetColor(*menu, #__Color_Back, RGB(213, 213, 213))
@@ -48,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    *button_menu = Button( 10, 5, 120, 25, "popup menu")
    Bind(*button_menu, @button_tab_events( ), #__event_Down )
-   Button( 140, 5, 150, 25, "button")
+   Button( 140, 5, 130, 25, "button")
    
    Define i, *combobox._S_WIDGET = ComboBox( 10, 125, 120, 25)
    AddItem(*combobox, -1, "combo")
@@ -85,12 +86,20 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    Next
    ;    Debug "-------<<--------"
    
-   WaitClose( )
+   ; WaitClose( )
+   
+   Define Event
+   Repeat
+      Event = WaitWindowEvent( )
+      If event = #PB_Event_LeftClick
+        Debug 888
+      EndIf
+   Until Event = #PB_Event_CloseWindow
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 18
+; CursorPosition = 93
+; FirstLine = 68
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -98,6 +98,7 @@ SetGadgetText(panel_inspector, "size: ("+Str(GadgetWidth(panel_inspector))+"x"+S
 SetGadgetText(text_help, "size: ("+Str(GadgetWidth(text_help))+"x"+Str(GadgetHeight(text_help))+") - " + Str(GetIndex( GetParent( text_help ))))
 
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.72 (Linux - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
+; DPIAware

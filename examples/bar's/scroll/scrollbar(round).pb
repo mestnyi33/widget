@@ -28,14 +28,12 @@ CompilerIf #PB_Compiler_IsMainFile
         Else
           SetGadgetText(0, "round scrollbar buttons")
         EndIf
-        
-       ; bind(-1,-1)
       EndIf
     EndIf
   EndProcedure
   
   Window_0()
-  SetAttribute(*scrollbar, #__Bar_ButtonSize, 100)
+  SetAttribute(*scrollbar, #__Bar_ButtonSize, 62)
             
   Repeat
     gEvent= WaitWindowEvent()
@@ -79,8 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 54
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 35
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

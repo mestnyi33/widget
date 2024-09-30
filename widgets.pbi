@@ -174,8 +174,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-  -----------------
       ;-   DECLARE_globals
       ;-  -----------------
-      Global _dpiScaleFactorX.d
-      Global _dpiScaleFactorY.d
+      Global DPIScaleResolutionX.d
+      Global DPIScaleResolutionY.d
       Declare.l update_items_( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
       
       Global _macro_call_count_
@@ -278,12 +278,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          Macro BindGadgetEvent( _gadget_, _callback_, _eventtype_=#PB_All )
          ;             Events::BindGadget( _gadget_, _callback_, _eventtype_)
          ;          EndMacro
-;          Macro GadgetX( _gadget_, _flags_ = #PB_Gadget_ContainerCoordinate )
-;             ( PB(GadgetX)( _gadget_, _flags_ ) * _dpiScaleFactorX )
-;          EndMacro
-;          Macro GadgetY( _gadget_, _flags_ = #PB_Gadget_ContainerCoordinate )
-;             ( PB(GadgetY)( _gadget_, _flags_ ) * _dpiScaleFactorY )
-;          EndMacro
       CompilerEndIf
       
       ;-
@@ -599,15 +593,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro ActiveWindow( ): Keyboard( )\window: EndMacro     ; Returns activeed window
       Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro ; Returns activeed gadget
       
+      Macro DPIResolutionX( ): DesktopResolutionX( ): EndMacro
+      Macro DPIResolutionY( ): DesktopResolutionY( ): EndMacro
+; ;       Macro DPIResolutionX( ): DPIScaleResolutionX: EndMacro
+; ;       Macro DPIResolutionY( ): DPIScaleResolutionY: EndMacro
+;       Macro DPIScaledX( _x_ ): ( _x_ * DPIResolutionX( )): EndMacro
+;       Macro DPIUnScaledX( _x_ ): ( _x_ / DPIResolutionX( )): EndMacro
+;       Macro DPIScaledY( _y_ ): ( _y_ * DPIResolutionY( )): EndMacro
+;       Macro DPIUnScaledY( _y_ ): ( _y_ / DPIResolutionY( )): EndMacro
+      
+      Macro DPIScaledX( _x_ ): DesktopScaledX( _x_ ): EndMacro
+      Macro DPIUnScaledX( _x_ ): DesktopUnscaledX( _x_ ): EndMacro
+      Macro DPIScaledY( _y_ ): DesktopScaledY( _y_ ): EndMacro
+      Macro DPIUnScaledY( _y_ ): DesktopUnscaledY( _y_ ): EndMacro
+      
       ;-
       Macro MouseButtons( ): mouse( )\buttons: EndMacro
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-         Macro GetMouseX( _mode_ = #__c_screen ): ( mouse( )\x / _dpiScaleFactorX ): EndMacro ; Returns mouse x
-         Macro GetMouseY( _mode_ = #__c_screen ): ( mouse( )\y / _dpiScaleFactorY ): EndMacro ; Returns mouse y
-      CompilerElse
-         Macro GetMouseX( _mode_ = #__c_screen ): mouse( )\x : EndMacro ; Returns mouse x
-         Macro GetMouseY( _mode_ = #__c_screen ): mouse( )\y : EndMacro ; Returns mouse y
-      CompilerEndIf
+      Macro GetMouseX( _mode_ = #__c_screen ): DPIUnScaledX( mouse( )\x ): EndMacro ; Returns mouse x
+      Macro GetMouseY( _mode_ = #__c_screen ): DPIUnScaledY( mouse( )\y ): EndMacro ; Returns mouse y
       ;-
       Macro Cursor( _this_ )
          _this_\cursor[3]
@@ -629,14 +632,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          CloseGadgetList( )
       EndMacro
       Macro CanvasMouseX( _canvas_ )
-         GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
+         ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
          ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
-         ;DesktopMouseX( ) - GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate )
+         DesktopMouseX( ) - DesktopScaledX(GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate ))
       EndMacro
       Macro CanvasMouseY( _canvas_ )
-         GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
+         ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
          ;WindowMouseY(  ID::Window(ID::GetWindowID(GadgetID(_canvas_)))  ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
-         ;DesktopMouseY( ) - GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate )
+         DesktopMouseY( ) - DesktopScaledY(GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate ))
       EndMacro
       
       
@@ -1573,8 +1576,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
    
    Module Widget
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-         _dpiScaleFactorX = GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96
-         _dpiScaleFactorY = GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96
+         DPIScaleResolutionX = GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96
+         DPIScaleResolutionY = GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96
       CompilerEndIf
       
       
@@ -5122,8 +5125,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                  width / _dpiScaleFactorX
-                  height / _dpiScaleFactorY
+                  If DPIResolutionX( )
+                     width = DPIUnscaledX( width )
+                  EndIf
+                  If DPIResolutionY( )
+                     height = DPIUnScaledY( height )
+                  EndIf
                CompilerEndIf
             EndIf
             
@@ -5153,14 +5160,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            x = *display\screen_x( ) + *display\EnteredTab( )\x
                         Else
                            x = mouse( )\x
-                           If _dpiScaleFactorX
-                             ; x * _dpiScaleFactorX 
-                           EndIf
                         EndIf
                      EndIf
                      
                      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                        x / _dpiScaleFactorX
+                        If DPIResolutionX( )
+                           x = DPIUnscaledX(x)
+                        EndIf
                      CompilerEndIf
                   EndIf
                   If *display\round
@@ -5169,7 +5175,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If y = #PB_Ignore
                      If *display\type = #__type_ComboBox
                         y = *display\screen_y( ) + *display\screen_height( )
-                     
+                        
                      ElseIf *display\bar And *display\EnteredTab( )
                         y = *display\screen_y( ) + *display\EnteredTab( )\y
                         If Not *display\bar\vertical
@@ -5180,7 +5186,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                        y / _dpiScaleFactorY
+                        If DPIResolutionY( )
+                           y = DPIUnscaledY(y)
+                        EndIf
                      CompilerEndIf
                   EndIf
                EndIf
@@ -5458,20 +5466,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If Not mouse( )\dragstart ; mouse( )\press ; 
             If Not *this\noscale
-               If _dpiScaleFactorX
+               If DPIResolutionX( )
                   If x <> #PB_Ignore
-                     x = x * _dpiScaleFactorX
+                     x = DPIScaledX( x )
                   EndIf
                   If width <> #PB_Ignore
-                     width = width * _dpiScaleFactorX
+                     width = DPIScaledX( width )
                   EndIf
                EndIf
-               If _dpiScaleFactorY
+               If DPIResolutionY( )
                   If y <> #PB_Ignore
-                     y = y * _dpiScaleFactorY
+                     y = DPIScaledY( y )
                   EndIf
                   If height <> #PB_Ignore
-                     height = height * _dpiScaleFactorY
+                     height = DPIScaledY( height )
                   EndIf
                EndIf
             EndIf
@@ -6196,22 +6204,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;{
-      Macro bar_in_stop_( _bar_ )
-         Bool( _bar_\thumb\pos >= _bar_\area\end ) ; _bar_\page\pos >= _bar_\page\end - _bar_\min[2] ) ;
-      EndMacro
-      
       Macro bar_in_start_( _bar_ )
-         Bool( _bar_\thumb\pos <= _bar_\area\pos ) ; _bar_\page\pos <= _bar_\min + _bar_\min[1] ) ;
-                                                   ;Debug ""+_bar_\page\pos +" "+ _bar_\min +" "+ _bar_\min[1]
+         Bool( _bar_\area\pos >= _bar_\thumb\pos )
       EndMacro
       
-      Macro bar_page_in_stop_( _bar_ )
-         Bool( _bar_\page\pos >= _bar_\page\end - _bar_\min[2] ) ;
+      Macro bar_in_stop_( _bar_ )
+        Bool( _bar_\thumb\pos >= _bar_\area\end ) 
       EndMacro
       
-      Macro bar_page_in_start_( _bar_ )
-         Bool( _bar_\page\pos <= _bar_\min + _bar_\min[1] ) ;
-      EndMacro
+      ;       Macro bar_page_in_stop_( _bar_ )
+      ;          Bool( _bar_\page\pos >= _bar_\page\end - _bar_\min[2] ) ;
+      ;       EndMacro
+      
+      ;       Macro bar_page_in_start_( _bar_ )
+      ;          Bool( _bar_\page\pos <= _bar_\min + _bar_\min[1] ) ;
+      ;       EndMacro
       
       ;       Macro bar_page_pos_( _bar_, _thumb_pos_ )
       ;          ( _bar_\min + Round(((( _thumb_pos_ ) + _bar_\min[2] ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
@@ -8714,7 +8721,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Splitter first-child auto resize
             If IsGadget( *this\split_1( ) )
                ;             If is_root_container_( *this )
-               PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
+               If DPIResolutionX( ) And DPIResolutionY( )
+                  PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
+               Else
+                  PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
+               EndIf
                ;             Else
                ;               PB(ResizeGadget)( *this\split_1( ),
                ;                                 *BB1\x + GadgetX( *this\root\canvas\gadget ),
@@ -8723,7 +8734,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;             EndIf
                
             Else
-               If *this\split_1( ) And *this\split_1( ) <> *this
+               If *this\split_1( ) > 0 And *this\split_1( ) <> *this
                   If *this\split_1( )\x <> *BB1\x Or
                      *this\split_1( )\y <> *BB1\y Or
                      *this\split_1( )\width <> *BB1\width Or
@@ -8750,7 +8761,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Splitter second-child auto resize
             If IsGadget( *this\split_2( ) )
                ;             If is_root_container_( *this )
-               PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
+               If DPIResolutionX( ) And DPIResolutionY( )
+                  PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
+               Else
+                  PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
+               EndIf
                ;             Else
                ;               PB(ResizeGadget)( *this\split_2( ),
                ;                                 *BB2\x + GadgetX( *this\root\canvas\gadget ),
@@ -8759,7 +8774,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;             EndIf
                
             Else
-               If *this\split_2( ) And *this\split_2( ) <> *this
+               If *this\split_2( ) > 0 And *this\split_2( ) <> *this
                   If *this\split_2( )\x <> *BB2\x Or
                      *this\split_2( )\y <> *BB2\y Or
                      *this\split_2( )\width <> *BB2\width Or
@@ -17445,12 +17460,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               If *param_1 >= 0
-                  *this\split_1( ) = *param_1
-               EndIf
-               If *param_2 >= 0
-                  *this\split_2( ) = *param_2
-               EndIf
+               *this\split_1( ) = *param_1
+               *this\split_2( ) = *param_2
                
                *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) )
                *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) )
@@ -17462,14 +17473,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If IsGadget( *this\split_1( ) )
                   Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
                   parent::set( *this\split_1( ), *this\root\canvas\GadgetID )
-               ElseIf *this\split_1( )
+               ElseIf *this\split_1( ) > 0
                   SetParent( *this\split_1( ), *this )
                EndIf
                
                If IsGadget( *this\split_2( ) )
                   Debug "bar_is_second_gadget_ " + IsGadget( *this\split_2( ) )
                   parent::set( *this\split_2( ), *this\root\canvas\GadgetID )
-               ElseIf *this\split_2( )
+               ElseIf *this\split_2( ) > 0
                   SetParent( *this\split_2( ), *this )
                EndIf
                ; EndIf
@@ -17625,8 +17636,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf *this\type = #__type_MDI Or
                    *this\type = #__type_ScrollArea
                
-               If _dpiScaleFactorX And _dpiScaleFactorY
-                  bar_area_create_( *this, 1, *param_1 * _dpiScaleFactorX, *param_2 * _dpiScaleFactorY, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
+               If DPIResolutionX( ) And DPIResolutionY( )
+                  bar_area_create_( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
                Else
                   bar_area_create_( *this, 1, *param_1, *param_2, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
                EndIf
@@ -18909,7 +18920,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                   ; post event re draw
-                  Send( *this, #__event_Draw )
+                  If is_root_( *this )
+                     Send( *this, #__event_ReDraw );, #PB_All, *this )
+                     ; PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint )
+                  Else
+                     Send( *this, #__event_Draw )
+                  EndIf
                   ;
                   ;
                   If *this\root\drawmode & 1<<2
@@ -19218,7 +19234,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                       
                      StopEnumerate( )
                   EndIf
-                  
                   
                   ;\\ draw clip out transform widgets frame
                   If *root\drawmode & 1<<2
@@ -22810,6 +22825,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If GetClassLongPtr_( w, #GCL_STYLE ) & #CS_DROPSHADOW = 0
                      SetClassLongPtr_( w, #GCL_STYLE, #CS_DROPSHADOW )
                   EndIf
+                  ;SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
                   SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
                   SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE)|#WS_EX_NOPARENTNOTIFY) 
                CompilerElse
@@ -24771,9 +24787,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 305
-; FirstLine = 268
-; Folding = --8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------
+; CursorPosition = 18923
+; FirstLine = 18777
+; Folding = --8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------s-------------------------------------------------------------------0-------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app

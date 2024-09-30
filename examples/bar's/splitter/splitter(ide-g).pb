@@ -103,7 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; FirstLine = 18
 ; Folding = -
 ; EnableXP
 ; DPIAware

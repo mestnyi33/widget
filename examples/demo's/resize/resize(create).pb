@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    Uselib( WIDGET )
    test_event_resize = 1
-   test_draw_repaint = 1
+  ; test_draw_repaint = 1
    
    Global *menu
    
@@ -176,8 +176,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 49
+; CursorPosition = 7
 ; Folding = -+
 ; EnableXP
 ; DPIAware
