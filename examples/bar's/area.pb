@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -415,7 +415,5 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 415
-; FirstLine = 386
 ; Folding = ---------
 ; EnableXP
