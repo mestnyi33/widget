@@ -17336,11 +17336,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ Draw selector back
             If *items( )\color\back[state]
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               If *this\flag & #__Flag_FullSelection
-                  draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
-               Else
-                  draw_roundbox_( x, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
+               If ListSize( *this\columns( )) = 1
+                  draw_mode_alpha_( #PB_2DDrawing_Default )
+                  If *this\flag & #__Flag_FullSelection
+                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
+                  Else
+                     draw_roundbox_( xs, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
+                  EndIf
                EndIf
             EndIf
             
@@ -18346,32 +18348,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected state.b, x.l, y.l, scroll_x, scroll_y
          
          If Not *this\hide
-            If *this\WidgetChange( ) = - 2 : *this\WidgetChange( ) = 1 : EndIf
-            If *this\WidgetChange( ) = - 1 : *this\WidgetChange( ) = 1 : EndIf
-            
-            ;\\
-            ForEach *this\columns( )
-               *this\row\column = *this\columns( )\index
-               Update_TreeItems( *this, *this\__rows( ), *this\WidgetChange( ) )
-            Next
-            
-           
-            ;\\
-            If *this\WidgetChange( ) > 0
-               bar_area_update( *this )
-               *this\WidgetChange( ) = - 2
-            EndIf
-           
-            ;\\ SetState( scroll-to-see )
-            If *this\FocusedRow( ) And *this\ScrollState( ) = - 1
-               row_scroll_y_( *this, *this\FocusedRow( ) )
+            If *this\WidgetChange( ) Or *this\ResizeChange( )
+               ForEach *this\columns( )
+                  *this\row\column = *this\columns( )\index
+                  Update_TreeItems( *this, *this\__rows( ), *this\WidgetChange( ) )
+               Next
                
-               *this\scroll\v\WidgetChange( ) = 0
-               *this\ScrollState( )             = #True
-            EndIf
-            
-            ;\\
-            If *this\WidgetChange( ) < 0
+               ;\\
+               bar_area_update( *this )
+               
+               ;\\ SetState( scroll-to-see )
+               If *this\FocusedRow( ) And *this\ScrollState( ) = - 1
+                  row_scroll_y_( *this, *this\FocusedRow( ) )
+                  
+                  *this\scroll\v\WidgetChange( ) = 0
+                  *this\ScrollState( )             = #True
+               EndIf
+               
                ;\\ reset draw list
                ClearList( *this\VisibleRows( ))
                *this\VisibleFirstRow( ) = 0
@@ -18381,6 +18374,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\row\column = *this\columns( )\index
                   Update_TreeVisibleItems( *this, *this\__rows( ) )
                Next
+               
+               *this\WidgetChange( ) = 0
             EndIf
             
             ;\\ Draw background
@@ -18431,6 +18426,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
             Next
+            
             
             ;\\ horizontal lines
             draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -24843,9 +24839,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12877
-; FirstLine = 12532
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----+--------------------------------------------------------------------------------t-----------------------------------------80-------8------------------------------------------------------------------------------------------------------------------------+--------------------------v---ff----v-----4f+bv-v--------------------------------------------------------------------8--------------------------------4------f9--------------------------------4-------
+; CursorPosition = 18408
+; FirstLine = 17012
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----+--------------------------------------------------------------------------------t-----------------------------------------80-------8------------------------------------------------------------------------------------------------------------------------+---f-0---f---4------+-----8---44----8-----0n-38-8--------------------------------------------------------------------+--------------------------------0------H---------------------------------0------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
