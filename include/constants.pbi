@@ -169,9 +169,9 @@
          #__flag_child
          #__flag_invert
          #__flag_vertical
-         ;#__flag_transparent
+         #__flag_Transparent
          ;#__flag_invisible
-         #__flag_noscrollbars
+         #__flag_noScrollbars
          #__flag_autoSize
          
          ;frame
@@ -882,8 +882,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 498
-; FirstLine = 484
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 168
+; FirstLine = 155
 ; Folding = ----
 ; EnableXP

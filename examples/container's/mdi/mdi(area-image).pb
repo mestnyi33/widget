@@ -13,33 +13,35 @@ CompilerIf #PB_Compiler_IsMainFile
       Static DragWidget
       
       Select WidgetEventType( )
-            ;       Case #PB_EventType_MouseEnter
+            ;       Case #__event_MouseEnter
             ;         SetCursor( *ew, #PB_Cursor_Hand )
             ;         
-            ;       Case #PB_EventType_MouseLeave
+            ;       Case #__event_MouseLeave
             ;         SetCursor( *ew, #PB_Cursor_Default )
             
-         Case #PB_EventType_LeftButtonUp 
+         Case #__event_LeftButtonUp 
             DragWidget = #Null
             
-         Case #PB_EventType_LeftButtonDown
-            ;         ; get alpha
-            ;         If *ew\image[#__img_background]\id And
-            ;            *ew\image[#__img_background]\depth > 31 And 
-            ;            StartDrawing( ImageOutput( *ew\image[#__img_background]\img ) )
-            ;           
-            ;            DrawingMode( #PB_2DDrawing_AlphaChannel )
-            ;            If Alpha( Point( Mouse( )\x - *ew\x[#__c_inner], Mouse( )\y - *ew\y[#__c_inner] ) )
-            ;              DragWidget = *ew
-            ;            EndIf
-            ;           
-            ;           StopDrawing( )
-            ;         Else
-            ;           DragWidget = *ew
-            ;         EndIf
+         Case #__event_LeftButtonDown
+;             ; get alpha
+;             If *ew\image[#__image_background]\id And
+;                *ew\image[#__image_background]\depth > 31 And 
+;                StartDrawing( ImageOutput( *ew\image[#__image_background]\img ) )
+;                
+;                DrawingMode( #PB_2DDrawing_AlphaChannel )
+;                If Alpha( Point( Mouse( )\x - *ew\x[#__c_inner], Mouse( )\y - *ew\y[#__c_inner] ) )
+;                   DragWidget = *ew
+;                Else
+;                   DragWidget = GetAtPoint( Root( ), mouse( )\x, mouse( )\y, __widgets( ), *ew\address )
+;                EndIf
+;                
+;                StopDrawing( )
+;             Else
+;                DragWidget = *ew
+;             EndIf
             DragWidget = *ew
             
-         Case #PB_EventType_MouseMove
+         Case #__event_MouseMove
             If DragWidget = *ew
                Resize( *ew, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
             EndIf
@@ -76,20 +78,21 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure MDI_AddImage( *mdi, x, y, img, round=0 )
       Protected *this._s_widget
       
-      *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
+      *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess|#__flag_Transparent )
       *this\class = "image-"+Str(img)
       *this\cursor = #PB_Cursor_Hand
       *this\round = round
       
       Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
       
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_LeftButtonUp )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_LeftButtonDown )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseMove )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseEnter )
-      Bind( *this, @MDI_ImageEvents(), #PB_EventType_MouseLeave )
+      Bind( *this, @MDI_ImageEvents(), #__event_LeftButtonUp )
+      Bind( *this, @MDI_ImageEvents(), #__event_LeftButtonDown )
+      Bind( *this, @MDI_ImageEvents(), #__event_MouseMove )
+      Bind( *this, @MDI_ImageEvents(), #__event_MouseEnter )
+      Bind( *this, @MDI_ImageEvents(), #__event_MouseLeave )
       Bind( *this, @MDI_ImageEvents(), #__Event_Draw )
-      Bind( #PB_All, @MDI_ImageEvents(), #PB_EventType_Repaint )
+      
+      ProcedureReturn *this
    EndProcedure
    
    ;- \\
@@ -228,14 +231,14 @@ CompilerIf #PB_Compiler_IsMainFile
    MDI_AddImage( *mdi, 100, 120, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
    MDI_AddImage( *mdi, 210, 250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
    
-   MDI_AddImage( *mdi,-70,240,hole, round )
+   MDI_AddImage( *mdi,50,150,hole, round )
    MDI_AddImage( *mdi,90,30,hole2, 100 )
    
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 121
-; FirstLine = 104
-; Folding = ---
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 40
+; FirstLine = 13
+; Folding = -8-
 ; EnableXP

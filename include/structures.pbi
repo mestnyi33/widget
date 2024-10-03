@@ -316,7 +316,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *cursor                 ; current visible cursor
          
          click.a                 ; mouse clicked count
-         press.b                 ; mouse buttons state
          change.b                ; mouse moved state
          buttons.a               ; mouse clicked button
          dragstart.b
@@ -330,8 +329,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *drag._s_DRAG           ;
                                  ;
          wheel._s_POINT          ;
-         delta._s_POINT          ;
-                                 ;
+         
+         ;StructureUnion
+            press.b                 ; mouse buttons state
+            *delta._s_POINT         ;
+         ;EndStructureUnion
+         ;
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
          
@@ -799,7 +802,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 121
+; CursorPosition = 335
+; FirstLine = 313
 ; Folding = -----r----
 ; EnableXP

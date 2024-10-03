@@ -35,12 +35,13 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure button_tab_events( )
       Select GetText( EventWidget( ) )
          Case "popup menu"
-            ; DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-            ; DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
+            ; DisplayPopupMenuBar( *menu, EventWidget( ), DesktopUnscaledX(mouse( )\x - EventWidget( )\x[#__c_inner]), mouse( )\y - EventWidget( )\y[#__c_inner] )
+             ; DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+             ;DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
             
            ; Debug "mouse_x = "+DesktopMouseX( ) +" gadget_x = "+ GadgetX(EventGadget(), #PB_Gadget_ScreenCoordinate) +" window_x = "+ WindowX(EventWindow(), #PB_Window_InnerCoordinate)
          
-            DisplayPopupMenuBar( *menu, EventWidget( ) );, DesktopMouseX( ), DesktopMouseY( ) )
+           DisplayPopupMenuBar( *menu, EventWidget( ) );, DesktopMouseX( ), DesktopMouseY( ) )
             
             
       EndSelect
@@ -97,9 +98,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 68
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 37
+; FirstLine = 23
 ; Folding = -
 ; EnableXP
 ; DPIAware

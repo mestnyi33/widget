@@ -1124,6 +1124,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    w_ide_design_panel = Panel( 0,0,0,0 ) : SetClass(w_ide_design_panel, "w_ide_design_panel" ) ; , #__bar_vertical ) : OpenList( w_ide_design_panel )
    AddItem( w_ide_design_panel, -1, "Form" )
    w_ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) : SetClass(w_ide_design_MDI, "w_ide_design_MDI" ) ;: SetFrame(w_ide_design_MDI, 10)
+   SetColor( w_ide_design_MDI, #__color_back, RGBA(195, 156, 191, 255) )
    a_init( w_ide_design_MDI);, 0 )
    
    ;AddItem( w_ide_design_panel, -1, "Code" )
@@ -1238,7 +1239,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    SetAttribute( w_ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
    
    ; set splitters dafault positions
-   SetState( w_ide_splitter, Height( w_ide_toolbar ) - 1 + 2 )
+   SetState( w_ide_splitter, height( w_ide_toolbar ) - 1 + 2 )
    SetState( w_ide_design_splitter, 200 )
    SetState( w_ide_help_splitter, height( w_ide_help_splitter )-80 )
    SetState( w_ide_debug_splitter, height( w_ide_debug_splitter )-200 )
@@ -1408,9 +1409,9 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 561
-; FirstLine = 552
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1244
+; FirstLine = 1221
 ; Folding = -----------------------
 ; EnableXP
 ; DPIAware
