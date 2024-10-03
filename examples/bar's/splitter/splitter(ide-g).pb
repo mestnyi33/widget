@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global s_desi, s_tbar, s_view, s_help, s_list,s_insp
   
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
-  widget::Open(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag))
+  widget::Open(0, 100,100,800,600, "ide", flag)
   window_ide = widget::GetWindow(root())
   canvas_ide = widget::GetGadget(root())
   
@@ -103,8 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; FirstLine = 18
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 16
 ; Folding = -
 ; EnableXP
 ; DPIAware
