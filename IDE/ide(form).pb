@@ -546,7 +546,7 @@ Procedure widget_events( )
                SetActive( w_ide_inspector_view )
             EndIf
             
-            ;Debug "focus " + GetActive( )\focusedRow( )\color\state
+            ;Debug "focus " + GetActive( )\RowFocused( )\color\state
           EndIf
          
       Case #__event_DragStart
@@ -939,19 +939,19 @@ Procedure ide_events( )
             If *e_widget = w_ide_inspector_view
                SetText( w_ide_help_view, GetItemText( *e_widget, e_item ) )
                
-               ;\\ TEMP change visible
-               *this._s_widget = *e_widget
-               If *this\FocusedRow( ) 
-                  If *this\FocusedRow( )\color\state <> 3
-                     *this\FocusedRow( )\color\back[*this\FocusedRow( )\color\state] = *this\color\back[*this\FocusedRow( )\color\state] ; $FFF5702C ; TEMP
-                  EndIf
-               EndIf
-               ;             If *this\EnteredRow( )
-               ;               If *this\EnteredRow( )\color\state <> 3
-               ;                 *this\EnteredRow( )\color\back[*this\EnteredRow( )\color\state] = $FF70F52C ; TEMP
-               ;                 *this\EnteredRow( )\color\front[*this\EnteredRow( )\color\state] = $FFffffff ; TEMP
-               ;               EndIf
-               ;             EndIf
+;                ;\\ TEMP change visible
+;                *this._s_widget = *e_widget
+;                If *this\RowFocused( ) 
+;                   If *this\RowFocused( )\color\state <> 3
+;                      *this\RowFocused( )\color\back[*this\RowFocused( )\color\state] = *this\color\back[*this\RowFocused( )\color\state] ; $FFF5702C ; TEMP
+;                   EndIf
+;                EndIf
+;                ;             If *this\EnteredRow( )
+;                ;               If *this\EnteredRow( )\color\state <> 3
+;                ;                 *this\EnteredRow( )\color\back[*this\EnteredRow( )\color\state] = $FF70F52C ; TEMP
+;                ;                 *this\EnteredRow( )\color\front[*this\EnteredRow( )\color\state] = $FFffffff ; TEMP
+;                ;               EndIf
+;                ;             EndIf
                
             EndIf
             
@@ -1410,8 +1410,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1244
-; FirstLine = 1221
-; Folding = -----------------------
+; CursorPosition = 953
+; FirstLine = 926
+; Folding = ----------------------
 ; EnableXP
 ; DPIAware

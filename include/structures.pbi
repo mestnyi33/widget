@@ -149,9 +149,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          round.a
          
          StructureUnion
-         toggle.b[3]
-         checked.b[3]
-      EndStructureUnion
+            toggle.b[3]
+            checked.b[3]
+         EndStructureUnion
          state.b
          
          hide.b
@@ -161,7 +161,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
             mouseenterframe.b
             mouseenterinner.b
          EndStructureUnion
-         focus.b
+         
+         StructureUnion
+            focus.b
+            _focus.b ; 
+         EndStructureUnion
          press.b
          disable.b
       EndStructure
@@ -802,7 +806,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 335
-; FirstLine = 313
+; CursorPosition = 166
+; FirstLine = 146
 ; Folding = -----r----
 ; EnableXP
