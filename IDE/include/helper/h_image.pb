@@ -91,7 +91,7 @@ EndProcedure
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  W_IH = GetWindow(Open(OpenWindow(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered)))
+  W_IH = GetWindow(Open(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
   W_IH_Open()
   
   While IsWindow(W_IH)
@@ -107,6 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   Wend
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 93
+; FirstLine = 39
 ; Folding = v--
 ; EnableXP

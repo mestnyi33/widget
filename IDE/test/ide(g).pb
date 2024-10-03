@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   AddGadgetItem(listview_debug, 1, "Form_1", 0, 0)  
   AddGadgetItem(listview_debug, 2, "Form_2", 0, 0)
   
-  panel_inspector = PanelGadget(#PB_Any, 0,0,0,0)  : BindGadgetEvent(panel_inspector, @panel_resize())
+  panel_inspector = PanelGadget(#PB_Any, 0,0,0,0)  
   AddGadgetItem(panel_inspector, 0, "elements", 0, 0) 
   tree_elements = TreeGadget(#PB_Any, 0,0,0,0)
   AddGadgetItem(tree_elements, 0, "Button", 0, 0) 
@@ -102,6 +102,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   AddGadgetItem(panel_inspector, 1, "properties", 0, 0)  
   AddGadgetItem(panel_inspector, 2, "events", 0, 0)  
   CloseGadgetList()
+  
+  BindGadgetEvent(panel_inspector, @panel_resize())
   
   text_help  = TextGadget(#PB_Any, 0,0,0,0, "help for the inspector", #PB_Text_Border)
   
@@ -136,7 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
  
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 5
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 59
+; FirstLine = 97
 ; Folding = --
 ; EnableXP

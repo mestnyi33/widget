@@ -3,10 +3,12 @@ XIncludeFile "ide(code).pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile 
-  Define event
+  
   ide_open()
-  Define *window = widget_add(w_ide_design_MDI, "window", 30, 30, 400, 250)
+  
+  Define *window = widget_add(ide_design_MDI, "window", 30, 30, 400, 250)
    
+  Define event
   Repeat 
     event = WaitWindowEvent() 
     
@@ -18,6 +20,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 13
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP
