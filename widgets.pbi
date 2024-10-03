@@ -5508,11 +5508,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Y      = *this\parent\inner_y( )  ;+ *this\parent\fs[2]
                width  = *this\parent\inner_width( )
                height = *this\parent\inner_height( )
-                  Debug 77888
-               If *this\parent\TabBox( )
-                 y + *this\parent\TabBox( )\height
                
-               EndIf
+;                If *this\parent\TabBox( )
+;                  y + *this\parent\TabBox( )\height
+;                
+;                EndIf
             EndIf
          Else
             ;\\ move & size steps
@@ -7777,7 +7777,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure bar_area_resize( *this._s_WIDGET, x.l, y.l, width.l, height.l )
          Protected v1, h1, x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight, w, h
          ;Protected v1, h1, x1 = *this\container_x( ), y1 = *this\container_y( ), width1 = *this\container_width( ), height1 = *this\container_height( ), iwidth, iheight, w, h
-         
          With *this\scroll
             If Not ( *this\scroll And ( \v Or \h ))
                ProcedureReturn 0
@@ -7788,7 +7787,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                \h\hide = #True
                ProcedureReturn 0
             EndIf
-            
+          
             If x = #PB_Ignore
                x = \h\container_x( )
             EndIf
@@ -7801,6 +7800,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If height = #PB_Ignore
                height = \h\frame_y( ) - \v\frame_y( ) + \h\frame_height( )
             EndIf
+            
             
             w = Bool( *this\scroll_width( ) > width )
             h = Bool( *this\scroll_height( ) > height )
@@ -7900,6 +7900,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If test_scrollbars_resize
                Debug "  --- area_resize " + *this\class + " " + *this\inner_width( ) + " " + *this\inner_height( ) + " " + \v\bar\page\len + " " + \h\bar\page\len
                Debug "  {"
+              ; Debug ""+v1 +" "+ \v\frame_x( ) +" "+ *this\inner_x( ) +" "+ x1  +" "+ \v\frame_y( )  +" "+ *this\inner_y( )  +" "+ y  +" "+ \v\frame_height( ) +" "+ height
             EndIf
             
             If v1 And (\v\frame_x( ) <> *this\inner_x( ) + x1 Or \v\frame_y( ) <> *this\inner_y( ) + y Or \v\frame_height( ) <> height)
@@ -11144,7 +11145,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Protected boxsize = 11
                   Protected bs = Bool( *this\fs )
                   
-                  
                   ;\\
                   PushListPosition( *this\__items( ))
                   ForEach *this\__items( )
@@ -12662,7 +12662,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result.s
       EndProcedure
       ;-
-      Procedure.i AddColumn( *this._s_WIDGET, position.l, text.s, width.l, image.i = -1 )
+      Procedure.i _AddColumn( *this._s_WIDGET, position.l, text.s, width.l, image.i = -1 )
          Protected *columns._s_COLUMN
          
          ;\\ Генерируем идентификатор
@@ -12681,6 +12681,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *columns
+            ;*this\columns.allocate(COLUMN, ( ))
             *columns\index         = Position
             *columns\y     = 0
             *columns\width = width
@@ -12694,6 +12695,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\type = #__type_listicon
                *columns\height = 24
             EndIf
+            
+            ;*this\columns( ) = *columns
+            
+            
+            ProcedureReturn *columns
+         EndIf
+      EndProcedure
+      
+      Procedure.i AddColumn( *this._s_WIDGET, position.l, text.s, width.l, image.i = -1 )
+         Protected *columns._s_COLUMN = AllocateStructure( _s_COLUMN )
+         
+         ;\\
+         If *columns
+            *columns\index         = Position
+            *columns\y     = 0
+            *columns\width = width
+            *columns\text\TextChange( ) = 1
+            *columns\text\string.s = Text.s
+            *columns\x = *this\text\padding\x + *this\scroll_width( )
+            *this\scroll_width( ) + width
+            ;Debug *this\columns( )\x
+            
+            ;\\
+            ;*this\fs[2] = 24
+            If *this\type = #__type_listicon
+               *columns\height = 24
+            EndIf
+            
+            ;\\ Генерируем идентификатор
+            If position < 0 Or
+               position > ListSize( *this\columns( )) - 1
+               ;
+               LastElement( *this\columns( ))
+               AddElement( *this\columns( ))
+               If position < 0
+                  position = ListIndex( *this\columns( )) 
+               EndIf
+            Else
+               SelectElement( *this\columns( ), position )
+               InsertElement( *this\columns( ))
+            EndIf
+            
+            *this\columns( ) = *columns
             ProcedureReturn *columns
          EndIf
       EndProcedure
@@ -12755,7 +12799,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;}
             
-            *rows( ) = AllocateStructure(_S_rows)
+            ;*rows( ) = AllocateStructure(_S_rows)
             ;                         *rows( )\box = AllocateStructure(_S_box)
             ;                         *rows( )\buttonbox = AllocateStructure(_S_box)
             
@@ -18311,12 +18355,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Update_TreeItems( *this, *this\__rows( ), *this\WidgetChange( ) )
             Next
             
+           
             ;\\
             If *this\WidgetChange( ) > 0
                bar_area_update( *this )
                *this\WidgetChange( ) = - 2
             EndIf
-            
+           
             ;\\ SetState( scroll-to-see )
             If *this\FocusedRow( ) And *this\ScrollState( ) = - 1
                row_scroll_y_( *this, *this\FocusedRow( ) )
@@ -24797,10 +24842,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 5504
-; FirstLine = 5502
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---------------------------+---00---------0--------------------------------------------------------------------------v--------------------------------f-------x--------------------------------f-------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 12877
+; FirstLine = 12532
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----+--------------------------------------------------------------------------------t-----------------------------------------80-------8------------------------------------------------------------------------------------------------------------------------+--------------------------v---ff----v-----4f+bv-v--------------------------------------------------------------------8--------------------------------4------f9--------------------------------4-------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app

@@ -10,6 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;test_draw_repaint = 1
    ;test_event_entered = 1
    ;test_event_canvas = 1
+   test_scrollbars_resize = 1
    
    Enumeration
       #window_0
@@ -118,14 +119,17 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
    Next
    
-   ;\\Close( )
+   Repaint( Root( ) )
    
+   ;\\Close( )
+   ;Debug  *g\scroll\v\hide
   
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 96
 ; Folding = -
 ; EnableXP
 ; DPIAware

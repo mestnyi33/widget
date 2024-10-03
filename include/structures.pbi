@@ -352,13 +352,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
-         *columnaddress
-         columnindex.i
+         ;*columnaddress
+         ;columnindex.i
          
          StructureUnion
             buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
             box._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
          EndStructureUnion
+         
          change.b
          drawing.b
          
@@ -431,7 +432,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *tt._s_tt
          
-         List lines._s_rows( )
+       ;  List lines._s_rows( )
       EndStructure
       
       ;--     TAB
@@ -550,7 +551,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          hide.b
          state.b
          
-         Map string.s( )
+         ;Map string.s( )
          ;List *items._s_rows( )
          List items._s_rows( )
       EndStructure
@@ -726,7 +727,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          mode._s_mode            ; drawing mode
          color._s_color[4]
          
-         List columns._s_column( )
+         List *columns._s_column( )
          
          *root._s_ROOT
          *window._s_WIDGET
@@ -806,7 +807,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 166
-; FirstLine = 146
-; Folding = -----r----
+; CursorPosition = 729
+; FirstLine = 703
+; Folding = ----------
 ; EnableXP
