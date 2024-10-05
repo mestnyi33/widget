@@ -189,7 +189,7 @@ EndProcedure
 
 Define a
     
-  If Open(OpenWindow(#PB_Any, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;ListViewGadget(0, 10, 10, 160, 160) 
     tree = PB(TreeGadget_)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
     *tree = Tree(190, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState );| #__flag_GridLines | #PB_Tree_Collapsed)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
@@ -254,8 +254,8 @@ Define a
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 222
-; FirstLine = 146
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 191
+; FirstLine = 121
 ; Folding = --yC--
 ; EnableXP

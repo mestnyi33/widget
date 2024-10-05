@@ -369,7 +369,7 @@ EndProcedure
 
 
 Procedure ListIconWidget( x,y,width,height, title.s, titleWidth )
-   ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
+  ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
   
    ;\\
    Text(x,y,width,20,title) : SetColor( widget( ), #__color_back, $FFC2C2C2)
@@ -469,8 +469,8 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
 EndIf
 
 End
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 383
-; FirstLine = 375
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 371
+; FirstLine = 364
 ; Folding = ----
 ; EnableXP

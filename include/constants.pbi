@@ -326,8 +326,9 @@
       #__tree_nobuttons   = #__flag_nogadgets
       #__tree_checkboxes  = #__flag_checkboxes
       #__tree_threestate  = #__flag_threeState
-      #__tree_collapse    = 32
-      #__tree_optionboxes = 64
+      
+      #__flag_collapsed   = 64
+      #__flag_optionboxes = 128
       
       #__tree_property = #__flag_numeric
       #__tree_listview = #__flag_readonly
@@ -362,10 +363,13 @@
       ;           Debug #PB_Tree_NoLines    ; 1
       ;           Debug #PB_Tree_Selected   ; 1
       ;           Debug #PB_Tree_SubLevel   ; 1
+      
       ;           Debug #PB_Tree_NoButtons  ; 2
       ;           Debug #PB_Tree_Expanded   ; 2
+      
       ;           Debug #PB_Tree_CheckBoxes ; 4
       ;           Debug #PB_Tree_Checked    ; 4
+      
       ;           Debug #PB_Tree_ThreeState ; 8
       ;           Debug #PB_Tree_Collapsed  ; 8
       ;           Debug #PB_Tree_Inbetween  ; 16
@@ -883,7 +887,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 168
-; FirstLine = 155
+; CursorPosition = 330
+; FirstLine = 313
 ; Folding = ----
 ; EnableXP

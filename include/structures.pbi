@@ -60,11 +60,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
          
          ;inline.b
+         optionboxes.b
+         checkboxes.b
+         
          StructureUnion
             check.b
-            Checkboxes.b
          EndStructureUnion
          AlwaysSelection.b
+         
          
          lines.b
          buttons.b
@@ -352,6 +355,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
+         _type.b
          ;*columnaddress
          ;columnindex.i
          
@@ -377,7 +381,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMoveMax.i
          
          ;*root._s_WIDGET
-         *parent._s_ROWS
+         *_parent._s_ROWS
          childrens.w ; Row( )\ ; rows( )\ ; row\
          sublevel.w
          
@@ -389,12 +393,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_ROWS Extends _s_ITEMS
          checkbox._s_BOX ; \box[1]\ -> \checkbox\
          
-         *first._s_rows           ;TEMP first elemnt in the list
-         *after._s_rows           ;TEMP first elemnt in the list
-         *before._s_rows          ;TEMP first elemnt in the list
-         *last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
+         ;*first._s_rows           ;TEMP first elemnt in the list
+         ;*after._s_rows           ;TEMP first elemnt in the list
+         ;*before._s_rows          ;TEMP first elemnt in the list
+         *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
          
-         *OptionGroupRow._s_rows ; option group row
+         *_option_group_parent._s_rows ; option group row
          
          ; edit
          margin._s_edit
@@ -412,8 +416,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_ROW
          id.i[4]
          
-         column.a
-         sublevelcolumn.a
+         ; column.a
+         ; sublevelcolumn.a
+         
          sublevelpos.a
          sublevelsize.a
          ;
@@ -540,7 +545,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     COLUMN
       Structure _s_COLUMN Extends _s_COORDINATE
-         index.i
+         ;index.i
          
          text._s_TEXT
          image._s_image
@@ -615,7 +620,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
 ;          Map *eventshook._s_HOOK( )
-;          
+;         
+         
          noscale.b
          
          haseventhook.b
@@ -674,7 +680,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *box._s_BOX              ; checkbox; optionbox
          *combobox._s_BUTTONS     ; combobox
                                   ;
-         *group._s_WIDGET         ; = Option( ) group widget
+         *option_group_parent._s_WIDGET         ; = Option( ) group widget
          *string._s_WIDGET        ; = SpinBar( ) string box
          
          StructureUnion
@@ -807,7 +813,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 554
-; FirstLine = 540
+; CursorPosition = 813
+; FirstLine = 784
 ; Folding = ----------
 ; EnableXP
