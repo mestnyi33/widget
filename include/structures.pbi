@@ -356,8 +356,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
          _type.b
+         
          ;*columnaddress
-         ;columnindex.i
+         columnindex.c
          
          StructureUnion
             buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
@@ -393,9 +394,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_ROWS Extends _s_ITEMS
          checkbox._s_BOX ; \box[1]\ -> \checkbox\
          
-         ;*first._s_rows           ;TEMP first elemnt in the list
-         ;*after._s_rows           ;TEMP first elemnt in the list
-         ;*before._s_rows          ;TEMP first elemnt in the list
+         *first._s_rows           ;TEMP first elemnt in the list
+         *after._s_rows           ;TEMP first elemnt in the list
+         *before._s_rows          ;TEMP first elemnt in the list
          *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
          
          *_option_group_parent._s_rows ; option group row
@@ -813,7 +814,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 813
-; FirstLine = 784
+; CursorPosition = 366
+; FirstLine = 355
 ; Folding = ----------
 ; EnableXP

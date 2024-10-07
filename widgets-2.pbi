@@ -1586,7 +1586,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare.b bar_area_update( *this._s_WIDGET )
       Declare.l Update_TreeVisibleItems( *this._s_WIDGET, List *items._s_ROWS( ), visible_height.l = 0 )
-      Declare   Draw_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ) )
+      Declare   Draw_TreeItems( *this._s_WIDGET, *column._s_COLUMN )
       Declare   edit_UpdateText( *this._s_WIDGET )
       
       Declare SetForeground( *this._s_WIDGET )
@@ -13057,7 +13057,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next
          EndIf
          
-         If *this\type = #__type_MDI
+        If *this\type = #__type_MDI
             *this\countitems + 1 ;?
             
             flag | #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget
@@ -17078,7 +17078,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       ;-  DRAWINGs
       ;-
-      Procedure   Draw_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ) )
+      Procedure   Draw_TreeItems( *this._s_WIDGET, *column._s_COLUMN )
          Protected state.b, x.l, y.l, xs.l, ys.l, _box_x_.l, _box_y_.l, minus.l = 7
          Protected bs = Bool( *this\fs )
          Protected _scroll_x_ = *this\scroll\h\bar\page\pos
@@ -17086,69 +17086,70 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          clip_output_( *this, [#__c_draw2] )
-         PushListPosition( *items( ))
-         ForEach *items( )
-            If *items( )\columnindex <> ListIndex( *this\columns( ))
+         PushListPosition( *column\items( ))
+         ForEach *column\items( )
+            
+            If *column\items( )\columnindex <> ListIndex( *this\columns( ))
                Continue
             EndIf
-            If Not *items( )\visible
+            If Not *column\items( )\visible
                Continue
             EndIf
             
             ;\\ init real drawing font
-            draw_font( *items( ) )
+            draw_font( *column\items( ) )
             
             ;\\
-            state = *items( )\ColorState( )
-            X     = row_x_( *this, *items( ) )
-            Y     = row_y_( *this, *items( ) )
+            state = *column\items( )\ColorState( )
+            X     = row_x_( *this, *column\items( ) )
+            Y     = row_y_( *this, *column\items( ) )
             Xs    = x - _scroll_x_
             Ys    = y - _scroll_y_
             
             ;\\ Draw selector back
-            If *items( )\color\back[state]
+            If *column\items( )\color\back[state]
                If ListSize( *this\columns( )) = 1
                   draw_mode_alpha_( #PB_2DDrawing_Default )
                   If *this\flag & #__Flag_FullSelection
-                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
+                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *column\items( )\height, *column\items( )\round, *column\items( )\round, *column\items( )\color\back[state] )
                   Else
-                     draw_roundbox_( xs, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
+                     draw_roundbox_( xs, ys, *column\items( )\width, *column\items( )\height, *column\items( )\round, *column\items( )\round, *column\items( )\color\back[state] )
                   EndIf
                Else
-                  If *items( ) = *this\RowEntered( )
-                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
+                  If *column\items( ) = *this\RowEntered( )
+                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *column\items( )\height, *column\items( )\round, *column\items( )\round, *column\items( )\color\back[state] )
                   EndIf
                EndIf
             EndIf
             
             ;\\ Draw items image
-            If *items( )\image\id
+            If *column\items( )\image\id
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *items( )\image\id, xs + *items( )\image\x, ys + *items( )\image\y, *items( )\AlphaState( ) )
+               DrawAlphaImage( *column\items( )\image\id, xs + *column\items( )\image\x, ys + *column\items( )\image\y, *column\items( )\AlphaState( ) )
             EndIf
             
             ;\\ Draw items text
-            If *items( )\text\string.s
+            If *column\items( )\text\string.s
                draw_mode_( #PB_2DDrawing_Transparent )
-               DrawRotatedText( xs + *items( )\text\x, ys + *items( )\text\y, *items( )\text\string.s, *this\text\rotate, *items( )\color\front[state] )
+               DrawRotatedText( xs + *column\items( )\text\x, ys + *column\items( )\text\y, *column\items( )\text\string.s, *this\text\rotate, *column\items( )\color\front[state] )
             EndIf
             
             ;\\ Draw selector frame
-            If *items( )\color\frame[state]
+            If *column\items( )\color\frame[state]
                draw_mode_( #PB_2DDrawing_Outlined )
                If *this\flag & #__Flag_FullSelection
-                  draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\frame[state] )
+                  draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *column\items( )\height, *column\items( )\round, *column\items( )\round, *column\items( )\color\frame[state] )
                Else
-                  draw_roundbox_( x, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\frame[state] )
+                  draw_roundbox_( x, ys, *column\items( )\width, *column\items( )\height, *column\items( )\round, *column\items( )\round, *column\items( )\color\frame[state] )
                EndIf
             EndIf
             
             ;\\ Horizontal line
             If *this\mode\GridLines And
-               ;*items( )\color\line And
-               *items( )\color\line <> *items( )\color\back
+               ;*column\items( )\color\line And
+               *column\items( )\color\line <> *column\items( )\color\back
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               draw_box_( x, ys + *items( )\height, *items( )\width, *this\mode\GridLines, $fff0f0f0 )
+               draw_box_( x, ys + *column\items( )\height, *column\items( )\width, *this\mode\GridLines, $fff0f0f0 )
             EndIf
          Next
          
@@ -17156,9 +17157,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;           draw_mode_alpha_( #PB_2DDrawing_Default ); | #PB_2DDrawing_AlphaBlend )
          ;          draw_box_( *this\inner_x( ), *this\inner_y( ), *this\row\sublevelsize, *this\inner_height( ), *this\__items( )\RowParent( )\color\back )
          
-          If ListIndex( *this\columns( )) = 0
+         If ListIndex( *this\columns( )) = 0
             ;         SelectElement( *this\columns( ), 0 )
-            ;         *items( ) = *this\__items( )
+            ;         *column\items( ) = *this\__items( )
             Protected *buttonBox._s_buttons
             
             ; Draw plots
@@ -17166,35 +17167,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_mode_alpha_( #PB_2DDrawing_Default )
                ; draw_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
                      
-               ForEach *items( )
-                 ; Debug " 9999 "+*items( )\columnindex+" "+ListIndex( *this\columns( ))+" "+*items( )\text\string
-                    If *items( )\columnindex <> ListIndex( *this\columns( ))
-               Continue
+               ForEach *column\items( )
+                  If *column\items( )\columnindex <> ListIndex( *this\columns( ))
+              ; Continue
             EndIf
                   
-                  If *items( )\visible And Not *items( )\hide
-                     If *items( )\_last
-                        *buttonBox = *items( )\_last\RowButton( )
+                  If *column\items( )\visible And Not *column\items( )\hide
+                     If *column\items( )\_last
+                        *buttonBox = *column\items( )\_last\RowButton( )
                      EndIf
                      
-                     Xs         = row_x_( *this, *items( ) ) - _scroll_x_
-                     Ys         = row_y_( *this, *items( ) ) - _scroll_y_
+                     Xs         = row_x_( *this, *column\items( ) ) - _scroll_x_
+                     Ys         = row_y_( *this, *column\items( ) ) - _scroll_y_
+                     ; Debug " 9999 "+*column\items( )\text\string
                      
                      ; for the tree vertical line
-                     If *items( )\_last And Not *items( )\_last\hide And *items( )\_last\sublevel
-                        Line((xs + *buttonBox\x + *buttonBox\width / 2), (ys + *items( )\height), 1, (*items( )\_last\y - *items( )\y) - *items( )\_last\height / 2, *items( )\color\line )
+                     If *column\items( )\_last And Not *column\items( )\_last\hide And *column\items( )\_last\sublevel
+                        Line((xs + *buttonBox\x + *buttonBox\width / 2), (ys + *column\items( )\height), 1, (*column\items( )\_last\y - *column\items( )\y) - *column\items( )\_last\height / 2, *column\items( )\color\line )
                      EndIf
-                     If *items( )\RowParent( ) And Not *items( )\RowParent( )\visible And *items( )\RowParent( )\_last = *items( ) And *items( )\sublevel
-                        Line((xs + *items( )\RowButton( )\x + *items( )\RowButton( )\width / 2), (*items( )\RowParent( )\y + *items( )\RowParent( )\height) - _scroll_y_, 1, (*items( )\y - *items( )\RowParent( )\y) - *items( )\height / 2, *items( )\RowParent( )\color\line )
+                     If *column\items( )\RowParent( ) And Not *column\items( )\RowParent( )\visible And *column\items( )\RowParent( )\_last = *column\items( ) And *column\items( )\sublevel
+                        Line((xs + *column\items( )\RowButton( )\x + *column\items( )\RowButton( )\width / 2), (*column\items( )\RowParent( )\y + *column\items( )\RowParent( )\height) - _scroll_y_, 1, (*column\items( )\y - *column\items( )\RowParent( )\y) - *column\items( )\height / 2, *column\items( )\RowParent( )\color\line )
                      EndIf
                      
                      ; for the tree horizontal line
-                     If Not (*this\mode\Buttons And *items( )\childrens)
-                        Line((xs + *items( )\RowButton( )\x + *items( )\RowButton( )\width / 2), (ys + *items( )\height / 2), 7, 1, *items( )\color\line )
+                     If Not (*this\mode\Buttons And *column\items( )\childrens)
+                        Line((xs + *column\items( )\RowButton( )\x + *column\items( )\RowButton( )\width / 2), (ys + *column\items( )\height / 2), 7, 1, *column\items( )\color\line )
                      Else
                         If *this\row\sublevelsize = 6
-                           If Bool( Not *items( )\RowButtonState( ))
-                              LineXY((xs + *buttonBox\x - 1), (ys + 10), (xs + *buttonBox\x + *buttonBox\width / 2 - 1), ys + *items( )\height - 1, *items( )\color\line )
+                           If Bool( Not *column\items( )\RowButtonState( ))
+                              LineXY((xs + *buttonBox\x - 1), (ys + 10), (xs + *buttonBox\x + *buttonBox\width / 2 - 1), ys + *column\items( )\height - 1, *column\items( )\color\line )
                            EndIf
                         EndIf
                      EndIf
@@ -17212,45 +17213,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  *this\mode\check
                
                ;\\ Draw boxs ( check&option )
-               ForEach *items( )
-                 If *items( )\columnindex <> ListIndex( *this\columns( ))
-               Continue
+               ForEach *column\items( )
+                 If *column\items( )\columnindex <> ListIndex( *this\columns( ))
+             ;  Continue
             EndIf
-             If *items( )\visible And *this\mode\check
-                     X = row_x_( *this, *items( ) ) - _scroll_x_
-                     Y = row_y_( *this, *items( ) ) - _scroll_y_
+             If *column\items( )\visible And *this\mode\check
+                     X = row_x_( *this, *column\items( ) ) - _scroll_x_
+                     Y = row_y_( *this, *column\items( ) ) - _scroll_y_
                      
-                     If *items( )\RowParent( ) And *this\mode\optionboxes
+                     If *column\items( )\RowParent( ) And *this\mode\optionboxes
                         ; option box
-                        draw_button_( 1, x + *items( )\RowBox( )\x, y + *items( )\RowBox( )\y, *items( )\RowBox( )\width, *items( )\RowBox( )\height, *items( )\RowBoxState( ) , 4 )
+                        draw_button_( 1, x + *column\items( )\RowBox( )\x, y + *column\items( )\RowBox( )\y, *column\items( )\RowBox( )\width, *column\items( )\RowBox( )\height, *column\items( )\RowBoxState( ) , 4 )
                      Else
                         ; check box
-                        draw_button_( 3, x + *items( )\RowBox( )\x, y + *items( )\RowBox( )\y, *items( )\RowBox( )\width, *items( )\RowBox( )\height, *items( )\RowBoxState( ) , 2 )
+                        draw_button_( 3, x + *column\items( )\RowBox( )\x, y + *column\items( )\RowBox( )\y, *column\items( )\RowBox( )\width, *column\items( )\RowBox( )\height, *column\items( )\RowBoxState( ) , 2 )
                      EndIf
                   EndIf
                Next
                
                ;\\ Draw buttons ( expanded&collapsed )
-               ForEach *items( )
-                 If *items( )\columnindex <> ListIndex( *this\columns( ))
-               Continue
+               ForEach *column\items( )
+                 If *column\items( )\columnindex <> ListIndex( *this\columns( ))
+             ;  Continue
             EndIf
-             If *items( )\visible And Not *items( )\hide
-                     If *this\mode\Buttons And *items( )\childrens 
+             If *column\items( )\visible And Not *column\items( )\hide
+                     If *this\mode\Buttons And *column\items( )\childrens 
                         
                         ;If Not ( *this\mode\optionboxes )
                            
-                           X = row_x_( *this, *items( ) ) + *items( )\RowButton( )\x - _scroll_x_
-                           Y = row_y_( *this, *items( ) ) + *items( )\RowButton( )\y - _scroll_y_
+                           X = row_x_( *this, *column\items( ) ) + *column\items( )\RowButton( )\x - _scroll_x_
+                           Y = row_y_( *this, *column\items( ) ) + *column\items( )\RowButton( )\y - _scroll_y_
                            
                            
                            If (x - 7 >= 0 And x + 7 <= *this\root\width) And ; в мак ос эти строки не нужны так как plot( ) может рисовать за пределамы границы
                               (y - 7 >= 0 And y + 7 <= *this\root\height)
                               
-                              If *items( )\ColorState( )
-                                 DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )))
+                              If *column\items( )\ColorState( )
+                                 DrawArrow2(x, y, 3 - Bool(*column\items( )\RowButtonState( )))
                               Else
-                                 DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )), $ff000000)
+                                 DrawArrow2(x, y, 3 - Bool(*column\items( )\RowButtonState( )), $ff000000)
                               EndIf
                            EndIf
                            
@@ -17259,9 +17260,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                Next
             EndIf
+         Else
+            ;Debug 777777
          EndIf
          ;
-         PopListPosition( *items( )) 
+         PopListPosition( *column\items( )) 
          clip_output_( *this, [#__c_draw] )
           
       EndProcedure
@@ -17309,7 +17312,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            Draw_TreeItems( *this, *this\RowVisibleList( ) )
+            Draw_TreeItems( *this, *this\columns( )); RowVisibleList( ) )
             
             ;\\ draw frames
             If *this\bs
@@ -17929,7 +17932,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                
                ;\\
-               Draw_TreeItems( *this, *this\RowVisibleList( ) )
+               ;Draw_TreeItems( *this, *this\RowVisibleList( ) )
+               Draw_TreeItems( *this, *this\Columns( ) )
                
                ;\\ Draw selector back
                If *this\color\back
@@ -23626,748 +23630,356 @@ EndMacro
 
 
 ;-
-
-;-
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile
    Uselib(widget)
+   Global Steps = 0
+   #PB_ToolBarIcon_Delete = 234567
+   #PB_ToolBarIcon_Help = 456567
+   #PB_ToolBarIcon_Print = 234565
+   #PB_ToolBarIcon_PrintPreview = 98765
+   #PB_ToolBarIcon_Replace = 12345678
+   #PB_ToolBarIcon_Properties = 34567564
+   #PB_ToolBarIcon_Cut = 234354657
+   #PB_ToolBarIcon_Copy = 45678
+   #PB_ToolBarIcon_Paste = 8765
+   #PB_ToolBarIcon_Undo = 678      
+   #PB_ToolBarIcon_Redo = 3456
+   #PB_ToolBarIcon_Find = 8728357
+   #PB_ToolBarIcon_Open = 325466
+   #PB_ToolBarIcon_New = 675445
+   #PB_ToolBarIcon_Save = 345676
    
-   Global MDI, MDI_splitter, Splitter
    
-   If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   Procedure Events( )
+      Protected i, j, Buffer$, Parent, Element, EventWidget = EventWidget( )
       
-      MDI        = MDI(10, 10, 680, 260);, #PB_MDI_AutoSize) ; as they will be sized automatically
-      Define *g0 = AddItem(MDI, -1, "form_0")
-      ; 		Button(10,10,80,80,"button_0")
-      ; 		
-      ; 		Define *g1 = AddItem(MDI, -1, "form_1")
-      ; 		Button(10,10,80,80,"button_1")
-      ; 		
-      ; 		Define *g2 = AddItem(MDI, -1, "form_2")
-      ; 		Button(10,10,80,80,"button_2")
-      Resize(*g0, 190, 190, #PB_Ignore, #PB_Ignore)
+      ;Buffer$=Gadgets(GetGadgetData(IDGadget))\Flag$
       
-      Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
-   EndIf
-   
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile 
-   
-   EnableExplicit
-   UseLIB(widget)
-   
-   Enumeration
-      #window_0
-      #window
-   EndEnumeration
-   
-   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      LoadFont(6, "Arial", 21)
+      For j=0 To CountItems(EventWidget)-1
+         If GetItemState(EventWidget, j)
+            Buffer$ +"|"+ GetItemText(EventWidget,j)
+         EndIf
+      Next
+      ;Debug GetItemState(EventWidget, 0)
+      Debug Buffer$
+      ;     ;Buffer$=Gadgets(GetGadgetData(IDGadget))\Flag$
+      ;     For i=1 To CountString(Buffer$,"|")+1
+      ;       For j=0 To CountGadgetItems(pElement)-1
+      ;         If GetGadgetItemText(pElement,j)=StringField(Buffer$,i,"|")
+      ;           SetGadgetItemState(pElement, j, #PB_ListIcon_Checked)
+      ;         EndIf
+      ;       Next
+      ;     Next
       
-   CompilerElse
-      LoadFont(6, "Arial", 17)
-      
-   CompilerEndIf
+      ; Debug EventClass(ElementEvent())
+   EndProcedure
    
-   ;-\\ ANCHORS
-   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
-   
-   Procedure anchor_events( )
-      Protected change
-      Protected *this._s_widget = EventWidget( )
+   Procedure GetButtonIcon(ButtonIcon) 
+      Protected ButtonID =- 1
+      UsePNGImageDecoder()
       
-      Select WidgetEventType( )
-         Case #__event_Create
-            ;             If Not *this\child
-            ;                If *this\index > 0 And  *this\index < 5
-            ;                   Debug "8476575788484 "+*this\class
-            ;                   a_set( *this, #__a_full )
-            ;                EndIf 
-            ;             EndIf 
-            
-         Case #__event_LeftClick
-            Select *this
-               Case frame_color
-                  
-               Case back_color
-                  
-            EndSelect
-            
-         Case #__event_Focus
-            change = 1
-            
-         Case #__event_StatusChange
-            Debug "a_StatusChange"
-            If size_value And *this\anchors
-               SetState(size_value, *this\anchors\size )
-            EndIf
-            
-            If pos_value And *this\anchors
-               SetState(pos_value, *this\anchors\pos )
-            EndIf
-            
-            If grid_value And *this\anchors
-               SetState(grid_value, mouse( )\steps )
-            EndIf
-            
-            change = 1
-            
-         Case #__event_Change
-            Select *this
-               Case size_value
-                  If a_focused( )\anchors\size <> GetState(*this)
-                     a_set( a_focused( ), #__a_full, GetState(*this), a_focused( )\anchors\pos )
-                  EndIf
-                  
-               Case pos_value
-                  If a_focused( )\anchors\pos <> GetState(*this)
-                     a_set( a_focused( ), #__a_full, a_focused( )\anchors\size, GetState(*this))
-                  EndIf
-                  
-               Case grid_value
-                  mouse( )\steps = GetState(grid_value)
-                  
-            EndSelect
-            
-            change = 1
-            
-      EndSelect
+      Protected Directory$ = GetCurrentDirectory()+"Themes/" ; "";
+      Protected ZipFile$ = Directory$ + "SilkTheme.zip"
       
-      If change
-         If a_focused( )
-            SetState(grid_value, mouse( )\steps )
-            SetState(size_value, a_focused( )\anchors\size )
-            SetState(pos_value, a_focused( )\anchors\pos )
-            
-            SetText(grid_text, Str(mouse( )\steps) )
-            SetText(size_text, Str(a_focused( )\anchors\size) )
-            SetText(pos_text, Str(a_focused( )\anchors\pos) )
+      If FileSize(ZipFile$) < 1
+         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+            ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+         CompilerElse
+            ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+         CompilerEndIf
+         If FileSize(ZipFile$) < 1
+            MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+            End
          EndIf
       EndIf
       
-   EndProcedure
-   
-   OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
-   
-   Define i
-   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
-   Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
-   
-   ;    
-   ;    
-   ;    Define *toolbar = ToolBar( *root )
-   ;     
-   ;     If *toolbar
-   ;       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-   ;       ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
-   ;       ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
-   ;       
-   ;       Separator( )
-   ;       
-   ;       ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-   ;       ; ToolTip(*toolbar, 3, "Cut")
-   ;       
-   ;       ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-   ;       ; ToolTip(*toolbar, 4, "Copy")
-   ;       
-   ;       ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-   ;       ; ToolTip(*toolbar, 5, "Paste")
-   ;       
-   ;       Separator( )
-   ;       
-   ;       ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-   ;       ; ToolTip(*toolbar, 6, "Find a document")
-   ;    EndIf
-   
-   ;BindWidgetEvent( *root, @BindEvents( ) )
-   view = Container(10, 10, 406, 238, #PB_Container_Flat)
-   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
-   a_init( view, 8 )
-   
-   Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
-   
-   If *toolbar
-      ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-      ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-      ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
-      
-      Separator( )
-      
-      ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-      ; ToolTip(*toolbar, 3, "Cut")
-      
-      ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-      ; ToolTip(*toolbar, 4, "Copy")
-      
-      ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-      ; ToolTip(*toolbar, 5, "Paste")
-      
-      Separator( )
-      
-      ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-      ; ToolTip(*toolbar, 6, "Find a document")
-   EndIf
-   
-   Define *a0._s_WIDGET = Button( 10, 10, 60, 60, "Button" )
-   Define *a1._s_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
-   ;Define *a2._s_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
-   Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
-   Define *a3._s_WIDGET = image( 150, 110, 60, 60, -1 )
-   
-   a_set( *a3, -1, 10)
-   
-   CloseList( )
-   size_value  = Track(56, 262, 240, 26, 0, 30)
-   pos_value   = Track(56, 292, 240, 26, 0, 30)
-   grid_value  = Track(56, 320, 240, 26, 0, 30)
-   back_color  = Button(304, 264, 112, 32, "BackColor")
-   frame_color = Button(304, 304, 112, 32, "FrameColor")
-   size_text   = Text(8, 256, 40, 24, "0")
-   pos_text    = Text(8, 288, 40, 24, "0")
-   grid_text   = Text(8, 320, 40, 24, "0")
-   
-   If a_focused( )
-      SetState(grid_value, mouse( )\steps )
-      SetState(size_value, a_focused( )\anchors\size )
-      SetState(pos_value, a_focused( )\anchors\pos )
-      
-      SetText(grid_text, Str(mouse( )\steps) )
-      SetText(size_text, Str(a_focused( )\anchors\size) )
-      SetText(pos_text, Str(a_focused( )\anchors\pos) )
-   EndIf
-   
-   
-   Bind( Root( ), @anchor_events( ) )
-   
-   ;\\Close( )
-   
-   
-   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   
-   ;\\ Open Root0
-   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-   ;BindWidgetEvent( *root2, @BindEvents( ) )
-   Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
-   SetColor( *menu, #__color_back, $FFC8ECF0 )
-   
-   BarTitle("Title-1")
-   BarItem(1, "title-1-item-1")
-   BarSeparator( )   
-   ;
-   OpenBar("title-1-sub-item")
-   BarItem(3, "title-1-item")
-   BarSeparator( )
-   ;
-   OpenBar("title-2-sub-item")   
-   BarItem(13, "title-2-item")
-   BarSeparator( )
-   ;
-   OpenBar("title-3-sub-item")   
-   BarItem(23, "title-3-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(14, "title-2-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(4, "title-1-item")
-   CloseBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(2, "title-1-item-2")
-   
-   BarTitle("Title-2")
-   ;    BarItem(5, "title-2-item-1")
-   ;    BarItem(6, "title-2-item-2")
-   
-   BarTitle("Title-event-test")
-   BarItem(7, "test")
-   BarSeparator( )
-   BarItem(8, "quit")
-   
-   BarTitle("Title-4")
-   BarItem(9, "title-4-item-1")
-   BarItem(10, "title-4-item-2")
-   
-   Procedure TestHandler()
-      Debug "Test menu event"
-   EndProcedure
-   
-   Procedure QuitHandler()
-      Debug "Quit menu event"
-      ; End
-   EndProcedure
-   
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
-   
-   *menu = CreatePopupMenuBar( )
-   If *menu                  ; creation of the pop-up menu begins...
-      BarItem(1, "Open")     ; You can use all commands for creating a menu
-      BarItem(2, "Save")     ; just like in a normal menu...
-      BarItem(3, "Save as")
-      BarItem(4, "event-Quit")
-      BarSeparator( )
-      OpenBar("Recent files")
-      BarItem(5, "PureBasic.exe")
-      BarItem(6, "event-Test")
-      CloseBar( )
-   EndIf
-   
-   Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
-   Bind(*menu, @QuitHandler(), #__event_LeftClick, 4)
-   
-   
-   ;\\
-   Global *button_panel = Panel(10, 10, 200 + 60, 200)
-   Define Text.s, m.s   = #LF$, a
-   AddItem(*button_panel, -1, "1")
-   *g = Editor(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
-   ;*g                 = Editor(10, 10, 200 + 60, 200, #__flag_gridlines);, #__flag_autosize)
-   Text.s = "This is a long line." + m.s +
-            "Who should show." + m.s +
-            m.s +
-            m.s +
-            m.s +
-            "I have to write the text in the box or not." + m.s +
-            m.s +
-            m.s +
-            m.s +
-            "The string must be very long." + m.s +
-            "Otherwise it will not work."
-   
-   SetText(*g, Text.s)
-   For a = 0 To 2
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   AddItem(*g, 7 + a, "_")
-   For a = 4 To 6
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   
-   ;\\
-   AddItem(*button_panel, -1, "2")
-   *g = Tree(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
-   a  = - 1
-   AddItem(*g, a, "This is a long line.")
-   AddItem(*g, a, "Who should show.")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "I have to write the text in the box or not.")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "The string must be very long.")
-   AddItem(*g, a, "Otherwise it will not work.")
-   For a = 0 To 2
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   AddItem(*g, 7 + a, "_")
-   For a = 4 To 6
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   ;\\
-   AddItem(*button_panel, -1, "3")
-   *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__Flag_FullSelection | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
-   For a = 1 To 2
-      AddColumn(*g, a, "Column_" + Str(a + 1), 90)
-   Next
-   For a = 0 To 15
-      AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
-   Next
-   
-   SetState(*button_panel, 2)
-   CloseList( ) ; close panel lists
-   
-   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__text_password | #__text_right)
-   
-   ;\\
-   Global *button_item1, *button_item2, *button_menu
-   Procedure button_tab_events( )
-      Select GetText( EventWidget( ) )
-         Case "popup menu"
-            DisplayPopupMenuBar( *menu, EventWidget( ) );, GetMouseX( ), GetMouseY( ) )
-            
-         Case "1"
-            SetState(*button_panel, 0)
-            SetState(*button_item2, 0)
-         Case "2"
-            SetState(*button_panel, 1)
-            SetState(*button_item1, 0)
-      EndSelect
-   EndProcedure 
-   
-   *button_menu = Button( 120, 5, 150, 25, "popup menu")
-   Bind(*button_menu, @button_tab_events( ), #__event_Down )
-   *button_item1 = Button( 220, 220, 25, 50, "1", #PB_Button_Toggle)
-   *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #PB_Button_Toggle)
-   Bind(*button_item1, @button_tab_events( ), #__event_Down )
-   Bind(*button_item2, @button_tab_events( ), #__event_Down )
-   ;\\Close( )
-   
-   ;\\
-   Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
-   ;BindWidgetEvent( *root1, @BindEvents( ) )
-   
-   ;\\Close( )
-   
-   Define *root2._s_WIDGET = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
-   ;BindWidgetEvent( *root2, @BindEvents( ) )
-   
-   HyperLink( 10, 10, 80, 40, "HyperLink", RGB(105, 245, 44) )
-   String( 60, 20, 60, 40, "String" )
-   *w = ComboBox( 108, 30, 152, 40, #PB_ComboBox_Editable )
-   For i = 1 To 100;0000
-      AddItem(*w, i, "text-" + Str(i))
-   Next
-   SetState( *w, 3 )
-   ;\\Close( )
-   
-   
-   Define *root3._s_WIDGET = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
-   ;BindWidgetEvent( *root3, @BindEvents( ) )
-   ;\\Close( )
-   
-   Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
-   ;BindWidgetEvent( *root4, @BindEvents( ) )
-   ;\\Close( )
-   
-   
-   
-   Define count = 2;0000
-   #st          = 1
-   Global mx    = #st, my = #st
-   
-   Define time = ElapsedMilliseconds( )
-   
-   Global *c, *p, *panel._s_WIDGET
-   Procedure hide_show_panel_events( )
-      Select WidgetEventType( )
-         Case #__event_LeftClick
-            
-            Select GetText( EventWidget( ) )
-               Case "hide_children"
-                  hide(*p, 1)
-                  ; Disable(*c, 1)
+      If FileSize(ZipFile$) > 0
+         UsePNGImageDecoder()
+         
+         CompilerIf #PB_Compiler_Version > 522
+            UseZipPacker()
+         CompilerEndIf
+         
+         Protected PackEntryName.s, ImageSize, *Image, ZipFile;, Image
+         ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+         
+         If ZipFile  
+            If ExaminePack(ZipFile)
+               While NextPackEntry(ZipFile)
                   
-               Case "show_children"
-                  hide(*p, 0)
+                  PackEntryName.S = PackEntryName(ZipFile)
                   
-               Case "hide_parent"
-                  hide(*c, GetState( EventWidget( ) ))
+                  PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+                  PackEntryName.S = ReplaceString(PackEntryName.S,"page_","")
                   
-            EndSelect
-            
-            ;         ;Case #__event_LeftButtonUp
-            ;         ClearDebugOutput( )
-            ;         If StartEnumerate(*panel);Root( ))
-            ;           If Not hide(widget( )) ;And GetParent(widget( )) = *panel
-            ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
-            ;           EndIf
-            ;           StopEnumerate( )
-            ;         EndIf
-            
-            
-      EndSelect
-   EndProcedure
-   
-   OpenList( *root1 )
-   *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
-   AddItem( *panel, -1, "item_1" )
-   ;Button( 20,20, 80,80, "item_1")
-   *g = Editor(0, 0, 0, 0, #__flag_autosize)
-   For a = 0 To 2
-      AddItem(*g, a, "Line " + Str(a))
-   Next
-   AddItem(*g, 3 + a, "")
-   AddItem(*g, 4 + a, ~"define W_0 = Window( 282, \"Window_0\" )")
-   AddItem(*g, 5 + a, "")
-   For a = 6 To 8
-      AddItem(*g, a, "Line " + Str(a))
-   Next
-   
-   AddItem( *panel, -1, "(hide&show)-test" ) : SetItemFont(*panel, 1, 6)
-   ; Button( 10,10, 80,80, "item_2")
-   Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
-   Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
-   Bind(Option( 5, 55, 95, 22, "show_children", #PB_Button_Toggle ), @hide_show_panel_events( ))
-   ;SetState(widget( ), 1)
-   
-   *c = Panel(110, 5, 150, 155)
-   AddItem(*c, -1, "0")
-   *p = Panel(10, 5, 150, 65)
-   AddItem(*p, -1, "item-1")
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 25, "butt1")
-   CloseList( )
-   CloseList( )
-   AddItem(*p, -1, "item-2")
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 25, "butt2")
-   CloseList( )
-   CloseList( )
-   AddItem(*c, -1, "1")
-   CloseList( )
-   
-   Container(10, 75, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 45, "butt1")
-   CloseList( )
-   CloseList( )
-   CloseList( )
-   CloseList( )
-   
-   AddItem( *panel, -1, "(enter&leave)-test" )
-   
-   Procedure enter_leave_containers_events( )
-      Protected repaint
-      Protected colorback = colors::*this\blue\fore,
-                colorframe = colors::*this\blue\frame,
-                colorback1 = $ff00ff00,
-                colorframe1 = $ff0000ff
-      
-      Select WidgetEventType( )
-         Case #__event_MouseEnter,
-              #__event_MouseLeave,
-              #__event_MouseMove
-            
-            If EventWidget( ) <> Root( )
-               If EventWidget( )\mouseenter
-                  If EventWidget( )\color\frame <> colorframe1
-                     repaint                    = 1
-                     EventWidget( )\color\frame = colorframe1
-                  EndIf
+                  Select PackEntryType(ZipFile)
+                     Case #PB_Packer_File
+                        
+                        Protected Left.S = UCase(Left(PackEntryName.S,1))
+                        Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                        PackEntryName.S = " "+Left.S+Right.S
+                        
+                        Select ButtonIcon 
+                              ;                 Case #PB_ToolBarIcon_Add
+                              ;                   ButtonID = CatchImage(#PB_Any, ?addicon_png_start, 576)
+                              ;                   
+                           Case #PB_ToolBarIcon_Delete
+                              ButtonID = CatchImage(#PB_Any, ?deleteicon_png_start, 801)
+                              
+                              ;                   If FindString(LCase(PackEntryName.S), "cross") And FindString(LCase(PackEntryName.S), "_") = 0
+                              ;                     ImageSize = PackEntrySize(ZipFile)
+                              ;                     *Image = AllocateMemory(ImageSize)
+                              ;                     UncompressPackMemory(ZipFile, *Image, ImageSize)
+                              ;                     ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                              ;                     FreeMemory(*Image)
+                              ;                     Break
+                              ;                   EndIf
+                              
+                           Case #PB_ToolBarIcon_Help
+                              If FindString(LCase(PackEntryName.S), "help")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Print
+                              If FindString(LCase(PackEntryName.S), "script")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_PrintPreview
+                              If FindString(LCase(PackEntryName.S), "folder_explore")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Replace
+                              If FindString(LCase(PackEntryName.S), "refresh") And FindString(LCase(PackEntryName.S), "_") = 0
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Properties
+                              If FindString(LCase(PackEntryName.S), "edit") And FindString(LCase(PackEntryName.S), "_") = 0
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Cut
+                              If FindString(LCase(PackEntryName.S), "cut")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Copy
+                              If FindString(LCase(PackEntryName.S), "copy")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Paste
+                              If FindString(LCase(PackEntryName.S), "paste")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Undo
+                              If FindString(LCase(PackEntryName.S), "arrow_undo")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Redo
+                              If FindString(LCase(PackEntryName.S), "arrow_redo")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Find
+                              If FindString(LCase(PackEntryName.S), "zoom")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Open
+                              If FindString(LCase(PackEntryName.S), "folder_page")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_New
+                              If FindString(LCase(PackEntryName.S), "page") And FindString(LCase(PackEntryName.S), "_") = 0
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                           Case #PB_ToolBarIcon_Save
+                              If FindString(LCase(PackEntryName.S), "disk")
+                                 ImageSize = PackEntrySize(ZipFile)
+                                 *Image = AllocateMemory(ImageSize)
+                                 UncompressPackMemory(ZipFile, *Image, ImageSize)
+                                 ButtonID = CatchImage(#PB_Any, *Image, ImageSize)
+                                 FreeMemory(*Image)
+                                 Break
+                              EndIf
+                              
+                        EndSelect
+                        
+                  EndSelect
                   
-                  If MouseEnter( EventWidget( ) )
-                     If EventWidget( )\color\back <> colorback1
-                        repaint                   = 1
-                        EventWidget( )\color\back = colorback1
-                     EndIf
-                  Else
-                     If EventWidget( )\color\back = colorback1
-                        repaint                   = 1
-                        EventWidget( )\color\back = colorback
-                     EndIf
-                  EndIf
-               Else
-                  If EventWidget( )\color\back <> colorback
-                     repaint                   = 1
-                     EventWidget( )\color\back = colorback
-                  EndIf
-                  If EventWidget( )\color\frame = colorframe1
-                     repaint                    = 1
-                     EventWidget( )\color\frame = colorframe
-                  EndIf
-               EndIf
+               Wend  
             EndIf
             
-      EndSelect
-      
-      If repaint
-         ; Debug "change state"
+            ClosePack(ZipFile)
+         EndIf
       EndIf
+      
+      
+      
+      DataSection
+         deleteicon_png_start:
+         ; size : 801 bytes
+         Data.q $0A1A0A0D474E5089,$524448490D000000,$0E0000000E000000,$2D481F0000000608,$47527301000000D1
+         Data.q $0000E91CCEAE0042,$0000414D41670400,$00000561FC0B8FB1,$0000735948700900,$C701C30E0000C30E
+         Data.q $741900000064A86F,$7774666F53745845,$6E69617000657261,$2E342074656E2E74,$7A5B033433312E30
+         Data.q $5441444991020000,$6153485D526D4F38,$AC1FA22E81FAFE18,$C6E6739D9D72E3B6,$175B34E8EDBFCE9C
+         Data.q $1A0FE51AC2932061,$CF368A9494586EA2,$2EC428933697358E,$41FD855D108298D2,$1B461A071BC2E82C
+         Data.q $A5285D578127538A,$5129A3BEFB78BBFB,$BCFBCF7EF177CDCF,$761CA75448BCFBCF,$62EB998C0F3D341B
+         Data.q $1768A3E9A443BAA6,$8E51A3D9429C9C7B,$FEBC8C8BAE4E6AF7,$C93078AA507E5C8E,$5E10FA7A5B16B8EF
+         Data.q $AD7DE90DB98A5CD5,$A5903BC8D48A09F4,$7A4D6626319FF31E,$104A2A5D372AD518,$B0756958BC8BDA11
+         Data.q $05DFA4400F0C7E1F,$B5F68E82E3175513,$FEC798337BD3C7B1,$53210C52C84492D2,$5A8A9EE068E54C2E
+         Data.q $DEF1E3723F682D13,$EAB0DD03AB62DAD6,$BD5FDE13708880ED,$5B2F26A768E4F490,$04C0B0429595CE7F
+         Data.q $086E55AE787AF9D3,$F17A9E245245ACB4,$5BBBDFE22A6B1F78,$F04DDBE580E9C560,$682057D5C21AA1AD
+         Data.q $10DA9D2616526336,$F248763DA6D1CA59,$AE7DE3C7DCBC4048,$56F961DAB4AE48AE,$8162C843D5352C23
+         Data.q $A25154E9F06CA62F,$EF3919DA0FE917F4,$7CB0B5EC86BEA9D6,$46F20872D6730EDD,$D97B2D2EE0E06D78
+         Data.q $AD83BAFEDB494EAE,$E4D66C9FE355EB95,$AF926CD82C237362,$620C367C021E02F9,$1BB23AA38E5A4EC5
+         Data.q $6DF98ED1CA3D2115,$56542C3B66C589E5,$6706F06F08D9B4C2,$6154C3C45C20F30A,$76A19398D9E90C2E
+         Data.q $B28A87EE1C2E42A2,$10B575C20386F844,$58BA8983386198B0,$8C8BA745C99233CA,$0C877E0084292910
+         Data.q $0FB421B3ECAC71E9,$2C1D636CFAECF479,$D21859FCE0403536,$2217216B2B021B31,$4CD89AD9231DA9B0
+         Data.q $3E7144E1B8F30F09,$B4DA8A395BA9B174,$839EB49CDF859F7A,$3C4E5776930E7A67,$FE2E9E45EFA29C89
+         Data.q $4EAFD53ABC09B4EE,$7674882F78055646,$8561AC539BA10AB1,$3EA971753C4E567F,$FAB513D211AD4B27
+         Data.q $E44097C6770976C0,$975227880FF88BA5,$1C285E1BF4202494,$0000005DDBFE0391,$6042AE444E454900
+         Data.b $82
+         deleteicon_png_end:
+      EndDataSection
+      
+      DataSection
+         addicon_png_start:
+         ; size : 576 bytes
+         Data.q $0A1A0A0D474E5089,$524448490D000000,$0E0000000E000000,$2D481F0000000608,$47527301000000D1
+         Data.q $0000E91CCEAE0042,$0000414D41670400,$00000561FC0B8FB1,$0000735948700900,$C701C30E0000C30E
+         Data.q $741900000064A86F,$7774666F53745845,$6E69617000657261,$2E342074656E2E74,$7A5B033433312E30
+         Data.q $54414449B0010000,$939D9406C0634F38,$519840B9FCCC6439,$E4A8184C2A0D8C3B,$5EA3DF9A2954A94C
+         Data.q $54105A60B35BA8B6,$64DB79DAEA303098,$31FD4E53C6FFA9EA,$D8184C2A1539DCEA,$FFE5EE76DB783A4E
+         Data.q $84729FB1FCAEF3F6,$EC769E76184646A0,$DF973DFF9B92EBB6,$5C23481CFF3BE3FE,$4389C9C94021880E
+         Data.q $C7FEDF45854E64A7,$FA7D98F63D8ED3F6,$3C3743BF1BB2EF89,$5D84FFD5FDB31FFE,$6838F67B6FC73EAF
+         Data.q $B63D1F6B7EC7A3C3,$9064636A0372E9CC,$6ED45F2CD4E70EB7,$FE1739877FD4E536,$B3EB763FF9BB2CFB
+         Data.q $F7DD4FFF5EBB49FF,$0F93FFCFC1DA7FFE,$C0FFC3FBBE1FFD7E,$83FBF6975BFF1F5D,$AB697AA0DE828235
+         Data.q $FE5E17DDBFD3F4F5,$2F5D94EFFEE1B91D,$C8F73FFF7FED65FF,$3CCDFCBF4739FFE7,$C3BF8F9EEC77F5FC
+         Data.q $97D93A50EDFC7D76,$1679B983233FF191,$1D9EC71F14F171AB,$3A2EC7F7F6D3BEFD,$63E2FBD9E7BF9FD9
+         Data.q $70AFF2FF1E97FF9F,$C7F56E9BE90BCBFF,$BF7AEAB61FDEB9AC,$A06C46D80EBB4163,$FDBEA7553BA3F774
+         Data.q $C7BED94FEDF33EAF,$AA7727DED94747C4,$9FC7F6735FFF7CCF,$E7BC58D7894FFD8A,$9D97FFDF53D2EDC9
+         Data.q $031A090F68A7FEFE,$07BAA7EA426DDA8A,$84D2EC29F5744F55,$404B1C239005130A,$1ED3496C00003030
+         Data.q $000000003E2C4D2A,$826042AE444E4549
+         addicon_png_end:
+      EndDataSection
+      
+      ProcedureReturn ButtonID 
    EndProcedure
    
-   SetText(ScrollArea(5, 5, 210, 210, 500, 500, 1, editable), "4")
-   SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets | editable), "5")
-   SetText(Container(40, 20, 180, 180, editable), "6")
-   Define seven = Container(20, 20, 180, 180, editable)
-   SetText(seven, "      7")
+   Define i
+   Open(0, 0,0, 530,460, "Demo ListIcon") 
+   Define g = ListIconGadget(#PB_Any,10,10,508,200, "Column_0",160, #PB_ListIcon_CheckBoxes|#PB_ListIcon_AlwaysShowSelection);|#PB_ListIcon_HeaderDragDrop)           
+    AddGadgetItem(g, -1, "ListIcon_1", ImageID(GetButtonIcon(#PB_ToolBarIcon_Copy)) )
+    AddGadgetItem(g, -1, "ListIcon_2") 
+    AddGadgetItem(g, -1, "ListIcon_3", ImageID(GetButtonIcon(#PB_ToolBarIcon_Cut)) )
+    AddGadgetItem(g, 0, "ListIcon_0", ImageID(GetButtonIcon(#PB_ToolBarIcon_Open)) )
    
-   SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets | editable), "     8")
-   SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets | editable), "     9")
-   SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets | editable), "     10")
-   
-   CloseList( ) ; 7
-   CloseList( ) ; 6
-   SetText(Container(10, 45, 70, 180, editable), "11")
-   SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets | editable), "12")
-   SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets | editable), "13")
-   SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets | editable), "14")
-   
-   SetText(Container(10, 45, 70, 180, editable), "15")
-   SetText(Container(10, 5, 70, 180, editable), "16")
-   SetText(Container(10, 5, 70, 180, editable), "17")
-   SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets | editable), "18")
-   CloseList( ) ; 17
-   CloseList( ) ; 16
-   CloseList( ) ; 15
-   CloseList( ) ; 11
-   CloseList( ) ; 1
-   
-   ;\\
-   OpenList( seven )
-   ;   Define split_1 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   Define split_2 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   Define split_3 = Splitter(5, 80, 180, 50,split_1,split_2,editable)
-   ;   Define split_4 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   SetText(Splitter(5, 80, 180, 50,split_3,split_4,#PB_Splitter_Vertical|editable), "10-1")
-   SetText(Container( - 5, 80, 180, 50, #__Flag_NoGadgets | editable), "container-7")
-   CloseList( ) ; 7
-   
-   ;\\
-   If *panel\root
-      If StartEnumerate( *panel, 2 )
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseEnter)
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseMove)
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseLeave)
-         StopEnumerate( )
-      EndIf
-   EndIf
-   
-   ;\\
-   ;OpenList( *panel )
-   AddItem( *panel, -1, "item_4" )
-   Button( 30, 30, 80, 80, "item_4")
-   AddItem( *panel, -1, "item_5" )
-   Button( 40, 40, 80, 80, "item_5")
-   CloseList( ) ; *panel
-   CloseList( ) ; *root1
-   
-   ; SetState( *panel, 2 )
-   
-   ;\\\
-   OpenList( *root2 )
-   SetText(*root2, "*root2" )
-   ;   ;Define *p3._s_WIDGET = Container( 80,80, 150,150 )
-   ;   Define *p3._s_WIDGET = ScrollArea( 80,80, 150+30,150+30, 300,300 )
-   ;   SetText(*p3, "12" )
-   ;   SetText(Container( 40,-30, 50,50, #__Flag_NoGadgets ), "13" )
-   ;
-   ;   Define *p2._s_WIDGET = Container( 40,40, 70,70 ) : SetText(*p2, "4" )
-   ;   SetText(Container( 5,5, 70,70 ), "5" )
-   ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "6")
-   ;   CloseList( )
-   ;   Define *c1._s_WIDGET = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetText(*c1, "3" )
-   ;   CloseList( )
-   ;
-   ;   SetText(Container( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
-   ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
-   ;   SetText(Container( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
-   ;   CloseList( )
-   ;   CloseList( )
-   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
-   ;   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-   ;   Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-   ;   Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-   
-   
-   Button_2 = ComboBox( 20, 20, 150, 40)
-   For i = 1 To 100;0000
-      AddItem(Button_2, i, "text-" + Str(i))
-   Next
-   SetState( Button_2, 3 )
-   
-   ;Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-   Button_3   = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-   Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-   widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-   widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-   ;Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-   Button_4   = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
-   Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
-   Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-   Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
-   Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-   Splitter_5 = widget::Splitter(10, 80, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
-   SetState(Splitter_5, 50)
-   SetState(Splitter_4, 50)
-   SetState(Splitter_3, 40)
-   SetState(Splitter_1, 50)
-   
-   Spin(10, 210, 250, 25, 25, 30, #__text_right )
-   Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
-   
-   ;\\
-   OpenList( *root3 )
-   Define *tree = Tree( 10, 20, 150, 200, #__tree_checkboxes)
-   For i = 1 To 100;0000
-      AddItem(*tree, i, "text-" + Str(i))
-   Next
-   SetState(*tree, 5 - 1)
-   Container( 70, 180, 80, 80): CloseList( )
-   SetItemFont(*tree, 1, 6)
-   SetItemFont(*tree, 4, 6)
-   
-   ;\\
-   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_multiselect) ; |#__flag_gridlines
-   SetColor( *w, #__color_back, $FF07EAF6 )
-   For i = 1 To 10;00000
-      AddItem(*w, i, "text-" + Str(i))
-   Next
-   SetState(*w, i - 1 )
-   SetItemFont(*w, 4, 6)
-   SetItemFont(*w, 5, 6)
-   
-   ;\\
-   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_clickselect )
-   For i = 1 To 100;0000
-      If (i & 5)
-         AddItem(*w, i, "text-" + Str(i), -1, 1 )
-      Else
-         AddItem(*w, i, "text-" + Str(i))
-      EndIf
-   Next
-   SetFont(*w, 6)
-   
-   Debug "--------  time --------- " + Str(ElapsedMilliseconds( ) - time)
-   
-   
-   ;\\
-   Define *window._s_WIDGET
-   Define i, y = 5
-   OpenList( *root4 )
-   For i = 1 To 4
-      Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
-      ;Container(5, y, 150, 95 + 2)
-      If i = 2
-         Disable( widget( ), 1)
-      EndIf
-      Container(5, 5, 120 + 2, 85 + 2) ;, #PB_Container_Flat)
-      If i = 3
-         CheckBox(10, 10, 100, 30, "CheckBox_" + Trim(Str(i + 10)))
-         SetState( widget( ), 1 )
-      ElseIf i = 4
-         Option(10, 10, 100, 30, "Option_" + Trim(Str(i + 10)))
-      Else
-         Button(10, 10, 100, 30, "Button_" + Trim(Str(i + 10)))
-      EndIf
-      If i = 3
-         Disable( widget( ), 1)
-      EndIf
-      If i = 4 Or i = 3
-         Option(10, 45, 100, 30, "Option_" + Trim(Str(i + 20)))
-         SetState( widget( ), 1 )
-      Else
-         Button(10, 45, 100, 30, "Button_" + Trim(Str(i + 20)))
-      EndIf
-      If i = 3
-         Disable( widget( ), 1)
-      EndIf
-      CloseList( )
-      ;CloseList( )
-      y + 130
+    AddGadgetItem(g, -1, "") 
+    AddGadgetColumn(g, 1,"Column_2",100)
+    AddGadgetItem(g, -1, Chr(10)+"") 
+    For i=4 To 10
+       AddGadgetItem(g, -1, Chr(10)+"ListIcon_"+Str(i)) 
    Next
    
+   Debug "------------------------------------"
+   Define *g._s_WIDGET = ListIcon(10-3,220-3,508+6,200+6+20, "Column_0",160,#__Flag_CheckBoxes|#__Flag_ThreeState);|#__Flag_SizeGadget) 
+   
+   ; AddColumn(*g, 1,"Column_2",100) ; good
+   
+    AddItem(*g, -1, "ListIcon_1", GetButtonIcon(#PB_ToolBarIcon_Copy))
+    AddItem(*g, -1, "ListIcon_2") 
+    AddItem(*g, -1, "ListIcon_3", GetButtonIcon(#PB_ToolBarIcon_Cut))
+    AddItem(*g, 0, "ListIcon_0", GetButtonIcon(#PB_ToolBarIcon_Open) )
+   
+    Debug "["+ListSize(*g\columns()\items())+"] first column items count"
+    AddItem(*g, -1, "") 
+    AddColumn(*g, 1,"Column_2",100) ; bad
+    AddItem(*g, -1, Chr(10)+"") 
+    For i=4 To 10
+       AddItem(*g, -1, Chr(10)+"ListIcon_"+Str(i)) 
+   Next
+   
+   Debug "["+ListSize(*g\columns()\items())+"] second column items count"
+   
+   Bind(*g, @Events(), #__Event_Change|#__Event_LeftClick)
    WaitClose( )
-   
 CompilerEndIf
+
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14267
-; FirstLine = 14253
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------8-------------+---00--------------8---------------------------------------------------------------------8---------------8---------f+-----4---v--f9---------------------------------------
+; CursorPosition = 13059
+; FirstLine = 12988
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; DPIAware
-; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17169
-; FirstLine = 17137
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-; EnableXP
-; DPIAware
-; Executable = widgets2.app

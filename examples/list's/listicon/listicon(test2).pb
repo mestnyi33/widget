@@ -313,34 +313,45 @@ CompilerIf #PB_Compiler_IsMainFile
    Define i
    Open(0, 0,0, 530,460, "Demo ListIcon") 
    Define g = ListIconGadget(#PB_Any,10,10,508,200, "Column_0",160, #PB_ListIcon_CheckBoxes|#PB_ListIcon_AlwaysShowSelection);|#PB_ListIcon_HeaderDragDrop)           
-   Debug AddGadgetItem(g, -1, "ListIcon_1", ImageID(GetButtonIcon(#PB_ToolBarIcon_Copy)) )
-   Debug AddGadgetItem(g, -1, "ListIcon_2") 
-   Debug AddGadgetItem(g, -1, "ListIcon_3", ImageID(GetButtonIcon(#PB_ToolBarIcon_Cut)) )
-   Debug AddGadgetItem(g, 0, "ListIcon_0", ImageID(GetButtonIcon(#PB_ToolBarIcon_Open)) )
-   AddGadgetColumn(g, 1,"Column_2",100)
-   For i=4 To 10
-      Debug AddGadgetItem(g, -1, Chr(10)+"ListIcon_"+Str(i)) 
+    AddGadgetItem(g, -1, "ListIcon_1", ImageID(GetButtonIcon(#PB_ToolBarIcon_Copy)) )
+    AddGadgetItem(g, -1, "ListIcon_2") 
+    AddGadgetItem(g, -1, "ListIcon_3", ImageID(GetButtonIcon(#PB_ToolBarIcon_Cut)) )
+    AddGadgetItem(g, 0, "ListIcon_0", ImageID(GetButtonIcon(#PB_ToolBarIcon_Open)) )
+   
+    AddGadgetItem(g, -1, "") 
+    AddGadgetColumn(g, 1,"Column_2",100)
+    AddGadgetItem(g, -1, Chr(10)+"") 
+    For i=4 To 10
+       AddGadgetItem(g, -1, Chr(10)+"ListIcon_"+Str(i)) 
    Next
    
    Debug "------------------------------------"
-   Define e = ListIcon(10-3,220-3,508+6,200+6, "Column_0",160,#__Flag_CheckBoxes|#__Flag_ThreeState);|#__Flag_SizeGadget) 
-   Debug AddItem(e, -1, "ListIcon_1", GetButtonIcon(#PB_ToolBarIcon_Copy))
-   Debug AddItem(e, -1, "ListIcon_2") 
-   Debug AddItem(e, -1, "ListIcon_3", GetButtonIcon(#PB_ToolBarIcon_Cut))
-   Debug AddItem(e, 0, "ListIcon_0", GetButtonIcon(#PB_ToolBarIcon_Open) )
-   AddColumn(e, 1,"Column_2",100)
-   For i=4 To 10
-      Debug AddItem(e, -1, Chr(10)+"ListIcon_"+Str(i)) 
+   Define *g._s_WIDGET = ListIcon(10-3,220-3,508+6,200+6+20, "Column_0",160,#__Flag_CheckBoxes|#__Flag_ThreeState);|#__Flag_SizeGadget) 
+   
+   ; AddColumn(*g, 1,"Column_2",100) ; good
+   
+    AddItem(*g, -1, "ListIcon_1", GetButtonIcon(#PB_ToolBarIcon_Copy))
+    AddItem(*g, -1, "ListIcon_2") 
+    AddItem(*g, -1, "ListIcon_3", GetButtonIcon(#PB_ToolBarIcon_Cut))
+    AddItem(*g, 0, "ListIcon_0", GetButtonIcon(#PB_ToolBarIcon_Open) )
+   
+    Debug "["+ListSize(*g\columns()\items())+"] first column items count"
+    AddItem(*g, -1, "") 
+    AddColumn(*g, 1,"Column_2",100) ; bad
+    AddItem(*g, -1, Chr(10)+"") 
+    For i=4 To 10
+       AddItem(*g, -1, Chr(10)+"ListIcon_"+Str(i)) 
    Next
    
+   Debug "["+ListSize(*g\columns()\items())+"] second column items count"
    
-   Bind(e, @Events(), #__Event_Change|#__Event_LeftClick)
+   Bind(*g, @Events(), #__Event_Change|#__Event_LeftClick)
    WaitClose( )
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 325
-; FirstLine = 307
-; Folding = -----
+; CursorPosition = 339
+; FirstLine = 55
+; Folding = 4----
 ; EnableXP
 ; DPIAware
