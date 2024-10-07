@@ -1575,7 +1575,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Declare Repost( )
       Declare DoEvent_Lines( *this, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-      Declare DoEvent_Items( *this, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+      Declare DoEvent_Items( *this, List  *items._s_ROWS( ), eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare DoEvent_Button( *this, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare DoEvent_Tab( *this, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare DoFocus( *this, eventtype.l, *button = #PB_All, *data = #Null )
@@ -11167,7 +11167,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      *items( )\y = *this\scroll_height( )
                      
-                     If ListIndex( *this\columns( )) = 0
+                     If *items( )\columnindex = 0
                         ;\\ check box size
                         If *this\mode\check
                            *items( )\RowBox( )\width  = boxsize
@@ -11318,7 +11318,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      *items( )\y = *this\scroll_height( )
                      
-                     If ListIndex( *this\columns( )) = 0
+                     If *items( )\columnindex = 0
                         ;\\ check box size
                         If *this\mode\check
                            *items( )\RowBox( )\width  = boxsize
@@ -11378,7 +11378,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                      EndIf
                      
-                     If ListIndex( *this\columns( )) = 0
+                     If *items( )\columnindex = 0
                         *items( )\x = *this\columns( )\x
                      Else
                         *items( )\x = *this\columns( )\x + *this\row\sublevelpos + *this\MarginLine( )\width
@@ -11386,7 +11386,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\ text position
                      If *items( )\text\string
-                        If ListIndex( *this\columns( )) > 0
+                        If *items( )\columnindex > 0
                            *items( )\text\x = *this\text\padding\x
                         Else
                            *items( )\text\x = *this\row\sublevelpos + *this\MarginLine( )\width + *this\text\padding\x
@@ -11459,7 +11459,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\RowVisibleList( ) = *items( )
                
                ;\\
-               If ListIndex( *this\columns( )) = 0
+               If *items( )\columnindex = 0
                   If ListSize( *This\Columns( ) ) = 1
                      *this\columns( )\width = *this\inner_width( ) - *this\columns( )\x
                      *items( )\width  = *this\columns( )\width
@@ -11553,7 +11553,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       
-      Procedure.l Tree_KeyEvents( *this._s_WIDGET,List  *items._s_ROWS( ), eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
+      Procedure.l Tree_KeyEvents( *this._s_WIDGET, List  *items._s_ROWS( ), eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
          Protected result, from = - 1
          Static cursor_change, Down, *rows_selected._s_ROWS
          
@@ -12843,7 +12843,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i AddItem_Tree( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+      Procedure.i AddItem_Tree( *this._s_WIDGET, List *items._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
          Protected last
          Protected *row.allocate(ROWS)
          Protected._s_ROWS *parent_row
@@ -13015,7 +13015,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                          ;EndIf
                
                ;\\
-               If ListIndex( *this\columns( )) = 0
+               If *row\columnindex = 0
                   *this\countitems + 1
                   *this\WidgetChange( ) = 1
                   set_image_( *this, *row\Image, Image )
@@ -20118,7 +20118,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure DoEvent_Items( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+      Procedure DoEvent_Items( *this._s_WIDGET, List *items._s_ROWS( ), eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected dragged = DragState( )
          Protected repaint, *item._s_ROWS
          mouse_x - *this\inner_x( ) ; - *this\scroll_x( )
@@ -20149,22 +20149,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Until PreviousElement( *this\RowVisibleList( )) = #False
                      EndIf
                      
-                  ElseIf ListSize( *this\__items( ) )
+                  ElseIf ListSize( *items( ) )
                      If *this\RowEntered( ) And
                         *this\RowEntered( )\visible And
                         Not *this\RowEntered( )\hide And
                         is_atpoint_( *this\RowEntered( ), mouse_x, mouse_y )
                         *item = *this\RowEntered( )
                      Else
-                        LastElement( *this\__items( ))
+                        LastElement( *items( ))
                         Repeat
-                           If *this\__items( )\visible And
-                              Not *this\__items( )\hide And
-                              is_atpoint_( *this\__items( ), mouse_x, mouse_y )
-                              *item = *this\__items( )
+                           If *items( )\visible And
+                              Not *items( )\hide And
+                              is_atpoint_( *items( ), mouse_x, mouse_y )
+                              *item = *items( )
                               Break
                            EndIf
-                        Until PreviousElement( *this\__items( )) = #False
+                        Until PreviousElement( *items( )) = #False
                      EndIf
                   EndIf
                   
@@ -20175,8 +20175,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If is_inside_( *this\x, *this\width, mouse( )\x )
                            If mouse( )\y <= mouse( )\delta\y + *this\inner_y( ) And mouse( )\y <= *this\inner_y( )
                               If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
-                                 ChangeCurrentElement( *this\__items( ), *this\RowFirstVisible( ))
-                                 *item = PreviousElement( *this\__items( ) )
+                                 ChangeCurrentElement( *items( ), *this\RowFirstVisible( ))
+                                 *item = PreviousElement( *items( ) )
                                  
                                  If *item
                                     row_scroll_y_( *this, *item )
@@ -20187,8 +20187,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ElseIf mouse( )\y >= mouse( )\delta\y + *this\inner_y( ) And
                                   mouse( )\y >= *this\inner_y( ) + *this\inner_height( )
                               If *this\RowLastVisible( ) And Not bar_in_stop_( *this\scroll\v\bar )
-                                 ChangeCurrentElement( *this\__items( ), *this\RowLastVisible( ))
-                                 *item = NextElement( *this\__items( ) )
+                                 ChangeCurrentElement( *items( ), *this\RowLastVisible( ))
+                                 *item = NextElement( *items( ) )
                                  
                                  If *item
                                     row_scroll_y_( *this, *item )
@@ -20356,16 +20356,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_Focus
                ;\\
                If *this\mode\multiSelect Or *this\mode\clickSelect
-                  PushListPosition( *this\__items( ) )
-                  ForEach *this\__items( )
-                     If *this\__items( ) <> *this\RowFocused( )
-                        If *this\__items( )\ColorState( ) = #__s_3
-                           *this\__items( )\ColorState( ) = #__s_2
+                  PushListPosition( *items( ) )
+                  ForEach *items( )
+                     If *items( ) <> *this\RowFocused( )
+                        If *items( )\ColorState( ) = #__s_3
+                           *items( )\ColorState( ) = #__s_2
                            *this\root\repaint          = 1
                         EndIf
                      EndIf
                   Next
-                  PopListPosition( *this\__items( ) )
+                  PopListPosition( *items( ) )
                EndIf
                
                ;\\
@@ -20388,16 +20388,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ ok
             If eventtype = #__event_LostFocus
                If *this\mode\multiSelect Or *this\mode\clickSelect
-                  PushListPosition( *this\__items( ) )
-                  ForEach *this\__items( )
-                     If *this\__items( ) <> *this\RowFocused( )
-                        If *this\__items( )\ColorState( ) = #__s_2
-                           *this\__items( )\ColorState( ) = #__s_3
+                  PushListPosition( *items( ) )
+                  ForEach *items( )
+                     If *items( ) <> *this\RowFocused( )
+                        If *items( )\ColorState( ) = #__s_2
+                           *items( )\ColorState( ) = #__s_3
                            *this\root\repaint          = 1
                         EndIf
                      EndIf
                   Next
-                  PopListPosition( *this\__items( ) )
+                  PopListPosition( *items( ) )
                EndIf
                
                ;\\
@@ -20418,23 +20418,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\
                      If *this\mode\multiSelect And Not *this\mode\clickSelect
-                        PushListPosition( *this\__items( ) )
-                        ForEach *this\__items( )
-                           If *this\__items( )\ColorState( ) <> #__s_0
-                              *this\__items( )\ColorState( ) = #__s_0
+                        PushListPosition( *items( ) )
+                        ForEach *items( )
+                           If *items( )\ColorState( ) <> #__s_0
+                              *items( )\ColorState( ) = #__s_0
                               
-                              ;                               If *this\__items( )\focus > 0
-                              ;                                  Debug " multiselect " + *this\__items( )\focus + " " + *this\__items( )\text\string
+                              ;                               If *items( )\focus > 0
+                              ;                                  Debug " multiselect " + *items( )\focus + " " + *items( )\text\string
                               ;                               EndIf
                               
-                              If Not *this\__items( )\enter
-                                 If *this\__items( )\_focus <> 0
-                                    *this\__items( )\_focus = 0
+                              If Not *items( )\enter
+                                 If *items( )\_focus <> 0
+                                    *items( )\_focus = 0
                                  EndIf
                               EndIf
                            EndIf
                         Next
-                        PopListPosition( *this\__items( ) )
+                        PopListPosition( *items( ) )
                      EndIf
                      
                      *this\RowPressed( ) = *this\RowEntered( )
@@ -20539,15 +20539,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\RowPressed( )
                      If *this\mode\clickSelect
                         If *this\mode\multiSelect
-                           PushListPosition( *this\__items( ) )
-                           ForEach *this\__items( )
-                              If *this\__items( )\ColorState( ) = #__s_2
-                                 If *this\__items( )\press <> 1
-                                    *this\__items( )\press = 1
+                           PushListPosition( *items( ) )
+                           ForEach *items( )
+                              If *items( )\ColorState( ) = #__s_2
+                                 If *items( )\press <> 1
+                                    *items( )\press = 1
                                  EndIf
                               EndIf
                            Next
-                           PopListPosition( *this\__items( ) )
+                           PopListPosition( *items( ) )
                         Else
                            If dragged
                               If *this\RowPressed( ) <> *this\RowEntered( )
@@ -21060,7 +21060,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
             ElseIf is_items_( *this )
                
-               DoEvent_Items( *this, eventtype, mouse( )\x, mouse( )\y )
+               DoEvent_Items( *this, *this\__items( ), eventtype, mouse( )\x, mouse( )\y )
             EndIf
             
             ;If Not mouse( )\press
@@ -24366,9 +24366,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24366
-; FirstLine = 24335
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21062
+; FirstLine = 20720
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
