@@ -394,9 +394,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_ROWS Extends _s_ITEMS
          checkbox._s_BOX ; \box[1]\ -> \checkbox\
          
+         ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
          *first._s_rows           ;TEMP first elemnt in the list
          *after._s_rows           ;TEMP first elemnt in the list
          *before._s_rows          ;TEMP first elemnt in the list
+         
          *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
          
          *_option_group_parent._s_rows ; option group row
@@ -454,7 +456,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *pressed._s_rows
          *focused._s_rows
          
-          List *items._s_ITEMS( )
+          List *s._s_ITEMS( )
       EndStructure
       
       ;--     BAR
@@ -558,8 +560,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          state.b
          
          ;Map string.s( )
-         ;List *items._s_rows( )
-         List items._s_rows( )
+         
+         List *items._s_rows( )
       EndStructure
       
       ;--     BOUNDS
@@ -622,7 +624,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_WIDGET Extends _s_STATE
 ;          Map *eventshook._s_HOOK( )
 ;         
-         
+         List lines._s_rows( )
          noscale.b
          
          haseventhook.b
@@ -814,7 +816,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 366
-; FirstLine = 355
+; CursorPosition = 396
+; FirstLine = 392
 ; Folding = ----------
 ; EnableXP
