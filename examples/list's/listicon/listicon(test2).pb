@@ -4,21 +4,6 @@ XIncludeFile "../../../widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    Uselib(widget)
    Global Steps = 0
-   #PB_ToolBarIcon_Delete = 234567
-   #PB_ToolBarIcon_Help = 456567
-   #PB_ToolBarIcon_Print = 234565
-   #PB_ToolBarIcon_PrintPreview = 98765
-   #PB_ToolBarIcon_Replace = 12345678
-   #PB_ToolBarIcon_Properties = 34567564
-   #PB_ToolBarIcon_Cut = 234354657
-   #PB_ToolBarIcon_Copy = 45678
-   #PB_ToolBarIcon_Paste = 8765
-   #PB_ToolBarIcon_Undo = 678      
-   #PB_ToolBarIcon_Redo = 3456
-   #PB_ToolBarIcon_Find = 8728357
-   #PB_ToolBarIcon_Open = 325466
-   #PB_ToolBarIcon_New = 675445
-   #PB_ToolBarIcon_Save = 345676
    
    
    Procedure Events( )
@@ -349,9 +334,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 339
-; FirstLine = 55
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 7
 ; Folding = 4----
 ; EnableXP
 ; DPIAware

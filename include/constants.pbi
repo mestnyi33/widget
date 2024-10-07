@@ -818,6 +818,24 @@
       ; ;
       
       ;- \\ ToolBar
+      CompilerIf #PB_Compiler_Version > 573
+         #PB_ToolBarIcon_Cut           = 0
+         #PB_ToolBarIcon_Copy          = 1
+         #PB_ToolBarIcon_Paste         = 2
+         #PB_ToolBarIcon_Undo          = 3      
+         #PB_ToolBarIcon_Redo          = 4
+         #PB_ToolBarIcon_Delete        = 5
+         #PB_ToolBarIcon_New           = 6
+         #PB_ToolBarIcon_Open          = 7
+         #PB_ToolBarIcon_Save          = 8
+         #PB_ToolBarIcon_PrintPreview  = 9
+         #PB_ToolBarIcon_Properties    = 10
+         #PB_ToolBarIcon_Help          = 11
+         #PB_ToolBarIcon_Find          = 12
+         #PB_ToolBarIcon_Replace       = 13
+         #PB_ToolBarIcon_Print         = 14
+      CompilerEndIf
+      
       CompilerIf Not Defined(PB_toolBar_small, #PB_Constant)
          #PB_ToolBar_Small = 1 << 0
       CompilerEndIf
@@ -886,8 +904,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 330
-; FirstLine = 313
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 832
+; FirstLine = 812
 ; Folding = ----
 ; EnableXP
