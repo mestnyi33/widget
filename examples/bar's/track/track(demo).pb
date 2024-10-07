@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ; Shows possible flags of ButtonGadget in action...
-  If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 320+320, 200, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TrackBarGadget(0, 10,  40, 250, 20, 0, 30)
     SplitterGadget(100, 10,  40, 250, 20, 0,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadgetState(100, 250)
     SetGadgetState(0, 25)
@@ -90,8 +90,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 8
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 43
+; FirstLine = 24
 ; Folding = --
 ; EnableXP

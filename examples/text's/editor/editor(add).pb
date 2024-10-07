@@ -71,6 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
     
     ;Repaints( ) 
+    Repaint( ROOT( ) )
     
     EditorGadget(0, 10, 10, 250, 680)
     ; HideGadget(0, 1)
@@ -94,6 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     ;     ; While WindowEvent() : Wend
 ;     ;   EndIf
 ;     ; Editor::SetFont(*w, FontID(LoadFont(#PB_Any, "Impact", 18 , #PB_Font_HighQuality)))
+    ;
     Repeat 
       Event=WaitWindowEvent()
     Until  Event= #PB_Event_CloseWindow
@@ -101,8 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 95
-; FirstLine = 77
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 74
+; FirstLine = 64
 ; Folding = --
 ; EnableXP
