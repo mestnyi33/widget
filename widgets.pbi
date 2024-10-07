@@ -486,9 +486,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro TabChange( ): change: EndMacro         ; tab\widget\change
       Macro TextChange( ): change: EndMacro        ; temp
       Macro ImageChange( ): change: EndMacro       ; temp
-      Macro AreaChange( ): area\change: EndMacro        ; temp
-      Macro PageChange( ): page\change: EndMacro        ; temp
-      Macro ThumbChange( ): thumb\change: EndMacro       ; temp
+      Macro AreaChange( ): area\change: EndMacro   ; temp
+      Macro PageChange( ): page\change: EndMacro   ; temp
+      Macro ThumbChange( ): thumb\change: EndMacro ; temp
       Macro ResizeChange( ): change: EndMacro      ; temp
       Macro WidgetChange( ): change: EndMacro      ; temp
       
@@ -2971,19 +2971,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If _address_ <> a_selector( )
             If _this_
                If _address_[#__a_moved]         ; moved
-;                   If _this_\anchors\mode & #__a_zoom ; _this_\type = #__type_window
-;                      _address_[#__a_moved]\x      = _x_ + _address_[#__a_left]\width
-;                      _address_[#__a_moved]\y      = _y_ + _address_[#__a_top]\height
-;                      _address_[#__a_moved]\width  = _width_ - ( _address_[#__a_left]\width + _address_[#__a_right]\width )
-;                      _address_[#__a_moved]\height = ( _this_\fs + _this_\barHeight ) - _address_[#__a_top]\height / 2
-;                   Else
-;                      ;If _this_\container
-                        _address_[#__a_moved]\x      = _x_
-                        _address_[#__a_moved]\y      = _y_
-                        _address_[#__a_moved]\width  = _this_\anchors\size * 2
-                        _address_[#__a_moved]\height = _this_\anchors\size * 2
-;                      ;EndIf
-;                   EndIf
+                                                ;                   If _this_\anchors\mode & #__a_zoom ; _this_\type = #__type_window
+                                                ;                      _address_[#__a_moved]\x      = _x_ + _address_[#__a_left]\width
+                                                ;                      _address_[#__a_moved]\y      = _y_ + _address_[#__a_top]\height
+                                                ;                      _address_[#__a_moved]\width  = _width_ - ( _address_[#__a_left]\width + _address_[#__a_right]\width )
+                                                ;                      _address_[#__a_moved]\height = ( _this_\fs + _this_\barHeight ) - _address_[#__a_top]\height / 2
+                                                ;                   Else
+                                                ;                      ;If _this_\container
+                  _address_[#__a_moved]\x      = _x_
+                  _address_[#__a_moved]\y      = _y_
+                  _address_[#__a_moved]\width  = _this_\anchors\size * 2
+                  _address_[#__a_moved]\height = _this_\anchors\size * 2
+                  ;                      ;EndIf
+                  ;                   EndIf
                EndIf
             EndIf
             
@@ -24392,10 +24392,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 2990
-; FirstLine = 2986
-; Folding = ---------------------------------------------------------------------------------------4----------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 24379
+; FirstLine = 24349
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
