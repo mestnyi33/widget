@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets-bar.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;  Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
     SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
@@ -110,6 +110,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 43
+; FirstLine = 28
 ; Folding = --
 ; EnableXP

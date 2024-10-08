@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList()
     
     ;
-    SplitterGadget(-1, 10,10,590,480, TextGadget(-1,0,0,0,0,""), SplitterGadget(-1, 0,0,0,0,TextGadget(-1,0,0,0,0,""), g, #PB_Splitter_Vertical))
+    SplitterGadget(-1, 10,10,590,480, TextGadget(-1,0,0,0,0,""), SplitterGadget(-1, 0,0,0,0,TextGadget(-1,0,0,0,0,""), g, #PB_Splitter_Separator|#PB_Splitter_Vertical), #PB_Splitter_Separator)
     
     If gcount
       OpenGadgetList(g)
@@ -48,7 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until ev = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 24
+; FirstLine = 6
 ; Folding = --
 ; EnableXP

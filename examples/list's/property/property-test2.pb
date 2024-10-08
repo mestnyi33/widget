@@ -43,36 +43,36 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *Tree = property(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *Tree
     AddItem_(*Tree, #_pi_group_0, "common")
-    AddItem_(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
-    AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
-    AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
+    AddItem_(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
+    AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+    AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     AddItem_(*Tree, #_pi_group_1, "layout")
-    AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_GadgetType_Spin, 1)
-    AddItem_(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_GadgetType_Spin, 1)
-    AddItem_(*Tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #PB_GadgetType_Spin, 1)
-    AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #PB_GadgetType_Spin, 1)
+    AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
+    AddItem_(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
+    AddItem_(*Tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
+    AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
     
     AddItem_(*Tree, #_pi_group_2, "state")
-    AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #PB_GadgetType_ComboBox, 1);Str(Disable(Value)))
-    AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_GadgetType_ComboBox, 1)
+    AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
+    AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
     
     Define *Tree1 = property(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *Tree1
     AddItem_(*Tree1, #_pi_group_0, "common")
-    AddItem_(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
-    AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
-    AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
+    AddItem_(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
+    AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+    AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     AddItem_(*Tree1, #_pi_group_1, "layout")
-    AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_GadgetType_Spin, 1)
-    AddItem_(*Tree1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_GadgetType_Spin, 1)
-    AddItem_(*Tree1, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #PB_GadgetType_Spin, 1)
-    AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #PB_GadgetType_Spin, 1)
+    AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
+    AddItem_(*Tree1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
+    AddItem_(*Tree1, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
+    AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
     
     AddItem_(*Tree1, #_pi_group_2, "state")
-    AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #PB_GadgetType_ComboBox, 1);Str(Disable(Value)))
-    AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_GadgetType_ComboBox, 1)
+    AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
+    AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
     
     Splitter_0 = Splitter(0, 0, 400, 400, Button_1, *Tree)
     Splitter_1 = Splitter(30, 30, 400, 400, Splitter_0, *Tree1, #PB_Splitter_Vertical)
@@ -81,8 +81,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 76
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 63
 ; FirstLine = 46
 ; Folding = -
 ; EnableXP

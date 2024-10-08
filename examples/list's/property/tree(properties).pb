@@ -39,19 +39,19 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define *Tree = widget::Tree_Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     widget::AddItem(*Tree, #_pi_group_0, "common")
-    widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
-    widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
-    widget::AddItem(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
+    widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
+    widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+    widget::AddItem(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     widget::AddItem(*Tree, #_pi_group_1, "layout")
-    widget::AddItem(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_GadgetType_Spin, 1)
-    widget::AddItem(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_GadgetType_Spin, 1)
-    widget::AddItem(*Tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #PB_GadgetType_Spin, 1)
-    widget::AddItem(*Tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #PB_GadgetType_Spin, 1)
+    widget::AddItem(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
+    widget::AddItem(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
+    widget::AddItem(*Tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
+    widget::AddItem(*Tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
     
     widget::AddItem(*Tree, #_pi_group_2, "state")
-    widget::AddItem(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #PB_GadgetType_ComboBox, 1);Str(Disable(Value)))
-    widget::AddItem(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_GadgetType_ComboBox, 1)
+    widget::AddItem(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
+    widget::AddItem(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
     
     ;;;SetAttribute(*Tree, #__Transformation, #PB_All)
     Define vert=20, horiz=60, width=400, height=500
@@ -67,8 +67,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 39
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 42
 ; FirstLine = 35
 ; Folding = -
 ; EnableXP

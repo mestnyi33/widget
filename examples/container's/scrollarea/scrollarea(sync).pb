@@ -45,8 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Splitter( 10, 10, 480, 410, *scroll1,*scroll2 )
   
-  Bind(*scroll1, @syncCB(), #PB_EventType_ScrollChange)
-  Bind(*scroll2, @syncCB(), #PB_EventType_ScrollChange)
+  Bind(*scroll1, @syncCB(), #__Event_ScrollChange)
+  Bind(*scroll2, @syncCB(), #__Event_ScrollChange)
   
   Repeat
     Select WaitWindowEvent(1)
@@ -57,8 +57,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Quit = 1
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 22
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 48
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
+; DPIAware

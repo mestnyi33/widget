@@ -6218,10 +6218,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;          Bool( _bar_\page\pos <= _bar_\min + _bar_\min[1] ) ;
       ;       EndMacro
       
-      ;       Macro bar_page_pos_( _bar_, _thumb_pos_ )
-      ;          ( _bar_\min + Round(((( _thumb_pos_ ) + _bar_\min[2] ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
-      ;       EndMacro
-      
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
          ( _bar_\min + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
@@ -7597,38 +7593,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_mode_( #PB_2DDrawing_XOr )
                
                If *bar\vertical
-                  x = *SB\x + Bool( Not *bar\invert ) * *SB\width 
+                  x = *SB\x + Bool( *bar\invert ) * *this\width - 8
                   y = *this\y + *bar\area\pos + *SB\size/2
+                  
+                  Line( x, y, 7, 1, *SB\color\frame )
+                  Line( x, y + *bar\area\len - *bar\thumb\len, 7, 1, *SB\color\frame )
                   
                   If *this\flag & #PB_TrackBar_Ticks
                      For i = *bar\min To *bar\max
-                        If i = *bar\min Or
-                           i = *bar\max
-                           Line( x - 3, y + bar_thumb_pos_( *bar, i ), 6, 1, *SB\color\frame )
-                        Else
-                           Line( x, y + bar_thumb_pos_( *bar, i ), 3, 1, *SB\color\frame )
+                        If i <> *bar\min And 
+                           i <> *bar\max
+                           Line( x + 2, y + bar_thumb_pos_( *bar, i ), 3, 1, *SB\color\frame )
                         EndIf
                      Next
-                  Else
-                     Line( x, y, 3, 1, *SB\color\frame )
-                     Line( x, y + *bar\area\len - *bar\thumb\len, 3, 1, *SB\color\frame )
                   EndIf
                Else
                   x = *this\x + *bar\area\pos + *SB\size/2
-                  y = *SB\y + Bool( Not *bar\invert ) * *SB\height 
+                  y = *SB\y + Bool( Not *bar\invert ) * *this\height - 8
+                  
+                  Line( x, y, 1, 7, *SB\color\frame )
+                  Line( x + *bar\area\len - *bar\thumb\len, y, 1, 7, *SB\color\frame )
                   
                   If *this\flag & #PB_TrackBar_Ticks
                      For i = *bar\min To *bar\max
-                        If i = *bar\min Or
-                           i = *bar\max
-                           Line( x + bar_thumb_pos_( *bar, i ), y - 3, 1, 6, *SB\color\frame )
-                        Else
-                           Line( x + bar_thumb_pos_( *bar, i ), y, 1, 3, *SB\color\frame )
+                        If i <> *bar\min And
+                           i <> *bar\max
+                           Line( x + bar_thumb_pos_( *bar, i ), y + 2, 1, 3, *SB\color\frame )
                         EndIf
                      Next
-                  Else
-                     Line( x, y, 1, 3, *SB\color\frame )
-                     Line( x + *bar\area\len - *bar\thumb\len, y, 1, 3, *SB\color\frame )
                   EndIf
                EndIf
             EndIf
@@ -8412,7 +8404,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ 
-            If *bar\ThumbChange( )
+            If *bar\ThumbChange( ) ; *this\press ; 
                ; *bar\ThumbChange( ) = 0
             Else
                *bar\thumb\pos = bar_thumb_pos_( *bar, *bar\page\pos )
@@ -8811,20 +8803,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this\type = #__type_TrackBar
-            If *bar\direction > 0
-               If *bar\thumb\pos = *bar\area\end Or *this\flag & #PB_TrackBar_Ticks
-                  *SB\arrow\direction = Bool( Not *bar\vertical ) + Bool( *bar\vertical = *bar\invert ) * 2
+            If bar_in_start_( *bar ) Or 
+               bar_in_stop_( *bar ) Or 
+               *this\flag & #PB_TrackBar_Ticks
+               ;
+               If *bar\vertical 
+                  If *bar\invert
+                     *SB\arrow\direction = 2 ; вправо
+                  Else
+                     *SB\arrow\direction = 0 ; влево
+                  EndIf
                Else
-                  *SB\arrow\direction = Bool( *bar\vertical ) + Bool( Not *bar\invert ) * 2
+                  If *bar\invert
+                     *SB\arrow\direction = 1 ; верх
+                  Else
+                     *SB\arrow\direction = 3 ; вниз
+                  EndIf
                EndIf
             Else
-               If *bar\thumb\pos = *bar\area\pos Or *this\flag & #PB_TrackBar_Ticks
-                  *SB\arrow\direction = Bool( Not *bar\vertical ) + Bool( *bar\vertical = *bar\invert ) * 2
-               Else
-                  *SB\arrow\direction = Bool( *bar\vertical ) + Bool( *bar\invert ) * 2
+               If ( *bar\direction > 0 And *bar\invert ) Or 
+                  ( *bar\direction < 0 And Not *bar\invert )
+                  ;
+                  If *bar\vertical
+                     *SB\arrow\direction = 1 ; верх
+                  Else
+                     *SB\arrow\direction = 0 ; влево
+                  EndIf
+               ElseIf ( *bar\direction < 0 And *bar\invert ) Or 
+                      ( *bar\direction > 0 And Not *bar\invert )
+                  ;
+                  If *bar\vertical
+                     *SB\arrow\direction = 3 ; вниз
+                  Else
+                     *SB\arrow\direction = 2 ; вправо
+                  EndIf
                EndIf
             EndIf
-            
             
             ; track bar draw coordinate
             If *bar\vertical
@@ -24393,9 +24407,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 24379
-; FirstLine = 24349
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9198
+; FirstLine = 9064
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app

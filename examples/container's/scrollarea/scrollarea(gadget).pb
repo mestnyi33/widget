@@ -1,5 +1,4 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -17,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug 666
         ResizeGadget(oc, X(EventWidget( ), #__c_inner), Y(EventWidget( ), #__c_inner), width(EventWidget( ), #__c_inner), height(EventWidget( ), #__c_inner))
         
-      Case #PB_EventType_ScrollChange
+      Case #__Event_ScrollChange
         ResizeGadget(ic, -*g\scroll\h\bar\page\pos, -*g\scroll\v\bar\page\pos, #PB_Ignore, #PB_Ignore)
        ; ResizeGadget(ic, X(*g, #__c_required), Y(*g, #__c_required), #PB_Ignore, #PB_Ignore)
     EndSelect
@@ -132,6 +131,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.04 LTS (Windows - x64)
+; CursorPosition = 32
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
