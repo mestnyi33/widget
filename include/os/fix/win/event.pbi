@@ -39,7 +39,7 @@ Module events
             ;          
             ;          SetGadgetAttribute(gadget, #PB_ScrollArea_X, scx + (delta * scs / #WHEEL_DELTA))
             ;          PostEvent(#PB_Event_Gadget, GetPBWindow(GetAncestor_(hwnd, #GA_ROOT)), gadget)
-            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelX, delta );(delta * scs / #WHEEL_DELTA) )
+            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelX, - delta );(delta * scs / #WHEEL_DELTA) )
             ProcedureReturn 0
             
          Case #WM_MOUSEWHEEL 
@@ -125,8 +125,8 @@ Module events
    Procedure   SetCallBack(*callback)
    EndProcedure
 EndModule
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 50
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 41
 ; FirstLine = 35
 ; Folding = --
 ; EnableXP
