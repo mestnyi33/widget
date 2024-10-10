@@ -21387,10 +21387,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If eventtype = #__event_MouseWheelX
             ; Debug "wheelX " + *data
             If *this\scroll And *this\scroll\h And
-               bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data )
+               bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
                *this\root\repaint = #True
-            ElseIf *this\bar And
-                   bar_PageChange( *this, *this\bar\page\pos - *data )
+            ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
                *this\root\repaint = #True
             EndIf
          EndIf
@@ -21398,12 +21397,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ mouse wheel verticl
          If eventtype = #__event_MouseWheelY
             ; Debug "wheelY " + *data
-            If *this\scroll And *this\scroll\v And
-               bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data )
+            If *this\scroll And *this\scroll\v And 
+               bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
                *this\root\repaint = #True
-            ElseIf *this\bar
-                 *this\bar\PageChange( ) =  bar_PageChange( *this, *this\bar\page\pos - *data )
-               Send( *this, #__event_Change, -1, *this\bar\PageChange( ) )
+            ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
                *this\root\repaint = #True
             EndIf
          EndIf
@@ -21412,7 +21409,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;          If eventtype = #__event_MouseWheelX Or eventtype = #__event_MouseWheelY
 ;             ;
 ;             If *this\bar And
-;                bar_PageChange( *this, *this\bar\page\pos - *data )
+;                bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
 ;                Debug "wheel " + *data
 ;                *this\root\repaint = #True
 ;             EndIf
@@ -24470,9 +24467,9 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 21399
-; FirstLine = 20292
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 21411
+; FirstLine = 20298
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+f-8ff-4-f--+f-4-P------------4--+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------44-7-------------------------------------------------------------------------------------------------------------------------------------f--Xt---73-uHAArr0-8--+4-880-f--------------------------------------------
 ; EnableXP
 ; DPIAware

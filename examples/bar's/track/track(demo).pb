@@ -16,8 +16,11 @@ CompilerIf #PB_Compiler_IsMainFile
                Case 1 : SetState(w_1, GetGadgetState(EventGadget()))
                Case 2 : SetState(w_2, GetGadgetState(EventGadget()))
             EndSelect
-            Repaint( Root( ) )
-            ; PostEventRepaint( root( ))
+            
+            ; 
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+               Repaint( Root( ) )
+            CompilerEndIf
       EndSelect
    EndProcedure
    
@@ -91,8 +94,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 18
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 19
 ; FirstLine = 5
 ; Folding = --
 ; EnableXP

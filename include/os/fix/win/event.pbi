@@ -6,7 +6,9 @@ Module events
    Procedure Events( )
    EndProcedure
    
-   ; bug mouse enter & leave
+   ; fixed bug mouse enter & leave
+   
+   ;
    Procedure.w HIWORD(Value.L)
       ProcedureReturn (((Value) >> 16) & $FFFF)
    EndProcedure
@@ -21,35 +23,10 @@ Module events
       Protected *callBack = GetProp_(hWnd, "sysProc"+Str(GetProp_(hWnd, "sysProcType")))
       Static enter.b
       
-      Protected.w delta
-      Protected.i gdt
-      Protected.l scx, scy, scs
-      
-      delta = HIWORD(wparam)
-      scs = 1
-      
       Select uMsg
          Case #WM_NCDESTROY 
             SetWindowLongPtr_(hwnd, #GWLP_USERDATA, sysProc)
             RemoveProp_(hwnd, sysProc)
-            
-         Case #WM_MOUSEHWHEEL 
-            ;          scx = GetGadgetAttribute(gadget, #PB_ScrollArea_X)
-            ;          scs = GetGadgetAttribute(gadget, #PB_ScrollArea_ScrollStep)
-            ;          
-            ;          SetGadgetAttribute(gadget, #PB_ScrollArea_X, scx + (delta * scs / #WHEEL_DELTA))
-            ;          PostEvent(#PB_Event_Gadget, GetPBWindow(GetAncestor_(hwnd, #GA_ROOT)), gadget)
-            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelX, - delta );(delta * scs / #WHEEL_DELTA) )
-            ProcedureReturn 0
-            
-         Case #WM_MOUSEWHEEL 
-            ;          scy = GetGadgetAttribute(gadget, #PB_ScrollArea_Y)
-            ;          scs = GetGadgetAttribute(gadget, #PB_ScrollArea_ScrollStep)
-            ;          
-            ;          SetGadgetAttribute(gadget, #PB_ScrollArea_Y, scy - (delta * scs / #WHEEL_DELTA))
-            ;          PostEvent(#PB_Event_Gadget, GetPBWindow(GetAncestor_(hwnd, #GA_ROOT)), gadget)
-            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelY , delta );(delta * scs / #WHEEL_DELTA))
-            ProcedureReturn 0
             
          Case #WM_MOUSEFIRST
             Protected TRACK.TRACKMOUSEEVENT
@@ -71,6 +48,15 @@ Module events
                CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_MouseEnter )
             EndIf
             ;CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_MouseMove )
+            
+         Case #WM_MOUSEHWHEEL 
+            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelX, - HIWORD(wparam) );(delta * step / #WHEEL_DELTA) )
+            ProcedureReturn 0
+            
+         Case #WM_MOUSEWHEEL 
+            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelY , HIWORD(wparam) );(delta * step / #WHEEL_DELTA))
+            ProcedureReturn 0
+            
             
             ;          Case #WM_SETFOCUS
             ;             ;text = "Focus on gadget #" + Str(gadget)
@@ -126,7 +112,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 35
+; CursorPosition = 51
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
