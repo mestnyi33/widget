@@ -312,13 +312,13 @@ Module Cursor
   EndProcedure
   
   Procedure   Hide( state.b )
-    ;     ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
-    ;     If state
-    ;       gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_BLANK_CURSOR))
-    ;       ;gdk_cursor_new_from_name("none")
-    ;     Else
-    ;       gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_ARROW))
-    ;     EndIf
+     ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
+     If state
+        gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_BLANK_CURSOR)) ; #GDK_BLANK_CURSOR = -2
+        ;gdk_cursor_new_from_name("none")
+     Else
+        gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_ARROW))
+     EndIf
   EndProcedure
   
   Procedure.i Create( ImageID.i, x.l = 0, y.l = 0 )
@@ -469,8 +469,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 303
-; FirstLine = 285
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 319
+; FirstLine = 307
 ; Folding = --------
 ; EnableXP
