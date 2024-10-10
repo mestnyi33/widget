@@ -100,30 +100,30 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug ""
     EndIf
     
-    Debug "gadget"
-    Debug "x = "+GetGadgetAttribute(g, #PB_ScrollArea_X)
-    Debug "y = "+GetGadgetAttribute(g, #PB_ScrollArea_Y)
-    Debug "iw = "+GetGadgetAttribute(g, #PB_ScrollArea_InnerWidth)
-    Debug "ih = "+GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)
-    Debug "step = "+GetGadgetAttribute(g, #PB_ScrollArea_ScrollStep)
-    
-    Debug "widget"
-    Debug "x = "+GetAttribute(*g, #PB_ScrollArea_X)
-    Debug "y = "+GetAttribute(*g, #PB_ScrollArea_Y)
-    Debug "iw = "+GetAttribute(*g, #PB_ScrollArea_InnerWidth)
-    Debug "ih = "+GetAttribute(*g, #PB_ScrollArea_InnerHeight)
-    Debug "step = "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
+    Debug ">>>>>>gadget>>>>>>"                    
+    Debug "area_x = "+GetGadgetAttribute(g, #PB_ScrollArea_X)
+    Debug "area_y = "+GetGadgetAttribute(g, #PB_ScrollArea_Y)
+    Debug "area_w = "+GetGadgetAttribute(g, #PB_ScrollArea_InnerWidth)
+    Debug "area_h = "+GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)
+    Debug "scroll_step = "+GetGadgetAttribute(g, #PB_ScrollArea_ScrollStep)
+    Debug ">>>>>>widget>>>>>>"
+    Debug "area_x = "+GetAttribute(*g, #PB_ScrollArea_X)
+    Debug "area_y = "+GetAttribute(*g, #PB_ScrollArea_Y)
+    Debug "area_w = "+GetAttribute(*g, #PB_ScrollArea_InnerWidth)
+    Debug "area_h = "+GetAttribute(*g, #PB_ScrollArea_InnerHeight)
+    Debug "scroll_step = "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
+    Debug ""
     
     BindGadgetEvent(g, @events_gadgets())
     Bind(*g, @events_widgets())
     
     WaitClose()
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+    ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 30
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 120
+; FirstLine = 19
 ; Folding = v-
 ; EnableXP
 ; DPIAware

@@ -62,8 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Splitter( 10, 10, 480, 410, *scroll1,*scroll2 )
   
-;   SetState( *scroll1\scroll\v, -1 )
-;   SetState( *scroll1\scroll\h, -1 )
+;    SetState( *scroll1\scroll\v, *scroll1\scroll\v\bar\max )
+;    SetState( *scroll1\scroll\h, *scroll1\scroll\h\bar\max )
   
 ;   *g = *scroll1\scroll\v
 ;   
@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Quit = 1
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
 ; CursorPosition = 65
 ; FirstLine = 52
 ; Folding = -

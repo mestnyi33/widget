@@ -91,14 +91,14 @@ Module events
                         If scrollX And Not scrollY
                            ; Debug "X - scroll"
                            CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
-                              PostEvent( #PB_Event_Gadget, Window, Gadget, constants::#PB_EventType_MouseWheelX, scrollX )
+                              CallCFunctionFast(refcon, #PB_Event_Gadget, Gadget, constants::#PB_EventType_MouseWheelX, scrollX )
                            CompilerEndIf
                         EndIf
                         
                         If scrollY And Not scrollX
                            ; Debug "Y - scroll"
                            CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
-                              PostEvent( #PB_Event_Gadget, window, Gadget, constants::#PB_EventType_MouseWheelY, scrollY )
+                             CallCFunctionFast(refcon, #PB_Event_Gadget, Gadget, constants::#PB_EventType_MouseWheelY, scrollY )
                            CompilerEndIf
                         EndIf
                      EndIf
@@ -113,39 +113,7 @@ Module events
                         EndIf
                      EndIf
                   EndIf
-                  
-;                   If IsGadget( Gadget )
-;                      If eType = #NSLeftMouseDown Or eType = #NSRightMouseDown
-;                         If GetActiveGadget() <> Gadget 
-;                            ;FocusedGadget( ) = Gadget
-;                            ;;Debug CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "focusView")
-;                            ; If GetActiveWindow() <> EventWindow()
-;                            SetActiveGadget( #PB_Default )
-;                            SetActiveGadget( Gadget )
-;                            ; EndIf
-;                         EndIf
-;                         
-;                      ElseIf eType = #NSScrollWheel
-;                         Window = EventWindow( )
-;                         scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
-;                         scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
-;                         
-;                         If scrollX And Not scrollY
-;                            ; Debug "X - scroll"
-;                            CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
-;                               PostEvent( #PB_Event_Gadget, Window, Gadget, constants::#PB_EventType_MouseWheelX, scrollX )
-;                            CompilerEndIf
-;                         EndIf
-;                         
-;                         If scrollY And Not scrollX
-;                            ; Debug "Y - scroll"
-;                            CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
-;                               PostEvent( #PB_Event_Gadget, window, Gadget, constants::#PB_EventType_MouseWheelY, scrollY )
-;                            CompilerEndIf
-;                         EndIf
-;                      EndIf
-;                   EndIf
-               EndIf
+                EndIf
             EndIf
          EndIf
       EndIf
@@ -580,8 +548,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 54
-; FirstLine = 75
-; Folding = ----f----------
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 97
+; FirstLine = 81
+; Folding = ----f--------
 ; EnableXP

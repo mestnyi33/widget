@@ -14257,11 +14257,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  #__type_ProgressBar,
                  #__type_Splitter
                
-               ; new
-               If state < 0
-                  state = *this\bar\max
-               EndIf
-               
                result = bar_PageChange( *this, state, 2 ) ; and post change event
          EndSelect
          
@@ -16848,7 +16843,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                bar_SetAttribute( *this, #__bar_buttonsize, Size )
             EndIf
             
-            If *param_1 > 0
+            If *param_1 ; > 0 ; в окнах работает так
                SetAttribute( *this, #__bar_minimum, *param_1 )
             EndIf
             If *param_2
@@ -21380,7 +21375,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *button = *this\RowEntered( )\index + 1
                   *data   = mouse( )\x | mouse( )\y << 16
                EndIf
-            Else
+               
+             ElseIf eventtype = #__event_MouseMove Or
+                    eventtype = #__event_MouseEnter
                *button = *this\RowEntered( )\index
                *data   = *this\RowEntered( )
             EndIf
@@ -24473,10 +24470,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 14264
-; FirstLine = 13557
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+f-8ff-4-f--+f-4-P------------4--+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vv-2--------------------------------------------------------------------------------------------------------------------------------------+4va---2t-dPAAWX8-4--0v-448--+-------------------------------------------
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 21399
+; FirstLine = 20292
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+f-8ff-4-f--+f-4-P------------4--+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------44-7-------------------------------------------------------------------------------------------------------------------------------------f--Xt---73-uHAArr0-8--+4-880-f--------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
