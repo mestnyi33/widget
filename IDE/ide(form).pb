@@ -1254,6 +1254,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Define event
    ide_open( )
    
+   SetState( ide_inspector_panel, 1 )
+   
    ;   ;OpenList(ide_design_MDI)
    Define result, example = 3
    
@@ -1389,9 +1391,9 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 1054
-; FirstLine = 1047
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 1368
+; FirstLine = 1349
 ; Folding = ----------------------
 ; EnableXP
 ; DPIAware

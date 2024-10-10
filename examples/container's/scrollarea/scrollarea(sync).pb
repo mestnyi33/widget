@@ -2,10 +2,27 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
-  Global *g, Quit, *scroll1._s_widget,*scroll2._s_widget,x_0,y_0
+  Global *g._S_WIDGET, Quit, *scroll1._s_widget,*scroll2._s_widget,x_0,y_0
   
   Procedure syncCB()
-    Protected *eWidget = EventWidget( )
+     Protected *eWidget = EventWidget( )
+; ;      *g = *eWidget
+; ;      If *g\bar
+; ;         Debug "-------"+Str(*g)+"-------"
+; ;         Debug *g\bar\page\pos  ; 2268 ; 0
+; ;         Debug *g\bar\page\len  ; 232  
+; ;         Debug *g\bar\page\end  ; 2268
+; ;         Debug *g\bar\page\change ; 0
+; ;         Debug *g\bar\percent     ; 0.08245149999857
+; ;         Debug *g\bar\area\end    ; 202
+; ;         Debug *g\bar\thumb\pos   ; 202 ; 15
+; ;         Debug *g\bar\thumb\len   ; 19
+; ;         Debug *g\bar\thumb\end   ; 206
+; ;         Debug *g\bar\thumb\change; 0
+; ;         Debug ""
+; ;         ;*g\bar\page\change = 0
+; ;         ;*g\bar\thumb\change = 0
+; ;      EndIf
     x_0 = GetAttribute(*eWidget, #PB_ScrollArea_X)
     y_0 = GetAttribute(*eWidget, #PB_ScrollArea_Y)
     
@@ -45,6 +62,24 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Splitter( 10, 10, 480, 410, *scroll1,*scroll2 )
   
+;   SetState( *scroll1\scroll\v, -1 )
+;   SetState( *scroll1\scroll\h, -1 )
+  
+;   *g = *scroll1\scroll\v
+;   
+;   Debug ""
+;   Debug *g\bar\page\pos  ; 2268 ; 0
+;   Debug *g\bar\page\len  ; 232  
+;   Debug *g\bar\page\end  ; 2268
+;   Debug *g\bar\page\change ; 0
+;   Debug *g\bar\percent     ; 0.08245149999857
+;   Debug *g\bar\area\end    ; 202
+;   Debug *g\bar\thumb\pos   ; 202 ; 15
+;   Debug *g\bar\thumb\len   ; 19
+;   Debug *g\bar\thumb\end   ; 206
+;   Debug *g\bar\thumb\change; 0
+;   Debug ""
+      
   Bind(*scroll1, @syncCB(), #__Event_ScrollChange)
   Bind(*scroll2, @syncCB(), #__Event_ScrollChange)
   
@@ -57,9 +92,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Quit = 1
   End
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 29
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 65
+; FirstLine = 52
 ; Folding = -
 ; EnableXP
 ; DPIAware
