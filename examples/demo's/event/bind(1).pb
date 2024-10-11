@@ -13,12 +13,12 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEventType() <> #__event_Draw And 
 		   WidgetEventType() <> #__event_StatusChange
 			
-			If Type( EventWidget( ) ) = #PB_GadgetType_Button
+			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
-				Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType() +" ("+ ClassFromEvent( WidgetEventType())+ ")  item - " +WidgetEventItem() +" (gadget)"
+				Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType() +" ("+ ClassFromEvent( WidgetEventType())+ ")  item - " +WidgetEventItem() +" (gadget)"
 			EndIf
 			
-			If GetIndex(EventWidget()) = 1
+			If IDWidget(EventWidget()) = 1
 				If WidgetEventType() = #__event_MouseEnter
 					Resize( EventWidget(), #PB_Ignore, #PB_Ignore, 280, #PB_Ignore)
 				EndIf
@@ -35,11 +35,11 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEventType() <> #__event_Draw And
 		   WidgetEventType() <> #__event_StatusChange
 			
-			If Type( EventWidget( ) ) = #PB_GadgetType_Button
-				Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
+			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
+				Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
 			EndIf
 			
-			If GetIndex(EventWidget()) = 2
+			If IDWidget(EventWidget()) = 2
 				ProcedureReturn #PB_Ignore ; no send to (root) - event
 			EndIf
 		EndIf
@@ -50,8 +50,8 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEventType() <> #__event_Draw And
 		   WidgetEventType() <> #__event_StatusChange
 			
-			If Type( EventWidget( ) ) = #PB_GadgetType_Button
-				Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
+			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
+				Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
 			EndIf
 		EndIf
 	EndProcedure
@@ -152,8 +152,9 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; End  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 72
-; FirstLine = 70
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 22
 ; Folding = ----
 ; EnableXP
+; DPIAware

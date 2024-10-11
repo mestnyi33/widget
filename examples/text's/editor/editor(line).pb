@@ -54,11 +54,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select eventtype
       Case #__event_Focus
-        String.s = "focus "+Str(GetIndex(EventWidget( )))+" "+eventtype
+        String.s = "focus "+Str(IDWidget(EventWidget( )))+" "+eventtype
       Case #__event_LostFocus
-        String.s = "lostfocus "+Str(GetIndex(EventWidget( )))+" "+eventtype
+        String.s = "lostfocus "+Str(IDWidget(EventWidget( )))+" "+eventtype
       Case #__event_Change
-        String.s = "change "+Str(GetIndex(EventWidget( )))+" "+eventtype
+        String.s = "change "+Str(IDWidget(EventWidget( )))+" "+eventtype
     EndSelect
     
     If eventtype = #__event_Focus
@@ -163,11 +163,11 @@ CompilerIf #PB_Compiler_IsMainFile
     String(305+8, (height+5)*7+10, 290, height, "")
     String(305+8, (height+5)*8+10, 290, 90, Text)
     
-    ;SetText(GetWidget(6+1), "pas")
-    Debug GetText(GetWidget(6+1))+"- get widget text"
+    ;SetText(WidgetID(6+1), "pas")
+    Debug GetText(WidgetID(6+1))+"- get widget text"
     
     For i=0 To 8
-      Bind(GetWidget(i), @events_widgets())
+      Bind(WidgetID(i), @events_widgets())
     Next
     
     ;WaitClose( ) 
@@ -175,5 +175,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 56
 ; Folding = ---
 ; EnableXP
+; DPIAware

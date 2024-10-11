@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       SetActive( widget( ) )
-      ;SetActive( GetWidget( 4 ) )
+      ;SetActive( WidgetID( 4 ) )
       
       ;\\
       Bind( #PB_All, @active(), #__event_Focus)
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       SetActive( widget( ) )
-      ;SetActive( GetWidget( 4 ) )
+      ;SetActive( WidgetID( 4 ) )
       
       ;\\
       Bind( #PB_All, @active(), #__event_Focus)
@@ -119,8 +119,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    End 
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 120
-; FirstLine = 87
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 108
+; FirstLine = 72
 ; Folding = -
 ; EnableXP
+; DPIAware

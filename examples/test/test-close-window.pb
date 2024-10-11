@@ -29,24 +29,24 @@ CompilerIf #PB_Compiler_IsMainFile
          If Position = #PB_List_First Or
             Position = #PB_List_Before
             
-            PushListPosition( *this\_widgets( ))
-            ChangeCurrentElement( *this\_widgets( ), *this\address )
-            MoveElement( *this\_widgets( ), #PB_List_Before, *widget\address )
+            PushListPosition( __widgets( ))
+            ChangeCurrentElement( __widgets( ), *this\address )
+            MoveElement( __widgets( ), #PB_List_Before, *widget\address )
             
             If *this\haschildren
-               While PreviousElement( *this\_widgets( ))
-                  If IsChild( *this\_widgets( ), *this )
-                     MoveElement( *this\_widgets( ), #PB_List_After, *widget\address )
+               While PreviousElement( __widgets( ))
+                  If IsChild( __widgets( ), *this )
+                     MoveElement( __widgets( ), #PB_List_After, *widget\address )
                   EndIf
                Wend
                
-               While NextElement( *this\_widgets( ))
-                  If IsChild( *this\_widgets( ), *this )
-                     MoveElement( *this\_widgets( ), #PB_List_Before, *widget\address )
+               While NextElement( __widgets( ))
+                  If IsChild( __widgets( ), *this )
+                     MoveElement( __widgets( ), #PB_List_Before, *widget\address )
                   EndIf
                Wend
             EndIf
-            PopListPosition( *this\_widgets( ))
+            PopListPosition( __widgets( ))
          EndIf
          
          If Position = #PB_List_Last Or
@@ -54,24 +54,24 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Protected *last._S_WIDGET = GetLast( *widget, *widget\TabIndex( ))
             
-            PushListPosition( *this\_widgets( ))
-            ChangeCurrentElement( *this\_widgets( ), *this\address )
-            MoveElement( *this\_widgets( ), #PB_List_After, *last\address )
+            PushListPosition( __widgets( ))
+            ChangeCurrentElement( __widgets( ), *this\address )
+            MoveElement( __widgets( ), #PB_List_After, *last\address )
             
             If *this\haschildren
-               While NextElement( *this\_widgets( ))
-                  If IsChild( *this\_widgets( ), *this )
-                     MoveElement( *this\_widgets( ), #PB_List_Before, *last\address )
+               While NextElement( __widgets( ))
+                  If IsChild( __widgets( ), *this )
+                     MoveElement( __widgets( ), #PB_List_Before, *last\address )
                   EndIf
                Wend
                
-               While PreviousElement( *this\_widgets( ))
-                  If IsChild( *this\_widgets( ), *this )
-                     MoveElement( *this\_widgets( ), #PB_List_After, *this\address )
+               While PreviousElement( __widgets( ))
+                  If IsChild( __widgets( ), *this )
+                     MoveElement( __widgets( ), #PB_List_After, *this\address )
                   EndIf
                Wend
             EndIf
-            PopListPosition( *this\_widgets( ))
+            PopListPosition( __widgets( ))
          EndIf
          
          ;
@@ -131,11 +131,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure.i __Free( *this._S_WIDGET )
       If *this
          If Not Send( *this, #__event_free )
-            ; еще не проверял
-            If ListSize( *this\events( ) )
-               ; Debug "free-events " + *this\events( )
-               ClearList( *this\events( ) )
-            EndIf
+;             ; еще не проверял
+;             If ListSize( *this\events( ) )
+;                ; Debug "free-events " + *this\events( )
+;                ClearList( *this\events( ) )
+;             EndIf
             
             If PopupWindow( ) = *this
                PopupWindow( ) = #Null
@@ -197,96 +197,96 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
             If *this\parent\haschildren
-               LastElement(*this\_widgets( ))
+               LastElement(__widgets( ))
                Repeat
-                  If *this\_widgets( ) = *this Or IsChild( *this\_widgets( ), *this )
-                     If *this\_widgets( )\root\haschildren > 0
-                        *this\_widgets( )\root\haschildren - 1
+                  If __widgets( ) = *this Or IsChild( __widgets( ), *this )
+                     If __widgets( )\root\haschildren > 0
+                        __widgets( )\root\haschildren - 1
                         
-                        If *this\_widgets( )\parent <> *this\_widgets( )\root
-                           *this\_widgets( )\parent\haschildren - 1
+                        If __widgets( )\parent <> __widgets( )\root
+                           __widgets( )\parent\haschildren - 1
                         EndIf
                         
-                        If *this\_widgets( )\TabBox( )
-                           If *this\_widgets( )\TabBox( ) = *this\_widgets( )
-                              Debug "   free - tab " + *this\_widgets( )\TabBox( )\class
-                              FreeStructure( *this\_widgets( )\TabBox( ) )
-                              *this\_widgets( )\TabBox( ) = 0
+                        If __widgets( )\TabBox( )
+                           If __widgets( )\TabBox( ) = __widgets( )
+                              Debug "   free - tab " + __widgets( )\TabBox( )\class
+                              FreeStructure( __widgets( )\TabBox( ) )
+                              __widgets( )\TabBox( ) = 0
                            EndIf
-                           *this\_widgets( )\TabBox( ) = #Null
+                           __widgets( )\TabBox( ) = #Null
                         EndIf
                         
-                        If *this\_widgets( )\scroll
-                           If *this\_widgets( )\scroll\v
-                              Debug "   free - scroll-v " + *this\_widgets( )\scroll\v\class
-                              FreeStructure( *this\_widgets( )\scroll\v )
-                              *this\_widgets( )\scroll\v = 0
+                        If __widgets( )\scroll
+                           If __widgets( )\scroll\v
+                              Debug "   free - scroll-v " + __widgets( )\scroll\v\class
+                              FreeStructure( __widgets( )\scroll\v )
+                              __widgets( )\scroll\v = 0
                            EndIf
-                           If *this\_widgets( )\scroll\h
-                              Debug "   free scroll-h - " + *this\_widgets( )\scroll\h\class
-                              FreeStructure( *this\_widgets( )\scroll\h )
-                              *this\_widgets( )\scroll\h = 0
+                           If __widgets( )\scroll\h
+                              Debug "   free scroll-h - " + __widgets( )\scroll\h\class
+                              FreeStructure( __widgets( )\scroll\h )
+                              __widgets( )\scroll\h = 0
                            EndIf
-                           ; *this\_widgets( )\scroll = #Null
+                           ; __widgets( )\scroll = #Null
                         EndIf
                         
-                        If *this\_widgets( )\type = #__type_Splitter
-                           If *this\_widgets( )\split_1( )
-                              Debug "   free - splitter - first " + *this\_widgets( )\split_1( )\class
-                              FreeStructure( *this\_widgets( )\split_1( ) )
-                              *this\_widgets( )\split_1( ) = 0
+                        If __widgets( )\type = #__type_Splitter
+                           If __widgets( )\split_1( )
+                              Debug "   free - splitter - first " + __widgets( )\split_1( )\class
+                              FreeStructure( __widgets( )\split_1( ) )
+                              __widgets( )\split_1( ) = 0
                            EndIf
-                           If *this\_widgets( )\split_2( )
-                              Debug "   free - splitter - second " + *this\_widgets( )\split_2( )\class
-                              FreeStructure( *this\_widgets( )\split_2( ) )
-                              *this\_widgets( )\split_2( ) = 0
+                           If __widgets( )\split_2( )
+                              Debug "   free - splitter - second " + __widgets( )\split_2( )\class
+                              FreeStructure( __widgets( )\split_2( ) )
+                              __widgets( )\split_2( ) = 0
                            EndIf
                         EndIf
                         
-                        If *this\_widgets( )\bounds\attach
-                           ;Debug " free - attach " +*this\_widgets( )\bounds\attach\parent\class
-                           *this\_widgets( )\bounds\attach\parent = 0
-                           FreeStructure( *this\_widgets( )\bounds\attach )
-                           *this\_widgets( )\bounds\attach = #Null
+                        If __widgets( )\bounds\attach
+                           ;Debug " free - attach " +__widgets( )\bounds\attach\parent\class
+                           __widgets( )\bounds\attach\parent = 0
+                           FreeStructure( __widgets( )\bounds\attach )
+                           __widgets( )\bounds\attach = #Null
                         EndIf
                         
-                        If EnteredWidget( ) = *this\_widgets( )
+                        If EnteredWidget( ) = __widgets( )
                            EnteredWidget( ) = 0
                         EndIf
-                        If PressedWidget( ) = *this\_widgets( )
+                        If PressedWidget( ) = __widgets( )
                            PressedWidget( ) = 0
                         EndIf
-                        If FocusedWidget( ) = *this\_widgets( )
-                           FocusedWidget( ) = 0
-                        EndIf
-                        *this\_widgets( )\address = 0
+;                         If FocusedWidget( ) = __widgets( )
+;                            FocusedWidget( ) = 0
+;                         EndIf
+                        __widgets( )\address = 0
                         
-                        Debug " free - " + *this\_widgets( )\class
+                        Debug " free - " + __widgets( )\class
                         
-                        If *this\_widgets( )\BeforeWidget( )
-                           *this\_widgets( )\BeforeWidget( )\AfterWidget( ) = *this\_widgets( )\AfterWidget( )
-                           Debug " - BeforeWidget "+*this\_widgets( )\BeforeWidget( )\class
+                        If __widgets( )\BeforeWidget( )
+                           __widgets( )\BeforeWidget( )\AfterWidget( ) = __widgets( )\AfterWidget( )
+                           Debug " - BeforeWidget "+__widgets( )\BeforeWidget( )\class
                         EndIf
-                        ;             If *this\_widgets( )\FirstWidget( )
-                        ;                Debug "  FirstWidget "+*this\_widgets( )\FirstWidget( )\class
+                        ;             If __widgets( )\FirstWidget( )
+                        ;                Debug "  FirstWidget "+__widgets( )\FirstWidget( )\class
                         ;             EndIf
-                        ;             If *this\_widgets( )\LastWidget( )
-                        ;                Debug "  LastWidget "+*this\_widgets( )\LastWidget( )\class
+                        ;             If __widgets( )\LastWidget( )
+                        ;                Debug "  LastWidget "+__widgets( )\LastWidget( )\class
                         ;             EndIf
-                        If *this\_widgets( )\AfterWidget( )
-                           *this\_widgets( )\AfterWidget( )\BeforeWidget( ) = *this\_widgets( )\BeforeWidget( )
-                           Debug " - AfterWidget "+*this\_widgets( )\AfterWidget( )\class
+                        If __widgets( )\AfterWidget( )
+                           __widgets( )\AfterWidget( )\BeforeWidget( ) = __widgets( )\BeforeWidget( )
+                           Debug " - AfterWidget "+__widgets( )\AfterWidget( )\class
                         EndIf
                         
                         
                         
-                        DeleteElement( *this\_widgets( ), 1 )
+                        DeleteElement( __widgets( ), 1 )
                      EndIf
                      
                      If *this\root\haschildren = 0
                         Break
                      EndIf
-                  ElseIf PreviousElement( *this\_widgets( )) = 0
+                  ElseIf PreviousElement( __widgets( )) = 0
                      Break
                   EndIf
                ForEver
@@ -298,17 +298,17 @@ CompilerIf #PB_Compiler_IsMainFile
             If PressedWidget( ) = *this
                PressedWidget( ) = 0
             EndIf
-            If FocusedWidget( ) = *this
-               FocusedWidget( ) = 0
-            EndIf
+;             If FocusedWidget( ) = *this
+;                FocusedWidget( ) = 0
+;             EndIf
             
             ;\\
             ;PostEventCanvasRepaint( *this\parent\root, #__event_free )
             ;ClearStructure( *this, _S_WIDGET )
             
             If *this = Root( )
-               DeleteMapElement( Root( ), MapKey( Root( ) ) )
-               ResetMap( Root( ) )
+               DeleteMapElement( __Roots( ), MapKey( __Roots( ) ) )
+               ResetMap( __Roots( ) )
                Debug " free - "+*this\class
             EndIf
             
@@ -330,7 +330,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEventType
          Case #__event_close;, #__event_focus
-            Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ GetCount( EventWidget( )\window ) 
+            Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ GetTypeCount( EventWidget( )\window ) 
             
             __Free( EventWidget( ) )
             
@@ -443,8 +443,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitEvent( #PB_All, @CallBack( ) )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 419
-; FirstLine = 372
-; Folding = ---------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 310
+; FirstLine = 305
+; Folding = --------------
 ; EnableXP
+; DPIAware

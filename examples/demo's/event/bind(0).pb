@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_roots( )
     If WidgetEventType( ) <> #__event_MouseMove
-      Debug "  "+ GetIndex(EventWidget()) +" - widget event - "+ WidgetEventType() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEventType()
+      Debug "  "+ IDWidget(EventWidget()) +" - widget event - "+ WidgetEventType() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEventType()
     EndIf
   EndProcedure
   
@@ -81,8 +81,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 82
-; FirstLine = 47
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 13
+; FirstLine = 9
 ; Folding = --
 ; EnableXP
+; DPIAware

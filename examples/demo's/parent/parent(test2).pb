@@ -270,7 +270,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; create elements
       Select class
         Case "window"    
-          If Type( *parent ) = #PB_GadgetType_MDI
+          If WidgetType( *parent ) = #PB_GadgetType_MDI
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
           Else
@@ -300,7 +300,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
         EndIf
         
-        Class.s = "Form_"+GetClass( *new )+"_"+GetCount( *new )
+        Class.s = "Form_"+GetClass( *new )+"_"+GetTypeCount( *new )
         SetText( *new, class )
         
         
@@ -346,9 +346,12 @@ CompilerIf #PB_Compiler_IsMainFile
         SetItemData( id_inspector_tree, position, *new )
         ; SetItemState( id_inspector_tree, position, #PB_tree_selected )
         SetState( id_inspector_tree, position )
+        If IsImage(img)
+          Protected ImageID = ImageID(img)
+        EndIf
         
-        If IsGadget( id_design_code )
-          AddGadgetItem_( id_design_code, position, Class.s, ImageID(img), SubLevel )
+        If IsGadget( id_design_code ) 
+          AddGadgetItem_( id_design_code, position, Class.s, ImageID, SubLevel )
           SetGadgetItemData( id_design_code, position, *new )
           ; SetGadgetItemState( id_design_code, position, #PB_tree_selected )
           SetGadgetState_( id_design_code, position ) ; Bug
@@ -368,54 +371,54 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;           Case #PB_List_First  : *rowMoved = *currentRow\parent_row( )\first\row
                                                                                                              ;           Case #PB_List_Before : *rowMoved = *currentRow\before\row
                                                                                                              ;           Case #PB_List_After  : *rowMoved = *currentRow\after\row
-                                                                                                             ;           Case #PB_List_Last   : *rowMoved = *currentRow\parent_row( )\last\row
+                                                                                                             ;           Case #PB_List_Last   : *rowMoved = *currentRow\parent_row( )\_last\row
                                                                                                              ;         EndSelect
                                                                                                              ;       EndIf
                                                                                                              ;       
                                                                                                              ;       If *rowMoved And *currentRow <> *rowMoved ;And *currentRow\TabIndex( ) = *rowMoved\TabIndex( )
                                                                                                              ;         If Position = #PB_List_First Or Position = #PB_List_Before
                                                                                                              ;           
-                                                                                                             ;           PushListPosition(  *this\__rows( ))
-                                                                                                             ;           ChangeCurrentElement(  *this\__rows( ), *currentRow\address )
-                                                                                                             ;           MoveElement(  *this\__rows( ), #PB_List_Before, *rowMoved\address )
+                                                                                                             ;           PushListPosition(  *this\__items( ))
+                                                                                                             ;           ChangeCurrentElement(  *this\__items( ), *currentRow\address )
+                                                                                                             ;           MoveElement(  *this\__items( ), #PB_List_Before, *rowMoved\address )
                                                                                                              ;           
                                                                                                              ;           If *currentRow\count\childrens
-                                                                                                             ;             While PreviousElement(  *this\__rows( )) 
-                                                                                                             ;               If IsChild(  *this\__rows( ), *currentRow )
-                                                                                                             ;                 MoveElement(  *this\__rows( ), #PB_List_After, *rowMoved\address )
+                                                                                                             ;             While PreviousElement(  *this\__items( )) 
+                                                                                                             ;               If IsChild(  *this\__items( ), *currentRow )
+                                                                                                             ;                 MoveElement(  *this\__items( ), #PB_List_After, *rowMoved\address )
                                                                                                              ;               EndIf
                                                                                                              ;             Wend
                                                                                                              ;             
-                                                                                                             ;             While NextElement(  *this\__rows( )) 
-                                                                                                             ;               If IsChild(  *this\__rows( ), *currentRow )
-                                                                                                             ;                 MoveElement(  *this\__rows( ), #PB_List_Before, *rowMoved\address )
+                                                                                                             ;             While NextElement(  *this\__items( )) 
+                                                                                                             ;               If IsChild(  *this\__items( ), *currentRow )
+                                                                                                             ;                 MoveElement(  *this\__items( ), #PB_List_Before, *rowMoved\address )
                                                                                                              ;               EndIf
                                                                                                              ;             Wend
                                                                                                              ;           EndIf
-                                                                                                             ;           PopListPosition(  *this\__rows( ))
+                                                                                                             ;           PopListPosition(  *this\__items( ))
                                                                                                              ;         EndIf  
                                                                                                              ;         
                                                                                                              ;         If Position = #PB_List_Last Or Position = #PB_List_After
-                                                                                                             ;           Protected *last._S_rows = *rowMoved\last\row ; GetLast( *rowMoved, *rowMoved\TabIndex( )) 
+                                                                                                             ;           Protected *last._S_rows = *rowMoved\_last\row ; GetLast( *rowMoved, *rowMoved\TabIndex( )) 
                                                                                                              ;           
-                                                                                                             ;           PushListPosition(  *this\__rows( ))
-                                                                                                             ;           ChangeCurrentElement(  *this\__rows( ), *currentRow\address )
-                                                                                                             ;           MoveElement(  *this\__rows( ), #PB_List_After, *last\currentRow\address )
+                                                                                                             ;           PushListPosition(  *this\__items( ))
+                                                                                                             ;           ChangeCurrentElement(  *this\__items( ), *currentRow\address )
+                                                                                                             ;           MoveElement(  *this\__items( ), #PB_List_After, *last\currentRow\address )
                                                                                                              ;           
                                                                                                              ;           If *currentRow\count\childrens
-                                                                                                             ;             While NextElement(  *this\__rows( )) 
-                                                                                                             ;               If IsChild(  *this\__rows( ), *currentRow )
-                                                                                                             ;                 MoveElement(  *this\__rows( ), #PB_List_Before, *last\currentRow\address )
+                                                                                                             ;             While NextElement(  *this\__items( )) 
+                                                                                                             ;               If IsChild(  *this\__items( ), *currentRow )
+                                                                                                             ;                 MoveElement(  *this\__items( ), #PB_List_Before, *last\currentRow\address )
                                                                                                              ;               EndIf
                                                                                                              ;             Wend
                                                                                                              ;             
-                                                                                                             ;             While PreviousElement(  *this\__rows( )) 
-                                                                                                             ;               If IsChild(  *this\__rows( ), *currentRow )
-                                                                                                             ;                 MoveElement(  *this\__rows( ), #PB_List_After, *currentRow\address )
+                                                                                                             ;             While PreviousElement(  *this\__items( )) 
+                                                                                                             ;               If IsChild(  *this\__items( ), *currentRow )
+                                                                                                             ;                 MoveElement(  *this\__items( ), #PB_List_After, *currentRow\address )
                                                                                                              ;               EndIf
                                                                                                              ;             Wend
                                                                                                              ;           EndIf
-                                                                                                             ;           PopListPosition(  *this\__rows( ))
+                                                                                                             ;           PopListPosition(  *this\__items( ))
                                                                                                              ;         EndIf
                                                                                                              ;         
                                                                                                              ;         ;
@@ -428,8 +431,8 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;         If *currentRow\parent_row( )\first\row = *currentRow
                                                                                                              ;           *currentRow\parent_row( )\first\row = *currentRow\after\row
                                                                                                              ;         EndIf
-                                                                                                             ;         If *currentRow\parent_row( )\last\row = *currentRow
-                                                                                                             ;           *currentRow\parent_row( )\last\row = *currentRow\before\row
+                                                                                                             ;         If *currentRow\parent_row( )\_last\row = *currentRow
+                                                                                                             ;           *currentRow\parent_row( )\_last\row = *currentRow\before\row
                                                                                                              ;         EndIf
                                                                                                              ;         
                                                                                                              ;         ;
@@ -458,10 +461,10 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;           If *currentRow\after\row
                                                                                                              ;             *currentRow\after\row\before\row = *currentRow
                                                                                                              ;           Else
-                                                                                                             ;             If *currentRow\parent_row( )\last\row
-                                                                                                             ;               *currentRow\parent_row( )\last\row\after\row = *currentRow
+                                                                                                             ;             If *currentRow\parent_row( )\_last\row
+                                                                                                             ;               *currentRow\parent_row( )\_last\row\after\row = *currentRow
                                                                                                              ;             EndIf
-                                                                                                             ;             *currentRow\parent_row( )\last\row = *currentRow
+                                                                                                             ;             *currentRow\parent_row( )\_last\row = *currentRow
                                                                                                              ;           EndIf
                                                                                                              ;         EndIf
                                                                                                              ;         
@@ -476,32 +479,32 @@ CompilerIf #PB_Compiler_IsMainFile
     ;With *this
     If *this
       ;{ Генерируем идентификатор
-        *rows = SelectElement( *this\__rows( ), position )
-       ;sublevel = *this\__rows( )\sublevel
+        *rows = SelectElement( *this\__items( ), position )
+       ;sublevel = *this\__items( )\sublevel
      
 ;         ; for the tree( )
-;         If sublevel > *this\__rows( )\sublevel
-;           PushListPosition( *this\__rows( ))
-;           If PreviousElement( *this\__rows( ))
-;             *this\row\added = *this\__rows( )
-;             ;;NextElement( *this\__rows( ))
+;         If sublevel > *this\__items( )\sublevel
+;           PushListPosition( *this\__items( ))
+;           If PreviousElement( *this\__items( ))
+;             *this\row\added = *this\__items( )
+;             ;;NextElement( *this\__items( ))
 ;           Else
 ;             last = *this\row\added
-;             sublevel = *this\__rows( )\sublevel
+;             sublevel = *this\__items( )\sublevel
 ;           EndIf
-;           PopListPosition( *this\__rows( ))
+;           PopListPosition( *this\__items( ))
 ;         Else
 ;           last = *this\row\added
-;           sublevel = *this\__rows( )\sublevel
+;           sublevel = *this\__items( )\sublevel
 ;         EndIf
         
         If *rowMoved
-          MoveElement( *this\__rows( ), #PB_List_After, *rowMoved)
+          MoveElement( *this\__items( ), #PB_List_After, *rowMoved)
         EndIf
         ;}
         
       If *rows
-        ;*rows\index = ListIndex( *this\__rows( ) )
+        ;*rows\index = ListIndex( *this\__items( ) )
         
         If sublevel > position
          ; sublevel = position
@@ -512,35 +515,35 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             sublevel = *this\row\added\sublevel + 1
 ;             *parent_row = *this\row\added
 ;             
-;           ElseIf *this\row\added\ParentRow( ) 
-;             If sublevel > *this\row\added\ParentRow( )\sublevel 
-;               *parent_row = *this\row\added\ParentRow( )
+;           ElseIf *this\row\added\RowParent( ) 
+;             If sublevel > *this\row\added\RowParent( )\sublevel 
+;               *parent_row = *this\row\added\RowParent( )
 ;               
 ;             ElseIf sublevel < *this\row\added\sublevel 
-;               If *this\row\added\ParentRow( )\ParentRow( )
-;                 *parent_row = *this\row\added\ParentRow( )\ParentRow( )
+;               If *this\row\added\RowParent( )\RowParent( )
+;                 *parent_row = *this\row\added\RowParent( )\RowParent( )
 ;                 
 ;                 While *parent_row 
 ;                   If sublevel >= *parent_row\sublevel 
 ;                     If sublevel = *parent_row\sublevel 
-;                       *parent_row = *parent_row\ParentRow( )
+;                       *parent_row = *parent_row\RowParent( )
 ;                     EndIf
 ;                     Break
 ;                   Else
-;                     *parent_row = *parent_row\ParentRow( )
+;                     *parent_row = *parent_row\RowParent( )
 ;                   EndIf
 ;                 Wend
 ;               EndIf
 ;               
 ;               ; for the editor( )
-;               If *this\row\added\ParentRow( ) 
-;                 If *this\row\added\ParentRow( )\sublevel = sublevel 
-;                   ;                     *rows\before = *this\row\added\ParentRow( )
-;                   ;                     *this\row\added\ParentRow( )\after = *rows
+;               If *this\row\added\RowParent( ) 
+;                 If *this\row\added\RowParent( )\sublevel = sublevel 
+;                   ;                     *rows\before = *this\row\added\RowParent( )
+;                   ;                     *this\row\added\RowParent( )\after = *rows
 ;                   
 ;                   If *this\type = #__type_Editor
-;                     *parent_row = *this\row\added\ParentRow( )
-;                     *parent_row\last = *rows
+;                     *parent_row = *this\row\added\RowParent( )
+;                     *parent_row\_last = *rows
 ;                     *this\row\added = *parent_row
 ;                     last = *parent_row
 ;                   EndIf
@@ -553,7 +556,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If *parent_row
           *parent_row\childrens + 1
-          *rows\ParentRow( ) = *parent_row
+          *rows\RowParent( ) = *parent_row
         EndIf
         
         If sublevel
@@ -567,9 +570,9 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ; for the tree( )
-        If *this\row\added\ParentRow( ) And
-           *this\row\added\ParentRow( )\sublevel < sublevel
-          *this\row\added\ParentRow( )\last = *this\row\added
+        If *this\row\added\RowParent( ) And
+           *this\row\added\RowParent( )\sublevel < sublevel
+          *this\row\added\RowParent( )\_last = *this\row\added
         EndIf
         
         If *this\row\added\sublevel = 0
@@ -580,9 +583,9 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\row\first = *rows
         EndIf
         
-        If *this\mode\collapsed And *rows\ParentRow( ) And 
-           *rows\sublevel > *rows\ParentRow( )\sublevel
-          ;*rows\ParentRow( )\collapsebox\___state= 1 
+        If *this\mode\collapsed And *rows\RowParent( ) And 
+           *rows\sublevel > *rows\RowParent( )\sublevel
+          ;*rows\RowParent( )\collapsebox\___state= 1 
           *rows\hide = 1
         EndIf
         
@@ -620,12 +623,12 @@ CompilerIf #PB_Compiler_IsMainFile
         
 ;         set_image_( *this, *rows\Image, Image )
         
-        If *this\FocusedRow( ) 
-          *this\FocusedRow( )\color\state = #__S_0
+        If *this\RowFocused( ) 
+          *this\RowFocused( )\color\state = #__S_0
           
-          *this\FocusedRow( ) = *rows 
-          *this\FocusedRow( )\focus = 1
-          *this\FocusedRow( )\color\state = #__S_2 + Bool( *this\focus = #False )
+          *this\RowFocused( ) = *rows 
+          *this\RowFocused( )\focus = 1
+          *this\RowFocused( )\color\state = #__S_2 + Bool( *this\focus = #False )
           
           ;             PostCanvasRepaint( *this\_root( ) )
         EndIf
@@ -633,13 +636,13 @@ CompilerIf #PB_Compiler_IsMainFile
         If *this\scroll\state = #True
           *this\scroll\state =- 1
         EndIf
-        *this\count\items + 1
+        *this\countitems + 1
         *this\change = 1
       EndIf
     EndIf
     ;EndWith
     
-    ProcedureReturn *this\count\items - 1
+    ProcedureReturn *this\countitems - 1
   EndProcedure
   
   Procedure widget_events( )
@@ -679,7 +682,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If IsContainer( EventWidget )
           If GetState( id_elements_tree) > 0 
             widget_add( EventWidget, GetText( id_elements_tree ), 
-                        EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
+                        DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
             
             ; end new create
             SetState( id_elements_tree, 0 )
@@ -728,20 +731,20 @@ CompilerIf #PB_Compiler_IsMainFile
 ;               
 ;               ; position = position2 + 1
               Protected *this._s_widget = id_inspector_tree
-              Protected *parent_row._S_rows = SelectElement( *this\__rows( ), position2 )
-              Protected *rows._S_rows = SelectElement( *this\__rows( ), position )
+              Protected *parent_row._S_rows = SelectElement( *this\__items( ), position2 )
+              Protected *rows._S_rows = SelectElement( *this\__items( ), position )
               
               *rows\sublevel = SubLevel2 + 1
               If *parent_row
                 ; *parent_row\childrens + 1
-                If *rows\ParentRow( ) ;And *rows\ParentRow( )\sublevel >= *parent_row\sublevel
+                If *rows\RowParent( ) ;And *rows\RowParent( )\sublevel >= *parent_row\sublevel
                   Debug 7777
-                  *rows\ParentRow( )\childrens - 1
+                  *rows\RowParent( )\childrens - 1
                 EndIf
-                *rows\ParentRow( ) = *parent_row
+                *rows\RowParent( ) = *parent_row
               EndIf
               
-              MoveElement( *this\__rows( ), #PB_List_After, *parent_row)
+              MoveElement( *this\__items( ), #PB_List_After, *parent_row)
               *this\change = 1
               
 ;               
@@ -783,7 +786,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;         DD_EventDragWidth( ) 
           ;         DD_EventDragHeight( )
           
-          a_transform( )\type = 0
+         ; a_transform( )\type = 0
          ; DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
           DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy )
         EndIf
@@ -810,7 +813,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
     
     Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-    Define root = widget::Open( OpenWindow( #PB_Any, x,y,width,height, "ide", flag ) )
+    Define root = widget::Open( 0, x,y,width,height, "ide", flag ) 
     window_ide = widget::GetWindow( root )
     canvas_ide = widget::GetGadget( root )
     
@@ -904,8 +907,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 278
-; FirstLine = 264
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 815
+; FirstLine = 810
 ; Folding = -------------
 ; EnableXP
+; DPIAware

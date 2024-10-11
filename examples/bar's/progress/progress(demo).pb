@@ -1,28 +1,29 @@
-﻿XIncludeFile "../../../widget-events.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
-
+  #__color_state_selected = 2
+  
 Procedure events_progress_gadgets()
   ;ClearDebugOutput()
   ;Debug ""+EventType()+ " - " +#PB_Compiler_Procedure+ " - " +EventGadget() +" state - " +GetGadgetState(EventGadget()) ; 
   
   Select EventType()
     Case #PB_EventType_LeftClick
-     ; SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     ; SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
       ; Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
 
 Procedure events_progress_widgets()
   ;ClearDebugOutput()
-  ;Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
+  ;Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
   Select WidgetEventType( )
-    Case #PB_EventType_Change
-     ; SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      ; Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+    Case #__Event_Change
+     ; SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
+      ; Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -32,7 +33,7 @@ Procedure events_track_gadgets()
   
   Select EventType()
     Case #PB_EventType_LeftClick
-      SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+      SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
       SetGadgetState(EventGadget()-3, GetGadgetState(EventGadget()))
       ; Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
@@ -40,12 +41,12 @@ EndProcedure
 
 Procedure events_track_widgets()
   ;ClearDebugOutput()
- ;; Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
+ ;; Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
   Select WidgetEventType( )
-    Case #PB_EventType_Change
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      SetState(GetWidget(GetIndex(EventWidget( ))-3), GetState(EventWidget( )))
+    Case #__Event_Change
+      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
+      SetState(WidgetID(IDWidget(EventWidget( ))-3), GetState(EventWidget( )))
   EndSelect
 EndProcedure
 
@@ -122,15 +123,18 @@ If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMen
   ;Bind(#PB_All, @events_widgets())
   
   For i = 0 To 2
-    Bind(GetWidget(i), @events_progress_widgets())
+    Bind(WidgetID(i), @events_progress_widgets())
   Next
   For i = 3 To 5
-    Bind(GetWidget(i), @events_track_widgets())
+    Bind(WidgetID(i), @events_track_widgets())
   Next
   
   WaitClose( )
 EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 23
+; FirstLine = 3
 ; Folding = --
 ; EnableXP
+; DPIAware

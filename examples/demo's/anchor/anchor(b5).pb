@@ -8,8 +8,6 @@ Global alpha = 64
 Global alpha1 = 128
 Global *Object1,*Object2,*Object3,*Object4,*Object5
 
-;Macro widget( ) : enumWidget( ) : EndMacro
-
 ; --------- Example ---------
 
 
@@ -291,5 +289,7 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = +
 ; EnableXP

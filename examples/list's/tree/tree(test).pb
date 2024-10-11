@@ -219,7 +219,7 @@ Define a
       AddItem(*tree, -1, "File "+Str(a), img, 0) ; sublevel 0 again
     Next
     
-    ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ Type(*tree)
+    ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ WidgetType(*tree)
     EnableDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     ;\\
@@ -254,8 +254,9 @@ Define a
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 121
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 221
+; FirstLine = 169
 ; Folding = --yC--
 ; EnableXP
+; DPIAware

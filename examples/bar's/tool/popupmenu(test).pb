@@ -181,9 +181,9 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget(), -1, "ComboBox editable...2")
     AddItem(widget(), -1, "ComboBox editable...3")
     
-    SetState(getwidget(0), 2)
-    SetState(getwidget(1), 1)
-    SetState(getwidget(2), 0)    ; set (beginning with 0) the third item as active one
+    SetState(WidgetID(0), 2)
+    SetState(WidgetID(1), 1)
+    SetState(WidgetID(2), 0)    ; set (beginning with 0) the third item as active one
       
    Bind(*menu, @TestHandler(), -1, 7)
    Bind(*menu, @QuitHandler(), -1, 8)
@@ -199,8 +199,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 168
-; FirstLine = 164
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 185
+; FirstLine = 160
 ; Folding = --
 ; EnableXP

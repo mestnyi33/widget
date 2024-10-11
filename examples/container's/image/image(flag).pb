@@ -83,12 +83,12 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 ;     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget,1)
     *this = widget::Image(100, 100, 250, 250, get_image())
     
     ; flag
-    f = widget::Tree(width+20, 10, 150, y+10, #__Tree_NoLines|#__Tree_NoButtons|#__tree_OptionBoxes|#__tree_CheckBoxes|#__Tree_threestate)
+    f = widget::Tree(width+20, 10, 150, y+10, #__Tree_NoLines|#__Tree_NoButtons|#__flag_OptionBoxes|#__tree_CheckBoxes|#__Tree_threestate)
     ; AddItem(f, -1, "align", -1,0)
     AddItem(f, -1, "top", -1,1)
     AddItem(f, -1, "left", -1,1)
@@ -138,8 +138,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 80
-; FirstLine = 66
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 90
+; FirstLine = 86
 ; Folding = ---
 ; EnableXP
+; DPIAware

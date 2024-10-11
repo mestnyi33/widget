@@ -8,7 +8,7 @@ Uselib(widget)
 ;   
 ;   Select EventType()
 ;     Case #PB_EventType_LeftClick
-;       ;SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+;       ;SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
 ;       Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
 ;   EndSelect
 ; EndProcedure
@@ -19,12 +19,14 @@ Uselib(widget)
 ;   
 ;   Select WidgetEventType( )
 ;     Case #PB_EventType_Change
-;       SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-;       Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+;       SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
+;       Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
 ;   EndSelect
 ; EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "disable - state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 500,0, 500);,140)
+OpenWindow(0, 0, 0, 500+500, 340, "disable - state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+
+If Open(0, 500,0, 500);,140)
   ScrollBarGadget  (0,  10, 42+30*0, 250,  20, 30, 100, 0) : SetGadgetState   (0,  50)                                            ; set 1st scrollbar (ID = 0) to 50 of 100
   ScrollBarGadget  (1,  10, 42+30*1, 250,  20, 30, 100, 50) ;: SetGadgetState   (1,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
   ScrollBarGadget  (2,  10, 42+30*2, 250,  20, 30, 100, 50) : SetGadgetState   (2,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
@@ -63,6 +65,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "disable - state", #PB_Window_Sy
  
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 26
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
+; DPIAware

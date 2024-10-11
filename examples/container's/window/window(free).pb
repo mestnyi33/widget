@@ -50,8 +50,8 @@ CompilerIf #PB_Compiler_IsMainFile
             *window = 0
             
           Case *buttonTest
-            ForEach EnumWidget()
-              Debug EnumWidget()\class
+            ForEach __widgets( )
+              Debug __widgets( )\class
             Next
         EndSelect
     EndSelect
@@ -75,5 +75,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 53
+; FirstLine = 45
 ; Folding = --
 ; EnableXP
+; DPIAware

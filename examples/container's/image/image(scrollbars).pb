@@ -5,7 +5,7 @@ UseLib(widget)
 
 Global *w._S_widget
 
-If Open(OpenWindow(#PB_Any, 100, 50, 400, 500, "ListViewGadget", #PB_Window_SystemMenu))
+If Open(0, 100, 50, 400, 500, "ListViewGadget", #PB_Window_SystemMenu)
   LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
   
   *w = Image(10, 10, 380, 380, (0)) 
@@ -18,7 +18,8 @@ If Open(OpenWindow(#PB_Any, 100, 50, 400, 500, "ListViewGadget", #PB_Window_Syst
   
   WaitClose()
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP
+; DPIAware

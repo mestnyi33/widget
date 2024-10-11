@@ -16,16 +16,16 @@
 ;   Panel(8, 8, 356, 203)
 ;   ;BarPosition( widget()\TabBox( ), 1, 100 )
 ;   
-;   AddItem (GetWidget(0), -1, "Panel 1")
+;   AddItem (WidgetID(0), -1, "Panel 1")
 ;   
-;   AddItem (GetWidget(0), -1,"Panel 2")
+;   AddItem (WidgetID(0), -1,"Panel 2")
 ;   
-;   AddItem (GetWidget(0), -1,"Panel 3")
+;   AddItem (WidgetID(0), -1,"Panel 3")
 ;  
 ;   CloseList()
 ;   
-;    SetItemFont(GetWidget(0), 1, 6)
-;   ; SetItemFont(GetWidget(0), 2, 6)
+;    SetItemFont(WidgetID(0), 1, 6)
+;   ; SetItemFont(WidgetID(0), 2, 6)
 ;   
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; EndIf
@@ -147,5 +147,8 @@ XIncludeFile "../../../widgets.pbi"
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 14
 ; Folding = --
 ; EnableXP
+; DPIAware

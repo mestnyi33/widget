@@ -1,6 +1,5 @@
 ﻿
 XIncludeFile "../../../widgets.pbi" 
-;Macro widget( ) : enumwidget( ) : EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
    
@@ -126,41 +125,41 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug "--- enumerate all gadgets ---"
       If StartEnumerate( root( ) )
-         If Not is_window_( enumWidget( ) )
-            Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         If Not is_window_( widget(  ) )
+            Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
          EndIf
          StopEnumerate( )
       EndIf
       
       Debug "--- enumerate all gadgets PANEL ---"
       If StartEnumerate( *PARENT )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
          StopEnumerate( )
       EndIf
       
       Debug "--- enumerate all (item 0) PANEL ---"
       If StartEnumerate( *PARENT, 0 )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
          StopEnumerate( )
       EndIf
       
       Debug "--- enumerate all (item 1) PANEL ---"
       If StartEnumerate( *PARENT, 1 )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
          StopEnumerate( )
       EndIf
       
       Debug "--- enumerate all (item 2) PANEL ---"
       If StartEnumerate( *PARENT, 2 )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
          StopEnumerate( )
       EndIf
       
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 140
-; FirstLine = 128
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 153
+; FirstLine = 125
 ; Folding = ---
 ; EnableXP

@@ -1,61 +1,65 @@
-﻿XIncludeFile "../../../widgets.pbi" 
-Uselib(widget)
+﻿; 1410 коммет каждое нажатие на стрелки горизонтального бара не перемещает скролл бар
+;\\ Scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
 
-Procedure events_gadgets()
-  ;ClearDebugOutput()
-  ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
-  
-  Select EventType()
-    Case #PB_EventType_LeftClick
-     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
-     Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
-  EndSelect
-EndProcedure
+XIncludeFile "../../../widgets.pbi" 
 
-Procedure events_widgets()
-  ;ClearDebugOutput()
-  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetState(EventWidget( )) ; 
-  
-  Select WidgetEventType( )
-    Case #__event_Change
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
-  EndSelect
-EndProcedure
-
-If OpenWindow(0, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  ScrollBarGadget  (0,  10, 42, 250,  20, 30, 100, 30)
-  SetGadgetState   (0,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-  
-  ScrollBarGadget  (1, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-  SetGadgetState   (1, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-  
-  TextGadget       (#PB_Any,  10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-  TextGadget       (#PB_Any,  10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-  
-  Define i
-  For i = 0 To 1
-    BindGadgetEvent(i, @events_gadgets())
-  Next
-  
-  Open(0, 305,0, 305,140)
-  Scroll(10, 42, 250,  20, 30, 100, 30)
-  SetState   (GetWidget(0),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-  
-  Scroll(270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-  SetState   (GetWidget(1), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-  
-  Text(10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#__Text_Center)
-  Text(10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#__Text_Right)
-  
-  For i = 0 To 1
-    Bind(GetWidget(i), @events_widgets())
-  Next
-  
-  WaitClose( )
-EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 41
-; FirstLine = 18
-; Folding = -
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   Uselib(widget)
+   Define i
+      
+   Procedure events_gadgets()
+      Select EventType()
+         Case #PB_EventType_LeftClick
+            SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+            Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+      EndSelect
+   EndProcedure
+   
+   Procedure events_widgets()
+      Select WidgetEventType( )
+         Case #__event_Change
+            SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
+            Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+      EndSelect
+   EndProcedure
+   
+   ;\\
+   If OpenWindow(0, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      ScrollBarGadget  (0,  10, 42, 250,  20, 30, 100, 30)
+      SetGadgetState   (0,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+      
+      ScrollBarGadget  (1, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
+      SetGadgetState   (1, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+      
+      TextGadget       (#PB_Any,  10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+      TextGadget       (#PB_Any,  10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
+      
+      For i = 0 To 1
+         BindGadgetEvent(i, @events_gadgets())
+      Next
+   EndIf
+   
+   ;\\
+   If Open(0, 305,0, 305,140)
+      Scroll(10, 42, 250,  20, 30, 100, 30)
+      SetState   (WidgetID(0),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+      
+      Scroll(270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
+      SetState   (WidgetID(1), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+      
+      Text(10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#__Text_Center)
+      Text(10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#__Text_Right)
+      
+      For i = 0 To 1
+         Bind(WidgetID(i), @events_widgets())
+      Next
+   EndIf
+   
+   WaitClose( )
+CompilerEndIf
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 22
+; FirstLine = 17
+; Folding = --
 ; EnableXP

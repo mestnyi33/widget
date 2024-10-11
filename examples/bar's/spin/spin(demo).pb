@@ -8,15 +8,15 @@ Procedure events_gadgets()
   
   Select EventType()
     Case #PB_EventType_Change
-     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
      Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
      
     Case #PB_EventType_Up
-     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
      Debug  ""+ EventGadget() +" - gadget up " + GetGadgetState(EventGadget())
      
    Case #PB_EventType_Down
-     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
      Debug  ""+ EventGadget() +" - gadget down " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
@@ -27,16 +27,16 @@ Procedure events_widgets()
   
   Select WidgetEventType( )
     Case #__event_Up
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+GetIndex(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
+      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+IDWidget(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
       
     Case #__event_Down
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+GetIndex(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
+      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+IDWidget(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
        
     Case #__event_Change
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
+      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+IDWidget(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -87,16 +87,16 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
        Spin(10, 30, 250, 18, 0, 30)
        Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_textcenter)
        Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_textright)
-       SetState(GetWidget(0), 0)
-       SetState(GetWidget(1), 15)
-       SetState(GetWidget(2), 30)
+       SetState(WidgetID(0), 0)
+       SetState(WidgetID(1), 15)
+       SetState(WidgetID(2), 30)
        
        Spin(10, 120, 250, 25, 5, 30, #__spin_Plus)
        Spin(270, 10, 40, 180, 5, 30, #__spin_Plus|#__bar_vertical);|#__bar_invert)
        SetState(widget( ), 5000)
        
        ; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
-       ; ; ;   SetState(GetWidget(2), 8000)
+       ; ; ;   SetState(WidgetID(2), 8000)
        
        Text(10,  10, 250, 20,"Spin Standard", #__Text_Center)
        Text(10, 100, 250, 20, "Spin plus&minus", #__Text_Center)
@@ -105,14 +105,15 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
        ;Bind(#PB_All, @events_widgets())
        
        For i = 0 To 1
-          Bind(GetWidget(i), @events_widgets())
+          Bind(WidgetID(i), @events_widgets())
        Next
     EndIf
 
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 101
-; FirstLine = 74
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 25
 ; Folding = --
 ; EnableXP
+; DPIAware

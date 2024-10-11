@@ -8,7 +8,7 @@ Procedure events_gadgets()
   
   Select EventType()
     Case #PB_EventType_LeftClick
-     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+     SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
      Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
@@ -19,8 +19,8 @@ Procedure events_widgets()
   
   Select WidgetEventType( )
     Case #__event_Change
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( GetWidget(0) ) +" "+ Height( GetWidget(1) )
+      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
+      Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( WidgetID(0) ) +" "+ Height( WidgetID(1) )
   EndSelect
 EndProcedure
 
@@ -40,8 +40,8 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
 
     Button(0, 0, 0, 0, "Button 1") ; No need to specify size or coordinates
     Button(0, 0, 0, 0, "Button 2") ; as they will be sized automatically
-    Splitter(5, 5, 220, 120, GetWidget(#Button1), GetWidget(#Button2));, #PB_Splitter_Separator)
-    Bind(GetWidget(#Splitter), @events_widgets())
+    Splitter(5, 5, 220, 120, WidgetID(#Button1), WidgetID(#Button2));, #PB_Splitter_Separator)
+    Bind(WidgetID(#Splitter), @events_widgets())
     
     Text(5, 135, 220, 60, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Border|#__Text_Center|#__text_top )
     
@@ -57,8 +57,9 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
 ;       EndIf
 ;     Until event = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 13
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 22
+; FirstLine = 19
 ; Folding = -
 ; EnableXP
+; DPIAware

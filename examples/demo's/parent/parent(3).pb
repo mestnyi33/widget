@@ -1,6 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
-;Macro widget( ) : enumwidget( ) : EndMacro
 
 Global i, *CHILD._s_widget, *CONT2,*CONT1._s_widget, *root1._s_widget, *root2._s_widget
 
@@ -98,8 +97,8 @@ If Open(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCen
    
    WaitEvent( @events_widgets() )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 94
-; FirstLine = 61
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = ---
 ; EnableXP
+; DPIAware

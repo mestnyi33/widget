@@ -30,53 +30,55 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    
    Debug "--- enumerate all widgets ---"
    If StartEnumerate( root( ) )
-      If is_window_( enumWidget() )
-         Debug "     window "+ enumWidget()\index
+      If is_window_( widget( ) )
+         Debug "     window "+ widget( )\index
       Else
-         Debug "       gadget - "+ enumWidget()\index
+         Debug "       gadget - "+ widget( )\index
       EndIf
       StopEnumerate( )
    EndIf
    
    Debug "--- enumerate all gadgets ---"
    If StartEnumerate( root( ) )
-      If Not is_window_( enumWidget( ) )
-         Debug "     gadget - "+enumWidget( )\index
+      If Not is_window_( widget(  ) )
+         Debug "     gadget - "+widget(  )\index
       EndIf
       StopEnumerate( )
    EndIf
    
    Debug "--- enumerate all windows ---"
    If StartEnumerate( root( ) )
-      If is_window_( enumWidget( ) )
-         Debug "     window " + enumWidget( )\index
+      If is_window_( widget(  ) )
+         Debug "     window " + widget(  )\index
       EndIf
       StopEnumerate( )
    EndIf
    
    Define index = 12
-   *parent = GetWidget( index )
+   *parent = WidgetID( index )
    
    Debug "--- enumerate all (window="+ Str(index) +") gadgets ---"
    If StartEnumerate( *parent )
-      Debug "     gadget - "+ enumWidget( )\index
+      Debug "     gadget - "+ widget(  )\index
       StopEnumerate( )
    EndIf
    
    index = 13
-   *parent = GetWidget( index )
+   *parent = WidgetID( index )
    Define item = 1
    
    Debug "--- enumerate all (gadget="+ Str(index) +") (item="+Str(item)+") gadgets ---"
    If StartEnumerate( *parent, item )
-      Debug "     gadget - "+ enumWidget( )\index
+      Debug "     gadget - "+ widget(  )\index
       StopEnumerate( )
    EndIf
    
    
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 35
+; FirstLine = 31
 ; Folding = --
 ; EnableXP
+; DPIAware

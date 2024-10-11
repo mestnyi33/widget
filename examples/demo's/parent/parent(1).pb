@@ -1,6 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 Uselib(widget)
-;Macro widget( ) : enumwidget( ) : EndMacro
 
 Global i, *w._s_widget, *p1,*p2._s_widget, *ch
 
@@ -82,8 +81,8 @@ EndProcedure
     WaitClose( )
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 63
-; FirstLine = 43
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP
+; DPIAware

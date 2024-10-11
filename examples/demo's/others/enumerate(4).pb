@@ -1,6 +1,5 @@
 ﻿
 XIncludeFile "../../../widgets.pbi" 
-;Macro widget( ) : enumwidget( ) : EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
    
@@ -102,15 +101,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug "--- enumerate all gadgets ---"
       If StartEnumerate( root( ) )
-         If Not is_window_( enumWidget( ) )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
+         If Not is_window_( widget(  ) )
+         Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
       EndIf
          StopEnumerate( )
       EndIf
       
       Debug "--- enumerate all gadgets ScrollArea ---"
       If StartEnumerate( *PARENT )
-         Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
+         Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
          StopEnumerate( )
       EndIf
       
@@ -119,8 +118,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 110
-; FirstLine = 88
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = ---
 ; EnableXP
+; DPIAware

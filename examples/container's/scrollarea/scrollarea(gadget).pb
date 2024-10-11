@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-
+; пока не наведеш на скролл бар правильно не отрисовивает
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   Global g,*g._s_widget, b,*b, oc, ic, i, time, Sw = 350, Sh = 300, count;=1000
@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    ; Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +this()\event+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
+    ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +this()\event+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
     
     Select WidgetEventType( )
       Case #PB_EventType_Resize
@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 30, #PB_ScrollArea_Flat)
     SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
@@ -128,11 +128,11 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     BindGadgetEvent(g, @events_gadgets())
 ;     Bind(*g, @events_widgets())
     
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+    WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 49
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 1
 ; Folding = --
 ; EnableXP
+; DPIAware

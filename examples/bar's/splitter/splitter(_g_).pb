@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
     
-    Repeat : Until Widget::WaitWindowEvent() = #PB_Event_CloseWindow
+    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
   
@@ -113,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EnableExplicit
   #__Text_Border = #PB_Text_Border
   
-  Macro GetIndex( this )
+  Macro IDWidget( this )
     MacroExpandedCount
   EndMacro
   Macro SetGadgetAttribute(_gadget_, _attribute_, _value_)
@@ -134,7 +134,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 
 
 
-  ; Procedure.l GetIndex( *this._S_widget )
+  ; Procedure.l IDWidget( *this._S_widget )
   ;     ; ProcedureReturn *this\index - 1
   ;   EndProcedure
   
@@ -221,19 +221,20 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   ;widget::Resize(Splitter_ide, 0,0,820,620)
   
-  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(GetIndex( widget::GetParent( s_tbar ))) )
-  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(GetIndex( widget::GetParent( s_desi ))))
-  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(GetIndex( widget::GetParent( s_view ))))
-  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(GetIndex( widget::GetParent( s_list ))))
-  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(GetIndex( widget::GetParent( s_insp ))))
-  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(GetIndex( widget::GetParent( s_help ))))
+  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(IDWidget( widget::GetParent( s_tbar ))) )
+  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(IDWidget( widget::GetParent( s_desi ))))
+  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(IDWidget( widget::GetParent( s_view ))))
+  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(IDWidget( widget::GetParent( s_list ))))
+  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(IDWidget( widget::GetParent( s_insp ))))
+  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(IDWidget( widget::GetParent( s_help ))))
   
   Repeat 
     Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 31
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 87
 ; Folding = ----
 ; EnableXP
+; DPIAware

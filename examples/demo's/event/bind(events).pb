@@ -10,11 +10,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Global binded
    
    Procedure events_1()
-      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 1event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
+      Debug " "+Str(IDWidget( EventWidget( ) ))+ " - 1event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
    EndProcedure
    
    Procedure events_2()
-      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 2event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
+      Debug " "+Str(IDWidget( EventWidget( ) ))+ " - 2event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (widget)"
    EndProcedure
    
    
@@ -37,6 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Disable( *bind, 1 )
       EndIf
    EndProcedure
+   
    Procedure events_Unbind()
       If binded = 1
          binded = 0
@@ -61,43 +62,26 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If Open(0, 10,10, 480, 480)
-         Window(80, 100, 300, 280, "Window_2")
-         
-         
+      If Open(0, 100, 100, 300, 280)
          *test = Tree(10,  10, 280, 170)
          Define i
          For i = 0 To 12
             AddItem( *test, -1, "item-"+Str(i) )
          Next i
          ;
-         *unbind = Button(10, 190, 135, 80, "Unbind")
-         *bind = Button(155, 190, 135, 80, "Bind")
-         Disable( *bind, 1 )
+         *bind = Button(10, 190, 135, 80, "Bind (events)")
+         *unbind = Button(155, 190, 135, 80, "Unbind (events)")
+         Disable( *unbind, 1 )
          
          Bind(*unbind, @events_Unbind(), #__event_LeftClick)
          Bind(*bind, @events_Bind(), #__event_LeftClick)
-         
-         ; post all default events
-         ;Bind(id, @events_widgets())
-         
-         ; post this events
-         Bind(*test, @events_1(), #__event_MouseEnter)
-         Bind(*test, @events_2(), #__event_MouseLeave)
-         ;
-         Bind(*test, @events_1(), #__event_LeftDown)
-         Bind(*test, @events_2(), #__event_LeftDown)
-         
-         Bind(*test, @events_1(), #__event_LeftUp, 1)
-         Bind(*test, @events_2(), #__event_LeftUp, 2)
-         binded = 1
-         
       EndIf
       
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; FirstLine = 34
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 39
 ; Folding = --
 ; EnableXP
+; DPIAware

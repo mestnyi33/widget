@@ -24,27 +24,29 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       
       ;\\
-      ForEach EnumWidget( )
-         Debug "position "+ EnumWidget( )\class 
+      ForEach __widgets(  )
+         Debug "position "+ __widgets(  )\class 
       Next
       
       Debug ""
-      ForEach EnumWidget( )
-         If EnumWidget( )\parent\FirstWidget( )
-            Debug ""+ EnumWidget( )\class +" - "+ EnumWidget( )\parent\FirstWidget( )\class +" <-> "+ EnumWidget( )\parent\LastWidget( )\class
+      ForEach __widgets(  )
+         If __widgets(  )\parent\FirstWidget( )
+            Debug ""+ __widgets(  )\class +" - "+ __widgets(  )\parent\FirstWidget( )\class +" <-> "+ __widgets(  )\parent\LastWidget( )\class
          EndIf
-         If EnumWidget( )\FirstWidget( )
-            Debug "first "+ EnumWidget( )\class +" - "+ EnumWidget( )\FirstWidget( )\class
+         If __widgets(  )\FirstWidget( )
+            Debug "first "+ __widgets(  )\class +" - "+ __widgets(  )\FirstWidget( )\class
          EndIf
-         If EnumWidget( )\LastWidget( )
-            Debug "last "+ EnumWidget( )\class +" - "+ EnumWidget( )\LastWidget( )\class
+         If __widgets(  )\LastWidget( )
+            Debug "last "+ __widgets(  )\class +" - "+ __widgets(  )\LastWidget( )\class
          EndIf
       Next
       
       WaitClose( )
    EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 25
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 39
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
+; DPIAware

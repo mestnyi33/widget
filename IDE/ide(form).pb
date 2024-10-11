@@ -396,7 +396,7 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
       Select class
          Case "window"    
             is_window = #True
-            If __type( *parent ) = #__Type_MDI
+            If WidgetType( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag )
                Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
             Else
@@ -797,7 +797,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, toolbarbutton )
    
    Select toolbarbutton
       Case 1
-         If __type( *e_widget ) = #__type_ToolBar
+         If WidgetType( *e_widget ) = #__type_ToolBar
             If GetItemState( *e_widget, toolbarbutton )  
                ; group
                group_select = *e_widget
@@ -1026,7 +1026,7 @@ Procedure ide_events( )
       Case #__event_LeftClick
          ide_menu_events( *e_widget, WidgetEventItem( ) )
          
-;          If __type( *e_widget ) = #__type_ToolBar
+;          If WidgetType( *e_widget ) = #__type_ToolBar
 ;             If *e_widget\EnteredTab( )
 ;                ide_menu_events( *e_widget, *e_widget\EnteredTab( )\itemindex )
 ;             EndIf
@@ -1229,7 +1229,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;
    ;\\\ ide events binds
    ;
-   If __type( ide_toolbar ) = #__type_ToolBar
+   If WidgetType( ide_toolbar ) = #__type_ToolBar
       Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
    EndIf
    Bind( ide_inspector_view, @ide_events( ) )
@@ -1346,7 +1346,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    Define._S_WIDGET *this, *parent
 ;    Debug "--- enumerate all gadgets ---"
 ;    If StartEnumerate( root( ) )
-;       Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
+;       Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
 ;       StopEnumerate( )
 ;    EndIf
 ;    
@@ -1357,7 +1357,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    
 ;    
 ;    If StartEnumerate( *parent )
-;       Debug "   *parent  gadget - "+ enumWidget()\index +" "+ enumWidget()\class +"               ("+ enumWidget()\parent\class +") " ;+" - ("+ enumWidget()\text\string +")"
+;       Debug "   *parent  gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
 ;       StopEnumerate( )
 ;    EndIf
 ;    
@@ -1392,8 +1392,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 1368
-; FirstLine = 1349
+; CursorPosition = 1359
+; FirstLine = 1338
 ; Folding = ----------------------
 ; EnableXP
 ; DPIAware

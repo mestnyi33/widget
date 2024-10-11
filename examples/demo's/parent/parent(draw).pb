@@ -1,11 +1,9 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-;Uselib(widget)
-;Macro widget( ) : enumwidget( ) : EndMacro
-;XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseLib( Widget )
+  
   Global canvas_1
   Global canvas_2
   Global canvas_1_win
@@ -120,6 +118,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 6
+; FirstLine = 85
 ; Folding = --
 ; EnableXP
+; DPIAware

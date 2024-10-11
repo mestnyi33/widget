@@ -25,7 +25,7 @@ EndProcedure
 
 Procedure events_widgets()
   If WidgetEventType( ) <> #__event_MouseMove And WidgetEventType( ) <> #__event_Draw
-    Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEventType( )+ "  item - " +WidgetEventItem( ) ; GetState(this()\widget) ; 
+    Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEventType( )+ "  item - " +WidgetEventItem( ) ; GetState(this()\widget) ; 
   EndIf
 EndProcedure
 
@@ -60,25 +60,25 @@ EndProcedure
 Procedure events_wbuttons()
   Select WidgetEventType( )
     Case #__event_LeftClick
-      Select GetIndex( EventWidget( ) )
+      Select IDWidget( EventWidget( ) )
         Case 2 
-          If CountItems( GetWidget(1)) > 1
-            RemoveItem( GetWidget(1), 1)
-            Debug ""+CountItems( GetWidget(1)) +" - count widget items"
+          If CountItems( WidgetID(1)) > 1
+            RemoveItem( WidgetID(1), 1)
+            Debug ""+CountItems( WidgetID(1)) +" - count widget items"
           EndIf
           
-        Case 4 : ClearItems( GetWidget(1))
-          Debug ""+CountItems( GetWidget(1)) +" - count widget items"
+        Case 4 : ClearItems( WidgetID(1))
+          Debug ""+CountItems( WidgetID(1)) +" - count widget items"
           
         Case 3 
-          ;OpenList( GetWidget(1))
-          AddItem( GetWidget(1), 1, "Sub 2 (add)")
-          If CountItems( GetWidget(1)) > 1
-            SetItemText( GetWidget(1), 1, "Sub 2 (add&set)")
-            Debug GetItemText( GetWidget(1), 1) + " - get item text"
+          ;OpenList( WidgetID(1))
+          AddItem( WidgetID(1), 1, "Sub 2 (add)")
+          If CountItems( WidgetID(1)) > 1
+            SetItemText( WidgetID(1), 1, "Sub 2 (add&set)")
+            Debug GetItemText( WidgetID(1), 1) + " - get item text"
           Else
-            SetItemText( GetWidget(1), 0, "Sub 1 (add&set)")
-            Debug GetItemText( GetWidget(1), 0) + " - get item text"
+            SetItemText( WidgetID(1), 0, "Sub 1 (add&set)")
+            Debug GetItemText( WidgetID(1), 0) + " - get item text"
           EndIf
           ;CloseList()
       EndSelect
@@ -125,48 +125,49 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   Debug ""+CountGadgetItems(1) +" - count gadget items"
   
   Panel(8, 8, 300, 200)
-  Define h = height( GetWidget(0), #__c_inner )
-  Define w = width( GetWidget(0), #__c_inner )
+  Define h = height( WidgetID(0), #__c_inner )
+  Define w = width( WidgetID(0), #__c_inner )
   
-  AddItem( GetWidget(0), -1, "Panel 1")
+  AddItem( WidgetID(0), -1, "Panel 1")
   Panel(10, 10, w-20, h-20-34*3)
-  AddItem( GetWidget(1), -1, "Sub 1")
-  AddItem( GetWidget(1), -1, "Sub 2")
-  AddItem( GetWidget(1), -1, "Sub 3")
-  AddItem( GetWidget(1), -1, "Sub 4")
-  AddItem( GetWidget(1), -1, "Sub 5")
-  AddItem( GetWidget(1), -1, "Sub 6")
-  AddItem( GetWidget(1), -1, "Sub 7")
-  AddItem( GetWidget(1), -1, "Sub 8")
-  AddItem( GetWidget(1), -1, "Sub 9")
-  SetState( GetWidget(1), 5)
+  AddItem( WidgetID(1), -1, "Sub 1")
+  AddItem( WidgetID(1), -1, "Sub 2")
+  AddItem( WidgetID(1), -1, "Sub 3")
+  AddItem( WidgetID(1), -1, "Sub 4")
+  AddItem( WidgetID(1), -1, "Sub 5")
+  AddItem( WidgetID(1), -1, "Sub 6")
+  AddItem( WidgetID(1), -1, "Sub 7")
+  AddItem( WidgetID(1), -1, "Sub 8")
+  AddItem( WidgetID(1), -1, "Sub 9")
+  SetState( WidgetID(1), 5)
   CloseList()
   
   Button(10, h-34*2, 80, 24,"remove")
   Button(10, h-34*3, 80, 24,"add")
   Button(10, h-34*1, 80, 24,"clear")
   
-  AddItem ( GetWidget(0), -1,"Panel 2")
+  AddItem ( WidgetID(0), -1,"Panel 2")
   Button(10, 10, 80, 24,"Button 3")
   Button(95, 10, 80, 24,"Button 4")
   CloseList()
   
   For i = 0 To 1
-    Bind( GetWidget(i), @events_widgets())
+    Bind( WidgetID(i), @events_widgets())
   Next
   For i = 2 To 4
-    Bind( GetWidget(i), @events_wbuttons())
+    Bind( WidgetID(i), @events_wbuttons())
   Next
   
   
-  ;SetState( GetWidget(1), 6)
+  ;SetState( WidgetID(1), 6)
   
-  Debug ""+CountItems( GetWidget(1)) +" - count widget items"
+  Debug ""+CountItems( WidgetID(1)) +" - count widget items"
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 89
-; FirstLine = 80
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 37
 ; Folding = ---
 ; EnableXP
+; DPIAware

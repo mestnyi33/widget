@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-   ; Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
+   ; Debug ""+Str(IDWidget(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile = 333
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+Str(GetIndex(EventWidget()))+ " - widget event - " +WidgetEventType();+ " bar - " +this()\item+ " direction - " +this()\data 
+    Debug ""+Str(IDWidget(EventWidget()))+ " - widget event - " +WidgetEventType();+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -230,8 +230,8 @@ CompilerIf #PB_Compiler_IsMainFile = 333
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 2
-; FirstLine = 21
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 120
 ; Folding = --9
 ; EnableXP

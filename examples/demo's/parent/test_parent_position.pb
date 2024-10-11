@@ -1,6 +1,5 @@
 ﻿
 XIncludeFile "../../../widgets.pbi" 
-;Macro widget( ) : enumwidget( ) : EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
    
@@ -159,8 +158,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 139
-; FirstLine = 86
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = f-
 ; EnableXP
+; DPIAware

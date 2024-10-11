@@ -1,6 +1,5 @@
 ﻿
 XIncludeFile "../../../widgets.pbi" 
-;Macro widget( ) : enumwidget( ) : EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
    
@@ -19,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
       time = ElapsedMilliseconds( )
       Debug "--- enumerate all gadgets ---"
       If StartEnumerate( root( ) )
-         ;Debug "     gadget - "+ enumWidget()\index +" "+ enumWidget()\class
+         ;Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
          StopEnumerate( )
       EndIf
       Debug "time - "+Str(ElapsedMilliseconds( ) - time)
@@ -27,7 +26,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 20
 ; Folding = -
 ; EnableXP
+; DPIAware

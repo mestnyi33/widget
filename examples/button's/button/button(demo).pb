@@ -84,8 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__button_multiline, -1,4 )
     Button( 10+222,170+70, 200, 25, "Toggle button", #__button_toggle )
     
-    SetState( GetWidget( 5 ), 1 )
-    SetFont( GetWidget( 5 ), FontID( 0 ) )
+    SetState( WidgetID( 5 ), 1 )
+    SetFont( WidgetID( 5 ), FontID( 0 ) )
     Bind( #PB_All, @events_widgets( ) )
     
   EndIf
@@ -143,8 +143,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 45
-; FirstLine = 41
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 87
+; FirstLine = 83
 ; Folding = ---
 ; EnableXP
+; DPIAware

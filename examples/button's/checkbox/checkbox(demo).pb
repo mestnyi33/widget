@@ -10,7 +10,7 @@ Procedure events_gadgets( )
   
   Select EventType( )
     Case #PB_EventType_LeftClick
-     SetState( GetWidget( EventGadget( ) ), GetGadgetState( EventGadget( ) ) )
+     SetState( WidgetID( EventGadget( ) ), GetGadgetState( EventGadget( ) ) )
      Debug  ""+ EventGadget( ) +" - gadget change state " + GetGadgetState( EventGadget( ) )
      
  EndSelect
@@ -22,8 +22,8 @@ Procedure events_widgets( )
   
   Select WidgetEventType( )
     Case #__event_Change
-      SetGadgetState( GetIndex( EventWidget( ) ), GetState( EventWidget( ) ) )
-      Debug  Str( GetIndex( EventWidget( ) ) )+" - widget change state " + GetState( EventWidget( ) )
+      SetGadgetState( IDWidget( EventWidget( ) ), GetState( EventWidget( ) ) )
+      Debug  Str( IDWidget( EventWidget( ) ) )+" - widget change state " + GetState( EventWidget( ) )
       
   EndSelect
 EndProcedure
@@ -44,18 +44,19 @@ If Open( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Wi
   CheckBox( 10+160, 10, 140, 20, "CheckBox 1" )
   CheckBox( 10+160, 35, 140, 40, text, #PB_CheckBox_ThreeState );| #__text_center )
   CheckBox( 10+160, 80, 140, 20, "CheckBox (right)", #PB_CheckBox_Right )
-  SetState( GetWidget( 0 ), #PB_Checkbox_Checked )  
-  SetState( GetWidget( 1 ), #PB_Checkbox_Inbetween )  
+  SetState( WidgetID( 0 ), #PB_Checkbox_Checked )  
+  SetState( WidgetID( 1 ), #PB_Checkbox_Inbetween )  
   ;Bind( #PB_All, @events_widgets( ) )
   
   For i = 0 To 2
-    Bind( GetWidget( i ), @events_widgets( ), #PB_EventType_Change )
+    Bind( WidgetID( i ), @events_widgets( ), #PB_EventType_Change )
   Next
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 19
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 25
+; FirstLine = 18
 ; Folding = -
 ; EnableXP
+; DPIAware

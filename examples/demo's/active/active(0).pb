@@ -31,22 +31,22 @@ Procedure events_buttons()
       ; Debug "click widget - " + Str(EventWidget( )\index - 1)
       
       Select (EventWidget( )\index)
-        Case 3 : SetActive(GetWidget(0))   ; Activate StringGadget
-        Case 4 : SetActive(GetWidget(1))   ; Activate ComboBoxGadget
+        Case 3 : SetActive(WidgetID(0))   ; Activate StringGadget
+        Case 4 : SetActive(WidgetID(1))   ; Activate ComboBoxGadget
       EndSelect
   EndSelect
 EndProcedure
 
 
-If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   StringGadget  (0, 10, 10, 250, 20, "bla bla...")
-  ComboBoxGadget(1, 10, 40, 250, 21)
   
+  ComboBoxGadget(1, 10, 40, 250, 21)
   For a = 1 To 5 
     AddGadgetItem(1, -1, "ComboBox item " + Str(a)) 
   Next
-  
   SetGadgetState(1, 2)                ; set (beginning with 0) the third item as active one
+  
   ButtonGadget  (2, 200, 65, 60, 20, "button")
   ButtonGadget  (3, 10,  90, 250, 20, "Activate StringGadget")
   ButtonGadget  (4, 10, 115, 250, 20, "Activate ComboBox")
@@ -57,23 +57,22 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_Sy
   
   ;-----
   String(10+270, 10, 250, 20, "bla bla...")
-  String(10+270, 40, 250, 21, "...blabla")
-  ;     *g = ComboBox(10+270, 40, 250, 21)
-  ;     
-  ;     For a = 1 To 5 
-  ;       AddItem(*g, -1, "ComboBox item " + Str(a)) 
-  ;     Next
-  ;     
-  ;     SetState(*g, 2)                ; set (beginning with 0) the third item as active one
+  ;String(10+270, 40, 250, 21, "...blabla")
+  *g = ComboBox(10+270, 40, 250, 21)
+  For a = 1 To 5 
+     AddItem(*g, -1, "ComboBox item " + Str(a)) 
+  Next
+  SetState(*g, 2)                ; set (beginning with 0) the third item as active one
+  
   Button(200+270, 65, 60, 20, "button")
   Button(10+270,  90, 250, 20, "Activate String")
   Button(10+270, 115, 250, 20, "Activate ComboBox")
   
   For i = 0 To 2
-    Bind(GetWidget(i), @events_widgets())
+    Bind(WidgetID(i), @events_widgets())
   Next
   For i = 3 To 4
-    Bind(GetWidget(i), @events_buttons())
+    Bind(WidgetID(i), @events_buttons())
   Next
   
   Repeat
@@ -86,8 +85,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_Sy
     EndIf
   Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9
-; FirstLine = 6
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 40
+; FirstLine = 44
 ; Folding = --
 ; EnableXP
+; DPIAware

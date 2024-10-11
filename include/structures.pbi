@@ -106,6 +106,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
             string.s
             files.s
          EndStructureUnion
+         
+         *value
       EndStructure
       Structure _s_DRAG Extends _s_DROP
          y.l
@@ -356,6 +358,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
          _type.b
+         _index.l     ; Index of new list element
+         itemindex.l
          
          ;*columnaddress
          columnindex.c
@@ -368,8 +372,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          change.b
          drawing.b
          
-         index.l     ; Index of new list element
-         itemindex.l
          
          visible.b
          
@@ -452,11 +454,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          addindex.c
          
          ; tab
-         *entered._s_rows
-         *pressed._s_rows
-         *focused._s_rows
-         
-          List *s._s_ITEMS( )
+         *entered._s_ITEMS
+         *pressed._s_ITEMS
+         *focused._s_ITEMS
+         List *_s._s_ITEMS( )
       EndStructure
       
       ;--     BAR
@@ -639,7 +640,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;          move.MOVEINFO                 
          resize.RESIZEINFO                 
          
-         _id.i      ; - widget index
          
          y.l[constants::#__c]
          x.l[constants::#__c]
@@ -702,7 +702,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ToolBarHeight.w
          TabHeight.i
          EndStructureUnion
-         index.b[3]
+         
+         
+         index.i      ; - widget index
          
          ; placing layout
          first._s_OBJECTTYPE
@@ -815,8 +817,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 481
-; FirstLine = 467
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 459
+; FirstLine = 447
 ; Folding = ----------
 ; EnableXP

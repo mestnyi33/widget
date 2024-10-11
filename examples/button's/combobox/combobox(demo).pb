@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 615, 120, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 615, 120, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
     ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable)
     For a = 1 To 31 ; xp=31 ;linux-qt=11 ; mac = 5
@@ -120,19 +120,20 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget(), -1, "ComboBox editable...2")
     AddItem(widget(), -1, "ComboBox editable...3")
     
-    SetState(getwidget(0), 2)
-    SetState(getwidget(1), 1)
-    SetState(getwidget(2), 0)    ; set (beginning with 0) the third item as active one
+    SetState(WidgetID(0), 2)
+    SetState(WidgetID(1), 1)
+    SetState(WidgetID(2), 0)    ; set (beginning with 0) the third item as active one
     
     For i = 0 To 2
-      Bind(getwidget(i), @events_widgets())
+      Bind(WidgetID(i), @events_widgets())
     Next
     
     WaitClose( ) 
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 43
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 80
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP
+; DPIAware

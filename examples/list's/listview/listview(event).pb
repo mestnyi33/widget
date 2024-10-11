@@ -65,36 +65,36 @@ EndProcedure
 Procedure events_widgets()
   Select WidgetEventType( )
     Case #__event_DragStart
-      Debug  ""+GetIndex(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+IDWidget(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_Change
-      Debug  ""+GetIndex(EventWidget( ))+" - widget Change "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+IDWidget(EventWidget( ))+" - widget Change "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_LeftClick
-      Debug  ""+GetIndex(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+IDWidget(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_LeftDoubleClick
-      Debug  ""+GetIndex(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+IDWidget(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_RightClick
-      Debug  ""+GetIndex(EventWidget( ))+" - widget RightClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+IDWidget(EventWidget( ))+" - widget RightClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
 ;       
 ;     Case #__event_Up
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
+;       Debug  ""+IDWidget(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
 ;       
 ;     Case #__event_Down
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
+;       Debug  ""+IDWidget(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
 ;       
 ;     Case #__event_ScrollChange
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+;       Debug  ""+IDWidget(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
 ;       
 ;     Case #__event_StatusChange
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+;       Debug  ""+IDWidget(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
   EndSelect
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;{
   Define i,a
   ;
@@ -138,45 +138,48 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Wi
   
   listview(270, 30, 250, 120) : SetFrame( widget( ), 2)
   For a = 0 To 12
-    AddItem (GetWidget(0), -1, "listview item " + Str(a)) ; define listview content
-    SetItemState(GetWidget(0), a, #PB_Tree_Selected) 
+    AddItem (WidgetID(0), -1, "listview item " + Str(a)) ; define listview content
+    SetItemState(WidgetID(0), a, #PB_Tree_Selected) 
   Next
-  SetState(GetWidget(0), 5) 
-  SetState(GetWidget(0), 7) 
-  SetState(GetWidget(0), 9) 
+  SetState(WidgetID(0), 5) 
+  SetState(WidgetID(0), 7) 
+  SetState(WidgetID(0), 9) 
   
   listview(270, 30+150, 250, 120, #PB_ListView_ClickSelect) : SetFrame( widget( ), 2)
   For a = 0 To 12
-    AddItem (GetWidget(1), -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
+    AddItem (WidgetID(1), -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
     If a%2
-      SetItemState(GetWidget(1), a, #PB_Tree_Selected) 
+      SetItemState(WidgetID(1), a, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState(GetWidget(1), 5) 
-  SetState(GetWidget(1), 7) 
-  SetState(GetWidget(1), 9) 
+  SetState(WidgetID(1), 5) 
+  SetState(WidgetID(1), 7) 
+  SetState(WidgetID(1), 9) 
   
   listview(270, 30+150+150, 250, 120, #PB_ListView_MultiSelect) : SetFrame( widget( ), 2)
   For a = 0 To 12
-    AddItem (GetWidget(2), -1, "listview item " + Str(a)) ; define listview content
+    AddItem (WidgetID(2), -1, "listview item " + Str(a)) ; define listview content
     If a%2
-      SetItemState(GetWidget(2), a, #PB_Tree_Selected) 
+      SetItemState(WidgetID(2), a, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState(GetWidget(2), 5) 
-  SetState(GetWidget(2), 7) 
-  SetState(GetWidget(2), 9) 
+  SetState(WidgetID(2), 5) 
+  SetState(WidgetID(2), 7) 
+  SetState(WidgetID(2), 9) 
   
   Text(270,10, 250,20, "flag = no")
   Text(270,10+150, 250,20, "flag = ClickSelect")
   Text(270,10+150+150, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-    Bind(GetWidget(i), @events_widgets())
+    Bind(WidgetID(i), @events_widgets())
   Next
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 96
+; FirstLine = 67
 ; Folding = --
 ; EnableXP
+; DPIAware

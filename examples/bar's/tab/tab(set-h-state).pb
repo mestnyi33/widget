@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global i, *w0, *w1, *w2, *w3, *w4, *w5, *w6, *w7, *w8, *w9
+  Global i, *w0._S_WIDGET, *w1, *w2, *w3, *w4, *w5, *w6, *w7, *w8, *w9
   
   widget::Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
@@ -68,6 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   widget::SetState(*w4, 10)
   
   widget::bar_Tab_SetState(*w0, -1)
+  *w0\bar\page\pos = *w0\bar\max
+  
   widget::bar_Tab_SetState(*w1, 9)
   widget::bar_Tab_SetState(*w3, 6)
   widget::bar_Tab_SetState(*w4, 1)
@@ -75,6 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::WaitClose( )
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP

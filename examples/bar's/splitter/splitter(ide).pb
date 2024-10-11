@@ -76,12 +76,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   ;widget::Resize(Splitter_ide, 0,0,820,620)
   
-  SetText(s_tbar, "size: ("+Str(Width(s_tbar))+"x"+Str(Height(s_tbar))+") - " );+ Str(GetIndex( widget::GetParent( s_tbar ))) )
-  SetText(s_desi, "size: ("+Str(Width(s_desi))+"x"+Str(Height(s_desi))+") - " );+ Str(GetIndex( widget::GetParent( s_desi ))))
-  SetText(s_view, "size: ("+Str(Width(s_view))+"x"+Str(Height(s_view))+") - " );+ Str(GetIndex( widget::GetParent( s_view ))))
-  SetText(s_list, "size: ("+Str(Width(s_list))+"x"+Str(Height(s_list))+") - " );+ Str(GetIndex( widget::GetParent( s_list ))))
-  SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(GetIndex( widget::GetParent( s_insp ))))
-  SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(GetIndex( widget::GetParent( s_help ))))
+  SetText(s_tbar, "size: ("+Str(Width(s_tbar))+"x"+Str(Height(s_tbar))+") - " );+ Str(IDWidget( widget::GetParent( s_tbar ))) )
+  SetText(s_desi, "size: ("+Str(Width(s_desi))+"x"+Str(Height(s_desi))+") - " );+ Str(IDWidget( widget::GetParent( s_desi ))))
+  SetText(s_view, "size: ("+Str(Width(s_view))+"x"+Str(Height(s_view))+") - " );+ Str(IDWidget( widget::GetParent( s_view ))))
+  SetText(s_list, "size: ("+Str(Width(s_list))+"x"+Str(Height(s_list))+") - " );+ Str(IDWidget( widget::GetParent( s_list ))))
+  SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(IDWidget( widget::GetParent( s_insp ))))
+  SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(IDWidget( widget::GetParent( s_help ))))
   
   ;WaitClose( )
   Define event
@@ -155,18 +155,19 @@ CompilerEndIf
 ;   
 ;   ;Resize(Splitter_ide, 0,0,800,600)
 ;   
-;   SetText(toolbar_design, "size: ("+Str(Width(toolbar_design))+"x"+Str(Height(toolbar_design))+") - " + Str(GetIndex( GetParent( toolbar_design ))) )
-;   SetText(mdi_design, "size: ("+Str(Width(mdi_design))+"x"+Str(Height(mdi_design))+") - " + Str(GetIndex( GetParent( mdi_design ))))
-;   SetText(listview_debug, "size: ("+Str(Width(listview_debug))+"x"+Str(Height(listview_debug))+") - " + Str(GetIndex( GetParent( listview_debug ))))
-;   SetText(tree_inspector, "size: ("+Str(Width(tree_inspector))+"x"+Str(Height(tree_inspector))+") - " + Str(GetIndex( GetParent( tree_inspector ))))
-;   SetText(panel_inspector, "size: ("+Str(Width(panel_inspector))+"x"+Str(Height(panel_inspector))+") - " + Str(GetIndex( GetParent( panel_inspector ))))
-;   SetText(text_help, "size: ("+Str(Width(text_help))+"x"+Str(Height(text_help))+") - " + Str(GetIndex( GetParent( text_help ))))
+;   SetText(toolbar_design, "size: ("+Str(Width(toolbar_design))+"x"+Str(Height(toolbar_design))+") - " + Str(IDWidget( GetParent( toolbar_design ))) )
+;   SetText(mdi_design, "size: ("+Str(Width(mdi_design))+"x"+Str(Height(mdi_design))+") - " + Str(IDWidget( GetParent( mdi_design ))))
+;   SetText(listview_debug, "size: ("+Str(Width(listview_debug))+"x"+Str(Height(listview_debug))+") - " + Str(IDWidget( GetParent( listview_debug ))))
+;   SetText(tree_inspector, "size: ("+Str(Width(tree_inspector))+"x"+Str(Height(tree_inspector))+") - " + Str(IDWidget( GetParent( tree_inspector ))))
+;   SetText(panel_inspector, "size: ("+Str(Width(panel_inspector))+"x"+Str(Height(panel_inspector))+") - " + Str(IDWidget( GetParent( panel_inspector ))))
+;   SetText(text_help, "size: ("+Str(Width(text_help))+"x"+Str(Height(text_help))+") - " + Str(IDWidget( GetParent( text_help ))))
 ;   
 ;   Bind(-1,-1)
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 13
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 162
+; FirstLine = 134
 ; Folding = -
 ; EnableXP
 ; DPIAware

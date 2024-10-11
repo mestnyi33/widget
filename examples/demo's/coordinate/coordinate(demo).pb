@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   setparent(*w, *scrollarea)
   
   ;\\ get required pos&size
-  ReDraw( Root( ) )
+  RePaint( Root( ) )
   
   ;\\
   Debug "POSITION (x&y)"
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Debug "----------"
   If StartEnumerate( Root( ) )
-    Debug ""+EnumWidget( )\class +" childrens - "+ EnumWidget( )\haschildren
+    Debug ""+widget( )\class +" childrens - "+ widget( )\haschildren
     StopEnumerate( )
   EndIf
 
@@ -104,8 +104,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 95
-; FirstLine = 73
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 30
+; FirstLine = 18
 ; Folding = -
 ; EnableXP
+; DPIAware
