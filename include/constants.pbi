@@ -44,33 +44,78 @@
       #Boundary_parentSize     = $60000000      ; 0b01100000...
       #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
       
-      
       ;
       ;\\ default values
       ;
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-         #__splitter_buttonsize = 9
+      CompilerIf #PB_Compiler_DPIAware
+        #__splittersize = 15
+        #__splitterround = 4
+        
+        #__window_frame_size     =  8
+        #__window_caption_height = 48
+        #__draw_plus_size = 11
+        
+        #__buttonround = 15
+        #__buttonsize = 32
+        
+        #__sublevelsize = 25
+        #__arrow_size = 8
+      CompilerElse
+        #__splittersize = 9
+        #__splitterround = 2
+        
+        #__window_frame_size     =  4
+        #__window_caption_height = 24
+        #__draw_plus_size = 5
+        
+        #__buttonround = 7
+        #__buttonsize = 16
+        
+        #__sublevelsize = 16
+        #__arrow_size = 4
       CompilerEndIf
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-         #__splitter_buttonsize = 9;4
-      CompilerEndIf
-      CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-         #__splitter_buttonsize = 9;4;4
-      CompilerEndIf
-      
-      
-      #__panel_height = 24 ;+ 4
-      #__panel_width  = 85
-      
-      #__menu_height = 25
-      
+    
       #__scroll_border = 2
-      #__scroll_buttonsize = 16
-      
+      #__a_anchors_size = 7
+      #__barsize  = #__buttonsize + 5
       #__arrow_type = 1 ; ;-1 ;0 ;1
-      #__arrow_size = 4 ;
+      
       
       #__sOC = SizeOf(Character)
+      
+      ;-\\ Anchors
+      ; a_index( )
+      #__a_left         = 1
+      #__a_top          = 2
+      #__a_right        = 3
+      #__a_bottom       = 4
+      #__a_left_top     = 5
+      #__a_right_top    = 6
+      #__a_right_bottom = 7
+      #__a_left_bottom  = 8
+      #__a_moved        = 9
+      #__a_moved2       = 10
+      #__a_count        = 11
+      
+      ; a_selector( )
+      #__a_line_left    = 0
+      #__a_line_top     = 1
+      #__a_line_right   = 2
+      #__a_line_bottom  = 3
+      
+      ; a_set( ) flags
+      EnumerationBinary 1
+         #__a_position ; положение
+         #__a_width    ; по ширине
+         #__a_height   ; по высоте
+         #__a_corner   ; по углам
+         #__a_zoom     ; по растянутый
+         #__a_nodraw
+      EndEnumeration
+      ;
+      #__a_edge = #__a_width | #__a_height ; по крайам
+      #__a_size = #__a_corner | #__a_edge
+      #__a_full = #__a_position | #__a_size
       
       ;-\\ edit errors
       Enumeration 1
@@ -270,8 +315,6 @@
       #__wb_mini  = 3
       #__wb_help  = 4
       
-      #__window_frame_size     = 4
-      #__window_caption_height = 24
       ;     #__window_nogadgets = #__flag_nogadgets
       ;     #__window_borderless = #__flag_borderless
       ;     #__window_systemmenu = #__flag_systemmenu
@@ -302,12 +345,11 @@
                                                            ;#PB_window                 = #PB_window_noActivate<<2
       
       ;-\\  Spin
-      #__spin_barsize  = #__scroll_buttonsize + 5
       #__spin_vertical = #__bar_vertical
       #__spin_left     = 1 << 1
       #__spin_right    = 1 << 2
       #__spin_plus     = 1 << 3
-      
+     
       ;     ;-
       ; Debug #PB_checkbox_Unchecked ; 0
       ; Debug #PB_checkbox_checked   ; 1
@@ -652,42 +694,6 @@
       
       
       
-      ;-\\ Anchors
-      #__a_anchors_size = 7
-      
-      ; a_index( )
-      #__a_left         = 1
-      #__a_top          = 2
-      #__a_right        = 3
-      #__a_bottom       = 4
-      #__a_left_top     = 5
-      #__a_right_top    = 6
-      #__a_right_bottom = 7
-      #__a_left_bottom  = 8
-      #__a_moved        = 9
-      #__a_moved2       = 10
-      #__a_count        = 11
-      
-      ; a_selector( )
-      #__a_line_left    = 0
-      #__a_line_top     = 1
-      #__a_line_right   = 2
-      #__a_line_bottom  = 3
-      
-      ; a_set( ) flags
-      EnumerationBinary 1
-         #__a_position ; положение
-         #__a_width    ; по ширине
-         #__a_height   ; по высоте
-         #__a_corner   ; по углам
-         #__a_zoom     ; по растянутый
-         #__a_nodraw
-      EndEnumeration
-      ;
-      #__a_edge = #__a_width | #__a_height ; по крайам
-      #__a_size = #__a_corner | #__a_edge
-      #__a_full = #__a_position | #__a_size
-      
       ;-
       ;- GLOBAL
       ;-
@@ -904,8 +910,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 832
-; FirstLine = 812
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 47
 ; Folding = ----
 ; EnableXP

@@ -186,8 +186,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          index.l     ; Index of new list element
          size.l
          noFocus.a
-         arrow._s_arrow
          color._s_color[4]
+         arrow._s_arrow
       EndStructure
       
       ;--     CARET
@@ -817,8 +817,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 459
-; FirstLine = 447
-; Folding = ----------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 190
+; FirstLine = 172
+; Folding = ---AA-----
 ; EnableXP

@@ -365,8 +365,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro bar_area_create_( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _scrollbar_size_, _mode_ = #True )
          If Not _parent_\scroll\bars
             _parent_\scroll\bars = 1
-            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_ScrollBar, 0, 0, _scrollbar_size_, _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, #__scroll_buttonsize, 7, _scroll_step_ )
-            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_ScrollBar, 0, 0, _width_, _scrollbar_size_, #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * #__scroll_buttonsize, 7, _scroll_step_ )
+            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_ScrollBar, 0, 0, _scrollbar_size_, _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, _scrollbar_size_, #__buttonround, _scroll_step_ )
+            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_ScrollBar, 0, 0, _width_, _scrollbar_size_, #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * _scrollbar_size_, #__buttonround, _scroll_step_ )
          EndIf
       EndMacro
       
@@ -1217,7 +1217,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
-      Macro draw_plus( _address_, _plus_, _size_ = 5 )
+      Macro draw_plus( _address_, _plus_, _size_ = #__draw_plus_size )
          Line(_address_\x + (_address_\width - _size_) / 2, _address_\y + (_address_\height - 1) / 2, _size_, 1, _address_\color\front[_address_\ColorState( )])
          If _plus_
             Line(_address_\x + (_address_\width - 1) / 2, _address_\y + (_address_\height - _size_) / 2, 1, _size_, _address_\color\front[_address_\ColorState( )])
@@ -1499,7 +1499,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i Spin( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0, increment.f = 1.0 )
       Declare.i Tab( x.l, y.l, width.l, height.l, flag.q = 0, round.l = 0 )
       Declare.i Scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
-      Declare.i Track( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 7 )
+      Declare.i Track( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = #__buttonround )
       Declare.i Progress( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
       Declare.i Splitter( x.l, y.l, width.l, height.l, First.i, Second.i, flag.q = 0 )
       
@@ -2118,7 +2118,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndDataSection
       EndProcedure
       
-      Macro DrawArrow2( _x_, _y_, _direction_, _frame_color_ = $ffffffff, _back_color_ = $ff000000)
+      Procedure DrawArrow2( _x_, _y_, _direction_, _frame_color_ = $ffffffff, _back_color_ = $ff000000)
          If _direction_ = 0 ; left
             If _frame_color_ <> _back_color_
                Line(_x_ + 8, _y_ - 2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
@@ -2172,7 +2172,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Line(_x_ + 3, _y_ + 5, 3, 1, _back_color_)
             Plot(_x_ + 4, _y_ + 6, _back_color_)
          EndIf
-      EndMacro
+      EndProcedure
       
       Procedure DrawArrow( x.l, y.l, Direction.l, color.l )
          If Direction = 0
@@ -2255,7 +2255,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.b Arrow( x.l, Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1 )
-         ; ProcedureReturn DrawArrow( x,y, Direction, Color )
+        If Style =- 1
+       ; ProcedureReturn DrawArrow2( x,y, Direction, Color )
+        EndIf
          
          Protected I
          ;Size - 2
@@ -3337,7 +3339,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If *this\anchors
             *this\anchors\mode = mode 
-            *this\anchors\size = #__a_anchors_size
+            *this\anchors\size = DesktopScaledX(#__a_anchors_size)
             *this\anchors\pos = *this\anchors\size / 2
             ;
             a_add( *this )
@@ -3551,6 +3553,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             If size >= 0
+              size = DesktopScaledX(size)
                If *this\anchors\size <> size
                   *this\anchors\size = size
                   *this\bs - *this\anchors\pos
@@ -3764,7 +3767,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          a_main( ) = *this
          ;
          a_transform( )\grid_type = grid_type
-         mouse( )\steps = grid_size + 1
+         mouse( )\steps = DesktopScaledX(grid_size + 1)
          ;
          If IsImage( a_transform( )\grid_image )
             FreeImage( a_transform( )\grid_image )
@@ -4874,6 +4877,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             size + 40
          EndIf
          ;EndIf
+         
+         ;
+         size = DPIScaledY( size )
+         
          
          If flag & #PB_Toolbar_Left Or 
             flag & #PB_Toolbar_Right
@@ -7013,6 +7020,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\type = #__type_TabBar
                   
                   ; Navigation
+                  ;Protected fabe_pos, fabe_out, button_size = DesktopScaledX(20), round = 0, Size = DesktopScaledX(60)
                   Protected fabe_pos, fabe_out, button_size = 20, round = 0, Size = 60
                   backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\ColorState( )]
                   If Not backcolor
@@ -7207,9 +7215,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *SB\arrow\type ;*this\type = #__type_ScrollBar
                      If *SB\arrow\size
                         draw_mode_alpha_( #PB_2DDrawing_Default )
-                        ;                 Arrow(*SB\x + (*SB\width -*SB\arrow\size )/2, *SB\y + (*SB\height -*SB\arrow\size )/2,
-                        ;                       *SB\arrow\size, *SB\arrow\direction, *SB\color\front[*SB\ColorState( )]&$FFFFFF |*SB\AlphaState24( ), *SB\arrow\type )
-                        
                         draw_arrows( *SB, *SB\arrow\direction )
                      EndIf
                   Else
@@ -11245,9 +11250,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ; reset item z - order
-                  Protected buttonpos = 6
-                  Protected buttonsize = 9
-                  Protected boxpos = 4
+                  Protected buttonpos = (6)
+                  Protected buttonsize = DesktopScaledX(9)
+                  Protected boxpos = (4)
                   Protected boxsize = buttonsize + 2 
                   Protected bs = Bool( *this\fs )
                   Protected scroll_width
@@ -12663,7 +12668,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   
                   If ( *this\mode\lines Or *this\mode\buttons );Or *this\mode\check ) ;And Not ( *this\flag & #__tree_property Or *this\flag & #__flag_optionboxes )
-                     *this\row\sublevelsize = 16
+                     *this\row\sublevelsize = #__sublevelsize
                   Else
                      *this\row\sublevelsize = 0
                   EndIf
@@ -16448,8 +16453,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\color\front = _get_colors_( )\front
                
                *this\ToggleBox( ).allocate( BOX )
-               *this\ToggleBox( )\round  = 7
-               *this\ToggleBox( )\width  = 15
+               *this\ToggleBox( )\round  = #__buttonround
+               *this\ToggleBox( )\width  = #__buttonsize - Bool( Not #__buttonsize % 2)
                *this\ToggleBox( )\height = *this\ToggleBox( )\width
                
                *this\text\padding\x = *this\ToggleBox( )\width + 8
@@ -16469,7 +16474,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                *this\ToggleBox( ).allocate( BOX )
                *this\ToggleBox( )\round  = 2
-               *this\ToggleBox( )\height = 15
+               *this\ToggleBox( )\height = #__buttonsize - Bool( Not #__buttonsize % 2)
                *this\ToggleBox( )\width  = *this\ToggleBox( )\height
                
                *this\text\padding\x = *this\ToggleBox( )\width + 8
@@ -16579,12 +16584,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\type = #__type_Panel
-               If Flag & #__bar_vertical = #False
-                  *this\fs[2] = #__panel_height
-               Else
-                  *this\fs[1] = #__panel_width
-               EndIf
-               
                *this\TabBox( ) = CreateBar( #__type_TabBar, *this, #PB_ToolBar_Small ) 
                
                If Flag & #__flag_nobuttons
@@ -16615,8 +16614,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\flag & #PB_ComboBox_Editable
                *this\StringBox( ) = Create( *this, "ComboString", #__type_String,
                                             0, 0, 0, 0, #Null$, #__flag_child | #__flag_borderless )
-               ;*this\StringBox( )\autosize = 1
-               *this\fs[3] = 17
+               
+               *this\fs[3] = #__barsize + Bool( Not #__barsize % 2)
             EndIf
             
             ;\\
@@ -16756,9 +16755,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *SB\round  = *this\round
                
                If *this\round < 7
-                  *SB\size = 9
+                  *SB\size = 9 ; #__buttonsize + Bool( Not #__buttonsize % 2)
                Else
-                  *SB\size = 15
+                  *SB\size = #__buttonsize + Bool( Not #__buttonsize % 2)
                EndIf
                
                ; button draw color
@@ -16792,12 +16791,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If Not Flag & #__bar_buttonsize = #__bar_buttonsize
                   *SB\size  = size
-                  *BB1\size = 15
-                  *BB2\size = 15
+                  *BB1\size = #__buttonsize - Bool( Not #__splittersize % 2) 
+                  *BB2\size = *BB1\size
                EndIf
                
-               *BB1\round = 7
-               *BB2\round = 7
+               *BB1\round = #__buttonround
+               *BB2\round = *BB1\round
                *SB\round  = *this\round
                
                *BB1\arrow\type = -1 ; -1 0 1
@@ -16850,8 +16849,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) )
                *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) )
-               *SB\size                 = #__splitter_buttonsize
-               *SB\round                = 2
+               
+               *SB\size                 = #__splittersize + Bool( Not #__splittersize % 2)
+               *SB\round                = #__splitterround
                
                ;\\
                ; If *this\type = #__type_Splitter
@@ -16997,7 +16997,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If flag & #__flag_noscrollbars = #False
             If *this\type = #__type_String
                
-               bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize, 0)
+               bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize, 0)
                
                *this\scroll\v\hide  = 1
                *this\scroll\h\hide  = 1
@@ -17017,17 +17017,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    *this\type = #__type_ExplorerList Or
                    *this\type = #__type_Property
                
-               bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize, Bool(( *this\mode\Buttons = 0 And *this\mode\Lines = 0 ) = 0 ))
+               bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize, Bool(( *this\mode\Buttons = 0 And *this\mode\Lines = 0 ) = 0 ))
             ElseIf *this\type = #__type_MDI Or
                    *this\type = #__type_ScrollArea
                
                If DPIResolutionX( ) And DPIResolutionY( )
-                  bar_area_create_( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
+                  bar_area_create_( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__buttonsize )
                Else
-                  bar_area_create_( *this, 1, *param_1, *param_2, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
+                  bar_area_create_( *this, 1, *param_1, *param_2, *this\inner_width( ), *this\inner_height( ), #__buttonsize )
                EndIf
             ElseIf *this\type = #__type_Image
-               bar_area_create_( *this, 1, *this\image\width, *this\image\height, *this\inner_width( ), *this\inner_height( ), #__scroll_buttonsize )
+               bar_area_create_( *this, 1, *this\image\width, *this\image\height, *this\inner_width( ), *this\inner_height( ), #__buttonsize )
             EndIf
          EndIf
          
@@ -17045,14 +17045,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i Spin( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0, Increment.f = 1.0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Spin, x, y, width, height, #Null$, flag, min, max, 0, #__spin_barsize, round, Increment )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Spin, x, y, width, height, #Null$, flag, min, max, 0, #__barsize, round, Increment )
       EndProcedure
       
       Procedure.i Scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollBar, x, y, width, height, #Null$, flag, min, max, pagelength, #__scroll_buttonsize, round, 1 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollBar, x, y, width, height, #Null$, flag, min, max, pagelength, #__buttonsize, round, 1 )
       EndProcedure
       
-      Procedure.i Track( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 7 )
+      Procedure.i Track( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = #__buttonround )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_TrackBar, x, y, width, height, #Null$, flag, min, max, 0, 0, round, 1 )
       EndProcedure
       
@@ -17166,19 +17166,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure.i MDI( x.l, y.l, width.l, height.l, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, x, y, width, height, #Null$, flag | #__flag_nogadgets, 0, 0, 0, #__scroll_buttonsize, 0, 1 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, x, y, width, height, #Null$, flag | #__flag_nogadgets, 0, 0, 0, #__buttonsize, 0, 1 )
       EndProcedure
       
       Procedure.i Panel( x.l, y.l, width.l, height.l, flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, x, y, width, height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__scroll_buttonsize, 0, 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, x, y, width, height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__buttonsize, 0, 0 )
       EndProcedure
       
       Procedure.i Container( x.l, y.l, width.l, height.l, flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, x, y, width, height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__scroll_buttonsize, 0, 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, x, y, width, height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__buttonsize, 0, 0 )
       EndProcedure
       
       Procedure.i ScrollArea( x.l, y.l, width.l, height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, x, y, width, height, #Null$, flag, ScrollAreaWidth, ScrollAreaHeight, 0, #__scroll_buttonsize, 0, ScrollStep )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, x, y, width, height, #Null$, flag, ScrollAreaWidth, ScrollAreaHeight, 0, #__buttonsize, 0, ScrollStep )
       EndProcedure
       
       Procedure.i Frame( x.l, y.l, width.l, height.l, Text.s, flag.q = #__flag_nogadgets )
@@ -17186,7 +17186,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i Image( x.l, y.l, width.l, height.l, image.i, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Image, x, y, width, height, #Null$, flag, image, 0, 0, #__scroll_buttonsize, 0, 1 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Image, x, y, width, height, #Null$, flag, image, 0, 0, #__buttonsize, 0, 1 )
       EndProcedure
       
       ;-
@@ -17365,12 +17365,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         If (x - 7 >= 0 And x + 7 <= *this\root\width) And ; в мак ос эти строки не нужны так как plot( ) может рисовать за пределамы границы
                            (y - 7 >= 0 And y + 7 <= *this\root\height)
-                           
-                           If *items( )\ColorState( )
-                              DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )))
-                           Else
-                              DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )), $ff000000)
-                           EndIf
+                          
+                          If *items( )\ColorState( )
+                            Arrow( x+#__arrow_size/2+1,y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
+                          Else
+                            Arrow(x+#__arrow_size/2+1, y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
+                          EndIf
+                          
+;                           If *items( )\ColorState( )
+;                             DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )))
+;                           Else
+;                             DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )), $ff000000)
+;                           EndIf
                         EndIf
                         
                         ;EndIf
@@ -17940,10 +17946,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; buttons image
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               draw_close_button( *this\CloseButton( ), 6 )
-               draw_maximize_button( *this\MaximizeButton( ), 4 )
-               draw_minimize_button( *this\MinimizeButton( ), 4 )
-               draw_help_button( *this\HelpButton( ), 4 )
+               draw_close_button( *this\CloseButton( ), DesktopScaledX(6) )
+               draw_maximize_button( *this\MaximizeButton( ), DesktopScaledX(4) )
+               draw_minimize_button( *this\MinimizeButton( ), DesktopScaledX(4) )
+               draw_help_button( *this\HelpButton( ), DesktopScaledX(4) )
                
                ; Draw image
                If *this\image\id
@@ -22826,7 +22832,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\barHeight = 0
             Else
                *this\barHeight = constants::_check_( *this\flag, #__flag_borderless, #False ) * barHeight
-               *this\round     = 7
+               *this\round     = #__buttonround
                
                *this\TitleText( )\padding\x = 5
                *this\TitleText( )\string    = Text
@@ -22844,13 +22850,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\MaximizeButton( )\ColorState( ) = 1
             *this\MinimizeButton( )\ColorState( ) = 1
             
-            *this\CloseButton( )\round    = 4 + 3
+            *this\CloseButton( )\round    = #__buttonround
             *this\MaximizeButton( )\round = *this\CloseButton( )\round
             *this\MinimizeButton( )\round = *this\CloseButton( )\round
             *this\HelpButton( )\round     = *this\CloseButton( )\round
             
-            *this\CloseButton( )\width  = 14
-            *this\CloseButton( )\height = 14
+            *this\CloseButton( )\width  = #__buttonsize - 2
+            *this\CloseButton( )\height = *this\CloseButton( )\width
             
             *this\MaximizeButton( )\width  = *this\CloseButton( )\width
             *this\MaximizeButton( )\height = *this\CloseButton( )\height
@@ -24514,10 +24520,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 453
-; FirstLine = 436
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 12670
+; FirstLine = 12392
+; Folding = --------------------------------------------f-++---------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-ff-d8+0+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = widgets2.app
+; Executable = ..\widgets.app.exe
