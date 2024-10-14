@@ -52,11 +52,11 @@
         #__splitterround = 4
         
         #__window_frame_size     =  8
-        #__window_caption_height = 48
+        #__window_caption_height = 48-6
         #__draw_plus_size = 11
         
         #__buttonround = 15
-        #__buttonsize = 32
+        #__buttonsize = 32-6
         
         #__sublevelsize = 25
         #__arrow_size = 8
@@ -910,8 +910,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 49
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 54
 ; FirstLine = 42
 ; Folding = ----
 ; EnableXP

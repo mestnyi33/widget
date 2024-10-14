@@ -6456,6 +6456,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                pos = seperator_step 
             EndIf
             
+            
             If Not *this\hide 
                ; - widget::bar_tab_update_( )
                If *this\TabChange( ) Or *this\resize\ResizeChange( )
@@ -13168,6 +13169,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure AddItem( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, flag.q = 0 )
          Protected result
+         
+         If DPIResolutionX( ) And DPIResolutionY( ) And IsImage( Image ) And ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
+           ResizeImage(Image, DesktopScaledX(ImageWidth(Image)), DesktopScaledX(ImageHeight(Image)), #PB_Image_Raw )
+         EndIf
          
          If *this\type = #__type_ListIcon
             Protected string.s, count
@@ -24520,10 +24525,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 17378
-; FirstLine = 16703
-; Folding = --------------------------------------------f-++---------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-ff-d8+0+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 13173
+; FirstLine = 12897
+; Folding = --------------------------------------------f-++---------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--++83080------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = ../widgets.app.exe
+; Executable = ..\widgets.app.exe
