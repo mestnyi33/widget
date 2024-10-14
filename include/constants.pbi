@@ -47,7 +47,7 @@
       ;
       ;\\ default values
       ;
-      CompilerIf #PB_Compiler_DPIAware
+      CompilerIf #PB_Compiler_DPIAware And #PB_Compiler_OS = #PB_OS_Windows
         #__splittersize = 15
         #__splitterround = 4
         
@@ -910,8 +910,9 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 47
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 49
+; FirstLine = 42
 ; Folding = ----
 ; EnableXP
+; DPIAware

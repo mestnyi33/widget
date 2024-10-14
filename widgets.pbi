@@ -17366,17 +17366,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If (x - 7 >= 0 And x + 7 <= *this\root\width) And ; в мак ос эти строки не нужны так как plot( ) может рисовать за пределамы границы
                            (y - 7 >= 0 And y + 7 <= *this\root\height)
                           
-                          If *items( )\ColorState( )
-                            Arrow( x+#__arrow_size/2+1,y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
-                          Else
-                            Arrow(x+#__arrow_size/2+1, y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
-                          EndIf
-                          
 ;                           If *items( )\ColorState( )
-;                             DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )))
+;                             Arrow( x+#__arrow_size/2+1,y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
 ;                           Else
-;                             DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )), $ff000000)
+;                             Arrow(x+#__arrow_size/2+1, y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
 ;                           EndIf
+                          
+                          If *items( )\ColorState( )
+                            DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )))
+                          Else
+                            DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )), $ff000000)
+                          EndIf
                         EndIf
                         
                         ;EndIf
@@ -24520,10 +24520,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12670
-; FirstLine = 12392
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 17378
+; FirstLine = 16703
 ; Folding = --------------------------------------------f-++---------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-ff-d8+0+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = ..\widgets.app.exe
+; Executable = ../widgets.app.exe
