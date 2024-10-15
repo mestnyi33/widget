@@ -7611,36 +7611,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          With *this
             If *this\type = #__type_TrackBar
-               Protected i, x, y
+               Protected i, x, y, size = DPIScaled(7)
                draw_mode_( #PB_2DDrawing_XOr )
                
                If *bar\vertical
-                  x = *SB\x + Bool( *bar\invert ) * *this\width - 8
+                  x = *this\x + Bool( *bar\invert ) * ( *this\width - size )
                   y = *this\y + *bar\area\pos + *SB\size/2
                   
-                  Line( x, y, 7, 1, *SB\color\frame )
-                  Line( x, y + *bar\area\len - *bar\thumb\len, 7, 1, *SB\color\frame )
+                  Line( x, y, size, 1, *SB\color\frame )
+                  Line( x, y + *bar\area\len - *bar\thumb\len, size, 1, *SB\color\frame )
                   
                   If *this\flag & #PB_TrackBar_Ticks
                      For i = *bar\min To *bar\max
                         If i <> *bar\min And 
                            i <> *bar\max
-                           Line( x + 2, y + bar_thumb_pos_( *bar, i ), 3, 1, *SB\color\frame )
+                           Line( x + DPIScaled(2), y + bar_thumb_pos_( *bar, i ), DPIScaled(3), 1, *SB\color\frame )
                         EndIf
                      Next
                   EndIf
                Else
                   x = *this\x + *bar\area\pos + *SB\size/2
-                  y = *SB\y + Bool( Not *bar\invert ) * *this\height - 8
+                  y = *this\y + Bool( Not *bar\invert ) * ( *this\height - size )
                   
-                  Line( x, y, 1, 7, *SB\color\frame )
-                  Line( x + *bar\area\len - *bar\thumb\len, y, 1, 7, *SB\color\frame )
+                  Line( x, y, 1, size, *SB\color\frame )
+                  Line( x + *bar\area\len - *bar\thumb\len, y, 1, size, *SB\color\frame )
                   
                   If *this\flag & #PB_TrackBar_Ticks
                      For i = *bar\min To *bar\max
                         If i <> *bar\min And
                            i <> *bar\max
-                           Line( x + bar_thumb_pos_( *bar, i ), y + 2, 1, 3, *SB\color\frame )
+                           Line( x + bar_thumb_pos_( *bar, i ), y + DPIScaled(2), 1, DPIScaled(3), *SB\color\frame )
                         EndIf
                      Next
                   EndIf
@@ -8913,8 +8913,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *SB\height = *bar\thumb\len
                EndIf
                
-               *BB1\width = 4
-               *BB2\width = 4
+               *BB1\width = DPIScaled( #__tracksize )
+               *BB2\width = *BB1\width
                *SB\width  = *SB\size + ( Bool( *SB\size < 10 ) * *SB\size )
                
                *BB1\y      = *this\frame_y( )
@@ -8924,22 +8924,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *BB2\height = *this\frame_height( ) - *bar\thumb\pos - *bar\thumb\len
                
                If *bar\invert
-                  *BB1\x = *this\frame_x( ) + 6
-                  *BB2\x = *this\frame_x( ) + 6
-                  *SB\x  = *BB1\x - *SB\width / 4 - 1 - Bool( *SB\size > 10 )
+                 *BB1\x = *this\frame_x( ) + DPIScaled(6)
                Else
-                  *BB1\x = *this\frame_x( ) + *this\frame_width( ) - *BB1\width - 6
-                  *BB2\x = *this\frame_x( ) + *this\frame_width( ) - *BB2\width - 6
-                  *SB\x  = *BB1\x - *SB\width / 2 + Bool( *SB\size > 10 )
+                 *BB1\x = *this\frame_x( ) + *this\frame_width( ) + DPIScaled(6) - *SB\size - 1
                EndIf
-            Else
+               
+               *BB2\x = *BB1\x
+               *SB\x  = *BB1\x - ( *SB\size - *BB1\width )/2
+             Else
                If *bar\thumb\len
                   *SB\x     = *this\frame_x( ) + *bar\thumb\pos
                   *SB\width = *bar\thumb\len
                EndIf
                
-               *BB1\height = 4
-               *BB2\height = 4
+               *BB1\height = DPIScaled( #__tracksize )
+               *BB2\height = *BB1\height
                *SB\height  = *SB\size + ( Bool( *SB\size < 10 ) * *SB\size )
                
                *BB1\x     = *this\frame_x( )
@@ -8949,14 +8948,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *BB2\width = *this\frame_width( ) - *bar\thumb\pos - *bar\thumb\len
                
                If *bar\invert
-                  *BB1\y = *this\frame_y( ) + *this\frame_height( ) - *BB1\height - 6
-                  *BB2\y = *this\frame_y( ) + *this\frame_height( ) - *BB2\height - 6
-                  *SB\y  = *BB1\y - *SB\height / 2 + Bool( *SB\size > 10 )
+                 *BB1\y = *this\frame_y( ) + *this\frame_height( ) + DPIScaled(6) - *SB\size - 1
                Else
-                  *BB1\y = *this\frame_y( ) + 6
-                  *BB2\y = *this\frame_y( ) + 6
-                  *SB\y  = *BB1\y - *SB\height / 4 - 1 - Bool( *SB\size > 10 )
+                  *BB1\y = *this\frame_y( ) + DPIScaled(6)
                EndIf
+               
+               *BB2\y = *BB1\y
+               *SB\y  = *BB1\y - ( *SB\size - *BB1\height )/2
             EndIf
          EndIf
          
@@ -12797,11 +12795,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             ;*columns\index         = Position
             *columns\y     = 0
-            *columns\width = width
+            *columns\width = DPIScaled( width )
             *columns\text\TextChange( ) = 1
             *columns\text\string.s = Text.s
-            *columns\x = *this\text\padding\x + *this\scroll_width( )
-            *this\scroll_width( ) + width
+            *columns\x = (*this\text\padding\x + *this\scroll_width( ))
+            *this\scroll_width( ) + *columns\width
             
             ;\\
             ;*this\fs[2] = 24
@@ -13017,8 +13015,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure AddItem( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, flag.q = 0 )
          Protected result
          ;          
-         If DPIResolution( ) > 1.0 And IsImage( Image ) And ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
-           ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
+         If IsImage( Image )
+           If DPIResolution( ) = 2.0 And ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
+             ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
+           EndIf
          EndIf
          
          If *this\type = #__type_ListIcon
@@ -16580,8 +16580,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\type = #__type_TrackBar
                *this\color\back = - 1
                *BB1\color       = _get_colors_( )
-               *BB2\color       = _get_colors_( )
-               *SB\color        = _get_colors_( )
+               *BB2\color       = *BB1\color
+               *SB\color        = *BB1\color
                
                *this\bar\vertical = Bool( Flag & #__bar_vertical = #__bar_vertical Or
                                           Flag & #PB_TrackBar_Vertical = #PB_TrackBar_Vertical )
@@ -16599,15 +16599,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *SB\arrow\size = DPIScaled( #__arrow_size )
                *SB\arrow\type = DPIScaled( #__arrow_type )
                
-               *BB1\round = DPIScaled( 2 )
-               *BB2\round = DPIScaled( 2 )
+               *BB1\round = DPIScaled(2)
+               *BB2\round = *BB2\round
                *SB\round  = *this\round
                
-               If *this\round < 7
-                  *SB\size = DPIScaled( 9 )
+               If *this\round < DPIScaled(7)
+                  *SB\size = DPIScaled(9)
                Else
                  *SB\size = DPIScaled( #__buttonsize ) 
-                 *SB\size + Bool( Not *SB\size % 2)
+                 *SB\size - Bool( Not *SB\size % 2)
                EndIf
                
                ; button draw color
@@ -16758,9 +16758,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_ButtonImage Or
             *this\type = #__type_Button
             
-            Image = *param_1
-            set_image_( *this, *this\Image, Image )
-            set_image_( *this, *this\image[#__image_released], Image )
+           Image = *param_1
+           If DPIResolution( ) = 2.0 
+             If IsImage(Image)
+               ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
+             EndIf
+           EndIf
+           set_image_( *this, *this\Image, Image )
+           set_image_( *this, *this\image[#__image_released], Image )
             
             *this\image\align\left   = constants::_check_( *this\flag, #__image_left )
             *this\image\align\right  = constants::_check_( *this\flag, #__image_right )
@@ -24373,9 +24378,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12808
-; FirstLine = 12500
-; Folding = ---------------------------------------------844--------------------------------------------------------------------------------------------------------------------------tf------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 16763
+; FirstLine = 15898
+; Folding = ---------------------------------------------844--------------------------------------------------------------------------------------------------------------------------tf-----------------------------------------------------v-8-f---------------------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------+-004--l-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

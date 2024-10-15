@@ -60,7 +60,7 @@
       #__sublevelsize = 16
       
       #__scroll_border = 2
-      
+      #__tracksize = 4
       #__arrow_size = 4
       #__arrow_type = 1 ; ;-1 ;0 ;1
       
@@ -897,8 +897,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 48
+; CursorPosition = 57
+; FirstLine = 45
 ; Folding = ----
 ; EnableXP
 ; DPIAware

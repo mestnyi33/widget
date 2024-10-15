@@ -23,7 +23,6 @@ If vertical
       *g = Track(165, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #PB_TrackBar_Ticks)
       SetState(*g, 5)
       
-      
       WaitClose( )
    EndIf
 Else
@@ -46,8 +45,8 @@ Else
       WaitClose( )
    EndIf
 EndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 25
 ; Folding = -
 ; EnableXP
 ; DPIAware
