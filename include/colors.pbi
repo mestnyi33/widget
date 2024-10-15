@@ -152,115 +152,6 @@
   EndWith
   
   
-  ;- grey1 - (серые цвета)
-  With *this\grey1                          
-    \state = 0
-    \_alpha = 255
-    
-    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
-    
-    ; Цвета по умолчанию
-    \front[0] = $FF5B5B5B
-    \Fore[0] = $FFF6F6F6 
-    \Frame[0] = $FFBABABA
-    \Back[0] = $FFE2E2E2;$F0F0F0 
-    
-    ; Цвета если курсор на виджете
-    \front[1] = $FF5B5B5B
-    \Fore[1] = $FFEAEAEA
-    \Back[1] = $FFCECECE
-    \Frame[1] = $FF8F8F8F
-    
-    ; Цвета если нажали на виджет
-    \front[2] = $FFFFFFFF
-    \Fore[2] = $FFE2E2E2
-    \Back[2] = $FFB4B4B4
-    \Frame[2] = $FF6F6F6F
-    
-    ; Цвета если отключили виджет
-    \front[3] = $FFBABABA
-    \fore[3] = $FFF6F6F6 
-    \back[3] = $FFE2E2E2 
-    \frame[3] = $FFCECECE
- EndWith
- 
- ;
-  ;- grey2 - (серые цвета)
-  With *this\grey2                         
-    \state = 0
-    \_alpha = 255
-    
-    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
-    
-    ; - Серые цвета
-    ; Цвета по умолчанию
-    \front[0] = $ff000000
-    \fore[0] = $FFF6F6F6
-    \back[0] = $FFE8E8E8
-    \frame[0] = $FFBABABA
-    
-    ; Цвета если курсор на виджете
-    \front[1] = $ff000000
-    \fore[1] = $FFF2F2F2 
-    \back[1] = $FFDCDCDC 
-    \frame[1] = $FFB0B0B0 
-    
-    ; Цвета если нажали на виджет
-    \front[2] = $FFFEFEFE
-    \fore[2] = $FFE2E2E2
-    \back[2] = $FFB4B4B4
-    \frame[2] = $FF6F6F6F
-    
-    ;     ;- Серые цвета 
-    ;         ; Цвета по умолчанию
-    ;         \front[0] = $FF000000
-    ;         \fore[0] = $FFFCFCFC ; $FFF6F6F6 
-    ;         \back[0] = $FFE2E2E2 ; $FFE8E8E8 ; 
-    ;         \line[0] = $FFA3A3A3
-    ;         \frame[0] = $FFA5A5A5 ; $FFBABABA
-    ;         
-    ;         ; Цвета если мышь на виджете
-    ;         \front[1] = $FF000000
-    ;         \fore[1] = $FFF5F5F5 ; $FFF5F5F5 ; $FFEAEAEA
-    ;         \back[1] = $FFEAEAEA ; $FFCECECE ; 
-    ;         \line[1] = $FF5B5B5B
-    ;         \frame[1] = $FFCECECE ; $FF8F8F8F
-    ;         
-    ;         ; Цвета если нажали на виджет
-    ;         \front[2] = $FFFFFFFF
-    ;         \fore[2] = $FFE2E2E2
-    ;         \back[2] = $FFB4B4B4
-    ;         \line[2] = $FFFFFFFF
-    ;         \frame[2] = $FF6F6F6F
-    
-    ;     ;- Зеленые цвета
-    ;                 ; Цвета по умолчанию
-    ;                 \front[0] = $FF000000
-    ;                 \fore[0] = $FFFFFFFF
-    ;                 \back[0] = $FFDAFCE1  
-    ;                 \frame[0] = $FF6AFF70 
-    ;                 
-    ;                 ; Цвета если мышь на виджете
-    ;                 \front[1] = $FF000000
-    ;                 \fore[1] = $FFE7FFEC
-    ;                 \back[1] = $FFBCFFC5
-    ;                 \frame[1] = $FF46E064 ; $FF51AB50
-    ;                 
-    ;                 ; Цвета если нажали на виджет
-    ;                 \front[2] = $FFFEFEFE
-    ;                 \fore[2] = $FFC3FDB7
-    ;                 \back[2] = $FF00B002
-    ;                 \frame[2] = $FF23BE03
-    
-    ; Цвета если отключили виджет
-    \front[3] = $FFBABABA
-    \fore[3] = $FFF6F6F6 
-    \back[3] = $FFE2E2E2 
-    \frame[3] = $FFCECECE
-  EndWith
-  
-  
-  
 EndDeclareModule
 
 Module colors
@@ -287,6 +178,7 @@ EndModule
 ; CompilerEndSelect
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 191
+; CursorPosition = 152
+; FirstLine = 118
 ; Folding = -
 ; EnableXP

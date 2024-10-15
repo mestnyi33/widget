@@ -441,9 +441,9 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
             If is_window
-               a_set(*new, #__a_full, 14)
+               a_set(*new, #__a_full, DPIScaled(14))
             Else
-               a_set(*new, #__a_full, 10)
+               a_set(*new, #__a_full, DPIScaled(10))
             EndIf  
          Else
             a_set(*new, #__a_full)
@@ -1392,8 +1392,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1054
-; FirstLine = 1041
+; CursorPosition = 445
+; FirstLine = 434
 ; Folding = ----------------------
 ; EnableXP
 ; DPIAware

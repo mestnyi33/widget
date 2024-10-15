@@ -34,7 +34,7 @@ Module Cursor
     Protected image
     Protected x = 0
     Protected y = 0
-    Protected size = 16
+    Protected size = (16)
     Protected width = size
     Protected height = size
     Protected fcolor = $ffFFFFFF
@@ -137,6 +137,10 @@ Module Cursor
       EndIf
       
       StopDrawing( )
+    EndIf
+    
+    If DesktopResolutionX( ) = 2.0 And DesktopResolutionY( ) = 2.0
+      ResizeImage(Image, DesktopScaledY(width), DesktopScaledY(height), #PB_Image_Raw )
     EndIf
     
     ProcedureReturn Create( ImageID( image ), x, y )
@@ -426,7 +430,9 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5
-; Folding = 4-v------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 141
+; FirstLine = 122
+; Folding = --f------
 ; EnableXP
+; DPIAware
