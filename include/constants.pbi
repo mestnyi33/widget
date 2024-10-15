@@ -47,20 +47,20 @@
       ;
       ;\\ default values
       ;
-      CompilerIf #PB_Compiler_DPIAware And #PB_Compiler_OS = #PB_OS_Windows
-        #__splittersize = 15
-        #__splitterround = 4
-        
-        #__window_frame_size     =  8
-        #__window_caption_height = 48-6
-        #__draw_plus_size = 11
-        
-        #__buttonround = 15
-        #__buttonsize = 32-6
-        
-        #__sublevelsize = 25
-        #__arrow_size = 8
-      CompilerElse
+;       CompilerIf #PB_Compiler_DPIAware And #PB_Compiler_OS = #PB_OS_Windows
+;         #__splittersize = 15
+;         #__splitterround = 4
+;         
+;         #__window_frame_size     =  8
+;         #__window_caption_height = 48-6
+;         #__draw_plus_size = 11
+;         
+;         #__buttonround = 15
+;         #__buttonsize = 32-6
+;         
+;         #__sublevelsize = 25
+;         #__arrow_size = 8
+;       CompilerElse
         #__splittersize = 9
         #__splitterround = 2
         
@@ -73,7 +73,7 @@
         
         #__sublevelsize = 16
         #__arrow_size = 4
-      CompilerEndIf
+;       CompilerEndIf
     
       #__scroll_border = 2
       #__a_anchors_size = 7
@@ -911,7 +911,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 54
+; CursorPosition = 75
 ; FirstLine = 42
 ; Folding = ----
 ; EnableXP

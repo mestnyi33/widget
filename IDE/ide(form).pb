@@ -1397,3 +1397,4 @@ EndDataSection
 ; Folding = ----------------------
 ; EnableXP
 ; DPIAware
+; Executable = ..\widgets-ide.app.exe
