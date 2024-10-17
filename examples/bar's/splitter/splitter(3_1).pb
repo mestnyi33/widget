@@ -70,11 +70,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   SetGadgetState(3, -50)
-  SetGadgetState(6, len-50-#__splitter_buttonsize)
+  SetGadgetState(6, len-50-#__splittersize)
   SetGadgetState(31, 50)
   SetGadgetState(61, -50)
-  SetGadgetState(311, len/2- #__splitter_buttonsize)
-  SetGadgetState(611, len/2- #__splitter_buttonsize)
+  SetGadgetState(311, len/2- #__splittersize)
+  SetGadgetState(611, len/2- #__splittersize)
   
   
   ; first splitter
@@ -118,14 +118,14 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(s_10, len); -30)
   SetState(s_11, len)
   
-  SetState(s_0, -50)
-  SetState(s_1, len-50- #__splitter_buttonsize)
+  SetState(s_0, -50) ; #__splittersize
+  SetState(s_1, len-50- #__splittersize)
   
   SetState(s_3, 50)
   SetState(s_4, -50)
   
-  SetState(s_6, len/2- #__splitter_buttonsize)
-  SetState(s_7, len/2- #__splitter_buttonsize)
+  SetState(s_6, len/2- #__splittersize)
+  SetState(s_7, len/2- #__splittersize)
   
   Debug GetState(s_0)
   Debug GetState(s_1)
@@ -136,6 +136,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 120
+; FirstLine = 89
 ; Folding = -
 ; EnableXP
+; DPIAware

@@ -8,20 +8,20 @@ Procedure show_DEBUG( )
    Define line.s
    ;\\ 
    Debug "---->>"
-   ForEach __widgets( )
-      If __widgets( )\root = *root1
-         line = "  ";+ __widgets( )\class +" "
+   ForEach widgets( )
+      If widgets( )\root = *root1
+         line = "  ";+ widgets( )\class +" "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class ; __widgets( )\text\string
+         line + widgets( )\class ; widgets( )\text\string
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -33,20 +33,20 @@ Procedure show_DEBUG( )
    
    ;\\ 
    Debug "---->>"
-   ForEach __widgets( )
-      If __widgets( )\root = *root2
-         line = "  ";+ __widgets( )\class +" "
+   ForEach widgets( )
+      If widgets( )\root = *root2
+         line = "  ";+ widgets( )\class +" "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class ; __widgets( )\text\string
+         line + widgets( )\class ; widgets( )\text\string
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -58,7 +58,7 @@ Procedure show_DEBUG( )
 EndProcedure
 
 Procedure events_widgets()
-   Select WidgetEventType()
+   Select WidgetEvent()
       Case #__event_LeftClick
          If i 
             SetParent(*CHILD, *CONT2)
@@ -97,8 +97,9 @@ If Open(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCen
    
    WaitEvent( @events_widgets() )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 48
+; FirstLine = 27
 ; Folding = ---
 ; EnableXP
 ; DPIAware

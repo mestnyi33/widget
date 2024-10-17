@@ -72,21 +72,21 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    If object
-      Bind( object, @CustomEvents(), #__event_cursorchange )
+      Bind( object, @CustomEvents(), #__event_cursor )
       Bind( object, @CustomEvents(), #__event_statuschange )
       Bind( object, @CustomEvents(), #__event_resize )
    EndIf
    
    ;\\
    If object1
-      Bind( object1, @CustomEvents(), #__event_cursorchange )
+      Bind( object1, @CustomEvents(), #__event_cursor )
       Bind( object1, @CustomEvents(), #__event_statuschange )
       Bind( object1, @CustomEvents(), #__event_resize )
    EndIf
    
    ;\\
    If object2
-      Bind( object2, @CustomEvents(), #__event_cursorchange )
+      Bind( object2, @CustomEvents(), #__event_cursor )
       Bind( object2, @CustomEvents(), #__event_statuschange )
       Bind( object2, @CustomEvents(), #__event_resize )
    EndIf
@@ -96,9 +96,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Procedure CustomEvents( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
             
-         Case #__event_cursorchange
+         Case #__event_cursor
            ; Debug "cursorchange "
             
          Case #__event_statuschange
@@ -111,6 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 100
+; FirstLine = 91
 ; Folding = --
 ; EnableXP

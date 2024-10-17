@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global ._s_widget *w,*w1,*w2 ;
   
   Procedure Events()
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_LeftClick
         
         Select GetText( EventWidget( ) )
@@ -141,8 +141,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 137
-; FirstLine = 78
-; Folding = 0-
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 12
+; FirstLine = 8
+; Folding = --
 ; EnableXP

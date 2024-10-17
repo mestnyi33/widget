@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global x=100,y=100, width=420, height=420 , focus
   
   Procedure ScrollBars_ChangeEvents( )
-     Debug " ---- " + ClassFromEvent( WidgetEventType( ))
+     Debug " ---- " + ClassFromEvent( WidgetEvent( ))
   EndProcedure
   
   
@@ -51,8 +51,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 45
-; FirstLine = 18
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

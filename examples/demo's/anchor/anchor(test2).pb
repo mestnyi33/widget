@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   Procedure CustomEvents( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_draw
         
         ; Demo draw on element
@@ -77,8 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 15
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 38
 ; Folding = -
 ; EnableXP

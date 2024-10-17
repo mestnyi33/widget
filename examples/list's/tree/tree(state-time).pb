@@ -86,7 +86,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   TreeGadget_(10, 10, 170, 250, 520);, #PB_Tree_NoButtons|#PB_Tree_NoLines)
   
   Open(0, 270, 170, 250, 520);, "", #__flag_borderless)
-  *w=Tree(0, 0, 250, 520, #__Flag_GridLines|#__tree_collapse);|#__Tree_NoButtons|#__Tree_NoLines)  ; |#PB_Flag_MultiSelect
+  *w=Tree(0, 0, 250, 520, #__Flag_GridLines|#__flag_collapsed);|#__Tree_NoButtons|#__Tree_NoLines)  ; |#PB_Flag_MultiSelect
                                             ;
                                             ;-
                                             ;
@@ -137,8 +137,9 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 55
-; FirstLine = 52
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 88
+; FirstLine = 84
 ; Folding = --
 ; EnableXP
+; DPIAware

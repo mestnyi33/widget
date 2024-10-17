@@ -337,7 +337,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure events_scrolls()
-      Select WidgetEventType( ) ;   this()\event ; 
+      Select WidgetEvent( ) ;   this()\event ; 
          Case #PB_EventType_Change
             If EventWidget( )\bar\vertical
                PushListPosition(Images())
@@ -388,8 +388,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;  Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 201
-; FirstLine = 137
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 339
+; FirstLine = 290
 ; Folding = 8------0---
 ; EnableXP

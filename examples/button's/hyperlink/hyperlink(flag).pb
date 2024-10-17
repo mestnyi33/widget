@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag, EventWidget = EventWidget( )
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_LeftClick
         Select EventWidget
           Case *this
@@ -239,12 +239,14 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\
     SetState(Splitter_0, pos)
     SetState(Splitter_1, pos)
-    SetState(Splitter_3, width - pos - #__splitter_buttonsize)
-    SetState(Splitter_2, height - pos - #__splitter_buttonsize)
+    SetState(Splitter_3, width - pos - #__splittersize)
+    SetState(Splitter_2, height - pos - #__splittersize)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 242
+; FirstLine = 226
 ; Folding = ----
 ; EnableXP

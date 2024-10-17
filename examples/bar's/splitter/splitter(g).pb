@@ -49,15 +49,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter_4 = widget::Splitter(430, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
       CloseCanvas( )
       
-;       SetState(Splitter_0, Width(Splitter_0)/2-5)
-;       SetState(Splitter_1, Width(Splitter_1)/2-5)
+;       SetState(Splitter_0, WidgetWidth(Splitter_0)/2-5)
+;       SetState(Splitter_1, WidgetWidth(Splitter_1)/2-5)
      
     WaitClose( )
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 17
-; FirstLine = 10
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 50
 ; Folding = -
 ; EnableXP

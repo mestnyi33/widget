@@ -99,7 +99,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Procedure toolbar_events()
 ;     Protected *this._s_widget
-;     Protected e_type = WidgetEventType( )
+;     Protected e_type = WidgetEvent( )
 ;     Protected e_item ;= this()\item
 ;     Protected e_widget = EventWidget( )
 ;     
@@ -310,8 +310,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 198
-; FirstLine = 195
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 101
+; FirstLine = 97
 ; Folding = --
 ; EnableXP

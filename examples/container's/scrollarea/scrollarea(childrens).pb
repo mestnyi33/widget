@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global show, ev, *g._s_widget, *b, i, time, Sw = 350, Sh = 300, wcount=1000
   
   Procedure events_widgets()
-    Debug ""+EventWidget()+ " - widget event - " +WidgetEventType()
+    Debug ""+EventWidget()+ " - widget event - " +WidgetEvent()
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -52,7 +52,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until ev = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 5
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 8
+; FirstLine = 4
 ; Folding = --
 ; EnableXP

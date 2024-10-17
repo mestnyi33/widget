@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_tree_widget()
     ;Debug " widget - "+EventWidget( )+" "+this()\event
     Protected EventGadget = EventWidget( )
-    Protected EventType = WidgetEventType( )
+    Protected EventType = WidgetEvent( )
     Protected EventData; = this()\data
     Protected EventItem = GetState(EventGadget)
     
@@ -64,42 +64,42 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
     ;;ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
-    Protected handle, *last._s_rows, *parent._s_rows
+    Protected handle, *last._s_ROWS, *parent._s_ROWS
     ; sublevel + 1
     
     ;With *this
     If *this
       ;{ Генерируем идентификатор
-      If position < 0 Or position > ListSize( *this\_rows( ) ) - 1
-        If LastElement( *this\_rows( ) )
-          ;;*this\row\last = *this\_rows( )
+      If position < 0 Or position > ListSize( *this\__items( ) ) - 1
+        If LastElement( *this\__items( ) )
+          ;;*this\row\last = *this\__items( )
         EndIf
-        handle = AddElement( *this\_rows( ) ) 
+        handle = AddElement( *this\__items( ) ) 
         ;If position < 0 
-          position = ListIndex( *this\_rows( ) )
+          position = ListIndex( *this\__items( ) )
         ;EndIf
       Else
-        handle = SelectElement( *this\_rows( ), position )
+        handle = SelectElement( *this\__items( ), position )
         ; for the tree( )
-        If sublevel > *this\_rows( )\sublevel
-          PushListPosition( *this\_rows( ) )
-          If PreviousElement( *this\_rows( ) )
-            *this\row\last = *this\_rows( )
-            ;; NextElement( *this\_rows( ) )
+        If sublevel > *this\__items( )\sublevel
+          PushListPosition( *this\__items( ) )
+          If PreviousElement( *this\__items( ) )
+            *this\row\last = *this\__items( )
+            ;; NextElement( *this\__items( ) )
           Else
             *last = *this\row\last
-            sublevel = *this\_rows( )\sublevel
+            sublevel = *this\__items( )\sublevel
           EndIf
-          PopListPosition( *this\_rows( ) )
+          PopListPosition( *this\__items( ) )
 ; ;           If *last = *this\row\last
-; ;             sublevel = *this\_rows( )\sublevel
+; ;             sublevel = *this\__items( )\sublevel
 ; ;           EndIf
         Else
           *last = *this\row\last
-          sublevel = *this\_rows( )\sublevel
+          sublevel = *this\__items( )\sublevel
         EndIf
         
-        handle = InsertElement( *this\_rows( ) )
+        handle = InsertElement( *this\__items( ) )
       EndIf
       ;}
       
@@ -139,9 +139,9 @@ CompilerIf #PB_Compiler_IsMainFile
                 If *this\row\last\parent\sublevel = sublevel 
 ; ;                   *last = *this\row\last\parent
 ; ;                   *parent = *this\row\last\parent
-; ; ;                   *parent\last = *this\_rows( )
+; ; ;                   *parent\last = *this\__items( )
 ; ;                    *this\row\last = *parent
-                  *this\row\last\parent\after = *this\_rows( )
+                  *this\row\last\parent\after = *this\__items( )
                   ;*this\row\last = *parent
                   Debug Text
                 EndIf
@@ -151,12 +151,12 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-        *this\_rows( )\parent = *parent
+        *this\__items( )\parent = *parent
         
         If *last
          ; *this\row\last = *last
         Else
-          *this\row\last = *this\_rows( )
+          *this\row\last = *this\__items( )
         EndIf
         
         ; for the tree( )
@@ -168,29 +168,29 @@ CompilerIf #PB_Compiler_IsMainFile
         If sublevel = 0
           If *this\row\first 
             If *this\row\first\first
-              *this\_rows( )\first = *this\row\first\first
+              *this\__items( )\first = *this\row\first\first
             EndIf
-            *this\row\first\first = *this\_rows( )
+            *this\row\first\first = *this\__items( )
           EndIf
         EndIf
         
         If position = 0
-          *this\row\first = *this\_rows( )
+          *this\row\first = *this\__items( )
         EndIf
         
-        *this\_rows( )\sublevel = sublevel
+        *this\__items( )\sublevel = sublevel
         
         ; add lines
-        *this\_rows( )\index = ListIndex( *this\_rows( ) )
-        *this\_rows( )\color = _get_colors_( )
-        *this\_rows( )\color\state = 0
-        *this\_rows( )\color\back = 0 
-        *this\_rows( )\color\frame = 0
+        *this\__items( )\index = ListIndex( *this\__items( ) )
+        *this\__items( )\color = _get_colors_( )
+        *this\__items( )\color\state = 0
+        *this\__items( )\color\back = 0 
+        *this\__items( )\color\frame = 0
         
         If Text
-          *this\_rows( )\text\change = 1
-          *this\_rows( )\text\string = StringField( Text.s, 1, #LF$ )
-          *this\_rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+          *this\__items( )\text\change = 1
+          *this\__items( )\text\string = StringField( Text.s, 1, #LF$ )
+          *this\__items( )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
         *this\count\items + 1
@@ -251,7 +251,7 @@ CompilerIf #PB_Compiler_IsMainFile
     add(*g, 4, "Sub-Item 4", -1, 4)
     
     ;{  5_example
-    *g5 = Tree(230, 10, 103, 210, #__Tree_NoButtons|#__tree_Collapse)                                         
+    *g5 = Tree(230, 10, 103, 210, #__Tree_NoButtons|#__flag_collapsed)                                         
     add(*g5, 0, "Tree_0", -1 )
     add(*g5, 1, "Tree_1", -1, 0) 
     add(*g5, 2, "Tree_2", -1, 0) 
@@ -275,7 +275,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 10, 103, 210, #__flag_BorderLess|#__tree_Collapse)                                         
+    *g6 = Tree(341, 10, 103, 210, #__flag_BorderLess|#__flag_collapsed)                                         
     
     add(*g6, 0, "Tree_1", -1, 1) 
     add(*g6, 0, "Tree_2_1", -1, 2) 
@@ -296,7 +296,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
        ;  2_example
-    *g = Tree(450, 10, 210, 210);|#__tree_Collapsed)                                         
+    *g = Tree(450, 10, 210, 210);|#__flag_collapsedd)                                         
     add(*g, 0, "Tree_0", -1 )
     add(*g, 1, "Tree_1_1", 0, 1) 
     add(*g, 4, "Tree_1_1_1", -1, 2) 
@@ -317,7 +317,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 10, 210, 210, #__tree_NoLines);|#__tree_OptionBoxes|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 10, 210, 210, #__tree_NoLines);|#__flag_optionboxes|#__tree_NoButtons) ;                                        
         add(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
         add(*g, 1, "Tree_1", -1, 1) 
         add(*g, 2, "Tree_2_2", -1, 2) 
@@ -344,7 +344,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 10, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+    *g = Tree(890, 10, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_optionboxes)                            
     add(*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 ;Or i%3=0
@@ -378,7 +378,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;   Open(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ; ; ; ;   
 ; ; ; ;   g = 11
-    *g = Tree(10, 230, 210, 400);|#__tree_Collapsed)                                         
+    *g = Tree(10, 230, 210, 400);|#__flag_collapsedd)                                         
   
     ;  2_example
     add(*g, 0, "Structure widget", -1, 0)
@@ -475,6 +475,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 380
+; FirstLine = 363
 ; Folding = -------
 ; EnableXP
+; DPIAware

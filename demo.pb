@@ -12,20 +12,20 @@ test_draw_contex = 0
 Global i, *test._s_widget
 
 Procedure events( )
-   Protected event = __event( ) ; *event\type ; events( ) ; GetEvent( )
+   Protected event = WidgetEvent( )
    Protected *this._s_widget = EventWidget( )
    
    ;\\
    If event = #__event_MouseEnter
       If *this\parent
-         Debug " -enter- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEvent( )\data
+         Debug " -enter- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEventData( )
       EndIf
    EndIf
    
    ;\\
    If event = #__event_MouseLeave
       If *this\parent
-         Debug " -leave- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEvent( )\data
+         Debug " -leave- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEventData( )
       EndIf
    EndIf
 EndProcedure
@@ -130,9 +130,9 @@ EndIf
 CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 42
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
 ; DPIAware

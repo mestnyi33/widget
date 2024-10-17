@@ -41,54 +41,54 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   Debug "POSITION (x&y)"
   Debug "window "
-  Debug "  screen - "+ x(*w, #__c_screen)
-  Debug "  frame - "+ x(*w, #__c_frame)
-  Debug "  inner - "+ x(*w, #__c_inner)
-  Debug "  container - "+ x(*w, #__c_container)
-  Debug "  required - "+ x(*w, #__c_required)
-  Debug "  window - "+ x(*w, #__c_window)
-  Debug "  draw - "+ x(*w, #__c_draw)
+  Debug "  screen - "+ WidgetX(*w, #__c_screen)
+  Debug "  frame - "+ WidgetX(*w, #__c_frame)
+  Debug "  inner - "+ WidgetX(*w, #__c_inner)
+  Debug "  container - "+ WidgetX(*w, #__c_container)
+  Debug "  required - "+ WidgetX(*w, #__c_required)
+  Debug "  window - "+ WidgetX(*w, #__c_window)
+  Debug "  draw - "+ WidgetX(*w, #__c_draw)
   Debug ""
   Debug "button "
-  Debug "  screen - "+ x(*button, #__c_screen)
-  Debug "  frame - "+ x(*button, #__c_frame)
-  Debug "  inner - "+ x(*button, #__c_inner)
-  Debug "  container - "+ x(*button, #__c_container)
-  Debug "  required - "+ x(*button, #__c_required)
-  Debug "  window - "+ x(*button, #__c_window)
-  Debug "  draw - "+ x(*button, #__c_draw)
+  Debug "  screen - "+ WidgetX(*button, #__c_screen)
+  Debug "  frame - "+ WidgetX(*button, #__c_frame)
+  Debug "  inner - "+ WidgetX(*button, #__c_inner)
+  Debug "  container - "+ WidgetX(*button, #__c_container)
+  Debug "  required - "+ WidgetX(*button, #__c_required)
+  Debug "  window - "+ WidgetX(*button, #__c_window)
+  Debug "  draw - "+ WidgetX(*button, #__c_draw)
   Debug ""
   Debug "scrollarea "
-  Debug "  screen - "+ x(*scrollarea, #__c_screen)
-  Debug "  frame - "+ x(*scrollarea, #__c_frame)
-  Debug "  inner - "+ x(*scrollarea, #__c_inner)
-  Debug "  container - "+ x(*scrollarea, #__c_container)
-  Debug "  required - "+ x(*scrollarea, #__c_required)
-  Debug "  window - "+ x(*scrollarea, #__c_window)
-  Debug "  draw - "+ x(*scrollarea, #__c_draw)
+  Debug "  screen - "+ WidgetX(*scrollarea, #__c_screen)
+  Debug "  frame - "+ WidgetX(*scrollarea, #__c_frame)
+  Debug "  inner - "+ WidgetX(*scrollarea, #__c_inner)
+  Debug "  container - "+ WidgetX(*scrollarea, #__c_container)
+  Debug "  required - "+ WidgetX(*scrollarea, #__c_required)
+  Debug "  window - "+ WidgetX(*scrollarea, #__c_window)
+  Debug "  draw - "+ WidgetX(*scrollarea, #__c_draw)
   Debug ""
   
   Debug "SIZE (width&height)"
   Debug "window "
-  Debug "  frame - "+ width(*w, #__c_frame)
-  Debug "  inner - "+ width(*w, #__c_inner)
-  Debug "  container - "+ width(*w, #__c_container)
-  Debug "  required - "+ width(*w, #__c_required)
-  Debug "  draw - "+ width(*w, #__c_draw)
+  Debug "  frame - "+ WidgetWidth(*w, #__c_frame)
+  Debug "  inner - "+ WidgetWidth(*w, #__c_inner)
+  Debug "  container - "+ WidgetWidth(*w, #__c_container)
+  Debug "  required - "+ WidgetWidth(*w, #__c_required)
+  Debug "  draw - "+ WidgetWidth(*w, #__c_draw)
   Debug ""
   Debug "button "
-  Debug "  frame - "+ width(*button, #__c_frame)
-  Debug "  inner - "+ width(*button, #__c_inner)
-  Debug "  container - "+ width(*button, #__c_container)
-  Debug "  required - "+ width(*button, #__c_required)
-  Debug "  draw - "+ width(*button, #__c_draw)
+  Debug "  frame - "+ WidgetWidth(*button, #__c_frame)
+  Debug "  inner - "+ WidgetWidth(*button, #__c_inner)
+  Debug "  container - "+ WidgetWidth(*button, #__c_container)
+  Debug "  required - "+ WidgetWidth(*button, #__c_required)
+  Debug "  draw - "+ WidgetWidth(*button, #__c_draw)
   Debug ""
   Debug "scrollarea "
-  Debug "  frame - "+ width(*scrollarea, #__c_frame)
-  Debug "  inner - "+ width(*scrollarea, #__c_inner)
-  Debug "  container - "+ width(*scrollarea, #__c_container)
-  Debug "  required - "+ width(*scrollarea, #__c_required)
-  Debug "  draw - "+ width(*scrollarea, #__c_draw)
+  Debug "  frame - "+ WidgetWidth(*scrollarea, #__c_frame)
+  Debug "  inner - "+ WidgetWidth(*scrollarea, #__c_inner)
+  Debug "  container - "+ WidgetWidth(*scrollarea, #__c_container)
+  Debug "  required - "+ WidgetWidth(*scrollarea, #__c_required)
+  Debug "  draw - "+ WidgetWidth(*scrollarea, #__c_draw)
   Debug ""
   
   Debug "----------"
@@ -104,9 +104,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 18
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 90
+; FirstLine = 87
 ; Folding = -
 ; EnableXP
 ; DPIAware

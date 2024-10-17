@@ -57,10 +57,10 @@
   
   ;\\
   Procedure CustomEvents( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
           
        Case #__event_statuschange
-          If EventWidget( )\show
+          If EventWidget( )\hide=0;show
              Debug "statuschange "
           EndIf
           
@@ -72,6 +72,9 @@
  
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 49
 ; Folding = -
 ; EnableXP
+; DPIAware

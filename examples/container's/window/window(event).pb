@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Protected text$ = "disable"
       EndIf
             
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_Create
             Debug ""
             Debug text$ + " create - event " + EventWidget( )\class
@@ -88,8 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitEvent( #PB_All, @CallBack( ) )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9
-; FirstLine = 4
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = -
 ; EnableXP

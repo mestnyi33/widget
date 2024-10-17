@@ -70,7 +70,7 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Select WidgetEventType( )
+  Select WidgetEvent( )
       ;     Case #__event_Up
       ;       Debug  ""+IDWidget(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
       ;       
@@ -198,9 +198,9 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 74
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 68
 ; Folding = --
 ; EnableXP
 ; DPIAware

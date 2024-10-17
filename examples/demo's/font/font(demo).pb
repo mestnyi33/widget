@@ -48,7 +48,7 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Debug ""+Str(IDWidget(EventWidget( )))+ " - widget  event - " +WidgetEvent( )\type+ "  item - " +WidgetEvent( )\item ; GetState(EventWidget( )) ; 
+  Debug ""+Str(IDWidget(EventWidget( )))+ " - widget  event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(EventWidget( )) ; 
 EndProcedure
 
 Procedure events_gbuttons()
@@ -82,7 +82,7 @@ Procedure events_gbuttons()
 EndProcedure
 
 Procedure events_wbuttons()
-  Select WidgetEvent( )\type
+  Select WidgetEvent( )
     Case #PB_EventType_LeftClick
       Select IDWidget(EventWidget( ))
         Case 2 
@@ -273,9 +273,9 @@ If Open(0, 322+50, 0, 322+50, 220)
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 185
-; FirstLine = 181
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 84
+; FirstLine = 73
 ; Folding = ----
 ; EnableXP
 ; DPIAware

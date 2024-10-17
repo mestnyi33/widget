@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
      Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
      
-     Select WidgetEventType( )
+     Select WidgetEvent( )
         Case #__event_StatusChange
            
 ;         Case #__event_Focus;, #__event_LostFocus
@@ -58,10 +58,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;              ; SetItemState(*second, GetItem( *first )\index , GetItemState(*first, GetItem( *first )\index  ) )
 ; ;            EndIf
 ;           Debug 333
-;           If *first\FocusedRow( )
+;           If *first\RowFocused( )
 ;              Debug 222
-;              SelectElement(*second\__items( ), *first\FocusedRow( )\index)
-;               *second\__items( )\color = *first\FocusedRow( )\color
+;              SelectElement(*second\__items( ), *first\RowFocused( )\index)
+;               *second\__items( )\color = *first\RowFocused( )\color
 ;            EndIf
 ; ;            If *first\RowEntered( )
 ; ;               SelectElement(*second\__items( ), *first\RowEntered( )\index)
@@ -70,11 +70,11 @@ CompilerIf #PB_Compiler_IsMainFile
            
         Case #__event_StatusChange
            If *first\RowLeaved( )
-              SelectElement(*second\__items( ), *first\RowLeaved( )\index)
+              SelectElement(*second\__items( ), *first\RowLeaved( )\_index)
               *second\__items( )\color = *first\RowLeaved( )\color
            EndIf
            If *first\RowEntered( )
-              SelectElement(*second\__items( ), *first\RowEntered( )\index)
+              SelectElement(*second\__items( ), *first\RowEntered( )\_index)
               *second\__items( )\color = *first\RowEntered( )\color
               
               ; CopyStructure( *first\__items( )\color, *second\__items( )\color, _s_COLOR )
@@ -84,11 +84,11 @@ CompilerIf #PB_Compiler_IsMainFile
            Debug 7788888
            
            If *second\RowLeaved( )
-              SelectElement(*first\__items( ), *second\RowLeaved( )\index)
+              SelectElement(*first\__items( ), *second\RowLeaved( )\_index)
               *first\__items( )\color = *second\RowLeaved( )\color
            EndIf
            If *second\RowEntered( )
-              SelectElement(*first\__items( ), *second\RowEntered( )\index)
+              SelectElement(*first\__items( ), *second\RowEntered( )\_index)
               *first\__items( )\color = *second\RowEntered( )\color
            EndIf
            
@@ -169,8 +169,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 48
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 58
 ; Folding = --
 ; EnableXP

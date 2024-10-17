@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global *progress, *scroll, *track, *splitter, *spin, *bar
    
    Procedure events_widgets()
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_Change
             Protected state = GetState(*bar)
             Debug "#PB_EventType_Change "+state
@@ -101,8 +101,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 89
-; FirstLine = 74
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = --
 ; EnableXP

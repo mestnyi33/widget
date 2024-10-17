@@ -35,13 +35,13 @@ CompilerIf #PB_Compiler_IsMainFile
   MoveBounds(object, fs, fs, 501-fs, 501-fs)
   
   ;\\
-  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  Bind( widget( ), @CustomEvents(), #__event_Draw )
   WaitClose( )
   
   ;\\
   Procedure CustomEvents( )
-    Select WidgetEventType( )
-      Case #PB_EventType_Draw
+    Select WidgetEvent( )
+      Case #__event_Draw
         
         ; Demo draw on element
         UnclipOutput()
@@ -77,6 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 43
+; FirstLine = 33
 ; Folding = -
 ; EnableXP

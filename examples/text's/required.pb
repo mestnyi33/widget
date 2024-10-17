@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       *widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
       
-      Define widget_required_size = Height( *widget, #__c_Required )
+      Define widget_required_size = WidgetHeight( *widget, #__c_Required )
       Define gadget_required_size = GadgetHeight( *gadget, #PB_Gadget_RequiredSize )
       
       Debug ""+ gadget_required_size +" "+ widget_required_size
@@ -28,8 +28,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
-; FirstLine = 6
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 20
+; FirstLine = 20
 ; Folding = -
 ; EnableXP

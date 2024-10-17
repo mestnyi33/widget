@@ -30,11 +30,11 @@ Structure _s_struct
   event._s_event_data
 EndStructure
 
-Macro EventWidget( ) : *canvas\widget: EndMacro
-Macro WidgetEvent( ) : *canvas\event: EndMacro
-Macro WidgetEventType( ) : WidgetEvent( )\type: EndMacro
-Macro WidgetEventItem( ) : WidgetEvent( )\item: EndMacro
-Macro WidgetEventData( ) : WidgetEvent( )\data: EndMacro
+;Macro EventWidget( ) : *canvas\widget: EndMacro
+;Macro WidgetEvent( ) : *canvas\event: EndMacro
+;Macro WidgetEvent( ) : WidgetEvent( ): EndMacro
+;Macro WidgetEventItem( ) : WidgetEventItem( ): EndMacro
+;Macro WidgetEventData( ) : WidgetEventData( ): EndMacro
 
 Macro InitFunction( ) : *canvas\function : EndMacro
 Macro CallFunction( ) : InitFunction( )( ) : EndMacro
@@ -58,7 +58,7 @@ Enumeration #PB_EventType_FirstCustomValue
       
       #PB_EventType_ResizeEnd
       
-      #PB_EventType_Draw
+      #__event_Draw
       #PB_EventType_Free         
       #PB_EventType_Create
       #PB_EventType_Drop
@@ -84,7 +84,7 @@ Procedure  UnPostWidgetEvent( *widget._s_WIDGET )
           If *widget\event\call( )\type = #PB_All Or  
              *widget\event\call( )\type = *widget\event\queue( )
             
-            WidgetEvent( )\type = *widget\event\queue( )
+            WidgetEvent( ) = *widget\event\queue( )
             InitFunction( ) = *widget\event\call( )\back
             
             If CallFunction( )
@@ -132,7 +132,7 @@ Procedure PostWidgetEvent( *widget._s_WIDGET, eventtype.l, *button = #PB_All, *d
         If *widget\event\call( )\type = #PB_All Or  
            *widget\event\call( )\type = eventtype
           
-          WidgetEvent( )\type = eventtype
+          WidgetEvent( ) = eventtype
           InitFunction( ) = *widget\event\call( )\back
           
           If CallFunction( )
@@ -147,7 +147,7 @@ Procedure PostWidgetEvent( *widget._s_WIDGET, eventtype.l, *button = #PB_All, *d
     EndIf
     
     EventWidget( ) = #Null
-    WidgetEvent( )\type = #PB_All
+    WidgetEvent( ) = #PB_All
     
     ; 2)
     ; 3)
@@ -159,15 +159,15 @@ PostWidgetEvent( widget_2, #PB_EventType_Create )
 
 ; 1)
 Procedure create_event( )
-  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )\type
+  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )
 EndProcedure
 
 Procedure enter_event( )
-  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )\type
+  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )
 EndProcedure
 
 Procedure leave_event( )
-  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )\type
+  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )
 EndProcedure
 
 BindWidgetEvent( widget_1, @create_event(), #PB_EventType_Create )
@@ -180,7 +180,7 @@ BindWidgetEvent( widget_2, @leave_event(), #PB_EventType_MouseLeave )
 
 ; 2)
 Procedure el_event( )
-  Debug "      "+#PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )\type
+  Debug "      "+#PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )
 EndProcedure
 
 BindWidgetEvent( widget_1, @el_event(), #PB_EventType_Create )
@@ -193,7 +193,7 @@ BindWidgetEvent( widget_2, @el_event(), #PB_EventType_MouseLeave )
 
 ; 3)
 Procedure all_event()
-  Debug "              "+#PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )\type
+  Debug "              "+#PB_Compiler_Procedure +" "+ EventWidget( )\index +" "+ WidgetEvent( )
 EndProcedure
 
 BindWidgetEvent( widget_1, @all_event(), #PB_All )
@@ -248,7 +248,7 @@ UnPostWidgetEvent( widget_2 )
 ; #PB_EventType_ReturnKey
 ; #PB_EventType_ResizeEnd
 ; 
-; #PB_EventType_Draw
+; #__event_Draw
 ; #PB_EventType_Free         
 ; #PB_EventType_Create
 ; #PB_EventType_Drop
@@ -310,9 +310,12 @@ UnPostWidgetEvent( widget_2 )
 ; 
 ; #PB_EventType_MouseWheelX
 ; #PB_EventType_MouseWheelY
-; #PB_EventType_Draw
+; #__event_Draw
 
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 21
 ; Folding = ------
 ; EnableXP
+; DPIAware

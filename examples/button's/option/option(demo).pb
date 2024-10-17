@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure events_widgets( )
-      Protected event = WidgetEventType( )
+      Protected event = WidgetEvent( )
       Debug ""+event+ " - event widget - " +Str(Index(EventWidget( ))) ;+ " state - "+ GetState(EventWidget( )) ; 
       
       Select event
@@ -65,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 31
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 19
+; FirstLine = 15
 ; Folding = --
 ; EnableXP

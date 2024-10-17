@@ -33,9 +33,8 @@ Repeat
    EndIf
 Until event = #PB_Event_CloseWindow
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 5
+; IDE Options = PureBasic 4.61 (Windows - x64)
+; CursorPosition = 28
 ; Folding = -
 ; EnableXP
 ; DPIAware

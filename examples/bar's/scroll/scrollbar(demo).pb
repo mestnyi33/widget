@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure events_widgets()
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_Change
             SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
             Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
@@ -58,8 +58,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 17
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 19
+; FirstLine = 15
 ; Folding = --
 ; EnableXP
+; DPIAware

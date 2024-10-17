@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag, EventWidget = EventWidget( )
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_LeftClick
         Select EventWidget
           Case *this
@@ -209,7 +209,7 @@ CompilerIf #PB_Compiler_IsMainFile
     button_invert    = widget::Button(width + 45, y + bh * 10, 100, 26, "invert", #PB_Button_Toggle)
     
 ;     ; flag
-;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_OptionBoxes | #__tree_CheckBoxes | #__Tree_threestate)
+;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__flag_optionboxes | #__tree_CheckBoxes | #__Tree_threestate)
 ;     AddItem(tree, #tree_item_default, "default")
 ;     AddItem(tree, #tree_item_multiline, "multiline")
 ;     AddItem(tree, #tree_item_text, "text alignment", -1, 0)
@@ -238,12 +238,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\
     SetState(Splitter_0, pos)
     SetState(Splitter_1, pos)
-    SetState(Splitter_3, width - pos - #__splitter_buttonsize)
-    SetState(Splitter_2, height - pos - #__splitter_buttonsize)
+    SetState(Splitter_3, width - pos - #__splittersize)
+    SetState(Splitter_2, height - pos - #__splittersize)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 241
+; FirstLine = 225
 ; Folding = ----
 ; EnableXP
+; DPIAware

@@ -14,9 +14,9 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  ; Debug "event - "+WidgetEvent( )\type+ " widget - " + Str(EventWidget( )\index - 1)
+  ; Debug "event - "+WidgetEvent( )+ " widget - " + Str(EventWidget( )\index - 1)
   
-  Select WidgetEvent( )\type
+  Select WidgetEvent( )
     Case #__event_Focus
       Debug Str(EventWidget( )\index)+ " - widget focus"
     Case #__event_LostFocus
@@ -26,7 +26,7 @@ Procedure events_widgets()
 EndProcedure
 
 Procedure events_buttons()
-  Select WidgetEvent( )\type
+  Select WidgetEvent( )
     Case #__event_LeftClick
       ; Debug "click widget - " + Str(EventWidget( )\index - 1)
       
@@ -85,9 +85,9 @@ If Open(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Wi
     EndIf
   Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 44
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 28
+; FirstLine = 12
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -4,7 +4,7 @@ EnableExplicit
 Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, w_type
 
 Procedure events_widgets()
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #PB_EventType_Change
       Select EventWidget( )
         Case w_type
@@ -12,8 +12,8 @@ Procedure events_widgets()
         Case Button_2
           EventWidget( ) = Button_1
           EventWidget( )\round = GetState(Button_2)
-          EventWidget( )\bar\button[#__b_1]\round = EventWidget( )\round
-          EventWidget( )\bar\button[#__b_2]\round = EventWidget( )\round
+          EventWidget( )\bar\button[1]\round = EventWidget( )\round
+          EventWidget( )\bar\button[2]\round = EventWidget( )\round
           
         Case Button_3
           SetState(Button_1, GetState(Button_3))
@@ -21,8 +21,8 @@ Procedure events_widgets()
         Case Button_4
           EventWidget( ) = Button_0
           EventWidget( )\round = GetState(Button_4)
-          EventWidget( )\bar\button[#__b_1]\round = EventWidget( )\round
-          EventWidget( )\bar\button[#__b_2]\round = EventWidget( )\round
+          EventWidget( )\bar\button[1]\round = EventWidget( )\round
+          EventWidget( )\bar\button[2]\round = EventWidget( )\round
           
         Case Button_5
           SetState(Button_0, GetState(Button_5))
@@ -67,6 +67,9 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   SetState(Splitter_0, 189)
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 24
+; FirstLine = 19
 ; Folding = -
 ; EnableXP
+; DPIAware

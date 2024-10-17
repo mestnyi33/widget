@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   SplitterGadget(30,125, 10, 250, 150, 15, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator | #PB_Splitter_Vertical)
   ;   SetGadgetState(30, 250)
   
-  SetGadgetState(15, 250-30-#__splitter_buttonsize)
+  SetGadgetState(15, 250-30-#__splittersize)
   SetGadgetState(13, 30)
   
   
@@ -137,8 +137,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   widget::SetState(w_13, 30)
   ;Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
-  ;widget::SetState(w_15, 250-30-#__splitter_buttonsize)
-  widget::SetState(w_15, 250-30-#__splitter_buttonsize)
+  ;widget::SetState(w_15, 250-30-#__splittersize)
+  widget::SetState(w_15, 250-30-#__splittersize)
   
   
   
@@ -161,8 +161,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 138
-; FirstLine = 129
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 140
+; FirstLine = 120
 ; Folding = ---
 ; EnableXP
+; DPIAware

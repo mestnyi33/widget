@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Select WidgetEventType()
+    Select WidgetEvent()
 ;       Case #__event_Focus
 ;         Debug  ""+IDWidget(EventWidget())+" - widget focus "+GetState(EventWidget())
 ;       Case #__event_LostFocus
@@ -128,7 +128,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_Drop
         If *w3 = EventWidget()
           Debug  ""+IDWidget(EventWidget())+" - widget Drop "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropText( )
-          AddItem( *w3, EventWidget( )\RowEntered( )\index + 1, EventDropText( ) )
+          AddItem( *w3, EventWidget( )\RowEntered( )\_index + 1, EventDropText( ) )
           SetActive( *w3 )
         EndIf
       
@@ -264,9 +264,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 78
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 130
+; FirstLine = 75
 ; Folding = V--
 ; EnableXP
 ; DPIAware

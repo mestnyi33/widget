@@ -17,7 +17,7 @@ Uselib(widget)
 ;   ClearDebugOutput()
 ;   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetState(EventWidget( )) ; 
 ;   
-;   Select WidgetEventType( )
+;   Select WidgetEvent( )
 ;     Case #PB_EventType_Change
 ;       SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
 ;       Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
@@ -31,19 +31,19 @@ If Open(0, 500,0, 500);,140)
   ScrollBarGadget  (1,  10, 42+30*1, 250,  20, 30, 100, 50) ;: SetGadgetState   (1,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
   ScrollBarGadget  (2,  10, 42+30*2, 250,  20, 30, 100, 50) : SetGadgetState   (2,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
   ScrollBarGadget  (3,  10, 42+30*3, 250,  20, 30, 100, 100) : SetGadgetState   (3,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
-  ScrollBarGadget  (4,  10, 42+30*4, 250,  20, 30, 100, 200) : SetGadgetState   (4,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
-  
-;   Debug GetGadgetAttribute(4, #PB_ScrollBar_Minimum )
-;   Debug GetGadgetAttribute(4, #PB_ScrollBar_Maximum )
-;   Debug GetGadgetAttribute(4, #PB_ScrollBar_PageLength )
-;   Debug ""
-  Debug GetGadgetState   (4)
+;   ScrollBarGadget  (4,  10, 42+30*4, 250,  20, 30, 100, 200) : SetGadgetState   (4,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
 ;   
-;   For i = 0 To 3
-;     BindGadgetEvent(i, @events_gadgets())
-;   Next
-
-;   ; disabled
+; ;   Debug GetGadgetAttribute(4, #PB_ScrollBar_Minimum )
+; ;   Debug GetGadgetAttribute(4, #PB_ScrollBar_Maximum )
+; ;   Debug GetGadgetAttribute(4, #PB_ScrollBar_PageLength )
+; ;   Debug ""
+;   Debug GetGadgetState   (4)
+; ;   
+; ;   For i = 0 To 3
+; ;     BindGadgetEvent(i, @events_gadgets())
+; ;   Next
+; 
+; ;   ; disabled
   Scroll(10, 42+30*0, 250,  20, 30, 100, 0) : SetState   (widget( ),  50)
   Scroll(10, 42+30*1, 250,  20, 30, 100, 50) ;: SetState   (widget( ),  50)
   Scroll(10, 42+30*2, 250,  20, 30, 100, 50) : SetState   (widget( ),  50)
@@ -65,9 +65,9 @@ If Open(0, 500,0, 500);,140)
  
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 17
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 35
 ; Folding = -
 ; EnableXP
 ; DPIAware

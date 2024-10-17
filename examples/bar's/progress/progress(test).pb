@@ -4,7 +4,7 @@ EnableExplicit
 Global progress_0, progress_1, track_1, track_0, track_3, track_2, Splitter_0, Splitter_1
 
 Procedure events_widgets()
-   Select WidgetEventType( )
+   Select WidgetEvent( )
       Case #__event_Change
          Select EventWidget( )
             Case track_1
@@ -59,8 +59,8 @@ If Open(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_W
    SetState(Splitter_0, 269)
    WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 21
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 6
+; FirstLine = 2
 ; Folding = -
 ; EnableXP

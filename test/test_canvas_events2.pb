@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_ROOT 
          
          ; init
-         If Not MapSize( __roots( ) )
+         If Not MapSize( roots( ) )
             events::SetCallback( @EventHandler( ) )
          EndIf
          
@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;
             ; then bug in windows
             If Window = #PB_Any
-               Window = 300 + MapSize( __roots( ) )
+               Window = 300 + MapSize( roots( ) )
             EndIf
             ;
             w = OpenWindow( Window, x, y, width, height, title$, flag, *parentID )
@@ -106,11 +106,11 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          
          ;
-         If Not FindMapElement( __roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
-            result     = AddMapElement( __roots( ), Str( g ) )
-            __roots( ) = AllocateStructure( _s_root )
-            Root( )    = __roots( )
-            *root      = __roots( )
+         If Not FindMapElement( roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
+            result     = AddMapElement( roots( ), Str( g ) )
+            roots( ) = AllocateStructure( _s_root )
+            Root( )    = roots( )
+            *root      = roots( )
             
             
             ;
@@ -225,8 +225,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 190
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 97
 ; Folding = ------
 ; EnableXP

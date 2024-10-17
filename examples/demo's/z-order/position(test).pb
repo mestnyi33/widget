@@ -28,12 +28,12 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList()
       
       
-      ForEach __widgets(  )
-         If __widgets(  )\parent\FirstWidget( )
-            Debug ""+ __widgets(  )\class +" "+ __widgets(  )\parent\FirstWidget( )\class +" "+ __widgets(  )\parent\LastWidget( )\class
+      ForEach widgets(  )
+         If widgets(  )\parent\FirstWidget( )
+            Debug ""+ widgets(  )\class +" "+ widgets(  )\parent\FirstWidget( )\class +" "+ widgets(  )\parent\LastWidget( )\class
          Else
-            Debug __widgets(  )\class
-            Debug __widgets(  )\FirstWidget( )\class
+            Debug widgets(  )\class
+            Debug widgets(  )\FirstWidget( )\class
          EndIf
       Next
       
@@ -42,9 +42,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 35
-; FirstLine = 7
+; FirstLine = 23
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_Change
         Debug  "change"
         
@@ -30,9 +30,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Case Button_0 : flag = #__tree_nolines
           Case Button_1 : flag = #__tree_nobuttons
           Case Button_2 : flag = #__tree_checkboxes
-          Case Button_3 : flag = #__tree_optionboxes
+          Case Button_3 : flag = #__flag_optionboxes
           Case Button_4 : flag = #__tree_threestate
-          Case Button_5 : flag = #__tree_collapse;d
+          Case Button_5 : flag = #__flag_collapsed;d
           ;Case Button_6 : flag = #__tree_expanded
           Case Button_7 : flag = #__flag_gridlines
         EndSelect
@@ -45,13 +45,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+55, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, width+180, height+55, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
     
     Define img = 0
     Container(10,10,width, height)
-    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget |#__tree_optionBoxes | #__tree_nolines | #__tree_nobuttons );| #__tree_OptionBoxes)  ; |#__tree_GridLines
+    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget |#__flag_optionboxes | #__tree_nolines | #__tree_nobuttons );| #__flag_optionboxes)  ; |#__tree_GridLines
     CloseList()
     
     ; ;     Define i
@@ -101,9 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Button_0, Flag(*this, #__tree_nolines))
     SetState(Button_1, Flag(*this, #__tree_nobuttons))
     SetState(Button_2, Flag(*this, #__tree_checkboxes))
-    SetState(Button_3, Flag(*this, #__tree_optionboxes))
+    SetState(Button_3, Flag(*this, #__flag_optionboxes))
     SetState(Button_4, Flag(*this, #__tree_threestate))
-    ;SetState(Button_5, Flag(*this, #__tree_collapsed))
+    ;SetState(Button_5, Flag(*this, #__flag_collapsedd))
     ;SetState(Button_6, Flag(*this, #__tree_expanded))
     SetState(Button_7, Flag(*this, #__flag_gridlines))
     ;     SetState(Button_8, Flag(*this, #__tree_nolines))
@@ -125,16 +125,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Define pos = 80
     SetState(Splitter_0, pos)
     SetState(Splitter_1, pos)
-    SetState(Splitter_3, width-pos-#__splitter_buttonsize)
-    SetState(Splitter_2, height-pos-#__splitter_buttonsize)
+    SetState(Splitter_3, width-pos-#__splittersize)
+    SetState(Splitter_2, height-pos-#__splittersize)
     
     Bind(#PB_All, @events_widgets())
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 26
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 47
+; FirstLine = 41
 ; Folding = --
 ; EnableXP
+; DPIAware

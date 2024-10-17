@@ -31,7 +31,7 @@ Procedure events( )
   Protected i, Text$, Level, CountItems
   
   If EventWidget( ) = *Panel                     
-    Select WidgetEventType( ) 
+    Select WidgetEvent( ) 
       Case #PB_EventType_DragStart 
         ; 
         ; The DragStart event tells us that the user clicked on an item and
@@ -242,7 +242,8 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
 EndIf
 
 End
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 27
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 33
+; FirstLine = 29
 ; Folding = --
 ; EnableXP

@@ -130,7 +130,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Button_Events( )
       Protected *ew._s_widget = EventWidget( )
       
-      Select WidgetEventType( ) 
+      Select WidgetEvent( ) 
          Case #__event_LeftClick
             If Not a_index( )
                Debug "Button '" + GetText(*ew) + "' was clicked."
@@ -272,7 +272,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CheckBox_Events( )
       Protected *ew._s_widget = EventWidget( )
       
-      Select WidgetEventType( ) 
+      Select WidgetEvent( ) 
          Case #__event_LeftClick;, #__event_Left2Click, #__event_Left3Click
             If Not a_index( )
                SetState(*ew, 1 - GetState(*ew))
@@ -379,8 +379,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 334
-; FirstLine = 265
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 274
+; FirstLine = 219
 ; Folding = 0-+f-
 ; EnableXP

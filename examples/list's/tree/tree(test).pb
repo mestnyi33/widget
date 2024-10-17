@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Static click
     Protected Text$
     Protected EventGadget = EventWidget()
-    Protected EventType = WidgetEventType()
+    Protected EventType = WidgetEvent()
     Protected EventData = WidgetEventData()
     Protected EventItem = GetState(EventGadget)
     Protected State = GetItemState(EventGadget, EventItem)
@@ -254,9 +254,9 @@ Define a
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 169
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 22
+; FirstLine = 18
 ; Folding = --yC--
 ; EnableXP
 ; DPIAware

@@ -42,15 +42,16 @@ CompilerIf #PB_Compiler_IsMainFile
   CloseList()
   
   Debug "---->>"
-  ForEach __widgets(  )
-    Debug "  "+ __widgets(  )\parent\class +" <- "+ __widgets(  )\class
+  ForEach widgets(  )
+    Debug "  "+ widgets(  )\parent\class +" <- "+ widgets(  )\class
   Next
   Debug "<<----"
   
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 26
-; FirstLine = 14
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 33
 ; Folding = -
 ; EnableXP
+; DPIAware

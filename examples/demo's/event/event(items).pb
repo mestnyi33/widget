@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Space.s = "       "
     EndIf
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getText(EventWidget( ))) + ">>")
       Case #__event_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getText(EventWidget( ))) + ">>")
         
@@ -84,8 +84,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 81
-; FirstLine = 50
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 22
+; FirstLine = 18
 ; Folding = --
 ; EnableXP
+; DPIAware

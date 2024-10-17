@@ -33,8 +33,8 @@ CompilerIf #PB_Compiler_IsMainFile
   *window = Button(10, 10, 90,30,"button")
   
   Debug " >> "
-  ForEach __widgets()
-    Debug __widgets()\class
+  ForEach widgets()
+    Debug widgets()\class
   Next
   Debug "<<"
   
@@ -43,8 +43,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose()
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 14
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 19
 ; Folding = -
 ; EnableXP

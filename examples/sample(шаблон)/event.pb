@@ -30,9 +30,9 @@ EndStructure
 
 Macro EventWidget( ) : *canvas\widget: EndMacro
 Macro WidgetEvent( ) : *canvas\event: EndMacro
-Macro WidgetEventType( ) : WidgetEvent( )\type: EndMacro
-Macro WidgetEventItem( ) : WidgetEvent( )\item: EndMacro
-Macro WidgetEventData( ) : WidgetEvent( )\data: EndMacro
+Macro WidgetEvent( ) : WidgetEvent( ): EndMacro
+Macro WidgetEventItem( ) : WidgetEventItem( ): EndMacro
+Macro WidgetEventData( ) : WidgetEventData( ): EndMacro
 
 DisableExplicit
 
@@ -57,17 +57,17 @@ Procedure  UnPostWidgetEvent( *widget._s_WIDGET )
            *widget\event\call( )\type = *widget\event\queue( )\type
           
           EventWidget( ) = *widget
-          WidgetEvent( )\type = *widget\event\queue( )\type
-          WidgetEvent( )\item = *widget\event\queue( )\item
-          WidgetEvent( )\data = *widget\event\queue( )\data
+          WidgetEvent( ) = *widget\event\queue( )\type
+          WidgetEventItem( ) = *widget\event\queue( )\item
+          WidgetEventData( ) = *widget\event\queue( )\data
           WidgetEvent( )\back = *widget\event\call( )\back
           
           result = WidgetEvent( )\back( )
           
           EventWidget( ) = #Null
-          WidgetEvent( )\type = #PB_All
-          WidgetEvent( )\item = #PB_All
-          WidgetEvent( )\data = #Null
+          WidgetEvent( ) = #PB_All
+          WidgetEventItem( ) = #PB_All
+          WidgetEventData( ) = #Null
           
           If result
             Break 
@@ -147,17 +147,17 @@ Procedure PostWidgetEvent( *widget._s_WIDGET, eventtype.l, item = #PB_All, *data
            *widget\event\call( )\type = eventtype
           
           EventWidget( ) = *widget
-          WidgetEvent( )\type = eventtype
-          WidgetEvent( )\item = item
-          WidgetEvent( )\data = *data
+          WidgetEvent( ) = eventtype
+          WidgetEventItem( ) = item
+          WidgetEventData( ) = *data
           WidgetEvent( )\back = *widget\event\call( )\back
           
           result = WidgetEvent( )\back( )
           
           EventWidget( ) = #Null
-          WidgetEvent( )\type = #PB_All
-          WidgetEvent( )\item = #PB_All
-          WidgetEvent( )\data = #Null
+          WidgetEvent( ) = #PB_All
+          WidgetEventItem( ) = #PB_All
+          WidgetEventData( ) = #Null
           
           If result
             Break 
@@ -179,17 +179,17 @@ PostWidgetEvent( widget_2, #PB_EventType_Create )
 
 ; 1)
 Procedure create_event( )
-  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )\type
+  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )
   ;
   ; ProcedureReturn 1
 EndProcedure
 
 Procedure enter_event( )
-  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )\type
+  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )
 EndProcedure
 
 Procedure leave_event( )
-  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )\type
+  Debug #PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )
 EndProcedure
 
 BindWidgetEvent( widget_1, @create_event(), #PB_EventType_Create )
@@ -204,7 +204,7 @@ BindWidgetEvent( widget_2, @leave_event(), #PB_EventType_MouseLeave )
 
 ; 2)
 Procedure el_event( )
-  Debug "      "+#PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )\type
+  Debug "      "+#PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )
 EndProcedure
 
 BindWidgetEvent( widget_1, @el_event(), #PB_EventType_Create )
@@ -217,7 +217,7 @@ BindWidgetEvent( widget_2, @el_event(), #PB_EventType_MouseLeave )
 
 ; 3)
 Procedure all_event()
-  Debug "              "+#PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )\type
+  Debug "              "+#PB_Compiler_Procedure +" "+ EventWidget( )\data +" "+ WidgetEvent( )
 EndProcedure
 
 BindWidgetEvent( widget_1, @all_event(), #PB_All )
@@ -272,7 +272,7 @@ PostWidgetEvent( widget_2, #PB_EventType_MouseMove )
 ; #PB_EventType_ReturnKey
 ; #PB_EventType_ResizeEnd
 ; 
-; #PB_EventType_Draw
+; #__event_Draw
 ; #PB_EventType_Free         
 ; #PB_EventType_Create
 ; #PB_EventType_Drop
@@ -334,9 +334,11 @@ PostWidgetEvent( widget_2, #PB_EventType_MouseMove )
 ; 
 ; #PB_EventType_MouseWheelX
 ; #PB_EventType_MouseWheelY
-; #PB_EventType_Draw
+; #__event_Draw
 
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 336
+; FirstLine = 296
 ; Folding = --0---
 ; EnableXP

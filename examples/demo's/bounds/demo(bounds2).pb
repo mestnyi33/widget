@@ -30,19 +30,19 @@ CompilerIf #PB_Compiler_IsMainFile
   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
-  a_mode(object, #__a_full, 8)
+  a_set(object, #__a_full, 8)
   
   SizeBounds(object, 200, 200, 501-fs*2-fs*2, 501-fs*2-fs*2)
   MoveBounds(object, fs, fs, 501-fs*2-fs, 501-fs*2-fs)
   
   ;\\
-  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  Bind( widget( ), @CustomEvents(), #__event_Draw )
   WaitClose( )
   
   ;\\
   Procedure CustomEvents( )
-    Select WidgetEventType( )
-      Case #PB_EventType_Draw
+    Select WidgetEvent( )
+      Case #__event_Draw
         
         ; Demo draw on element
         UnclipOutput()
@@ -84,8 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 33
-; FirstLine = 11
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 44
+; FirstLine = 34
 ; Folding = -
 ; EnableXP

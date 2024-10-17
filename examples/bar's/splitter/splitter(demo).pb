@@ -17,10 +17,10 @@ Procedure events_widgets()
   ;ClearDebugOutput()
   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\event+ "  state - " GetState(EventWidget( )) ; 
   
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__event_Change
       SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-      Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( WidgetID(0) ) +" "+ Height( WidgetID(1) )
+      Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ WidgetHeight( WidgetID(0) ) +" "+ WidgetHeight( WidgetID(1) )
   EndSelect
 EndProcedure
 
@@ -57,9 +57,9 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
 ;       EndIf
 ;     Until event = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 22
-; FirstLine = 19
+; FirstLine = 21
 ; Folding = -
 ; EnableXP
 ; DPIAware

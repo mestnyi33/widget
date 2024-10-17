@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
      Protected result
      
-     Select WidgetEventType( )
+     Select WidgetEvent( )
         Case #__Event_Draw ;         : result = 1 : AddItem(w_flag, -1, " ------------ draw")
            Debug "draw"
            
@@ -57,7 +57,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 22
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 13
+; FirstLine = 9
 ; Folding = -
 ; EnableXP
+; DPIAware

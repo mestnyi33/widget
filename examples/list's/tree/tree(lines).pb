@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
     With structures::*event
       ;Debug " widget - "+this()\widget+" "+this()\event
     Protected EventGadget = EventWidget( )
-    Protected EventType = WidgetEventType( )
+    Protected EventType = WidgetEvent( )
     Protected EventData = EventWidget( )\data
     Protected EventItem = GetState(EventGadget)
     
@@ -214,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*g, -1, "File "+Str(a), -1, 0)  
     
     ;{  3_example
-    *g5 = Tree(230, 20, 103, th, #__Tree_NoButtons|#__tree_Collapse)                                         
+    *g5 = Tree(230, 20, 103, th, #__Tree_NoButtons|#__flag_Collapsed)                                         
     AddItem(*g5, 0, "Tree_0", -1 )
     AddItem(*g5, 1, "Tree_1", -1, 0) 
     AddItem(*g5, 2, "Tree_2", -1, 0) 
@@ -235,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 20, 103, th, #__flag_BorderLess|#__tree_Collapse)                                         
+    *g6 = Tree(341, 20, 103, th, #__flag_BorderLess|#__flag_Collapsed)                                         
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 
     AddItem(*g6, 0, "Tree_2_2", -1, 3) 
@@ -253,7 +253,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
        ;  2_example
-    *g = Tree(450, 20, 210, th);|#__tree_Collapsed)                                         
+    *g = Tree(450, 20, 210, th);|#__flag_collapsedd)                                         
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1", 0, 1) 
     AddItem(*g, 2, "Tree_2", -1, 2) 
@@ -275,7 +275,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 20, 210, th, #__tree_nolines|#__tree_OptionBoxes);|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 20, 210, th, #__tree_nolines|#__flag_OptionBoxes);|#__tree_NoButtons) ;                                        
 ;         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
 ;         AddItem(*g, 1, "Tree_1", -1, 1) 
 ;         AddItem(*g, 2, "Tree_2_2", -1, 2) 
@@ -302,7 +302,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 20, 210, th, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+    *g = Tree(890, 20, 210, th, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_OptionBoxes)                            
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7
@@ -331,9 +331,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 102
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 255
+; FirstLine = 251
 ; Folding = ---
 ; EnableXP
 ; DPIAware

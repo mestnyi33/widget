@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Static after
     Static before
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_LeftButtonDown 
         after = GetPosition(EventWidget( ), #PB_List_After)
         before = GetPosition(EventWidget( ), #PB_List_Before)
@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     ;}
     
-    ForEach __widgets()
-      Debug __widgets()\class
+    ForEach widgets()
+      Debug widgets()\class
     Next
     
     ResizeWindow(0,WindowX(0)-200,#PB_Ignore,#PB_Ignore,#PB_Ignore)
@@ -193,8 +193,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 125
-; FirstLine = 115
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 120
 ; Folding = ---
 ; EnableXP
+; DPIAware

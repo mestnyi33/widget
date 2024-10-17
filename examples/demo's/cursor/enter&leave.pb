@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Static drag, deltax, deltay
       
       If eventwidget() <> root()
-         Select widgeteventtype()
+         Select WidgetEvent()
             Case #__event_down
 ;                deltax = mouse()\x-eventwidget()\x
 ;                deltay = mouse()\y-eventwidget()\y
@@ -108,8 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 20
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
+; DPIAware

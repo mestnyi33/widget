@@ -104,7 +104,7 @@ EndProcedure
 
 Procedure DrawBarEvents( )
   Protected y, *this._s_widget = EventWidget( )
-  Protected EventType = WidgetEventType( )
+  Protected EventType = WidgetEvent( )
   
   MouseX = Mouse()\x 
   MouseY = Mouse()\y 
@@ -128,7 +128,7 @@ Procedure DrawBarEvents( )
 ;       EndIf
 ;     Next
     
-    *TabSwap = *this\EnteredRow( )
+    *TabSwap = *this\RowEntered( )
     
     If *TabSwap
 ;       ;\\ Align all tabs to bottom (without TabSwap)
@@ -231,7 +231,7 @@ Procedure events( )
   Protected i, Text$, Level, CountItems
   
   If EventWidget( ) = *tree                     
-    Select WidgetEventType( ) 
+    Select WidgetEvent( ) 
       Case #__event_Change
         Debug "change - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
         
@@ -528,6 +528,9 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
 EndIf
 
 End
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 130
+; FirstLine = 127
 ; Folding = -----
 ; EnableXP
+; DPIAware

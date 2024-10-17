@@ -5,7 +5,7 @@ Uselib(widget)
 Global *container._s_WIDGET
 
 Procedure events_widgets()
-   If WidgetEventType() = #__event_LeftClick
+   If WidgetEvent() = #__event_LeftClick
       SetState(*container, GetData(EventWidget()))
    EndIf
 EndProcedure
@@ -23,7 +23,7 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
   Text( 10,10,100,20,"Page 0")
   ;
   AddItem( *container, -1, "Panel 1")
-  Define h = height( *container, #__c_inner )
+  Define h = WidgetHeight( *container, #__c_inner )
   Text( 10,10,100,20,"Page 1")
   
   Button(10, h-34*2, 80, 24,"remove")
@@ -43,8 +43,8 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
   ;
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 35
-; FirstLine = 4
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 25
+; FirstLine = 25
 ; Folding = -
 ; EnableXP

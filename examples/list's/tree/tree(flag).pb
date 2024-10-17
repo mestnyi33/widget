@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag, EventWidget = EventWidget( )
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_Change
         Debug  "change"
         
@@ -49,9 +49,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Case Button_0 : flag = #__tree_nolines
           Case Button_1 : flag = #__tree_nobuttons
           Case Button_2 : flag = #__tree_checkboxes
-          Case Button_3 : flag = #__tree_optionboxes
+          Case Button_3 : flag = #__flag_optionboxes
           Case Button_4 : flag = #__tree_threestate
-          ;Case Button_5 : flag = #__tree_collapsed
+          ;Case Button_5 : flag = #__flag_collapsedd
           ;Case Button_6 : flag = #__tree_expanded
           Case Button_7 : flag = #__flag_gridlines
         EndSelect
@@ -70,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define img = 0
     widget::Container(10,10,width, height)
-    *this = widget::tree(100, 100, 250, 200, #__tree_optionBoxes | #PB_Tree_NoLines | #PB_Tree_NoButtons )  ; |#__flag_GridLines
+    *this = widget::tree(100, 100, 250, 200, #__flag_optionBoxes | #PB_Tree_NoLines | #PB_Tree_NoButtons )  ; |#__flag_GridLines
     CloseList()
     
     ;\\
@@ -121,9 +121,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState(Button_0, Flag(*this, #__tree_nolines))
     widget::SetState(Button_1, Flag(*this, #__tree_nobuttons))
     widget::SetState(Button_2, Flag(*this, #__tree_checkboxes))
-    widget::SetState(Button_3, Flag(*this, #__tree_optionboxes))
+    widget::SetState(Button_3, Flag(*this, #__flag_optionboxes))
     widget::SetState(Button_4, Flag(*this, #__tree_threestate))
-    ;widget::SetState(Button_5, Flag(*this, #__tree_collapsed))
+    ;widget::SetState(Button_5, Flag(*this, #__flag_collapsedd))
     ;widget::SetState(Button_6, Flag(*this, #__tree_expanded))
     ;widget::SetState(Button_7, Flag(*this, #__tree_gridlines))
     ;     widget::SetState(Button_8, Flag(*this, #__tree_nolines))
@@ -145,14 +145,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Define pos = 30
     widget::SetState(Splitter_0, pos)
     widget::SetState(Splitter_1, pos)
-    widget::SetState(Splitter_3, width-pos-#__splitter_buttonsize)
-    widget::SetState(Splitter_2, height-pos-#__splitter_buttonsize)
+    widget::SetState(Splitter_3, width-pos-#__splittersize)
+    widget::SetState(Splitter_2, height-pos-#__splittersize)
     
     widget::Bind(Root( ), @events_widgets())
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 125
+; FirstLine = 108
 ; Folding = --
 ; EnableXP
+; DPIAware

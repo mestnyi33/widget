@@ -3,6 +3,30 @@ XIncludeFile "../cursors.pbi"
 
 Module Cursor 
   #test_cursor = 0
+  CompilerIf #PB_Compiler_Version =< 546
+    #CURSOR_SHOWING = 1
+    
+    Macro DesktopResolutionX( )
+      (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
+    EndMacro
+    Macro DesktopResolutionY( )
+      (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
+    EndMacro
+    Macro DesktopScaledX( _x_ )
+      (_x_ * DesktopResolutionX( ))
+    EndMacro
+    Macro DesktopScaledY( _y_ )
+      (_y_ * DesktopResolutionY( ))
+    EndMacro
+    Macro DesktopUnScaledX( _x_ )
+      ( _x_ / DesktopResolutionX( ))
+    EndMacro
+    Macro DesktopUnScaledY( _y_ )
+      (_y_ / DesktopResolutionY( ))
+    EndMacro
+    
+  CompilerEndIf
+  
   
   Procedure   Proc(hWnd, uMsg, wParam, lParam)
     Protected result
@@ -11,8 +35,8 @@ Module Cursor
     Select uMsg
       Case #WM_DESTROY
         Debug "event( DESTROY ) "+hwnd
-;       Case #WM_NCDESTROY
-;         Debug "event( NC_DESTROY ) "+hwnd
+        ;       Case #WM_NCDESTROY
+        ;         Debug "event( NC_DESTROY ) "+hwnd
         RemoveProp_(hwnd, "#__cursor")
         RemoveProp_(hwnd, "#__oldproc_cursor")
         
@@ -252,10 +276,10 @@ Module Cursor
   EndProcedure
   
   Procedure   Clip( x.l,y.l,width.l,height.l )
-     Protected rect.RECT
-     ;GetWindowRect_(GadgetID,rect.RECT)
-     SetRect_(rect,x,y,x+width,y+height)
-     ProcedureReturn ClipCursor_(rect)
+    Protected rect.RECT
+    ;GetWindowRect_(GadgetID,rect.RECT)
+    SetRect_(rect,x,y,x+width,y+height)
+    ProcedureReturn ClipCursor_(rect)
   EndProcedure
   
   Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
@@ -430,9 +454,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 122
-; Folding = --f------
+; IDE Options = PureBasic 5.46 LTS (Windows - x64)
+; CursorPosition = 5
+; Folding = -----------
 ; EnableXP
 ; DPIAware

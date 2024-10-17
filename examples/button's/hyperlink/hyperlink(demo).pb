@@ -15,7 +15,7 @@ Procedure events_widgets()
    ;ClearDebugOutput()
    ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(EventWidget( )) ; 
    
-   Select WidgetEventType( )
+   Select WidgetEvent( )
       Case #PB_EventType_LeftClick
          SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
          Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
@@ -59,9 +59,9 @@ EndIf
 ;\\
 WaitClose( )
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 20
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 17
+; FirstLine = 13
 ; Folding = --
 ; EnableXP
 ; DPIAware

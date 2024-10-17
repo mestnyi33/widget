@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *window, *buttonOpen, *buttonClose, *buttonTest
   
   Procedure events_()
-    Select WidgetEventType( ) 
+    Select WidgetEvent( ) 
       Case #__event_Maximize
         Debug "maximize"
         ProcedureReturn #PB_Ignore
@@ -50,8 +50,8 @@ CompilerIf #PB_Compiler_IsMainFile
             *window = 0
             
           Case *buttonTest
-            ForEach __widgets( )
-              Debug __widgets( )\class
+            ForEach widgets( )
+              Debug widgets( )\class
             Next
         EndSelect
     EndSelect
@@ -74,9 +74,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose()
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 53
-; FirstLine = 45
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
 ; DPIAware

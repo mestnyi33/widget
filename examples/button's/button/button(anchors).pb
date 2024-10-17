@@ -25,8 +25,8 @@ Module AnchorBox
   
   Procedure Events( )
     
-    Select widget::WidgetEventType( )
-      Case #PB_EventType_LeftClick 
+    Select widget::WidgetEvent( )
+      Case #__event_LeftClick 
         Protected *this = widget::EventWidget( )
         
         If *this = Button_10 
@@ -201,19 +201,19 @@ Module AnchorBox
     
     ;widget::setColor(a, constants::#__color_back, widget::GetColor( widget::GetParent( a ), constants::#__color_back) )
     
-    widget::Bind(Button_2, @Events( ), #PB_EventType_LeftClick )
-    widget::Bind(Button_1, @Events( ), #PB_EventType_LeftClick )
-    widget::Bind(Button_4, @Events( ), #PB_EventType_LeftClick )
-    widget::Bind(Button_3, @Events( ), #PB_EventType_LeftClick )
-    widget::Bind(Button_9, @Events( ), #PB_EventType_LeftClick )
-    widget::Bind(Button_5, @Events( ), #PB_EventType_LeftClick )
-    widget::Bind(Button_6, @Events( ), #PB_EventType_LeftClick )
-    widget::Bind(Button_7, @Events( ), #PB_EventType_LeftClick )
-    widget::Bind(Button_8, @Events( ), #PB_EventType_LeftClick )
+    widget::Bind(Button_2, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_1, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_4, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_3, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_9, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_5, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_6, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_7, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_8, @Events( ), #__event_LeftClick )
     
     widget::Hide(*a,1)
     widget::SetData(Button_10, *a)
-    widget::Bind(Button_10, @Events( ), #PB_EventType_LeftClick )
+    widget::Bind(Button_10, @Events( ), #__event_LeftClick )
     
     ProcedureReturn *a
   EndProcedure
@@ -229,6 +229,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   widget::WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 6
 ; Folding = ---
 ; EnableXP

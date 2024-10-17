@@ -197,7 +197,7 @@ EndProcedure
 Procedure AliginsEvent()
   Protected Ev = EventWidget( )
   
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__event_LeftClick
       Static L,LT,T,RT,R,RB,B,LB,C,Result
       
@@ -446,8 +446,8 @@ Bind(Sha, @Sha_Events( ), #__event_resize)
 ShowAlignWindow()
 
 Repeat :Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 390
-; FirstLine = 367
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 199
+; FirstLine = 195
 ; Folding = -------
 ; EnableXP

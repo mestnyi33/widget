@@ -7,12 +7,12 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(Widget)
    
    Procedure events_widgets( )
-      If WidgetEventType() <> #__event_MouseMove And 
-         WidgetEventType() <> #__event_Draw And 
-         WidgetEventType() <> #__event_StatusChange
+      If WidgetEvent() <> #__event_MouseMove And 
+         WidgetEvent() <> #__event_Draw And 
+         WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (gadget)"
+            Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (gadget)"
          EndIf
          
          If IDWidget(EventWidget()) = 1
@@ -22,12 +22,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure events_windows( )
-      If WidgetEventType() <> #__event_Draw And
-         WidgetEventType() <> #__event_MouseMove And 
-         WidgetEventType() <> #__event_StatusChange
+      If WidgetEvent() <> #__event_Draw And
+         WidgetEvent() <> #__event_MouseMove And 
+         WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
+            Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
          EndIf
          
          If IDWidget(EventWidget()) = 2
@@ -37,12 +37,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure events_roots( )
-      If WidgetEventType() <> #__event_Draw And
-         WidgetEventType() <> #__event_MouseMove And 
-         WidgetEventType() <> #__event_StatusChange
+      If WidgetEvent() <> #__event_Draw And
+         WidgetEvent() <> #__event_MouseMove And 
+         WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
+            Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
          EndIf
       EndIf
    EndProcedure
@@ -61,8 +61,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = ---
 ; EnableXP
 ; DPIAware

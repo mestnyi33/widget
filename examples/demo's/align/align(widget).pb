@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events()
     Protected *eventWidget._s_widget = EventWidget()
-    Select WidgetEventType()
+    Select WidgetEvent()
       Case #__event_mouseenter ; leftclick
         If tree_view
           ;Debug *eventWidget
@@ -498,8 +498,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     
   ;   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 457
-; FirstLine = 385
-; Folding = 0---
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 19
+; FirstLine = 15
+; Folding = ----
 ; EnableXP

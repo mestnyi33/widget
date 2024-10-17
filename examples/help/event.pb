@@ -43,7 +43,7 @@
 ; #PB_EventType_CloseWindow
 ; #PB_EventType_CloseItem
 ; 
-; #PB_EventType_Draw
+; #__event_Draw
 ; #PB_EventType_Repaint
 ; #PB_EventType_ScrollChange
 ;
@@ -62,5 +62,7 @@
 ; #PB_EventType_TitleChange
 ; #PB_EventType_Change
 ;
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 38
 ; EnableXP

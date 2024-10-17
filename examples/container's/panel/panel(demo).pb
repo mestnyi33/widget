@@ -24,8 +24,8 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  If WidgetEventType( ) <> #__event_MouseMove And WidgetEventType( ) <> #__event_Draw
-    Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEventType( )+ "  item - " +WidgetEventItem( ) ; GetState(this()\widget) ; 
+  If WidgetEvent( ) <> #__event_MouseMove And WidgetEvent( ) <> #__event_Draw
+    Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(this()\widget) ; 
   EndIf
 EndProcedure
 
@@ -58,7 +58,7 @@ Procedure events_gbuttons()
 EndProcedure
 
 Procedure events_wbuttons()
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__event_LeftClick
       Select IDWidget( EventWidget( ) )
         Case 2 
@@ -125,8 +125,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   Debug ""+CountGadgetItems(1) +" - count gadget items"
   
   Panel(8, 8, 300, 200)
-  Define h = height( WidgetID(0), #__c_inner )
-  Define w = width( WidgetID(0), #__c_inner )
+  Define h = WidgetHeight( WidgetID(0), #__c_inner )
+  Define w = WidgetWidth( WidgetID(0), #__c_inner )
   
   AddItem( WidgetID(0), -1, "Panel 1")
   Panel(10, 10, w-20, h-20-34*3)
@@ -165,9 +165,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 37
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 127
+; FirstLine = 123
 ; Folding = ---
 ; EnableXP
 ; DPIAware

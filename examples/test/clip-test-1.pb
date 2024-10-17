@@ -31,14 +31,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(185,50,100,30,"button_1") : SetClass(widget(), GetText(widget()))
   
   Debug "---->>"
-  ForEach __widgets()
+  ForEach widgets()
     Debug "  "+ widget( )\parent\class +" <- "+ widget( )\class +"  "+ widget( )\window\class
   Next
   Debug "<<----"
   
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 33
+; FirstLine = 21
 ; Folding = -
 ; EnableXP

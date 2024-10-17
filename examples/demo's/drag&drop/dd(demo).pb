@@ -60,7 +60,7 @@ EndIf
 
 Procedure widget_events( )
   Protected EventWidget.i = EventWidget( ),
-            EventType.i = WidgetEventType( );,
+            EventType.i = WidgetEvent( );,
                                             ;EventItem.i = WidgetEventItem( ), 
                                             ;EventData.i = WidgetEventData( )
   
@@ -91,15 +91,15 @@ Procedure widget_events( )
             If DragDropPrivate(#PrivateType_0, #PB_Drag_Move)
               Protected img =- 1
               
-              SelectElement(EventWidget( )\__rows( ), SourceItem)
-              img = CreateImage(#PB_Any, EventWidget( )\__rows( )\text\width, EventWidget( )\__rows( )\text\height, 32, #PB_Image_Transparent )
+              SelectElement(EventWidget( )\__items( ), SourceItem)
+              img = CreateImage(#PB_Any, EventWidget( )\__items( )\text\width, EventWidget( )\__items( )\text\height, 32, #PB_Image_Transparent )
               StartDrawing(ImageOutput(img))
               DrawingMode( #PB_2DDrawing_AllChannels)
-              DrawText(0, 0, EventWidget( )\__rows( )\text\string, $ff000000)
+              DrawText(0, 0, EventWidget( )\__items( )\text\string, $ff000000)
               StopDrawing()
               
               If IsImage(img)
-                ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\text\width/2, EventWidget( )\__rows( )\text\height/2 ))
+                ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__items( )\text\width/2, EventWidget( )\__items( )\text\height/2 ))
               EndIf
             EndIf
           EndIf
@@ -316,8 +316,8 @@ Procedure widget_events( )
             Debug ""
             ;ClearDebugOutput()
             Define *this._s_widget = Gadget_TargetItem
-            ForEach *this\__rows( )
-              Debug ""+ *this\__rows( )\index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\string +""
+            ForEach *this\__items( )
+              Debug ""+ *this\__items( )\_index +" "+ ListIndex(*this\__items( )) +" "+ *this\__items( )\text\string +""
             Next
           EndIf
           
@@ -470,7 +470,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 371
-; FirstLine = 364
+; CursorPosition = 319
+; FirstLine = 315
 ; Folding = ----
 ; EnableXP
+; DPIAware

@@ -8,7 +8,7 @@
 ;                        GetItemState( *address, item ) - GetToolBarButtonState( #ToolBar, Button )
 ;                 SetItemState( *address, item, state ) - SetToolBarButtonState( #ToolBar, Button, State )
 ;                 SetItemText( *address, item, text.s ) - ToolBarButtonText( #ToolBar, Button, Text$ )
-;                                    Height( *address ) - ToolBarHeight( #ToolBar )
+;                                    WidgetHeight( *address ) - ToolBarHeight( #ToolBar )
 ;      AddItem( *address, button, text.s, image, mode ) - ToolBarImageButton( #Button, ImageID [, Mode [, Text$]] )
 ;       AddItem( *address, button, text.s, icon, mode ) - ToolBarStandardButton( #Button, #ButtonIcon [, Mode [, Text$]] )
 ;                 ToolTipItem( *address, item, text.s ) - ToolBarToolTip( #ToolBar, Button, Text$ )
@@ -131,8 +131,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 108
-; FirstLine = 96
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 10
+; FirstLine = 9
 ; Folding = --
 ; EnableXP

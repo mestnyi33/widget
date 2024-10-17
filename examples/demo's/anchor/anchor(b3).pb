@@ -5,7 +5,7 @@ Global alpha = 128
 Global *Object1,*Object2,*Object3,*Object4,*Object5
 
   Procedure CustomEvents( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_Draw
         
         If Eventwidget()\focus
@@ -76,8 +76,8 @@ If Open(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", 
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 35
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 7
+; FirstLine = 3
 ; Folding = --
 ; EnableXP

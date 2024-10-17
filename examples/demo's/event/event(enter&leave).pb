@@ -59,7 +59,7 @@ WaitClose( )
 Procedure events_widgets()
    Protected repaint
    
-   Select WidgetEventType( )
+   Select WidgetEvent( )
       Case #__event_MouseEnter,
            #__event_MouseLeave,
            #__event_MouseMove
@@ -100,7 +100,9 @@ Procedure events_widgets()
       Debug "change state"
    EndIf
 EndProcedure
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 7
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 61
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP
+; DPIAware

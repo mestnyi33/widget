@@ -228,7 +228,7 @@ PostWidgetEvent( widget_2, #PB_EventType_MouseMove )
 ; #PB_EventType_ReturnKey
 ; #PB_EventType_ResizeEnd
 ; 
-; #PB_EventType_Draw
+; #__event_Draw
 ; #PB_EventType_Free         
 ; #PB_EventType_Create
 ; #PB_EventType_Drop
@@ -290,9 +290,11 @@ PostWidgetEvent( widget_2, #PB_EventType_MouseMove )
 ; 
 ; #PB_EventType_MouseWheelX
 ; #PB_EventType_MouseWheelY
-; #PB_EventType_Draw
+; #__event_Draw
 
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 292
+; FirstLine = 267
 ; Folding = ------
 ; EnableXP

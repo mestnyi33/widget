@@ -41,9 +41,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Procedure ParentEvents( )
       Protected width 
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_resize
-            width = width( EventWidget( ), #__c_inner ) - 20
+            width = WidgetWidth( EventWidget( ), #__c_inner ) - 20
             
             Debug ">"
             Resize( object1, #PB_Ignore, #PB_Ignore, width, #PB_Ignore) 
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure ObjectEvents( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
             
          Case #__event_resize
             Debug "  resize "+EventWidget( )\class +" "+ EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
@@ -65,7 +65,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 43
 ; Folding = -
 ; EnableXP
+; DPIAware

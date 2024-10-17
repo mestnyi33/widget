@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Protected eventobject = EventWidget( )
       
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_RightButtonUp
             DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
                
@@ -175,8 +175,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 7
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 23
 ; Folding = -+
 ; EnableXP
 ; DPIAware

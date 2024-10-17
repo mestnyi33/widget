@@ -15,7 +15,7 @@ Global Window_0_OpenFile$, Window_0_0_Image=-1, Event_=-1, Properties_Image=-1, 
 Procedure CFE_Helper_Buttons_Events( )
   Protected Checked ;= *Create\Checked
   
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__Event_Close
       Close( EventWidget( ) )
       
@@ -32,7 +32,7 @@ Procedure CFE_Helper_Buttons_Events( )
               SetBackGroundImage(Checked, Window_0_0_Image)
               
             Case Properties_Image
-              If Width(Checked) <> ImageWidth(Window_0_0_Image) And Not IsContainer(Checked)
+              If WidgetWidth(Checked) <> ImageWidth(Window_0_0_Image) And Not IsContainer(Checked)
                 
                 If MessageRequester("Сообщение","Хотите изменить размер элемента?", #PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
                   SetText(Checked, "")
@@ -126,8 +126,9 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose(Window)
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 101
-; FirstLine = 88
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 32
 ; Folding = ---
 ; EnableXP
+; DPIAware

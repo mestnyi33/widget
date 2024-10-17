@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ClearDebugOutput()
     ; Debug ""+Str(This()\widget\index - 1)+ " - widget  event - " +This()\type+ "  state - " GetState(This()\widget) ; 
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_Change
         SetGadgetState((EventWidget( )\index - 1), GetState(EventWidget( )))
         Debug  Str(EventWidget( )\index - 1)+" - widget change " + GetState(EventWidget( ))
@@ -110,9 +110,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = --
 ; EnableXP
 ; DPIAware

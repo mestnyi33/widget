@@ -42,20 +42,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Define line.s
       ;\\
       Debug "---->>"
-      ForEach __widgets( )
-         ;Debug __widgets( )\class
+      ForEach widgets( )
+         ;Debug widgets( )\class
          line = "  "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class ; __widgets( )\text\string
+         line + widgets( )\class ; widgets( )\text\string
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -76,56 +76,56 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro StartEnumerate2( _parent_, _item_ = #PB_All )
          Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
-         PushListPosition( __widgets( ) )
+         PushListPosition( widgets( ) )
          ;
          If _parent_\FirstWidget( )\address
-            ChangeCurrentElement( __widgets( ), _parent_\FirstWidget( )\address )
+            ChangeCurrentElement( widgets( ), _parent_\FirstWidget( )\address )
          Else
-            ResetList( __widgets( ) )
+            ResetList( widgets( ) )
          EndIf
          ;
 ;          ;\\
 ;          If _item_ > 0
 ;             Repeat
-;                If __widgets( ) = _parent_\AfterWidget( ) 
+;                If widgets( ) = _parent_\AfterWidget( ) 
 ;                   Break
 ;                EndIf
-;                If __widgets( )\root <> _parent_\root
+;                If widgets( )\root <> _parent_\root
 ;                   Break    
 ;                EndIf
-;                If __widgets( )\parent = _parent_  
-;                   If __widgets( )\TabIndex( ) = _item_
+;                If widgets( )\parent = _parent_  
+;                   If widgets( )\TabIndex( ) = _item_
 ;                      Break
 ;                   EndIf
 ;                EndIf
-;             Until Not NextElement( __widgets( ) ) 
+;             Until Not NextElement( widgets( ) ) 
 ;          EndIf
 ;          ;
          ;\\
-         If __widgets( )\parent = _parent_
+         If widgets( )\parent = _parent_
             Repeat
-               If __widgets( ) = _parent_\AfterWidget( ) 
+               If widgets( ) = _parent_\AfterWidget( ) 
                   Debug 666
                   Break
                EndIf
-               If __widgets( )\root <> _parent_\root
+               If widgets( )\root <> _parent_\root
                   Debug 777
                   Break    
                EndIf
                
-               If  __widgets( )\level < _parent_\level
+               If  widgets( )\level < _parent_\level
                   Debug 111
                   Break
                EndIf
                
                If _item_ >= 0 And 
-                  __widgets( )\parent = _parent_ And 
-                  _item_ <> __widgets( )\TabIndex( )
+                  widgets( )\parent = _parent_ And 
+                  _item_ <> widgets( )\TabIndex( )
                   Debug 888
                   Break
                EndIf
                ;
-               widget( ) = __widgets( )
+               widget( ) = widgets( )
             EndMacro
             ;
             Macro AbortEnumerate2( )
@@ -133,9 +133,9 @@ CompilerIf #PB_Compiler_IsMainFile
             EndMacro
             ;
             Macro StopEnumerate2( )
-            Until Not NextElement( __widgets( ) )
+            Until Not NextElement( widgets( ) )
          EndIf
-         PopListPosition( __widgets( ) )
+         PopListPosition( widgets( ) )
       EndMacro
       
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
@@ -177,9 +177,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 126
-; Folding = f--
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 127
+; FirstLine = 123
+; Folding = ---
 ; EnableXP
 ; DPIAware

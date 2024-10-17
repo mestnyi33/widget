@@ -647,7 +647,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure widget_events( )
     Protected EventWidget = EventWidget( )
-    Select WidgetEventType( ) 
+    Select WidgetEvent( ) 
         ; ;       Case #__event_DragStart
         ; ;         If IsContainer( EventWidget )
         ; ;           DragPrivate( #_drag_private_type )
@@ -657,7 +657,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; ;         
         ; ;       Case #__event_Drop
         ; ;         If IsContainer( EventWidget )
-        ; ;            ;Debug "DROP "+EventWidget( )\class  +" "+ WidgetEventType( ) 
+        ; ;            ;Debug "DROP "+EventWidget( )\class  +" "+ WidgetEvent( ) 
         ; ;           If GetState( id_elements_tree) <> 0 
         ; ;             Debug "create - drop"
         ; ;             widget_add( EventWidget, GetText( id_elements_tree ), 
@@ -771,8 +771,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;-
   Procedure ide_events( )
     Protected *this._s_widget
-    Protected e_type = WidgetEvent( )\type
-    Protected e_item = WidgetEvent( )\item
+    Protected e_type = WidgetEvent( )
+    Protected e_item = WidgetEventItem( )
     Protected EventWidget = EventWidget( )
     
     Select e_type
@@ -830,7 +830,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ;     
     ; ;     ;id_design_form = Container( 0,0,0,0, #__mdi_editable ) : CloseList( )
     ; ;     id_design_form = MDI( 0,0,0,0, #__mdi_editable ) 
-    ; ;     ;id_design_form = MDI(10,10, width( widget( ), #__c_inner )-20, height( widget( ), #__c_inner )-20);, #__flag_autosize)
+    ; ;     ;id_design_form = MDI(10,10, WidgetWidth( widget( ), #__c_inner )-20, WidgetHeight( widget( ), #__c_inner )-20);, #__flag_autosize)
     ; ;     id_design_panel = id_design_form
     ; ;     ;id_design_code = listview_debug
     ; ;     
@@ -907,9 +907,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 815
-; FirstLine = 810
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 832
+; FirstLine = 833
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

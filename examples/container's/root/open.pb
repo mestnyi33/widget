@@ -12,9 +12,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ; Shows using of several panels...
-  Procedure BindEvents( )
+  Procedure HandlerEvents( )
     Protected *this._S_widget = EventWidget( )
-    Protected eventtype = WidgetEventType( )
+    Protected eventtype = WidgetEvent( )
     
     Select eventtype
         ;       Case #__event_Draw          : Debug "draw"         
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *w._S_widget, *g._S_widget, editable
   Define *root._S_widget = Open(#window_0,0,0,424, 352): *root\class = "root": SetText(*root, "root")
   
-  ;BindWidgetEvent( *root, @BindEvents( ) )
+  ;BindWidgetEvent( *root, @HandlerEvents( ) )
   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
   view = Container(10, 10, 406, 238, #PB_Container_Flat)
   SetColor(view, #PB_Gadget_BackColor,RGB(213,213,213))
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;{ OpenRoot0
   Define *root0._S_widget = Open(#window,10,10,300-20,300-20): *root0\class = "root0": SetText(*root0, "root0")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
+  ;BindWidgetEvent( *root2, @HandlerEvents( ) )
   
   Define Text.s, m.s=#LF$, a
   *g = Editor(10, 10, 200+60, 200, #__flag_gridlines);, #__flag_autosize) 
@@ -103,11 +103,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Define *root1._S_widget = Open(#window,300,10,300-20,300-20): *root1\class = "root1": SetText(*root1, "root1")
-  ;BindWidgetEvent( *root1, @BindEvents( ) )
+  ;BindWidgetEvent( *root1, @HandlerEvents( ) )
   
   
   Define *root2._S_widget = Open(#window,10,300,300-20,300-20): *root2\class = "root2": SetText(*root2, "root2")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
+  ;BindWidgetEvent( *root2, @HandlerEvents( ) )
   
   *w = ComboBox( 20,20, 150,40)
   For i=1 To 100;0000
@@ -116,10 +116,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Define *root3._S_widget = Open(#window,300,300,300-20,300-20): *root3\class = "root3": SetText(*root3, "root3")
-  ;BindWidgetEvent( *root3, @BindEvents( ) )
+  ;BindWidgetEvent( *root3, @HandlerEvents( ) )
   
   Define *root4._S_widget = Open(#window, 590, 10, 200, 600-20): *root4\class = "root4": SetText(*root4, "root4")
-  ;BindWidgetEvent( *root4, @BindEvents( ) )
+  ;BindWidgetEvent( *root4, @HandlerEvents( ) )
   
   
   
@@ -240,8 +240,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ; 
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 206
-; FirstLine = 202
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 121
+; FirstLine = 86
 ; Folding = -
 ; EnableXP

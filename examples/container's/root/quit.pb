@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   Procedure CallBack( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_Focus
         Debug "focus "+EventWidget( )\class
         
@@ -78,15 +78,15 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
       Default
-        ; Debug ""+classfromevent(WidgetEventType( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEventType( )
+        ; Debug ""+classfromevent(WidgetEvent( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEvent( )
         
     EndSelect
   EndProcedure
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 68
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 80
 ; FirstLine = 56
 ; Folding = -
 ; EnableXP

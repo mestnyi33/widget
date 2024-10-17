@@ -8,7 +8,7 @@
 ;                        GetItemState( *address, item ) - GetToolBarButtonState( #ToolBar, Button )
 ;                 SetItemState( *address, item, state ) - SetToolBarButtonState( #ToolBar, Button, State )
 ;                 SetItemText( *address, item, text.s ) - ToolBarButtonText( #ToolBar, Button, Text$ )
-;                                    Height( *address ) - ToolBarHeight( #ToolBar )
+;                                    WidgetHeight( *address ) - ToolBarHeight( #ToolBar )
 ;      AddItem( *address, button, text.s, image, mode ) - ToolBarImageButton( #Button, ImageID [, Mode [, Text$]] )
 ;       AddItem( *address, button, text.s, icon, mode ) - ToolBarStandardButton( #Button, #ButtonIcon [, Mode [, Text$]] )
 ;                 ToolTipItem( *address, item, text.s ) - ToolBarToolTip( #ToolBar, Button, Text$ )
@@ -59,20 +59,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Define line.s
       ;\\
       Debug "---->>"
-      ForEach __widgets( )
-         ;Debug __widgets( )\class
+      ForEach widgets( )
+         ;Debug widgets( )\class
          line = "  "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class +"_"+ __widgets( )\TabIndex( ) ; TabAddIndex( ) ; TabState( )
+         line + widgets( )\class +"_"+ widgets( )\TabIndex( ) ; TabAddIndex( ) ; TabState( )
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -286,8 +286,8 @@ CompilerIf #PB_Compiler_IsMainFile
       group_height:     : IncludeBinary "group/group_height.png"
    EndDataSection
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 205
-; FirstLine = 202
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 74
+; FirstLine = 57
 ; Folding = -0
 ; EnableXP

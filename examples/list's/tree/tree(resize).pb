@@ -22,8 +22,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetState(Splitter_0, pos)
     SetState(Splitter_1, pos)
-    SetState(Splitter_3, width-pos-#__splitter_buttonsize)
-    SetState(Splitter_2, height-pos-#__splitter_buttonsize)
+    SetState(Splitter_3, width-pos-#__splittersize)
+    SetState(Splitter_2, height-pos-#__splittersize)
     
      
 ;     Debug " --v-- "
@@ -65,6 +65,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 25
+; FirstLine = 20
 ; Folding = -
 ; EnableXP
+; DPIAware

@@ -4,7 +4,7 @@ Uselib(widget)
 Global i, *w, *p1,*p2, *ch, *b, *bb._s_widget
 
 Procedure events_widgets( )
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__Event_LeftClick
       If *b = EventWidget( )
         If i 
@@ -13,7 +13,7 @@ Procedure events_widgets( )
           SetParent(*w, *p1)
         EndIf
         
-        Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
+        Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  WidgetY(*ch) +" "+  WidgetY(*ch, 3)
         
         i!1
       EndIf
@@ -54,38 +54,38 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
   Debug "after " + *bb\after\widget
   
   Debug ""
-  ForEach __widgets( )
-    If __widgets( )\parent
-      If __widgets( )\before\widget
-        before = Str( __widgets( )\before\widget\data )
+  ForEach widgets( )
+    If widgets( )\parent
+      If widgets( )\before\widget
+        before = Str( widgets( )\before\widget\data )
       EndIf
-      If __widgets( )\after\widget
-        after = Str( __widgets( )\after\widget\data )
+      If widgets( )\after\widget
+        after = Str( widgets( )\after\widget\data )
       Else
         after = "  "
       EndIf
       
-      If __widgets( )\last\widget
-        last = Str( __widgets( )\last\widget\data )
+      If widgets( )\last\widget
+        last = Str( widgets( )\last\widget\data )
       Else
         last = "  "
       EndIf
       
-      parent = Str( __widgets( )\parent\data )
-      If __widgets( )\parent\first\widget
-        parentfirst = Str( __widgets( )\parent\first\widget\data )
+      parent = Str( widgets( )\parent\data )
+      If widgets( )\parent\first\widget
+        parentfirst = Str( widgets( )\parent\first\widget\data )
       EndIf
-      If __widgets( )\parent\last\widget
-        parentlast = Str( __widgets( )\parent\last\widget\data )
+      If widgets( )\parent\last\widget
+        parentlast = Str( widgets( )\parent\last\widget\data )
       EndIf
     
-    If __widgets( )\first\widget
-      first = Str( __widgets( )\first\widget\data )
+    If widgets( )\first\widget
+      first = Str( widgets( )\first\widget\data )
     EndIf
     
-    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ __widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
      Else
-      Debug " "+__widgets( )\data +" - "+ __widgets( )\x +" "+ __widgets( )\width
+      Debug " "+widgets( )\data +" - "+ widgets( )\x +" "+ widgets( )\width
     EndIf
      
   Next
@@ -107,38 +107,38 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
   Debug "after " + *bb\after\widget
   
   Debug ""
-  ForEach __widgets( )
-    If __widgets( )\parent
-      If __widgets( )\before\widget
-        before = Str( __widgets( )\before\widget\data )
+  ForEach widgets( )
+    If widgets( )\parent
+      If widgets( )\before\widget
+        before = Str( widgets( )\before\widget\data )
       EndIf
-      If __widgets( )\after\widget
-        after = Str( __widgets( )\after\widget\data )
+      If widgets( )\after\widget
+        after = Str( widgets( )\after\widget\data )
       Else
         after = "  "
       EndIf
       
-      If __widgets( )\last\widget
-        last = Str( __widgets( )\last\widget\data )
+      If widgets( )\last\widget
+        last = Str( widgets( )\last\widget\data )
       Else
         last = "  "
       EndIf
       
-      parent = Str( __widgets( )\parent\data )
-      If __widgets( )\parent\first\widget
-      parentfirst = Str( __widgets( )\parent\first\widget\data )
+      parent = Str( widgets( )\parent\data )
+      If widgets( )\parent\first\widget
+      parentfirst = Str( widgets( )\parent\first\widget\data )
     EndIf
-    If __widgets( )\parent\last\widget
-      parentlast = Str( __widgets( )\parent\last\widget\data )
+    If widgets( )\parent\last\widget
+      parentlast = Str( widgets( )\parent\last\widget\data )
     EndIf 
     
-    If __widgets( )\first\widget
-      first = Str( __widgets( )\first\widget\data )
+    If widgets( )\first\widget
+      first = Str( widgets( )\first\widget\data )
     EndIf
     
-    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ __widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
      Else
-      Debug " "+__widgets( )\data +" - "+ __widgets( )\x +" "+ __widgets( )\width
+      Debug " "+widgets( )\data +" - "+ widgets( )\x +" "+ widgets( )\width
     EndIf
      
   Next
@@ -148,8 +148,9 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
   WaitClose( )
   ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 140
+; FirstLine = 119
 ; Folding = ----
 ; EnableXP
 ; DPIAware

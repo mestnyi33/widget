@@ -9,7 +9,7 @@ Global i, drop, source, appQuit, dropText$, selectedIndex, selectedText$
 
 Procedure event_widget()
   
-  Select WidgetEventType()
+  Select WidgetEvent()
     Case #__event_DragStart      
       Debug "event( DRAGSTART )"
       
@@ -83,6 +83,9 @@ WaitClose()
 ;   EndSelect 
 ;   
 ; Until appQuit
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 11
+; FirstLine = 7
 ; Folding = -
 ; EnableXP
+; DPIAware

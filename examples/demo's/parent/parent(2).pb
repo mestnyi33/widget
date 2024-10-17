@@ -4,7 +4,7 @@ Uselib(widget)
 Global i, *w, *p1,*p2, *ch, *b
 
 Procedure events_widgets()
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__event_LeftClick
       If *b = EventWidget( )
         If i 
@@ -14,7 +14,7 @@ Procedure events_widgets()
         EndIf
         
         If *ch
-          Debug ""+GetParent(*w) +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
+          Debug ""+GetParent(*w) +" "+ GetParent(*ch) +" "+  WidgetY(*ch) +" "+  WidgetY(*ch, 3)
         EndIf
         
         i!1
@@ -40,15 +40,15 @@ If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   
   *b=Button(10,430, 200, 30, "change parent", #__Button_Toggle)
   
-;   ForEach __widgets( )
-;     __widgets( )\class = __widgets( )\class +"-"+ __widgets( )\index
+;   ForEach widgets( )
+;     widgets( )\class = widgets( )\class +"-"+ widgets( )\index
 ;   Next
   
   i = 1
   SetParent(*w, *p2)
   
-  ForEach __widgets( )
-    Debug  ""+ListIndex(__widgets( )) +" - "+ __widgets( )\index +" - "+ __widgets( )\class +" - "+ __widgets( )\text\string +" - "+ __widgets( )\root
+  ForEach widgets( )
+    Debug  ""+ListIndex(widgets( )) +" - "+ widgets( )\index +" - "+ widgets( )\class +" - "+ widgets( )\text\string +" - "+ widgets( )\root
   Next
   
   
@@ -56,8 +56,9 @@ If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 24
-; FirstLine = 19
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 50
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
+; DPIAware

@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Static i
       
       ;\\
-      GetAtPoint( root( ), mouse( )\x, mouse( )\y )
+      GetAtPoint( root( ), mouse( )\x, mouse( )\y, widgets( ) )
       
       If EnteredWidget( ) = object
          i = EnteredWidget( )\frame_width( ) - 5
@@ -65,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Resize( object, #PB_Ignore, #PB_Ignore, i, #PB_Ignore)
         ; PostEventCanvasRepaint( root( ))
       Else
-         If width( object, #__c_frame ) < 250
-            i = width( object, #__c_frame ) + 5
+         If WidgetWidth( object, #__c_frame ) < 250
+            i = WidgetWidth( object, #__c_frame ) + 5
             
             Debug "timer "+i
             Resize( object, #PB_Ignore, #PB_Ignore, i, #PB_Ignore)
@@ -80,10 +80,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Procedure CustomEvents( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
             
          Case #__event_statuschange
-            If EventWidget( )\show
+            If EventWidget( )\hide=0;show
                Debug "statuschange "
             EndIf
             
@@ -94,8 +94,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 43
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 59
+; FirstLine = 55
 ; Folding = --
 ; EnableXP
+; DPIAware

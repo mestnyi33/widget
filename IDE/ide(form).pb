@@ -128,10 +128,10 @@ Macro properties_update_disable( _gadget_, _value_ )
 EndMacro
 
 Macro properties_update_coordinate( _gadget_, _value_ )
-   SetItemText( _gadget_, #_pi_x,       GetItemText( _gadget_, #_pi_x )       +Chr( 10 )+Str( X( _value_, #__c_container ) ) )
-   SetItemText( _gadget_, #_pi_y,       GetItemText( _gadget_, #_pi_y )       +Chr( 10 )+Str( Y( _value_, #__c_container ) ) )
-   SetItemText( _gadget_, #_pi_width,   GetItemText( _gadget_, #_pi_width )   +Chr( 10 )+Str( Width( _value_ ) ) )
-   SetItemText( _gadget_, #_pi_height,  GetItemText( _gadget_, #_pi_height )  +Chr( 10 )+Str( Height( _value_ ) ) )
+   SetItemText( _gadget_, #_pi_x,       GetItemText( _gadget_, #_pi_x )       +Chr( 10 )+Str( WidgetX( _value_, #__c_container ) ) )
+   SetItemText( _gadget_, #_pi_y,       GetItemText( _gadget_, #_pi_y )       +Chr( 10 )+Str( WidgetY( _value_, #__c_container ) ) )
+   SetItemText( _gadget_, #_pi_width,   GetItemText( _gadget_, #_pi_width )   +Chr( 10 )+Str( WidgetWidth( _value_ ) ) )
+   SetItemText( _gadget_, #_pi_height,  GetItemText( _gadget_, #_pi_height )  +Chr( 10 )+Str( WidgetHeight( _value_ ) ) )
 EndMacro
 
 Macro properties_updates( _gadget_, _value_ )
@@ -515,8 +515,8 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
 EndProcedure
 
 Procedure widget_events( )
-   Protected eventtype = WidgetEvent( )\type 
-   Protected *new, *e_widget._s_widget = WidgetEvent( )\widget
+   Protected eventtype = WidgetEvent( ) 
+   Protected *new, *e_widget._s_widget = EventWidget( )
    ;    Static *beforeWidget
    
    Select eventtype 
@@ -591,7 +591,7 @@ Procedure widget_events( )
                Debug " ----- DD_copy ----- " + GetText( PressedWidget( ) )
                
                ;            *new = widget_add( *e_widget, GetClass( PressedWidget( ) ), 
-               ;                         X( PressedWidget( ) ), Y( PressedWidget( ) ), Width( PressedWidget( ) ), Height( PressedWidget( ) ) )
+               ;                         WidgetX( PressedWidget( ) ), WidgetY( PressedWidget( ) ), WidgetWidth( PressedWidget( ) ), WidgetHeight( PressedWidget( ) ) )
                
                *new = widget_add( *e_widget, DropText( ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
                SetText( *new, "Copy_"+DropText( ) )
@@ -633,7 +633,7 @@ Procedure widget_events( )
          
       Case #__event_Resize
          properties_update_coordinate( ide_inspector_properties, *e_widget )
-         SetWindowTitle( GetWindow(*e_widget\root), Str(width(*e_widget))+"x"+Str(height(*e_widget) ) )
+         SetWindowTitle( GetWindow(*e_widget\root), Str(WidgetWidth(*e_widget))+"x"+Str(WidgetHeight(*e_widget) ) )
          
       Case #__event_MouseEnter,
            #__event_MouseLeave,
@@ -901,9 +901,9 @@ EndProcedure
 
 Procedure ide_events( )
    Protected *this._s_widget
-   Protected e_type = WidgetEvent( )\type
-   Protected e_item = WidgetEvent( )\item
-   Protected *e_widget._s_widget = WidgetEvent( )\widget
+   Protected e_type = WidgetEvent( )
+   Protected e_item = WidgetEventItem( )
+   Protected *e_widget._s_widget = EventWidget( )
    
    Select e_type
       Case #__event_Close
@@ -1192,11 +1192,11 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
 ;    ; SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
 ;    
 ;    ; set splitters dafault positions
-;    SetState( ide_splitter, width( ide_splitter )-200 )
-;    SetState( ide_help_splitter, height( ide_help_splitter )-80 )
-;    SetState( ide_debug_splitter, height( ide_debug_splitter )-150 )
+;    SetState( ide_splitter, WidgetWidth( ide_splitter )-200 )
+;    SetState( ide_help_splitter, WidgetHeight( ide_help_splitter )-80 )
+;    SetState( ide_debug_splitter, WidgetHeight( ide_debug_splitter )-150 )
 ;    SetState( ide_inspector_splitter, 200 )
-;    SetState( ide_design_splitter, Height( ide_toolbar ) - 1 + 2 )
+;    SetState( ide_design_splitter, WidgetHeight( ide_toolbar ) - 1 + 2 )
    
    ;
    ;\\ main splitter 2 example 
@@ -1219,10 +1219,10 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    SetAttribute( ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
    
    ; set splitters dafault positions
-   SetState( ide_splitter, height( ide_toolbar ) - 1 + 2 )
+   SetState( ide_splitter, WidgetHeight( ide_toolbar ) - 1 + 2 )
    SetState( ide_design_splitter, 200 )
-   SetState( ide_help_splitter, height( ide_help_splitter )-80 )
-   SetState( ide_debug_splitter, height( ide_debug_splitter )-200 )
+   SetState( ide_help_splitter, WidgetHeight( ide_help_splitter )-80 )
+   SetState( ide_debug_splitter, WidgetHeight( ide_debug_splitter )-200 )
    SetState( ide_inspector_splitter, 230 )
    
    
@@ -1392,8 +1392,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 445
-; FirstLine = 434
+; CursorPosition = 635
+; FirstLine = 631
 ; Folding = ----------------------
 ; EnableXP
 ; DPIAware

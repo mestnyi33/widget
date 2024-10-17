@@ -308,7 +308,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If flag & #__text_right
           flags + "#PB_Button_Right|"
         EndIf
-        If flag & #__text_border
+        If flag & #__flag_borderflat
           flags + "#PB_Text_Border|"
         EndIf
         
@@ -427,7 +427,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case "#PB_String_UpperCase"               : Flag = Flag | #PB_String_UpperCase
             ; text
           Case "#PB_Text_Left"                      : Flag = Flag | #__Text_Left
-          Case "#PB_Text_Border"                    : Flag = Flag | #__Text_Border
+          Case "#PB_Text_Border"                    : Flag = Flag | #__flag_borderflat
           Case "#PB_Text_Center"                    : Flag = Flag | #__Text_Center
           Case "#PB_Text_Right"                     : Flag = Flag | #__Text_Right
             ; option
@@ -571,14 +571,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_Change
         Select EventWidget( )
           Case w_type 
             flag = Flag(*this)
             Add(FlagFromType(GetState(w_type)))
             ;Debug FlagFromFlag(GetType(*this), flag)
-            SetCheckedText(w_flag, FlagFromFlag(GetType(*this), flag))
+            SetCheckedText(w_flag, FlagFromFlag(GetTypeCount(*this), flag))
             
           Case w_flag
             ;  Debug GetCheckedText(w_flag)
@@ -608,7 +608,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(w_type, -1, ClassFromType(i))
     Next
     
-    w_flag = widget::Tree(width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__tree_optionboxes) 
+    w_flag = widget::Tree(width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_optionboxes) 
     
     Bind(#PB_All, @events_widgets())
     
@@ -617,6 +617,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = d----+-V8-
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 610
+; FirstLine = 511
+; Folding = d------28-
 ; EnableXP
+; DPIAware

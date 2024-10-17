@@ -24,20 +24,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Define line.s
       ;\\
       Debug "---->>"
-      ForEach __widgets( )
-         ;Debug __widgets( )\class
+      ForEach widgets( )
+         ;Debug widgets( )\class
          line = "  "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class ; __widgets( )\text\string
+         line + widgets( )\class ; widgets( )\text\string
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -49,8 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
   Procedure Widgets_CallBack()
     Protected EventWidget.i = EventWidget( ),
-              EventType.i = WidgetEvent( )\type,
-              EventItem.i = WidgetEvent( )\item;, EventData.i = WidgetEvent( )\data
+              EventType.i = WidgetEvent( ),
+              EventItem.i = WidgetEventItem( );, EventData.i = WidgetEventData( )
     
     Select EventType
       Case #__Event_MouseEnter
@@ -133,8 +133,9 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose()
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 39
+; FirstLine = 22
 ; Folding = 6z
 ; EnableXP
 ; DPIAware

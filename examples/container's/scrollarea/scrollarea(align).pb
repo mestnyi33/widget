@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+EventWidget()+ " - widget event - " +WidgetEventType()
+    Debug ""+EventWidget()+ " - widget event - " +WidgetEvent()
   ;  Debug ""+Str(IDWidget(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
@@ -110,9 +110,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 79
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 11
+; FirstLine = 7
 ; Folding = --
 ; EnableXP
 ; DPIAware

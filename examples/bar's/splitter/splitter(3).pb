@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   SplitterGadget(71, 125, 80, 250, 70, 31, 61, #PB_Splitter_Separator )
   
-  Define max = 250-#__splitter_buttonsize
+  Define max = 250-#__splittersize
   SetGadgetState(3, -10)
   SetGadgetState(6, max-10)
   SetGadgetState(31, max/2)
@@ -90,8 +90,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 79
-; FirstLine = 57
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 49
 ; Folding = -
 ; EnableXP
+; DPIAware

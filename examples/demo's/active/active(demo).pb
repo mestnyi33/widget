@@ -12,9 +12,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Widget_Handler()
     Protected EventWidget.i = EventWidget( ),
-              EventType.i = WidgetEvent( )\type,
-              EventItem.i = WidgetEvent( )\item, 
-              EventData.i = WidgetEvent( )\data
+              EventType.i = WidgetEvent( ),
+              EventItem.i = WidgetEventItem( ), 
+              EventData.i = WidgetEventData( )
     
     Select EventType
       Case #__Event_MouseEnter
@@ -41,13 +41,13 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         ; draw active window focused frame
 ;         If GetActive( ) = EventWidget
 ;           DrawingMode(#PB_2DDrawing_Outlined)
-;           Box(0, 0, width(EventWidget), height(EventWidget), $FFFF00FF)
+;           Box(0, 0, WidgetWidth(EventWidget), WidgetHeight(EventWidget), $FFFF00FF)
 ;         EndIf
 ;         
 ;         ; draw active gadget focused frame
 ;         If GetGadget( GetActive( ) ) = EventWidget
 ;           DrawingMode(#PB_2DDrawing_Outlined)
-;           Box(0, 0, width(EventWidget), height(EventWidget), $FFFFFF00)
+;           Box(0, 0, WidgetWidth(EventWidget), WidgetHeight(EventWidget), $FFFFFF00)
 ;         EndIf
         
     EndSelect
@@ -68,8 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
     w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
     
-    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
   EndProcedure
   
@@ -81,8 +81,8 @@ CompilerIf #PB_Compiler_IsMainFile
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
     w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
     
-    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
     ;       
     w_list(Hex(120)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu)) : SetData(w_list(Hex(120)), 120)
@@ -91,8 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
     w_list(Hex(121)) = String(10, 10, 180, 85, "String_121") : SetData(w_list(Hex(121)), 121)
     w_list(Hex(122)) = String(10, 105, 180, 85, "String_122") : SetData(w_list(Hex(122)), 122)
     
-    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
     
     w_list(Hex(130)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_130")) : SetData(w_list(Hex(130)), 130)
@@ -101,8 +101,8 @@ CompilerIf #PB_Compiler_IsMainFile
     w_list(Hex(131)) = String(10, 10, 180, 85, "String_131") : SetData(w_list(Hex(131)), 131)
     w_list(Hex(132)) = String(10, 105, 180, 85, "String_132") : SetData(w_list(Hex(132)), 132)
     
-    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
   EndProcedure
   
@@ -231,8 +231,8 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
       w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
       
-      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
       ;       
       w_list(Hex(120)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu)) : SetData(w_list(Hex(120)), 120)
@@ -241,8 +241,8 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(121)) = String(10, 10, 180, 85, "String_121") : SetData(w_list(Hex(121)), 121)
       w_list(Hex(122)) = String(10, 105, 180, 85, "String_122") : SetData(w_list(Hex(122)), 122)
       
-      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
       
       w_list(Hex(130)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_130")) : SetData(w_list(Hex(130)), 130)
@@ -251,8 +251,8 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(131)) = String(10, 10, 180, 85, "String_131") : SetData(w_list(Hex(131)), 131)
       w_list(Hex(132)) = String(10, 105, 180, 85, "String_132") : SetData(w_list(Hex(132)), 132)
       
-      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, WidgetHeight(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
@@ -314,9 +314,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Repaint()
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 29
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 254
+; FirstLine = 254
 ; Folding = ----
 ; EnableXP
 ; DPIAware

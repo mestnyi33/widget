@@ -15,17 +15,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_widgets()
       Protected repaint
       
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_MouseEnter,
               #__event_MouseLeave,
               #__event_MouseMove
             Protected *this._s_WIDGET = EventWidget( )
             
-;             If WidgetEventType( ) = #__event_MouseEnter
+;             If WidgetEvent( ) = #__event_MouseEnter
 ;                Debug "e "+Trim(GetText( *this ))
 ;             EndIf
 ;             
-;             If WidgetEventType( ) = #__event_MouseLeave
+;             If WidgetEvent( ) = #__event_MouseLeave
 ;                Debug "l "+Trim(GetText( *this ))
 ;             EndIf
             
@@ -234,7 +234,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 7
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 13
 ; Folding = ---
 ; EnableXP

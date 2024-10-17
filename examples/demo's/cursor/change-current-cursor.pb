@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Procedure CustomEvents( )
       Protected *enter._s_WIDGET = object1
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_enter
             Debug "enter " + EventWidget( )\class
          Case #__event_leave
@@ -128,7 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 6
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 97
+; FirstLine = 93
 ; Folding = --
 ; EnableXP

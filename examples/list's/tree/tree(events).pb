@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     ;; ClearDebugOutput()
     
-    Select WidgetEventType()
+    Select WidgetEvent()
       Case #__event_Focus
         Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( FOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       Case #__event_LostFocus
@@ -85,9 +85,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 23
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 11
+; FirstLine = 7
 ; Folding = --
 ; EnableXP
 ; DPIAware

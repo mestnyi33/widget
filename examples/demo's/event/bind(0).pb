@@ -7,11 +7,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseLib(Widget)
   
-  Global.i gEvent, gQuit, *but, *win
+  Global.i gEvent, gQuit
+  Global *but, *win
   
   Procedure events_roots( )
-    If WidgetEventType( ) <> #__event_MouseMove
-      Debug "  "+ IDWidget(EventWidget()) +" - widget event - "+ WidgetEventType() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEventType()
+    If WidgetEvent( ) <> #__event_MouseMove
+      Debug "  "+ IDWidget(EventWidget()) +" - widget event - "+ WidgetEvent() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEvent()
     EndIf
   EndProcedure
   
@@ -81,9 +82,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 9
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 10
+; FirstLine = 5
 ; Folding = --
 ; EnableXP
 ; DPIAware

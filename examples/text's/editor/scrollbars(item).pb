@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   ;\\ Open Root0
   Define *root0._S_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
+  ;BindWidgetEvent( *root2, @HandlerEvents( ) )
   
   Global *button_panel = Panel(10, 10, 200 + 60, 200)
   Define Text.s, m.s   = #LF$, a
@@ -137,6 +137,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = 0
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 58
+; FirstLine = 42
+; Folding = -
 ; EnableXP
+; DPIAware

@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -85,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If Width = 100
            direction = 1
         EndIf
-        If Width = Width(Root())-100
+        If Width = WidgetWidth(Root())-100
           direction =- 1
         EndIf
 ;         
@@ -101,8 +100,8 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventGadget()
           Case 0
             Define *th._s_widget = Widgets(Str(0))
-            Width = Width(*th)
-            Height = Height(*th)
+            Width = WidgetWidth(*th)
+            Height = WidgetHeight(*th)
             
             If GetGadgetState(0)
               AddWindowTimer(0, 1, 200)
@@ -115,8 +114,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 64
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 103
 ; Folding = ---
 ; EnableXP

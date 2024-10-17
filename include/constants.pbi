@@ -90,12 +90,12 @@
       #__a_line_bottom  = 3
       
       ; a_set( ) flags
-      EnumerationBinary 1
-         #__a_position ; положение
-         #__a_width    ; по ширине
-         #__a_height   ; по высоте
-         #__a_corner   ; по углам
-         #__a_zoom     ; по растянутый
+      Enumeration;Binary 1
+         #__a_position = 1 << 1 ; положение
+         #__a_width    = 1 << 2 ; по ширине
+         #__a_height   = 1 << 3 ; по высоте
+         #__a_corner   = 1 << 4 ; по углам
+         #__a_zoom     = 1 << 5 ; по растянутый
          #__a_nodraw
       EndEnumeration
       ;
@@ -160,10 +160,10 @@
       ;   #PB_state = 1<<16
       
       ;-\\ resize-state
-      EnumerationBinary
-         #__resize_restore
-         #__resize_minimize
-         #__resize_maximize
+      Enumeration;Binary
+         #__resize_restore  = 1 << 1 
+         #__resize_minimize = 1 << 2 
+         #__resize_maximize = 1 << 3 
       EndEnumeration
       
       ;-\\ create-flags
@@ -896,9 +896,9 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 45
+; IDE Options = PureBasic 5.20 LTS (Windows - x64)
+; CursorPosition = 165
+; FirstLine = 148
 ; Folding = ----
 ; EnableXP
 ; DPIAware

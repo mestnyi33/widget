@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_LeftClick
         Select EventWidget( )
           Case *this
@@ -122,8 +122,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 78
-; FirstLine = 63
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 30
 ; Folding = --
 ; EnableXP
+; DPIAware

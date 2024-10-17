@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     Protected ComboBox.s
-    Protected eventtype = WidgetEventType( )
+    Protected eventtype = WidgetEvent( )
     If eventtype = #__event_Draw Or eventtype = #__event_MouseMove
       ProcedureReturn 
     EndIf
@@ -131,9 +131,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( ) 
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 57
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 49
+; FirstLine = 45
 ; Folding = ---
 ; EnableXP
 ; DPIAware

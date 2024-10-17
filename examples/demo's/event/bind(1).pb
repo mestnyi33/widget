@@ -6,23 +6,24 @@ CompilerIf #PB_Compiler_IsMainFile
 	EnableExplicit
 	UseLib(Widget)
 	
-	Global.i gEvent, gQuit, *but, *win
+	Global.i gEvent, gQuit
+	Global *but, *win
 	
 	Procedure events_widgets( )
-		If WidgetEventType() <> #__event_MouseMove And 
-		   WidgetEventType() <> #__event_Draw And 
-		   WidgetEventType() <> #__event_StatusChange
+		If WidgetEvent() <> #__event_MouseMove And 
+		   WidgetEvent() <> #__event_Draw And 
+		   WidgetEvent() <> #__event_StatusChange
 			
 			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
-				Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType() +" ("+ ClassFromEvent( WidgetEventType())+ ")  item - " +WidgetEventItem() +" (gadget)"
+				Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ ClassFromEvent( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
 			EndIf
 			
 			If IDWidget(EventWidget()) = 1
-				If WidgetEventType() = #__event_MouseEnter
+				If WidgetEvent() = #__event_MouseEnter
 					Resize( EventWidget(), #PB_Ignore, #PB_Ignore, 280, #PB_Ignore)
 				EndIf
-				If WidgetEventType() = #__event_MouseLeave
+				If WidgetEvent() = #__event_MouseLeave
 					Resize( EventWidget(), #PB_Ignore, #PB_Ignore, 240, #PB_Ignore)
 				EndIf
 				ProcedureReturn #PB_Ignore ; no send to (window & root) - event
@@ -31,12 +32,12 @@ CompilerIf #PB_Compiler_IsMainFile
 	EndProcedure
 	
 	Procedure events_windows( )
-		If WidgetEventType() <> #__event_MouseMove And 
-		   WidgetEventType() <> #__event_Draw And
-		   WidgetEventType() <> #__event_StatusChange
+		If WidgetEvent() <> #__event_MouseMove And 
+		   WidgetEvent() <> #__event_Draw And
+		   WidgetEvent() <> #__event_StatusChange
 			
 			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
-				Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (window)"
+				Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
 			EndIf
 			
 			If IDWidget(EventWidget()) = 2
@@ -46,12 +47,12 @@ CompilerIf #PB_Compiler_IsMainFile
 	EndProcedure
 	
 	Procedure events_roots( )
-		If WidgetEventType() <> #__event_MouseMove And 
-		   WidgetEventType() <> #__event_Draw And
-		   WidgetEventType() <> #__event_StatusChange
+		If WidgetEvent() <> #__event_MouseMove And 
+		   WidgetEvent() <> #__event_Draw And
+		   WidgetEvent() <> #__event_StatusChange
 			
 			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
-				Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEventType()+ "  item - " +WidgetEventItem() +" (root)"
+				Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
 			EndIf
 		EndIf
 	EndProcedure
@@ -99,22 +100,22 @@ CompilerEndIf
 ;   
 ;   Procedure active()
 ;     Protected *ew._s_widget = EventWidget( )
-;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEventType()+" "+*ew\index
+;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEvent()+" "+*ew\index
 ;   EndProcedure
 ;   
 ;   Procedure deactive()
 ;     Protected *ew._s_widget = EventWidget( )
-;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEventType()+" "+*ew\index
+;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEvent()+" "+*ew\index
 ;   EndProcedure
 ;   
 ;   Procedure click()
 ;     Protected *ew._s_widget = EventWidget( )
-;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEventType()+" "+*ew\index
+;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEvent()+" "+*ew\index
 ;   EndProcedure
 ;   
 ;   Procedure events()
 ;     Protected *ew._s_widget = EventWidget( )
-;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEventType()+" "+*ew\index
+;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEvent()+" "+*ew\index
 ;   EndProcedure
 ;   
 ;   If Open(OpenWindow(#PB_Any, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
@@ -152,9 +153,9 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; End  
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 22
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 9
+; FirstLine = 1
 ; Folding = ----
 ; EnableXP
 ; DPIAware

@@ -15,20 +15,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Define line.s
       ;\\
       Debug "---->>"
-      ForEach __widgets( )
-         ;Debug __widgets( )\class
+      ForEach widgets( )
+         ;Debug widgets( )\class
          line = "  "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class ; __widgets( )\text\string
+         line + widgets( )\class ; widgets( )\text\string
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
-   ;BindWidgetEvent( *root1, @BindEvents( ) )
+   ;BindWidgetEvent( *root1, @HandlerEvents( ) )
    
   
    
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global *c, *p, *panel._s_WIDGET
    Procedure do_Events( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_LeftClick
             
             Select GetText( EventWidget( ) )
@@ -145,20 +145,20 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       Define line.s
       ;\\
       Debug "---->>"
-      ForEach __widgets( )
-         ;Debug __widgets( )\class
+      ForEach widgets( )
+         ;Debug widgets( )\class
          line = "  "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class ; __widgets( )\text\string
+         line + widgets( )\class ; widgets( )\text\string
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -177,7 +177,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    ;\\
    Define *root1._s_WIDGET = root( ): *root1\class = "root1": SetText(*root1, "root1")
-   ;BindWidgetEvent( *root1, @BindEvents( ) )
+   ;BindWidgetEvent( *root1, @HandlerEvents( ) )
    
    
    
@@ -195,7 +195,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
                 colorback1 = $ff00ff00,
                 colorframe1 = $ff0000ff
       
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_MouseEnter,
               #__event_MouseLeave,
               #__event_MouseMove
@@ -301,20 +301,20 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       Define line.s
       ;\\
       Debug "---->>"
-      ForEach __widgets( )
-         ;Debug __widgets( )\class
+      ForEach widgets( )
+         ;Debug widgets( )\class
          line = "  "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class ; __widgets( )\text\string
+         line + widgets( )\class ; widgets( )\text\string
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -414,26 +414,26 @@ CompilerEndIf
 ;       EndIf
 ;       
 ;       Debug "----all childrens-----"
-;       ForEach __widgets( )
-;          Debug  __widgets( )\class
+;       ForEach widgets( )
+;          Debug  widgets( )\class
 ;       Next
 ;       
 ;       ;\\
 ;       Define line.s
 ;       Debug "---->>"
-;       ForEach __widgets( )
-;          line = "  ";+ __widgets( )\class +" "
+;       ForEach widgets( )
+;          line = "  ";+ widgets( )\class +" "
 ;          
-;          If __widgets( )\before\widget
-;             line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+;          If widgets( )\before\widget
+;             line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
 ;          Else
 ;             line + "-------- <<  " 
 ;          EndIf
 ;          
-;          line + __widgets( )\class ; __widgets( )\text\string
+;          line + widgets( )\class ; widgets( )\text\string
 ;          
-;          If __widgets( )\after\widget
-;             line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+;          If widgets( )\after\widget
+;             line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
 ;          Else
 ;             line + "  >> --------" 
 ;          EndIf
@@ -446,8 +446,9 @@ CompilerEndIf
 ;       WaitClose( )
 ;    EndIf   
 ; CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 94
-; FirstLine = 54
-; Folding = vd--+-
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 179
+; FirstLine = 144
+; Folding = ------
 ; EnableXP
+; DPIAware

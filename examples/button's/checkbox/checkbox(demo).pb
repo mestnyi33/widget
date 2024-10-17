@@ -18,9 +18,9 @@ EndProcedure
 
 Procedure events_widgets( )
   ClearDebugOutput( )
-  ; Debug ""+Str( EventWidget( )\index - 1 )+ " - widget  event - " +WidgetEventType( )+ "  state - " GetState( EventWidget( ) ) ; 
+  ; Debug ""+Str( EventWidget( )\index - 1 )+ " - widget  event - " +WidgetEvent( )+ "  state - " GetState( EventWidget( ) ) ; 
   
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__event_Change
       SetGadgetState( IDWidget( EventWidget( ) ), GetState( EventWidget( ) ) )
       Debug  Str( IDWidget( EventWidget( ) ) )+" - widget change state " + GetState( EventWidget( ) )
@@ -54,8 +54,8 @@ If Open( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Wi
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 25
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 22
 ; FirstLine = 18
 ; Folding = -
 ; EnableXP

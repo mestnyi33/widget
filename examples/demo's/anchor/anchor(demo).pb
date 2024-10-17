@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets( )
     Protected *this._s_widget = EventWidget( )
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_LeftClick
         Select *this 
           Case *FrameColor
@@ -100,8 +100,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 47
-; FirstLine = 18
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 11
+; FirstLine = 7
 ; Folding = --
 ; EnableXP

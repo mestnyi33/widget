@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Procedure gadget_CallBack( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_close
             Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
            ; ProcedureReturn #PB_Ignore
@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Procedure window_CallBack( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_close
             Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
             ;ProcedureReturn 3
@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Procedure root_CallBack( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_close
             Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
             ;ProcedureReturn 4
@@ -96,8 +96,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 36
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 47
+; FirstLine = 17
 ; Folding = --
 ; EnableXP

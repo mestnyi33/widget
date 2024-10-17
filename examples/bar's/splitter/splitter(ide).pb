@@ -146,9 +146,9 @@ CompilerEndIf
 ;   If state
 ;     ; set splitters dafault positions
 ;     ;SetState(Splitter_ide, -130)
-;     SetState(Splitter_ide, width(Splitter_ide)-220)
-;     SetState(splitter_help, height(splitter_help)-80)
-;     SetState(splitter_debug, height(splitter_debug)-150)
+;     SetState(Splitter_ide, WidgetWidth(Splitter_ide)-220)
+;     SetState(splitter_help, WidgetHeight(splitter_help)-80)
+;     SetState(splitter_debug, WidgetHeight(splitter_debug)-150)
 ;     SetState(Splitter_inspector, 200)
 ;     SetState(Splitter_design, 30)
 ;   EndIf
@@ -165,9 +165,9 @@ CompilerEndIf
 ;   Bind(-1,-1)
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 134
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 150
+; FirstLine = 148
 ; Folding = -
 ; EnableXP
 ; DPIAware

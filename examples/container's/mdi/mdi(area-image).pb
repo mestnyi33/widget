@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *ew._s_widget = EventWidget( )
       Static DragWidget
       
-      Select WidgetEventType( )
+      Select WidgetEvent( )
             ;       Case #__event_MouseEnter
             ;         SetCursor( *ew, #PB_Cursor_Hand )
             ;         
@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                If Alpha( Point( Mouse( )\x - *ew\x[#__c_inner], Mouse( )\y - *ew\y[#__c_inner] ) )
 ;                   DragWidget = *ew
 ;                Else
-;                   DragWidget = GetAtPoint( Root( ), mouse( )\x, mouse( )\y, __widgets( ), *ew\address )
+;                   DragWidget = GetAtPoint( Root( ), mouse( )\x, mouse( )\y, widgets( ), *ew\address )
 ;                EndIf
 ;                
 ;                StopDrawing( )
@@ -238,7 +238,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 13
+; CursorPosition = 34
+; FirstLine = 30
 ; Folding = -8-
 ; EnableXP

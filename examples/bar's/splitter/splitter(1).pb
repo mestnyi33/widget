@@ -54,9 +54,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\ state
   SetGadgetState(3, 10)
-  SetGadgetState(6, 250-#__splitter_buttonsize-10)
+  SetGadgetState(6, 250-#__splittersize-10)
   SetState(s_0, 10)
-  SetState(s_1, 250-#__splitter_buttonsize-10)
+  SetState(s_1, 250-#__splittersize-10)
   
   Define event
   Repeat
@@ -64,8 +64,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 39
-; FirstLine = 31
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 58
+; FirstLine = 45
 ; Folding = -
 ; EnableXP
+; DPIAware

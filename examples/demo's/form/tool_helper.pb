@@ -30,7 +30,7 @@ Global Tool_Container_Mode,
 Procedure Tool_Gadget_Event( )
    Select EventWidget( )
       Case Tool_Align_To_Grid, Tool_Align_To_Line
-         Select WidgetEventType( )
+         Select WidgetEvent( )
             Case #__Event_Change
                Protected State1 = Bool(GetState(Tool_Align_To_Line) = #PB_Checkbox_Checked)
                Protected State2 = Bool(GetState(Tool_Align_To_Grid) = #PB_Checkbox_Checked)
@@ -53,7 +53,7 @@ Procedure Tool_Gadget_Event( )
          EndSelect
          
       Case Tool_Grid_Show
-         Select WidgetEventType( )
+         Select WidgetEvent( )
             Case #__Event_LeftClick
                If GetState(Tool_Grid_Show) = #PB_Checkbox_Checked
                   
@@ -90,8 +90,8 @@ Procedure Tool_Gadget( Window, Width, Height )
    ;SetColor( Tool_Line_Frame, #__color_back, GetColor(Tool_Line_Size_Info, #__color_back))
    CloseList( )
    
-   Tool_Align_To_Grid = Option(X(Tool_Grid_Container, 3)+6, Y(Tool_Grid_Container, 3)+2, 152-12, 16, "Выровнять по сетке")
-   Tool_Align_To_Line = Option(X(Tool_Line_Container, 3)+6, Y(Tool_Line_Container, 3)+2, 152-12, 16, "Выровнять по линии")
+   Tool_Align_To_Grid = Option(X(Tool_Grid_Container, 3)+6, WidgetY(Tool_Grid_Container, 3)+2, 152-12, 16, "Выровнять по сетке")
+   Tool_Align_To_Line = Option(X(Tool_Line_Container, 3)+6, WidgetY(Tool_Line_Container, 3)+2, 152-12, 16, "Выровнять по линии")
    CloseList( )
    CloseList( )
    
@@ -123,8 +123,9 @@ CompilerEndIf
 
 DisableExplicit
 
-; IDE Options = PureBasic 6.04 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 98
-; FirstLine = 90
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 89
 ; Folding = --
 ; EnableXP
+; DPIAware

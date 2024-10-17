@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *ew._s_widget = EventWidget( )
       Static DragWidget
       
-      Select WidgetEventType( )
+      Select WidgetEvent( )
             ;       Case #__event_MouseEnter
             ;         SetCursor( *ew, #PB_Cursor_Hand )
             ;         
@@ -240,8 +240,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 162
-; FirstLine = 148
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 46
+; FirstLine = 42
 ; Folding = --v
 ; EnableXP

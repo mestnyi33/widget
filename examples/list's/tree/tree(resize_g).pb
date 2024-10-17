@@ -149,7 +149,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_tree_widget()
     ;Debug " widget - "+*event\widget+" "+*event\type
     Protected EventGadget = eventwidget()
-    Protected EventType = widgeteventtype()
+    Protected EventType = WidgetEvent()
     Protected EventData = widgeteventdata()
     Protected EventItem = GetState(EventGadget)
     
@@ -246,6 +246,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = 8--2--
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 151
+; FirstLine = 33
+; Folding = 8--0--
 ; EnableXP
+; DPIAware

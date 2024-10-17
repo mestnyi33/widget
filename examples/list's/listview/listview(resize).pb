@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   Procedure events_widgets()
-    Select WidgetEventType()
+    Select WidgetEvent()
       Case #__event_Resize
         Debug  "resize "+ EventWidget( )\frame_width( ) +"x"+ EventWidget( )\frame_height( )
       
@@ -32,6 +32,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = -
 ; EnableXP
+; DPIAware

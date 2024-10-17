@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *object = widget( )
       If *object <> root( )
          ;\\ для всех виджетов
-         Bind( *object, @CustomEvents( ), #__event_cursorchange )
+         Bind( *object, @CustomEvents( ), #__event_cursor )
          
          ;\\ исключаем некоторые виджеты
          If *object\child
@@ -47,13 +47,13 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Procedure CustomEvents( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
             
-         Case #__event_cursorchange
-            Debug ""+ WidgetEvent( )\widget\class +" event( CURSOR ) "+ WidgetEvent( )\data +" "+ WidgetEvent( )\item
+         Case #__event_cursor
+            Debug ""+ EventWidget( )\class +" event( CURSOR ) "+ WidgetEventData( ) +" "+ WidgetEventItem( )
             
          Case #__event_statuschange
-             Debug ""+ WidgetEvent( )\widget\class +" event( STATUS ) "+ WidgetEvent( )\data +" "+ WidgetEvent( )\item
+             Debug ""+ EventWidget( )\class +" event( STATUS ) "+ WidgetEventData( ) +" "+ WidgetEventItem( )
             
          Case #__event_resize
              Debug ""+EventWidget( )\class +" event( RESIZE ) "+ EventWidget( )\frame_width( ) +" "+ EventWidget( )\frame_height( )
@@ -62,8 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 58
-; FirstLine = 28
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 51
+; FirstLine = 41
 ; Folding = --
 ; EnableXP

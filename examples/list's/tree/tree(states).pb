@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Select WidgetEventType()
+    Select WidgetEvent()
 ;       Case #__event_Focus
 ;         Debug  ""+IDWidget(EventWidget())+" - widget focus "+GetState(EventWidget())
 ;       Case #__event_LostFocus
@@ -245,9 +245,9 @@ EndProcedure
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 121
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 99
 ; Folding = ---
 ; EnableXP
 ; DPIAware

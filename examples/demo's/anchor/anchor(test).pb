@@ -58,7 +58,7 @@
   
   ;\\
   Procedure CustomEvents( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
           
        Case #__event_statuschange
           If EventWidget( )\show
@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   ;\\
   Procedure CustomEvents( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_draw
         
         ; Demo draw on element
@@ -151,6 +151,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; Folding = v-
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 116
+; FirstLine = 112
+; Folding = --
 ; EnableXP

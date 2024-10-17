@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseLib(widget)
    
    Procedure CallBack( )
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_Close
             Debug "disable (close - event)"
             ProcedureReturn 1
@@ -81,8 +81,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitEvent( @CallBack( ) )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 80
-; FirstLine = 15
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 8
+; FirstLine = 4
 ; Folding = --
 ; EnableXP
+; DPIAware

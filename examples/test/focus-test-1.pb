@@ -19,7 +19,7 @@
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
-;                                                  Height( *address ) - MenuHeight( )
+;                                                  WidgetHeight( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
 ;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Handler()
-     Debug ""+ClassFromEvent( WidgetEventType( ) ) +" - "+ EventWidget( )\class
+     Debug ""+ClassFromEvent( WidgetEvent( ) ) +" - "+ EventWidget( )\class
    EndProcedure
    
    ;\\
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Define *window._s_widget = root( )
    
-   *menu = CreateMenuBar( *window ) : SetClass(menu(), "root_MenuBar" )
+   *menu = CreateMenuBar( *window ) : SetClass(widget(), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarTitle("Title-2")
@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *window._s_widget = Window(100, 50, 300, 100, "menu click test", #PB_Window_SystemMenu)
    Define *container._s_widget = Container( 10, 10, 80, 100-20, #PB_Container_Flat ) : CloseList( )
    
-   *menu = CreateMenuBar( *window ) : SetClass(menu(), "window_MenuBar" )
+   *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
    
    BarTitle("Title-1")
    BarTitle("Title-2")
@@ -123,8 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 77
-; FirstLine = 42
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 84
+; FirstLine = 81
 ; Folding = --
 ; EnableXP

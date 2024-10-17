@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Area_Events( )
       Protected change
       
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_ReDraw
             ;Case #__event_Draw
             ; If is_root_( EventWidget( ) )
@@ -414,6 +414,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 70
+; FirstLine = 66
 ; Folding = ---------
 ; EnableXP

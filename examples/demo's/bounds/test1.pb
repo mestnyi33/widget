@@ -19,12 +19,12 @@ CompilerIf #PB_Compiler_IsMainFile
   SizeBounds(object, 200, 200, 401, 401)
   MoveBounds(object, 100, 100, 401, 401)
   
-  Bind( widget( ), @CustomEvents(), #PB_EventType_Draw )
+  Bind( widget( ), @CustomEvents(), #__Event_ReDraw )
   WaitClose( )
   
   Procedure CustomEvents( )
-    Select WidgetEventType( )
-      Case #PB_EventType_Draw
+    Select WidgetEvent( )
+      Case #__Event_ReDraw
         
         ; Demo draw on element
         UnclipOutput()
@@ -60,6 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 21
+; FirstLine = 19
 ; Folding = -
 ; EnableXP

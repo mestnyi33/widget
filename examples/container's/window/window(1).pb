@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Procedure Events_widgets( )
-    Debug "event "+ WidgetEventType( ) +" "+ EventWidget( )\index
+    Debug "event "+ WidgetEvent( ) +" "+ EventWidget( )\index
   EndProcedure
   
   ;
@@ -16,6 +16,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitEvent( #PB_All, @Events_widgets( ) )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP
+; DPIAware

@@ -9,21 +9,21 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global i, *test._s_widget
    
-   Procedure events( )
-      Protected event = __event( ) ; *event\type ; events( ) ; GetEvent( )
+   Procedure HandlerEvents( )
+      Protected event = WidgetEvent( ) 
       Protected *this._s_widget = EventWidget( )
       
       ;\\
       If event = #__event_MouseEnter
          If *this\parent
-            Debug " -enter- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEvent( )\data
+            Debug " -enter- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEventData( )
          EndIf
       EndIf
       
       ;\\
       If event = #__event_MouseLeave
          If *this\parent
-            Debug " -leave- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEvent( )\data
+            Debug " -leave- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEventData( )
          EndIf
       EndIf
    EndProcedure
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       If Open(0, 10,10, 480, 480)
          a_init( root( ) )
-         Bind(#PB_All, @events( ))
+         Bind(#PB_All, @HandlerEvents( ))
          Window(80, 100, 300, 280, "Window_2")
          
          ;\\
@@ -61,8 +61,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 26
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = --
 ; EnableXP

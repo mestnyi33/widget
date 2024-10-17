@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected change
     Protected *this._s_widget = EventWidget( )
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_Create
         ;             If Not *this\child
         ;                If *this\index > 0 And  *this\index < 5
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;    EndIf
 
 
-  ;BindWidgetEvent( *root, @BindEvents( ) )
+  ;BindWidgetEvent( *root, @HandlerEvents( ) )
   view = Container(10, 10, 406, 238, #PB_Container_Flat)
   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
   a_init( view, 8 )
@@ -227,7 +227,7 @@ CompilerIf #PB_Compiler_IsMainFile
  
   ;\\ Open Root0
   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
+  ;BindWidgetEvent( *root2, @HandlerEvents( ) )
   Global *menu._S_WIDGET = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
   
   SetColor( *menu, #__color_back, $FFC8ECF0 )
@@ -329,20 +329,20 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   
 ; ;   ;\\
 ; ;   Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
-; ;   ;BindWidgetEvent( *root1, @BindEvents( ) )
+; ;   ;BindWidgetEvent( *root1, @HandlerEvents( ) )
 ; ;   ;\\Close( )
 ; ;   
 ; ;   Define *root2._s_WIDGET = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
-; ;   ;BindWidgetEvent( *root2, @BindEvents( ) )
+; ;   ;BindWidgetEvent( *root2, @HandlerEvents( ) )
 ; ;   ;\\Close( )
 ; ;   
 ; ;   
 ; ;   Define *root3._s_WIDGET = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
-; ;   ;BindWidgetEvent( *root3, @BindEvents( ) )
+; ;   ;BindWidgetEvent( *root3, @HandlerEvents( ) )
 ; ;   ;\\Close( )
 ; ;   
 ; ;   Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
-; ;   ;BindWidgetEvent( *root4, @BindEvents( ) )
+; ;   ;BindWidgetEvent( *root4, @HandlerEvents( ) )
 ; ;   ;\\Close( )
 ;   
 
@@ -454,12 +454,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
-  ;BindWidgetEvent( *root1, @BindEvents( ) )
+  ;BindWidgetEvent( *root1, @HandlerEvents( ) )
   
   ;\\Close( )
   
   Define *root2._s_WIDGET = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
-  ;BindWidgetEvent( *root2, @BindEvents( ) )
+  ;BindWidgetEvent( *root2, @HandlerEvents( ) )
   
   HyperLink( 10, 10, 80, 40, "HyperLink", RGB(105, 245, 44) )
   String( 60, 20, 60, 40, "String" )
@@ -472,11 +472,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Define *root3._s_WIDGET = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
-  ;BindWidgetEvent( *root3, @BindEvents( ) )
+  ;BindWidgetEvent( *root3, @HandlerEvents( ) )
   ;\\Close( )
   
   Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
-  ;BindWidgetEvent( *root4, @BindEvents( ) )
+  ;BindWidgetEvent( *root4, @HandlerEvents( ) )
   ;\\Close( )
   
    WaitClose( )
@@ -508,7 +508,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
       Protected change
       Protected *this._s_widget = EventWidget( )
       
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_Create
             ;             If Not *this\child
             ;                If *this\index > 0 And  *this\index < 5
@@ -611,7 +611,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    ;       ; ToolTip(*toolbar, 6, "Find a document")
    ;    EndIf
    
-   ;BindWidgetEvent( *root, @BindEvents( ) )
+   ;BindWidgetEvent( *root, @HandlerEvents( ) )
    view = Container(10, 50, 406, 238, #PB_Container_Flat)
    SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
    ;a_init( view, 8 )
@@ -700,7 +700,8 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    
 CompilerEndIf
    
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 99
-; Folding = ---8---
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 613
+; FirstLine = 578
+; Folding = -------
 ; EnableXP

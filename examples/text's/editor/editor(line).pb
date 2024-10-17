@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     Protected String.s
-    Protected eventtype = WidgetEventType( )
+    Protected eventtype = WidgetEvent( )
     
     Select eventtype
       Case #__event_Focus
@@ -174,9 +174,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 56
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 48
 ; Folding = ---
 ; EnableXP
 ; DPIAware

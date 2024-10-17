@@ -39,10 +39,10 @@
   
   ;\\
   Procedure CustomEvents( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
           
        Case #__event_statuschange
-          If EventWidget( )\show
+          If EventWidget( )\hide=0;show
              Debug "statuschange "
           EndIf
           
@@ -53,8 +53,8 @@
  EndProcedure
  
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 8
-; FirstLine = 4
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 44
+; FirstLine = 40
 ; Folding = -
 ; EnableXP

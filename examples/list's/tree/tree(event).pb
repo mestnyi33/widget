@@ -26,7 +26,7 @@ EndProcedure
 Procedure events_widgets()
   ;; ClearDebugOutput()
   
-  Select WidgetEventType()
+  Select WidgetEvent()
     Case #__event_Focus
       Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( FOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
     Case #__event_LostFocus
@@ -192,9 +192,9 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   
   Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 43
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 28
+; FirstLine = 24
 ; Folding = ---
 ; EnableXP
 ; DPIAware

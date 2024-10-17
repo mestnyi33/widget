@@ -11,14 +11,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +this()\event+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_Resize
         Debug 666
-        ResizeGadget(oc, X(EventWidget( ), #__c_inner), Y(EventWidget( ), #__c_inner), width(EventWidget( ), #__c_inner), height(EventWidget( ), #__c_inner))
+        ResizeGadget(oc, WidgetX(EventWidget( ), #__c_inner), WidgetY(EventWidget( ), #__c_inner), WidgetWidth(EventWidget( ), #__c_inner), WidgetHeight(EventWidget( ), #__c_inner))
         
       Case #__Event_ScrollChange
         ResizeGadget(ic, -*g\scroll\h\bar\page\pos, -*g\scroll\v\bar\page\pos, #PB_Ignore, #PB_Ignore)
-       ; ResizeGadget(ic, X(*g, #__c_required), Y(*g, #__c_required), #PB_Ignore, #PB_Ignore)
+       ; ResizeGadget(ic, WidgetX(*g, #__c_required), WidgetY(*g, #__c_required), #PB_Ignore, #PB_Ignore)
     EndSelect
   EndProcedure
   
@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Bind(-1, @events_widgets())
     
     *g = ScrollArea(0, 0, 100, 100, Sw, Sh, 30, #PB_ScrollArea_Flat)
-    oc = ContainerGadget(#PB_Any, X(*g, #__c_inner), Y(*g, #__c_inner), width(*g, #__c_inner), height(*g, #__c_inner))
+    oc = ContainerGadget(#PB_Any, WidgetX(*g, #__c_inner), WidgetY(*g, #__c_inner), WidgetWidth(*g, #__c_inner), WidgetHeight(*g, #__c_inner))
     ic = ContainerGadget(#PB_Any, 0, 0, Sw, Sh)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;
     Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
     
-    ResizeGadget(oc, X(*g, #__c_inner), Y(*g, #__c_inner), width(*g, #__c_inner), height(*g, #__c_inner))
+    ResizeGadget(oc, WidgetX(*g, #__c_inner), WidgetY(*g, #__c_inner), WidgetWidth(*g, #__c_inner), WidgetHeight(*g, #__c_inner))
     
     BindGadgetEvent(g, @events_gadgets())
     Bind(*g, @events_widgets())
@@ -131,8 +131,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 57
+; FirstLine = 57
 ; Folding = --
 ; EnableXP
 ; DPIAware

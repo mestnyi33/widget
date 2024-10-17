@@ -244,8 +244,8 @@ EndProcedure
     With structures::*event
       ;Debug " widget - "+this()\widget+" "+this()\event
     Protected EventGadget = EventWidget( )
-    Protected EventType = WidgetEventType( )
-    Protected EventData = EventWidget( )\data
+    Protected EventType = WidgetEvent( )
+    Protected EventData = WidgetEventData( )
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
@@ -588,8 +588,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 522
-; FirstLine = 347
+; CursorPosition = 247
+; FirstLine = 85
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware

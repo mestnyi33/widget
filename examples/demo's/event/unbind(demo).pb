@@ -9,20 +9,20 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure events_widgets1()
-    Debug ""+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )\type
+    Debug ""+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )
   EndProcedure
   
   Procedure events_widgets2()
     ; ClearDebugOutput()
-    Debug " "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )\type
+    Debug " "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )
   EndProcedure
   
   Procedure events_windows()
-    Debug "   "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )\type+ "  item - " +WidgetEvent( )\item +" (window)"
+    Debug "   "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) +" (window)"
   EndProcedure
   
   Procedure events_roots()
-    Debug "     "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )\type+ "  item - " +WidgetEvent( )\item +" (root)"
+    Debug "     "+#PB_Compiler_Procedure+ " event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) +" (root)"
   EndProcedure
   
   
@@ -62,8 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose()
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 55
-; FirstLine = 37
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 24
+; FirstLine = 20
 ; Folding = --
 ; EnableXP

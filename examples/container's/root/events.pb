@@ -65,16 +65,16 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
    ;\\
    Procedure CallBack( )
-     If WidgetEventType( ) <> #__event_draw
-;        If WidgetEventType( ) = #__event_repaint
+     If WidgetEvent( ) <> #__event_draw
+;        If WidgetEvent( ) = #__event_repaint
 ;          ProcedureReturn 
 ;        EndIf
-       Debug ""+RemoveString(ClassFromEvent(WidgetEventType( )), "#__event_") +" - " + EventWidget( )\class +" - ("+ Bool(Root( ) = EventWidget( )\root) +")";+" "+ WidgetEventType( )
+       Debug ""+RemoveString(ClassFromEvent(WidgetEvent( )), "#__event_") +" - " + EventWidget( )\class +" - ("+ Bool(Root( ) = EventWidget( )\root) +")";+" "+ WidgetEvent( )
      EndIf
    EndProcedure
  CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 32
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 44
 ; Folding = -
 ; EnableXP

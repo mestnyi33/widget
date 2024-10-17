@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure ButtonEvents( )
-      Select WidgetEventType( ) 
+      Select WidgetEvent( ) 
          Case #__event_Down
             ShowMessage( )
             
@@ -58,8 +58,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 57
-; FirstLine = 23
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 33
+; FirstLine = 29
 ; Folding = --
 ; EnableXP

@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Widgets_CallBack()
     Protected EventWidget.i = EventWidget(),
-              EventType.i = WidgetEventType(),
+              EventType.i = WidgetEvent(),
               EventItem.i = WidgetEventItem(), 
               EventData.i = WidgetEventData()
     
@@ -217,8 +217,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 126
-; FirstLine = 69
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 23
 ; Folding = -0
 ; EnableXP
+; DPIAware

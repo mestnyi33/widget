@@ -124,10 +124,10 @@ DeclareModule Scroll
   ;- DECLAREs
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1)
   Declare.b Draw(*this._S_widget)
-  Declare.l Y(*this._S_widget)
-  Declare.l X(*this._S_widget)
-  Declare.l Width(*this._S_widget)
-  Declare.l Height(*this._S_widget)
+  Declare.l WidgetY(*this._S_widget)
+  Declare.l WidgetX(*this._S_widget)
+  Declare.l WidgetWidth(*this._S_widget)
+  Declare.l WidgetHeight(*this._S_widget)
   
   Declare.i GetState(*this._S_widget)
   Declare.i GetAttribute(*this._S_widget, Attribute.i)
@@ -380,19 +380,19 @@ Module Scroll
   EndProcedure
   
   ;-
-  Procedure.l X(*this._S_widget)
+  Procedure.l WidgetX(*this._S_widget)
     ProcedureReturn *this\x + Bool(*this\hide[1]) * *this\width
   EndProcedure
   
-  Procedure.l Y(*this._S_widget)
+  Procedure.l WidgetY(*this._S_widget)
     ProcedureReturn *this\y + Bool(*this\hide[1]) * *this\height
   EndProcedure
   
-  Procedure.l Width(*this._S_widget)
+  Procedure.l WidgetWidth(*this._S_widget)
     ProcedureReturn Bool(Not *this\hide[1]) * *this\width
   EndProcedure
   
-  Procedure.l Height(*this._S_widget)
+  Procedure.l WidgetHeight(*this._S_widget)
     ProcedureReturn Bool(Not *this\hide[1]) * *this\height
   EndProcedure
   
@@ -628,7 +628,7 @@ Module Scroll
   
   Procedure.b Updates(*scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     With *scroll
-      Protected iWidth = X(\v), iHeight = Y(\h)
+      Protected iWidth = WidgetX(\v), iHeight = WidgetY(\h)
       Static hPos, vPos : vPos = \v\page\pos : hPos = \h\page\pos
       
       ; Вправо работает как надо
@@ -2439,8 +2439,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 915
-; FirstLine = 900
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 394
+; FirstLine = 394
 ; Folding = -------------------------------------------------------
 ; EnableXP

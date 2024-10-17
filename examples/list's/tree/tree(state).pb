@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure button_events()
     Protected count
     
-    Select widget::WidgetEventType( )
+    Select widget::WidgetEvent( )
       Case #__event_Up
         
         Select widget::EventWidget( )
@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure widget_events()
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_RightClick
         widget::AddItem(*w1, -1, "item " +Str(widget::CountItems(*w1)) +" (added)")
         widget::AddItem(*w2, -1, "item " +Str(widget::CountItems(*w2)) +" (added)")
@@ -177,6 +177,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 47
 ; Folding = ---
 ; EnableXP
+; DPIAware

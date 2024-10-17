@@ -78,7 +78,7 @@ SetGadgetState(13, 30)
                   
    widget::SetState(*w_13, 30)
 ;   
-;   ;widget::SetState(*w_15, 250-30-#__splitter_buttonsize)
+;   ;widget::SetState(*w_15, 250-30-#__splittersize)
 ;   widget::SetState(*w_12, 43)
 ;   widget::SetState(*w_15, -30)
   
@@ -101,6 +101,8 @@ SetGadgetState(13, 30)
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 80
+; FirstLine = 76
 ; Folding = -
 ; EnableXP

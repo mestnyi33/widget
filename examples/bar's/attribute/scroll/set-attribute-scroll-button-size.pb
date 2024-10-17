@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Uselib(widget)
    
    Procedure widget_events( )
-      Debug ""+EventWidget()\class+" "+classFromEvent( WidgetEventType( )) +" "+ GetState(EventWidget()) +" "+ 
+      Debug ""+EventWidget()\class+" "+classFromEvent( WidgetEvent( )) +" "+ GetState(EventWidget()) +" "+ 
             EventWidget()\bar\thumb\pos ;+" "+ EventWidget()\bar\page\pos ;+" "+ EventWidget()\bar\ThumbChange( ) +" "+ EventWidget()\bar\PageChange( ) ; WidgetEventData( )
    EndProcedure
    
@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP

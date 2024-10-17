@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global first3=-1,prev3=-1,next3=-1,last3=-1
   
   Procedure _Event( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_LeftClick 
         Select EventWidget( )
           Case first1, first2, first3
@@ -60,8 +60,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 55
-; FirstLine = 23
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = -
 ; EnableXP
+; DPIAware

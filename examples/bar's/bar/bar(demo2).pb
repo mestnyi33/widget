@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work." ;+ m.s +
  
   Procedure Events_()
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #PB_EventType_MouseEnter
         Debug "post enter - "+EventWidget( )\index
         If EnteredButton( )
@@ -227,8 +227,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event= #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 222
-; FirstLine = 196
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 35
+; FirstLine = 31
 ; Folding = --
 ; EnableXP

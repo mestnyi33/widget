@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Protected text$ = "disable"
       EndIf
             
-      Select WidgetEventType( )
+      Select WidgetEvent( )
          Case #__event_MouseLeave
             show = 0
             
@@ -72,8 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitEvent( @CallBack( ) )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 34
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

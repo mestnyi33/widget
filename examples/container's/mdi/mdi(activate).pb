@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Window(x,y,width, height,"window_3", #PB_Window_SystemMenu) : SetClass(widget(), "window_3") 
   ;Define *mdi._s_widget = MDI(x,y,Width, height);, #__flag_autosize)
-  Define *mdi._s_widget = MDI(10,10, width( widget( ), #__c_inner )-20, height( widget( ), #__c_inner )-20);, #__flag_autosize)
+  Define *mdi._s_widget = MDI(10,10, WidgetWidth( widget( ), #__c_inner )-20, WidgetHeight( widget( ), #__c_inner )-20);, #__flag_autosize)
   
   ;Define *mdi._s_widget = MDI(0,0,0,0, #__flag_autosize)
   ;;a_init( *mdi )
@@ -64,8 +64,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Button(450,110,80,80,"button_1") : SetClass(widget(), GetText(widget())) 
 ;   CloseList()
   
-  Resize(*g1, X(*g0, #__c_container) + Width(*g0, #__c_frame) - 15, Y(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
-  Resize(*g2, X(*g0, #__c_container), Y(*g0, #__c_container) + Height(*g0, #__c_frame) - 15, #PB_Ignore, #PB_Ignore)
+  Resize(*g1, WidgetX(*g0, #__c_container) + WidgetWidth(*g0, #__c_frame) - 15, WidgetY(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
+  Resize(*g2, WidgetX(*g0, #__c_container), WidgetY(*g0, #__c_container) + WidgetHeight(*g0, #__c_frame) - 15, #PB_Ignore, #PB_Ignore)
   
   SetState(*mdi\scroll\h, 120)
   
@@ -73,6 +73,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 67
+; FirstLine = 68
 ; Folding = -
 ; EnableXP

@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure CustomEvents( )
     Static DragWidget
     
-    Select WidgetEventType( )
+    Select WidgetEvent( )
 ;       Case #__event_MouseEnter
 ;         SetCursor( EventWidget( ), #PB_Cursor_Hand )
 ;         
@@ -263,8 +263,9 @@ CompilerIf #PB_Compiler_IsMainFile
   BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 39
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 70
+; FirstLine = 70
 ; Folding = --v+
 ; EnableXP
+; DPIAware

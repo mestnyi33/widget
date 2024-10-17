@@ -7,20 +7,20 @@ Global i, *w._s_widget, *p1,*p2._s_widget, *ch
       Define line.s
       ;\\
       Debug "---->>"
-      ForEach __widgets( )
-         ;Debug __widgets( )\class
+      ForEach widgets( )
+         ;Debug widgets( )\class
          line = "  "
          
-         If __widgets( )\before\widget
-            line + __widgets( )\before\widget\class +" <<  "    ;  +"_"+__widgets( )\before\widget\text\string
+         If widgets( )\before\widget
+            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + __widgets( )\class ; __widgets( )\text\string
+         line + widgets( )\class ; widgets( )\text\string
          
-         If __widgets( )\after\widget
-            line +"  >> "+ __widgets( )\after\widget\class ;+"_"+__widgets( )\after\widget\text\string
+         If widgets( )\after\widget
+            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -32,7 +32,7 @@ Global i, *w._s_widget, *p1,*p2._s_widget, *ch
    
 
 Procedure events_widgets()
-  Select WidgetEventType()
+  Select WidgetEvent()
     Case #__event_LeftClick
       If i 
         SetParent(*w, *p1)
@@ -40,7 +40,7 @@ Procedure events_widgets()
         SetParent(*w, *p2)
       EndIf
       
-      Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
+      Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  WidgetY(*ch) +" "+  WidgetY(*ch, 3)
       
       Show_DEBUG( )
       i!1
@@ -68,12 +68,12 @@ EndProcedure
     ;*w\root = *p2\root
     Show_DEBUG( )
     
-;     ForEach __widgets( )
-;       If __widgets( ) = *w
-;         __widgets( )\root = *p2\root
+;     ForEach widgets( )
+;       If widgets( ) = *w
+;         widgets( )\root = *p2\root
 ;       EndIf
 ;       
-;       Debug  ""+__widgets( )\root +" "+ *p2\root +" - "+ __widgets( )\text\string
+;       Debug  ""+widgets( )\root +" "+ *p2\root +" - "+ widgets( )\text\string
 ;     Next
             
     Bind(change, @events_widgets())
@@ -81,8 +81,9 @@ EndProcedure
     WaitClose( )
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 75
+; FirstLine = 55
 ; Folding = --
 ; EnableXP
 ; DPIAware

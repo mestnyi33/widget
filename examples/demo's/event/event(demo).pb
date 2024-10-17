@@ -62,14 +62,14 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure _events( )
       If is_root_(eventWidget( ))
-         If widgetEventType( ) = #__event_Focus
+         If WidgetEvent( ) = #__event_Focus
             events( #PB_Event_ActivateWindow, GetWindow(eventWidget( )), #PB_All, widgetEventData( ) )
          EndIf
-         If widgetEventType( ) = #__event_LostFocus
+         If WidgetEvent( ) = #__event_LostFocus
             events( #PB_Event_DeactivateWindow, GetWindow(eventWidget( )), #PB_All, widgetEventData( ) )
          EndIf
       Else
-         events( #PB_Event_Gadget, eventWidget( ), widgetEventType( ), widgetEventData( ) )
+         events( #PB_Event_Gadget, eventWidget( ), WidgetEvent( ), widgetEventData( ) )
       EndIf
    EndProcedure
    
@@ -93,8 +93,9 @@ CompilerIf #PB_Compiler_IsMainFile
       event = WaitWindowEvent(1)
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 79
-; FirstLine = 58
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 60
 ; Folding = --
 ; EnableXP
+; DPIAware

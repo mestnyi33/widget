@@ -36,19 +36,19 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure events( )
-      Protected event = __event( ) ; *event\type ; events( ) ; GetEvent( )
+   Procedure HandlerEvents( )
+      Protected event = WidgetEvent( ) 
       Protected *this._s_widget = EventWidget( )
       
       ;\\
       If event = #__event_MouseEnter
-         Debug " -enter- "+*this\class +" ("+ *this\enter +") " + WidgetEvent( )\data
+         Debug " -enter- "+*this\class +" ("+ *this\enter +") " + WidgetEventData( )
          DrawCanvasFrame(*this\root\canvas\gadget, $00A600)
       EndIf
       
       ;\\
       If event = #__event_MouseLeave
-         Debug " -leave- "+*this\class +" ("+ *this\enter +") " + WidgetEvent( )\data
+         Debug " -leave- "+*this\class +" ("+ *this\enter +") " + WidgetEventData( )
          DrawCanvasFrame(*this\root\canvas\gadget, 0)
       EndIf
       
@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      Bind(#PB_All, @events( ))
+      Bind(#PB_All, @HandlerEvents( ))
       
       ButtonGadget(-1, 0,0,500,20,"")
       Button( 0,30,500,20,"")
@@ -71,9 +71,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 36
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 39
+; FirstLine = 35
 ; Folding = ---
 ; EnableXP
 ; DPIAware

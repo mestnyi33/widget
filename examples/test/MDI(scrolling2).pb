@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *ew._s_widget = EventWidget( )
       Static DragWidget
       
-      Select WidgetEventType( )
+      Select WidgetEvent( )
             ;       Case #__event_MouseEnter
             ;         SetCursor( *ew, #PB_Cursor_Hand )
             ;         
@@ -65,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             With *ew\parent\scroll
-               Box( x, y, Width, Height, RGB( 0,255,0 ) )
-               Box( \h\x, \v\y, \h\bar\page\len, \v\bar\page\len, RGB( 0,0,255 ) )
+              Box( DPIScaled(x), DPIScaled(y), DPIScaled(Width), DPIScaled(Height), RGB( 0,255,0 ) )
+                Box( \h\x, \v\y, \h\bar\page\len, \v\bar\page\len, RGB( 0,0,255 ) )
                Box( \h\x-\h\bar\page\pos, \v\y - \v\bar\page\pos, \h\bar\max, \v\bar\max, RGB( 255,0,0 ) )
             EndWith
       EndSelect
@@ -75,13 +75,21 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure MDI_AddImage( *mdi, x, y, img, round=0 )
       Protected *this._s_widget
+      ; Debug DPIResolution( ) 
+      
+      If IsImage( img )
+      	; If DPIResolution( ) = 2.0
+      	ResizeImage(img, DPIScaled(ImageWidth(img)), DPIScaled(ImageHeight(img)), #PB_Image_Raw )
+      	; EndIf
+      EndIf
       
       *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess )
       *this\class = "image-"+Str(img)
       *this\cursor = #PB_Cursor_Hand
-      *this\round = round
+      *this\round = DPIScaled(round)
       
-      Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
+      ;Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
+      Resize(*this, x, y, DPIUnScaled(ImageWidth( img )), DPIUnScaled(ImageHeight( img )))
       
       Bind( *this, @MDI_ImageEvents(), #__event_LeftButtonUp )
       Bind( *this, @MDI_ImageEvents(), #__event_LeftButtonDown )
@@ -196,14 +204,14 @@ CompilerIf #PB_Compiler_IsMainFile
    SetColor(*mdi, #__color_back, $ffffffff)
    ;SetColor(*mdi, #__color_frame, $ffffffff)
    
-   Define b=19;20        
-   *mdi\scroll\v\round = 11
+   Define b=DPIScaled(19);20        
+   *mdi\scroll\v\round = DPIScaled(11)
    *mdi\scroll\v\bar\button[1]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button[2]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button\round = *mdi\scroll\v\round
    SetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
    
-   *mdi\scroll\h\round = 11
+   *mdi\scroll\h\round = DPIScaled(11)
    *mdi\scroll\h\bar\button[1]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button[2]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button\round = *mdi\scroll\h\round
@@ -220,8 +228,9 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 139
-; FirstLine = 133
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 67
+; FirstLine = 58
 ; Folding = ---
 ; EnableXP
+; DPIAware

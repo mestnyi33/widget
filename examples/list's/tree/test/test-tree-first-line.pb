@@ -238,7 +238,7 @@ EndProcedure
     With structures::*event
       ;Debug " widget - "+this()\widget+" "+this()\event
     Protected EventGadget = EventWidget( )
-    Protected EventType = WidgetEventType( )
+    Protected EventType = WidgetEvent( )
     Protected EventData = EventWidget( )\data
     Protected EventItem = GetState(EventGadget)
     
@@ -464,7 +464,7 @@ EndProcedure
     Next i
     
     ;  5_example
-    *g = Tree(450, 100, 210, 210 );|#__tree_Collapsed)                                         
+    *g = Tree(450, 100, 210, 210 );|#__flag_collapsedd)                                         
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1_1", 0, 1) 
     AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
@@ -497,7 +497,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 439
-; FirstLine = 435
+; CursorPosition = 466
+; FirstLine = 462
 ; Folding = --------
 ; EnableXP
+; DPIAware

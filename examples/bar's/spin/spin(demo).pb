@@ -25,7 +25,7 @@ Procedure events_widgets()
   ;ClearDebugOutput()
   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(EventWidget( )) ; 
   
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__event_Up
       SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
       Debug  ""+IDWidget(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
@@ -111,9 +111,9 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
 
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 25
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 23
 ; Folding = --
 ; EnableXP
 ; DPIAware

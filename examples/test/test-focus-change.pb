@@ -10,7 +10,7 @@ CreateRegularExpression(#REGEX_DATE,#DEFREGEX_DATEFORMAT)
 ;
 Procedure   Pc_DateTypingControl()
   Protected.i Test
-  Protected.i NoGadget=EventWidget(),NoEvenmt=ToPBEventType(WidgetEventType())
+  Protected.i NoGadget=EventWidget(),NoEvenmt=ToPBEventType(WidgetEvent())
   Static.a StartDateError,EndDateError
   Static.s AncStartDate,AncEndDate,Date
   
@@ -44,8 +44,8 @@ If Open(0,0,0,120,65,"Test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 28
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 12
 ; FirstLine = 8
 ; Folding = --
 ; EnableXP

@@ -80,7 +80,7 @@ SetGadgetState(15, 250-9-25)
   widget::SetState(*w_15, 250-9-25)
   
 ;   
-;widget::SetState(*w_15, *w_15\bar\page\end-25);-#__splitter_buttonsize)
+;widget::SetState(*w_15, *w_15\bar\page\end-25);-#__splittersize)
 ;   widget::SetState(*w_12, 43)
   
   Debug GetGadgetState(13)
@@ -102,6 +102,9 @@ SetGadgetState(15, 250-9-25)
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 78
 ; Folding = -
 ; EnableXP
+; DPIAware

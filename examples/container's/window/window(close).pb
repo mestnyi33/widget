@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
   
   Procedure CallBack( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_leftclick
         Select GetText( EventWidget())
           Case "Button_0_close"
@@ -94,9 +94,9 @@ CompilerIf #PB_Compiler_IsMainFile
      WaitEvent( #PB_All, @CallBack( ) )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 29
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets( )
-    Select WidgetEventType( )
+    Select WidgetEvent( )
       Case #__event_LeftClick
        ; Debug  ""+EventIndex( )+" - widget click"
     EndSelect
@@ -143,9 +143,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 83
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 43
+; FirstLine = 39
 ; Folding = ---
 ; EnableXP
 ; DPIAware

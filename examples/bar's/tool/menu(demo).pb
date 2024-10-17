@@ -3,7 +3,7 @@
 ;                                                                     - MenuID( #Menu )
 ;                                                    Free( *address ) - FreeMenu( #Menu )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
-;                                                  Height( *address ) - MenuHeight( )
+;                                                  WidgetHeight( *address ) - MenuHeight( )
 ; 
 ;                                             PopupMenuBar( [flags] ) - CreatePopupMenu( #Menu )
 ;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
@@ -40,8 +40,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define *menu._s_widget
    ;-
-   Procedure Handler()
-      Protected event = __event( ) ; *event\type ; events( ) ; GetEvent( )
+   Procedure HandlerEvents()
+      Protected event = WidgetEvent( )
       
       If event = #__event_LeftClick
          Debug " -777- event "
@@ -49,10 +49,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If event = #__event_MouseEnter
          Debug "  - "+GetActiveGadget( )+" "+GetActiveWindow( )
-         ForEach __roots( )
-            Debug ""+__roots( )\canvas\gadget +" "+ __roots( )\canvas\window +" "+ __roots( )\class +" "+ __roots( )\focus
+         ForEach roots( )
+            Debug ""+roots( )\canvas\gadget +" "+ roots( )\canvas\window +" "+ roots( )\class +" "+ roots( )\focus
             
-            If StartEnumerate( __roots( ) )
+            If StartEnumerate( roots( ) )
                Debug "   "+ widget( )\class +" "+ widget( )\focus
                StopEnumerate( )
             EndIf
@@ -127,7 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 8, @QuitHandler())
    
    ButtonGadget(777, 10, 220, 80, 35, "-777-" )
-   Bind(Button( 10, 220, 80, 35, "-777-" ), @handler( ), #__event_LeftClick)  : SetClass(widget(), "-777-" )
+   Bind(Button( 10, 220, 80, 35, "-777-" ), @HandlerEvents( ), #__event_LeftClick)  : SetClass(widget(), "-777-" )
    
    ;\\
    *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
@@ -178,7 +178,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
-   Bind(Button( 415, 220, 80, 35, "Button2" ), @handler( ), #__event_MouseEnter)  : SetClass(widget(), "Button2" )
+   Bind(Button( 415, 220, 80, 35, "Button2" ), @HandlerEvents( ), #__event_MouseEnter)  : SetClass(widget(), "Button2" )
    Define *window._s_widget = Window(100, 50, 300, 200, "menu click test", #PB_Window_SystemMenu)
    Container( 10, 10, 80, 80, #PB_Container_Flat )
    String( 10, 10, 80, 35, "String1" )
@@ -245,8 +245,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 13
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 48
 ; Folding = --
 ; EnableXP
 ; DPIAware

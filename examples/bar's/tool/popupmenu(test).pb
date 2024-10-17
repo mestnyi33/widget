@@ -19,7 +19,7 @@
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
-;                                                  Height( *address ) - MenuHeight( )
+;                                                  WidgetHeight( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
 ;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
@@ -40,28 +40,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define *menu._s_widget
    ;-
-   Procedure Handler()
-      Protected event = __event( ) ; *event\type ; events( ) ; GetEvent( )
-      
-      If event = #__event_LeftClick
-         Debug " -777- event "
-      EndIf
-      
-      If event = #__event_MouseEnter
-         Debug "  - "+GetActiveGadget( )+" "+GetActiveWindow( )
-         ForEach __roots( )
-            Debug ""+__roots( )\canvas\gadget +" "+ __roots( )\canvas\window +" "+ __roots( )\class +" "+ __roots( )\focus
-            
-            If StartEnumerate( __roots( ) )
-               Debug "   "+ widget( )\class +" "+ widget( )\focus
-               StopEnumerate( )
-            EndIf
-         Next
-         Debug ""
-      EndIf
-      
-   EndProcedure
-   
    Procedure TestHandler()
       ;ClearDebugOutput()
       Debug "Test menu event"
@@ -199,8 +177,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 185
-; FirstLine = 160
-; Folding = --
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 21
+; FirstLine = 20
+; Folding = -
 ; EnableXP

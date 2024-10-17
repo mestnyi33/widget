@@ -20,7 +20,7 @@ Procedure events_progress_widgets()
   ;ClearDebugOutput()
   ;Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__Event_Change
      ; SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
       ; Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
@@ -43,7 +43,7 @@ Procedure events_track_widgets()
   ;ClearDebugOutput()
  ;; Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
-  Select WidgetEventType( )
+  Select WidgetEvent( )
     Case #__Event_Change
       SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
       SetState(WidgetID(IDWidget(EventWidget( ))-3), GetState(EventWidget( )))
@@ -132,9 +132,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMen
   WaitClose( )
 EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 23
-; FirstLine = 3
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 41
 ; Folding = --
 ; EnableXP
 ; DPIAware

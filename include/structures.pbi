@@ -793,14 +793,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
          
-         Map *roots._s_ROOT( )   
-         List *widgets._s_WIDGET( )    ; __widgets( )
+         Map *_roots._s_ROOT( )   
+         List *_widgets._s_WIDGET( )    ; __widgets( )
          
          ;*drawingIMG
          ;List *intersect._s_WIDGET( )
          
          ;\\ event\
-         event._s_EVENTDATA                ; widgetEvent( )\ 
+         event._s_EVENTDATA                ; __event( )\ 
          eventquit.b                       ; quit from main loop
          eventloop.b
          eventexit.b
@@ -818,7 +818,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 190
-; FirstLine = 172
+; CursorPosition = 795
+; FirstLine = 657
 ; Folding = ---AA-----
 ; EnableXP
