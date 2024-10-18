@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flag, EventWidget = EventWidget( )
     
     Select WidgetEvent( )
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         Select EventWidget
           Case *this
             If Flag(*this, #PB_Button_Toggle)
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Flag(*this, flag, GetState(EventWidget))
         EndIf
         
-      Case #PB_EventType_Change
+      Case #__event_Change
 ;         If EventWidget <> tree
 ;           SetState(tree, - 1)
 ;         EndIf
@@ -223,7 +223,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 203
+; CursorPosition = 141
+; FirstLine = 129
 ; Folding = ---
+; Optimizer
 ; EnableXP
+; DPIAware

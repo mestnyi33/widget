@@ -107,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;       Case #PB_EventType_LeftClick
 ;         If e_widget = id_elements_tree
 ;           Debug "click"
-;           ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, a_transform()\type)))
+;           ; SetCursor(EventWidget( ), ImageID(GetItemData(id_elements_tree, a_transform()\type)))
 ;         EndIf
 ;         
 ;         If getclass(e_widget) = "ToolBar"
@@ -311,7 +311,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 97
+; CursorPosition = 109
+; FirstLine = 105
 ; Folding = --
 ; EnableXP

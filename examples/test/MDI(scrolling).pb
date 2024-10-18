@@ -155,7 +155,7 @@ CompilerIf #PB_Compiler_IsMainFile
    CheckBoxGadget(3, 30, 50, 80,20, "invert")
    CheckBoxGadget(4, 30, 70, 80,20, "noButtons")
    
-   If CreateImage(0, 200, 80)
+   If CreateImage(0, (200), (80))
       
       StartDrawing(ImageOutput(0))
       
@@ -173,8 +173,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       StopDrawing() ; This is absolutely needed when the drawing operations are finished !!! Never forget it !
       
-   EndIf
-   ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
+    EndIf
+    
+    ResizeImage(0, DPIScaled(200), DPIScaled(80), #PB_Image_Raw)
+    ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
    
    Define round = 50
    Define hole = CreateImage( #PB_Any,100,100,32 )
@@ -242,8 +244,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 63
+; CursorPosition = 179
+; FirstLine = 155
 ; Folding = ----
 ; EnableXP
 ; DPIAware

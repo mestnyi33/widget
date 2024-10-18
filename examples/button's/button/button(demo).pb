@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_gadgets( )
     Select EventType( )
-      Case #__event_LeftClick
+      Case #PB_EventType_LeftClick
         Debug  ""+ EventGadget( ) +" - gadget click"
     EndSelect
   EndProcedure
@@ -144,8 +144,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 39
+; CursorPosition = 35
+; FirstLine = 118
 ; Folding = ---
+; Optimizer
 ; EnableXP
 ; DPIAware

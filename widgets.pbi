@@ -662,11 +662,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;Macro EventIndex( ): EventWidget( )\index: EndMacro
-      Macro __event( ): widget::__gui\event: EndMacro
-      Macro EventWidget( ): __event( )\widget: EndMacro
-      Macro WidgetEvent( ): __event( )\type: EndMacro
-      Macro WidgetEventData( ): __event( )\data: EndMacro
-      Macro WidgetEventItem( ): __event( )\item: EndMacro
+      Macro EventWidget( ): widget::__gui\event\widget: EndMacro
+      Macro WidgetEvent( ): widget::__gui\event\type: EndMacro
+      Macro WidgetEventData( ): widget::__gui\event\data: EndMacro
+      Macro WidgetEventItem( ): widget::__gui\event\item: EndMacro
       ;
       Macro WaitEvent( _callback_, _eventtype_ = #PB_All )
          widget::Bind( #PB_All, _callback_, _eventtype_ )
@@ -6168,8 +6167,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               
                               
-                              Resize( widget( ), x, y, width, height )
-                           Else
+                              Resize( widget( ), DPIUnScaled(x), DPIUnScaled(y), DPIUnScaled(width), DPIUnScaled(height) )
+;                               *this\noscale = 1
+;                               Resize( widget( ), x, y, width, height )
+;                               *this\noscale = 0
+                            Else
                               Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                            EndIf
                         EndIf
@@ -13694,7 +13696,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn *this\TabState( )
          Else
             If *this\bar
-               ProcedureReturn *this\bar\page\pos
+             If *this\type = #__type_Splitter
+                ProcedureReturn DPIUnScaled(*this\bar\page\pos)
+             EndIf
+             ProcedureReturn *this\bar\page\pos
             EndIf
          EndIf
       EndProcedure
@@ -16865,11 +16870,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Button
             
            Image = *param_1
-           If DPIResolution( ) = 2.0 
-             If IsImage(Image)
-               ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
-             EndIf
-           EndIf
+;            If DPIResolution( ) = 2.0 
+;              If IsImage(Image)
+;                ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
+;              EndIf
+;            EndIf
            set_image_( *this, *this\Image, Image )
            set_image_( *this, *this\image[#__image_released], Image )
             
@@ -24501,9 +24506,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13065
-; FirstLine = 11619
-; Folding = ----------------------------------------------0-8--------------P9--v--bz+---v+v--------fv0-v-4f-b--------------------------------------------------------------------------3v-----------------------------------------------------4---v---------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------0-88v--r------------------------------------------------------------f----------------------------------------------------------------8-v-8----------------------------------------------------------------------------
+; CursorPosition = 15642
+; FirstLine = 15390
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-8r-v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

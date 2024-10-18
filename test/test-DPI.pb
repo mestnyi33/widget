@@ -30,9 +30,9 @@ CompilerIf #PB_Compiler_IsMainFile
             Protected  mouse_x
             mouse_x = GetMouseX( ) ; mouse( )\x ; DesktopMouseX()
             Resize(EventWidget(), mouse_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            Debug "mouse_x = "+mouse_x +" gadget_x = "+ Str(X(EventWidget(), #__c_Screen) )
+            Debug "mouse_x = "+mouse_x +" gadget_x = "+ Str(WidgetX(EventWidget(), #__c_Screen) )
 ;             Resize(EventWidget(), DesktopUnscaledX(mouse_x), #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;             Debug "mouse_x = "+mouse_x +" gadget_x = "+ Str(DesktopScaledX(X(EventWidget(), #__c_Screen) ))
+;             Debug "mouse_x = "+mouse_x +" gadget_x = "+ Str(DesktopScaledX(WidgetX(EventWidget(), #__c_Screen) ))
             
       EndSelect
    EndProcedure 
@@ -55,7 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 18
+; CursorPosition = 34
+; FirstLine = 30
 ; Folding = -
+; Optimizer
 ; EnableXP

@@ -136,10 +136,10 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     AddItem_(*Tree, #_pi_group_1, "layout")
-    AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
-    AddItem_(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
-    AddItem_(*Tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
-    AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
+    AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(WidgetX(Value)), #__type_Spin, 1)
+    AddItem_(*Tree, #_pi_y, "y:"+Chr(10)+Str(WidgetY(Value)), #__type_Spin, 1)
+    AddItem_(*Tree, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #__type_Spin, 1)
+    AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
     
     AddItem_(*Tree, #_pi_group_2, "state")
     AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
@@ -153,10 +153,10 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     AddItem_(*Tree1, #_pi_group_1, "layout")
-    AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
-    AddItem_(*Tree1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
-    AddItem_(*Tree1, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
-    AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
+    AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(WidgetX(Value)), #__type_Spin, 1)
+    AddItem_(*Tree1, #_pi_y, "y:"+Chr(10)+Str(WidgetY(Value)), #__type_Spin, 1)
+    AddItem_(*Tree1, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #__type_Spin, 1)
+    AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
     
     AddItem_(*Tree1, #_pi_group_2, "state")
     AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
@@ -170,7 +170,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 58
+; CursorPosition = 158
+; FirstLine = 137
 ; Folding = --
+; Optimizer
 ; EnableXP
+; DPIAware

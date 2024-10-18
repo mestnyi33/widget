@@ -1928,7 +1928,7 @@ Module Editor
         PopListPosition(*This\Items())
        
         ; Draw
-        ClipOutput(0,0, Scroll::X(*This\scroll\v), Scroll::Y(*This\scroll\h))
+        ClipOutput(0,0, Scroll::WidgetX(*This\scroll\v), Scroll::WidgetY(*This\scroll\h))
        
         PushListPosition(*This\Items())
         ForEach *This\Items()
@@ -2004,8 +2004,8 @@ Module Editor
       \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
       \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
       \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-      Protected iHeight = \Height-Scroll::Height(*This\scroll\h)
-      Protected iWidth = \Width-Scroll::Width(*This\scroll\v)
+      Protected iHeight = \Height-Scroll::WidgetHeight(*This\scroll\h)
+      Protected iWidth = \Width-Scroll::WidgetWidth(*This\scroll\v)
      
       Select EventType()
         Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
@@ -2044,7 +2044,7 @@ Module Editor
       ;Debug *This\scroll\h\at
      
       If Not *This\scroll\v\from And Not *This\scroll\h\from
-        ;Or (\Canvas\Mouse\X<*This\Width[2]-Scroll::Width(*This\scroll\v) And \Canvas\Mouse\Y<*This\Height[2]-Scroll::Height(*This\scroll\h))
+        ;Or (\Canvas\Mouse\X<*This\Width[2]-Scroll::WidgetWidth(*This\scroll\v) And \Canvas\Mouse\Y<*This\Height[2]-Scroll::WidgetHeight(*This\scroll\h))
         *This\Repaint = EditableCallBack(*This, EventType())
         If *This\Repaint
           ReDraw(*This)
@@ -2440,7 +2440,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 394
-; FirstLine = 394
+; CursorPosition = 1930
+; FirstLine = 1926
 ; Folding = -------------------------------------------------------
+; Optimizer
 ; EnableXP

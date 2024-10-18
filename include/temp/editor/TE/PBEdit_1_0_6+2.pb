@@ -1,5 +1,5 @@
-﻿IncludePath "/Users/as/Documents/GitHub/widget/"
-XIncludeFile "widgets.pbi"
+﻿;IncludePath "/Users/as/Documents/GitHub/widget/"
+XIncludeFile "../../../../widgets.pbi"
 
 UseLib(widget)
 
@@ -7281,7 +7281,7 @@ Module _PBEdit_
 		
 ; ; 		If StartDrawing( CanvasOutput( *view\canvas ) )
 ; ; 		  If *view\scrollBarV\gadget
-; ; 		    ;Debug widget::x(*view\scrollBarV\gadget)
+; ; 		    ;Debug widget::WidgetX(*view\scrollBarV\gadget)
 ; ; 		    widget::Draw( *view\scrollBarV\gadget )
 ; ; 		  EndIf
 ; ; 		  If *view\scrollBarH\gadget
@@ -8887,9 +8887,9 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Event_ScrollBar()
-	  Protected gNr = widget::this()\widget
+	  Protected gNr = widget::EventWidget( )
 	  
-		Protected *view.TE_VIEW = GetGadgetData(widget::this()\widget\root\canvas\gadget)
+		Protected *view.TE_VIEW = GetGadgetData(widget::EventWidget( )\root\canvas\gadget)
 		ProcedureReturnIf( (*view = #Null) Or (*view\editor = #Null))
 		
 		Protected *te.TE_STRUCT = *view\editor
@@ -9291,10 +9291,10 @@ Module _PBEdit_
 				
 			Case #PB_EventType_LeftDoubleClick, #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp, #PB_EventType_MiddleButtonDown, #PB_EventType_MouseMove
 				
-			  If Not (widget::_is_selected_( *view\scrollBarV\gadget ) Or 
-			          widget::_is_selected_( *view\scrollBarH\gadget ))
+; 			  If Not (widget::_is_selected_( *view\scrollBarV\gadget ) Or 
+; 			          widget::_is_selected_( *view\scrollBarH\gadget ))
 			    Event_Mouse(*te, *view, EventType())
-				EndIf
+; 				EndIf
 			Case #PB_EventType_MouseWheel
 				
 				Event_MouseWheel(*te, *view, EventType())
@@ -9678,8 +9678,8 @@ EndEnumeration
 OpenWindow(0, 0, 0, 800, 600, "TextEditor", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget );| #PB_Window_Maximize)
 
 CreateToolBar(0, WindowID(0))
-ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
-ToolBarStandardButton(#tlb_redo, #PB_ToolBarIcon_Redo)
+; ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
+; ToolBarStandardButton(#tlb_redo, #PB_ToolBarIcon_Redo)
 CreateStatusBar(0, WindowID(0))
 AddStatusBarField(DesktopScaledX(200))
 AddStatusBarField(DesktopScaledX(200))
@@ -9733,6 +9733,9 @@ Repeat
 			EndIf
 	EndSelect
 ForEver
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 9681
+; FirstLine = 9594
 ; Folding = -----------0-----------------------------------------------------------------------------------------------------00---------------------------------------------------------------------------------------------
+; Optimizer
 ; EnableXP

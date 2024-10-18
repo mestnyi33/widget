@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     Debug ""+EventWidget()+ " - widget event - " +WidgetEvent()
-  ;  Debug ""+Str(IDWidget(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
+  ;  Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -111,8 +111,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 7
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = --
+; Optimizer
 ; EnableXP
 ; DPIAware

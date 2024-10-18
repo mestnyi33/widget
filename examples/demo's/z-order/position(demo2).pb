@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If after 
           Debug "<<"
-;           _SetPosition(this()\widget, #PB_List_After, after)
+;           _SetPosition(EventWidget( ), #PB_List_After, after)
 ;           
 ;           ForEach widget()
 ;             Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
@@ -333,8 +333,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 264
-; FirstLine = 129
+; CursorPosition = 182
+; FirstLine = 48
 ; Folding = 0--
+; Optimizer
 ; EnableXP
 ; DPIAware

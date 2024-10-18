@@ -36,10 +36,21 @@ Global img1 = 1
 Global img2 = 2
 Global x,y,i,NewMap id.i(), round = 0
 
+CompilerIf #PB_Compiler_DPIAware
+  Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
+    Protected result = PB(LoadImage)( _image_, _filename_, _flags_ )
+    ResizeImage(_image_, DPIScaled(ImageWidth(_image_)), DPIScaled(ImageHeight(_image_)))
+    ProcedureReturn result
+  EndProcedure
+  Macro LoadImage( _image_, _filename_, _flags_=-1 )
+    LoadImage__( _image_, _filename_, _flags_ )
+  EndMacro
+CompilerEndIf
+
 If Not LoadImage(img2, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
    End
 EndIf
-
+ 
 If Not LoadImage(img1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
    End
 EndIf
@@ -131,8 +142,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 100
-; Folding = --
+; CursorPosition = 39
+; FirstLine = 36
+; Folding = ---
 ; EnableXP
 ; DPIAware

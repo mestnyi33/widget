@@ -26,14 +26,14 @@ Module AnchorBox
   Procedure Events( )
     
     Select widget::WidgetEvent( )
-      Case #__event_LeftClick 
+      Case constants::#__event_LeftClick 
         Protected *this = widget::EventWidget( )
         
         If *this = Button_10 
           Protected a = widget::GetData(*this)
           widget::Hide(a, Bool( Not widget::GetState(*this)))
-          widget::Resize(a, widget::X(*this), widget::Y(*this)+widget::Height(*this), #PB_Ignore, #PB_Ignore )
-         ; widget::Display(a, *this)
+          widget::Resize(a, widget::WidgetX(*this), widget::WidgetY(*this)+widget::WidgetHeight(*this), #PB_Ignore, #PB_Ignore )
+          ; widget::Display(a, *this)
         Else
           ;\\
           If *this <> Button_9 ; center 
@@ -91,11 +91,11 @@ Module AnchorBox
           Protected Button_6_State = widget::GetState(Button_6)
           
           ;\\
-          Protected x = widget::X( Button_9, constants::#__c_container ) - size / 2
-          Protected width  = widget::X( Button_5, constants::#__c_container ) - size
+          Protected x = widget::WidgetX( Button_9, constants::#__c_container ) - size / 2
+          Protected width  = widget::WidgetX( Button_5, constants::#__c_container ) - size
           
-          Protected y = widget::Y( Button_9, constants::#__c_container ) - size / 2
-          Protected height = widget::Y( Button_7, constants::#__c_container ) - size
+          Protected y = widget::WidgetY( Button_9, constants::#__c_container ) - size / 2
+          Protected height = widget::WidgetY( Button_7, constants::#__c_container ) - size
           
           ;\\
           If Button_1_State And Button_3_State And Button_5_State And Button_7_State
@@ -173,7 +173,7 @@ Module AnchorBox
     Protected height1 = box_height-size*2 ; -2
     
     Button_10 = widget::Button(x,y,width, height, "LEFT&TOP",constants::#__button_toggle);,-1,radius)
-    Protected *a.Structures::_s_widget = widget::Container(0,0,width,box_height);, constants::#__flag_child)
+    Protected *a.Structures::_s_widget = widget::Container(0,0,width,box_height)         ;, constants::#__flag_child)
     Protected fs = 1
     ;widget::SetFrame(a,fs)
     height1 - fs*2
@@ -201,19 +201,19 @@ Module AnchorBox
     
     ;widget::setColor(a, constants::#__color_back, widget::GetColor( widget::GetParent( a ), constants::#__color_back) )
     
-    widget::Bind(Button_2, @Events( ), #__event_LeftClick )
-    widget::Bind(Button_1, @Events( ), #__event_LeftClick )
-    widget::Bind(Button_4, @Events( ), #__event_LeftClick )
-    widget::Bind(Button_3, @Events( ), #__event_LeftClick )
-    widget::Bind(Button_9, @Events( ), #__event_LeftClick )
-    widget::Bind(Button_5, @Events( ), #__event_LeftClick )
-    widget::Bind(Button_6, @Events( ), #__event_LeftClick )
-    widget::Bind(Button_7, @Events( ), #__event_LeftClick )
-    widget::Bind(Button_8, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_2, @Events( ), constants::#__event_LeftClick )
+    widget::Bind(Button_1, @Events( ), constants::#__event_LeftClick )
+    widget::Bind(Button_4, @Events( ), constants::#__event_LeftClick )
+    widget::Bind(Button_3, @Events( ), constants::#__event_LeftClick )
+    widget::Bind(Button_9, @Events( ), constants::#__event_LeftClick )
+    widget::Bind(Button_5, @Events( ), constants::#__event_LeftClick )
+    widget::Bind(Button_6, @Events( ), constants::#__event_LeftClick )
+    widget::Bind(Button_7, @Events( ), constants::#__event_LeftClick )
+    widget::Bind(Button_8, @Events( ), constants::#__event_LeftClick )
     
     widget::Hide(*a,1)
     widget::SetData(Button_10, *a)
-    widget::Bind(Button_10, @Events( ), #__event_LeftClick )
+    widget::Bind(Button_10, @Events( ), constants::#__event_LeftClick )
     
     ProcedureReturn *a
   EndProcedure
@@ -230,7 +230,9 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 6
+; CursorPosition = 211
+; FirstLine = 20
 ; Folding = ---
+; Optimizer
 ; EnableXP
+; DPIAware

@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     ClearDebugOutput()
-    ; Debug ""+Str(This()\widget\index - 1)+ " - widget  event - " +This()\type+ "  state - " GetState(This()\widget) ; 
+    ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +This()\type+ "  state - " GetState(EventWidget( )) ; 
     
     Select WidgetEvent( )
       Case #PB_EventType_Change
@@ -111,8 +111,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 17
+; CursorPosition = 19
+; FirstLine = 15
 ; Folding = --
+; Optimizer
 ; EnableXP
 ; DPIAware

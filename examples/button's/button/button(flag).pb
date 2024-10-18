@@ -253,5 +253,6 @@ CompilerEndIf
 ; CursorPosition = 215
 ; FirstLine = 199
 ; Folding = 0---
+; Optimizer
 ; EnableXP
 ; DPIAware

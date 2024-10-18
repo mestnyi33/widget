@@ -152,8 +152,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug "get 13 state - "+widget::GetState(w_13)
   Debug "get 15 state - "+widget::GetState(w_15)
   
-  Debug "get 11 width - "+widget::Width(w_11)
-  Debug "get 14 width - "+widget::Width(w_14)
+  Debug "get 11 width - "+widget::WidgetWidth(w_11)
+  Debug "get 14 width - "+widget::WidgetWidth(w_14)
   
   Define event
   Repeat
@@ -162,8 +162,9 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 120
+; CursorPosition = 155
+; FirstLine = 135
 ; Folding = ---
+; Optimizer
 ; EnableXP
 ; DPIAware

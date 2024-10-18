@@ -1201,11 +1201,11 @@ Module Tree
         If ListSize(*This\Items())
           *This\Scroll\Width=*This\x[2]
           *This\Scroll\height=*This\y[2]
-          width = *This\width[2]-Scroll::Width(*This\Scroll\v)
+          width = *This\width[2]-Scroll::WidgetWidth(*This\Scroll\v)
           
           ForEach *This\Items()
             If Not \hide
-              ClipOutput(*This\x[2], *This\y[2], width, *This\height[2]-Scroll::Height(*This\Scroll\h))
+              ClipOutput(*This\x[2], *This\y[2], width, *This\height[2]-Scroll::WidgetHeight(*This\Scroll\h))
               
               \x=*This\x[2]
               \width=width
@@ -2450,7 +2450,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 403
-; FirstLine = 394
+; CursorPosition = 1207
+; FirstLine = 1194
 ; Folding = +-----------------------------------------------------------
+; Optimizer
 ; EnableXP

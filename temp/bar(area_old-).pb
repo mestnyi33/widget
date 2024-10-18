@@ -1167,7 +1167,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;           Debug "----------Up---------"
 ;           GetScrollCoordinate()
 ;           ScrollUpdates(*scroll, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
-;           ;           Protected iWidth = Width-Width(*scroll\v), iHeight = Height-Height(*scroll\h)
+;           ;           Protected iWidth = Width-Width(*scroll\v), iHeight = Height- WidgetHeight(*scroll\h)
 ;           ;   
 ;           ;         Debug ""+*scroll\h\hide+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
 ;           ;         Debug ""+*scroll\v\hide+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
@@ -1306,7 +1306,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 392
-; FirstLine = 392
+; CursorPosition = 1169
+; FirstLine = 1132
 ; Folding = -----------------------f-+------
+; Optimizer
 ; EnableXP

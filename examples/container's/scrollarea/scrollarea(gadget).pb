@@ -9,10 +9,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +this()\event+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
+    ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
     
     Select WidgetEvent( )
-      Case #PB_EventType_Resize
+      Case #__event_Resize
         Debug 666
         ResizeGadget(oc, WidgetX(EventWidget( ), #__c_inner), WidgetY(EventWidget( ), #__c_inner), WidgetWidth(EventWidget( ), #__c_inner), WidgetHeight(EventWidget( ), #__c_inner))
         
@@ -132,8 +132,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 57
+; CursorPosition = 14
+; FirstLine = 8
 ; Folding = --
+; Optimizer
 ; EnableXP
 ; DPIAware

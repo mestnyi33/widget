@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -38,12 +38,12 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If *after
-          ChangeCurrentElement(widget(), *this\address)
-          MoveElement(widget(), #PB_List_Before, *after\address)
+          ChangeCurrentElement(widgets(), *this\address)
+          MoveElement(widgets(), #PB_List_Before, *after\address)
           
-          While NextElement(widget()) 
-            If Child(widget(), *this)
-              MoveElement(widget(), #PB_List_Before, *after\address)
+          While NextElement(widgets()) 
+            If isChild(widgets(), *this)
+              MoveElement(widgets(), #PB_List_Before, *after\address)
             EndIf
           Wend
           
@@ -91,12 +91,12 @@ CompilerIf #PB_Compiler_IsMainFile
           ;           Debug *before\class
           ;           Debug *last\class
           
-          ChangeCurrentElement(widget(), *this\address)
-          MoveElement(widget(), #PB_List_After, *last\address)
+          ChangeCurrentElement(widgets(), *this\address)
+          MoveElement(widgets(), #PB_List_After, *last\address)
           
-          While PreviousElement(widget()) 
-            If Child(widget(), *this)
-              MoveElement(widget(), #PB_List_After, *this\address)
+          While PreviousElement(widgets()) 
+            If Child(widgets(), *this)
+              MoveElement(widgets(), #PB_List_After, *this\address)
             EndIf
           Wend
           
@@ -143,26 +143,26 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure this_events()
-    Select this()\event
+    Select WidgetEvent( )
       Case #PB_EventType_LeftButtonDown 
-        before = GetPosition(this()\widget, #PB_List_Before)
-        after = GetPosition(this()\widget, #PB_List_After)
+        before = GetPosition(EventWidget( ), #PB_List_Before)
+        after = GetPosition(EventWidget( ), #PB_List_After)
         
         If before
           Debug "Before - "+GetClass(before)
         EndIf
         If after
           Debug "After - "+GetClass(after)
-          _SetPosition(this()\widget, #PB_List_Last)
+          _SetPosition(EventWidget( ), #PB_List_Last)
         EndIf
         
       Case #PB_EventType_LeftButtonUp
         If after
-          _SetPosition(this()\widget, #PB_List_Before, after)
+          _SetPosition(EventWidget( ), #PB_List_Before, after)
           
           Debug " --- up "
-          before = GetPosition(this()\widget, #PB_List_Before)
-          after = GetPosition(this()\widget, #PB_List_After)
+          before = GetPosition(EventWidget( ), #PB_List_Before)
+          after = GetPosition(EventWidget( ), #PB_List_After)
           
           If before
             Debug "Before - "+GetClass(before)
@@ -206,6 +206,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 40
+; FirstLine = 28
 ; Folding = v-+--
+; Optimizer
 ; EnableXP

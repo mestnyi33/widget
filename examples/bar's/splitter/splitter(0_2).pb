@@ -95,8 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   Debug widget::GetState(w_13)
 ; ;   Debug widget::GetState(w_15)
 ; ;   
-; ;   Debug widget::Width(w_11)
-; ;   Debug widget::Width(w_14)
+; ;   Debug widget::WidgetWidth(w_11)
+; ;   Debug widget::WidgetWidth(w_14)
   
   Define event
   Repeat
@@ -105,8 +105,9 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 79
+; CursorPosition = 98
+; FirstLine = 77
 ; Folding = -
+; Optimizer
 ; EnableXP
 ; DPIAware

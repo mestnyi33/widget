@@ -91,13 +91,13 @@ Global group_select,
 
 
 ;-
-Macro ToolBar( parent, flag = #PB_ToolBar_Small )
-  Container( 0,0,0,0 ) 
-EndMacro
+; Macro ToolBar( parent, flag = #PB_ToolBar_Small )
+;   Container( 0,0,0,0 ) 
+; EndMacro
 
-Macro ToolBarButton( )
-   Button(( ( widget( )\x+widget( )\width ) ), 5,30,30,Str(MacroExpandedCount) )
-EndMacro
+; Macro ToolBarButton( )
+;    Button(( ( widget( )\x+widget( )\width ) ), 5,30,30,Str(MacroExpandedCount) )
+; EndMacro
 
 
 ;-
@@ -115,26 +115,26 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    
    
    toolbar_design = ToolBar( toolbar_design )
-   ToolBarButton(  )
-   ToolBarButton( )
-   ToolBarButton( )
-   
-   ToolBarButton( )
-   ToolBarButton( )
-   
-   ToolBarButton( )
-   ToolBarButton( )
-   
-   ToolBarButton( )
-   ToolBarButton( )
-   ToolBarButton( )
-   ToolBarButton( )
-   
-   ToolBarButton( )
-   ToolBarButton( )
-   ToolBarButton( )
-   ToolBarButton( )
-   ToolBarButton( )
+;    ToolBarButton(1,-1,0,"open" )
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    ToolBarButton( )
+;    ToolBarButton( )
    CloseList( )
    
    ; gadgets
@@ -197,9 +197,9 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ; widget::SetAttribute( Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff )
    
    ;\\ set splitters dafault positions
-   widget::SetState( Splitter_ide, widget::width( Splitter_ide )-220 )
-   widget::SetState( splitter_help, widget::height( splitter_help )-80 )
-   widget::SetState( splitter_debug, widget::height( splitter_debug )-200 )
+   widget::SetState( Splitter_ide, widget::WidgetWidth( Splitter_ide )-220 )
+   widget::SetState( splitter_help, widget::WidgetHeight( splitter_help )-80 )
+   widget::SetState( splitter_debug, widget::WidgetHeight( splitter_debug )-200 )
    widget::SetState( Splitter_inspector, 230 )
    widget::SetState( Splitter_design, 42 )
    
@@ -235,8 +235,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 100
-; FirstLine = 93
-; Folding = --
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 117
+; FirstLine = 108
+; Folding = -
+; Optimizer
 ; EnableXP

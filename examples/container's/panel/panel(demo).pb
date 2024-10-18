@@ -25,7 +25,7 @@ EndProcedure
 
 Procedure events_widgets()
   If WidgetEvent( ) <> #__event_MouseMove And WidgetEvent( ) <> #__event_Draw
-    Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(this()\widget) ; 
+    Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(EventWidget( )) ; 
   EndIf
 EndProcedure
 
@@ -166,8 +166,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 123
+; CursorPosition = 27
+; FirstLine = 23
 ; Folding = ---
+; Optimizer
 ; EnableXP
 ; DPIAware

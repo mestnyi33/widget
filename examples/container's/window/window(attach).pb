@@ -42,8 +42,8 @@ CompilerIf #PB_Compiler_IsMainFile
         UnclipOutput()
         DrawingMode(#PB_2DDrawing_Outlined)
         
-        Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, $ffff0000)
-        Box(Eventwidget()\x[#__c_draw],Eventwidget()\y[#__c_draw],Eventwidget()\width[#__c_draw],Eventwidget()\height[#__c_draw], $ff0000ff)
+        Box(EventWidget()\x,EventWidget()\y,EventWidget()\width,EventWidget()\height, $ffff0000)
+        Box(EventWidget()\x[#__c_draw],EventWidget()\y[#__c_draw],EventWidget()\width[#__c_draw],EventWidget()\height[#__c_draw], $ff0000ff)
         
     EndSelect
   EndProcedure
@@ -65,14 +65,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *g0._s_widget = Window(50, 50, 400, 400-vfs, "main",flag|#__window_child, *mdi) : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
   
-  Define *g1._s_widget =  Window(X(*g0, #__c_container)+50, WidgetY(*g0, #__c_container)+50, 200, 300, "Child 1 (Position Attach)",flag,*g0) : SetClass(widget(), "form_1") 
+  Define *g1._s_widget =  Window(WidgetX(*g0, #__c_container)+50, WidgetY(*g0, #__c_container)+50, 200, 300, "Child 1 (Position Attach)",flag,*g0) : SetClass(widget(), "form_1") 
   Define *g1b = Button(10,10,80,80,"message") : SetClass(widget(), GetText(widget())) 
   ; Sticky(*g1, 1)
   
-  Define *g2._s_widget = Window(X(*g0, #__c_container)+Width(*g0, #__c_Frame), WidgetY(*g0, #__c_container), 200, 300-vfs, "Child 2 (Frame Magnetic)",flag,*g0) : SetClass(widget(), "form_2") 
+  Define *g2._s_widget = Window(WidgetX(*g0, #__c_container)+WidgetWidth(*g0, #__c_Frame), WidgetY(*g0, #__c_container), 200, 300-vfs, "Child 2 (Frame Magnetic)",flag,*g0) : SetClass(widget(), "form_2") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
   
-  Define *g3._s_widget = Window(X(*g2, #__c_container), WidgetY(*g2, #__c_container)+Height(*g2, #__c_Frame), 200, 100-vfs, "SubChild",flag,*g2) : SetClass(widget(), "SubChild") 
+  Define *g3._s_widget = Window(WidgetX(*g2, #__c_container), WidgetY(*g2, #__c_container)+WidgetHeight(*g2, #__c_Frame), 200, 100-vfs, "SubChild",flag,*g2) : SetClass(widget(), "SubChild") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
   
   Bind(*g1b, @CustomEvents(), #__event_LeftClick )
@@ -85,7 +85,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 70
+; CursorPosition = 14
+; FirstLine = 14
 ; Folding = -
 ; EnableXP
+; DPIAware

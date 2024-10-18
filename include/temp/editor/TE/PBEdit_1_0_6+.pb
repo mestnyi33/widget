@@ -1,5 +1,4 @@
-﻿IncludePath "/Users/as/Documents/GitHub/widget/"
-XIncludeFile "widgets.pbi"
+﻿XIncludeFile "../../../../widgets.pbi"
 
 UseLib(widget)
 
@@ -7281,7 +7280,7 @@ Module _PBEdit_
 		
 ; ; 		If StartDrawing( CanvasOutput( *view\canvas ) )
 ; ; 		  If *view\scrollBarV\gadget
-; ; 		    ;Debug widget::x(*view\scrollBarV\gadget)
+; ; 		    ;Debug widget::WidgetX(*view\scrollBarV\gadget)
 ; ; 		    widget::Draw( *view\scrollBarV\gadget )
 ; ; 		  EndIf
 ; ; 		  If *view\scrollBarH\gadget
@@ -9678,8 +9677,8 @@ EndEnumeration
 OpenWindow(0, 0, 0, 800, 600, "TextEditor", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget );| #PB_Window_Maximize)
 
 CreateToolBar(0, WindowID(0))
-ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
-ToolBarStandardButton(#tlb_redo, #PB_ToolBarIcon_Redo)
+; ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
+; ToolBarStandardButton(#tlb_redo, #PB_ToolBarIcon_Redo)
 CreateStatusBar(0, WindowID(0))
 AddStatusBarField(DesktopScaledX(200))
 AddStatusBarField(DesktopScaledX(200))
@@ -9733,6 +9732,9 @@ Repeat
 			EndIf
 	EndSelect
 ForEver
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 9680
+; FirstLine = 9675
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Optimizer
 ; EnableXP

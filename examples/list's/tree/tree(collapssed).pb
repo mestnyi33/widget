@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_tree_widget()
-    ;Debug " widget - "+EventWidget( )+" "+this()\event
+    ;Debug " widget - "+EventWidget( )+" "+WidgetEvent( )
     Protected EventGadget = EventWidget( )
     Protected EventType = WidgetEvent( )
     Protected EventData; = this()\data
@@ -476,8 +476,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 380
-; FirstLine = 363
+; CursorPosition = 44
+; FirstLine = 40
 ; Folding = -------
+; Optimizer
 ; EnableXP
 ; DPIAware

@@ -15,7 +15,7 @@ EndProcedure
 
 Procedure events_widgets()
   ;ClearDebugOutput()
-  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\event+ "  state - " GetState(EventWidget( )) ; 
+  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +WidgetEvent( )+ "  state - " GetState(EventWidget( )) ; 
   
   Select WidgetEvent( )
     Case #__event_Change
@@ -58,8 +58,9 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
 ;     Until event = #PB_Event_CloseWindow
   EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 21
+; CursorPosition = 17
+; FirstLine = 13
 ; Folding = -
+; Optimizer
 ; EnableXP
 ; DPIAware

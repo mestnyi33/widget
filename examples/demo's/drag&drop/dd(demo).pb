@@ -27,11 +27,38 @@ Global Gadget_SourceText,
        Gadget_TargetPrivate1,
        Gadget_TargetPrivate2
 
-Global i, Event, font = LoadFont( 0, "Aria", DPIUnScaled(13) )
+Global i, Event, font = LoadFont( 0, "Aria", (13) )
 
 ; Macro EnableDrop( this, Format, Actions, PrivateType = 0 )
 ;    DropEnable( this, Format, Actions, PrivateType)
 ; EndMacro
+
+CompilerIf #PB_Compiler_DPIAware
+  Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
+    Protected result = PB(LoadImage)( _image_, _filename_, _flags_ )
+    ResizeImage(_image_, DPIScaled(ImageWidth(_image_)), DPIScaled(ImageHeight(_image_)))
+    ProcedureReturn result
+  EndProcedure
+  Macro LoadImage( _image_, _filename_, _flags_=-1 )
+    LoadImage__( _image_, _filename_, _flags_ )
+  EndMacro
+  
+  Macro CreateImage( _image_, _width_, _height_, _depth_=24, _backcolor_= -1)
+    PB(CreateImage)( _image_, DesktopScaledX(_width_), DesktopScaledY(_height_), _depth_, _backcolor_ )
+  EndMacro
+  
+  Macro Circle( _x_, _y_, _radius_, _color_= -1)
+    PB(Circle)( DesktopScaledX(_x_), DesktopScaledX(_y_), DesktopScaledX(_radius_), _color_ )
+  EndMacro
+  
+  Macro Box(_x_, _y_, _width_, _height_, _color_= -1)
+    PB(Box)(DesktopScaledX(_x_), DesktopScaledX(_y_), DesktopScaledX(_width_), DesktopScaledY(_height_), _color_)
+  EndMacro
+  
+  Macro DrawText(_x_, _y_, _text_, _frontcolor_= -1, _backcolor_= -1)
+    PB(DrawText)(DesktopScaledX(_x_), DesktopScaledX(_y_), _text_, _frontcolor_, _backcolor_)
+  EndMacro
+CompilerEndIf
 
 ;
 ; Create some images for the image demonstration
@@ -48,7 +75,8 @@ If StartDrawing( ImageOutput( #ImageGadget_Source ) )
   
   StopDrawing( )
 EndIf  
-
+;ResizeImage(#ImageGadget_Source, DPIScaled(ImageWidth(#ImageGadget_Source)), DPIScaled(ImageHeight(#ImageGadget_Source)))
+          
 CreateImage( #ImageGadget_Target, 136, 136 )
 If StartDrawing( ImageOutput( #ImageGadget_Target ) )
   DrawingFont( font )
@@ -470,9 +498,9 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 18
-; Folding = ----
+; CursorPosition = 36
+; FirstLine = 27
+; Folding = ---0-
 ; Optimizer
 ; EnableXP
 ; DPIAware

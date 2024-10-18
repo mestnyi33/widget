@@ -242,7 +242,7 @@ EndProcedure
   
   Procedure events_tree_widget()
     With structures::*event
-      ;Debug " widget - "+this()\widget+" "+this()\event
+      ;Debug " widget - "+EventWidget( )+" "+WidgetEvent( )
     Protected EventGadget = EventWidget( )
     Protected EventType = WidgetEvent( )
     Protected EventData = WidgetEventData( )
@@ -588,8 +588,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 247
-; FirstLine = 85
+; CursorPosition = 244
+; FirstLine = 86
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware

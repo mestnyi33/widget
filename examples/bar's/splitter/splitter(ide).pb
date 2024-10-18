@@ -155,19 +155,19 @@ CompilerEndIf
 ;   
 ;   ;Resize(Splitter_ide, 0,0,800,600)
 ;   
-;   SetText(toolbar_design, "size: ("+Str(Width(toolbar_design))+"x"+Str(Height(toolbar_design))+") - " + Str(IDWidget( GetParent( toolbar_design ))) )
-;   SetText(mdi_design, "size: ("+Str(Width(mdi_design))+"x"+Str(Height(mdi_design))+") - " + Str(IDWidget( GetParent( mdi_design ))))
-;   SetText(listview_debug, "size: ("+Str(Width(listview_debug))+"x"+Str(Height(listview_debug))+") - " + Str(IDWidget( GetParent( listview_debug ))))
-;   SetText(tree_inspector, "size: ("+Str(Width(tree_inspector))+"x"+Str(Height(tree_inspector))+") - " + Str(IDWidget( GetParent( tree_inspector ))))
-;   SetText(panel_inspector, "size: ("+Str(Width(panel_inspector))+"x"+Str(Height(panel_inspector))+") - " + Str(IDWidget( GetParent( panel_inspector ))))
-;   SetText(text_help, "size: ("+Str(Width(text_help))+"x"+Str(Height(text_help))+") - " + Str(IDWidget( GetParent( text_help ))))
+;   SetText(toolbar_design, "size: ("+Str(WidgetWidth(toolbar_design))+"x"+Str(WidgetHeight(toolbar_design))+") - " + Str(IDWidget( GetParent( toolbar_design ))) )
+;   SetText(mdi_design, "size: ("+Str(WidgetWidth(mdi_design))+"x"+Str(WidgetHeight(mdi_design))+") - " + Str(IDWidget( GetParent( mdi_design ))))
+;   SetText(listview_debug, "size: ("+Str(WidgetWidth(listview_debug))+"x"+Str(WidgetHeight(listview_debug))+") - " + Str(IDWidget( GetParent( listview_debug ))))
+;   SetText(tree_inspector, "size: ("+Str(WidgetWidth(tree_inspector))+"x"+Str(WidgetHeight(tree_inspector))+") - " + Str(IDWidget( GetParent( tree_inspector ))))
+;   SetText(panel_inspector, "size: ("+Str(WidgetWidth(panel_inspector))+"x"+Str(WidgetHeight(panel_inspector))+") - " + Str(IDWidget( GetParent( panel_inspector ))))
+;   SetText(text_help, "size: ("+Str(WidgetWidth(text_help))+"x"+Str(WidgetHeight(text_help))+") - " + Str(IDWidget( GetParent( text_help ))))
 ;   
 ;   Bind(-1,-1)
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 65
+; CursorPosition = 162
+; FirstLine = 144
 ; Folding = -
 ; Optimizer
 ; EnableXP

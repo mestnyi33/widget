@@ -18,7 +18,7 @@ EndProcedure
 
 Procedure events_progress_widgets()
   ;ClearDebugOutput()
-  ;Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
+  ;Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
   Select WidgetEvent( )
     Case #__Event_Change
@@ -41,7 +41,7 @@ EndProcedure
 
 Procedure events_track_widgets()
   ;ClearDebugOutput()
- ;; Debug ""+this()\event+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
+ ;; Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
   Select WidgetEvent( )
     Case #__Event_Change
@@ -51,7 +51,7 @@ Procedure events_track_widgets()
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;\\
   ProgressBarGadget(0,  10, 30, 250,  30, 0, 100)
   SetGadgetState   (0, 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
@@ -133,8 +133,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMen
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 41
+; CursorPosition = 53
+; FirstLine = 78
 ; Folding = --
+; Optimizer
 ; EnableXP
 ; DPIAware

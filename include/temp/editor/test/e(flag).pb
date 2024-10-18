@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -32,16 +32,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag
     
-    Select this()\event
+    Select WidgetEvent( )
       Case #PB_EventType_LeftClick
-        Select this()\widget
+        Select EventWidget( )
           Case *this
             If Flag(*this, #__button_toggle)
-              SetState(Button_4, GetState(this()\widget))
+              SetState(Button_4, GetState(EventWidget( )))
             EndIf
             
           Case Button_type 
-            If GetState(this()\widget)
+            If GetState(EventWidget( ))
               Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(this()\widget))
+          Flag(*this, flag, GetState(EventWidget( )))
         EndIf
         Post(#__event_repaint, #PB_All)
     EndSelect
@@ -119,6 +119,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 30
 ; Folding = --
+; Optimizer
 ; EnableXP
+; DPIAware
