@@ -27,7 +27,7 @@ Global Gadget_SourceText,
        Gadget_TargetPrivate1,
        Gadget_TargetPrivate2
 
-Global i, Event, font = LoadFont( 0, "Aria", 13 )
+Global i, Event, font = LoadFont( 0, "Aria", DPIUnScaled(13) )
 
 ; Macro EnableDrop( this, Format, Actions, PrivateType = 0 )
 ;    DropEnable( this, Format, Actions, PrivateType)
@@ -470,8 +470,9 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 319
-; FirstLine = 315
+; CursorPosition = 29
+; FirstLine = 18
 ; Folding = ----
+; Optimizer
 ; EnableXP
 ; DPIAware

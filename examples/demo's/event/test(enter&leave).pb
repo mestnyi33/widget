@@ -66,3 +66,4 @@ CompilerEndIf
 ; FirstLine = 8
 ; Folding = --
 ; EnableXP
+; DPIAware

@@ -3505,6 +3505,9 @@ Repeat
 	EndSelect
 	
 ForEver
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 221
+; FirstLine = 217
 ; Folding = --------------------------------------------------------------------------------
+; Optimizer
 ; EnableXP

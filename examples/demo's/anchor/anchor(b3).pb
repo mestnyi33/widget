@@ -8,23 +8,23 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
     Select WidgetEvent( )
       Case #__event_Draw
         
-        If Eventwidget()\focus
+        If EventWidget()\focus
           ; Demo draw on element
           UnclipOutput()
           DrawingMode(#PB_2DDrawing_Outlined)
           
-          If Eventwidget()\bounds\move
-            Box(Eventwidget()\bounds\move\min\x,
-                Eventwidget()\bounds\move\min\y,
-                Eventwidget()\bounds\move\max\x-Eventwidget()\bounds\move\min\x,
-                Eventwidget()\bounds\move\max\y-Eventwidget()\bounds\move\min\y, $ff0000ff)
+          If EventWidget()\bounds\move
+            Box(EventWidget()\bounds\move\min\x,
+                EventWidget()\bounds\move\min\y,
+                EventWidget()\bounds\move\max\x-EventWidget()\bounds\move\min\x,
+                EventWidget()\bounds\move\max\y-EventWidget()\bounds\move\min\y, $ff0000ff)
           EndIf
           
-          If Eventwidget()\bounds\size
-            Box(Eventwidget()\x[#__c_frame],
-                Eventwidget()\y[#__c_frame],
-                Bool(Eventwidget()\bounds\size\max\width>0)*Eventwidget()\bounds\size\max\width,
-                Bool(Eventwidget()\bounds\size\max\height>0)*Eventwidget()\bounds\size\max\height, $ffff0000)
+          If EventWidget()\bounds\size
+            Box(EventWidget()\x[#__c_frame],
+                EventWidget()\y[#__c_frame],
+                Bool(EventWidget()\bounds\size\max\width>0)*EventWidget()\bounds\size\max\width,
+                Bool(EventWidget()\bounds\size\max\height>0)*EventWidget()\bounds\size\max\height, $ffff0000)
           EndIf
           
           ; Box(Eventwidget()\x,Eventwidget()\y,Eventwidget()\width,Eventwidget()\height, draw_color)
@@ -78,6 +78,7 @@ If Open(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", 
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 7
-; FirstLine = 3
+; FirstLine = 39
 ; Folding = --
 ; EnableXP
+; DPIAware

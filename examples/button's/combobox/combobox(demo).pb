@@ -58,15 +58,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ;ClearDebugOutput()
     
     Select eventtype
-      Case #PB_EventType_Focus
+      Case #__event_Focus
         ComboBox.s = "focus "+Str(EventWidget( )\index-1)+" "+eventtype
-      Case #PB_EventType_LostFocus
+      Case #__event_LostFocus
         ComboBox.s = "lostfocus "+Str(EventWidget( )\index-1)+" "+eventtype
-      Case #PB_EventType_Change
+      Case #__event_Change
         ComboBox.s = "change "+Str(EventWidget( )\index-1)+" "+eventtype
     EndSelect
     
-    If eventtype = #PB_EventType_Focus
+    If eventtype = #__event_Focus
       Debug ComboBox.s +" - widget" +" get text - "+ GetText(EventWidget( ))
     Else
       If ComboBox.s <> "" 
@@ -132,8 +132,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 45
-; Folding = ---
+; CursorPosition = 68
+; FirstLine = 35
+; Folding = 8--
+; Optimizer
 ; EnableXP
 ; DPIAware

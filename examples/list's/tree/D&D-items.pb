@@ -56,7 +56,7 @@ Global MouseDownY  .i
 Global TabsWi      .i
 
 Macro Tabs( )
-  *this\_rows( )
+  *this\__items( )
 EndMacro
 
 Procedure DrawBar (*this._s_widget)
@@ -248,14 +248,14 @@ Procedure events( )
         SourceItem = GetState(*tree)
         If DragPrivate(#PrivateType, #PB_Drag_Move)
           Protected img =- 1
-          SelectElement(EventWidget( )\_rows( ), SourceItem)
-          img = CreateImage(#PB_Any, EventWidget( )\_rows( )\text\width, EventWidget( )\_rows( )\text\height, 32, #PB_Image_Transparent )
+          SelectElement(EventWidget( )\__items( ), SourceItem)
+          img = CreateImage(#PB_Any, EventWidget( )\__items( )\text\width, EventWidget( )\__items( )\text\height, 32, #PB_Image_Transparent )
           StartDrawing(ImageOutput(img))
           DrawingMode( #PB_2DDrawing_AllChannels)
-          DrawText(0, 0, EventWidget( )\_rows( )\text\string, $ff000000)
+          DrawText(0, 0, EventWidget( )\__items( )\text\string, $ff000000)
           StopDrawing()
           If IsImage(img)
-            SetCursor( *tree, Cursor::Create( ImageID(img), EventWidget( )\_rows( )\text\width/2, EventWidget( )\_rows( )\text\height/2 ))
+            SetCursor( *tree, Cursor::Create( ImageID(img), EventWidget( )\__items( )\text\width/2, EventWidget( )\__items( )\text\height/2 ))
           EndIf
         EndIf
         
@@ -429,8 +429,8 @@ Procedure events( )
           Debug ""
           ;ClearDebugOutput()
           Define *this._s_widget = *tree
-          ForEach *this\_rows( )
-            Debug ""+ *this\_rows( )\index +" "+ ListIndex(*this\_rows( )) +" "+ *this\_rows( )\text\string +""
+          ForEach *this\__items( )
+            Debug ""+ *this\__items( )\_index +" "+ ListIndex(*this\__items( )) +" "+ *this\__items( )\text\string +""
           Next
         EndIf
         
@@ -529,8 +529,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 127
+; CursorPosition = 432
+; FirstLine = 428
 ; Folding = -----
 ; EnableXP
 ; DPIAware

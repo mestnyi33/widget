@@ -302,7 +302,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *grid_image
          grid_type.l
-         *grid_widget
+         *grid_widget._s_WIDGET
       EndStructure
       ;--     TRANSFORM
       Structure _s_TRANSFORM
@@ -818,7 +818,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 795
-; FirstLine = 657
-; Folding = ---AA-----
+; CursorPosition = 304
+; FirstLine = 208
+; Folding = ---AI-----
 ; EnableXP

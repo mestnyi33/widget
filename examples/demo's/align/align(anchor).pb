@@ -451,3 +451,4 @@ Repeat :Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; FirstLine = 195
 ; Folding = -------
 ; EnableXP
+; DPIAware

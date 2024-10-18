@@ -154,7 +154,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;SetText(*Object, Text)                                 ; Set the button text as a dictionary entry
       Bind(*Object, @Button_Events( ), #__event_Draw )  ; Set the drawing callback with the specified highlighting color
       Bind(*Object, @Button_Events( ), #__event_LeftClick ) 
-      ;a_mode(*Object, #__a_size|#__a_position)        ; Add handles if you want to edit the buttons.
+      ;a_set(*Object, #__a_size|#__a_position)        ; Add handles if you want to edit the buttons.
       
       ProcedureReturn *Object
    EndProcedure
@@ -298,7 +298,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*Object, @CheckBox_Events( ), #__event_LeftClick)  ; Set the drawing callback with the specified highlighting color
       Bind(*Object, @CheckBox_Events( ), #__event_Left2Click) ; Set the drawing callback with the specified highlighting color
       Bind(*Object, @CheckBox_Events( ), #__event_Left3Click) ; Set the drawing callback with the specified highlighting color
-                                                              ;a_mode(*Object, #__a_size|#__a_position)               ; Add handles if you want to edit the buttons.
+                                                              ;a_set(*Object, #__a_size|#__a_position)               ; Add handles if you want to edit the buttons.
       
       ProcedureReturn *Object
    EndProcedure
@@ -330,6 +330,7 @@ CompilerIf #PB_Compiler_IsMainFile
    a_init(root( ), 0)
    
    ; 2DDrawing 
+   
    Root( )\drawmode | 1<<2
    ; VectorDrawing
    Root( )\drawmode | 1<<1
@@ -380,7 +381,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 274
-; FirstLine = 219
-; Folding = 0-+f-
+; CursorPosition = 333
+; FirstLine = 304
+; Folding = 0--f-
 ; EnableXP

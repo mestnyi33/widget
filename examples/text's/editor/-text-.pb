@@ -109,7 +109,7 @@
       
       While *End\c
          If *end\c = #LF ;Or *End\c = 0
-                         ;edit_AddItem( *this, *this\_rows( ), - 1, *str, (*end-*str)>>#PB_Compiler_Unicode )
+                         ;edit_AddItem( *this, *this\__items( ), - 1, *str, (*end-*str)>>#PB_Compiler_Unicode )
             If count = item
                Debug PeekS(*str, (*end-*str)>>#PB_Compiler_Unicode )
                Break
@@ -178,8 +178,9 @@ CompilerEndIf
 ; 19 - time
 ; ----------------------------
 ; 110 - time
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 57
-; FirstLine = 47
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 111
+; FirstLine = 107
 ; Folding = --
+; Optimizer
 ; EnableXP

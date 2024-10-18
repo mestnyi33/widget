@@ -23,11 +23,11 @@ CompilerIf #PB_Compiler_IsMainFile
         If State = - 1
           If *this\RowFocused( )
             If *this\mode\check <> #__m_optionselect
-              If *this\RowFocused( )\state\focus
-                *this\RowFocused( )\state\focus = #False
+              If *this\RowFocused( )\focus
+                *this\RowFocused( )\focus = #False
                 ; multi select mode
-                If *this\row\multiselect
-                  Post( *this, #__event_Change, *this\RowFocused( )\index, - 1 )
+                If *this\mode\multiselect
+                  Post( *this, #__event_Change, *this\RowFocused( )\_index, - 1 )
                 EndIf
               EndIf
             EndIf
@@ -38,21 +38,21 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ;
-        If is_no_select_item_( *this\_rows( ), State )
+        If is_no_select_item_( *this\__items( ), State )
           ProcedureReturn #False
         EndIf
         
         ;\\
-        If *this\count\items
+        If *this\countitems
           *this\scroll\state  = - 1
           
           If *this\row\index <> state
           *this\row\index = state
           ;\\
-          If *this\RowFocused( ) <> *this\_rows( )
+          If *this\RowFocused( ) <> *this\__items( )
             If *this\RowFocused( )
-              If *this\RowFocused( )\state\focus
-                *this\RowFocused( )\state\focus = #False
+              If *this\RowFocused( )\focus
+                *this\RowFocused( )\focus = #False
                 ; multi select mode
                 If *this\row\multiselect
                   Post( *this, #__event_Change, *this\RowFocused( )\index, - 1 )
@@ -62,29 +62,29 @@ CompilerIf #PB_Compiler_IsMainFile
               *this\RowFocused( )\color\state = #__S_0
             EndIf
             
-            *this\RowFocused( ) = *this\_rows( )
+            *this\RowFocused( ) = *this\__items( )
             
             ; click select mode
             If *this\row\clickselect
-              If *this\RowFocused( )\state\focus
-                *this\RowFocused( )\state\focus = 0
+              If *this\RowFocused( )\focus
+                *this\RowFocused( )\focus = 0
                 *this\RowFocused( )\color\state = #__S_0
               Else
-                *this\RowFocused( )\state\focus = 1
+                *this\RowFocused( )\focus = 1
                 *this\RowFocused( )\color\state = #__S_3
               EndIf
               
               Post( *this, #__event_Change, *this\RowFocused( )\index )
             Else
-              If *this\RowFocused( )\state\focus = 0 ; ???
-                *this\RowFocused( )\state\focus = 1
+              If *this\RowFocused( )\focus = 0 ; ???
+                *this\RowFocused( )\focus = 1
                 ; multi select mode
                 If *this\row\multiselect
                   Post( *this, #__event_Change, *this\RowFocused( )\index, 1 )
                 EndIf
               EndIf
               
-              *this\RowFocused( )\color\state = #__S_2 + Bool( *this\state\focus = #False )
+              *this\RowFocused( )\color\state = #__S_2 + Bool( *this\focus = #False )
             EndIf
             
             PostEventCanvasRepaint( *this )
@@ -106,13 +106,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_Up
         
         If *this\EnteredRow( )
-          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\state\focus
+          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
         EndIf
         If *this\PressedRow( )
-          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\state\focus
+          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
         EndIf
         If *this\RowFocused( )
-          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\state\focus
+          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\focus
         EndIf
         
         Debug "--------------"
@@ -125,13 +125,13 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug "--------------"
         
         If *this\EnteredRow( )
-          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\state\focus
+          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
         EndIf
         If *this\PressedRow( )
-          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\state\focus
+          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
         EndIf
         If *this\RowFocused( )
-          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\state\focus
+          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\focus
         EndIf
         
     EndSelect
@@ -141,13 +141,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent( )
       Case #__event_Change
         If *this\EnteredRow( )
-          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\state\focus
+          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
         EndIf
         If *this\PressedRow( )
-          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\state\focus
+          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
         EndIf
         If *this\RowFocused( )
-          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\state\focus
+          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\focus
         EndIf
         
         Debug "--------------"
@@ -155,13 +155,13 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug "--------------"
         
         If *this\EnteredRow( )
-          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\state\focus
+          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
         EndIf
         If *this\PressedRow( )
-          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\state\focus
+          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
         EndIf
         If *this\RowFocused( )
-          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\state\focus
+          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\focus
         EndIf
     EndSelect
   EndProcedure
@@ -192,7 +192,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 110
+; CursorPosition = 48
+; FirstLine = 44
 ; Folding = -------
 ; EnableXP

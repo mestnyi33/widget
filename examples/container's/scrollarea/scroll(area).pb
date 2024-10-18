@@ -246,7 +246,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndMacro
    
    Procedure Canvas_Draw(canvas.i, List Images.canvasitem())
-      If StartDrawing(CanvasOutput(canvas))
+      ;If StartDrawing(CanvasOutput(canvas))
          DrawingMode(#PB_2DDrawing_Default)
          Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
          
@@ -267,8 +267,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Box(*this\x[#__c_required], *this\y[#__c_required], *this\scroll\h\bar\max, *this\scroll\v\bar\max, RGB(255,0,0))
          Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, RGB(255,255,0))
          
-         StopDrawing()
-      EndIf
+      ;   StopDrawing()
+      ;EndIf
    EndProcedure
    
    Procedure Canvas_CallBack()
@@ -331,14 +331,18 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
       If Repaint 
-         Canvas_Draw(Canvas, Images()) 
+        ; Canvas_Draw(Canvas, Images()) 
       EndIf
    EndProcedure
+   Procedure events_draw()
+     Canvas_Draw(MyCanvas, Images()) 
+   EndProcedure
+   
    
    
    Procedure events_scrolls()
       Select WidgetEvent( ) ;   this()\event ; 
-         Case #PB_EventType_Change
+         Case #__event_Change
             If EventWidget( )\bar\vertical
                PushListPosition(Images())
                ForEach Images()
@@ -357,8 +361,6 @@ CompilerIf #PB_Compiler_IsMainFile
                
                *this\x[#__c_required] =- EventWidget( )\bar\page\pos + EventWidget( )\x
             EndIf
-            
-            Canvas_Draw(MyCanvas, Images()) 
       EndSelect
    EndProcedure
    
@@ -369,6 +371,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    MyCanvas = GetGadget(Open(0, 10, 10)) 
    BindGadgetEvent(MyCanvas, @Canvas_CallBack())
+   Bind(root( ), @events_draw(), #__event_ReDraw)
    
    *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_invert, 11)
    *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, #__bar_invert, 11)
@@ -379,17 +382,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(*this\scroll\h, @events_scrolls())
    
    
-   ;   StopDrawing()
-   ;   GetScrollCoordinate(x, y, width, height)
-   ;   Canvas_Draw(MyCanvas, Images()) 
-   
    Repeat
-      Event = pb(WaitWindowEvent)()
-      ;  Event = WaitWindowEvent()
+      Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 339
-; FirstLine = 290
-; Folding = 8------0---
+; CursorPosition = 385
+; FirstLine = 285
+; Folding = 8------0-8-
 ; EnableXP

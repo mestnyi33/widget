@@ -996,6 +996,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
+      Declare a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
       Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
       Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
       Declare a_update( *parent )
@@ -2812,54 +2813,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;-\\  ANCHORs
-      Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
-         Macro a_grid_change( _this_ )
-            If a_transform( )\grid_widget <> _this_
-               If mouse( )\steps > 1 And a_transform( )\grid_widget
-                  SetBackgroundImage( a_transform( )\grid_widget, #PB_Default )
-               EndIf
-               a_transform( )\grid_widget = _this_
-               
-               If mouse( )\steps > 1 And a_transform( )\grid_widget
-                  SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
-               EndIf
-            EndIf
-         EndMacro
-         
-         ;\\
-         ;Steps - 1
-         Protected hDC, x, y
-         ExamineDesktops( )
-         Protected width = DesktopWidth( 0 )
-         Protected height = DesktopHeight( 0 )
-         hDC = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent )
-         ;
-         ;\\
-         If StartDrawing( ImageOutput( hDC ))
-            draw_mode_( #PB_2DDrawing_AllChannels )
-            If Color = 0 : Color = $ff808080 : EndIf
-            ;
-            For x = startx To width - 1
-               For y = starty To height - 1
-                  ;
-                  If line
-                     Line( x, 0, 1, height, Color )
-                     Line( 0, y, width, 1, Color )
-                  Else
-                     Line( x, y, 1, 1, Color )
-                  EndIf
-                  ;
-                  y + Steps
-               Next
-               x + Steps
-            Next
-            ;
-            StopDrawing( )
-         EndIf
-         
-         ProcedureReturn hDC
-      EndProcedure
-      
       Macro a_draw( _this_ )
          ; Debug "a_draw "+_this_\class +" "+ _this_\anchors +" "+ _this_\anchors\mode
          If Not _this_\anchors\mode & #__a_nodraw ; 
@@ -3206,6 +3159,89 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndMacro
       
+      
+      Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
+         Macro a_grid_change( _this_ )
+            If a_transform( )\grid_widget <> _this_
+               If mouse( )\steps > 1 And a_transform( )\grid_widget
+                  SetBackgroundImage( a_transform( )\grid_widget, #PB_Default )
+               EndIf
+               a_transform( )\grid_widget = _this_
+               
+               If mouse( )\steps > 1 And a_transform( )\grid_widget
+                  SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
+               EndIf
+            EndIf
+         EndMacro
+         
+         ;\\
+         ;Steps = DPIScaled(Steps)
+         Protected hDC, x, y
+         ExamineDesktops( )
+         Protected width = DesktopWidth( 0 )
+         Protected height = DesktopHeight( 0 )
+         hDC = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent )
+         ;
+         ;\\
+         If StartDrawing( ImageOutput( hDC ))
+            draw_mode_( #PB_2DDrawing_AllChannels )
+            If Color = 0 : Color = $ff808080 : EndIf
+            ;
+            For x = startx To width - 1
+               For y = starty To height - 1
+                  ;
+                  If line
+                     Line( x, 0, 1, height, Color )
+                     Line( 0, y, width, 1, Color )
+                  Else
+                     ;Line( x, y, 1, 1, Color )
+                     Box(x, y, DPIScaled(1), DPIScaled(1), Color )
+                     ;Line( x, y, DesktopScaledX(1), DesktopScaledY(1), Color )
+                  EndIf
+                  ;
+                  y + Steps
+               Next
+               x + Steps
+            Next
+            ;
+            StopDrawing( )
+         EndIf
+         
+         ProcedureReturn hDC
+      EndProcedure
+      
+      Procedure.i a_init( *this._s_WIDGET, grid_size.a = 7, grid_type.b = 0 )
+         Protected i
+         ;
+         If Not *this\anchors
+            *this\anchors.allocate( ANCHORS )
+         EndIf
+         ;
+         If Not a_transform( ) 
+            a_transform( ).allocate( TRANSFORMDATA )
+         EndIf
+         ;
+         a_main( ) = *this
+         ;
+         a_transform( )\grid_type = grid_type
+         mouse( )\steps = DPIScaled(grid_size + 1)
+         ;
+         If IsImage( a_transform( )\grid_image )
+            FreeImage( a_transform( )\grid_image )
+         EndIf
+         ;
+         a_transform( )\grid_image = a_grid_image( mouse( )\steps - 1, a_transform( )\grid_type, $FF000000, 0,0);*this\fs, *this\fs )
+                                                                                                                ;
+         a_anchors( )\framecolor[#__s_0] = $ff000000
+         a_anchors( )\framecolor[#__s_1] = $ffFF0000
+         a_anchors( )\framecolor[#__s_2] = $ff0000FF
+         
+         a_anchors( )\backcolor[#__s_0] = $ffFFFFFF
+         a_anchors( )\backcolor[#__s_1] = $80FF0000
+         a_anchors( )\backcolor[#__s_2] = $800000FF
+         ;
+         
+      EndProcedure
       
       Procedure a_delta( *this._s_WIDGET )
          ;\\
@@ -3788,39 +3824,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure  
       
-      Procedure.i a_init( *this._s_WIDGET, grid_size.a = 7, grid_type.b = 0 )
-         Protected i
-         ;
-         If Not *this\anchors
-            *this\anchors.allocate( ANCHORS )
-         EndIf
-         ;
-         If Not a_transform( ) 
-            a_transform( ).allocate( TRANSFORMDATA )
-         EndIf
-         ;
-         a_main( ) = *this
-         ;
-         a_transform( )\grid_type = grid_type
-         mouse( )\steps = DPIScaled(grid_size + 1)
-         ;
-         If IsImage( a_transform( )\grid_image )
-            FreeImage( a_transform( )\grid_image )
-         EndIf
-         ;
-         a_transform( )\grid_image = a_grid_image( mouse( )\steps - 1, a_transform( )\grid_type, $FF000000, 0,0);*this\fs, *this\fs )
-                                                                                                                ;
-         a_anchors( )\framecolor[#__s_0] = $ff000000
-         a_anchors( )\framecolor[#__s_1] = $ffFF0000
-         a_anchors( )\framecolor[#__s_2] = $ff0000FF
-         
-         a_anchors( )\backcolor[#__s_0] = $ffFFFFFF
-         a_anchors( )\backcolor[#__s_1] = $80FF0000
-         a_anchors( )\backcolor[#__s_2] = $800000FF
-         ;
-         
-      EndProcedure
-      
       Procedure a_update( *parent._s_WIDGET )
          If *parent\anchors ;= 1 ; Not ListSize( a_group( ))
             
@@ -3966,7 +3969,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Static move_x, move_y, resize_x, resize_y, *after
          Protected i
          Protected.l mx, my, mw, mh
-         Protected.l Px, Py, IsGrid = Bool( mouse( )\steps > 1 )
+         Protected.l Px, Py, IsGrid = DPIScaled(Bool( mouse( )\steps > 1 ))
          
          Protected text.s
          
@@ -5560,11 +5563,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                If width <> #PB_Ignore
                   width + ( width % mouse( )\steps )
-                  width = (( width / mouse( )\steps ) * mouse( )\steps ) + 1
+                  width = (( width / mouse( )\steps ) * mouse( )\steps ) + DPIScaled(1)
                EndIf
                If height <> #PB_Ignore
                   height + ( height % mouse( )\steps )
-                  height = (( height / mouse( )\steps ) * mouse( )\steps ) + 1
+                  height = (( height / mouse( )\steps ) * mouse( )\steps ) + DPIScaled(1)
                EndIf
             EndIf
             
@@ -9192,29 +9195,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\type = #__type_Spin
-               If *this\StringBox( )
-                  Debug " update spin-change " + *bar\PageChange( ) + " " + Str( *bar\thumb\pos - *bar\area\pos )
-                  Protected i
-                  For i = 0 To 3
-                     If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
-                        SetText( *this\StringBox( ), StrF( *bar\page\pos, i ) )
-                        ;SetText( *this\StringBox( ), StrF( ( *bar\thumb\pos - *bar\area\pos ), i ) )
-                        Break
-                     EndIf
-                  Next
-               EndIf
+              If *this\StringBox( )
+                Debug " update spin-change " + *bar\PageChange( ) + " " + Str( *bar\thumb\pos - *bar\area\pos )
+                Protected i
+                For i = 0 To 3
+                  If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
+                    SetText( *this\StringBox( ), StrF( *bar\page\pos, i ) )
+                    ;SetText( *this\StringBox( ), StrF( ( *bar\thumb\pos - *bar\area\pos ), i ) )
+                    Break
+                  EndIf
+                Next
+              EndIf
             EndIf
             
             ;\\ post change event
             If mode = 2
-               If is_scrollbars_( *this )
-                  If *this\type = #__type_ScrollBar
-                     Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
-                  EndIf
-               Else
-                  ; scroll area change
-                  Send( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
-               EndIf  
+              If is_scrollbars_( *this )
+                If *this\type = #__type_ScrollBar
+                  Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
+                EndIf
+              Else
+                ; scroll area change
+                Send( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
+              EndIf  
+              
+;               If *this\StringBox( )
+;                 Debug 777
+;                 Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
+;               EndIf
             EndIf
             
             ; for the scrollarea scrollbars 
@@ -11613,7 +11621,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        *this\WidgetChange( ) = - 1
                                     EndIf
                                  EndIf
-                                 ; 
+                                 ; tree items change
                                  DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
                                  result = 1
                               EndIf
@@ -11661,6 +11669,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     EndIf
                                  EndIf
                                  ;
+                                 ; tree items change
                                  DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
                                  result = 1
                               EndIf
@@ -11727,6 +11736,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\RowFocused( )  = *current
                         EndIf
                         
+                        ; listview items change
                         DoEvents( *this, #__event_Change, *current\_index, *current )
                         Repaint = 1
                      EndIf
@@ -11790,6 +11800,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\WidgetChange( ) = - 1
                               EndIf
                               
+                              ; listview items change
                               DoEvents( *this, #__event_Change, *current\_index, *current )
                               Repaint = 1
                            EndIf
@@ -11841,6 +11852,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\WidgetChange( ) = - 1
                               EndIf
                               
+                              ; listview items change
                               DoEvents( *this, #__event_Change, *current\_index, *current )
                               Repaint = 1
                            EndIf
@@ -11930,7 +11942,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;                         ;\\
                      ;                         If *this\RowEntered( )\ColorState( ) = #__s_2
-                     ;                            DoEvents( *this, #__event_Change, *this\RowEntered( )\_index, *this\RowEntered( ) )
+                     ;                            ; tree items change
+;                                  DoEvents( *this, #__event_Change, *this\RowEntered( )\_index, *this\RowEntered( ) )
                      ;                         EndIf
                   EndIf
                EndIf
@@ -13050,7 +13063,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result
          ;          
          If IsImage( Image )
-           If DPIResolution( ) = 2.0 And ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
+           If DPIResolution( ) >= 1.50 And ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
              ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
            EndIf
          EndIf
@@ -13896,7 +13909,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      *this\OptionBox( )\OptionBox( ) = *this
                   EndIf
-                  ;
+                  ; box change
                   If Not Send( *this, #__event_Change )
                      PostEventRepaint( *this\root )
                   EndIf
@@ -13923,6 +13936,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
+                  ; button change
                   If Not Send( *this, #__event_Change )
                      PostEventRepaint( *this\root )
                   EndIf
@@ -14163,7 +14177,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\RowFocused( )\ColorState( ) = #__s_3
                            EndIf
                            
-                           DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
+                          ; list items change
+                          DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
                         Else
                            *this\RowFocused( )\_focus = 1
                            *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
@@ -19056,11 +19071,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   WidgetEventData( ) = *data
                   
                   ;\\ menu send bind event
-                  If *this\PopupBar( )
-                     While *this\PopupBar( )
+                  If *this\type = #__type_Menu Or *this\type = #__type_ToolBar
+                    If *this\PopupBar( )
+                      While *this\PopupBar( )
                         *this = *this\PopupBar( )
-                     Wend
-                     EventWidget( )     = *this
+                      Wend
+                      EventWidget( )     = *this
+                    EndIf
                   EndIf
                   
                   ; Debug "send - "+*this\class +" "+ ClassFromEvent(eventtype) +" "+ *button +" "+ *data
@@ -20657,6 +20674,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\RowFocused( )\enter         = 0
                                  *this\RowFocused( )\_focus = 0
                                  *this\RowFocused( )\ColorState( ) = #__s_0
+                                 ;
                                  DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( ))
                               EndIf
                            EndIf
@@ -20687,8 +20705,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\RowFocused( )\_focus = 1
                               
                               ; Debug "change3"
-                              DoEvents(*this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ))
-                           EndIf
+                              If is_integral_( *this ) And *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+                               ; Debug " combo send change event"
+                                 DoEvents(*this\parent\parent, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ))
+                                ;Send( *this\parent\parent, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
+                              Else
+                                DoEvents(*this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ))
+                              EndIf
+                            EndIf
                         EndIf
                         ;
                      EndIf
@@ -21423,7 +21447,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf eventtype = #__event_Focus
             ElseIf eventtype = #__event_LostFocus
             Else
-               Send( *this, eventtype, *button, *data )
+              Send( *this, eventtype, *button, *data )
+              
+              If eventtype = #__event_Down
+                If *this\type = #__type_Spin
+                  If *this\StringBox( )
+                    Send( *this, #__event_Change, *this\StringBox( ), *this\bar\PageChange( ) )
+                  EndIf
+                EndIf
+              EndIf
             EndIf
          EndIf
          
@@ -24469,9 +24501,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21988
-; FirstLine = 21335
-; Folding = ----------------------------------------------0-8--------------------------------------------------------------------------------------------------------------------------3v-----------------------------------------------------4---v---------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------0-88v--r-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 13065
+; FirstLine = 11619
+; Folding = ----------------------------------------------0-8--------------P9--v--bz+---v+v--------fv0-v-4f-b--------------------------------------------------------------------------3v-----------------------------------------------------4---v---------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------0-88v--r------------------------------------------------------------f----------------------------------------------------------------8-v-8----------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

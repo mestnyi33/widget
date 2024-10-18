@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global._s_widget *BackColor, *FrameColor, *position, *size, *grid
+  Global._s_widget *BackColor, *FrameColor, *position, *size, *grid, *gridType
   
   Procedure events_widgets( )
     Protected *this._s_widget = EventWidget( )
@@ -19,6 +19,8 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
       Case #__event_StatusChange
+        Debug " StatusChange"
+        
         If *size
           SetState(*size, *this\anchors\size )
         EndIf
@@ -39,28 +41,44 @@ CompilerIf #PB_Compiler_IsMainFile
           Case *position
             a_set( a_focused( ), #__a_full, GetState(*size), GetState(*this))
             
-          Case *grid
-            mouse( )\steps = GetState(*grid)
+           Case *grid, *gridType
+            mouse( )\steps = DPIScaled(GetState(*grid))
+            
+            If IsImage( a_transform( )\grid_image )
+              FreeImage( a_transform( )\grid_image )
+            EndIf
+            a_transform( )\grid_image = a_grid_image( mouse( )\steps, GetState(*gridType) )
+            SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
+            
+            ; 
+            If StartEnumerate( a_transform( )\grid_widget )
+              Resize(widget(), 
+                     DPIUnScaled(widget()\container_x()),
+                     DPIUnScaled(widget()\container_y()),
+                     DPIUnScaled(widget()\container_width()),
+                     DPIUnScaled(widget()\container_height()))
+              StopEnumerate( )
+            EndIf
+            ;Resize(a_transform( )\grid_widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             
         EndSelect
-  EndSelect
-  
-  Debug a_focused( )
+    EndSelect
   EndProcedure
   
-
+  
   If Open(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Container( 10,10,220,210 )
     a_init( widget( ),5 )
     
     image( 5,5,60,60, -1 )
-    Bind( widget( ), @events_widgets( ), #__event_StatusChange )
     Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-    Bind( widget( ), @events_widgets( ), #__event_StatusChange )
     image( 150,110,60,60, -1 )
-    Bind( widget( ), @events_widgets( ), #__event_StatusChange )
     a_set( *a )
     CloseList( )
+    
+    Bind( WidgetID(1), @events_widgets( ), #__event_StatusChange )
+    Bind( WidgetID(2), @events_widgets( ), #__event_StatusChange )
+    Bind( WidgetID(3), @events_widgets( ), #__event_StatusChange )
     
     Define y = 0
     ;Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
@@ -77,13 +95,18 @@ CompilerIf #PB_Compiler_IsMainFile
     Text( 10,130+y,100,18, "anchor position", #PB_Text_Border )
     *position = Spin( 10,150+y,100,30, 0,59 )
     
-    
+    ;\\
+    *gridType = ComboBox( 120,30+y,100,30 )
+    AddItem(*gridType, -1, "grid [point]" )
+   AddItem(*gridType, -1, "grid [line]" )
+   SetState(*gridType, 1)
+   
     *FrameColor = Button( 120,90+y,100,30, "FrameColor" )
     *BackColor = Button( 120,150+y,100,30, "BackColor" )
     
-    
+    ; 
     If a_focused( )
-      SetState(*grid, mouse( )\steps )
+      SetState(*grid, DPIUnScaled(mouse( )\steps) )
       SetState(*size, a_focused( )\anchors\size )
       SetState(*position, a_focused( )\anchors\pos )
     EndIf
@@ -92,6 +115,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind( *grid, @events_widgets( ), #__event_Change )
     Bind( *size, @events_widgets( ), #__event_Change )
     Bind( *position, @events_widgets( ), #__event_Change )
+    ;
+    Bind( *gridType, @events_widgets( ), #__event_Change )
     Bind( *BackColor, @events_widgets( ), #__event_LeftClick )
     Bind( *FrameColor, @events_widgets( ), #__event_LeftClick )
     
@@ -101,7 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 7
-; Folding = --
+; CursorPosition = 43
+; FirstLine = 36
+; Folding = ---
 ; EnableXP
+; DPIAware

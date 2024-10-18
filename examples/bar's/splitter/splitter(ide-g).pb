@@ -77,9 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   If state
     ; set splitters dafault positions
     ;widget::SetState(Splitter_ide, -130)
-    widget::SetState(Splitter_ide, widget::width(Splitter_ide)-220)
-    widget::SetState(splitter_help, widget::height(splitter_help)-80)
-    widget::SetState(splitter_debug, widget::height(splitter_debug)-150)
+    widget::SetState(Splitter_ide, widget::WidgetWidth(Splitter_ide)-220)
+    widget::SetState(splitter_help, widget::WidgetHeight(splitter_help)-80)
+    widget::SetState(splitter_debug, widget::WidgetHeight(splitter_debug)-150)
     widget::SetState(Splitter_inspector, 200)
     widget::SetState(Splitter_design, 30)
     widget::SetState(Splitter_5, 120)
@@ -103,9 +103,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 68
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 81
+; FirstLine = 73
 ; Folding = -
+; Optimizer
 ; EnableXP
 ; DPIAware
