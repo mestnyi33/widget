@@ -63,25 +63,25 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ;\\
-  ForEach enumRoot( )
-    Debug enumRoot( )\class
+  ForEach roots( )
+    Debug roots( )\class
   Next
   
 ;   Debug ""
 ;   Define canvas, window
-;   ForEach enumRoot( )
-;      Debug enumRoot( )\class
-;      canvas = enumRoot( )\canvas\gadget
-;      window = enumRoot( )\canvas\window
+;   ForEach roots( )
+;      Debug roots( )\class
+;      canvas = roots( )\canvas\gadget
+;      window = roots( )\canvas\window
 ;      
-;      DeleteMapElement(enumRoot( ))
+;      DeleteMapElement(roots( ))
 ;      FreeGadget( canvas )
 ;      CloseWindow( window )
 ;      
-;      ResetMap(enumRoot( ))
+;      ResetMap(roots( ))
 ;   Next
 ;   
-;   If Not MapSize(enumRoot( ))
+;   If Not MapSize(roots( ))
 ;     Debug "0"
 ;     End
 ;   EndIf
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( Root( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 7
+; CursorPosition = 83
+; FirstLine = 62
 ; Folding = -
 ; EnableXP

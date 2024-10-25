@@ -202,7 +202,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;     EndSelect
   EndProcedure
   
-  Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
+  Macro ToolBarButton_(_button_, _image_, _mode_=0, _text_="")
     ; #PB_ToolBar_Normal: the button will act as standard button (Default)
     ; #PB_ToolBar_Toggle: the button will act as toggle button
     
@@ -216,7 +216,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Bind(widget(), @toolbar_events())
   EndMacro
   
-  Macro Separator()
+  Macro Separator_()
     Text(2+widget()\x+widget()\width, 2,1,30,"")
     Button(widget()\x+widget()\width, 2+4,1,24,"")
     SetData(widget(), - MacroExpandedCount)
@@ -224,37 +224,37 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndMacro
   
   
-  Open(OpenWindow(#PB_Any, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
+  Open(0, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
   toolbar_design = Container(0,0,600,40) 
   ;SetAlignmentFlag(widget(), #__align_top)
   ;ToolBar(toolbar, window, flags)
   
-  group_select = ToolBarButton(1, - 1, #__button_Toggle)
+  group_select = ToolBarButton_(1, - 1, #__button_Toggle)
   SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
   SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
   
   ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
-  Separator()
-  ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
-  Separator()
-  ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
-  Separator()
-  ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
+  Separator_()
+  ToolBarButton_(#_tb_group_left, CatchImage(#PB_Any,?group_left))
+  ToolBarButton_(#_tb_group_right, CatchImage(#PB_Any,?group_right))
+  Separator_()
+  ToolBarButton_(#_tb_group_top, CatchImage(#PB_Any,?group_top))
+  ToolBarButton_(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
+  Separator_()
+  ToolBarButton_(#_tb_group_width, CatchImage(#PB_Any,?group_width))
+  ToolBarButton_(#_tb_group_height, CatchImage(#PB_Any,?group_height))
   
-  Separator()
-  ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
-  ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
-  ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
-  ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
-  Separator()
-  ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
-  ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
-  ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
+  Separator_()
+  ToolBarButton_(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
+  ToolBarButton_(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
+  ToolBarButton_(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
+  ToolBarButton_(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
+  Separator_()
+  ToolBarButton_(#_tb_align_left, CatchImage(#PB_Any,?group_left))
+  ToolBarButton_(#_tb_align_top, CatchImage(#PB_Any,?group_top))
+  ToolBarButton_(#_tb_align_center, CatchImage(#PB_Any,?group_width))
+  ToolBarButton_(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
+  ToolBarButton_(#_tb_align_right, CatchImage(#PB_Any,?group_right))
   CloseList()
   
   
@@ -311,7 +311,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 105
+; CursorPosition = 226
+; FirstLine = 214
 ; Folding = --
 ; EnableXP

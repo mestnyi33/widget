@@ -8495,14 +8495,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ 
         If Not *this\BarChange( )
           ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
+          
+          If *bar\invert
+            ThumbPos = *bar\area\end - ThumbPos
+          Else
+            ThumbPos = *bar\area\pos + ThumbPos
+          EndIf
           ;
           If *bar\thumb\pos <> ThumbPos
-            If *bar\invert
-              ThumbPos = *bar\area\end - ThumbPos
-            Else
-              ThumbPos = *bar\area\pos + ThumbPos
-            EndIf
-             
             If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
             If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
            
@@ -8562,13 +8562,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           ;
+          If *bar\invert
+            ThumbPos = *bar\area\end - ThumbPos
+          Else
+            ThumbPos = *bar\area\pos + ThumbPos
+          EndIf
+          ;
           If *bar\thumb\pos <> ThumbPos
-            If *bar\invert
-              ThumbPos = *bar\area\end - ThumbPos
-            Else
-              ThumbPos = *bar\area\pos + ThumbPos
-            EndIf
-            
             If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
             If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
             
@@ -9264,7 +9264,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ProcedureReturn #True   
       EndIf
     EndProcedure
-    
+      
     Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
       Protected result.b, *bar._s_BAR = *this\bar
       
@@ -24478,10 +24478,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 14241
-; FirstLine = 13505
-; Folding = -----------------------------------------------------------------------------------------8---------------------------------------------------------------------------------------------------------------------------------8v-vb4-+44-bv4-v-4-0-z-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 8573
+; FirstLine = 8311
+; Folding = -----------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------f----8--v84-+44-bv4-v-4-0-z-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

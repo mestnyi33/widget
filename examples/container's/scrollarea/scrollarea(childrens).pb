@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug ""+EventWidget()+ " - widget event - " +WidgetEvent()
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 1, #PB_ScrollArea_Flat)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     Bind(*g, @events_widgets(), #__event_ScrollChange )
@@ -53,7 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
+; CursorPosition = 7
 ; FirstLine = 4
 ; Folding = --
 ; EnableXP
+; DPIAware

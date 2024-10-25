@@ -61,7 +61,7 @@
     Select WidgetEvent( )
           
        Case #__event_statuschange
-          If EventWidget( )\show
+          If EventWidget( )\hide = 0 ; show
              Debug "statuschange "
           EndIf
           
@@ -152,7 +152,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 112
+; CursorPosition = 63
+; FirstLine = 59
 ; Folding = --
 ; EnableXP
