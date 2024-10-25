@@ -23,8 +23,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
   ; object = Container(100, 100, 250, 250) : CloseList()
-  ; object = ScrollArea(100, 100, 250, 250, 350,350, 1) : CloseList()
-   object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList()
+  object = ScrollArea(100, 100, 250, 250, 350,350, 1) : CloseList()
+  ;  object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList()
   
   ;\\
   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -84,8 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 34
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 26
+; FirstLine = 15
 ; Folding = -
 ; EnableXP

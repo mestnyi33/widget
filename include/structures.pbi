@@ -481,9 +481,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          change.w
       EndStructure
       Structure _s_BAR
-         max.l
-         min.l[3]   ; fixed min[1&2] bar size
-         fixed.l[3] ; fixed bar[1&2] position (splitter)
+        change.w
+        
+        max.l
+        min.l[3]   ; fixed min[1&2] bar size
+        fixed.l[3] ; fixed bar[1&2] position (splitter)
          
          invert.b
          vertical.b
@@ -800,9 +802,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 191
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 485
+; FirstLine = 352
 ; Folding = ---BQ+----
 ; Optimizer
 ; EnableXP
