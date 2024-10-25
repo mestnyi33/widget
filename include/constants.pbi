@@ -244,7 +244,7 @@
       
       ;-
       ;-\\ Bar
-      #__bar_minus      = 1
+      ;#__bar_minus      = 1
       #__bar_minimum    = 1
       #__bar_maximum    = 2
       #__bar_pagelength = 3
@@ -256,8 +256,6 @@
       #__bar_invert     = #__flag_invert
       #__bar_vertical   = #__flag_vertical
       #__bar_nobuttons  = #__flag_nogadgets
-      ;
-      #__bar_horizontal = 2
       
       
       ;-\\ Text
@@ -896,9 +894,10 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.20 LTS (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 148
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 246
+; FirstLine = 243
 ; Folding = ----
+; Optimizer
 ; EnableXP
 ; DPIAware

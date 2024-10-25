@@ -13,6 +13,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
   Global s_desi, s_tbar, s_view, s_help, s_list,s_insp
   
+  
+  Procedure events_widgets()
+    Select WidgetEvent( )
+      Case #__event_Change
+        Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ WidgetHeight( WidgetID(0) ) +" "+ WidgetHeight( WidgetID(1) )
+    EndSelect
+  EndProcedure
+
+
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
   widget::Open(0, 100,100,800,600, "ide", flag)
   window_ide = widget::GetWindow(root())
@@ -96,6 +105,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(IDWidget( widget::GetParent( s_insp ))))
   SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(IDWidget( widget::GetParent( s_help ))))
   
+  Bind(#PB_All, @events_widgets(), #__event_Change)
+    
   ;WaitClose( )
   Define event
   Repeat 
@@ -104,9 +115,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 73
-; Folding = -
+; CursorPosition = 107
+; FirstLine = 80
+; Folding = --
 ; Optimizer
 ; EnableXP
 ; DPIAware

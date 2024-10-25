@@ -18,10 +18,10 @@ Module Cursor
     Macro DesktopScaledY( _y_ )
       (_y_ * DesktopResolutionY( ))
     EndMacro
-    Macro DesktopUnScaledX( _x_ )
+    Macro DesktopUnscaledX( _x_ )
       ( _x_ / DesktopResolutionX( ))
     EndMacro
-    Macro DesktopUnScaledY( _y_ )
+    Macro DesktopUnscaledY( _y_ )
       (_y_ / DesktopResolutionY( ))
     EndMacro
     
@@ -177,6 +177,10 @@ Module Cursor
       image = CatchImage( #PB_Any, ?add, 601 )
     ElseIf type = #__cursor_Drag
       image = CatchImage( #PB_Any, ?copy, 530 )
+    EndIf
+    
+    If DesktopResolutionX( ) = 2.0 And DesktopResolutionY( ) = 2.0
+      ResizeImage(Image, DesktopScaledY(ImageWidth(Image)), DesktopScaledY(ImageHeight(Image)), #PB_Image_Raw )
     EndIf
     
     DataSection
@@ -454,8 +458,10 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 5.46 LTS (Windows - x64)
-; CursorPosition = 5
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 182
+; FirstLine = 157
 ; Folding = -----------
+; Optimizer
 ; EnableXP
 ; DPIAware

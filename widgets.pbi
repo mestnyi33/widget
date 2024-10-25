@@ -517,6 +517,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro split_1( ) : gadget[1] : EndMacro ; temp
       Macro split_2( ) : gadget[2] : EndMacro ; temp
+;       Macro split_1( ) : bar\button[1]\gadget : EndMacro ; temp
+;       Macro split_2( ) : bar\button[2]\gadget : EndMacro ; temp
       
       ;-
       ; Macro Popup( ): widget::__gui\sticky\box: EndMacro
@@ -5944,11 +5946,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\bar    
-               If ( Not *this\bar\max And *this\type <> #__type_Splitter)
-                  
-               Else
+;               If ( Not *this\bar\max And *this\type <> #__type_Splitter)
+;                 
+;               Else
+;                 bar_Update( *this, 1 )
+;               EndIf
+              
+              If *this\type = #__type_Splitter   
+                ;*this\bar\PageChange( ) = 1
+               ;; If *this\bar\PageChange( )
+                  bar_Update( *this, 2 )
+                ;Else
+                ;  bar_Update( *this, 1 )
+               ; EndIf
+              Else
+                If *this\bar\max
                   bar_Update( *this, 1 )
-               EndIf
+                EndIf
+              EndIf
             EndIf
             
             ;\\
@@ -6284,8 +6299,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;            Bool( Not _bar_\invert ) * ( _bar_\area\pos + ( _thumb_pos_ ) ))
 ;       EndMacro
       
-      Macro bar_thumb_change( _address_ )
-         _address_\thumb\pos = bar_thumb_pos_( _address_, _address_\page\pos )
+      Macro bar_thumb_change( _address_, _scroll_pos_ )
+         _address_\thumb\pos = bar_thumb_pos_( _address_, _scroll_pos_ )
          ;_address_\thumb\pos = bar_invert_thumb_pos_( _address_, _address_\thumb\pos )
          
          If _address_\invert
@@ -8251,7 +8266,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *SB  = *bar\button
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
-         
+         ;Debug ""+ mode +" "+ *this\bar\PageChange( )
+         ;mode = 2
 ;          ; NEW
 ;          If Not *bar\max 
 ;             If *this\type = #__type_Splitter
@@ -8292,9 +8308,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If mode
             ;\\ get area size
             If *bar\vertical
-               *bar\area\len = height
+               *bar\area\len = (height)
             Else
-               *bar\area\len = width
+               *bar\area\len = (width)
             EndIf
             
             If *this\type = #__type_Spin
@@ -8405,27 +8421,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *bar\page\end = *bar\area\len - *bar\thumb\len
                               
                               If Not *bar\page\pos
-                                 *bar\page\pos = *bar\page\end / 2
+                                *bar\page\pos = *bar\page\end / 2
+                                *bar\PageChange( ) = *bar\page\pos
                               EndIf
                               
-                              ; if splitter fixed
-                              ; set splitter pos to center
-                              If *bar\fixed = 1
-                                 *bar\fixed[1] = *bar\page\pos
-                              ElseIf *bar\fixed = 2
-                                 *bar\fixed[2] = *bar\page\end - *bar\page\pos
+;                               ; save fixed pos
+;                               If *bar\fixed = 1
+;                                  *bar\fixed[1] = *bar\page\pos
+;                               ElseIf *bar\fixed = 2
+;                                  *bar\fixed[2] = *bar\page\end - *bar\page\pos
+;                               EndIf
+                            Else
+                               If *bar\fixed = 1
+                                *bar\page\end = *bar\area\len - *bar\thumb\len
+                              ElseIf *bar\PageChange( )
+                                *bar\page\end = *bar\area\len - *bar\thumb\len
+                              Else
+;                                 ;*bar\PageChange( ) = 1
+;                                 Debug ""+ *bar\ThumbChange( );*bar\fixed;IDWidget(*this) +" "+ *bar\area\len
+;                                ; *bar\page\end = *bar\area\len - *bar\thumb\len
                               EndIf
-                           Else
-                              If *bar\PageChange( ) Or *bar\fixed = 1
-                                 *bar\page\end = *bar\area\len - *bar\thumb\len
-                              EndIf
-                           EndIf
-                        EndIf
+                            EndIf
+                          EndIf
                         
                      EndIf
                   EndIf
-                  
-                  ; Debug ""+*bar\vertical +" "+ *bar\thumb\len +" "+ *SB\size
                   
                   If *bar\page\end
                      *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
@@ -8434,7 +8454,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] )
-                  
                   If *bar\area\end < *bar\area\pos
                      *bar\area\end = *bar\area\pos
                   EndIf
@@ -8491,9 +8510,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *bar\max > *bar\page\len
                      If *bar\page\end
                         *bar\page\pos = *bar\page\end + *bar\page\pos
-                        Debug " bar error "
+                        Debug " bar error pos"
                      Else
-                        Debug " bar error page\end - " + *bar\page\end
+                        Debug " bar error end - " + *bar\page\end
                      EndIf
                   EndIf
                EndIf
@@ -8508,50 +8527,74 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ 
-            If *bar\ThumbChange( )
-               ; *bar\ThumbChange( ) = 0
-            Else
-               bar_thumb_change( *bar )
+            If Not *bar\ThumbChange( )
+              ;If *bar\PageChange( ) 
+                 bar_thumb_change( *bar, *bar\page\pos )
+              ;EndIf
+              
+              ;If *bar\ThumbChange( )
+              If *this\type = #__type_Splitter
+                If Not *bar\PageChange( ) 
+;                   Protected pageend = *bar\area\len - *bar\thumb\len
+;                   Protected thumbend = *bar\thumb\end
+;                   Debug ""+*bar\thumb\pos +" "+ thumbend
+;                   Protected percent.f = ( thumbend - *bar\thumb\len ) / ( pageend - *bar\min )
+;                   
+; ;                   Debug ""+ IDWidget(*this) +" "+ *bar\area\len
+;                                   *bar\thumb\pos     = Round((( *bar\thumb\pos ) + *bar\min + *bar\min[1] ) * percent, #PB_Round_Nearest ) ; *bar\thumb\pos / *bar\percent
+;                                   
+;                                    ScrollPos     = ( *bar\min + Round((( *bar\thumb\pos ) - *bar\area\pos ) / percent, #PB_Round_Nearest ))
+; ;                                    ScrollPos - *bar\page\pos   
+; ;                                    If ScrollPos > 0 
+; ;                                    *bar\page\pos + ScrollPos
+; ;                                    EndIf
+;                                    ;ScrollPos     = bar_page_pos_( *bar, *bar\thumb\pos )
+; ;                                   ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+; ;                                    *bar\PageChange( ) = *bar\page\pos - ScrollPos
+; ;                                  *bar\page\pos = ScrollPos
+;                                   Debug "---- "+ScrollPos ; *bar\page\pos
+                EndIf              
+              EndIf               
             EndIf
-         EndIf
+          EndIf
          
          ;\\ splitter fixed size
          If *bar\fixed
-            If *bar\PageChange( ) 
-               If *bar\fixed = 1
-                  *bar\fixed[1] = *bar\thumb\pos
+           If *bar\fixed = 1
+             If *bar\PageChange( ) 
+               *bar\fixed[1] = *bar\thumb\pos
+             Else
+               *bar\thumb\pos = *bar\fixed[1]
+               
+               If *bar\thumb\pos > *bar\area\end
+                 If *bar\min[1] < *bar\area\end
+                   *bar\thumb\pos = *bar\area\end
+                 Else
+                   If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
+                     *bar\thumb\pos = ( *bar\area\end + *bar\min[2] )
+                   Else
+                     *bar\thumb\pos = *bar\min[1]
+                   EndIf
+                 EndIf
                EndIf
-               If *bar\fixed = 2
-                  *bar\fixed[2] = *bar\area\end - *bar\thumb\pos 
+             EndIf
+             ;
+             If *bar\fixed = 2
+               If *bar\PageChange( ) 
+                 *bar\fixed[2] = *bar\area\end - *bar\thumb\pos 
+               Else
+                 *bar\thumb\pos = *bar\area\end - *bar\fixed[2] 
+                 
+                 If *bar\thumb\pos < *bar\min[1]
+                   If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
+                     *bar\thumb\pos = ( *bar\area\end + *bar\min[2] )
+                   Else
+                     *bar\thumb\pos = *bar\min[1]
+                   EndIf
+                 EndIf
                EndIf
-            Else
-               If *bar\fixed = 1
-                  *bar\thumb\pos = *bar\fixed[1]
-                  
-                  If *bar\thumb\pos > *bar\area\end
-                     If *bar\min[1] < *bar\area\end
-                        *bar\thumb\pos = *bar\area\end
-                     Else
-                        If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
-                           *bar\thumb\pos = ( *bar\area\end + *bar\min[2] )
-                        Else
-                           *bar\thumb\pos = *bar\min[1]
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               If *bar\fixed = 2
-                  *bar\thumb\pos = *bar\area\end - *bar\fixed[2] 
-                  
-                  If *bar\thumb\pos < *bar\min[1]
-                     If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
-                        *bar\thumb\pos = ( *bar\area\end + *bar\min[2] )
-                     Else
-                        *bar\thumb\pos = *bar\min[1]
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
+             EndIf
+           EndIf
          EndIf
          
          ;
@@ -8821,14 +8864,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; Splitter first-child auto resize
-            If IsGadget( *this\split_1( ) )
-               ;             If is_root_container_( *this )
-               If DPIResolutionX( ) And DPIResolutionY( )
-                  PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
-               Else
-                  PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
-               EndIf
-               ;             Else
+            ;If *bar\PageChange( )
+              If IsGadget( *this\split_1( ) )
+              ;             If is_root_container_( *this )
+              CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                ; PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
+                SetWindowPos_( GadgetID(*this\split_1( )), #HWND_TOP, *BB1\x, *BB1\y, *BB1\width, *BB1\height, #SWP_NOACTIVATE )
+                UpdateWindow_(GadgetID(*this\split_1( )))
+              CompilerElse
+                PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
+              CompilerEndIf
+              ;             Else
                ;               PB(ResizeGadget)( *this\split_1( ),
                ;                                 *BB1\x + GadgetX( *this\root\canvas\gadget ),
                ;                                 *BB1\y + GadgetY( *this\root\canvas\gadget ),
@@ -8862,13 +8908,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; Splitter second-child auto resize
             If IsGadget( *this\split_2( ) )
-               ;             If is_root_container_( *this )
-               If DPIResolutionX( ) And DPIResolutionY( )
-                  PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
-               Else
-                  PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
-               EndIf
-               ;             Else
+              ;             If is_root_container_( *this )
+              CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                ; PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
+                SetWindowPos_( GadgetID(*this\split_2( )), #HWND_TOP, *BB2\x, *BB2\y, *BB2\width, *BB2\height, #SWP_NOACTIVATE )
+                UpdateWindow_(GadgetID(*this\split_2( )))
+              CompilerElse
+                PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
+              CompilerEndIf
+              ;             Else
                ;               PB(ResizeGadget)( *this\split_2( ),
                ;                                 *BB2\x + GadgetX( *this\root\canvas\gadget ),
                ;                                 *BB2\y + GadgetY( *this\root\canvas\gadget ),
@@ -8899,7 +8947,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
+           ;EndIf
          EndIf
          
          ;\\
@@ -9136,7 +9184,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ; ;          Debug "<<<<<<<<<<<<<<<<<"
 ;                
          ;\\
-         If *bar\PageChange( ) 
+         If *bar\PageChange( )
             ;\\
             If *this\type = #__type_ScrollBar
                If *this\parent And *this\parent\scroll
@@ -9229,9 +9277,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; for the scrollarea scrollbars 
             ; then resize and scrollbars pos = max
-            If *this\type = #__type_ScrollBar
+            ;If *this\type = #__type_ScrollBar
                *bar\ThumbChange( ) = 0
-            EndIf
+            ;EndIf
             
             ; 
             *bar\PageChange( ) = 0
@@ -9242,14 +9290,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
          Protected result.b, *bar._s_BAR = *this\bar
-         
-         If *this\type = #__type_splitter
-            If *bar\vertical
-               ScrollPos = DPIScaledX( ScrollPos )
-            Else
-               ScrollPos = DPIScaledY( ScrollPos )
-            EndIf
-         EndIf
          
          If *bar\area\len
             If Not *bar\max
@@ -9283,7 +9323,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
+           
             If *bar\page\pos <> ScrollPos
                If *bar\page\pos > ScrollPos
                   *bar\direction =- 1
@@ -9293,7 +9333,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                *bar\PageChange( ) = *bar\page\pos - ScrollPos
                *bar\page\pos      = ScrollPos
-               
+                
                ; Debug ""+ScrollPos +" "+ *bar\page\end +" "+ *bar\thumb\len +" "+ *bar\thumb\end +" "+ *bar\page\pos +" "+ Str(*bar\page\end-*bar\min[2])
                
                result = *bar\PageChange( )
@@ -9367,13 +9407,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\type = #__type_Splitter
                Select Attribute
                   Case #PB_Splitter_FirstMinimumSize
-                     *bar\min[1] = *value
-                     ;*BB1\size = *value
+                     *bar\min[1] = DPIScaled(*value)
                      result = Bool( *bar\max )
                      
                   Case #PB_Splitter_SecondMinimumSize
-                     *bar\min[2] = *value
-                     ;*BB2\size = *value
+                     *bar\min[2] = DPIScaled(*value)
                      result = Bool( *bar\max )
                      
                   Case #PB_Splitter_FirstGadget
@@ -9392,7 +9430,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Select Attribute
                   Case #__bar_minimum
                      If *bar\min <> *value ;And Not *value < 0
-                        *bar\AreaChange( ) = *bar\min - value
+                        ;*bar\AreaChange( ) = *bar\min - value
                         If *bar\page\pos < *value
                            *bar\page\pos = *value
                         EndIf
@@ -9402,16 +9440,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                   Case #__bar_maximum
-                     If *bar\max <> *value And Not ( *value < 0 And Not #__bar_minus)
-                        *bar\AreaChange( ) = *bar\max - value
+                     If *bar\max <> *value ;And Not ( *value < 0 And Not #__bar_minus)
+                        ;*bar\AreaChange( ) = *bar\max - value
                         
-                        If *bar\min > *value And Not #__bar_minus
+                        If *bar\min > *value ;And Not #__bar_minus
                            *bar\max = *bar\min + 1
                         Else
                            *bar\max = *value
                         EndIf
                         ;
-                        If Not *bar\max And Not #__bar_minus
+                        If Not *bar\max ;And Not #__bar_minus
                            *bar\page\pos = *bar\max
                         EndIf
                         ; Debug  "   min " + *bar\min + " max " + *bar\max
@@ -9429,11 +9467,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                   Case #__bar_pagelength
-                     If *bar\page\len <> *value And Not ( *value < 0 And Not #__bar_minus )
-                        *bar\AreaChange( ) = *bar\page\len - value
+                     If *bar\page\len <> *value ;And Not ( *value < 0 And Not #__bar_minus )
+                        ;*bar\AreaChange( ) = *bar\page\len - value
                         *bar\page\len      = *value
                         
-                        If Not *bar\max And Not #__bar_minus
+                        If Not *bar\max ;And Not #__bar_minus
                            If *bar\min > *value
                               *bar\max = *bar\min + 1
                            Else
@@ -13692,17 +13730,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_ToolBar Or
             *this\type = #__type_TabBar Or
             *this\type = #__type_Menu
-            ;
-            ProcedureReturn *this\TabState( )
+           ;
+           ProcedureReturn *this\TabState( )
          Else
-            If *this\bar
+           If *this\bar
              If *this\type = #__type_Splitter
-                ProcedureReturn DPIUnScaled(*this\bar\page\pos)
+               ProcedureReturn DPIUnScaled( *this\bar\page\pos )
              EndIf
              ProcedureReturn *this\bar\page\pos
-            EndIf
+           EndIf
          EndIf
-      EndProcedure
+       EndProcedure
       
       Procedure.s GetText( *this._s_WIDGET );, column.l = 0 )
          If *this\type = #__type_Tree
@@ -14213,7 +14251,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  #__type_ScrollBar,
                  #__type_ProgressBar,
                  #__type_Splitter
-               
+              
+              If *this\type = #__type_splitter
+                If *this\bar\vertical
+                  state = DPIScaledX( state )
+                Else
+                  state = DPIScaledY( state )
+                EndIf
+              EndIf
+
                result = bar_PageChange( *this, state, 2 ) ; and post change event
          EndSelect
          
@@ -16828,7 +16874,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   SetParent( *this\split_2( ), *this )
                EndIf
                ; EndIf
-               
             EndIf
             
          EndIf
@@ -16900,7 +16945,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\ Create cursor
+         ;\\ cursor init
          If *this\type = #__type_Editor Or
             *this\type = #__type_String
             *this\cursor = cursor::#__cursor_IBeam
@@ -24506,9 +24551,10 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15642
-; FirstLine = 15390
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-8r-v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 8554
+; FirstLine = 8189
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------0-8----------------v-------------------------------------------------------------48v-0f-4-+44-8v3-v-4-0-8-------------------------------------------------------------------------------------------------------------------------+-+7-8-----------------------------------------------------------------------------v4R08---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Optimizer
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

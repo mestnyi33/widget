@@ -33,7 +33,7 @@ Global i, Event, font = LoadFont( 0, "Aria", (13) )
 ;    DropEnable( this, Format, Actions, PrivateType)
 ; EndMacro
 
-CompilerIf #PB_Compiler_DPIAware
+CompilerIf #PB_Compiler_DPIAware And #PB_Compiler_OS = #PB_OS_Windows
   Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
     Protected result = PB(LoadImage)( _image_, _filename_, _flags_ )
     ResizeImage(_image_, DPIScaled(ImageWidth(_image_)), DPIScaled(ImageHeight(_image_)))
@@ -498,8 +498,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 27
+; CursorPosition = 35
+; FirstLine = 33
 ; Folding = ---0-
 ; Optimizer
 ; EnableXP

@@ -41,6 +41,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          y.l
          x.l
       EndStructure
+      ;--     RESIZEINFO
+      Structure RESIZEINFO Extends _s_COORDINATE
+         flag.c
+         clip.b
+         send.b
+         change.b
+         nochildren.b
+      EndStructure
       ;--     MODE
       Structure _s_mode
          ;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
@@ -183,7 +191,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_BOX
-         index.l     ; Index of new list element
          size.l
          noFocus.a
          color._s_color[4]
@@ -585,30 +592,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *attach._s_BOUNDATTACH
       EndStructure
       
-      Structure RESIZEINFO Extends _s_COORDINATE
-         flag.c
-         clip.b
-         send.b
-         hide.b
-         change.b
-         nochildren.b
-      EndStructure
-      
-      ;       Structure SIZEINFO Extends _s_SIZE
-      ;          change.b
-      ;          start.b
-      ;          stop.b
-      ;          send.b
-      ;          ;children.b
-      ;       EndStructure
-      ;       Structure MOVEINFO Extends _s_POINT
-      ;          change.b
-      ;          start.b
-      ;          stop.b
-      ;          send.b
-      ;          ;children.b
-      ;       EndStructure
-      
       ;--     EVENT
       Structure _s_EVENTDATA
          *widget._s_ROOT   ; eventWidget( )
@@ -818,7 +801,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 304
-; FirstLine = 208
-; Folding = ---AI-----
+; CursorPosition = 193
+; FirstLine = 191
+; Folding = ---BQ+----
+; Optimizer
 ; EnableXP

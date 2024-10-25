@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   If OpenWindow(0, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenWindow       (0, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ScrollBarGadget  (0,  10, 42, 250,  20, 30, 100, 30)
       SetGadgetState   (0,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
       
@@ -41,26 +41,27 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;\\
-   If Open(0, 305,0, 305,140)
-      Scroll(10, 42, 250,  20, 30, 100, 30)
-      SetState   (WidgetID(0),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+   If Open     (0, 305,0, 305,140)
+      Scroll   (10, 42, 250,  20, 30, 100, 30)
+      SetState (WidgetID(0),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
       
-      Scroll(270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-      SetState   (WidgetID(1), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+      Scroll   (270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
+      SetState (WidgetID(1), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
       
-      Text(10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#__Text_Center)
-      Text(10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#__Text_Right)
+      Text     (10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#__Text_Center)
+      Text     (10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#__Text_Right)
       
       For i = 0 To 1
-         Bind(WidgetID(i), @events_widgets())
+         Bind  (WidgetID(i), @events_widgets())
       Next
    EndIf
    
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 15
+; CursorPosition = 38
+; FirstLine = 26
 ; Folding = --
+; Optimizer
 ; EnableXP
 ; DPIAware

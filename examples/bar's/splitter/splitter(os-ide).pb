@@ -81,6 +81,7 @@ If state
   SetGadgetState(Splitter_design, 30)
   SetGadgetState(Splitter_5, 120)
   
+  ;       ; bug fixed
   ;       SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
   ;       SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
   
@@ -98,9 +99,10 @@ SetGadgetText(panel_inspector, "size: ("+Str(GadgetWidth(panel_inspector))+"x"+S
 SetGadgetText(text_help, "size: ("+Str(GadgetWidth(text_help))+"x"+Str(GadgetHeight(text_help))+") - " + Str(IDWidget( GetParent( text_help ))))
 
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 97
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 83
 ; FirstLine = 69
 ; Folding = -
+; Optimizer
 ; EnableXP
 ; DPIAware
