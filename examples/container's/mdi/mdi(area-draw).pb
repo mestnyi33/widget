@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected Text.s = GetText(*Object)
       Protected Hue = DataValue
         Protected x, y
-       Button_Draw( *Object )
+       Draw_Button( *Object )
      
    EndProcedure
    
@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *Object = AddItem( *mdi, -1, "", -1, #__flag_BorderLess )
       *Object\class = "draw-"+Str(type)
       *Object\cursor = #PB_Cursor_Hand
-      *Object\round = round
+      *Object\round = DPIScaled(round)
       
       If type = #PB_GadgetType_Button
         *Object\root\widget = Button(0,0,0,0,text,#__flag_autosize, -1, round)
@@ -213,14 +213,14 @@ CompilerIf #PB_Compiler_IsMainFile
    SetColor(*mdi, #__color_back, $ffffffff)
    ;SetColor(*mdi, #__color_frame, $ffffffff)
    
-   Define b=19;20        
-   *mdi\scroll\v\round = 11
+   Define b=DPIScaled(19);20        
+   *mdi\scroll\v\round = DPIScaled(11)
    *mdi\scroll\v\bar\button[1]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button[2]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button\round = *mdi\scroll\v\round
    SetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
    
-   *mdi\scroll\h\round = 11
+   *mdi\scroll\h\round = DPIScaled(11)
    *mdi\scroll\h\bar\button[1]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button[2]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button\round = *mdi\scroll\h\round
@@ -241,7 +241,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 42
-; Folding = --v
+; CursorPosition = 191
+; FirstLine = 174
+; Folding = ---
 ; EnableXP
+; DPIAware

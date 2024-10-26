@@ -390,86 +390,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     
-    ;-
-    Declare.b bar_draw_scroll( *this )
-    Macro bar_area_Create_( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _scrollbar_size_, _mode_ = #True )
-      If Not _parent_\scroll\bars
-        _parent_\scroll\bars = 1
-        _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_ScrollBar, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, ( _scrollbar_size_), #__buttonround, _scroll_step_ )
-        _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_ScrollBar, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_), #__buttonround, _scroll_step_ )
-      EndIf
-    EndMacro
-    
-    Macro bar_area_Change( _this_, _objects_ )
-      ;\\ 
-      _this_\scroll_x( ) = _objects_\x 
-      _this_\scroll_y( ) = _objects_\Y
-      _this_\scroll_width( ) = _objects_\width
-      _this_\scroll_height( ) = _objects_\height
-      ;
-      PushListPosition( _objects_ )
-      ForEach _objects_
-        If _this_\scroll_x( ) > _objects_\x 
-          _this_\scroll_x( ) = _objects_\x 
-        EndIf
-        If _this_\scroll_y( ) > _objects_\y 
-          _this_\scroll_y( ) = _objects_\y 
-        EndIf
-      Next
-      ;
-      ForEach _objects_
-        If _this_\scroll_width( ) < _objects_\x + _objects_\width - _this_\scroll_x( ) 
-          _this_\scroll_width( ) = _objects_\x + _objects_\width - _this_\scroll_x( ) 
-        EndIf
-        If _this_\scroll_height( ) < _objects_\Y + _objects_\height - _this_\scroll_y( ) 
-          _this_\scroll_height( ) = _objects_\Y + _objects_\height - _this_\scroll_y( ) 
-        EndIf
-      Next
-      PopListPosition( _objects_ )
-      
-      widget::bar_mdi_resize( _this_,
-                              _this_\scroll\h\x, 
-                              _this_\scroll\v\y, 
-                              ( _this_\scroll\v\x + _this_\scroll\v\width ) - _this_\scroll\h\x,
-                              ( _this_\scroll\h\y + _this_\scroll\h\height ) - _this_\scroll\v\y )
-    EndMacro
-    
-    Macro bar_area_Draw( _this_ )
-      If _this_\scroll And ( _this_\scroll\v Or _this_\scroll\h )
-        ;clip_output_( _this_, [#__c_draw] )
-        
-        If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And
-           ( _this_\scroll\v\draw_width( ) > 0 And _this_\scroll\v\draw_height( ) > 0 )
-          bar_draw_scroll( _this_\scroll\v )
-        EndIf
-        If _this_\scroll\h And Not _this_\scroll\h\hide And _this_\scroll\h\height And
-           ( _this_\scroll\h\draw_width( ) > 0 And _this_\scroll\h\draw_height( ) > 0 )
-          bar_draw_scroll( _this_\scroll\h )
-        EndIf
-        
-        ;\\
-        If Not _this_\haschildren
-          draw_mode_alpha_( #PB_2DDrawing_Outlined )
-          
-          ; ;                ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), RGB( 255,0,0 ) )
-          ; ;                Box( _this_\scroll\h\bar\page\pos, _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-          
-          ;\\ Scroll area coordinate
-          draw_box_( _this_\inner_x( ) + _this_\scroll_x( ) + _this_\text\padding\x, _this_\inner_y( ) + _this_\scroll_y( ) + _this_\text\padding\y, _this_\scroll_width( ) - _this_\text\padding\x * 2, _this_\scroll_height( ) - _this_\text\padding\y * 2, $FFFF0000 )
-          draw_box_( _this_\inner_x( ) + _this_\scroll_x( ), _this_\inner_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
-          
-          If _this_\scroll\v And _this_\scroll\h
-            draw_box_( _this_\scroll\h\frame_x( ) + _this_\scroll_x( ), _this_\scroll\v\frame_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
-            
-            ; Debug "" +  _this_\scroll_x( )  + " " +  _this_\scroll_y( )  + " " +  _this_\scroll_width( )  + " " +  _this_\scroll_height( )
-            ;draw_box_( _this_\scroll\h\frame_x( ) - _this_\scroll\h\bar\page\pos, _this_\scroll\v\frame_y( ) - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FF0000FF )
-            
-            ;\\ page coordinate
-            draw_box_( _this_\scroll\h\frame_x( ), _this_\scroll\v\frame_y( ), _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00 )
-          EndIf
-        EndIf
-      EndIf
-    EndMacro
     
     
     ;- \\
@@ -755,10 +675,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Not _root_\drawmode 
         _root_\drawmode | 1<<2
       EndIf
-      If _root_\drawmode & 1<<1
+      If _root_\drawmode & 1<<1 = 1<<1
         widget::DrawingDC = StartVectorDrawing( CanvasVectorOutput( _root_\canvas\gadget ))
       EndIf
-      If _root_\drawmode & 1<<2
+      If _root_\drawmode & 1<<2 = 1<<2
         widget::DrawingDC = StartDrawing( CanvasOutput( _root_\canvas\gadget ))
       EndIf
       widget::__gui\drawingroot = _root_
@@ -766,10 +686,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro StopDrawingroot( )
       If widget::__gui\drawingroot 
         ;Debug "StopDrawingroot "+widget::__gui\drawingroot\class
-        If widget::__gui\drawingroot\drawmode & 1<<2
+        If widget::__gui\drawingroot\drawmode & 1<<2 = 1<<2
           StopDrawing( )
         EndIf
-        If widget::__gui\drawingroot\drawmode & 1<<1
+        If widget::__gui\drawingroot\drawmode & 1<<1 = 1<<1
           StopVectorDrawing( )  
         EndIf
         widget::__gui\drawingroot = #Null
@@ -1925,7 +1845,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
           Else
             _this_\MarginLine( )\hide = 1
-            _this_\text\numeric       = Bool( _flag_ & #__text_numeric )
+            _this_\text\numeric       = Bool( _flag_ & #__text_numeric = #__text_numeric )
           EndIf
         EndIf
         
@@ -2817,7 +2737,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-\\  ANCHORs
     Macro a_draw( _this_ )
       ; Debug "a_draw "+_this_\class +" "+ _this_\anchors +" "+ _this_\anchors\mode
-      If Not _this_\anchors\mode & #__a_nodraw ; 
+      If Not _this_\anchors\mode & #__a_nodraw = #__a_nodraw; 
         draw_mode_alpha_( #PB_2DDrawing_Outlined )
         
         ; draw a_object frame 
@@ -2907,7 +2827,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If _address_ <> a_selector( )
-        If _mode_ & #__a_zoom 
+        If _mode_ & #__a_zoom = #__a_zoom
           If _address_[#__a_left_top] ; left&top
             _address_[#__a_left_top]\width  = _size_ * 2
             _address_[#__a_left_top]\height = _size_ * 2
@@ -2972,7 +2892,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        If _this_ And _this_\anchors\mode & #__a_zoom 
+        If _this_ And _this_\anchors\mode & #__a_zoom = #__a_zoom
           If _address_[#__a_left] ; left
             _address_[#__a_left]\x      = _x_
             _address_[#__a_left]\y      = _y_ + _address_[#__a_left_top]\height
@@ -3449,7 +3369,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure a_hide( *this._s_WIDGET )
       ProcedureReturn a_remove( *this )
       If *this\anchors
-        If *this\anchors\mode & #__a_nodraw
+        If *this\anchors\mode & #__a_nodraw = #__a_nodraw
           ; *this\anchors\mode &~ #__a_nodraw
         Else
           ;  *this\anchors\mode | #__a_nodraw
@@ -4769,16 +4689,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\TabBox( )\TabChange( ) = 1
         
         If size = #PB_Default
-          If *this\TabBox( )\flag & #PB_ToolBar_Small 
+          If *this\TabBox( )\flag & #PB_ToolBar_Small = #PB_ToolBar_Small
             size = 24
-          ElseIf *this\TabBox( )\flag & #PB_ToolBar_Large 
+          ElseIf *this\TabBox( )\flag & #PB_ToolBar_Large = #PB_ToolBar_Large
             size = 44
           Else ; If *this\flag & #PB_Toolbar_Normal 
             size = 34
           EndIf
           
           If position = 1 Or position = 3
-            If *this\TabBox( )\flag & #PB_ToolBar_InlineText
+            If *this\TabBox( )\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
               size = 80
             Else
               size = 50; - (1 + fs)
@@ -4907,16 +4827,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ProcedureReturn *this
       EndIf
       
-      If flag & #PB_ToolBar_Small 
+      If flag & #PB_ToolBar_Small = #PB_ToolBar_Small
         size = 24
-      ElseIf flag & #PB_ToolBar_Large 
+      ElseIf flag & #PB_ToolBar_Large = #PB_ToolBar_Large
         size = 44
       Else ; If flag & #PB_Toolbar_Normal 
         size = 34
       EndIf
       
       ;If Not flag & #PB_Toolbar_InlineText
-      If flag & #PB_Toolbar_Left Or flag & #PB_Toolbar_Right
+      If flag & #PB_Toolbar_Left Or flag & #PB_Toolbar_Right = #PB_Toolbar_Right
         size + 40
       EndIf
       ;EndIf
@@ -5503,28 +5423,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         *this\parent\redraw = 1
       EndIf
       
-      ;
-      If Not mouse( )\dragstart ; mouse( )\press ; 
-        If Not *this\noscale
-          If DPIResolutionX( )
-            If x <> #PB_Ignore
-              x = DPIScaledX( x )
-            EndIf
-            If width <> #PB_Ignore
-              width = DPIScaledX( width )
-            EndIf
-          EndIf
-          If DPIResolutionY( )
-            If y <> #PB_Ignore
-              y = DPIScaledY( y )
-            EndIf
-            If height <> #PB_Ignore
-              height = DPIScaledY( height )
-            EndIf
-          EndIf
-        EndIf
-      EndIf
-      
       ;\\
       If *this\resize\change <> 1
         *this\resize\change = 1
@@ -5550,12 +5448,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\parent And 
            *this\parent <> *this 
           
-          x      = *this\parent\inner_x( )
-          Y      = *this\parent\inner_y( )
-          width  = *this\parent\inner_width( )
-          height = *this\parent\inner_height( )
+          x      = (*this\parent\inner_x( ))
+          Y      = (*this\parent\inner_y( ))
+          width  = (*this\parent\inner_width( ))
+          height = (*this\parent\inner_height( ))
         EndIf
       Else
+        ;
+        If Not mouse( )\dragstart ; mouse( )\press ; 
+          If Not *this\noscale
+            If DPIResolutionX( )
+              If x <> #PB_Ignore
+                x = DPIScaledX( x )
+              EndIf
+              If width <> #PB_Ignore
+                width = DPIScaledX( width )
+              EndIf
+            EndIf
+            If DPIResolutionY( )
+              If y <> #PB_Ignore
+                y = DPIScaledY( y )
+              EndIf
+              If height <> #PB_Ignore
+                height = DPIScaledY( height )
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
         ;\\ move & size steps
         If mouse( )\steps > 1 And *this\anchors And *this\anchors\mode
           If x <> #PB_Ignore
@@ -6519,7 +6439,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *bar\vertical
                     If *this\scroll_width( ) < 20+*items( )\text\width 
                       *this\scroll_width( ) = 20+*items( )\text\width
-                      If *this\flag & #PB_ToolBar_InlineText
+                      If *this\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
                         *this\scroll_width( ) + *items( )\image\width 
                       EndIf
                     EndIf
@@ -6581,7 +6501,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     *items( )\height = *items( )\image\height
                   EndIf
                   If *items( )\text\height
-                    If *this\flag & #PB_ToolBar_InlineText
+                    If *this\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
                       If Not *items( )\image\height 
                         *items( )\height = *items( )\text\height
                       EndIf
@@ -6593,7 +6513,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   *items( )\height + 6
                   ;
-                  If *this\flag & #PB_ToolBar_InlineText
+                  If *this\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
                     ;
                     ;                               *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width - *items( )\text\width ) / 2 
                     ;                               *items( )\text\x  = *items( )\image\x + *items( )\image\width + 5
@@ -6782,7 +6702,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_roundbox_( x + *items( )\x, y + *items( )\y, *items( )\width, *items( )\height, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\AlphaState24( ) )
           Else
             If is_menu_( *this )
-              If *this\flag & #PB_ToolBar_InlineText
+              If *this\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
                 If *items( )\image\id
                   If *this\bar\vertical
                     draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -7660,7 +7580,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Line( x, y, 1, size, *SB\color\frame )
             Line( x + *bar\area\len - *bar\thumb\len, y, 1, size, *SB\color\frame )
             
-            If *this\flag & #PB_TrackBar_Ticks
+            If *this\flag & #PB_TrackBar_Ticks = #PB_TrackBar_Ticks
               For i = *bar\min To *bar\max
                 If i <> *bar\min And
                    i <> *bar\max
@@ -7820,6 +7740,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
+    Macro bar_area_create( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _scrollbar_size_, _mode_ = #True )
+      If Not _parent_\scroll\bars
+        _parent_\scroll\bars = 1
+        _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_ScrollBar, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, ( _scrollbar_size_), #__buttonround, _scroll_step_ )
+        _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_ScrollBar, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_), #__buttonround, _scroll_step_ )
+      EndIf
+    EndMacro
+    
+    Macro bar_area_draw( _this_ )
+      If _this_\scroll And ( _this_\scroll\v Or _this_\scroll\h )
+        ;clip_output_( _this_, [#__c_draw] )
+        
+        If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And
+           ( _this_\scroll\v\draw_width( ) > 0 And _this_\scroll\v\draw_height( ) > 0 )
+          bar_draw_scroll( _this_\scroll\v )
+        EndIf
+        If _this_\scroll\h And Not _this_\scroll\h\hide And _this_\scroll\h\height And
+           ( _this_\scroll\h\draw_width( ) > 0 And _this_\scroll\h\draw_height( ) > 0 )
+          bar_draw_scroll( _this_\scroll\h )
+        EndIf
+        
+        ;\\
+        If Not _this_\haschildren
+          draw_mode_alpha_( #PB_2DDrawing_Outlined )
+          
+          ; ;                ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), RGB( 255,0,0 ) )
+          ; ;                Box( _this_\scroll\h\bar\page\pos, _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+          
+          ;\\ Scroll area coordinate
+          draw_box_( _this_\inner_x( ) + _this_\scroll_x( ) + _this_\text\padding\x, _this_\inner_y( ) + _this_\scroll_y( ) + _this_\text\padding\y, _this_\scroll_width( ) - _this_\text\padding\x * 2, _this_\scroll_height( ) - _this_\text\padding\y * 2, $FFFF0000 )
+          draw_box_( _this_\inner_x( ) + _this_\scroll_x( ), _this_\inner_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
+          
+          If _this_\scroll\v And _this_\scroll\h
+            draw_box_( _this_\scroll\h\frame_x( ) + _this_\scroll_x( ), _this_\scroll\v\frame_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
+            
+            ; Debug "" +  _this_\scroll_x( )  + " " +  _this_\scroll_y( )  + " " +  _this_\scroll_width( )  + " " +  _this_\scroll_height( )
+            ;draw_box_( _this_\scroll\h\frame_x( ) - _this_\scroll\h\bar\page\pos, _this_\scroll\v\frame_y( ) - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FF0000FF )
+            
+            ;\\ page coordinate
+            draw_box_( _this_\scroll\h\frame_x( ), _this_\scroll\v\frame_y( ), _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00 )
+          EndIf
+        EndIf
+      EndIf
+    EndMacro
+    
     Procedure bar_area_resize( *this._s_WIDGET, x.l, y.l, width.l, height.l )
       Protected v1, h1, x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight, w, h
       ;Protected v1, h1, x1 = *this\container_x( ), y1 = *this\container_y( ), width1 = *this\container_width( ), height1 = *this\container_height( ), iwidth, iheight, w, h
@@ -8010,7 +7975,41 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    ;-
+;     ;-
+;     Macro bar_mdi_change( _this_, _objects_ )
+;       ;\\ 
+;       _this_\scroll_x( ) = _objects_\x 
+;       _this_\scroll_y( ) = _objects_\Y
+;       _this_\scroll_width( ) = _objects_\width
+;       _this_\scroll_height( ) = _objects_\height
+;       ;
+;       PushListPosition( _objects_ )
+;       ForEach _objects_
+;         If _this_\scroll_x( ) > _objects_\x 
+;           _this_\scroll_x( ) = _objects_\x 
+;         EndIf
+;         If _this_\scroll_y( ) > _objects_\y 
+;           _this_\scroll_y( ) = _objects_\y 
+;         EndIf
+;       Next
+;       ;
+;       ForEach _objects_
+;         If _this_\scroll_width( ) < _objects_\x + _objects_\width - _this_\scroll_x( ) 
+;           _this_\scroll_width( ) = _objects_\x + _objects_\width - _this_\scroll_x( ) 
+;         EndIf
+;         If _this_\scroll_height( ) < _objects_\Y + _objects_\height - _this_\scroll_y( ) 
+;           _this_\scroll_height( ) = _objects_\Y + _objects_\height - _this_\scroll_y( ) 
+;         EndIf
+;       Next
+;       PopListPosition( _objects_ )
+;       
+;       widget::bar_mdi_resize( _this_,
+;                               _this_\scroll\h\x, 
+;                               _this_\scroll\v\y, 
+;                               ( _this_\scroll\v\x + _this_\scroll\v\width ) - _this_\scroll\h\x,
+;                               ( _this_\scroll\h\y + _this_\scroll\h\height ) - _this_\scroll\v\y )
+;     EndMacro
+;     
     Procedure bar_mdi_update( *this._s_WIDGET, x.l, y.l, width.l, height.l ) ; Ok
       *this\scroll_x( )      = x
       *this\scroll_y( )      = y
@@ -8986,7 +8985,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\type = #__type_TrackBar
         If bar_in_start_( *bar ) Or 
            bar_in_stop_( *bar ) Or 
-           *this\flag & #PB_TrackBar_Ticks
+           *this\flag & #PB_TrackBar_Ticks = #PB_TrackBar_Ticks
           ;
           If *bar\vertical 
             If *bar\invert
@@ -9345,7 +9344,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\redraw = 1
         EndIf
         
-        If Not ( *this\type = #__type_trackbar And *this\flag & #PB_TrackBar_Ticks )
+        If Not ( *this\type = #__type_trackbar And *this\flag & #PB_TrackBar_Ticks = #PB_TrackBar_Ticks )
           *this\BarChange( ) = 1
         EndIf
         
@@ -13101,7 +13100,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\type = #__type_MDI
         *this\countitems + 1 ;?
         
-        flag | #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget
+        flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
+        If Not flag & #__flag_BorderLess
+          flag | #__window_sizegadget
+        EndIf
         result = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__flag_child, *this )
         
         If IsImage( Image )
@@ -16165,7 +16167,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *parent
         *root = *parent\root
       EndIf
-      
+      ;
+      size = DPIScaled( size )
+      ;
       Protected color, image                 ;, *this.allocate( Widget )
       
       Protected *this._s_WIDGET
@@ -16221,7 +16225,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\flag | #__text_center | #__text_left
         EndIf
         
-        If *this\type = #__type_CheckBox And Flag & #PB_CheckBox_Right
+        If *this\type = #__type_CheckBox And Flag & #PB_CheckBox_Right = #PB_CheckBox_Right
           *this\flag & ~ #__text_left
           *this\flag | #__text_right
         EndIf
@@ -16603,7 +16607,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB1\size = - 1
             *BB2\size = - 1
           EndIf
-          *SB\size = DPIScaled( size )
+          *SB\size = size
           
           *BB1\round = *this\round
           *BB2\round = *this\round
@@ -16718,7 +16722,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\bar\vertical = Bool( Flag & #__bar_vertical = #__bar_vertical )
           
           If Not Flag & #__bar_buttonsize = #__bar_buttonsize
-            *SB\size  = DPIScaled( size )
+            *SB\size  = size
             *BB1\size = DPIScaled( #__buttonsize ) 
             *BB1\size - Bool( Not *BB1\size % 2) 
             *BB2\size = *BB1\size
@@ -16820,7 +16824,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\type = #__type_Spin
         
         If *this\type = #__type_Spin
-          bar_SetAttribute( *this, #__bar_buttonsize, DPIScaled( Size ) + 5 )
+          bar_SetAttribute( *this, #__bar_buttonsize, Size + 5 )
         EndIf
         
         If *param_1 ; > 0 ; в окнах работает так
@@ -16935,7 +16939,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If flag & #__flag_noscrollbars = #False
         If *this\type = #__type_String
           
-          bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize, 0)
+          bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize, 0)
           
           *this\scroll\v\hide  = 1
           *this\scroll\h\hide  = 1
@@ -16955,17 +16959,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\type = #__type_ExplorerList Or
                *this\type = #__type_Property
           
-          bar_area_create_( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize, Bool(( *this\mode\Buttons = 0 And *this\mode\Lines = 0 ) = 0 ))
+          bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize )
         ElseIf *this\type = #__type_MDI Or
                *this\type = #__type_ScrollArea
           
-          If DPIResolutionX( ) And DPIResolutionY( )
-            bar_area_create_( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__buttonsize )
-          Else
-            bar_area_create_( *this, 1, *param_1, *param_2, *this\inner_width( ), *this\inner_height( ), #__buttonsize )
-          EndIf
+          bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__buttonsize )
         ElseIf *this\type = #__type_Image
-          bar_area_create_( *this, 1, *this\image\width, *this\image\height, *this\inner_width( ), *this\inner_height( ), #__buttonsize )
+          bar_area_create( *this, 1, *this\image\width, *this\image\height, *this\inner_width( ), *this\inner_height( ), #__buttonsize )
         EndIf
       EndIf
       
@@ -18531,7 +18531,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               ;\\ draw area scrollbars
               If *this\scroll And ( *this\scroll\v Or *this\scroll\h )
-                bar_area_Draw( *this )
+                bar_area_draw( *this )
                 ; clip_output_( *this, [#__c_draw] )
               EndIf
               
@@ -22870,7 +22870,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
         EndIf
         
-        If *this\flag & #__window_SizeGadget
+        If *this\flag & #__window_SizeGadget = #__window_SizeGadget
           a_create( *this, #__a_full | #__a_zoom | #__a_nodraw )
         EndIf
       EndWith
@@ -24475,10 +24475,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 13583
-; FirstLine = 12801
-; Folding = -----------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------f----8----8f-8X2v4bv4-v-4-0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 4838
+; FirstLine = 4781
+; Folding = ----------------------------------------------------------------------------------------f-----------------------------------------------48-f---Vr9-------------------------------------------------------0-----0-8---------0----0v-0r748t4--4---+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---+---
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -2,6 +2,8 @@
 
 Uselib(widget)
 
+
+
 ; Procedure events_gadgets()
 ;   ClearDebugOutput()
 ;   ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
@@ -66,8 +68,8 @@ If Open(0, 500,0, 500);,140)
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 35
+; CursorPosition = 5
+; FirstLine = 4
 ; Folding = -
 ; EnableXP
 ; DPIAware

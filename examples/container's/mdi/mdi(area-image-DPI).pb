@@ -7,6 +7,57 @@ CompilerIf #PB_Compiler_IsMainFile
    Global Event.i, MyCanvas, *mdi._s_widget, vButton, hButton
    Global x=200,y=150, width=320, height=320 , focus
    
+   CompilerIf #PB_Compiler_DPIAware
+     Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
+       Protected result = PB(LoadImage)( _image_, _filename_, _flags_ )
+       If _image_ = #PB_Any 
+         _image_ = result
+       EndIf
+       ResizeImage(_image_, DPIScaled(ImageWidth(_image_)), DPIScaled(ImageHeight(_image_)))
+       ProcedureReturn result
+     EndProcedure
+     Macro LoadImage( _image_, _filename_, _flags_=-1 )
+       LoadImage__( _image_, _filename_, _flags_ )
+     EndMacro
+     
+     Macro CreateImage( _image_, _width_, _height_, _depth_=24, _backcolor_=-1  )
+       PB(CreateImage)( _image_, DesktopScaledX(_width_), DesktopScaledY(_height_), _depth_, _backcolor_ )
+     EndMacro
+     
+     Macro OutputWidth( )
+       DesktopUnscaledX(PB(OutputWidth)( ))
+     EndMacro
+     
+     Macro OutputHeight( )
+       DesktopUnscaledY(PB(OutputHeight)( ))
+     EndMacro
+     
+     Macro ImageWidth( _image_  )
+       DesktopUnscaledX(PB(ImageWidth)( _image_ ))
+     EndMacro
+     
+     Macro ImageHeight( _image_  )
+       DesktopUnscaledY(PB(ImageHeight)( _image_ ))
+     EndMacro
+     
+     Macro Circle( _x_, _y_, _radius_, _color_= -1)
+       PB(Circle)( DesktopScaledX(_x_), DesktopScaledX(_y_), DesktopScaledX(_radius_), _color_ )
+     EndMacro
+     
+     Macro Box(_x_, _y_, _width_, _height_, _color_= -1)
+       PB(Box)(DesktopScaledX(_x_), DesktopScaledX(_y_), DesktopScaledX(_width_), DesktopScaledY(_height_), _color_)
+     EndMacro
+     
+     Macro RoundBox(_x_, _y_, _width_, _height_, _roundx_,roundy_, _color_= -1)
+       PB(RoundBox)(DesktopScaledX(_x_), DesktopScaledX(_y_), DesktopScaledX(_width_), DesktopScaledY(_height_), DesktopScaledX(_roundx_), DesktopScaledY(roundy_), _color_)
+     EndMacro
+     
+     Macro DrawText(_x_, _y_, _text_, _frontcolor_= -1, _backcolor_= -1)
+       PB(DrawText)(DesktopScaledX(_x_), DesktopScaledX(_y_), _text_, _frontcolor_, _backcolor_)
+     EndMacro
+   CompilerEndIf
+   
+   
    ;-
    Procedure MDI_ImageEvents( )
       Protected *ew._s_widget = EventWidget( )
@@ -47,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__Event_Draw
-            
+            Protected ex=DesktopUnscaledX(*ew\x), ey=DesktopUnscaledY(*ew\y), ew=DesktopUnscaledX(*ew\width), eh=DesktopUnscaledY(*ew\height)
             ; Demo draw line on the element
             UnclipOutput()
             DrawingMode(#PB_2DDrawing_Outlined)
@@ -61,15 +112,15 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             If *ew\round
-               RoundBox(DpiUnScaled(*ew\x),DpiUnScaled(*ew\y),DpiUnScaled(*ew\width),DpiUnScaled(*ew\height), *ew\round, *ew\round, draw_color)
+               RoundBox(ex,ey,ew,eh, DesktopUnscaledX(*ew\round), DesktopUnscaledY(*ew\round), draw_color)
             Else
-               Box(*ew\x,*ew\y,*ew\width,*ew\height, draw_color)
+               Box(ex,ey,ew,eh, draw_color)
             EndIf
             
             With *ew\parent\scroll
-               Box( DpiScaled(x), DpiScaled(y), DpiScaled(Width), DpiScaled(Height), RGB( 0,255,0 ) )
-               Box( \h\x, \v\y, \h\bar\page\len, \v\bar\page\len, RGB( 0,0,255 ) )
-               Box( \h\x-\h\bar\page\pos, \v\y - \v\bar\page\pos, \h\bar\max, \v\bar\max, RGB( 255,0,0 ) )
+               Box( (x), (y), (Width), (Height), RGB( 0,255,0 ) )
+               Box( DesktopUnscaledX(\h\x), DesktopUnscaledY(\v\y), DesktopUnscaledX(\h\bar\page\len), DesktopUnscaledY(\v\bar\page\len), RGB( 0,0,255 ) )
+               Box( DesktopUnscaledX(\h\x-\h\bar\page\pos), DesktopUnscaledY(\v\y - \v\bar\page\pos), DesktopUnscaledX(\h\bar\max), DesktopUnscaledY(\v\bar\max), RGB( 255,0,0 ) )
             EndWith
       EndSelect
       
@@ -81,10 +132,12 @@ CompilerIf #PB_Compiler_IsMainFile
       width = ImageWidth( img )
       height = ImageHeight( img )
       
+      ;ResizeImage(img, DpiScaled(width), DPIScaled(height) )
+      
       *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess|#__flag_Transparent )
       *this\class = "image-"+Str(img)
       *this\cursor = #PB_Cursor_Hand
-      *this\round = (round)
+      *this\round = DPIScaled(round)
       
       Resize(*this, x, y, width, height )
       
@@ -149,7 +202,7 @@ CompilerIf #PB_Compiler_IsMainFile
      text.s = " disable DPIAware"
    CompilerEndIf
    If Not OpenWindow( 0, 0, 0, Width+x*2+20+xx, Height+y*2+20+yy, "Move/Drag Canvas Image"+text, #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
-     MessageRequester( "Fatal error", "Program terminated." )
+      MessageRequester( "Fatal error", "Program terminated." )
       End
    EndIf
    
@@ -164,13 +217,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       StartDrawing(ImageOutput(0))
       
-      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
+      FillMemory(DrawingBuffer(), DrawingBufferPitch() * DesktopScaledY(OutputHeight()), $FF)
       
       DrawingMode(#PB_2DDrawing_Default)
       Box(5, 15, 30, 2, RGB( 0,255,0 ))
       Box(5, 15+25, 30, 2, RGB( 0,0,255 ))
       Box(5, 15+50, 30, 2, RGB( 255,0,0 ))
       
+      DrawingFont( GetGadgetFont( #PB_Default ) )
       DrawingMode(#PB_2DDrawing_Transparent)
       DrawText(40, 5, "frame - (coordinate color)",0,0)
       DrawText(40, 30, "page - (coordinate color)",0,0)
@@ -219,14 +273,14 @@ CompilerIf #PB_Compiler_IsMainFile
    SetColor(*mdi, #__color_back, $ffffffff)
    ;SetColor(*mdi, #__color_frame, $ffffffff)
    
-   Define b=(19);20        
-   *mdi\scroll\v\round = (11)
+   Define b=DpiScaled(19);20        
+   *mdi\scroll\v\round = DpiScaled(11)
    *mdi\scroll\v\bar\button[1]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button[2]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button\round = *mdi\scroll\v\round
    SetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
    
-   *mdi\scroll\h\round = (11)
+   *mdi\scroll\h\round = DpiScaled(11)
    *mdi\scroll\h\bar\button[1]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button[2]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button\round = *mdi\scroll\h\round
@@ -247,7 +301,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 129
-; Folding = -8--
+; CursorPosition = 226
+; FirstLine = 216
+; Folding = ------
 ; EnableXP
+; DPIAware

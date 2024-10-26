@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Define *mdi = MDI(x,y,width, height)
   Define *mdi = MDI(100, 300, 160,95) 
   ; 
-  Debug " * "+width(*mdi, #__c_inner)+" "+height(*mdi, #__c_inner)
+  Debug " * "+ Widgetwidth(*mdi, #__c_inner)+" "+ Widgetheight(*mdi, #__c_inner)
   
   ; 
   ; a_init( *mdi )
@@ -135,8 +135,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 39
-; FirstLine = 29
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 61
+; FirstLine = 57
 ; Folding = -
 ; EnableXP
+; DPIAware

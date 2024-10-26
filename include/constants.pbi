@@ -895,8 +895,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 246
-; FirstLine = 243
+; CursorPosition = 206
+; FirstLine = 198
 ; Folding = ----
 ; Optimizer
 ; EnableXP

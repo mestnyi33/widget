@@ -498,8 +498,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 33
+; CursorPosition = 82
+; FirstLine = 69
 ; Folding = ---0-
 ; Optimizer
 ; EnableXP
