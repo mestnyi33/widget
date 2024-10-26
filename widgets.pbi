@@ -8229,7 +8229,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     ;-
     Procedure.b bar_Update( *this._s_WIDGET, mode.b = 1 )
-      Protected fixed.l, ScrollPos.f, ThumbPos.i=- 1, width, height
+      Protected fixed.l, ScrollPos.f, ThumbPos.i, width, height
       
       ;\\
       If Not *this\bar
@@ -8495,17 +8495,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ 
         If Not *this\BarChange( )
           ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
-          
+          ;
           If *bar\invert
             ThumbPos = *bar\area\end - ThumbPos
           Else
             ThumbPos = *bar\area\pos + ThumbPos
           EndIf
           ;
+          If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
+          If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
+          ;
           If *bar\thumb\pos <> ThumbPos
-            If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-            If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
-           
             *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
             *bar\thumb\pos = ThumbPos
           EndIf
@@ -8525,7 +8525,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;
       ;\\ splitter fixed size
-      If *bar\fixed
+      If *bar\fixed 
         If *bar\PageChange( ) 
           If *bar\fixed = 1
             *bar\fixed[1] = *bar\thumb\pos
@@ -8542,7 +8542,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
                   ThumbPos = ( *bar\area\end + *bar\min[2] )
                 Else
-                  ThumbPos = *bar\min[1]
+                  If *bar\min[1] > *bar\area\len - *bar\thumb\len
+                    ThumbPos = *bar\area\len - *bar\thumb\len
+                  Else
+                    ThumbPos = *bar\min[1]
+                  EndIf
                 EndIf
               EndIf
             Else
@@ -8555,25 +8559,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If *bar\min[1] > *bar\area\end + *bar\min[2] 
                 ThumbPos = *bar\area\end + *bar\min[2]
               Else
-                ThumbPos = *bar\min[1]
+                If *bar\min[1] > *bar\area\len - *bar\thumb\len
+                  ThumbPos = *bar\area\len - *bar\thumb\len
+                Else
+                  ThumbPos = *bar\min[1]
+                EndIf
               EndIf
             Else
               ThumbPos = *bar\area\end - *bar\fixed[2] 
             EndIf
           EndIf
           ;
-          If *bar\invert
-            ThumbPos = *bar\area\end - ThumbPos
-          Else
-            ThumbPos = *bar\area\pos + ThumbPos
-          EndIf
-          ;
           If *bar\thumb\pos <> ThumbPos
-            If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-            If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
-            
             *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
             *bar\thumb\pos = ThumbPos
+            ; Debug ""+*this\class +" "+  *bar\fixed +" "+ ThumbPos
           EndIf
         EndIf
       EndIf
@@ -24478,10 +24478,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8573
-; FirstLine = 8311
-; Folding = -----------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------f----8--v84-+44-bv4-v-4-0-z-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 8547
+; FirstLine = 8314
+; Folding = -----------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------f----8----8f-88-t48-4-8-+-6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
