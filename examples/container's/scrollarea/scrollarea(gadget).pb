@@ -17,6 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ResizeGadget(oc, WidgetX(EventWidget( ), #__c_inner), WidgetY(EventWidget( ), #__c_inner), WidgetWidth(EventWidget( ), #__c_inner), WidgetHeight(EventWidget( ), #__c_inner))
         
       Case #__Event_ScrollChange
+        ;Debug 88
         ResizeGadget(ic, -*g\scroll\h\bar\page\pos, -*g\scroll\v\bar\page\pos, #PB_Ignore, #PB_Ignore)
        ; ResizeGadget(ic, WidgetX(*g, #__c_required), WidgetY(*g, #__c_required), #PB_Ignore, #PB_Ignore)
     EndSelect
@@ -57,8 +58,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ResizeGadget(oc, WidgetX(*g, #__c_inner), WidgetY(*g, #__c_inner), WidgetWidth(*g, #__c_inner), WidgetHeight(*g, #__c_inner))
     
-    BindGadgetEvent(g, @events_gadgets())
-    Bind(*g, @events_widgets())
+;     BindGadgetEvent(g, @events_gadgets())
+;     Bind(*g, @events_widgets())
     
     ; set&get demos
     If count
@@ -75,7 +76,6 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseGadgetList()
       
       OpenGadgetList(ic)
-      ;OpenList(*g)
       time = ElapsedMilliseconds()
       For i=0 To count
         If Bool(i>count-110)
@@ -83,14 +83,9 @@ CompilerIf #PB_Compiler_IsMainFile
         Else
           ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button"+Str(i))
         EndIf
-;         If Bool(i>count-110)
-;           Button((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
-;         Else
-;           Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
-;         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
-      CloseList()
+      CloseGadgetList()
     Else
 ;       SetGadgetAttribute(g, #PB_ScrollArea_X, 50)
 ;       SetAttribute(*g, #PB_ScrollArea_X, 50)
@@ -125,15 +120,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "ih - "+GetAttribute(*g, #PB_ScrollArea_InnerHeight)
     Debug "step - "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
     
-;     BindGadgetEvent(g, @events_gadgets())
-;     Bind(*g, @events_widgets())
+    BindGadgetEvent(g, @events_gadgets())
+    Bind(*g, @events_widgets())
     
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 8
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 19
+; FirstLine = 24
 ; Folding = --
 ; Optimizer
 ; EnableXP

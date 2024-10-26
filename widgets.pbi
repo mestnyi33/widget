@@ -8791,6 +8791,59 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *SB\width  = 0
           EndIf
         EndIf
+        
+        ;\\
+        If *bar\PageChange( )
+          If *this\parent And *this\parent\scroll
+            If *bar\vertical
+              If *this\parent\scroll\v = *this
+                *this\parent\WidgetChange( ) = - 1
+                *this\parent\scroll_y( )     = - *bar\page\pos
+                
+                ;\\ Area children's x&y auto move
+                If StartEnumerate( *this\parent )
+                  If *this\parent = widget( )\parent 
+                    If *this\parent\scroll\v <> widget( ) And
+                       *this\parent\scroll\h <> widget( ) And Not widget( )\align
+                      ;
+                      widget( )\noscale = 1
+                      If widget( )\child < 0
+                        Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore )
+                      Else
+                        Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+                      EndIf
+                      widget( )\noscale = 0
+                    EndIf
+                  EndIf
+                  StopEnumerate( )
+                EndIf
+              EndIf
+            Else
+              If *this\parent\scroll\h = *this
+                *this\parent\WidgetChange( ) = - 2
+                *this\parent\scroll_x( )     = - *bar\page\pos
+                ;
+                ;\\ Area children's x&y auto move
+                If StartEnumerate( *this\parent )
+                  If *this\parent = widget( )\parent 
+                    If *this\parent\scroll\v <> widget( ) And
+                       *this\parent\scroll\h <> widget( ) And Not widget( )\align
+                      ;
+                      widget( )\noscale = 1
+                      If widget( )\child < 0
+                        Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                      Else
+                        Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                      EndIf
+                      widget( )\noscale = 0
+                    EndIf
+                  EndIf
+                  StopEnumerate( )
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+        EndIf
       EndIf
       
       ;\\ Ok
@@ -9166,59 +9219,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
       ;\\
       If *bar\PageChange( )
-        ;\\
-        If *this\type = #__type_ScrollBar
-          If *this\parent And *this\parent\scroll
-            If *bar\vertical
-              If *this\parent\scroll\v = *this
-                *this\parent\WidgetChange( ) = - 1
-                *this\parent\scroll_y( )     = - *bar\page\pos
-                ;
-                ;\\ Area children's x&y auto move
-                If StartEnumerate( *this\parent )
-                  If *this\parent = widget( )\parent 
-                    If *this\parent\scroll\v <> widget( ) And
-                       *this\parent\scroll\h <> widget( ) And Not widget( )\align
-                      ;
-                      widget( )\noscale = 1
-                      If widget( )\child < 0
-                        Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore )
-                      Else
-                        Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
-                      EndIf
-                      widget( )\noscale = 0
-                    EndIf
-                  EndIf
-                  StopEnumerate( )
-                EndIf
-              EndIf
-            Else
-              If *this\parent\scroll\h = *this
-                *this\parent\WidgetChange( ) = - 2
-                *this\parent\scroll_x( )     = - *bar\page\pos
-                ;
-                ;\\ Area children's x&y auto move
-                If StartEnumerate( *this\parent )
-                  If *this\parent = widget( )\parent 
-                    If *this\parent\scroll\v <> widget( ) And
-                       *this\parent\scroll\h <> widget( ) And Not widget( )\align
-                      ;
-                      widget( )\noscale = 1
-                      If widget( )\child < 0
-                        Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                      Else
-                        Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                      EndIf
-                      widget( )\noscale = 0
-                    EndIf
-                  EndIf
-                  StopEnumerate( )
-                EndIf
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-        
         ;\\
         If *this\type = #__type_ProgressBar
           *this\text\string = "%" + Str( *bar\page\pos )
@@ -13579,8 +13579,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Select Attribute
           Case #PB_Splitter_FirstGadget : result = *this\split_1( )
           Case #PB_Splitter_SecondGadget : result = *this\split_2( )
-          Case #PB_Splitter_FirstMinimumSize : result = *this\bar\button[1]\size
-          Case #PB_Splitter_SecondMinimumSize : result = *this\bar\button[2]\size
+          Case #PB_Splitter_FirstMinimumSize : result = *this\bar\min[1]
+          Case #PB_Splitter_SecondMinimumSize : result = *this\bar\min[2]
         EndSelect
       EndIf
       
@@ -13608,9 +13608,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Case #__bar_minimum : result = *this\bar\min          ; 1
           Case #__bar_maximum : result = *this\bar\max          ; 2
           Case #__bar_pagelength : result = *this\bar\page\len  ; 3
-          Case #__bar_scrollstep : result = *this\scroll\increment ; 5
             
+          Case #__bar_scrollstep : result = *this\scroll\increment ; 5
           Case #__bar_buttonsize : result = *this\bar\button[1]\size
+            
           Case #__bar_direction : result = *this\bar\direction
           Case #__bar_invert : result = *this\bar\invert
         EndSelect
@@ -14285,27 +14286,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         Select Attribute
           Case #PB_ScrollArea_X
-            If bar_PageChange( *this\scroll\h, DPIScaledX(*value) )
-              ; *this\scroll_x( ) = *this\scroll\h\bar\page\pos
+            If bar_PageChange( *this\scroll\h, DPIScaledX(*value), 2 ) ; and post event
               result = 1
             EndIf
             
           Case #PB_ScrollArea_Y
-            If bar_PageChange( *this\scroll\v, DPIScaledY(*value) )
-              ;*this\scroll_y( ) = *this\scroll\v\bar\page\pos
+            If bar_PageChange( *this\scroll\v, DPIScaledY(*value), 2 ) ; and post event
               result = 1
             EndIf
             
           Case #PB_ScrollArea_InnerWidth
-            If bar_SetAttribute( *this\scroll\h, #__bar_maximum, DPIScaledX(*value))
-              *this\scroll_width( ) = *this\scroll\h\bar\max
-              result                = 1
+            If bar_SetAttribute( *this\scroll\h, #__bar_maximum, DPIScaledX(*value) )
+              result = 1
             EndIf
             
           Case #PB_ScrollArea_InnerHeight
             If bar_SetAttribute( *this\scroll\v, #__bar_maximum, DPIScaledY(*value))
-              *this\scroll_height( ) = *this\scroll\v\bar\max
-              result                 = 1
+              result = 1
             EndIf
             
           Case #PB_ScrollArea_ScrollStep
@@ -24479,9 +24476,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 8547
-; FirstLine = 8314
-; Folding = -----------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------f----8----8f-88-t48-4-8-+-6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 13583
+; FirstLine = 12801
+; Folding = -----------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------f----8----8f-8X2v4bv4-v-4-0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
