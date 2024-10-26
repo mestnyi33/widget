@@ -165,9 +165,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @events_gadgets() )
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 15
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 15
 ; Folding = ---
 ; EnableXP
 ; DPIAware

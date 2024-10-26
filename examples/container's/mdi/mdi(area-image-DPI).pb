@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
        If _image_ = #PB_Any 
          _image_ = result
        EndIf
-       ResizeImage(_image_, DPIScaled(ImageWidth(_image_)), DPIScaled(ImageHeight(_image_)))
+       ResizeImage(_image_, DesktopScaledX(PB(ImageWidth)(_image_)), DesktopScaledY(PB(ImageHeight)(_image_)))
        ProcedureReturn result
      EndProcedure
      Macro LoadImage( _image_, _filename_, _flags_=-1 )
@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
        PB(DrawText)(DesktopScaledX(_x_), DesktopScaledX(_y_), _text_, _frontcolor_, _backcolor_)
      EndMacro
    CompilerEndIf
-   
+;    
    
    ;-
    Procedure MDI_ImageEvents( )
@@ -98,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__Event_Draw
-            Protected ex=DesktopUnscaledX(*ew\x), ey=DesktopUnscaledY(*ew\y), ew=DesktopUnscaledX(*ew\width), eh=DesktopUnscaledY(*ew\height)
+            Protected ex=DPIUnscaled(*ew\x), ey=DPIUnscaled(*ew\y), ew=DPIUnscaled(*ew\width), eh=DPIUnscaled(*ew\height)
             ; Demo draw line on the element
             UnclipOutput()
             DrawingMode(#PB_2DDrawing_Outlined)
@@ -112,15 +112,15 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             If *ew\round
-               RoundBox(ex,ey,ew,eh, DesktopUnscaledX(*ew\round), DesktopUnscaledY(*ew\round), draw_color)
+               RoundBox(ex,ey,ew,eh, DPIUnscaled(*ew\round), DPIUnscaled(*ew\round), draw_color)
             Else
                Box(ex,ey,ew,eh, draw_color)
             EndIf
             
             With *ew\parent\scroll
                Box( (x), (y), (Width), (Height), RGB( 0,255,0 ) )
-               Box( DesktopUnscaledX(\h\x), DesktopUnscaledY(\v\y), DesktopUnscaledX(\h\bar\page\len), DesktopUnscaledY(\v\bar\page\len), RGB( 0,0,255 ) )
-               Box( DesktopUnscaledX(\h\x-\h\bar\page\pos), DesktopUnscaledY(\v\y - \v\bar\page\pos), DesktopUnscaledX(\h\bar\max), DesktopUnscaledY(\v\bar\max), RGB( 255,0,0 ) )
+               Box( DPIUnscaled(\h\x), DPIUnscaled(\v\y), DPIUnscaled(\h\bar\page\len), DPIUnscaled(\v\bar\page\len), RGB( 0,0,255 ) )
+               Box( DPIUnscaled(\h\x-\h\bar\page\pos), DPIUnscaled(\v\y - \v\bar\page\pos), DPIUnscaled(\h\bar\max), DPIUnscaled(\v\bar\max), RGB( 255,0,0 ) )
             EndWith
       EndSelect
       
@@ -301,8 +301,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 216
+; CursorPosition = 56
+; FirstLine = 30
 ; Folding = ------
 ; EnableXP
 ; DPIAware

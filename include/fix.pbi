@@ -9,6 +9,7 @@ CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
    
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
    ;XIncludeFile "os/fix/win/events.pbi"
+   XIncludeFile "os/fix/win/draw.pbi"
    
 CompilerEndIf
 
@@ -64,10 +65,11 @@ DeclareModule fix
       
       ;     ;- win
       ;   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-   CompilerElse
+    CompilerElse
       Macro PB_(Function)
-         Function
+        Function
       EndMacro
+      
       
    CompilerEndIf
 EndDeclareModule 
@@ -78,7 +80,8 @@ Module fix
 EndModule 
 
 UseModule fix
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 10
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 53
 ; Folding = ---
 ; EnableXP
