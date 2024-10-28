@@ -62,7 +62,7 @@
       #__scroll_border = 2
       #__tracksize = 4
       #__arrow_size = 4
-      #__arrow_type = 1 ; ;-1 ;0 ;1
+      #__arrow_type = - 1 ; ;-1 ;0 ;1
       
       
       #__sOC = SizeOf(Character)
@@ -895,8 +895,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 198
+; CursorPosition = 64
+; FirstLine = 61
 ; Folding = ----
 ; Optimizer
 ; EnableXP

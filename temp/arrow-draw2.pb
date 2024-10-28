@@ -196,24 +196,88 @@
     PB(Point)(DPIScaledX(_x_), DPIScaledY(_y_))
   EndMacro 
 CompilerEndIf 
+; 0,0,0,0,0,0,0,0,0,0,0,0,0
+; 0,1,0,0,0,0,0,0,0,0,0,1,0
+; 0,1,1,0,0,0,0,0,0,0,1,1,0
+; 0,1,1,1,0,0,0,0,0,1,1,1,0
+; 0,1,1,1,1,0,0,0,1,1,1,1,0
+; 0,1,1,1,1,1,0,1,1,1,1,1,0
+; 0,1,1,1,1,1,1,1,1,1,1,1,0
+; 0,1,1,1,1,1,1,1,1,1,1,1,0
+; 0,1,1,1,1,1,1,1,1,1,1,1,0
+; 0,0,1,1,1,1,1,1,1,1,1,0,0
+; 0,0,0,1,1,1,1,1,1,1,0,0,0
+; 0,0,0,0,1,1,1,1,1,0,0,0,0
+; 0,0,0,0,0,1,1,1,0,0,0,0,0
+; 0,0,0,0,0,0,1,0,0,0,0,0,0
+; 0,0,0,0,0,0,0,0,0,0,0,0,0
+
+
+; 0,0,0,0,0,0,0
+; 0,1,0,0,0,1,0
+; 0,1,1,0,1,1,0
+; 0,1,1,1,1,1,0
+; 0,1,1,1,1,1,0
+; 0,0,1,1,1,0,0
+; 0,0,0,1,0,0,0
+
+Procedure Arrow( x, y, size, direction, color = 0 )
+  If direction = 0 ; left
+    For x1 = - size To size
+      For y1 = -x1/2 To size+x1/2
+        Box(x+x1+size/2,y+y1,1,1, color)
+      Next  
+    Next
+  EndIf
+  
+  If direction = 1 ; up
+    For x1 = - size To size
+      For y1 = -x1/2 To size+x1/2
+        Box(x+y1,y+x1+size/2,1,1, color)
+      Next  
+    Next
+  EndIf 
+  
+  If direction = 2 ; right
+    For x1 = - size To size
+      For y1 = x1/2 To size-x1/2
+        Box(x+x1+size/2,y+y1,1,1, color)
+      Next  
+    Next
+  EndIf
+  
+  If direction = 3 ; down
+    For x1 = - size To size
+      For y1 = x1/2 To size-x1/2
+        Box(x+y1,y+x1+size/2,1,1, color)
+      Next  
+    Next
+  EndIf
+EndProcedure
+
+size = 30
+d=5
 
 
 
-If OpenWindow(0, 0, 0, 200, 200, "2DDrawing Example DPI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   If CreateImage(0, 200, 200, 24, $FFFFFF) And StartDrawing(ImageOutput(0))
+    SetOrigin(size/2,size/2)
+    FrontColor($ff0000)
     
-    ; Draw the same figure at different locations by moving the drawing origin
-    For x = 0 To 120 Step 40
-      For y = 0 To 120 Step 60
-        
-        SetOrigin(x, y)
-        ; Debug ""+ x +" "+ GetOriginX() +" "+ y +" "+ GetOriginY()
-        
-        Box(0, 0, 30, 30, $FF0000)
-        Circle(15, 15, 10, $00FF00)
-        
-      Next y
-    Next x   
+    x=0
+    y=size*2+d
+    Arrow(x,y, size, 0)
+    x=size*2+d*2+size*2
+    Arrow(x,y, size, 2)
+    
+    y=0
+    x=size*2+d
+    Arrow(x,y, size, 1)
+    y=size*2+d*2+size*2
+    Arrow(x,y, size, 3)
+    
+    
     
     StopDrawing() 
     ImageGadget(0, 0, 0, 200, 200, ImageID(0))      
@@ -225,7 +289,8 @@ If OpenWindow(0, 0, 0, 200, 200, "2DDrawing Example DPI", #PB_Window_SystemMenu 
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; FirstLine = 3
-; Folding = -------
+; CursorPosition = 250
+; FirstLine = 242
+; Folding = --------
 ; EnableXP
 ; DPIAware

@@ -156,26 +156,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
     UseModule structures
     
     CompilerIf #PB_Compiler_Version =< 546
+      Global DPISCALEDX.a = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
+      Global DPISCALEDY.a = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
       
       Macro DesktopResolutionX( )
-        (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
+        DPISCALEDX;(GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
       EndMacro
       Macro DesktopResolutionY( )
-        (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
+        DPISCALEDY;(GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
       EndMacro
       Macro DesktopScaledX( _x_ )
-        (_x_ * DesktopResolutionX( ))
+        ((_x_) * DesktopResolutionX( )) ; DesktopScaledX(_x_) ; 
       EndMacro
       Macro DesktopScaledY( _y_ )
-        (_y_ * DesktopResolutionY( ))
+        ((_y_) * DesktopResolutionY( )) ; DesktopScaledY(_y_) ; 
       EndMacro
       Macro DesktopUnscaledX( _x_ )
-        ( _x_ / DesktopResolutionX( ))
+        ((_x_) / DesktopResolutionX( )) ; DesktopUnscaledX(_x_) ; 
       EndMacro
       Macro DesktopUnscaledY( _y_ )
-        (_y_ / DesktopResolutionY( ))
+        ((_y_) / DesktopResolutionY( )) ; DesktopUnscaledY(_y_) ; 
       EndMacro
-      
     CompilerEndIf
     
     CompilerIf #PB_Compiler_Version =< 546
@@ -209,8 +210,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-  -----------------
     ;-   DECLARE_globals
     ;-  -----------------
-    Global DPIScaleResolutionX.d
-    Global DPIScaleResolutionY.d
     Declare.l Update_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
     
     Global _macro_call_count_
@@ -267,6 +266,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug ""
     EndMacro
     
+;     Macro BoxedGradient(_x_, _y_, _width_, _height_)
+;       Debug 555
+;       ; PB(BoxedGradient)(DesktopScaledX(_x_), DesktopScaledY(_y_), DesktopScaledX(_width_), DesktopScaledY(_height_))
+;     EndMacro
+      
     
     ;-  DRAG & DROP
     ;       Macro EventDropX( ): DropX( ): EndMacro
@@ -1191,10 +1195,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndMacro
     
-    Macro draw_arrows( _address_, _type_ )
-      Arrow( _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
-             _address_\y + ( _address_\height - _address_\arrow\size ) / 2, _address_\arrow\size, _type_,
-             _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ), _address_\arrow\type )
+    Macro draw_arrows( _address_, _direction_ )
+      Draw_Arrow( _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
+             _address_\y + ( _address_\height - _address_\arrow\size ) / 2, _address_\arrow\size, _direction_, _address_\arrow\type,
+             _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
     EndMacro
     
     Macro draw_box( _address_, _color_type_, _mode_ = )
@@ -1505,7 +1509,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
     Declare   AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
     
-    Declare.b Arrow( x.l, Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1 )
+    Declare.b Draw_Arrow( x.l, y.l, size.a, direction.a, style.b = 1, FrameColor = $ffffffff, Color = $ff000000 )
     ;
     Declare.i Send( *this, eventtype.l, *button = #PB_All, *data = #Null )
     Declare.i Post( *this, eventtype.l, *button = #PB_All, *data = #Null )
@@ -1523,12 +1527,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
   EndDeclareModule
   
   Module Widget
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      DPIScaleResolutionX = GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96
-      DPIScaleResolutionY = GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96
-    CompilerEndIf
-    
-    
     ;-
     ;-\\ DECLARE PRIVATEs
     ;-
@@ -2083,240 +2081,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;       Data.b 0,0,0,0,0,0,0,0
         
       EndDataSection
-    EndProcedure
-    
-    Procedure DrawArrow2( _x_, _y_, _direction_, _frame_color_ = $ffffffff, _back_color_ = $ff000000)
-      If _direction_ = 0 ; left
-        If _frame_color_ <> _back_color_
-          Line(_x_ + 8, _y_ - 2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
-          Plot(_x_ + 7, _y_ - 1, _frame_color_ ) : Plot(_x_ + 7, _y_ + 7, _frame_color_ )
-          Plot(_x_ + 6, _y_ + 0, _frame_color_ ) : Plot(_x_ + 6, _y_ + 6, _frame_color_ )
-          Plot(_x_ + 5, _y_ + 1, _frame_color_ ) : Plot(_x_ + 5, _y_ + 5, _frame_color_ )
-          Plot(_x_ + 4, _y_ + 2, _frame_color_ ) : Plot(_x_ + 4, _y_ + 4, _frame_color_ )
-          Plot(_x_ + 3, _y_ + 3, _frame_color_)
-        EndIf
-        Line(_x_ + 7, _y_ + 0, 1, 7, _back_color_)
-        Line(_x_ + 6, _y_ + 1, 1, 5, _back_color_)
-        Line(_x_ + 5, _y_ + 2, 1, 3, _back_color_)
-        Plot(_x_ + 4, _y_ + 3, _back_color_)
-      ElseIf _direction_ = 1 ; up
-        If _frame_color_ <> _back_color_
-          Line(_x_ - 1, _y_ + 7, 11, 1, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
-          Plot(_x_ + 0, _y_ + 6, _frame_color_ ) : Plot(_x_ + 8, _y_ + 6, _frame_color_ )
-          Plot(_x_ + 1, _y_ + 5, _frame_color_ ) : Plot(_x_ + 7, _y_ + 5, _frame_color_ )
-          Plot(_x_ + 2, _y_ + 4, _frame_color_ ) : Plot(_x_ + 6, _y_ + 4, _frame_color_ )
-          Plot(_x_ + 3, _y_ + 3, _frame_color_ ) : Plot(_x_ + 5, _y_ + 3, _frame_color_ )
-          Plot(_x_ + 4, _y_ + 2, _frame_color_)
-        EndIf
-        Line(_x_ + 1, _y_ + 6, 7, 1, _back_color_)
-        Line(_x_ + 2, _y_ + 5, 5, 1, _back_color_)
-        Line(_x_ + 3, _y_ + 4, 3, 1, _back_color_)
-        Plot(_x_ + 4, _y_ + 3, _back_color_)
-      ElseIf _direction_ = 2 ; right
-        If _frame_color_ <> _back_color_
-          Line(_x_ + 3, _y_ - 2, 1, 11, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
-          Plot(_x_ + 4, _y_ - 1, _frame_color_ ) : Plot(_x_ + 4, _y_ + 7, _frame_color_ )
-          Plot(_x_ + 5, _y_ + 0, _frame_color_ ) : Plot(_x_ + 5, _y_ + 6, _frame_color_ )
-          Plot(_x_ + 6, _y_ + 1, _frame_color_ ) : Plot(_x_ + 6, _y_ + 5, _frame_color_ )
-          Plot(_x_ + 7, _y_ + 2, _frame_color_ ) : Plot(_x_ + 7, _y_ + 4, _frame_color_ )
-          Plot(_x_ + 8, _y_ + 3, _frame_color_)
-        EndIf
-        Line(_x_ + 4, _y_ + 0, 1, 7, _back_color_)
-        Line(_x_ + 5, _y_ + 1, 1, 5, _back_color_)
-        Line(_x_ + 6, _y_ + 2, 1, 3, _back_color_)
-        Plot(_x_ + 7, _y_ + 3, _back_color_)
-      ElseIf _direction_ = 3 ; down
-        If _frame_color_ <> _back_color_
-          Line(_x_ - 1, _y_ + 2, 11, 1, _frame_color_)                                                                                                           ; 0,0,0,0,0,0,0,0,0,0,0
-          Plot(_x_ + 0, _y_ + 3, _frame_color_ ) : Plot(_x_ + 8, _y_ + 3, _frame_color_ )
-          Plot(_x_ + 1, _y_ + 4, _frame_color_ ) : Plot(_x_ + 7, _y_ + 4, _frame_color_ )
-          Plot(_x_ + 2, _y_ + 5, _frame_color_ ) : Plot(_x_ + 6, _y_ + 5, _frame_color_ )
-          Plot(_x_ + 3, _y_ + 6, _frame_color_ ) : Plot(_x_ + 5, _y_ + 6, _frame_color_ )
-          Plot(_x_ + 4, _y_ + 7, _frame_color_)
-        EndIf
-        Line(_x_ + 1, _y_ + 3, 7, 1, _back_color_)
-        Line(_x_ + 2, _y_ + 4, 5, 1, _back_color_)
-        Line(_x_ + 3, _y_ + 5, 3, 1, _back_color_)
-        Plot(_x_ + 4, _y_ + 6, _back_color_)
-      EndIf
-    EndProcedure
-    
-    Procedure DrawArrow( x.l, y.l, Direction.l, color.l )
-      If Direction = 0
-        ; left                                                                                  ; 0,0,0,0,0,0,0,0
-        Plot( x + 3, y + 1, color ) : Plot( x + 4, y + 1, color ) : Plot( x + 5, y + 1, color ) ; 0,0,0,1,1,1,0,0
-        Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color ) ; 0,0,1,1,1,0,0,0
-        Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) ; 0,1,1,1,0,0,0,0
-        Plot( x + 3, y + 4, color ) : Plot( x + 2, y + 4, color ) : Plot( x + 4, y + 4, color ) ; 0,0,1,1,1,0,0,0
-        Plot( x + 3, y + 5, color ) : Plot( x + 4, y + 5, color ) : Plot( x + 5, y + 5, color ) ; 0,0,0,1,1,1,0,0
-                                                                                                ; 0,0,0,0,0,0,0,0
-      EndIf
-      If Direction = 2
-        ; right                                                                                  ; 0,0,0,0,0,0,0,0
-        Plot( x + 1, y + 1, color ) : Plot( x + 2, y + 1, color ) : Plot( x + 3, y + 1, color )  ; 0,0,1,1,1,0,0,0
-        Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color )  ; 0,0,0,1,1,1,0,0
-        Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color )  ; 0,0,0,0,1,1,1,0
-        Plot( x + 2, y + 4, color ) : Plot( x + 3, y + 4, color ) : Plot( x + 4, y + 4, color )  ; 0,0,0,1,1,1,0,0
-        Plot( x + 1, y + 5, color ) : Plot( x + 2, y + 5, color ) : Plot( x + 3, y + 5, color )  ; 0,0,1,1,1,0,0,0
-                                                                                                 ; 0,0,0,0,0,0,0,0
-      EndIf
-      
-      If Direction = 1
-        ; up                                                                                                                                                  ; 0,0,0,0,0,0,0
-        : Plot( x + 3, y + 1, color )                                                             ; 0,0,0,1,0,0,0
-        : Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color ) ; 0,0,1,1,1,0,0
-        Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color ) ; 0,1,1,1,1,1,0
-        Plot( x + 1, y + 4, color ) : Plot( x + 2, y + 4, color ) : Plot( x + 4, y + 4, color ) : Plot( x + 5, y + 4, color )                               ; 0,1,1,0,1,1,0
-        Plot( x + 1, y + 5, color ) : Plot( x + 5, y + 5, color )                                                                                           ; 0,1,0,0,0,1,0
-                                                                                                                                                            ; 0,0,0,0,0,0,0
-                                                                                                                                                            ; 0,0,0,0,0,0,0
-      EndIf
-      If Direction = 3
-        ; down                                                                                                                                                ; 0,0,0,0,0,0,0
-        Plot( x + 1, y + 1, color ) : Plot( x + 5, y + 1, color )   ; 0,1,0,0,0,1,0
-        Plot( x + 1, y + 2, color ) : Plot( x + 2, y + 2, color ) : Plot( x + 4, y + 2, color ) : Plot( x + 5, y + 2, color )   ; 0,1,1,0,1,1,0
-        Plot( x + 1, y + 3, color ) : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 5, y + 3, color )   ; 0,1,1,1,1,1,0
-        : Plot( x + 2, y + 4, color ) : Plot( x + 3, y + 4, color ) : Plot( x + 4, y + 4, color )                                                             ; 0,0,1,1,1,0,0
-        : Plot( x + 3, y + 5, color )                                                                                                                         ; 0,0,0,1,0,0,0
-                                                                                                                                                              ; 0,0,0,0,0,0,0
-      EndIf
-      
-      If Direction = 11
-        ; select_bottom
-        ; 0,0,0,0,0,1,0,0,0,0,0
-        ; 0,0,0,0,1,1,1,0,0,0,0
-        ; 0,0,0,1,1,0,1,1,0,0,0
-        ; 0,0,1,1,0,0,0,1,1,0,0
-        ; 0,1,1,0,0,0,0,0,1,1,0
-        ; 1,1,0,0,0,0,0,0,0,1,1
-        
-        : Plot( x + 5, y, color )
-        : Plot( x + 4, y + 1, color ) : Plot( x + 5, y + 1, color ) : Plot( x + 6, y + 1, color )
-        : Plot( x + 3, y + 2, color ) : Plot( x + 4, y + 2, color ) : Plot( x + 6, y + 2, color ) : Plot( x + 7, y + 2, color )
-        : Plot( x + 2, y + 3, color ) : Plot( x + 3, y + 3, color ) : Plot( x + 7, y + 3, color ) : Plot( x + 8, y + 3, color )
-        : Plot( x + 1, y + 4, color ) : Plot( x + 2, y + 4, color ) : Plot( x + 8, y + 4, color ) : Plot( x + 9, y + 4, color )
-        : Plot( x, y + 5, color ) : Plot( x + 1, y + 5, color ) : Plot( x + 9, y + 5, color ) : Plot( x + 10, y + 5, color )
-        
-        :
-      EndIf
-      
-      If Direction = 33
-        ; select_bottom
-        ; 1,1,0,0,0,0,0,0,0,1,1
-        ; 0,1,1,0,0,0,0,0,1,1,0
-        ; 0,0,1,1,0,0,0,1,1,0,0
-        ; 0,0,0,1,1,0,1,1,0,0,0
-        ; 0,0,0,0,1,1,1,0,0,0,0
-        ; 0,0,0,0,0,1,0,0,0,0,0
-        
-        : Plot( x, y, color ) : Plot( x + 1, y, color ) : Plot( x + 9, y, color ) : Plot( x + 10, y, color )
-        : Plot( x + 1, y + 1, color ) : Plot( x + 2, y + 1, color ) : Plot( x + 8, y + 1, color ) : Plot( x + 9, y + 1, color )
-        : Plot( x + 2, y + 2, color ) : Plot( x + 3, y + 2, color ) : Plot( x + 7, y + 2, color ) : Plot( x + 8, y + 2, color )
-        : Plot( x + 3, y + 3, color ) : Plot( x + 4, y + 3, color ) : Plot( x + 6, y + 3, color ) : Plot( x + 7, y + 3, color )
-        : Plot( x + 4, y + 4, color ) : Plot( x + 5, y + 4, color ) : Plot( x + 6, y + 4, color )
-        : Plot( x + 5, y + 5, color )
-        
-        :
-      EndIf
-      
-    EndProcedure
-    
-    Procedure.b Arrow( x.l, Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1 )
-      If Style =- 1
-        ; ProcedureReturn DrawArrow2( x,y, Direction, Color )
-      EndIf
-      
-      Protected I
-      ;Size - 2
-      
-      If Not Length
-        Style = - 1
-      EndIf
-      Length = ( Size + 2 ) / 2
-      
-      
-      If Direction = 1 ; top
-        If Style > 0 : x - 1 : y + 2
-          Size / 2
-          For i = 0 To Size
-            LineXY(( x + 1 + i ) + Size, ( Y + i - 1 ) - ( Style ), ( x + 1 + i ) + Size, ( Y + i - 1 ) + ( Style ), Color )         ; Левая линия
-            LineXY(( ( x + 1 + ( Size )) - i ), ( Y + i - 1 ) - ( Style ), (( x + 1 + ( Size )) - i ), ( Y + i - 1 ) + ( Style ), Color ) ; правая линия
-          Next
-        Else : x - 1 : y - 1
-          For i = 1 To Length
-            If Style = - 1
-              LineXY( x + i, ( Size + y ), x + Length, y, Color )
-              LineXY( x + Length * 2 - i, ( Size + y ), x + Length, y, Color )
-            Else
-              LineXY( x + i, ( Size + y ) - i / 2, x + Length, y, Color )
-              LineXY( x + Length * 2 - i, ( Size + y ) - i / 2, x + Length, y, Color )
-            EndIf
-          Next
-          i                                              = Bool( Style = - 1 )
-          LineXY( x, ( Size + y ) + Bool( i              = 0 ), x + Length, y + 1, Color )
-          LineXY( x + Length * 2, ( Size + y ) + Bool( i = 0 ), x + Length, y + 1, Color ) ; bug
-        EndIf
-      ElseIf Direction = 3 ; bottom
-        If Style > 0 : x - 1 : y + 1;2
-          Size / 2
-          For i = 0 To Size
-            LineXY(( x + 1 + i ), ( Y + i ) - ( Style ), ( x + 1 + i ), ( Y + i ) + ( Style ), Color ) ; Левая линия
-            LineXY(( ( x + 1 + ( Size * 2 )) - i ), ( Y + i ) - ( Style ), (( x + 1 + ( Size * 2 )) - i ), ( Y + i ) + ( Style ), Color ) ; правая линия
-          Next
-        Else : x - 1 : y + 1
-          For i = 0 To Length
-            If Style = - 1
-              LineXY( x + i, y, x + Length, ( Size + y ), Color )
-              LineXY( x + Length * 2 - i, y, x + Length, ( Size + y ), Color )
-            Else
-              LineXY( x + i, y + i / 2 - Bool( i              = 0 ), x + Length, ( Size + y ), Color )
-              LineXY( x + Length * 2 - i, y + i / 2 - Bool( i = 0 ), x + Length, ( Size + y ), Color )
-            EndIf
-          Next
-        EndIf
-      ElseIf Direction = 0 ; в лево
-        If Style > 0 : y - 1
-          Size / 2
-          For i = 0 To Size
-            ; в лево
-            LineXY(( ( x + 1 ) + i ) - ( Style ), (( ( Y + 1 ) + ( Size )) - i ), (( x + 1 ) + i ) + ( Style ), (( ( Y + 1 ) + ( Size )) - i ), Color ) ; правая линия
-            LineXY(( ( x + 1 ) + i ) - ( Style ), (( Y + 1 ) + i ) + Size, (( x + 1 ) + i ) + ( Style ), (( Y + 1 ) + i ) + Size, Color )               ; Левая линия
-          Next
-        Else : x - 1 : y - 1
-          For i = 1 To Length
-            If Style = - 1
-              LineXY(( Size + x ), y + i, x, y + Length, Color )
-              LineXY(( Size + x ), y + Length * 2 - i, x, y + Length, Color )
-            Else
-              LineXY(( Size + x ) - i / 2, y + i, x, y + Length, Color )
-              LineXY(( Size + x ) - i / 2, y + Length * 2 - i, x, y + Length, Color )
-            EndIf
-          Next
-          i                             = Bool( Style = - 1 )
-          LineXY(( Size + x ) + Bool( i = 0 ), y, x + 1, y + Length, Color )
-          LineXY(( Size + x ) + Bool( i = 0 ), y + Length * 2, x + 1, y + Length, Color )
-        EndIf
-      ElseIf Direction = 2 ; в право
-        If Style > 0 : y - 1 ;: x + 1
-          Size / 2
-          For i = 0 To Size
-            ; в право
-            LineXY(( ( x + 1 ) + i ) - ( Style ), (( Y + 1 ) + i ), (( x + 1 ) + i ) + ( Style ), (( Y + 1 ) + i ), Color ) ; Левая линия
-            LineXY(( ( x + 1 ) + i ) - ( Style ), (( ( Y + 1 ) + ( Size * 2 )) - i ), (( x + 1 ) + i ) + ( Style ), (( ( Y + 1 ) + ( Size * 2 )) - i ), Color ) ; правая линия
-          Next
-        Else : y - 1 : x + 1
-          For i = 0 To Length
-            If Style = - 1
-              LineXY( x, y + i, Size + x, y + Length, Color )
-              LineXY( x, y + Length * 2 - i, Size + x, y + Length, Color )
-            Else
-              LineXY( x + i / 2 - Bool( i = 0 ), y + i, Size + x, y + Length, Color )
-              LineXY( x + i / 2 - Bool( i = 0 ), y + Length * 2 - i, Size + x, y + Length, Color )
-            EndIf
-          Next
-        EndIf
-      EndIf
-      
     EndProcedure
     
     Procedure.i Match( *value, Grid.i, Max.i = $7FFFFFFF )
@@ -6405,7 +6169,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         pos + Bool(typ) * 2
         
         Protected layout = pos * 2
-        Protected text_pos = 6
+        Protected text_pos = DPIScaled(6)
         Protected seperator_step = 1
         
         If *this\type = #__type_ToolBar Or
@@ -7179,15 +6943,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
               ; Draw thumb lines
               draw_mode_alpha_( #PB_2DDrawing_Default )
+;               FrontColor( *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+;               If *bar\vertical
+;                 Box(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - DPIScaled(3), *SB\arrow\size, DPIScaled(1))
+;                 Box(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, DPIScaled(1))
+;                 Box(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + DPIScaled(3), *SB\arrow\size, DPIScaled(1))
+;               Else
+;                 Box(*SB\x + *SB\width / 2 - DPIScaled(3), *SB\y + (*SB\height - *SB\arrow\size ) / 2, DPIScaled(1), *SB\arrow\size)
+;                 Box(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, DPIScaled(1), *SB\arrow\size)
+;                 Box(*SB\x + *SB\width / 2 + DPIScaled(3), *SB\y + (*SB\height - *SB\arrow\size ) / 2, DPIScaled(1), *SB\arrow\size)
+;               EndIf
               If *bar\vertical
-                Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - 3, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                Line(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + 3, *SB\arrow\size, 1, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                Box(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 - DPIScaled(3), *SB\arrow\size, DPIScaled(1), *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                Box(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2, *SB\arrow\size, DPIScaled(1), *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                Box(*SB\x + (*SB\width - *SB\arrow\size ) / 2, *SB\y + *SB\height / 2 + DPIScaled(3), *SB\arrow\size, DPIScaled(1), *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
               Else
-                Line(*SB\x + *SB\width / 2 - 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                Line(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                Line(*SB\x + *SB\width / 2 + 3, *SB\y + (*SB\height - *SB\arrow\size ) / 2, 1, *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                Box(*SB\x + *SB\width / 2 - DPIScaled(3), *SB\y + (*SB\height - *SB\arrow\size ) / 2, DPIScaled(1), *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                Box(*SB\x + *SB\width / 2, *SB\y + (*SB\height - *SB\arrow\size ) / 2, DPIScaled(1), *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                Box(*SB\x + *SB\width / 2 + DPIScaled(3), *SB\y + (*SB\height - *SB\arrow\size ) / 2, DPIScaled(1), *SB\arrow\size, *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
               EndIf
+            
             EndIf
             
             ; Draw thumb frame
@@ -7201,8 +6976,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.b bar_draw_progress( *this._s_WIDGET )
+      Macro DrawHLines( _start_x_, _start_y_, _stop_x_, _stop_y_ )
+        For y1 = _start_y_ To _stop_y_
+          For x1 = _start_x_ To _stop_x_
+            If Point( *this\frame_x( ) + x1, *this\frame_y( ) + y1 ) & $FFFFFF = _frame_color_ & $FFFFFF
+              Line( *this\frame_x( ) + x1, *this\frame_y( ) + y1, *this\frame_width( ) - x1 * 2, 1 )
+              Break
+            EndIf
+          Next x1
+        Next y1
+      EndMacro
+      
+      Macro DrawVLines( _start_x_, _start_y_, _stop_x_, _stop_y_ )
+        For x1 = _start_x_ To _stop_x_
+          For y1 = _start_y_ To _stop_y_
+            If Point( *this\frame_x( ) + x1, *this\frame_y( ) + y1 ) & $FFFFFF = _frame_color_ & $FFFFFF
+              Line( *this\frame_x( ) + x1, *this\frame_y( ) + y1, 1, *this\frame_height( ) - y1 * 2 )
+              Break
+            EndIf
+          Next y1
+        Next x1
+      EndMacro
+      
       With *this
-        Protected i, a, _position_, _frame_size_ = 1, _gradient_ = 1
+        Protected x1, y1, _position_, _frame_size_ = 1, _gradient_ = 1
         Protected *bar._s_BAR = *this\bar
         Protected _vertical_ = *bar\vertical
         Protected _reverse_ = *bar\invert
@@ -7227,13 +7024,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If _vertical_
           
-          ;           If _reverse_
+          ;           if _reverse_
           ;             _position_ = *bar\thumb\pos
           ;           Else
           _position_ = *this\frame_height( ) - *bar\thumb\pos
           ;           EndIf
         Else
-          ;           If _reverse_
+          ;           if _reverse_
           ;             _position_ = *this\frame_width( ) - *bar\thumb\pos
           ;           Else
           _position_ = *bar\thumb\pos
@@ -7247,14 +7044,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; Debug "_position_ "+_position_ +" "+ *bar\page\pos
         
-        ; https://www.purebasic.fr/english/viewtopic.php?f=13&t=75757&p=557936#p557936 ; thank you infratec
+        ; https://www.purebasic.fr/english/viewtopic.php?f=13&t=75757&p=557936#p557936 ; thank you x1nfratec
         ; FrontColor(_frame_color_) ; не работает
         draw_mode_alpha_(#PB_2DDrawing_Outlined)
         draw_roundbox_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _frame_size_, *this\frame_width( ) - _frame_size_ * 2, *this\frame_height( ) - _frame_size_ * 2, _round_, _round_, _frame_color_)
         ;   draw_roundbox_(*this\frame_x( ) + _frame_size_+1, *this\frame_y( ) + _frame_size_+1, *this\frame_width( ) - _frame_size_*2-2, *this\frame_height( ) - _frame_size_*2-2, _round_,_round_)
         ;   ; ;   draw_roundbox_(*this\frame_x( ) + _frame_size_+2, *this\frame_y( ) + _frame_size_+2, *this\frame_width( ) - _frame_size_*2-4, *this\frame_height( ) - _frame_size_*2-4, _round_,_round_)
         ;   ;
-        ;   ;   For i = 0 To 1
+        ;   ;   For x1 = 0 To 1
         ;   ;     draw_roundbox_(*this\frame_x( ) + (_frame_size_+i), *this\frame_y( ) + (_frame_size_+i), *this\frame_width( ) - (_frame_size_+i)*2, *this\frame_height( ) - (_frame_size_+i)*2, _round_,_round_)
         ;   ;   Next
         
@@ -7275,95 +7072,55 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If Not _round_
           If _vertical_
-            draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + (_position_), *this\frame_width( ) - _frame_size_ * 2, (*this\frame_height( ) - _frame_size_ - (_position_)))
+            draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _position_, *this\frame_width( ) - _frame_size_ * 2, (*this\frame_height( ) - _frame_size_ - _position_))
           Else
-            draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _frame_size_, (_position_) - _frame_size_, *this\frame_height( ) - _frame_size_ * 2)
+            draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _frame_size_, _position_ - _frame_size_, *this\frame_height( ) - _frame_size_ * 2)
           EndIf
         Else
           
           If _vertical_
-            If (*this\frame_height( ) - _round_ - (_position_)) > _round_
+            If (*this\frame_height( ) - _round_ - _position_) > _round_
               If *this\frame_height( ) > _round_ * 2
                 ; рисуем прямоуголную часть
-                If _round_ > (_position_)
-                  draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + (_position_) + (_round_ - (_position_)), *this\frame_width( ) - _frame_size_ * 2, (*this\frame_height( ) - _round_ - (_position_)) - (_round_ - (_position_)))
+                If _round_ > _position_
+                  draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _position_ + (_round_ - _position_), *this\frame_width( ) - _frame_size_ * 2, (*this\frame_height( ) - _round_ - _position_) - (_round_ - _position_))
                 Else
-                  draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + (_position_), *this\frame_width( ) - _frame_size_ * 2, (*this\frame_height( ) - _round_ - (_position_)))
+                  draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _position_, *this\frame_width( ) - _frame_size_ * 2, (*this\frame_height( ) - _round_ - _position_))
                 EndIf
               EndIf
               
-              For a = (*this\frame_height( ) - _round_) To (*this\frame_height( ) - _frame_size_)
-                For i = _frame_size_ To (*this\frame_width( ) - _frame_size_)
-                  If Point(*this\frame_x( ) + i, *this\frame_y( ) + a) & $FFFFFF = _frame_color_ & $FFFFFF
-                    Line(*this\frame_x( ) + i, *this\frame_y( ) + a, *this\frame_width( ) - i * 2, 1)
-                    Break
-                  EndIf
-                Next i
-              Next a
+              ;\\
+              DrawHLines( _frame_size_ , (*this\frame_height( ) - _round_), (*this\frame_width( ) - _frame_size_), (*this\frame_height( ) - _frame_size_))
               
               ; если позиция ползунка больше начало второго округленыя
-              If _round_ > (_position_)
-                For a = _frame_size_ + (_position_) To _round_
-                  For i = _frame_size_ To (*this\frame_width( ) - _frame_size_)
-                    If Point(*this\frame_x( ) + i, *this\frame_y( ) + a) & $FFFFFF = _frame_color_ & $FFFFFF
-                      Line(*this\frame_x( ) + i, *this\frame_y( ) + a, *this\frame_width( ) - i * 2, 1)
-                      Break
-                    EndIf
-                  Next i
-                Next a
+              If _round_ > _position_
+                DrawHLines( _frame_size_ , _frame_size_ + _position_, (*this\frame_width( ) - _frame_size_), _round_)
               EndIf
               
             Else
-              For a = (_position_) - _frame_size_ To (*this\frame_height( ) - _frame_size_)
-                For i = _frame_size_ To (*this\frame_width( ) - _frame_size_)
-                  If Point(*this\frame_x( ) + i, *this\frame_y( ) + a) & $FFFFFF = _frame_color_ & $FFFFFF
-                    Line(*this\frame_x( ) + i, *this\frame_y( ) + a, *this\frame_width( ) - i * 2, 1)
-                    Break
-                  EndIf
-                Next i
-              Next a
+              DrawHLines( _frame_size_ , _position_ - _frame_size_, (*this\frame_width( ) - _frame_size_), (*this\frame_height( ) - _frame_size_))
             EndIf
           Else
-            If (_position_) > _round_
+            If _position_ > _round_
               ; рисуем прямоуголную часть
               If *this\frame_width( ) > _round_ * 2
-                If (*this\frame_width( ) - (_position_)) > _round_
-                  draw_box_(*this\frame_x( ) + _round_, *this\frame_y( ) + _frame_size_, ((_position_) - _round_) , *this\frame_height( ) - _frame_size_ * 2)
+                If (*this\frame_width( ) - _position_) > _round_
+                  draw_box_(*this\frame_x( ) + _round_, *this\frame_y( ) + _frame_size_, (_position_ - _round_) , *this\frame_height( ) - _frame_size_ * 2)
                 Else
-                  draw_box_(*this\frame_x( ) + _round_, *this\frame_y( ) + _frame_size_, ((_position_) - _round_) + (*this\frame_width( ) - _round_ - (_position_)), *this\frame_height( ) - _frame_size_ * 2)
+                  draw_box_(*this\frame_x( ) + _round_, *this\frame_y( ) + _frame_size_, (_position_ - _round_) + (*this\frame_width( ) - _round_ - _position_), *this\frame_height( ) - _frame_size_ * 2)
                 EndIf
               EndIf
               
-              For a = _frame_size_ To _round_
-                For i = _frame_size_ To (*this\frame_height( ) - _frame_size_ * 2)
-                  If Point(*this\frame_x( ) + a, *this\frame_y( ) + i) & $FFFFFF = _frame_color_ & $FFFFFF
-                    Line(*this\frame_x( ) + a, *this\frame_y( ) + i, 1, *this\frame_height( ) - i * 2)
-                    Break
-                  EndIf
-                Next i
-              Next a
+              ;\\
+              DrawVLines( _frame_size_ , _frame_size_, _round_, (*this\frame_height( ) - _frame_size_ * 2))
               
               ; если позиция ползунка больше начало второго округленыя
-              If _round_ > (*this\frame_width( ) - (_position_))
-                For a = (*this\frame_width( ) - _frame_size_ - _round_) To (_position_) - _frame_size_
-                  For i = _frame_size_ To (*this\frame_height( ) - _frame_size_ * 2)
-                    If Point(*this\frame_x( ) + a, *this\frame_y( ) + i) & $FFFFFF = _frame_color_ & $FFFFFF
-                      Line(*this\frame_x( ) + a, *this\frame_y( ) + i, 1, *this\frame_height( ) - i * 2)
-                      Break
-                    EndIf
-                  Next i
-                Next a
+              If _round_ > (*this\frame_width( ) - _position_)
+                DrawVLines( (*this\frame_width( ) - _frame_size_ - _round_), _frame_size_ , (_position_ - _frame_size_), (*this\frame_height( ) - _frame_size_ * 2))
               EndIf
               
             Else
-              For a = _frame_size_ To (_position_) + _frame_size_ - 1
-                For i = _frame_size_ To (*this\frame_height( ) - _frame_size_ * 2)
-                  If Point(*this\frame_x( ) + a, *this\frame_y( ) + i) & $FFFFFF = _frame_color_ & $FFFFFF
-                    Line(*this\frame_x( ) + a, *this\frame_y( ) + i, 1, *this\frame_height( ) - i * 2)
-                    Break
-                  EndIf
-                Next i
-              Next a
+              DrawVLines( _frame_size_ , _frame_size_, (_position_ + _frame_size_ - 1), (*this\frame_height( ) - _frame_size_ * 2))
             EndIf
           EndIf
           
@@ -7374,94 +7131,54 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         If Not _round_
           If _vertical_
-            draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _frame_size_, *this\frame_width( ) - _frame_size_ * 2, (_position_) - _frame_size_)
+            draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _frame_size_, *this\frame_width( ) - _frame_size_ * 2, _position_ - _frame_size_)
           Else
-            draw_box_(*this\frame_x( ) + (_position_), *this\frame_y( ) + _frame_size_, (*this\frame_width( ) - _frame_size_ - (_position_)), *this\frame_height( ) - _frame_size_ * 2)
+            draw_box_(*this\frame_x( ) + _position_, *this\frame_y( ) + _frame_size_, (*this\frame_width( ) - _frame_size_ - _position_), *this\frame_height( ) - _frame_size_ * 2)
           EndIf
         Else
           If _vertical_
-            If (_position_) > _round_
+            If _position_ > _round_
               If *this\frame_height( ) > _round_ * 2
                 ; рисуем прямоуголную часть
-                If _round_ > (*this\frame_height( ) - (_position_))
-                  draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _round_, *this\frame_width( ) - _frame_size_ * 2, ((_position_) - _round_) + (*this\frame_height( ) - _round_ - (_position_)))
+                If _round_ > (*this\frame_height( ) - _position_)
+                  draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _round_, *this\frame_width( ) - _frame_size_ * 2, (_position_ - _round_) + (*this\frame_height( ) - _round_ - _position_))
                 Else
-                  draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _round_, *this\frame_width( ) - _frame_size_ * 2, ((_position_) - _round_))
+                  draw_box_(*this\frame_x( ) + _frame_size_, *this\frame_y( ) + _round_, *this\frame_width( ) - _frame_size_ * 2, (_position_ - _round_))
                 EndIf
               EndIf
               
-              For a = _frame_size_ To _round_
-                For i = _frame_size_ To (*this\frame_width( ) - _frame_size_ * 2)
-                  If Point(*this\frame_x( ) + i, *this\frame_y( ) + a) & $FFFFFF = _frame_color_ & $FFFFFF
-                    Line(*this\frame_x( ) + i, *this\frame_y( ) + a, *this\frame_width( ) - i * 2, 1)
-                    Break
-                  EndIf
-                Next i
-              Next a
+              ;\\
+              DrawHLines( _frame_size_ , _frame_size_, (*this\frame_width( ) - _frame_size_ * 2), _round_)
               
               ; если позиция ползунка больше начало второго округленыя
-              If _round_ > (*this\frame_height( ) - (_position_))
-                For a = (*this\frame_height( ) - _frame_size_ - _round_) To (_position_) - _frame_size_
-                  For i = _frame_size_ To (*this\frame_width( ) - _frame_size_ * 2)
-                    If Point(*this\frame_x( ) + i, *this\frame_y( ) + a) & $FFFFFF = _frame_color_ & $FFFFFF
-                      Line(*this\frame_x( ) + i, *this\frame_y( ) + a, *this\frame_width( ) - i * 2, 1)
-                      Break
-                    EndIf
-                  Next i
-                Next a
+              If _round_ > (*this\frame_height( ) - _position_)
+                DrawHLines( _frame_size_ , (*this\frame_height( ) - _frame_size_ - _round_), (*this\frame_width( ) - _frame_size_ * 2), _position_ - _frame_size_)
               EndIf
               
             Else
-              For a = _frame_size_ To (_position_) + _frame_size_ - 1
-                For i = _frame_size_ To (*this\frame_width( ) - _frame_size_ * 2)
-                  If Point(*this\frame_x( ) + i, *this\frame_y( ) + a) & $FFFFFF = _frame_color_ & $FFFFFF
-                    Line(*this\frame_x( ) + i, *this\frame_y( ) + a, *this\frame_width( ) - i * 2, 1)
-                    Break
-                  EndIf
-                Next i
-              Next a
+              DrawHLines( _frame_size_ , _frame_size_, (*this\frame_width( ) - _frame_size_ * 2), (_position_ + _frame_size_ - 1))
             EndIf
           Else
-            If (*this\frame_width( ) - _round_ - (_position_)) > _round_
+            If (*this\frame_width( ) - _round_ - _position_) > _round_
               If *this\frame_width( ) > _round_ * 2
                 ; рисуем прямоуголную часть
-                If _round_ > (_position_)
-                  draw_box_(*this\frame_x( ) + (_position_) + (_round_ - (_position_)), *this\frame_y( ) + _frame_size_, (*this\frame_width( ) - _round_ - (_position_)) - (_round_ - (_position_)), *this\frame_height( ) - _frame_size_ * 2)
+                If _round_ > _position_
+                  draw_box_(*this\frame_x( ) + _position_ + (_round_ - _position_), *this\frame_y( ) + _frame_size_, (*this\frame_width( ) - _round_ - _position_) - (_round_ - _position_), *this\frame_height( ) - _frame_size_ * 2)
                 Else
-                  draw_box_(*this\frame_x( ) + (_position_), *this\frame_y( ) + _frame_size_, (*this\frame_width( ) - _round_ - (_position_)), *this\frame_height( ) - _frame_size_ * 2)
+                  draw_box_(*this\frame_x( ) + _position_, *this\frame_y( ) + _frame_size_, (*this\frame_width( ) - _round_ - _position_), *this\frame_height( ) - _frame_size_ * 2)
                 EndIf
               EndIf
               
-              For a = (*this\frame_width( ) - _round_) To (*this\frame_width( ) - _frame_size_)
-                For i = _frame_size_ To (*this\frame_height( ) - _frame_size_ * 2)
-                  If Point(*this\frame_x( ) + a, *this\frame_y( ) + i) & $FFFFFF = _frame_color_ & $FFFFFF
-                    Line(*this\frame_x( ) + a, *this\frame_y( ) + i, 1, *this\frame_height( ) - i * 2)
-                    Break
-                  EndIf
-                Next i
-              Next a
+              ;\\
+              DrawVLines( (*this\frame_width( ) - _round_), _frame_size_, (*this\frame_width( ) - _frame_size_), (*this\frame_height( ) - _frame_size_ * 2))
               
               ; если позиция ползунка больше начало второго округленыя
-              If _round_ > (_position_)
-                For a = _frame_size_ + (_position_) To _round_
-                  For i = _frame_size_ To (*this\frame_height( ) - _frame_size_ * 2)
-                    If Point(*this\frame_x( ) + a, *this\frame_y( ) + i) & $FFFFFF = _frame_color_ & $FFFFFF
-                      Line(*this\frame_x( ) + a, *this\frame_y( ) + i, 1, *this\frame_height( ) - i * 2)
-                      Break
-                    EndIf
-                  Next i
-                Next a
+              If _round_ > _position_
+                DrawVLines( ( _frame_size_ + _position_), _frame_size_ , (_round_), (*this\frame_height( ) - _frame_size_ * 2))
               EndIf
               
             Else
-              For a = (_position_) - _frame_size_ To (*this\frame_width( ) - _frame_size_)
-                For i = _frame_size_ To (*this\frame_height( ) - _frame_size_ * 2)
-                  If Point(*this\frame_x( ) + a, *this\frame_y( ) + i) & $FFFFFF = _frame_color_ & $FFFFFF
-                    Line(*this\frame_x( ) + a, *this\frame_y( ) + i, 1, *this\frame_height( ) - i * 2)
-                    Break
-                  EndIf
-                Next i
-              Next a
+              DrawVLines( (_position_ - _frame_size_), _frame_size_, (*this\frame_width( ) - _frame_size_), (*this\frame_height( ) - _frame_size_ * 2))
             EndIf
           EndIf
         EndIf
@@ -16621,8 +16338,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *BB2\round = *this\round
           *SB\round  = *this\round
           
-          *BB1\arrow\type = #__arrow_type ; -1 0 1
-          *BB2\arrow\type = #__arrow_type ; -1 0 1
+          *BB1\arrow\type = #__arrow_type 
+          *BB2\arrow\type = *BB1\arrow\type 
           
           *BB1\arrow\size = DPIScaled( #__arrow_size )
           *BB2\arrow\size = DPIScaled( #__arrow_size )
@@ -16654,8 +16371,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB1\arrow\size = DPIScaled( #__arrow_size )
             *BB2\arrow\size = DPIScaled( #__arrow_size )
             
-            *BB1\arrow\type = #__arrow_type ; -1 0 1
-            *BB2\arrow\type = #__arrow_type ; -1 0 1
+            *BB1\arrow\type = #__arrow_type
+            *BB2\arrow\type = *BB1\arrow\type
           EndIf
           
           ;\\
@@ -16687,7 +16404,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;             EndIf
           
           *SB\arrow\size = DPIScaled( #__arrow_size )
-          *SB\arrow\type = DPIScaled( #__arrow_type )
+          *SB\arrow\type = #__arrow_type
           
           *BB1\round = DPIScaled(2)
           *BB2\round = *BB2\round
@@ -16740,8 +16457,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *BB2\round = *BB1\round
           *SB\round  = *this\round
           
-          *BB1\arrow\type = -1 ; -1 0 1
-          *BB2\arrow\type = -1 ; -1 0 1
+          *BB1\arrow\type = 2 ; #__arrow_type 
+          *BB2\arrow\type = 2 ; #__arrow_type 
           
           *BB1\arrow\size = DPIScaled( #__arrow_size )
           *BB2\arrow\size = DPIScaled( #__arrow_size )
@@ -17143,6 +16860,129 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-
     ;-  DRAWINGs
     ;-
+     Procedure.b Arrow( x.l, Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1 )
+      Protected I
+      ;Size - 2
+      
+      If Not Length
+        Style = - 1
+      EndIf
+      Length = ( Size + 2 ) / 2
+      
+      
+      If Direction = 1 ; top
+        If Style > 0 : x - 1 : y + 2
+          Size / 2
+          For i = 0 To Size
+            LineXY(( x + 1 + i ) + Size, ( Y + i - 1 ) - ( Style ), ( x + 1 + i ) + Size, ( Y + i - 1 ) + ( Style ), Color )         ; Левая линия
+            LineXY(( ( x + 1 + ( Size )) - i ), ( Y + i - 1 ) - ( Style ), (( x + 1 + ( Size )) - i ), ( Y + i - 1 ) + ( Style ), Color ) ; правая линия
+          Next
+        Else : x - 1 : y - 1
+          For i = 1 To Length
+            If Style = - 1
+              LineXY( x + i, ( Size + y ), x + Length, y, Color )
+              LineXY( x + Length * 2 - i, ( Size + y ), x + Length, y, Color )
+            Else
+              LineXY( x + i, ( Size + y ) - i / 2, x + Length, y, Color )
+              LineXY( x + Length * 2 - i, ( Size + y ) - i / 2, x + Length, y, Color )
+            EndIf
+          Next
+          i                                              = Bool( Style = - 1 )
+          LineXY( x, ( Size + y ) + Bool( i              = 0 ), x + Length, y + 1, Color )
+          LineXY( x + Length * 2, ( Size + y ) + Bool( i = 0 ), x + Length, y + 1, Color ) ; bug
+        EndIf
+      ElseIf Direction = 3 ; bottom
+        If Style > 0 : x - 1 : y + 1;2
+          Size / 2
+          For i = 0 To Size
+            LineXY(( x + 1 + i ), ( Y + i ) - ( Style ), ( x + 1 + i ), ( Y + i ) + ( Style ), Color ) ; Левая линия
+            LineXY(( ( x + 1 + ( Size * 2 )) - i ), ( Y + i ) - ( Style ), (( x + 1 + ( Size * 2 )) - i ), ( Y + i ) + ( Style ), Color ) ; правая линия
+          Next
+        Else : x - 1 : y + 1
+          For i = 0 To Length
+            If Style = - 1
+              LineXY( x + i, y, x + Length, ( Size + y ), Color )
+              LineXY( x + Length * 2 - i, y, x + Length, ( Size + y ), Color )
+            Else
+              LineXY( x + i, y + i / 2 - Bool( i              = 0 ), x + Length, ( Size + y ), Color )
+              LineXY( x + Length * 2 - i, y + i / 2 - Bool( i = 0 ), x + Length, ( Size + y ), Color )
+            EndIf
+          Next
+        EndIf
+      ElseIf Direction = 0 ; в лево
+        If Style > 0 : y - 1
+          Size / 2
+          For i = 0 To Size
+            ; в лево
+            LineXY(( ( x + 1 ) + i ) - ( Style ), (( ( Y + 1 ) + ( Size )) - i ), (( x + 1 ) + i ) + ( Style ), (( ( Y + 1 ) + ( Size )) - i ), Color ) ; правая линия
+            LineXY(( ( x + 1 ) + i ) - ( Style ), (( Y + 1 ) + i ) + Size, (( x + 1 ) + i ) + ( Style ), (( Y + 1 ) + i ) + Size, Color )               ; Левая линия
+          Next
+        Else : x - 1 : y - 1
+          For i = 1 To Length
+            If Style = - 1
+              LineXY(( Size + x ), y + i, x, y + Length, Color )
+              LineXY(( Size + x ), y + Length * 2 - i, x, y + Length, Color )
+            Else
+              LineXY(( Size + x ) - i / 2, y + i, x, y + Length, Color )
+              LineXY(( Size + x ) - i / 2, y + Length * 2 - i, x, y + Length, Color )
+            EndIf
+          Next
+          i                             = Bool( Style = - 1 )
+          LineXY(( Size + x ) + Bool( i = 0 ), y, x + 1, y + Length, Color )
+          LineXY(( Size + x ) + Bool( i = 0 ), y + Length * 2, x + 1, y + Length, Color )
+        EndIf
+      ElseIf Direction = 2 ; в право
+        If Style > 0 : y - 1 ;: x + 1
+          Size / 2
+          For i = 0 To Size
+            ; в право
+            LineXY(( ( x + 1 ) + i ) - ( Style ), (( Y + 1 ) + i ), (( x + 1 ) + i ) + ( Style ), (( Y + 1 ) + i ), Color ) ; Левая линия
+            LineXY(( ( x + 1 ) + i ) - ( Style ), (( ( Y + 1 ) + ( Size * 2 )) - i ), (( x + 1 ) + i ) + ( Style ), (( ( Y + 1 ) + ( Size * 2 )) - i ), Color ) ; правая линия
+          Next
+        Else : y - 1 : x + 1
+          For i = 0 To Length
+            If Style = - 1
+              LineXY( x, y + i, Size + x, y + Length, Color )
+              LineXY( x, y + Length * 2 - i, Size + x, y + Length, Color )
+            Else
+              LineXY( x + i / 2 - Bool( i = 0 ), y + i, Size + x, y + Length, Color )
+              LineXY( x + i / 2 - Bool( i = 0 ), y + Length * 2 - i, Size + x, y + Length, Color )
+            EndIf
+          Next
+        EndIf
+      EndIf
+      
+    EndProcedure
+    
+     Procedure.b Draw_Arrow( x.l, y.l, size.a, direction.a, style.b = 1, FrameColor = $ffffffff, Color = $ff000000 )
+      Protected x1.l, y1.l
+      
+      If Style
+        If Style =- 1
+          ProcedureReturn Arrow( x, y, Size, Direction, Color )
+        Else
+          For x1 = 0 To size
+            For y1 = x1/Style To size-x1/Style
+              If direction = 0 ; left
+                Box(x+size/2-x1,y+y1,1,1, Color)
+              EndIf
+              If direction = 1 ; up
+                Box(x+y1,y+size/2-x1,1,1, Color)
+              EndIf
+              If direction = 2 ; right
+                Box(x+size/2+x1,y+y1,1,1, Color)
+                ;Box(x-size/2+x1,y+y1,1,1, Color)
+              EndIf
+              If direction = 3 ; down
+                Box(x+y1,y+size/2+x1,1,1, Color)
+                ;Box(x+y1,y-size/2+x1,1,1, Color)
+              EndIf
+            Next  
+          Next
+        EndIf
+      EndIf
+    EndProcedure
+   
     Procedure   Draw_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ) )
       Protected state.b, x.l, y.l, xs.l, ys.l, _box_x_.l, _box_y_.l, minus.l = 7
       Protected bs = Bool( *this\fs )
@@ -17247,15 +17087,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               ; for the tree vertical line
               If *items( )\_last And Not *items( )\_last\hide And *items( )\_last\sublevel
-                Line((xs + *buttonBox\x + *buttonBox\width / 2), (ys + *items( )\height), 1, (*items( )\_last\y - *items( )\y) - *items( )\_last\height / 2, *items( )\color\line )
+                Line((xs + *buttonBox\x + *buttonBox\width / 2), (ys + *items( )\height), 1, ((*items( )\_last\y - *items( )\y) - *items( )\_last\height / 2), *items( )\color\line )
               EndIf
               If *items( )\RowParent( ) And Not *items( )\RowParent( )\visible And *items( )\RowParent( )\_last = *items( ) And *items( )\sublevel
-                Line((xs + *items( )\RowButton( )\x + *items( )\RowButton( )\width / 2), (*items( )\RowParent( )\y + *items( )\RowParent( )\height) - _scroll_y_, 1, (*items( )\y - *items( )\RowParent( )\y) - *items( )\height / 2, *items( )\RowParent( )\color\line )
+                Line((xs + *items( )\RowButton( )\x + *items( )\RowButton( )\width / 2), (*items( )\RowParent( )\y + *items( )\RowParent( )\height) - _scroll_y_, 1, ((*items( )\y - *items( )\RowParent( )\y) - *items( )\height / 2), *items( )\RowParent( )\color\line )
               EndIf
               
               ; for the tree horizontal line
               If Not (*this\mode\Buttons And *items( )\childrens)
-                Line((xs + *items( )\RowButton( )\x + *items( )\RowButton( )\width / 2), (ys + *items( )\height / 2), 7, 1, *items( )\color\line )
+                Line((xs + *items( )\RowButton( )\x + *items( )\RowButton( )\width / 2), (ys + *items( )\height / 2), DPIScaledX(7), 1, *items( )\color\line )
               Else
                 If *this\row\sublevelsize = 6
                   If Bool( Not *items( )\RowButtonState( ))
@@ -17313,16 +17153,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                    (y - 7 >= 0 And y + 7 <= *this\root\height)
                   
                   ;                           If *items( )\ColorState( )
-                  ;                             Arrow( x+#__arrow_size/2+1,y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
+                  ;                             Draw_Arrow( x+#__arrow_size/2+1,y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
                   ;                           Else
-                  ;                             Arrow(x+#__arrow_size/2+1, y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
+                  ;                             Draw_Arrow(x+#__arrow_size/2+1, y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
                   ;                           EndIf
                   
+;                   If *items( )\ColorState( )
+;                     Draw_Arrow(x, y, DPIScaled(6), 3 - Bool(*items( )\RowButtonState( )),1)
+;                   Else
+;                     Draw_Arrow(x, y, DPIScaled(6), 3 - Bool(*items( )\RowButtonState( )), 1,$ff000000)
+;                   EndIf
+                  
                   If *items( )\ColorState( )
-                    DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )))
-                  Else
-                    DrawArrow2(x, y, 3 - Bool(*items( )\RowButtonState( )), $ff000000)
-                  EndIf
+                  Draw_Arrow(x - Bool(*items( )\RowButtonState( )), y-1, *items( )\RowButton( )\width, 3 - Bool(*items( )\RowButtonState( )), 1 )
+                Else
+                  Draw_Arrow(x+3 - Bool(*items( )\RowButtonState( )), y+3 , DPIScaled(6), 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000)
+                EndIf
+                
                 EndIf
                 
                 ;EndIf
@@ -23946,7 +23793,7 @@ CompilerIf #PB_Compiler_IsMainFile
   grid_text   = Text(8, 320, 40, 24, "0")
   
   If a_focused( )
-    SetState(grid_value, mouse( )\steps )
+    SetState(grid_value, (mouse( )\steps) )
     SetState(size_value, a_focused( )\anchors\size )
     SetState(pos_value, a_focused( )\anchors\pos )
     
@@ -24484,9 +24331,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 541
-; FirstLine = 530
-; Folding = ----------------------------------------------------------------------------------------f-----------------------------------------------48-f---Vr9-------------------------------------------------------0-----0-8---------0----0v-0r748t4--4---+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---+---
+; CursorPosition = 17169
+; FirstLine = 16129
+; Folding = ------------------------------------------------------------------------------------4-----------------------------------------------0+-4--f2K------------------------------------------------------0-----0-8---------0----0v-0r748t4--4---+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---
 ; Optimizer
 ; EnableXP
 ; DPIAware
