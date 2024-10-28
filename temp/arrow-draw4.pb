@@ -221,25 +221,78 @@ CompilerEndIf
 ; 0,0,1,1,1,0,0
 ; 0,0,0,1,0,0,0
 
+   
 Procedure Arrow( x, y, size, direction, mode=1, color = 0 )
-  ;size/mode
-  For x1 = 0 To size
-    For y1 = x1/mode To size-x1/mode
-      If direction = 0 ; left
-        Box(x+size/2-x1,y+y1,1,1, color)
-      EndIf
-      If direction = 2 ; right
-        Box(x-size/2+x1,y+y1,1,1, color)
-      EndIf
-      If direction = 1 ; up
-        Box(x+y1,y+size/2-x1,1,1, color)
-      EndIf
-      If direction = 3 ; down
-        ;Debug ""+Str(x+y1)+" "+Str(y+size/2+x1)
-        Box(x+y1,y-size/2+x1,1,1, color)
-      EndIf
-    Next  
-  Next
+  Protected Pixel, index.i
+  x=0
+  y=0
+  size = 11;13
+  
+  Box( 0, 0, size, size, $fff0f0f0 );GetSysColor_( #COLOR_bTNFACE ))
+  
+  If direction = 2
+    Restore img_arrow_down
+    For y = 0 To size - 1
+      For x = 0 To size - 1
+        Read.b Pixel
+        
+        If Pixel
+          Plot( x, y, color )
+        EndIf
+      Next x
+    Next y
+  EndIf
+  
+  
+  DataSection
+    
+    img_arrow_down:
+    ;Data.b  0,0,0,0,0,0,0,0,0,0,0,0,0
+    Data.b  0,0,0,0,0,0,0,0,0,0,0
+    Data.b  1,0,0,0,0,0,0,0,0,0,1
+    Data.b  1,1,0,0,0,0,0,0,0,1,1
+    Data.b  1,1,1,0,0,0,0,0,1,1,1
+    Data.b  1,1,1,1,0,0,0,1,1,1,1
+    Data.b  0,1,1,1,1,0,1,1,1,1,0
+    Data.b  0,0,1,1,1,1,1,1,1,0,0
+    Data.b  0,0,0,1,1,1,1,1,0,0,0
+    Data.b  0,0,0,0,1,1,1,0,0,0,0
+    Data.b  0,0,0,0,0,1,0,0,0,0,0
+    Data.b  0,0,0,0,0,0,0,0,0,0,0
+    
+    
+    ;       img_arrow_>:
+    ;       Data.b 0,0,0,0,0,0,0,0
+    ;       Data.b 0,1,1,1,0,0,0,0
+    ;       Data.b 0,0,1,1,1,0,0,0
+    ;       Data.b 0,0,0,1,1,1,0,0
+    ;       Data.b 0,0,1,1,1,0,0,0
+    ;       Data.b 0,1,1,1,0,0,0,0
+    ;       Data.b 0,0,0,0,0,0,0,0
+    ;       Data.b 0,0,0,0,0,0,0,0
+    
+    ;       img_arrow_v:
+    ;       Data.b 0,0,0,0,0,0,0,0
+    ;       Data.b 0,1,0,0,0,1,0,0
+    ;       Data.b 0,1,1,0,1,1,0,0
+    ;       Data.b 0,1,1,1,1,1,0,0
+    ;       Data.b 0,0,1,1,1,0,0,0
+    ;       Data.b 0,0,0,1,0,0,0,0
+    ;       Data.b 0,0,0,0,0,0,0,0
+    ;       Data.b 0,0,0,0,0,0,0,0
+    ;
+    ;       img_close
+    ;       Data.b 0,0,0,0,0,0,0,0
+    ;       Data.b 0,1,1,0,0,1,1,0
+    ;       Data.b 0,1,1,1,1,1,1,0
+    ;       Data.b 0,0,1,1,1,1,0,0
+    ;       Data.b 0,0,1,1,1,1,0,0
+    ;       Data.b 0,1,1,1,1,1,1,0
+    ;       Data.b 0,1,1,0,0,1,1,0
+    ;       Data.b 0,0,0,0,0,0,0,0
+    
+  EndDataSection
+  
 EndProcedure
 
 size = 30
@@ -250,19 +303,19 @@ d=5
 If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   If CreateImage(0, 200, 200, 24, $F0F0F0) And StartDrawing(ImageOutput(0))
     SetOrigin(size/2,size/2)
-    FrontColor($ff0000)
+    ;FrontColor($ff0000)
     
-    x=0
-    y=size*2+d
-    Arrow(x,y, size, 0, 2)
-    x=d+size;size*2+d*2+size*2
+;     x=0
+;     y=size*2+d
+;     Arrow(x,y, size, 0, 2)
+;     x=d+size;size*2+d*2+size*2
     Arrow(x,y, size, 2, 2)
-    
-    y=0
-    x=size*2+d
-    Arrow(x,y, size, 1)
-    y=d+size;size*2+d*2+size*2
-    Arrow(x,y, size, 3)
+;     
+;     y=0
+;     x=size*2+d
+;     Arrow(x,y, size, 1)
+;     y=d+size;size*2+d*2+size*2
+;     Arrow(x,y, size, 3)
     
     
     
@@ -276,8 +329,8 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 218
+; CursorPosition = 243
+; FirstLine = 224
 ; Folding = --------
 ; EnableXP
 ; DPIAware

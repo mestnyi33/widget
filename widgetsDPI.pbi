@@ -2153,90 +2153,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;
     ;     CompilerEndSelect ;}
     
-    Procedure CreateIcon( img.l, type.l )
-      Protected x, y, Pixel, size = 8, index.i
-      
-      index = CreateImage( img, size, size )
-      If img = - 1 : img = index : EndIf
-      
-      If StartDrawing( ImageOutput( img ))
-        draw_box_( 0, 0, size, size, $fff0f0f0 );GetSysColor_( #COLOR_bTNFACE ))
-        
-        If type = 1
-          Restore img_arrow_down
-          For y = 0 To size - 1
-            For x = 0 To size - 1
-              Read.b Pixel
-              
-              If Pixel
-                Plot( x, y, $000000 )
-              EndIf
-            Next x
-          Next y
-          
-        ElseIf type = 2
-          Restore img_arrow_down
-          For y = size - 1 To 0 Step - 1
-            For x = 0 To size - 1
-              Read.b Pixel
-              
-              If Pixel
-                Plot( x, y, $000000 )
-              EndIf
-            Next x
-          Next y
-        EndIf
-        StopDrawing( )
-      EndIf
-      
-      DataSection
-        
-        img_arrow_down:
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        Data.b 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        
-        
-        ;       img_arrow_>:
-        ;       Data.b 0,0,0,0,0,0,0,0
-        ;       Data.b 0,1,1,1,0,0,0,0
-        ;       Data.b 0,0,1,1,1,0,0,0
-        ;       Data.b 0,0,0,1,1,1,0,0
-        ;       Data.b 0,0,1,1,1,0,0,0
-        ;       Data.b 0,1,1,1,0,0,0,0
-        ;       Data.b 0,0,0,0,0,0,0,0
-        ;       Data.b 0,0,0,0,0,0,0,0
-        
-        ;       img_arrow_v:
-        ;       Data.b 0,0,0,0,0,0,0,0
-        ;       Data.b 0,1,0,0,0,1,0,0
-        ;       Data.b 0,1,1,0,1,1,0,0
-        ;       Data.b 0,1,1,1,1,1,0,0
-        ;       Data.b 0,0,1,1,1,0,0,0
-        ;       Data.b 0,0,0,1,0,0,0,0
-        ;       Data.b 0,0,0,0,0,0,0,0
-        ;       Data.b 0,0,0,0,0,0,0,0
-        ;
-        ;       img_close
-        ;       Data.b 0,0,0,0,0,0,0,0
-        ;       Data.b 0,1,1,0,0,1,1,0
-        ;       Data.b 0,1,1,1,1,1,1,0
-        ;       Data.b 0,0,1,1,1,1,0,0
-        ;       Data.b 0,0,1,1,1,1,0,0
-        ;       Data.b 0,1,1,1,1,1,1,0
-        ;       Data.b 0,1,1,0,0,1,1,0
-        ;       Data.b 0,0,0,0,0,0,0,0
-        
-      EndDataSection
-    EndProcedure
-    
     Procedure.i Match( *value, Grid.i, Max.i = $7FFFFFFF )
       If Grid
         *value = Round(( *value / Grid ), #PB_Round_Nearest ) * Grid
@@ -17410,19 +17326,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ProcedureReturn Arrow( x, y, Size, Direction, Color )
         Else
           For x1 = 0 To size
-            For y1 = x1/Style To size-x1/Style
+            For y1 = x1 To size-x1 
               If direction = 0 ; left
-                Box(x+size/2-x1,y+y1,1,1, Color)
+                Box(x+size/2-x1*Style,y+y1,Style,1, Color)
               EndIf
               If direction = 1 ; up
-                Box(x+y1,y+size/2-x1,1,1, Color)
+                Box(x+y1,y+size/2-x1*Style,1,Style, Color)
               EndIf
               If direction = 2 ; right
-                Box(x+size/2+x1,y+y1,1,1, Color)
+                Box(x+size/2+x1*Style,y+y1,Style,1, Color)
                 ;Box(x-size/2+x1,y+y1,1,1, Color)
               EndIf
               If direction = 3 ; down
-                Box(x+y1,y+size/2+x1,1,1, Color)
+                Box(x+y1,y+size/2+x1*Style,1,Style, Color)
                 ;Box(x+y1,y-size/2+x1,1,1, Color)
               EndIf
             Next  
@@ -17597,7 +17513,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If *items( )\ColorState( )
                   Draw_Arrow(x-1, y-1, *items( )\RowButton( )\width, 3 - Bool(*items( )\RowButtonState( )), 1 )
                 Else
-                  Draw_Arrow(x+1, y+1, 5, 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000)
+                  Draw_Arrow(x+1, y+1, 6, 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000)
                 EndIf
                 
               EndIf
@@ -24762,8 +24678,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18501
-; FirstLine = 18334
-; Folding = ---------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 17513
+; FirstLine = 17404
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

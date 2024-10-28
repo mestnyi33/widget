@@ -1,7 +1,7 @@
 ﻿IncludePath "../../../"
 ;XIncludeFile "gadget/gadgets.pbi"
 ;XIncludeFile "widgets-ROW.pbi"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgetsDPI.pbi"
 
 ; #PB_Tree_Selected ; Элемент должен быть выбран.
 ; #PB_Tree_Expanded ; Элемент должен быть развернут.
