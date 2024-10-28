@@ -16961,28 +16961,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If Style =- 1
           ProcedureReturn Arrow( x, y, Size, Direction, Color )
         Else
-          For x1 = 0 To size
-            For y1 = x1/Style To size-x1/Style
-              If direction = 0 ; left
-                Box(x+size/2-x1,y+y1,1,1, Color)
-              EndIf
-              If direction = 1 ; up
-                Box(x+y1,y+size/2-x1,1,1, Color)
-              EndIf
-              If direction = 2 ; right
-                Box(x+size/2+x1,y+y1,1,1, Color)
-                ;Box(x-size/2+x1,y+y1,1,1, Color)
-              EndIf
-              If direction = 3 ; down
-                Box(x+y1,y+size/2+x1,1,1, Color)
-                ;Box(x+y1,y-size/2+x1,1,1, Color)
-              EndIf
-            Next  
-          Next
+          Protected fs = 2
+      
+      For x1 = 0 To size
+        For y1 = x1 To size-x1 
+          If direction = 0 ; left
+            Box(x+size/2-x1*Style,y+y1,Style,1, FrameColor)
+          EndIf
+          If direction = 1 ; up
+            Box(x+y1,y+size/2-x1*Style,1,Style, FrameColor)
+          EndIf
+          If direction = 2 ; right
+            Box(x+size/2+x1*Style,y+y1,Style,1, FrameColor)
+          EndIf
+          If direction = 3 ; down
+            Box(x+y1,y+size/2+x1*Style,1,Style, FrameColor)
+          EndIf
+        Next  
+      Next
+      
+      For x1 = fs/2 To size - fs
+        For y1 = x1+fs To size-x1 - fs
+          If direction = 0 ; left
+            Box(x+size/2-x1*Style,y+y1,Style,1, Color)
+          EndIf
+          If direction = 1 ; up
+            Box(x+y1,y+size/2-x1*Style,1,Style, Color)
+          EndIf
+          If direction = 2 ; right
+            Box(x+size/2+x1*Style,y+y1,Style,1, Color)
+          EndIf
+          If direction = 3 ; down
+            Box(x+y1,y+size/2+x1*Style,1,Style, Color)
+          EndIf
+        Next  
+      Next
         EndIf
       EndIf
     EndProcedure
-   
+    
     Procedure   Draw_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ) )
       Protected state.b, x.l, y.l, xs.l, ys.l, _box_x_.l, _box_y_.l, minus.l = 7
       Protected bs = Bool( *this\fs )
@@ -17149,27 +17166,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 Y = row_y_( *this, *items( ) ) + *items( )\RowButton( )\y - _scroll_y_
                 
                 
-                If (x - 7 >= 0 And x + 7 <= *this\root\width) And ; в мак ос эти строки не нужны так как plot( ) может рисовать за пределамы границы
-                   (y - 7 >= 0 And y + 7 <= *this\root\height)
-                  
-                  ;                           If *items( )\ColorState( )
-                  ;                             Draw_Arrow( x+#__arrow_size/2+1,y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
-                  ;                           Else
-                  ;                             Draw_Arrow(x+#__arrow_size/2+1, y+#__arrow_size/2+1, #__arrow_size, 3 - Bool(*items( )\RowButtonState( )), $ff000000, -1)
-                  ;                           EndIf
-                  
-;                   If *items( )\ColorState( )
-;                     Draw_Arrow(x, y, DPIScaled(6), 3 - Bool(*items( )\RowButtonState( )),1)
-;                   Else
-;                     Draw_Arrow(x, y, DPIScaled(6), 3 - Bool(*items( )\RowButtonState( )), 1,$ff000000)
-;                   EndIf
-                  
-                  If *items( )\ColorState( )
-                  Draw_Arrow(x - Bool(*items( )\RowButtonState( )), y-1, *items( )\RowButton( )\width, 3 - Bool(*items( )\RowButtonState( )), 1 )
+                If *items( )\ColorState( ) = 1
+                  Draw_Arrow(x-1, y-1, DPIScaled(9), 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000 )
+                ElseIf *items( )\ColorState( ) = 2
+                  Draw_Arrow(x-2, y-2, DPIScaled(11), 3 - Bool(*items( )\RowButtonState( )), 1 )
                 Else
-                  Draw_Arrow(x+3 - Bool(*items( )\RowButtonState( )), y+3 , DPIScaled(6), 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000)
-                EndIf
-                
+                  Draw_Arrow(x+1, y+1, DPIScaled(6), 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000)
                 EndIf
                 
                 ;EndIf
@@ -24330,10 +24332,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17169
-; FirstLine = 16129
-; Folding = ------------------------------------------------------------------------------------4-----------------------------------------------0+-4--f2K------------------------------------------------------0-----0-8---------0----0v-0r748t4--4---+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 17001
+; FirstLine = 15960
+; Folding = ------------------------------------------------------------------------------------4-----------------------------------------------0+-4--f2K------------------------------------------------------0-----0-8---------0----0v-0r748t4--4---+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----
 ; Optimizer
 ; EnableXP
 ; DPIAware
