@@ -17325,24 +17325,41 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If Style =- 1
           ProcedureReturn Arrow( x, y, Size, Direction, Color )
         Else
-          For x1 = 0 To size
-            For y1 = x1 To size-x1 
-              If direction = 0 ; left
-                Box(x+size/2-x1*Style,y+y1,Style,1, Color)
-              EndIf
-              If direction = 1 ; up
-                Box(x+y1,y+size/2-x1*Style,1,Style, Color)
-              EndIf
-              If direction = 2 ; right
-                Box(x+size/2+x1*Style,y+y1,Style,1, Color)
-                ;Box(x-size/2+x1,y+y1,1,1, Color)
-              EndIf
-              If direction = 3 ; down
-                Box(x+y1,y+size/2+x1*Style,1,Style, Color)
-                ;Box(x+y1,y-size/2+x1,1,1, Color)
-              EndIf
-            Next  
-          Next
+          Protected fs = 2
+      
+      For x1 = 0 To size
+        For y1 = x1 To size-x1 
+          If direction = 0 ; left
+            Box(x+size/2-x1*Style,y+y1,Style,1, FrameColor)
+          EndIf
+          If direction = 1 ; up
+            Box(x+y1,y+size/2-x1*Style,1,Style, FrameColor)
+          EndIf
+          If direction = 2 ; right
+            Box(x+size/2+x1*Style,y+y1,Style,1, FrameColor)
+          EndIf
+          If direction = 3 ; down
+            Box(x+y1,y+size/2+x1*Style,1,Style, FrameColor)
+          EndIf
+        Next  
+      Next
+      
+      For x1 = fs/2 To size - fs
+        For y1 = x1+fs To size-x1 - fs
+          If direction = 0 ; left
+            Box(x+size/2-x1*Style,y+y1,Style,1, Color)
+          EndIf
+          If direction = 1 ; up
+            Box(x+y1,y+size/2-x1*Style,1,Style, Color)
+          EndIf
+          If direction = 2 ; right
+            Box(x+size/2+x1*Style,y+y1,Style,1, Color)
+          EndIf
+          If direction = 3 ; down
+            Box(x+y1,y+size/2+x1*Style,1,Style, Color)
+          EndIf
+        Next  
+      Next
         EndIf
       EndIf
     EndProcedure
@@ -17510,8 +17527,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 X = row_x_( *this, *items( ) ) + *items( )\RowButton( )\x - _scroll_x_
                 Y = row_y_( *this, *items( ) ) + *items( )\RowButton( )\y - _scroll_y_
                 
-                If *items( )\ColorState( )
-                  Draw_Arrow(x-1, y-1, *items( )\RowButton( )\width, 3 - Bool(*items( )\RowButtonState( )), 1 )
+                If *items( )\ColorState( ) = 1
+                  Draw_Arrow(x-1, y-1, 9, 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000 )
+                ElseIf *items( )\ColorState( ) = 2
+                  Draw_Arrow(x-2, y-2, 11, 3 - Bool(*items( )\RowButtonState( )), 1 )
                 Else
                   Draw_Arrow(x+1, y+1, 6, 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000)
                 EndIf
@@ -24678,8 +24697,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17513
-; FirstLine = 17404
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 17528
+; FirstLine = 17431
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
