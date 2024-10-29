@@ -1,7 +1,8 @@
 ﻿IncludePath "../../../"
 ;XIncludeFile "gadget/gadgets.pbi"
 ;XIncludeFile "widgets-ROW.pbi"
-XIncludeFile "widgetsDPI.pbi"
+;XIncludeFile "widgetsDPI.pbi"
+XIncludeFile "widgets.pbi"
 
 ; #PB_Tree_Selected ; Элемент должен быть выбран.
 ; #PB_Tree_Expanded ; Элемент должен быть развернут.
@@ -588,7 +589,7 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 4
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware

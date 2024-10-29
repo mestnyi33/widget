@@ -1,6 +1,6 @@
 ﻿;- 
 #IDE_path = "../"
-XIncludeFile #IDE_path + "widgetsDPI.pbi"
+XIncludeFile #IDE_path + "widgets.pbi"
 ;
 EnableExplicit
 ;

@@ -27,34 +27,17 @@ size = 60
 d=5
 
 
-Procedure.b Draw_Arrow( x.l, y.l, size.a, direction.a, style.b = 1, framesize=2, FrameColor = $ff000000, Color = $ffffffff )
+Procedure.b Draw_Arrow( x.l, y.l, size.a, direction.a, style.b = 1, Color = $ffffffff )
+  ;ProcedureReturn 
   Protected x1.l, y1.l
   
   If Style
     If Style =- 1
       ; ProcedureReturn Arrow( x, y, Size, Direction, Color )
     Else
-      Protected fs = framesize
       
       For x1 = 0 To size
         For y1 = x1 To size-x1 
-          If direction = 0 ; left
-            Box(x+size/2-x1*Style,y+y1,Style,1, FrameColor)
-          EndIf
-          If direction = 1 ; up
-            Box(x+y1,y+size/2-x1*Style,1,Style, FrameColor)
-          EndIf
-          If direction = 2 ; right
-            Box(x+size/2+x1*Style,y+y1,Style,1, FrameColor)
-          EndIf
-          If direction = 3 ; down
-            Box(x+y1,y+size/2+x1*Style,1,Style, FrameColor)
-          EndIf
-        Next  
-      Next
-      
-      For x1 = fs/2 To size ; - fs
-        For y1 = x1+fs To size-x1 - fs
           If direction = 0 ; left
             Box(x+size/2-x1*Style,y+y1,Style,1, Color)
           EndIf
@@ -69,6 +52,38 @@ Procedure.b Draw_Arrow( x.l, y.l, size.a, direction.a, style.b = 1, framesize=2,
           EndIf
         Next  
       Next
+      
+    EndIf
+  EndIf
+EndProcedure
+Procedure.b Draw_ArrowFrame( x.l, y.l, size.a, direction.a, style.b = 1, Color = $ff000000 )
+  Protected x1.l, y1.l
+  
+  If Style
+    If Style =- 1
+      ; ProcedureReturn Arrow( x, y, Size, Direction, Color )
+    Else
+      Protected framesize = 4
+      
+      ;Draw_Arrow( x-framesize, y-framesize, size+framesize*2, direction, style, Color )
+      For x1 = -framesize/2 To size ; - framesize
+        
+        For y1 = x1-framesize To size-x1+framesize
+          If direction = 0 ; left
+            Box(x+size/2-x1*Style,y+y1,Style,1, Color)
+          EndIf
+          If direction = 1 ; up
+            Box(x+y1,y+size/2-x1*Style,1,Style, Color)
+          EndIf
+          If direction = 2 ; right
+            Box(x+size/2+x1*Style,y+y1,Style,1, Color)
+          EndIf
+          If direction = 3 ; down
+            Box(x+y1,y+size/2+x1*Style,1,Style, Color)
+          EndIf
+        Next  
+      Next
+      
     EndIf
   EndIf
 EndProcedure
@@ -99,17 +114,21 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
     ;     
     ;     Arrow(x,y, size, 1)
     ;     ;     
-    
-    x=0
-    y=size*2+d
+    pos = 10
+    x=pos
+    y=pos+size*2+d
+    Draw_ArrowFrame(x,y, size, 0,2)
     Draw_Arrow(x,y, size, 0,2)
-    x=size*2+d*2+size*2
+    x=pos+size*2+d*2+size*2
+    Draw_ArrowFrame(x,y, size, 2,2)
     Draw_Arrow(x,y, size, 2,2)
     
-    y=0
-    x=size*2+d
+    y=pos
+    x=pos+size*2+d
+    Draw_ArrowFrame(x,y, size, 1)
     Draw_Arrow(x,y, size, 1)
-    y=size*2+d*2+size*2
+    y=pos+size*2+d*2+size*2
+    Draw_ArrowFrame(x,y, size, 3)
     Draw_Arrow(x,y, size, 3)
     
     StopDrawing() 
@@ -122,8 +141,8 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 20
+; CursorPosition = 70
+; FirstLine = 62
 ; Folding = ---
 ; EnableXP
 ; DPIAware

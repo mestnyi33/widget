@@ -122,6 +122,7 @@
   EndMacro
   
   Macro Box(_x_, _y_, _width_, _height_, _color_= )
+ ;   Line(_x_, _y_, _width_, _height_, _color_ )
     CompilerIf _dq_#_color_#_dq_ = "" 
       PB(Box)(DPIScaledX(_x_), DPIScaledY(_y_), DPIScaledX(_width_), DPIScaledY(_height_))
     CompilerElse
@@ -221,16 +222,89 @@ CompilerEndIf
 ; 0,0,1,1,1,0,0
 ; 0,0,0,1,0,0,0
 
-Procedure Arrow( x, y, size, direction, color = 0 )
-  Protected style = 2, s=1
+Procedure.b Draw_ArrowFrame( x, y, size, direction, color = 0 )
+  size/2
+  Protected thickness = size/2+2
+  Protected style = 2, s=2
+  x+size
+  y+size
+          
+  If direction = 0 ; left
+    Box(x+s,y-size,-s,size*2, Color)
+  EndIf
+  If direction = 2 ; right
+    Box(x,y-size,s,size*2, Color)
+  EndIf
+  If direction = 1 ; up
+    Box(x-size,y+s,size*2,-s, Color)
+  EndIf
+  If direction = 3 ; down
+    Box(x-size,y,size*2,s, Color)
+  EndIf
+  
+  s+1
+  
   For x1 = -size To size
-    If x1 > 0
-      Box(x+x1,y+x1*1,1,s, Color)
-    Else
-      Box(x-x1,y+x1*1,1,s, Color)
+    If direction = 0 ; left
+      If x1 > 0
+        Box(x+x1-size+s-1,y+x1*1,-s,1, Color)
+      Else
+        Box(x-x1-size+s-1,y+x1*1,-s,1, Color)
+      EndIf
+    EndIf
+    If direction = 2 ; right
+      If x1 < 0
+        Box(x+x1+size,y+x1*1,s,1, Color)
+      Else
+        Box(x-x1+size,y+x1*1,s,1, Color)
+      EndIf
     EndIf
     
-;     For y1 = x1 To size-x1
+    If direction = 1 ; up
+      If x1 > 0
+        Box(x+x1*1,y+x1-size+s-1,1,-s, Color)
+      Else
+        Box(x+x1*1,y-x1-size+s-1,1,-s, Color)
+      EndIf
+    EndIf
+    
+    If direction = 3 ; down
+      If x1 < 0
+        Box(x+x1*1,y+x1+size,1,s, Color)
+      Else
+        Box(x+x1*1,y-x1+size,1,s, Color)
+      EndIf
+    EndIf
+  Next
+EndProcedure
+Procedure.b Draw_Arrow( x.l, y.l, size.a, direction.a, style.b = 1, framesize=2, FrameColor = $ff000000, Color = $ffffffff )
+  Protected x1.l, y1.l
+  
+  If Style
+    If Style =- 1
+      ; ProcedureReturn Arrow( x, y, Size, Direction, Color )
+    Else
+      Protected fs = framesize
+      
+      For x1 = 0 To size
+        For y1 = x1 To size-x1 
+          If direction = 0 ; left
+            Box(x+size/2-x1*Style,y+y1,Style,1, FrameColor)
+          EndIf
+          If direction = 1 ; up
+            Box(x+y1,y+size/2-x1*Style,1,Style, FrameColor)
+          EndIf
+          If direction = 2 ; right
+            Box(x+size/2+x1*Style,y+y1,Style,1, FrameColor)
+          EndIf
+          If direction = 3 ; down
+            Box(x+y1,y+size/2+x1*Style,1,Style, FrameColor)
+          EndIf
+        Next  
+      Next
+;       
+;       For x1 = fs/2 To size ; - fs
+;         For y1 = x1+fs To size-x1 - fs
 ;           If direction = 0 ; left
 ;             Box(x+size/2-x1*Style,y+y1,Style,1, Color)
 ;           EndIf
@@ -243,9 +317,10 @@ Procedure Arrow( x, y, size, direction, color = 0 )
 ;           If direction = 3 ; down
 ;             Box(x+y1,y+size/2+x1*Style,1,Style, Color)
 ;           EndIf
-;       
-;     Next  
-  Next
+;         Next  
+;       Next
+    EndIf
+  EndIf
 EndProcedure
 
 size = 30
@@ -254,21 +329,25 @@ d=5
 
 
 If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  If CreateImage(0, 200, 200, 24, $FFFFFF) And StartDrawing(ImageOutput(0))
+  If CreateImage(0, 200, 200, 24, $5FA8EC) And StartDrawing(ImageOutput(0))
     SetOrigin(size/2,size/2)
     FrontColor($ff0000)
     
     x=0
     y=size*2+d
-    Arrow(x,y, size, 0)
+    Draw_Arrow(x,y, size, 0)
+    Draw_ArrowFrame(x,y, size, 0, $ffffff)
     x=size*2+d*2+size*2
-    Arrow(x,y, size, 2)
+    Draw_Arrow(x,y, size, 2)
+    Draw_ArrowFrame(x,y, size, 2, $ffffff)
     
     y=0
     x=size*2+d
-    Arrow(x,y, size, 1)
+    Draw_Arrow(x,y, size, 1)
+    Draw_ArrowFrame(x,y, size, 1, $ffffff)
     y=size*2+d*2+size*2
-    Arrow(x,y, size, 3)
+    Draw_Arrow(x,y, size, 3)
+    Draw_ArrowFrame(x,y, size, 3, $ffffff)
     
     
     
@@ -282,8 +361,8 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 229
-; FirstLine = 215
-; Folding = --------
+; CursorPosition = 251
+; FirstLine = 244
+; Folding = --------4--
 ; EnableXP
 ; DPIAware

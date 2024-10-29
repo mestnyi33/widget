@@ -1663,7 +1663,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
     Declare   AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
     
-    Declare.b Draw_Arrow( x.l, y.l, size.a, direction.a, style.b = 1, FrameColor = $ffffffff, Color = $ff000000 )
+    Declare.b Draw_Arrow( x.l, y.l, size.a, direction.a, mode.b = 1, Color = $ff000000 )
+    Declare.b Draw_ArrowFrame( x.l, y.l, size.a, direction.a, mode.b = 1, Color = $ffffffff )
+    
     ;
     Declare.i Send( *this, eventtype.l, *button = #PB_All, *data = #Null )
     Declare.i Post( *this, eventtype.l, *button = #PB_All, *data = #Null )
@@ -17224,142 +17226,147 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-
     ;-  DRAWINGs
     ;-
-    Procedure.b Arrow( x.l, Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1 )
-      Protected I
-      ;Size - 2
+    Procedure.b Draw_ArrowFrame(  x.l, y.l, size.a, direction.a, mode.b = 1, color = $ffffffff  )
+      Protected i.w, j.w, thickness.a = 2
       
-      If Not Length
-        Style = - 1
+      If mode = 2
+        For i = - thickness / 2 To size 
+          For j = i - thickness To size - i + thickness
+            If direction = 0 ; left
+              Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
+            EndIf
+            If direction = 1 ; up
+              Box( x + j, y + size / 2 - i * mode, 1, mode, Color)
+            EndIf
+            If direction = 2 ; right
+              Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
+            EndIf
+            If direction = 3 ; down
+              Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
+            EndIf
+          Next  
+        Next
       EndIf
-      Length = ( Size + 2 ) / 2
+    
+      If mode = 1
+      size / 2
+      x + size
+      y + size
       
-      
-      If Direction = 1 ; top
-        If Style > 0 : x - 1 : y + 2
-          Size / 2
-          For i = 0 To Size
-            LineXY(( x + 1 + i ) + Size, ( Y + i - 1 ) - ( Style ), ( x + 1 + i ) + Size, ( Y + i - 1 ) + ( Style ), Color )         ; Левая линия
-            LineXY(( ( x + 1 + ( Size )) - i ), ( Y + i - 1 ) - ( Style ), (( x + 1 + ( Size )) - i ), ( Y + i - 1 ) + ( Style ), Color ) ; правая линия
-          Next
-        Else : x - 1 : y - 1
-          For i = 1 To Length
-            If Style = - 1
-              LineXY( x + i, ( Size + y ), x + Length, y, Color )
-              LineXY( x + Length * 2 - i, ( Size + y ), x + Length, y, Color )
-            Else
-              LineXY( x + i, ( Size + y ) - i / 2, x + Length, y, Color )
-              LineXY( x + Length * 2 - i, ( Size + y ) - i / 2, x + Length, y, Color )
-            EndIf
-          Next
-          i                                              = Bool( Style = - 1 )
-          LineXY( x, ( Size + y ) + Bool( i              = 0 ), x + Length, y + 1, Color )
-          LineXY( x + Length * 2, ( Size + y ) + Bool( i = 0 ), x + Length, y + 1, Color ) ; bug
-        EndIf
-      ElseIf Direction = 3 ; bottom
-        If Style > 0 : x - 1 : y + 1;2
-          Size / 2
-          For i = 0 To Size
-            LineXY(( x + 1 + i ), ( Y + i ) - ( Style ), ( x + 1 + i ), ( Y + i ) + ( Style ), Color ) ; Левая линия
-            LineXY(( ( x + 1 + ( Size * 2 )) - i ), ( Y + i ) - ( Style ), (( x + 1 + ( Size * 2 )) - i ), ( Y + i ) + ( Style ), Color ) ; правая линия
-          Next
-        Else : x - 1 : y + 1
-          For i = 0 To Length
-            If Style = - 1
-              LineXY( x + i, y, x + Length, ( Size + y ), Color )
-              LineXY( x + Length * 2 - i, y, x + Length, ( Size + y ), Color )
-            Else
-              LineXY( x + i, y + i / 2 - Bool( i              = 0 ), x + Length, ( Size + y ), Color )
-              LineXY( x + Length * 2 - i, y + i / 2 - Bool( i = 0 ), x + Length, ( Size + y ), Color )
-            EndIf
-          Next
-        EndIf
-      ElseIf Direction = 0 ; в лево
-        If Style > 0 : y - 1
-          Size / 2
-          For i = 0 To Size
-            ; в лево
-            LineXY(( ( x + 1 ) + i ) - ( Style ), (( ( Y + 1 ) + ( Size )) - i ), (( x + 1 ) + i ) + ( Style ), (( ( Y + 1 ) + ( Size )) - i ), Color ) ; правая линия
-            LineXY(( ( x + 1 ) + i ) - ( Style ), (( Y + 1 ) + i ) + Size, (( x + 1 ) + i ) + ( Style ), (( Y + 1 ) + i ) + Size, Color )               ; Левая линия
-          Next
-        Else : x - 1 : y - 1
-          For i = 1 To Length
-            If Style = - 1
-              LineXY(( Size + x ), y + i, x, y + Length, Color )
-              LineXY(( Size + x ), y + Length * 2 - i, x, y + Length, Color )
-            Else
-              LineXY(( Size + x ) - i / 2, y + i, x, y + Length, Color )
-              LineXY(( Size + x ) - i / 2, y + Length * 2 - i, x, y + Length, Color )
-            EndIf
-          Next
-          i                             = Bool( Style = - 1 )
-          LineXY(( Size + x ) + Bool( i = 0 ), y, x + 1, y + Length, Color )
-          LineXY(( Size + x ) + Bool( i = 0 ), y + Length * 2, x + 1, y + Length, Color )
-        EndIf
-      ElseIf Direction = 2 ; в право
-        If Style > 0 : y - 1 ;: x + 1
-          Size / 2
-          For i = 0 To Size
-            ; в право
-            LineXY(( ( x + 1 ) + i ) - ( Style ), (( Y + 1 ) + i ), (( x + 1 ) + i ) + ( Style ), (( Y + 1 ) + i ), Color ) ; Левая линия
-            LineXY(( ( x + 1 ) + i ) - ( Style ), (( ( Y + 1 ) + ( Size * 2 )) - i ), (( x + 1 ) + i ) + ( Style ), (( ( Y + 1 ) + ( Size * 2 )) - i ), Color ) ; правая линия
-          Next
-        Else : y - 1 : x + 1
-          For i = 0 To Length
-            If Style = - 1
-              LineXY( x, y + i, Size + x, y + Length, Color )
-              LineXY( x, y + Length * 2 - i, Size + x, y + Length, Color )
-            Else
-              LineXY( x + i / 2 - Bool( i = 0 ), y + i, Size + x, y + Length, Color )
-              LineXY( x + i / 2 - Bool( i = 0 ), y + Length * 2 - i, Size + x, y + Length, Color )
-            EndIf
-          Next
-        EndIf
+        If direction = 0 ; left
+        Box( x + thickness, y - size,  - thickness, size * 2, Color )
+      EndIf
+      If direction = 2 ; right
+        Box( x, y - size, thickness, size * 2, Color )
+      EndIf
+      If direction = 1 ; up
+        Box( x - size, y + thickness, size * 2,  - thickness, Color )
+      EndIf
+      If direction = 3 ; down
+        Box( x - size, y, size * 2, thickness, Color )
       EndIf
       
+      thickness + 1
+      
+      For i = - size To size
+        If direction = 0 ; left
+          If i > 0
+            Box( x + i - size + thickness - 1, y + i * 1,  - thickness, 1, Color )
+          Else
+            Box( x - i - size + thickness - 1, y + i * 1,  - thickness, 1, Color )
+          EndIf
+        EndIf
+        If direction = 2 ; right
+          If i < 0
+            Box( x + i + size, y + i * 1, thickness, 1, Color )
+          Else
+            Box( x - i + size, y + i * 1, thickness, 1, Color )
+          EndIf
+        EndIf
+        
+        If direction = 1 ; up
+          If i > 0
+            Box( x + i * 1, y + i - size + thickness - 1, 1,  - thickness, Color )
+          Else
+            Box( x + i * 1, y - i - size + thickness - 1, 1,  - thickness, Color )
+          EndIf
+        EndIf
+        
+        If direction = 3 ; down
+          If i < 0
+            Box( x + i * 1, y + i + size, 1, thickness, Color )
+          Else
+            Box( x + i * 1, y - i + size, 1, thickness, Color )
+          EndIf
+        EndIf
+      Next
+    EndIf
+    
     EndProcedure
     
-    Procedure.b Draw_Arrow( x.l, y.l, size.a, direction.a, style.b = 1, FrameColor = $ffffffff, Color = $ff000000 )
-      Protected x1.l, y1.l
+    Procedure.b Draw_Arrow(  x.l, y.l, size.a, direction.a, mode.b = 1, Color = $ff000000  )
+      Protected i.w, j.w, thickness.a
       
-      If Style
-        If Style =- 1
-          ProcedureReturn Arrow( x, y, Size, Direction, Color )
+      If mode
+        If mode = - 1
+          size / 2
+          x + size
+          y + size
+          
+          thickness.a = size / 2 + 2
+          
+          For i = - size To size
+            If direction = 0 ; left
+              If i > 0
+                Box( x + i, y + i * 1,  - thickness, 1, Color )
+              Else
+                Box( x - i, y + i * 1,  - thickness, 1, Color )
+              EndIf
+            EndIf
+            If direction = 2 ; right
+              If i < 0
+                Box( x + i, y + i * 1, thickness, 1, Color )
+              Else
+                Box( x - i, y + i * 1, thickness, 1, Color )
+              EndIf
+            EndIf
+            
+            If direction = 1 ; up
+              If i > 0
+                Box( x + i * 1, y + i, 1,  - thickness, Color )
+              Else
+                Box( x + i * 1, y - i, 1,  - thickness, Color )
+              EndIf
+            EndIf
+            
+            If direction = 3 ; down
+              If i < 0
+                Box( x + i * 1, y + i, 1, thickness, Color )
+              Else
+                Box( x + i * 1, y - i, 1, thickness, Color )
+              EndIf
+            EndIf
+          Next
+          
         Else
-          Protected fs = 2
-      
-      For x1 = 0 To size
-        For y1 = x1 To size-x1 
-          If direction = 0 ; left
-            Box(x+size/2-x1*Style,y+y1,Style,1, FrameColor)
-          EndIf
-          If direction = 1 ; up
-            Box(x+y1,y+size/2-x1*Style,1,Style, FrameColor)
-          EndIf
-          If direction = 2 ; right
-            Box(x+size/2+x1*Style,y+y1,Style,1, FrameColor)
-          EndIf
-          If direction = 3 ; down
-            Box(x+y1,y+size/2+x1*Style,1,Style, FrameColor)
-          EndIf
-        Next  
-      Next
-      
-      For x1 = fs/2 To size - fs
-        For y1 = x1+fs To size-x1 - fs
-          If direction = 0 ; left
-            Box(x+size/2-x1*Style,y+y1,Style,1, Color)
-          EndIf
-          If direction = 1 ; up
-            Box(x+y1,y+size/2-x1*Style,1,Style, Color)
-          EndIf
-          If direction = 2 ; right
-            Box(x+size/2+x1*Style,y+y1,Style,1, Color)
-          EndIf
-          If direction = 3 ; down
-            Box(x+y1,y+size/2+x1*Style,1,Style, Color)
-          EndIf
-        Next  
-      Next
+          
+          For i = 0 To size
+            For j = i To size - i 
+              If direction = 0 ; left
+                Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
+              EndIf
+              If direction = 1 ; up
+                Box( x + j, y + size / 2 - i * mode, 1, mode, Color )
+              EndIf
+              If direction = 2 ; right
+                Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
+              EndIf
+              If direction = 3 ; down
+                Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
+              EndIf
+            Next  
+          Next
+          
         EndIf
       EndIf
     EndProcedure
@@ -17528,11 +17535,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 Y = row_y_( *this, *items( ) ) + *items( )\RowButton( )\y - _scroll_y_
                 
                 If *items( )\ColorState( ) = 1
-                  Draw_Arrow(x-1, y-1, 9, 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000 )
+                  Draw_Arrow(x-1, y-1, 9, 3 - Bool(*items( )\RowButtonState( )), 1 )
                 ElseIf *items( )\ColorState( ) = 2
                   Draw_Arrow(x-2, y-2, 11, 3 - Bool(*items( )\RowButtonState( )), 1 )
+                  Draw_ArrowFrame(x-2, y-2, 11, 3 - Bool(*items( )\RowButtonState( )), 1 )
                 Else
-                  Draw_Arrow(x+1, y+1, 6, 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000)
+                  Draw_Arrow(x+1, y+1, 6, 3 - Bool(*items( )\RowButtonState( )), 1)
                 EndIf
                 
               EndIf
@@ -17545,6 +17553,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       clip_output_( *this, [#__c_draw] )
       
     EndProcedure
+    
     
     Procedure   Draw_Tree( *this._s_WIDGET )
       Protected state.b, x.l, y.l, scroll_x, scroll_y
@@ -19462,7 +19471,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If PressedWidget( ) = *list( )
                     Continue
                   EndIf
-                  EnteredWidget( ) =  *list( )
+                  EnteredWidget( ) = *list( )
                   ProcedureReturn 0
                 EndIf
               EndIf
@@ -23213,26 +23222,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-            __gui\eventquit =  - 1
+            __gui\eventquit = - 1
           EndIf
           
           ;\\
           If Free( root( ) )
             If PB(IsWindow)( window )
               If DraggedGadget( ) = canvas
-                DraggedGadget( ) =  - 1
+                DraggedGadget( ) = - 1
               EndIf
               If EnteredGadget( ) = canvas
-                EnteredGadget( ) =  - 1
+                EnteredGadget( ) = - 1
               EndIf
               If PressedGadget( ) = canvas
-                PressedGadget( ) =  - 1
+                PressedGadget( ) = - 1
               EndIf
               If FocusedGadget( ) = canvas
-                FocusedGadget( ) =  - 1
+                FocusedGadget( ) = - 1
               EndIf
               
-              If __gui\eventquit =  - 1
+              If __gui\eventquit = - 1
                 FreeGadget( canvas )
                 CloseWindow( window )
                 ResetMap( roots( ) )
@@ -23541,7 +23550,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               ;                   Case #PB_Event_Repaint
               ;                      EventRepaint( )
               
-            Case #PB_Event_CloseWindow : __gui\eventquit =  - 1
+            Case #PB_Event_CloseWindow : __gui\eventquit = - 1
               Protected window = PB(EventWindow)( )
               Protected canvas = PB(GetWindowData)( window )
               
@@ -24697,8 +24706,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17528
-; FirstLine = 17431
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 17238
+; FirstLine = 17224
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

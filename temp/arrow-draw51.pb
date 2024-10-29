@@ -122,6 +122,7 @@
   EndMacro
   
   Macro Box(_x_, _y_, _width_, _height_, _color_= )
+ ;   Line(_x_, _y_, _width_, _height_, _color_ )
     CompilerIf _dq_#_color_#_dq_ = "" 
       PB(Box)(DPIScaledX(_x_), DPIScaledY(_y_), DPIScaledX(_width_), DPIScaledY(_height_))
     CompilerElse
@@ -223,13 +224,53 @@ CompilerEndIf
 
 Procedure Arrow( x, y, size, direction, color = 0 )
   Protected style = 2, s=1
+  
+  If direction = 0 ; left
+    Box(x+size,y-size,0.5,size*2, Color)
+  EndIf
+  If direction = 2 ; right
+    Box(x-size,y-size,0.5,size*2, Color)
+  EndIf
+  If direction = 1 ; up
+    Box(x-size,y+size,size*2,0.5, Color)
+  EndIf
+  If direction = 3 ; down
+    Box(x-size,y-size,size*2,0.5, Color)
+  EndIf
+  
+  
   For x1 = -size To size
-    If x1 > 0
-      Box(x+x1,y+x1*1,1,s, Color)
-    Else
-      Box(x-x1,y+x1*1,1,s, Color)
+    If direction = 0 ; left
+      If x1 > 0
+        Line(x+x1,y+x1*1,1,s, Color)
+      Else
+        Line(x-x1,y+x1*1,1,s, Color)
+      EndIf
+    EndIf
+    If direction = 2 ; right
+      If x1 < 0
+        Line(x+x1,y+x1*1,1,s, Color)
+      Else
+        Line(x-x1,y+x1*1,1,s, Color)
+      EndIf
     EndIf
     
+    If direction = 1 ; up
+      If x1 > 0
+        Line(x+x1*1,y+x1,s,1, Color)
+      Else
+        Line(x+x1*1,y-x1,s,1, Color)
+      EndIf
+    EndIf
+    
+    If direction = 3 ; down
+      If x1 < 0
+        Line(x+x1*1,y+x1,s,1, Color)
+      Else
+        Line(x+x1*1,y-x1,s,1, Color)
+      EndIf
+    EndIf
+  
 ;     For y1 = x1 To size-x1
 ;           If direction = 0 ; left
 ;             Box(x+size/2-x1*Style,y+y1,Style,1, Color)
@@ -282,8 +323,8 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 229
-; FirstLine = 215
-; Folding = --------
+; CursorPosition = 241
+; FirstLine = 233
+; Folding = ---------
 ; EnableXP
 ; DPIAware

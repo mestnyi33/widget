@@ -122,6 +122,7 @@
   EndMacro
   
   Macro Box(_x_, _y_, _width_, _height_, _color_= )
+    ;   Line(_x_, _y_, _width_, _height_, _color_ )
     CompilerIf _dq_#_color_#_dq_ = "" 
       PB(Box)(DPIScaledX(_x_), DPIScaledY(_y_), DPIScaledX(_width_), DPIScaledY(_height_))
     CompilerElse
@@ -222,29 +223,39 @@ CompilerEndIf
 ; 0,0,0,1,0,0,0
 
 Procedure Arrow( x, y, size, direction, color = 0 )
-  Protected style = 2, s=1
-  For x1 = -size To size
-    If x1 > 0
-      Box(x+x1,y+x1*1,1,s, Color)
-    Else
-      Box(x-x1,y+x1*1,1,s, Color)
+  Protected style = 2, s=size/4+2
+  
+  For x1 = 0 To size
+    If direction = 0 ; left
+      If x1 > size/2
+        Box(x+x1-size/2,y+x1*1-size,-s,1, Color)
+      Else
+        Box(x-x1+size/2,y+x1*1-size,-s,1, Color)
+      EndIf
+    EndIf
+    If direction = 2 ; right
+      If x1 < size/2
+        Box(x+x1-size/2,y+x1*1,s,1, Color)
+      Else
+        Box(x-x1+size/2,y+x1*1,s,1, Color)
+      EndIf
     EndIf
     
-;     For y1 = x1 To size-x1
-;           If direction = 0 ; left
-;             Box(x+size/2-x1*Style,y+y1,Style,1, Color)
-;           EndIf
-;           If direction = 1 ; up
-;             Box(x+y1,y+size/2-x1*Style,1,Style, Color)
-;           EndIf
-;           If direction = 2 ; right
-;             Box(x+size/2+x1*Style,y+y1,Style,1, Color)
-;           EndIf
-;           If direction = 3 ; down
-;             Box(x+y1,y+size/2+x1*Style,1,Style, Color)
-;           EndIf
-;       
-;     Next  
+    If direction = 1 ; up
+      If x1 > size/2
+        Box(x+x1*1-size,y+x1-size/2,1,-s, Color)
+      Else
+        Box(x+x1*1-size,y-x1+size/2,1,-s, Color)
+      EndIf
+    EndIf
+    
+    If direction = 3 ; down
+      If x1 < size/2
+        Box(x+x1*1,y+x1-size/2,1,s, Color)
+      Else
+        Box(x+x1*1,y-x1+size/2,1,s, Color)
+      EndIf
+    EndIf
   Next
 EndProcedure
 
@@ -257,17 +268,17 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
   If CreateImage(0, 200, 200, 24, $FFFFFF) And StartDrawing(ImageOutput(0))
     SetOrigin(size/2,size/2)
     FrontColor($ff0000)
-    
-    x=0
-    y=size*2+d
+    pos = 10
+    x=pos
+    y=size*2+d+pos
     Arrow(x,y, size, 0)
-    x=size*2+d*2+size*2
+    x=size*2+d*2+size*2+pos
     Arrow(x,y, size, 2)
     
-    y=0
-    x=size*2+d
+    y=pos
+    x=size*2+d+pos
     Arrow(x,y, size, 1)
-    y=size*2+d*2+size*2
+    y=size*2+d*2+size*2+pos
     Arrow(x,y, size, 3)
     
     
@@ -282,8 +293,8 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 229
-; FirstLine = 215
-; Folding = --------
+; CursorPosition = 261
+; FirstLine = 252
+; Folding = ---------
 ; EnableXP
 ; DPIAware
