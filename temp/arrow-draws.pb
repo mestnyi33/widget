@@ -3,14 +3,14 @@
     Function
   EndMacro
   
-  Global DPISCALEDX.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX)/96)
-  Global DPISCALEDY.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY)/96)
+  Global DPISCALEDX.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
+  Global DPISCALEDY.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
   
   Macro DPIResolutionX( )
-    DPISCALEDX;(GetDeviceCaps_(GetDC_(0),#LOGPIXELSX)/96)
+    DPISCALEDX;(GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
   EndMacro
   Macro DPIResolutionY( )
-    DPISCALEDY;(GetDeviceCaps_(GetDC_(0),#LOGPIXELSY)/96)
+    DPISCALEDY;(GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
   EndMacro
   Macro DPIScaledX( _x_ )
     ((_x_) * DPIResolutionX( )) ; DesktopScaledX(_x_) ; 
@@ -19,10 +19,10 @@
     ((_y_) * DPIResolutionY( )) ; DesktopScaledY(_y_) ; 
   EndMacro
   Macro DPIUnscaledX( _x_ )
-    ((_x_)/DPIResolutionX( )) ; DesktopUnscaledX(_x_) ; 
+    ((_x_) / DPIResolutionX( )) ; DesktopUnscaledX(_x_) ; 
   EndMacro
   Macro DPIUnscaledY( _y_ )
-    ((_y_)/DPIResolutionY( )) ; DesktopUnscaledY(_y_) ; 
+    ((_y_) / DPIResolutionY( )) ; DesktopUnscaledY(_y_) ; 
   EndMacro
   
   Macro _dq_
@@ -222,36 +222,43 @@ CompilerEndIf
 ; 0,0,1,1,1,0,0
 ; 0,0,0,1,0,0,0
 
-Procedure.b Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ff000000, framesize=2 )
+Procedure.b Arrow( x.l, y.l, size.a, direction.a, mode.b = 1, Color = $ff000000 )
   Protected i.w, j.w, thickness.a
+  mode = 3 ; - 1
+  ;mode = - 1
+  Protected framesize = 2
+  If mode = 1
+    x-13
+    y-13
+  EndIf
+  
+  If mode = 2
+    x+4
+    y+4
+  EndIf
+  
+  If mode = 3
+    x+20
+    y+20
+  EndIf
+  
+  If mode = - 1
+    x-4
+    y-4
+  EndIf
   
   If mode
-    x + size/2
-    y + size/2
-    
-    If mode = 2
-      x + size/2 + framesize
-      y + size/2 + framesize
-    EndIf
-    
-    If mode = 3
-      x + size + framesize * 2
-      y + size + framesize * 2
-    EndIf
-    
-    
     If mode = - 1
-      thickness.a = 2 + size/4
+      size / 2
+      thickness.a = size / 2 + 2
       
-      x - thickness + 1
-      y - thickness + 1 
+      ;x + size
+      ;y + size
+      
       
       If framesize
-        x + framesize*2
-        y + framesize*2
-        
         Color = $ffffff
-        For i = - (size+framesize)/2 To (size+framesize)/2
+        For i = - (size+framesize/2) To (size+framesize/2)
           If direction = 0 ; left
             If i > 0
               Box( x + i + framesize, y + i * 1, - (thickness+framesize*2), 1, Color )
@@ -284,7 +291,7 @@ Procedure.b Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ff000000,
         Color = $000000
       EndIf
       
-      For i = - size/2 To size/2
+      For i = - size To size
         If direction = 0 ; left
           If i > 0
             Box( x + i, y + i * 1, - (thickness), 1, Color )
@@ -319,19 +326,19 @@ Procedure.b Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ff000000,
       
       If framesize
         Color = $ffffff
-        For i = - framesize/2 To size 
+        For i = - framesize / 2 To size 
           For j = i - framesize To size - i + framesize
             If direction = 0 ; left
-              Box( x - i * mode + framesize, y + j-size/2, mode, 1, Color )
+              Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
             EndIf
             If direction = 1 ; up
-              Box( x + j-size/2, y - i * mode + framesize, 1, mode, Color )
+              Box( x + j, y + size / 2 - i * mode, 1, mode, Color )
             EndIf
             If direction = 2 ; right
-              Box( x + i * mode - framesize, y + j-size/2, mode, 1, Color )
+              Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
             EndIf
             If direction = 3 ; down
-              Box( x + j-size/2, y + i * mode - framesize, 1, mode, Color )
+              Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
             EndIf
           Next 
         Next
@@ -341,16 +348,16 @@ Procedure.b Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ff000000,
       For i = 0 To size
         For j = i To size - i 
           If direction = 0 ; left
-            Box( x - i * mode + framesize, y + j-size/2, mode, 1, Color )
+            Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
           EndIf
           If direction = 1 ; up
-            Box( x + j-size/2, y - i * mode + framesize, 1, mode, Color )
+            Box( x + j, y + size / 2 - i * mode, 1, mode, Color )
           EndIf
           If direction = 2 ; right
-            Box( x + i * mode - framesize, y + j-size/2, mode, 1, Color )
+            Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
           EndIf
           If direction = 3 ; down
-            Box( x + j-size/2, y + i * mode - framesize, 1, mode, Color )
+            Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
           EndIf
         Next 
       Next
@@ -359,32 +366,28 @@ Procedure.b Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ff000000,
   EndIf
 EndProcedure
 
-
 size = 30
-d=size+10
-pos = 10
+d=5
 
-; display mode
-mode = 1 
-;   mode = 2 
-;   mode = 3 
-;   mode = - 1
 
 
 If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  If CreateImage(0, 400, 400, 24, $BFBFE8) And StartDrawing(ImageOutput(0))
-    
+  If CreateImage(0, 200, 200, 24, $BFBFE8) And StartDrawing(ImageOutput(0))
+    SetOrigin(size/2,size/2)
+    FrontColor($ff0000)
+    pos = 0
     x=pos
-    y=d+pos
-    Arrow(0, x,y, size, mode)
-    x=d*2+pos
-    Arrow(2, x,y, size, mode)
+    y=size*2+d+pos
+    Arrow(x,y, size, 0)
+    x=size*2+d*2+size*2+pos
+    Arrow(x,y, size, 2)
     
     y=pos
-    x=d+pos
-    Arrow(1, x,y, size, mode)
-    y=d*2+pos
-    Arrow(3, x,y, size, mode)
+    x=size*2+d+pos
+    Arrow(x,y, size, 1)
+    y=size*2+d*2+size*2+pos
+    Arrow(x,y, size, 3)
+    
     
     
     StopDrawing() 
@@ -397,8 +400,8 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 364
-; FirstLine = 353
-; Folding = ------------
+; CursorPosition = 241
+; FirstLine = 219
+; Folding = -------------
 ; EnableXP
 ; DPIAware

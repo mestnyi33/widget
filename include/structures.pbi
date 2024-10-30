@@ -122,7 +122,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          x.l
          width.l
          height.l
-         ;state.b
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD ; Ok
@@ -184,16 +183,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BOX
       Structure _s_BOX Extends _s_STATE
-         y.l[3]
-         x.l[3]
-         width.l[3]
-         height.l[3]
+        x.l
+        y.l
+        width.l
+        height.l
       EndStructure
       ;--     BUTTONS
-      Structure _s_BUTTONS Extends _s_BOX
-         size.l
-         noFocus.a
-         color._s_color[4]
+      Structure _s_BUTTONS Extends _s_BOX                  Align 4 ; без него при наведении на кнопку трии итем теряется итем
+         size.w
+         color._s_color
          arrow._s_arrow
       EndStructure
       
@@ -364,7 +362,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
-         _type.b
+        _type.b
          _index.l     ; Index of new list element
          itemindex.l
          
@@ -802,9 +800,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 485
-; FirstLine = 352
-; Folding = ---BQ+----
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 191
+; FirstLine = 181
+; Folding = ---BE5----
 ; Optimizer
 ; EnableXP

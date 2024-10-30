@@ -1742,8 +1742,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           _address_\width  = _address_\size
           _address_\height = _address_\size
         Else
-          _address_\width  = ImageWidth( _image_ )
-          _address_\height = ImageHeight( _image_ )
+          _address_\width  = DesktopScaledX(ImageWidth( _image_ ))
+          _address_\height = DesktopScaledY(ImageHeight( _image_ ))
         EndIf
         ;         CompilerEndIf
         
@@ -6421,7 +6421,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; Draw items image
       If _address_\image\id
         draw_mode_alpha_( #PB_2DDrawing_Transparent )
-        DrawAlphaImage( _address_\image\id, _x_ + _address_\image\x, _y_ + _address_\image\y, _address_\ColorAlphaState( ) )
+        DrawImage( _address_\image\id, _address_\image\x, _address_\image\y, _address_\image\width, _address_\image\height )
+        ;DrawAlphaImage( _address_\image\id, _x_ + _address_\image\x, _y_ + _address_\image\y, _address_\ColorAlphaState( ) )
       EndIf
       ;
       ; Draw items text
@@ -12805,12 +12806,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Procedure AddItem( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, flag.q = 0 )
       Protected result
-      ;          
-      If IsImage( Image )
-        If DPIResolution( ) >= 1.50 And ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
-          ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
-        EndIf
-      EndIf
+;       ;          
+;       If IsImage( Image )
+;         If DPIResolution( ) >= 1.50 And ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
+;           ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
+;         EndIf
+;       EndIf
       
       If *this\type = #__type_ListIcon
         Protected string.s, count
@@ -17031,7 +17032,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ Draw items image
         If *items( )\image\id
           draw_mode_alpha_( #PB_2DDrawing_Transparent )
-          DrawAlphaImage( *items( )\image\id, xs + *items( )\image\x, ys + *items( )\image\y, *items( )\AlphaState( ) )
+          
+          DrawImage( *items( )\image\id, xs + *items( )\image\x, ys + *items( )\image\y, *items( )\image\width, *items( )\image\height )
+          ; DrawAlphaImage( *items( )\image\id, xs + *items( )\image\x, ys + *items( )\image\y, *items( )\AlphaState( ) )
         EndIf
         
         ;\\ Draw items text
@@ -17211,7 +17214,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ Draw background image
         If *this\image\id
           draw_mode_alpha_( #PB_2DDrawing_Transparent )
-          DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\AlphaState( ) )
+          DrawImage( *this\image\id, *this\image\x, *this\image\y, *this\image\width, *this\image\height )
+          ;DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\AlphaState( ) )
         EndIf
         
         ;\\
@@ -17822,7 +17826,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ Draw background image
         If *this\image\id
           draw_mode_alpha_( #PB_2DDrawing_Transparent )
-          DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\AlphaState( ) )
+          DrawImage( *this\image\id, *this\image\x, *this\image\y, *this\image\width, *this\image\height )
+          ;DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\AlphaState( ) )
         EndIf
         
         ;\\
@@ -24308,10 +24313,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12809
-; FirstLine = 11792
-; Folding = ------------------------------------------------------------------------------------4-----------------------------------------------0+-4--f2K------------------------------------------------------0-----0-8---------0----0v-0r748t4--4---+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---
-; Optimizer
+; CursorPosition = 24313
+; FirstLine = 24282
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = widgets-.app.exe
