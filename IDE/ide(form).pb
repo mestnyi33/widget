@@ -1052,7 +1052,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)
 
    ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
-   ide_toolbar = ToolBar( ide_toolbar_container, #PB_ToolBar_Buttons );|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
+   ide_toolbar = ToolBar( ide_toolbar_container, #PB_ToolBar_Buttons|#PB_ToolBar_Small );|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
    
    OpenBar("Menu")
    BarItem(#_tb_file_open, "Open")
@@ -1391,9 +1391,10 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 1054
+; FirstLine = 1026
 ; Folding = ----------------------
 ; EnableXP
 ; DPIAware
-; Executable = ..\widgets-ide.app.exe
+; Executable = ../widgets-ide.app.exe

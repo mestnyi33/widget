@@ -189,8 +189,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
         height.l
       EndStructure
       ;--     BUTTONS
-      Structure _s_BUTTONS Extends _s_BOX                  Align 4 ; без него при наведении на кнопку трии итем теряется итем
-         size.w
+      Structure _s_BUTTONS Extends _s_BOX
+        noFocus.a ; без него при наведении на кнопку трии итем, теряется итем
+        size.w
          color._s_color
          arrow._s_arrow
       EndStructure
@@ -800,8 +801,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 191
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 192
 ; FirstLine = 181
 ; Folding = ---BE5----
 ; Optimizer
