@@ -222,6 +222,131 @@ CompilerEndIf
 ; 0,0,1,1,1,0,0
 ; 0,0,0,1,0,0,0
 
+Procedure.b Draw_ArrowFrame(  x.l, y.l, size.a, direction.a, mode.b = 1, color = $ffffffff  )
+  Protected i.w, j.w, thickness.a
+  size / 2
+  x + size
+  y + size
+  
+  thickness.a = 2
+  
+  If direction = 0 ; left
+    Box( x + thickness, y - size,  - thickness, size * 2, Color )
+  EndIf
+  If direction = 2 ; right
+    Box( x, y - size, thickness, size * 2, Color )
+  EndIf
+  If direction = 1 ; up
+    Box( x - size, y + thickness, size * 2,  - thickness, Color )
+  EndIf
+  If direction = 3 ; down
+    Box( x - size, y, size * 2, thickness, Color )
+  EndIf
+  
+  thickness + 1
+  
+  For i = - size To size
+    If direction = 0 ; left
+      If i > 0
+        Box( x + i - size + thickness - 1, y + i * 1,  - thickness, 1, Color )
+      Else
+        Box( x - i - size + thickness - 1, y + i * 1,  - thickness, 1, Color )
+      EndIf
+    EndIf
+    If direction = 2 ; right
+      If i < 0
+        Box( x + i + size, y + i * 1, thickness, 1, Color )
+      Else
+        Box( x - i + size, y + i * 1, thickness, 1, Color )
+      EndIf
+    EndIf
+    
+    If direction = 1 ; up
+      If i > 0
+        Box( x + i * 1, y + i - size + thickness - 1, 1,  - thickness, Color )
+      Else
+        Box( x + i * 1, y - i - size + thickness - 1, 1,  - thickness, Color )
+      EndIf
+    EndIf
+    
+    If direction = 3 ; down
+      If i < 0
+        Box( x + i * 1, y + i + size, 1, thickness, Color )
+      Else
+        Box( x + i * 1, y - i + size, 1, thickness, Color )
+      EndIf
+    EndIf
+  Next
+EndProcedure
+
+Procedure.b Draw_Arrow(  x.l, y.l, size.a, direction.a, mode.b = 1, Color = $ff000000  )
+  Protected i.w, j.w, thickness.a
+  
+  If mode
+    If mode = - 1
+      size / 2
+      x + size
+      y + size
+      
+      thickness.a = size / 2 + 2
+      
+      For i = - size To size
+        If direction = 0 ; left
+          If i > 0
+            Box( x + i, y + i * 1,  - thickness, 1, Color )
+          Else
+            Box( x - i, y + i * 1,  - thickness, 1, Color )
+          EndIf
+        EndIf
+        If direction = 2 ; right
+          If i < 0
+            Box( x + i, y + i * 1, thickness, 1, Color )
+          Else
+            Box( x - i, y + i * 1, thickness, 1, Color )
+          EndIf
+        EndIf
+        
+        If direction = 1 ; up
+          If i > 0
+            Box( x + i * 1, y + i, 1,  - thickness, Color )
+          Else
+            Box( x + i * 1, y - i, 1,  - thickness, Color )
+          EndIf
+        EndIf
+        
+        If direction = 3 ; down
+          If i < 0
+            Box( x + i * 1, y + i, 1, thickness, Color )
+          Else
+            Box( x + i * 1, y - i, 1, thickness, Color )
+          EndIf
+        EndIf
+      Next
+      
+    Else
+      
+      For i = 0 To size
+        For j = i To size - i 
+          If direction = 0 ; left
+            Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
+          EndIf
+          If direction = 1 ; up
+            Box( x + j, y + size / 2 - i * mode, 1, mode, Color )
+          EndIf
+          If direction = 2 ; right
+            Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
+          EndIf
+          If direction = 3 ; down
+            Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
+          EndIf
+        Next  
+      Next
+      
+    EndIf
+  EndIf
+EndProcedure
+
+
 Procedure.b Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ff000000, framesize=2 )
   Protected i.w, j.w, thickness.a
   
@@ -397,8 +522,8 @@ If OpenWindow(0, 0, 0, 400, 400, "2DDrawing Example DPI", #PB_Window_SystemMenu 
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 364
-; FirstLine = 353
-; Folding = ------------
+; CursorPosition = 521
+; FirstLine = 492
+; Folding = -----------------
 ; EnableXP
 ; DPIAware

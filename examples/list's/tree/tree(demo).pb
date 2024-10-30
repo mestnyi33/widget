@@ -1,7 +1,4 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "gadget/gadgets.pbi"
-;XIncludeFile "widgets-ROW.pbi"
-;XIncludeFile "widgetsDPI.pbi"
 XIncludeFile "widgets.pbi"
 
 ; #PB_Tree_Selected ; Элемент должен быть выбран.
@@ -589,8 +586,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
-; Folding = f-b------
+; CursorPosition = 1
+; Folding = e-b------
 ; EnableXP
 ; DPIAware
 ; Executable = C:\Users\user\Documents\GitHub\1.exe

@@ -1196,9 +1196,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro draw_arrows( _address_, _direction_ )
-      Draw_Arrow( _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
-             _address_\y + ( _address_\height - _address_\arrow\size ) / 2, _address_\arrow\size, _direction_, _address_\arrow\type,
-             _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+      Draw_Arrow( _direction_,
+                  _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
+                  _address_\y + ( _address_\height - _address_\arrow\size ) / 2, 
+                  _address_\arrow\size, _address_\arrow\type, 0,
+                  _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
     EndMacro
     
     Macro draw_box( _address_, _color_type_, _mode_ = )
@@ -1509,8 +1511,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
     Declare   AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
     
-    Declare.b Draw_Arrow( x.l, y.l, size.a, direction.a, mode.b = 1, Color = $ff000000 )
-    Declare.b Draw_ArrowFrame( x.l, y.l, size.a, direction.a, mode.b = 1, Color = $ffffffff )
+    Declare.b Draw_Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, framesize.a = 0, Color = $ff000000 )
     ;
     Declare.i Send( *this, eventtype.l, *button = #PB_All, *data = #Null )
     Declare.i Post( *this, eventtype.l, *button = #PB_All, *data = #Null )
@@ -6150,7 +6151,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure.b bar_tab_UpdateItems( *this._s_WIDGET, List *items._s_ITEMS( ) )
+    Procedure.b bar_tab_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
       With *this
         Protected index
         Protected typ = 0
@@ -6200,23 +6201,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *bar\vertical
               If is_menu_( *this )
-                ForEach *items( )
+                ForEach *tabs( )
                   ; if not visible then skip
-                  If *items( )\hide
+                  If *tabs( )\hide
                     Continue
                   EndIf
                   ;
-                  draw_font( *items( ) )
+                  draw_font( *tabs( ) )
                   
                   ; init items position
                   If *bar\vertical
-                    If *this\scroll_width( ) < 20+*items( )\text\width 
-                      *this\scroll_width( ) = 20+*items( )\text\width
+                    If *this\scroll_width( ) < 20+*tabs( )\text\width 
+                      *this\scroll_width( ) = 20+*tabs( )\text\width
                       If *this\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
-                        *this\scroll_width( ) + *items( )\image\width 
+                        *this\scroll_width( ) + *tabs( )\image\width 
                       EndIf
                     EndIf
-                    If *items( )\childrens 
+                    If *tabs( )\childrens 
                       *this\scroll_width( ) + 60
                     EndIf
                   EndIf
@@ -6229,155 +6230,155 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;Debug  "scroll width="+*this\width;*this\scroll_width( )
-            ForEach *items( )
-              If *items( )\hide
+            ForEach *tabs( )
+              If *tabs( )\hide
                 Continue
               EndIf
               
               ;\\
-              draw_font( *items( ), GetFontID( *this ) )
+              draw_font( *tabs( ), GetFontID( *this ) )
               
-              index = ListIndex( *items( ) ) ; *items( )\_index
+              index = ListIndex( *tabs( ) ) ; *tabs( )\_index
               
               ; init items position
               If *bar\vertical
-                *items( )\y = *bar\max + pos
+                *tabs( )\y = *bar\max + pos
                 
                 If *this\type = #__type_TabBar
                   If *this\TabState( ) = index
-                    *items( )\x       = - Bool( *this\parent\fs[3] )
-                    *items( )\width   = *this\width
+                    *tabs( )\x       = - Bool( *this\parent\fs[3] )
+                    *tabs( )\width   = *this\width
                   Else
-                    *items( )\x       = 1 + Bool( *this\parent\fs[1] )
-                    *items( )\width   = *this\width - 4
+                    *tabs( )\x       = 1 + Bool( *this\parent\fs[1] )
+                    *tabs( )\width   = *this\width - 4
                   EndIf
                   
                 Else
-                  *items( )\x       = pos
-                  If *items( )\itemindex  = #PB_Ignore
-                    *items( )\x      + 3
+                  *tabs( )\x       = pos
+                  If *tabs( )\itemindex  = #PB_Ignore
+                    *tabs( )\x      + 3
                   EndIf
                   
-                  *items( )\width  = *this\scroll_width( ) - *items( )\x * 2
+                  *tabs( )\width  = *this\scroll_width( ) - *tabs( )\x * 2
                 EndIf
                 
-                If *items( )\itemindex  = #PB_Ignore
-                  *items( )\y      + seperator_step
-                  *items( )\height = 1
+                If *tabs( )\itemindex  = #PB_Ignore
+                  *tabs( )\y      + seperator_step
+                  *tabs( )\height = 1
                   *bar\max         + seperator_step * 2
                 Else
                   ;
-                  Debug "why "+*items( )\height +" ?"
-                  *items( )\height = 0
+                  Debug "why "+*tabs( )\height +" ?"
+                  *tabs( )\height = 0
                   ;
-                  If *items( )\image\height
-                    *items( )\height = *items( )\image\height
+                  If *tabs( )\image\height
+                    *tabs( )\height = *tabs( )\image\height
                   EndIf
-                  If *items( )\text\height
+                  If *tabs( )\text\height
                     If *this\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
-                      If Not *items( )\image\height 
-                        *items( )\height = *items( )\text\height
+                      If Not *tabs( )\image\height 
+                        *tabs( )\height = *tabs( )\text\height
                       EndIf
                     Else
-                      *items( )\height + *items( )\text\height
+                      *tabs( )\height + *tabs( )\text\height
                     EndIf
                   EndIf
                   
                   ;
-                  *items( )\height + 6
+                  *tabs( )\height + 6
                   ;
                   If *this\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
                     ;
-                    ;                               *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width - *items( )\text\width ) / 2 
-                    ;                               *items( )\text\x  = *items( )\image\x + *items( )\image\width + 5
+                    ;                               *tabs( )\image\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\image\width - *tabs( )\text\width ) / 2 
+                    ;                               *tabs( )\text\x  = *tabs( )\image\x + *tabs( )\image\width + 5
                     Protected align_x = 5
-                    *items( )\image\x = *items( )\x + align_x
-                    *items( )\text\x  = *items( )\image\x + *items( )\image\width + align_x + 5
+                    *tabs( )\image\x = *tabs( )\x + align_x
+                    *tabs( )\text\x  = *tabs( )\image\x + *tabs( )\image\width + align_x + 5
                     
                     ;
-                    *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height )/2
-                    *items( )\text\y  = *items( )\y + ( *items( )\height - *items( )\text\height )/2
+                    *tabs( )\image\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\image\height )/2
+                    *tabs( )\text\y  = *tabs( )\y + ( *tabs( )\height - *tabs( )\text\height )/2
                     ;                          
                   Else
-                    If *items( )\text\width
-                      *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height - *items( )\text\height ) / 2
+                    If *tabs( )\text\width
+                      *tabs( )\image\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\image\height - *tabs( )\text\height ) / 2
                     Else
-                      *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height ) / 2
+                      *tabs( )\image\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\image\height ) / 2
                     EndIf
                     ;
-                    *items( )\text\y  = *items( )\image\y + *items( )\image\height
+                    *tabs( )\text\y  = *tabs( )\image\y + *tabs( )\image\height
                     ;
-                    *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width )/2
-                    *items( )\text\x  = *items( )\x + ( *items( )\width - *items( )\text\width )/2
+                    *tabs( )\image\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\image\width )/2
+                    *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
                   EndIf
                 EndIf
                 
                 ;
                 If *this\type = #__type_TabBar
-                  *bar\max + *items( )\height + Bool( index <> *this\countitems - 1 ) - Bool(typ) * 2 + Bool( index = *this\countitems - 1 ) * layout
+                  *bar\max + *tabs( )\height + Bool( index <> *this\countitems - 1 ) - Bool(typ) * 2 + Bool( index = *this\countitems - 1 ) * layout
                 Else
-                  *bar\max + *items( )\height + pos + Bool( index = *this\countitems - 1 )
+                  *bar\max + *tabs( )\height + pos + Bool( index = *this\countitems - 1 )
                 EndIf
               Else
-                *items( )\x = *bar\max + pos
+                *tabs( )\x = *bar\max + pos
                 ;
                 If *this\type = #__type_TabBar
                   If *this\TabState( ) = index
-                    *items( )\y       = - Bool( *this\parent\fs[4] )
-                    *items( )\height  = *this\height
+                    *tabs( )\y       = - Bool( *this\parent\fs[4] )
+                    *tabs( )\height  = *this\height
                   Else
-                    *items( )\y       = 1 + Bool( *this\parent\fs[2] )
-                    *items( )\height  = *this\height - 4
+                    *tabs( )\y       = 1 + Bool( *this\parent\fs[2] )
+                    *tabs( )\height  = *this\height - 4
                   EndIf
                   
                 Else
-                  *items( )\y       = pos
-                  If *items( )\itemindex  = #PB_Ignore
-                    *items( )\y      + 3
+                  *tabs( )\y       = pos
+                  If *tabs( )\itemindex  = #PB_Ignore
+                    *tabs( )\y      + 3
                   EndIf
                   
-                  *items( )\height  = *this\scroll_height( ) - *items( )\y * 2
+                  *tabs( )\height  = *this\scroll_height( ) - *tabs( )\y * 2
                 EndIf
                 ;
-                If *items( )\itemindex  = #PB_Ignore
-                  *items( )\x      + seperator_step
-                  *items( )\width  = 1
-                  *bar\max + *items( )\width + pos + (seperator_step * 2)
+                If *tabs( )\itemindex  = #PB_Ignore
+                  *tabs( )\x      + seperator_step
+                  *tabs( )\width  = 1
+                  *bar\max + *tabs( )\width + pos + (seperator_step * 2)
                 Else
                   ;
-                  *this\text\y = ( *items( )\height - *items( )\text\height ) / 2
+                  *this\text\y = ( *tabs( )\height - *tabs( )\text\height ) / 2
                   ;
-                  *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height ) / 2
-                  *items( )\text\y  = *items( )\y + *this\text\y
+                  *tabs( )\image\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\image\height ) / 2
+                  *tabs( )\text\y  = *tabs( )\y + *this\text\y
                   
                   ;
-                  *items( )\image\x = *items( )\x + Bool( *items( )\image\width ) * *this\image\x ;+ Bool( *items( )\text\width ) * ( *this\text\x )
-                  *items( )\text\x  = *items( )\image\x + *items( )\image\width + *this\text\x
+                  *tabs( )\image\x = *tabs( )\x + Bool( *tabs( )\image\width ) * *this\image\x ;+ Bool( *tabs( )\text\width ) * ( *this\text\x )
+                  *tabs( )\text\x  = *tabs( )\image\x + *tabs( )\image\width + *this\text\x
                   
                   ;
-                  *items( )\width = Bool( *items( )\text\width ) * ( *this\text\x * 2 ) + *items( )\text\width +
-                                    Bool( *items( )\image\width ) * ( *this\image\x * 2 ) + *items( )\image\width - ( Bool( *items( )\image\width And *items( )\text\width ) * ( *this\text\x ))
+                  *tabs( )\width = Bool( *tabs( )\text\width ) * ( *this\text\x * 2 ) + *tabs( )\text\width +
+                                    Bool( *tabs( )\image\width ) * ( *this\image\x * 2 ) + *tabs( )\image\width - ( Bool( *tabs( )\image\width And *tabs( )\text\width ) * ( *this\text\x ))
                   
                   ;
                   If *this\type = #__type_TabBar
-                    *bar\max + *items( )\width + Bool( index <> *this\countitems - 1 ) - Bool(typ) * 2 + Bool( index = *this\countitems - 1 ) * layout
-                    ;*bar\max + *items( )\width + pos + Bool( index = *this\countitems - 1 )
+                    *bar\max + *tabs( )\width + Bool( index <> *this\countitems - 1 ) - Bool(typ) * 2 + Bool( index = *this\countitems - 1 ) * layout
+                    ;*bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
                   Else
                     If Not *this\flag & #PB_ToolBar_InlineText
-                      If *items( )\text\width
-                        If *items( )\width > *items( )\image\width 
-                          *items( )\width - *items( )\image\width 
+                      If *tabs( )\text\width
+                        If *tabs( )\width > *tabs( )\image\width 
+                          *tabs( )\width - *tabs( )\image\width 
                         EndIf
                         ;
-                        *items( )\image\y = *items( )\y + ( *items( )\height - *items( )\image\height - *items( )\text\height ) / 2
-                        *items( )\text\y  = *items( )\image\y + *items( )\image\height
+                        *tabs( )\image\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\image\height - *tabs( )\text\height ) / 2
+                        *tabs( )\text\y  = *tabs( )\image\y + *tabs( )\image\height
                         ;
-                        *items( )\image\x = *items( )\x + ( *items( )\width - *items( )\image\width )/2
-                        *items( )\text\x  = *items( )\x + ( *items( )\width - *items( )\text\width )/2
+                        *tabs( )\image\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\image\width )/2
+                        *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
                       EndIf
                     EndIf
                     
-                    *bar\max + *items( )\width + pos + Bool( index = *this\countitems - 1 )
+                    *bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
                   EndIf
                 EndIf
               EndIf
@@ -6443,7 +6444,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndMacro
     
-    Procedure bar_draw_tabitems( *this._s_WIDGET, vertical, x,y, round, List *items._s_ITEMS( ) )
+    Procedure bar_draw_tabitems( *this._s_WIDGET, vertical, x,y, round, List *tabs._s_ITEMS( ) )
       Protected._s_BAR *bar = *this\bar
       Protected._s_BUTTONS *BB1, *BB2, *SB
       *SB  = *bar\button
@@ -6451,38 +6452,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *BB2 = *bar\button[2]
       
       ; draw all visible items
-      ForEach *items( )
-        If *items( )\hide 
-          *items( )\visible = 0
+      ForEach *tabs( )
+        If *tabs( )\hide 
+          *tabs( )\visible = 0
           Continue
         EndIf
         ;
-        draw_font( *items( ) )
+        draw_font( *tabs( ) )
         
         ; real visible items
         If vertical
-          *items( )\visible = Bool( (( y + *items( )\y + *items( )\height ) > *this\inner_y( ) And
-                                     ( y + *items( )\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ))
+          *tabs( )\visible = Bool( (( y + *tabs( )\y + *tabs( )\height ) > *this\inner_y( ) And
+                                     ( y + *tabs( )\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ))
         Else
-          *items( )\visible = Bool( (( x + *items( )\x + *items( )\width ) > *this\inner_x( ) And
-                                     ( x + *items( )\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ))
+          *tabs( )\visible = Bool( (( x + *tabs( )\x + *tabs( )\width ) > *this\inner_x( ) And
+                                     ( x + *tabs( )\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ))
         EndIf
         ;
         ; Draw seperator
         ;no &~ entered &~ focused
-        If *items( )\visible 
-          If *items( )\itemindex = #PB_Ignore
-            draw_roundbox_( x + *items( )\x, y + *items( )\y, *items( )\width, *items( )\height, 0, 0, *items( )\color\frame[0] & $FFFFFF | *items( )\AlphaState24( ) )
+        If *tabs( )\visible 
+          If *tabs( )\itemindex = #PB_Ignore
+            draw_roundbox_( x + *tabs( )\x, y + *tabs( )\y, *tabs( )\width, *tabs( )\height, 0, 0, *tabs( )\color\frame[0] & $FFFFFF | *tabs( )\AlphaState24( ) )
           Else
             If is_menu_( *this )
               If *this\flag & #PB_ToolBar_InlineText = #PB_ToolBar_InlineText
-                If *items( )\image\id
+                If *tabs( )\image\id
                   If *this\bar\vertical
                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                    draw_roundbox_(x + *items( )\x,
-                                   y + *items( )\y - Bool( ListIndex( *items( ) ))*3, 
-                                   *items( )\image\width + 10,
-                                   *items( )\height + Bool( ListIndex( *items( ) ))*3 + Bool( ListIndex( *items( ) ) <> *this\countitems - 1 )*3, 
+                    draw_roundbox_(x + *tabs( )\x,
+                                   y + *tabs( )\y - Bool( ListIndex( *tabs( ) ))*3, 
+                                   *tabs( )\image\width + 10,
+                                   *tabs( )\height + Bool( ListIndex( *tabs( ) ))*3 + Bool( ListIndex( *tabs( ) ) <> *this\countitems - 1 )*3, 
                                    *this\round, *this\round, $FFF0F0F0 )
                   EndIf
                 EndIf
@@ -6490,18 +6491,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *items( )\toggle
-              bar_draw_item_( *this\bar\vertical, *items( ), x, y, round, [2] )
+            If *tabs( )\toggle
+              bar_draw_item_( *this\bar\vertical, *tabs( ), x, y, round, [2] )
             Else
-              If *items( ) <> *this\TabFocused( ) And 
-                 *items( ) <> *this\TabEntered( )
+              If *tabs( ) <> *this\TabFocused( ) And 
+                 *tabs( ) <> *this\TabEntered( )
                 ;                     ;
-                ;Debug ""+*BB1\hide +" "+ Str( *BB1\x ) +" "+ Str( x + *items( )\x ) +" - "+ *SB\width
-                ;Debug ""+*BB2\hide +" "+ Str( *BB2\x ) +" "+ Str( x + *items( )\x )
+                ;Debug ""+*BB1\hide +" "+ Str( *BB1\x ) +" "+ Str( x + *tabs( )\x ) +" - "+ *SB\width
+                ;Debug ""+*BB2\hide +" "+ Str( *BB2\x ) +" "+ Str( x + *tabs( )\x )
                 ;                         
-                ;                         If (( *BB2\x + *BB2\width < x + *items( )\x ) Or ( *BB2\hide And *BB2\x + *BB2\width > x + *items( )\x )) Or
-                ;                            (( *BB1\x > x + *items( )\x + *items( )\width ) Or ( *BB1\hide And *BB1\x < x + *items( )\x + *items( )\width )) 
-                bar_draw_item_( *this\bar\vertical, *items( ), x, y, round, [0],
+                ;                         If (( *BB2\x + *BB2\width < x + *tabs( )\x ) Or ( *BB2\hide And *BB2\x + *BB2\width > x + *tabs( )\x )) Or
+                ;                            (( *BB1\x > x + *tabs( )\x + *tabs( )\width ) Or ( *BB1\hide And *BB1\x < x + *tabs( )\x + *tabs( )\width )) 
+                bar_draw_item_( *this\bar\vertical, *tabs( ), x, y, round, [0],
                                 Bool( Not( ( *this\type = #__type_ToolBar Or 
                                              *this\type = #__type_Menu ) And
                                            Not *this\flag & #PB_Toolbar_Buttons)) )
@@ -11043,7 +11044,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected buttonpos = DPIScaled(6)
             Protected buttonsize = DPIScaled(9)
             Protected boxpos = DPIScaled(4)
-            Protected boxsize = buttonsize + 2 
+            Protected boxsize = buttonsize + DPIScaled(2)
             Protected bs = Bool( *this\fs )
             Protected scroll_width
             
@@ -11102,7 +11103,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
                 ;\\ expanded & collapsed box position
                 If ( *this\mode\Lines Or *this\mode\Buttons ) 
-                  *items( )\RowButton( )\x = *this\row\sublevelpos - *items( )\RowButton( )\width - 2
+                  *items( )\RowButton( )\x = *this\row\sublevelpos - *items( )\RowButton( )\width - DPIScaled(2)
                   *items( )\RowButton( )\y = ( *items( )\height ) - ( *items( )\height + *items( )\RowButton( )\height ) / 2
                 EndIf
                 
@@ -11120,7 +11121,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 If *items( )\image\id
                   If *this\mode\check
                     ; If Not ( *this\mode\Buttons And *this\mode\Lines )
-                    *this\row\sublevelpos + ( 2 )
+                    *this\row\sublevelpos + DPIScaled( 2 )
                     ; EndIf
                   EndIf
                   
@@ -11151,7 +11152,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               ;\\ horizontal scroll max value
               If *this\type = #__type_ListIcon
-                *items( )\image\x - 8
+                *items( )\image\x - DPIScaled(8)
                 *items( )\RowBox( )\x - boxsize
                 scroll_width = ( *this\row\sublevelpos + *this\text\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
               Else
@@ -16861,130 +16862,132 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;-
     ;-  DRAWINGs
     ;-
-    Procedure.b Draw_ArrowFrame(  x.l, y.l, size.a, direction.a, mode.b = 1, color = $ffffffff  )
+     Procedure.b Draw_Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, framesize.a = 0, Color = $ff000000 )
       Protected i.w, j.w, thickness.a
-      size / 2
-      x + size
-      y + size
-      
-      thickness.a = 2
-      
-      If direction = 0 ; left
-        Box( x + thickness, y - size,  - thickness, size * 2, Color )
-      EndIf
-      If direction = 2 ; right
-        Box( x, y - size, thickness, size * 2, Color )
-      EndIf
-      If direction = 1 ; up
-        Box( x - size, y + thickness, size * 2,  - thickness, Color )
-      EndIf
-      If direction = 3 ; down
-        Box( x - size, y, size * 2, thickness, Color )
-      EndIf
-      
-      thickness + 1
-      
-      For i = - size To size
-        If direction = 0 ; left
-          If i > 0
-            Box( x + i - size + thickness - 1, y + i * 1,  - thickness, 1, Color )
-          Else
-            Box( x - i - size + thickness - 1, y + i * 1,  - thickness, 1, Color )
-          EndIf
-        EndIf
-        If direction = 2 ; right
-          If i < 0
-            Box( x + i + size, y + i * 1, thickness, 1, Color )
-          Else
-            Box( x - i + size, y + i * 1, thickness, 1, Color )
-          EndIf
-        EndIf
-        
-        If direction = 1 ; up
-          If i > 0
-            Box( x + i * 1, y + i - size + thickness - 1, 1,  - thickness, Color )
-          Else
-            Box( x + i * 1, y - i - size + thickness - 1, 1,  - thickness, Color )
-          EndIf
-        EndIf
-        
-        If direction = 3 ; down
-          If i < 0
-            Box( x + i * 1, y + i + size, 1, thickness, Color )
-          Else
-            Box( x + i * 1, y - i + size, 1, thickness, Color )
-          EndIf
-        EndIf
-      Next
-    EndProcedure
-    
-    Procedure.b Draw_Arrow(  x.l, y.l, size.a, direction.a, mode.b = 1, Color = $ff000000  )
-      Protected i.w, j.w, thickness.a
+      x + size/2
+      y + size/2
       
       If mode
         If mode = - 1
-          size / 2
-          x + size
-          y + size
           
-          thickness.a = size / 2 + 2
+          thickness.a = 2 + size/4
           
-          For i = - size To size
+          ;       x - thickness + 1
+          ;       y - thickness + 1 
+          
+          If framesize
+            x + framesize*2
+            y + framesize*2
+            
+            Color = $ffffffff
+            For i = - (size+framesize)/2 To (size+framesize)/2
+              If direction = 0 ; left
+                If i > 0
+                  Box( x + i + framesize, y + i * 1, - (thickness+framesize*2), 1, Color )
+                Else
+                  Box( x - i + framesize, y + i * 1, - (thickness+framesize*2), 1, Color )
+                EndIf
+              EndIf
+              If direction = 2 ; right
+                If i < 0
+                  Box( x + i - framesize, y + i * 1, (thickness+framesize*2), 1, Color )
+                Else
+                  Box( x - i - framesize, y + i * 1, (thickness+framesize*2), 1, Color )
+                EndIf
+              EndIf
+              If direction = 1 ; up
+                If i > 0
+                  Box( x + i * 1, y + i + framesize, 1, - (thickness+framesize*2), Color )
+                Else
+                  Box( x + i * 1, y - i + framesize, 1, - (thickness+framesize*2), Color )
+                EndIf
+              EndIf
+              If direction = 3 ; down
+                If i < 0
+                  Box( x + i * 1, y + i - framesize, 1, (thickness+framesize*2), Color )
+                Else
+                  Box( x + i * 1, y - i - framesize, 1, (thickness+framesize*2), Color )
+                EndIf
+              EndIf
+            Next
+            Color = $ff000000
+          EndIf
+          
+          For i = - size/2 To size/2
             If direction = 0 ; left
               If i > 0
-                Box( x + i, y + i * 1,  - thickness, 1, Color )
+                Box( x + i, y + i * 1, - (thickness), 1, Color )
               Else
-                Box( x - i, y + i * 1,  - thickness, 1, Color )
+                Box( x - i, y + i * 1, - (thickness), 1, Color )
               EndIf
             EndIf
             If direction = 2 ; right
               If i < 0
-                Box( x + i, y + i * 1, thickness, 1, Color )
+                Box( x + i, y + i * 1, (thickness), 1, Color )
               Else
-                Box( x - i, y + i * 1, thickness, 1, Color )
+                Box( x - i, y + i * 1, (thickness), 1, Color )
               EndIf
             EndIf
-            
             If direction = 1 ; up
               If i > 0
-                Box( x + i * 1, y + i, 1,  - thickness, Color )
+                Box( x + i * 1, y + i, 1, - (thickness), Color )
               Else
-                Box( x + i * 1, y - i, 1,  - thickness, Color )
+                Box( x + i * 1, y - i, 1, - (thickness), Color )
               EndIf
             EndIf
-            
             If direction = 3 ; down
               If i < 0
-                Box( x + i * 1, y + i, 1, thickness, Color )
+                Box( x + i * 1, y + i, 1, (thickness), Color )
               Else
-                Box( x + i * 1, y - i, 1, thickness, Color )
+                Box( x + i * 1, y - i, 1, (thickness), Color )
               EndIf
             EndIf
           Next
           
         Else
           
+          If framesize
+            Color = $ffffffff
+            For i = - framesize/2 To size 
+              For j = i - framesize To size - i + framesize
+                If direction = 0 ; left
+                  Box( x - i * mode + framesize, y + j-size/2, mode, 1, Color )
+                EndIf
+                If direction = 1 ; up
+                  Box( x + j-size/2, y - i * mode + framesize, 1, mode, Color )
+                EndIf
+                If direction = 2 ; right
+                  Box( x + i * mode - framesize, y + j-size/2, mode, 1, Color )
+                EndIf
+                If direction = 3 ; down
+                  Box( x + j-size/2, y + i * mode - framesize, 1, mode, Color )
+                EndIf
+              Next 
+            Next
+            Color = $ff000000
+          EndIf
+          
           For i = 0 To size
             For j = i To size - i 
               If direction = 0 ; left
-                Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
+                Box( x - i * mode + framesize, y + j-size/2, mode, 1, Color )
               EndIf
               If direction = 1 ; up
-                Box( x + j, y + size / 2 - i * mode, 1, mode, Color )
+                Box( x + j-size/2, y - i * mode + framesize, 1, mode, Color )
               EndIf
               If direction = 2 ; right
-                Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
+                Box( x + i * mode - framesize, y + j-size/2, mode, 1, Color )
               EndIf
               If direction = 3 ; down
-                Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
+                Box( x + j-size/2, y + i * mode - framesize, 1, mode, Color )
               EndIf
-            Next  
+            Next 
           Next
           
         EndIf
       EndIf
     EndProcedure
-    
+   
     Procedure   Draw_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ) )
       Protected state.b, x.l, y.l, xs.l, ys.l, _box_x_.l, _box_y_.l, minus.l = 7
       Protected bs = Bool( *this\fs )
@@ -17099,7 +17102,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If Not (*this\mode\Buttons And *items( )\childrens)
                 Line((xs + *items( )\RowButton( )\x + *items( )\RowButton( )\width / 2), (ys + *items( )\height / 2), DPIScaledX(7), 1, *items( )\color\line )
               Else
-                If *this\row\sublevelsize = 6
+                If *this\row\sublevelsize = DPIScaled(6)
                   If Bool( Not *items( )\RowButtonState( ))
                     LineXY((xs + *buttonBox\x - 1), (ys + 10), (xs + *buttonBox\x + *buttonBox\width / 2 - 1), ys + *items( )\height - 1, *items( )\color\line )
                   EndIf
@@ -17110,7 +17113,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ; for the tree item first vertical line
           If *this\RowFirst( ) And *this\RowLast( )
-            Line((*this\inner_x( ) + *this\RowFirst( )\RowButton( )\x + *this\RowFirst( )\RowButton( )\width / 2) - _scroll_x_ + 4, (row_y_( *this, *this\RowFirst( ) ) + *this\RowFirst( )\height / 2) - _scroll_y_, 1, (*this\RowLast( )\y - *this\RowFirst( )\y), *this\RowFirst( )\color\line )
+            Line((*this\inner_x( ) + *this\RowFirst( )\RowButton( )\x + *this\RowFirst( )\RowButton( )\width / 2) - _scroll_x_ + DPIScaled(4), (row_y_( *this, *this\RowFirst( ) ) + *this\RowFirst( )\height / 2) - _scroll_y_, 1, (*this\RowLast( )\y - *this\RowFirst( )\y), *this\RowFirst( )\color\line )
           EndIf
         EndIf
         
@@ -17150,14 +17153,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 X = row_x_( *this, *items( ) ) + *items( )\RowButton( )\x - _scroll_x_
                 Y = row_y_( *this, *items( ) ) + *items( )\RowButton( )\y - _scroll_y_
                 
-                
                 If *items( )\ColorState( ) = 1
-                  Draw_Arrow(x-DPIScaled(1), y-DPIScaled(1), DPIScaled(9), 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000 )
+                  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1-Bool(*items( )\RowButtonState( )), y-1-Bool(*items( )\RowButtonState( )=0), DPIScaled(10), 1 )
                 ElseIf *items( )\ColorState( ) = 2
-                  Draw_Arrow(x-DPIScaled(2), y-DPIScaled(2), DPIScaled(11), 3 - Bool(*items( )\RowButtonState( )), 1 )
-                  Draw_ArrowFrame(x-DPIScaled(2), y-DPIScaled(2), DPIScaled(11), 3 - Bool(*items( )\RowButtonState( )), 1 )
+                  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-Bool(*items( )\RowButtonState( )=0)*DPIScaled(1), y-DPIScaled(1), DPIScaled(11), 1, 2 )
+                ;   Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1-Bool(*items( )\RowButtonState( )), y-1-Bool(*items( )\RowButtonState( )=0), DPIScaled(10), 1, 0, $ffffffff )
                 Else
-                  Draw_Arrow(x+1, y+1, DPIScaled(6), 3 - Bool(*items( )\RowButtonState( )), 1, $ff000000)
+                  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x+DPIScaled(1), y+DPIScaled(1), DPIScaled(6)+DPIScaled(#PB_Compiler_DPIAware), 1)
                 EndIf
                 
                 ;EndIf
@@ -18059,11 +18061,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\StringBox( )
         draw_arrows( *this\ComboButton( ), *this\ComboButton( )\arrow\direction )
       Else
-        Draw_Arrow( *this\ComboButton( )\x + ( *this\ComboButton( )\width - *this\ComboButton( )\arrow\size * 2 - 4 ),
+        Draw_Arrow( *this\ComboButton( )\arrow\direction,
+                   *this\ComboButton( )\x + ( *this\ComboButton( )\width - *this\ComboButton( )\arrow\size * 2 - 4 ),
                    *this\ComboButton( )\y + ( *this\ComboButton( )\height - *this\ComboButton( )\arrow\size ) / 2,
                    *this\ComboButton( )\arrow\size, 
-                   *this\ComboButton( )\arrow\direction,
-                   *this\ComboButton( )\arrow\type,
+                   *this\ComboButton( )\arrow\type, 0,
                    *this\ComboButton( )\color\front[state] & $FFFFFF | *this\ComboButton( )\AlphaState24( ) )
       EndIf
       
@@ -24308,9 +24310,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12809
-; FirstLine = 11792
-; Folding = ------------------------------------------------------------------------------------4-----------------------------------------------0+-4--f2K------------------------------------------------------0-----0-8---------0----0v-0r748t4--4---+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---
+; CursorPosition = 6679
+; FirstLine = 6436
+; Folding = ------------------------------------------------------------------------------------4-----------------------------------------------0+-4--f2K------------------------------------------------------0-----0-8---------0----0v-0r748t4--4---+-------------------------------------------------z----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---
 ; Optimizer
 ; EnableXP
 ; DPIAware

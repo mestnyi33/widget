@@ -1350,14 +1350,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro draw_arrows( _address_, _direction_ )
-      ;Debug _address_\width
       Draw_Arrow( _direction_,
-;                   _address_\x + _address_\width / 2,
-;                   _address_\y + _address_\height / 2,
                   _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
                   _address_\y + ( _address_\height - _address_\arrow\size ) / 2,
-      _address_\arrow\size,
-_address_\arrow\type,
+                  _address_\arrow\size,
+                  _address_\arrow\type, 0,
                   _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
     EndMacro
     
@@ -1669,8 +1666,7 @@ _address_\arrow\type,
     Declare  AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
     Declare  AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
     
-    Declare.b Draw_Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ff000000 )
-    Declare.b Draw_ArrowFrame( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ffffffff )
+    Declare.b Draw_Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, framesize.a = 0, Color = $ff000000 )
     
     ;
     Declare.i Send( *this, eventtype.l, *button = #PB_All, *data = #Null )
@@ -17232,292 +17228,130 @@ _address_\arrow\type,
     ;-
     ;- DRAWINGs
     ;-
-    Procedure.b Draw_ArrowFrame( direction.a, x.l, y.l, size.a, mode.b = 1, color = $ffffffff )
-      Protected i.w, j.w, thickness.a = 2
+    Procedure.b Draw_Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, framesize.a = 0, Color = $ff000000 )
+      Protected i.w, j.w, thickness.a
+      x + size/2
+      y + size/2
       
-      If mode = 2
-        For i = - thickness / 2 To size 
-          For j = i - thickness To size - i + thickness
-            If direction = 0 ; left
-              Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
-            EndIf
-            If direction = 1 ; up
-              Box( x + j, y + size / 2 - i * mode, 1, mode, Color)
-            EndIf
-            If direction = 2 ; right
-              Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
-            EndIf
-            If direction = 3 ; down
-              Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
-            EndIf
-          Next 
-        Next
-      EndIf
-      
-      If mode = 1
-        size / 2
-        x + size
-        y + size
-        
-        If direction = 0 ; left
-          Box( x + thickness, y - size, - thickness, size * 2, Color )
-        EndIf
-        If direction = 2 ; right
-          Box( x, y - size, thickness, size * 2, Color )
-        EndIf
-        If direction = 1 ; up
-          Box( x - size, y + thickness, size * 2, - thickness, Color )
-        EndIf
-        If direction = 3 ; down
-          Box( x - size, y, size * 2, thickness, Color )
-        EndIf
-        
-        thickness + 1
-        
-        For i = - size To size
-          If direction = 0 ; left
-            If i > 0
-              Box( x + i - size + thickness - 1, y + i * 1, - thickness, 1, Color )
-            Else
-              Box( x - i - size + thickness - 1, y + i * 1, - thickness, 1, Color )
-            EndIf
-          EndIf
-          If direction = 2 ; right
-            If i < 0
-              Box( x + i + size, y + i * 1, thickness, 1, Color )
-            Else
-              Box( x - i + size, y + i * 1, thickness, 1, Color )
-            EndIf
+      If mode
+        If mode = - 1
+          
+          thickness.a = 2 + size/4
+          
+          ;       x - thickness + 1
+          ;       y - thickness + 1 
+          
+          If framesize
+            x + framesize*2
+            y + framesize*2
+            
+            Color = $ffffffff
+            For i = - (size+framesize)/2 To (size+framesize)/2
+              If direction = 0 ; left
+                If i > 0
+                  Box( x + i + framesize, y + i * 1, - (thickness+framesize*2), 1, Color )
+                Else
+                  Box( x - i + framesize, y + i * 1, - (thickness+framesize*2), 1, Color )
+                EndIf
+              EndIf
+              If direction = 2 ; right
+                If i < 0
+                  Box( x + i - framesize, y + i * 1, (thickness+framesize*2), 1, Color )
+                Else
+                  Box( x - i - framesize, y + i * 1, (thickness+framesize*2), 1, Color )
+                EndIf
+              EndIf
+              If direction = 1 ; up
+                If i > 0
+                  Box( x + i * 1, y + i + framesize, 1, - (thickness+framesize*2), Color )
+                Else
+                  Box( x + i * 1, y - i + framesize, 1, - (thickness+framesize*2), Color )
+                EndIf
+              EndIf
+              If direction = 3 ; down
+                If i < 0
+                  Box( x + i * 1, y + i - framesize, 1, (thickness+framesize*2), Color )
+                Else
+                  Box( x + i * 1, y - i - framesize, 1, (thickness+framesize*2), Color )
+                EndIf
+              EndIf
+            Next
+            Color = $ff000000
           EndIf
           
-          If direction = 1 ; up
-            If i > 0
-              Box( x + i * 1, y + i - size + thickness - 1, 1, - thickness, Color )
-            Else
-              Box( x + i * 1, y - i - size + thickness - 1, 1, - thickness, Color )
-            EndIf
-          EndIf
-          
-          If direction = 3 ; down
-            If i < 0
-              Box( x + i * 1, y + i + size, 1, thickness, Color )
-            Else
-              Box( x + i * 1, y - i + size, 1, thickness, Color )
-            EndIf
-          EndIf
-        Next
-      EndIf
-      
-    EndProcedure
-    
-    Procedure.b Draw_Arrow( direction.a, x.l, y.l, size.a, mode.b = 1, Color = $ff000000 )
-      Protected framesize=0 
-  Protected i.w, j.w, thickness.a
-   x + size/2
-    y + size/2
-    
-  If mode
-    If mode = - 1
-     
-    thickness.a = 2 + size/4
-      
-;       x - thickness + 1
-;       y - thickness + 1 
-      
-      If framesize
-        x + framesize*2
-        y + framesize*2
-        
-        Color = $ffffffff
-        For i = - (size+framesize)/2 To (size+framesize)/2
-          If direction = 0 ; left
-            If i > 0
-              Box( x + i + framesize, y + i * 1, - (thickness+framesize*2), 1, Color )
-            Else
-              Box( x - i + framesize, y + i * 1, - (thickness+framesize*2), 1, Color )
-            EndIf
-          EndIf
-          If direction = 2 ; right
-            If i < 0
-              Box( x + i - framesize, y + i * 1, (thickness+framesize*2), 1, Color )
-            Else
-              Box( x - i - framesize, y + i * 1, (thickness+framesize*2), 1, Color )
-            EndIf
-          EndIf
-          If direction = 1 ; up
-            If i > 0
-              Box( x + i * 1, y + i + framesize, 1, - (thickness+framesize*2), Color )
-            Else
-              Box( x + i * 1, y - i + framesize, 1, - (thickness+framesize*2), Color )
-            EndIf
-          EndIf
-          If direction = 3 ; down
-            If i < 0
-              Box( x + i * 1, y + i - framesize, 1, (thickness+framesize*2), Color )
-            Else
-              Box( x + i * 1, y - i - framesize, 1, (thickness+framesize*2), Color )
-            EndIf
-          EndIf
-        Next
-        Color = $ff000000
-      EndIf
-      
-      For i = - size/2 To size/2
-        If direction = 0 ; left
-          If i > 0
-            Box( x + i, y + i * 1, - (thickness), 1, Color )
-          Else
-            Box( x - i, y + i * 1, - (thickness), 1, Color )
-          EndIf
-        EndIf
-        If direction = 2 ; right
-          If i < 0
-            Box( x + i, y + i * 1, (thickness), 1, Color )
-          Else
-            Box( x - i, y + i * 1, (thickness), 1, Color )
-          EndIf
-        EndIf
-        If direction = 1 ; up
-          If i > 0
-            Box( x + i * 1, y + i, 1, - (thickness), Color )
-          Else
-            Box( x + i * 1, y - i, 1, - (thickness), Color )
-          EndIf
-        EndIf
-        If direction = 3 ; down
-          If i < 0
-            Box( x + i * 1, y + i, 1, (thickness), Color )
-          Else
-            Box( x + i * 1, y - i, 1, (thickness), Color )
-          EndIf
-        EndIf
-      Next
-      
-    Else
-      
-      If framesize
-        Color = $ffffffff
-        For i = - framesize/2 To size 
-          For j = i - framesize To size - i + framesize
+          For i = - size/2 To size/2
             If direction = 0 ; left
-              Box( x - i * mode + framesize, y + j-size/2, mode, 1, Color )
-            EndIf
-            If direction = 1 ; up
-              Box( x + j-size/2, y - i * mode + framesize, 1, mode, Color )
+              If i > 0
+                Box( x + i, y + i * 1, - (thickness), 1, Color )
+              Else
+                Box( x - i, y + i * 1, - (thickness), 1, Color )
+              EndIf
             EndIf
             If direction = 2 ; right
-              Box( x + i * mode - framesize, y + j-size/2, mode, 1, Color )
+              If i < 0
+                Box( x + i, y + i * 1, (thickness), 1, Color )
+              Else
+                Box( x - i, y + i * 1, (thickness), 1, Color )
+              EndIf
+            EndIf
+            If direction = 1 ; up
+              If i > 0
+                Box( x + i * 1, y + i, 1, - (thickness), Color )
+              Else
+                Box( x + i * 1, y - i, 1, - (thickness), Color )
+              EndIf
             EndIf
             If direction = 3 ; down
-              Box( x + j-size/2, y + i * mode - framesize, 1, mode, Color )
+              If i < 0
+                Box( x + i * 1, y + i, 1, (thickness), Color )
+              Else
+                Box( x + i * 1, y - i, 1, (thickness), Color )
+              EndIf
             EndIf
-          Next 
-        Next
-        Color = $ff000000
+          Next
+          
+        Else
+          
+          If framesize
+            Color = $ffffffff
+            For i = - framesize/2 To size 
+              For j = i - framesize To size - i + framesize
+                If direction = 0 ; left
+                  Box( x - i * mode + framesize, y + j-size/2, mode, 1, Color )
+                EndIf
+                If direction = 1 ; up
+                  Box( x + j-size/2, y - i * mode + framesize, 1, mode, Color )
+                EndIf
+                If direction = 2 ; right
+                  Box( x + i * mode - framesize, y + j-size/2, mode, 1, Color )
+                EndIf
+                If direction = 3 ; down
+                  Box( x + j-size/2, y + i * mode - framesize, 1, mode, Color )
+                EndIf
+              Next 
+            Next
+            Color = $ff000000
+          EndIf
+          
+          For i = 0 To size
+            For j = i To size - i 
+              If direction = 0 ; left
+                Box( x - i * mode + framesize, y + j-size/2, mode, 1, Color )
+              EndIf
+              If direction = 1 ; up
+                Box( x + j-size/2, y - i * mode + framesize, 1, mode, Color )
+              EndIf
+              If direction = 2 ; right
+                Box( x + i * mode - framesize, y + j-size/2, mode, 1, Color )
+              EndIf
+              If direction = 3 ; down
+                Box( x + j-size/2, y + i * mode - framesize, 1, mode, Color )
+              EndIf
+            Next 
+          Next
+          
+        EndIf
       EndIf
-      
-      For i = 0 To size
-        For j = i To size - i 
-          If direction = 0 ; left
-            Box( x - i * mode + framesize, y + j-size/2, mode, 1, Color )
-          EndIf
-          If direction = 1 ; up
-            Box( x + j-size/2, y - i * mode + framesize, 1, mode, Color )
-          EndIf
-          If direction = 2 ; right
-            Box( x + i * mode - framesize, y + j-size/2, mode, 1, Color )
-          EndIf
-          If direction = 3 ; down
-            Box( x + j-size/2, y + i * mode - framesize, 1, mode, Color )
-          EndIf
-        Next 
-      Next
-      
-    EndIf
-  EndIf
-; ;       Protected i.w, j.w, thickness.a
-; ;       
-; ;       If mode
-; ;         If mode = - 1
-; ;           size / 2
-; ;           x + size
-; ;           y + size
-; ;           
-; ;           thickness.a = size / 2 + 2
-; ;           
-; ;           For i = - size To size
-; ;             If direction = 0 ; left
-; ;               If i > 0
-; ;                 Box( x + i, y + i * 1, - thickness, 1, Color )
-; ;               Else
-; ;                 Box( x - i, y + i * 1, - thickness, 1, Color )
-; ;               EndIf
-; ;             EndIf
-; ;             If direction = 2 ; right
-; ;               If i < 0
-; ;                 Box( x + i, y + i * 1, thickness, 1, Color )
-; ;               Else
-; ;                 Box( x - i, y + i * 1, thickness, 1, Color )
-; ;               EndIf
-; ;             EndIf
-; ;             If direction = 1 ; up
-; ;               If i > 0
-; ;                 Box( x + i * 1, y + i, 1, - thickness, Color )
-; ;               Else
-; ;                 Box( x + i * 1, y - i, 1, - thickness, Color )
-; ;               EndIf
-; ;             EndIf
-; ;             If direction = 3 ; down
-; ;               If i < 0
-; ;                 Box( x + i * 1, y + i, 1, thickness, Color )
-; ;               Else
-; ;                 Box( x + i * 1, y - i, 1, thickness, Color )
-; ;               EndIf
-; ;             EndIf
-; ;           Next
-; ;           
-; ;         Else
-; ;           
-; ;           Protected framesize = 0
-; ;       
-; ;           If framesize
-; ;             For i = - framesize / 2 To size 
-; ;               For j = i - framesize To size - i + framesize
-; ;                 If direction = 0 ; left
-; ;                   Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
-; ;                 EndIf
-; ;                 If direction = 1 ; up
-; ;                   Box( x + j, y + size / 2 - i * mode, 1, mode, Color )
-; ;                 EndIf
-; ;                 If direction = 2 ; right
-; ;                   Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
-; ;                 EndIf
-; ;                 If direction = 3 ; down
-; ;                   Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
-; ;                 EndIf
-; ;               Next 
-; ;             Next
-; ;           EndIf
-; ;           
-; ;           For i = 0 To size
-; ;             For j = i To size - i 
-; ;               If direction = 0 ; left
-; ;                 Box( x + size / 2 - i * mode, y + j, mode, 1, Color )
-; ;               EndIf
-; ;               If direction = 1 ; up
-; ;                 Box( x + j, y + size / 2 - i * mode, 1, mode, Color )
-; ;               EndIf
-; ;               If direction = 2 ; right
-; ;                 Box( x + size / 2 + i * mode, y + j, mode, 1, Color )
-; ;               EndIf
-; ;               If direction = 3 ; down
-; ;                 Box( x + j, y + size / 2 + i * mode, 1, mode, Color )
-; ;               EndIf
-; ;             Next 
-; ;           Next
-; ;           
-; ;         EndIf
-;       EndIf
     EndProcedure
     
     Procedure  Draw_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ) )
@@ -17686,8 +17520,8 @@ _address_\arrow\type,
                 If *items( )\ColorState( ) = 1
                   Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1, y-1, 9, 1 )
                 ElseIf *items( )\ColorState( ) = 2
-                  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-2, y-2, 11, 1 )
-                  Draw_ArrowFrame(3 - Bool(*items( )\RowButtonState( )), x-2, y-2, 11, 1 )
+                  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1, y-1, 11, 1, 2 )
+                ;  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1, y-1, 9, 1, 0, $ffffffff )
                 Else
                   Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x+1, y+1, 6, 1)
                 EndIf
@@ -18596,7 +18430,7 @@ _address_\arrow\type,
                     *this\ComboButton( )\x + ( *this\ComboButton( )\width - *this\ComboButton( )\arrow\size * 2 - 4 ),
                     *this\ComboButton( )\y + ( *this\ComboButton( )\height - *this\ComboButton( )\arrow\size ) / 2,
                     *this\ComboButton( )\arrow\size, 
-                    *this\ComboButton( )\arrow\type,
+                    *this\ComboButton( )\arrow\type, 0, 
                     *this\ComboButton( )\color\front[state] & $FFFFFF | *this\ComboButton( )\AlphaState24( ) )
       EndIf
       
@@ -24841,8 +24675,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6480
-; FirstLine = 6450
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 17523
+; FirstLine = 16994
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----P--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
