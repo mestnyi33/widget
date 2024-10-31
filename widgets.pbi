@@ -17159,15 +17159,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 X = row_x_( *this, *items( ) ) + *items( )\RowButton( )\x - _scroll_x_
                 Y = row_y_( *this, *items( ) ) + *items( )\RowButton( )\y - _scroll_y_
                 
-                If *items( )\ColorState( ) = 1
-                  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1-Bool(*items( )\RowButtonState( )), y-1-Bool(*items( )\RowButtonState( )=0), DPIScaled(10), 1 )
-                ElseIf *items( )\ColorState( ) = 2
-                  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-Bool(*items( )\RowButtonState( )=0)*DPIScaled(1), y-DPIScaled(1), DPIScaled(11), 1, 2 )
-                ;   Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1-Bool(*items( )\RowButtonState( )), y-1-Bool(*items( )\RowButtonState( )=0), DPIScaled(10), 1, 0, $ffffffff )
+                If Bool(DPIResolution( ) > 1)
+                  If *items( )\ColorState( ) = 1
+                    Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1-Bool(*items( )\RowButtonState( )), y-1-Bool(*items( )\RowButtonState( )=0), DPIScaled(10), 1 )
+                  ElseIf *items( )\ColorState( ) = 2
+                    Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-Bool(*items( )\RowButtonState( )=0)*DPIScaled(1), y-DPIScaled(1), DPIScaled(11), 1, 2 )
+                    ;   Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x-1-Bool(*items( )\RowButtonState( )), y-1-Bool(*items( )\RowButtonState( )=0), DPIScaled(10), 1, 0, $ffffffff )
+                  Else
+                    Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x+DPIScaled(1), y+DPIScaled(1), DPIScaled(6)+DPIScaled(Bool(DPIResolution( )>1)), 1)
+                  EndIf
                 Else
-                  Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x+DPIScaled(1), y+DPIScaled(1), DPIScaled(6)+DPIScaled(#PB_Compiler_DPIAware), 1)
+                  If *items( )\ColorState( ) = 1
+                    Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x, y-Bool(*items( )\RowButtonState( )=0), 8, 1 )
+                  ElseIf *items( )\ColorState( ) = 2
+                    Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x+Bool(*items( )\RowButtonState( ))*2, y+Bool(*items( )\RowButtonState( )=0), 8, 1, 2 )
+                  Else
+                    Draw_Arrow(3 - Bool(*items( )\RowButtonState( )), x+2, y+2, 4, 1)
+                  EndIf
                 EndIf
-                
+              
                 ;EndIf
               EndIf
             EndIf
@@ -24315,10 +24325,11 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21959
-; FirstLine = 21936
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 17172
+; FirstLine = 17145
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Optimizer
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

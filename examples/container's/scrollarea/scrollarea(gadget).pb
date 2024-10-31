@@ -45,9 +45,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *g = ScrollArea(0, 0, 100, 100, Sw, Sh, 30, #PB_ScrollArea_Flat)
     oc = ContainerGadget(#PB_Any, 0,0,0,0)
-    SetWindowLongPtr_( GadgetID(oc), #GWL_STYLE, GetWindowLongPtr_( GadgetID(oc), #GWL_STYLE ) | #WS_CLIPCHILDREN )
     ic = ContainerGadget(#PB_Any, 0, 0, (Sw), (Sh))
-    SetWindowLongPtr_( GadgetID(ic), #GWL_STYLE, GetWindowLongPtr_( GadgetID(ic), #GWL_STYLE ) | #WS_CLIPCHILDREN )
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      SetWindowLongPtr_( GadgetID(oc), #GWL_STYLE, GetWindowLongPtr_( GadgetID(oc), #GWL_STYLE ) | #WS_CLIPCHILDREN )
+      SetWindowLongPtr_( GadgetID(ic), #GWL_STYLE, GetWindowLongPtr_( GadgetID(ic), #GWL_STYLE ) | #WS_CLIPCHILDREN )
+    CompilerEndIf
     *g\scroll\gadget[1] = oc
     *g\scroll\gadget[2] = ic
     
@@ -139,9 +141,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 39
-; Folding = -9
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 52
+; FirstLine = 43
+; Folding = -6
 ; EnableXP
 ; DPIAware
