@@ -13,13 +13,19 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select WidgetEvent( )
       Case #__event_Resize
-        Debug 666
-        ResizeGadget(oc, WidgetX(EventWidget( ), #__c_inner), WidgetY(EventWidget( ), #__c_inner), WidgetWidth(EventWidget( ), #__c_inner), WidgetHeight(EventWidget( ), #__c_inner))
+;         ;oc = EventWidget( )\scroll\gadget[1]
+;         ResizeGadget(oc, WidgetX(EventWidget( ), #__c_inner), WidgetY(EventWidget( ), #__c_inner), WidgetWidth(EventWidget( ), #__c_inner), WidgetHeight(EventWidget( ), #__c_inner))
+;         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;           UpdateWindow_(GadgetID(oc))
+;         CompilerEndIf
         
+        ;
       Case #__Event_ScrollChange
-        ;Debug 88
-        ResizeGadget(ic, -*g\scroll\h\bar\page\pos, -*g\scroll\v\bar\page\pos, #PB_Ignore, #PB_Ignore)
-       ; ResizeGadget(ic, WidgetX(*g, #__c_required), WidgetY(*g, #__c_required), #PB_Ignore, #PB_Ignore)
+;         ; ResizeGadget(ic, -DesktopUnscaledX(*g\scroll\h\bar\page\pos), -DesktopUnscaledY(*g\scroll\v\bar\page\pos), #PB_Ignore, #PB_Ignore)
+;         ResizeGadget(ic, WidgetX(*g, #__c_required), WidgetY(*g, #__c_required), #PB_Ignore, #PB_Ignore)
+;         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;           UpdateWindow_(GadgetID(ic))
+;         CompilerEndIf
     EndSelect
   EndProcedure
   
@@ -38,9 +44,18 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Bind(-1, @events_widgets())
     
     *g = ScrollArea(0, 0, 100, 100, Sw, Sh, 30, #PB_ScrollArea_Flat)
-    oc = ContainerGadget(#PB_Any, WidgetX(*g, #__c_inner), WidgetY(*g, #__c_inner), WidgetWidth(*g, #__c_inner), WidgetHeight(*g, #__c_inner))
-    ic = ContainerGadget(#PB_Any, 0, 0, Sw, Sh)
-    SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
+    oc = ContainerGadget(#PB_Any, 0,0,0,0)
+    SetWindowLongPtr_( GadgetID(oc), #GWL_STYLE, GetWindowLongPtr_( GadgetID(oc), #GWL_STYLE ) | #WS_CLIPCHILDREN )
+    ic = ContainerGadget(#PB_Any, 0, 0, (Sw), (Sh))
+    SetWindowLongPtr_( GadgetID(ic), #GWL_STYLE, GetWindowLongPtr_( GadgetID(ic), #GWL_STYLE ) | #WS_CLIPCHILDREN )
+    *g\scroll\gadget[1] = oc
+    *g\scroll\gadget[2] = ic
+    
+    
+    SetGadgetColor(oc, #PB_Gadget_BackColor, $00FFFF)
+    SetGadgetColor(ic, #PB_Gadget_BackColor, $00FFFF)
+    ;SetColor(*g, #PB_Gadget_BackColor, $FFFF00)
+    ;SetColor(*g\root, #PB_Gadget_BackColor, $FFFF00)
     
     ButtonGadget  (#PB_Any,  10,  10, 230, 30,"Button 1")
     ButtonGadget  (#PB_Any,  50,  50, 230, 30,"Button 2")
@@ -49,15 +64,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     
-    CloseGadgetList()
-    CloseGadgetList()
+    CloseGadgetList() ; ic
+    CloseGadgetList() ; oc
     CloseList()
     
     ;
     Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
-    
-    ResizeGadget(oc, WidgetX(*g, #__c_inner), WidgetY(*g, #__c_inner), WidgetWidth(*g, #__c_inner), WidgetHeight(*g, #__c_inner))
-    
+     
 ;     BindGadgetEvent(g, @events_gadgets())
 ;     Bind(*g, @events_widgets())
     
@@ -95,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       SetGadgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
-      
-;       ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
-;       ResizeGadget(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
+        
+      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
+      ResizeGadget(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
       
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
       SetAttribute(*g, #PB_ScrollArea_Y, 0)
@@ -126,10 +139,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 24
-; Folding = --
-; Optimizer
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 53
+; FirstLine = 39
+; Folding = -9
 ; EnableXP
 ; DPIAware

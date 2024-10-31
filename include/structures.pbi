@@ -507,6 +507,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          state.b          ; set state status
          
+         gadget.i[3]
          increment.f      ; scrollarea
          *v._s_WIDGET     ; vertical scrollbar
          *h._s_WIDGET     ; horizontal scrollbar
@@ -801,9 +802,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 192
-; FirstLine = 181
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 509
+; FirstLine = 340
 ; Folding = ---BE5----
 ; Optimizer
 ; EnableXP

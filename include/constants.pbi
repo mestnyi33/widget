@@ -4,12 +4,29 @@
          Bool(_state_ = Bool(((_variable_) & _constant_) = _constant_))
       EndMacro
       
+      Macro BinaryFlag(_variable_, _constant_)
+         Bool(((_variable_) & _constant_) = _constant_)
+      EndMacro
+      
       ;- - CONSTANTs
       CompilerIf Not Defined(PB_canvas_container, #PB_Constant)
          #PB_Canvas_Container = 1 << 5
       CompilerEndIf
-      
-      
+      CompilerIf Not Defined(PB_Compiler_DPIAware, #PB_Constant)
+         #PB_Compiler_DPIAware = 0
+      CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
+        #PB_EventType_Resize = 6
+      CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
+        #PB_EventType_ReturnKey = 7
+      CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_CloseItem, #PB_Constant)
+        #PB_EventType_CloseItem = 65535
+      CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_SizeItem, #PB_Constant)
+        #PB_EventType_SizeItem = 65534
+      CompilerEndIf
       
       ;-\\ DD
       ;#PB_Drag_Resize = - 1; #PB_Drag_Move
@@ -471,26 +488,12 @@
       
       
       ;-\\ event-type
-      CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
-        #PB_EventType_Resize = 6
-      CompilerEndIf
-      CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
-        #PB_EventType_ReturnKey = 7
-      CompilerEndIf
-      CompilerIf Not Defined(PB_EventType_CloseItem, #PB_Constant)
-        #PB_EventType_CloseItem = 65535
-      CompilerEndIf
-      CompilerIf Not Defined(PB_EventType_SizeItem, #PB_Constant)
-        #PB_EventType_SizeItem = 65534
-      CompilerEndIf
-      
       Enumeration #PB_EventType_FirstCustomValue
          #PB_EventType_Drop
          #PB_EventType_Repaint
          #PB_EventType_MouseWheelX
          #PB_EventType_MouseWheelY
       EndEnumeration
-      
       
       Enumeration 1
          #__event_create
@@ -895,8 +898,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 61
+; CursorPosition = 6
 ; Folding = ----
 ; Optimizer
 ; EnableXP
