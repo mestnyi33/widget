@@ -1365,7 +1365,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
     
     Declare   IsChild( *this, *parent )
-    Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
+    Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l, scale.b = #True )
     Declare.i SetAlignment( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
     Declare.i SetAttachment( *this, *parent, mode.a )
     
@@ -2521,7 +2521,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         draw_mode_alpha_( #PB_2DDrawing_Outlined )
         
         ; draw a_object frame 
-        If _this_\anchors
+        If a_transform( )
           If _this_\anchors\id[0] 
             draw_box_( _this_\anchors\id[0]\x, _this_\anchors\id[0]\y, _this_\anchors\id[0]\width, _this_\anchors\id[0]\height , a_anchors( )\framecolor[_this_\anchors\id[a_index( )]\state] ) 
           EndIf
@@ -2730,7 +2730,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
       EndIf
       
-      If a_focused( ) And a_focused( )\anchors And
+      If a_transform( ) And a_focused( ) And 
          a_line([#__a_line_left]) And
          a_line([#__a_line_right]) And
          a_line([#__a_line_top]) And
@@ -2971,7 +2971,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\
-          If Not is_integral_( *this )
+          If *this\child <= 0
             Select a_index( )
               Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
                 mouse( )\delta\x + *this\parent\scroll_x( )
@@ -3175,7 +3175,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;
       i = 0
       ;
-      If a_focused( ) And a_focused( )\anchors
+      If a_transform( ) And a_focused( ) And a_focused( )\anchors
         For i = 1 To #__a_moved  
           If a_focused( )\anchors\id[i] And
              is_atpoint_( a_focused( )\anchors\id[i], mouse( )\x, mouse( )\y )
@@ -3993,8 +3993,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;Debug " " + mw + " " + mh
-                  *pressed\noscale = 1
-                  Resize( *pressed, mouse_x, mouse_y, mw, mh )
+                  Resize( *pressed, mouse_x, mouse_y, mw, mh, 0 )
                   
                 Else
                   If a_main( )
@@ -4106,8 +4105,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 Case #PB_Shortcut_Down : mh + mouse( )\steps : a_index( ) = #__a_bottom
               EndSelect
               
-              *this\noscale = 1
-              Resize( *this, mx, my, mw, mh )
+              Resize( *this, mx, my, mw, mh, 0 )
               
             Case (#PB_Canvas_Shift | #PB_Canvas_Control), #PB_Canvas_Alt ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control | #PB_Canvas_Command
               Select Keyboard( )\Key
@@ -4118,8 +4116,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 Case #PB_Shortcut_Down : my + mouse( )\steps : a_index( ) = #__a_moved
               EndSelect
               
-              *this\noscale = 1
-              Resize( *this, mx, my, mw, mh )
+              Resize( *this, mx, my, mw, mh, 0 )
               
             Default
               ;\\ tab focus
@@ -4793,7 +4790,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           *this\autosize = 1
           
-          ;Resize( *this, 0,0,500,500)
           If StartDrawingroot( *this\root )
             ;\\ init drawing font
             draw_font( *this, GetFontID( *this\root ) )
@@ -5196,7 +5192,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn Bool( *this\draw_width( ) > 0 And *this\draw_height( ) > 0 )
     EndProcedure
     
-    Procedure.b Resize( *this._s_WIDGET, x.l, y.l, width.l, height.l )
+    Procedure.b Resize( *this._s_WIDGET, x.l, y.l, width.l, height.l, scale.b = #True )
       Protected.b result
       Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
       If test_event_resize
@@ -5241,8 +5237,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Else
         ;
         CompilerIf #PB_Compiler_DPIAware
-          If Not *this\noscale
-           ; If Not mouse( )\dragstart
+          If scale
+            If Not mouse( )\dragstart
               If Not is_integral_( *this )
                 If x <> #PB_Ignore
                   x = DPIScaledX( x )
@@ -5257,7 +5253,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   height = DPIScaledY( height )
                 EndIf
               EndIf
-          ;  EndIf
+            EndIf
           EndIf
         CompilerEndIf
         
@@ -8556,11 +8552,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       If *this\parent\scroll\v <> widget( ) And
                          *this\parent\scroll\h <> widget( ) And Not widget( )\align
                         ;
-                        widget( )\noscale = 1
                         If widget( )\child < 0
-                          Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, 0 )
                         Else
-                          Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore, 0 )
                         EndIf
                       EndIf
                     EndIf
@@ -8585,11 +8580,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       If *this\parent\scroll\v <> widget( ) And
                          *this\parent\scroll\h <> widget( ) And Not widget( )\align
                         ;
-                        widget( )\noscale = 1
                         If widget( )\child < 0
-                          Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                         Else
-                          Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                         EndIf
                       EndIf
                     EndIf
@@ -9449,6 +9443,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       If eventtype = #__event_Up
         If mouse( )\buttons & #PB_Canvas_LeftButton
+          
+          If *this\type = #__type_Splitter
+            ;                   If PressedButton( ) = *SB
+            ;                      If *this\split_1( ) ;And *this\split_1( )\resize\nochildren
+            ;                         *this\split_1( )\resize\nochildren = 0
+            ;                         
+            ;                         If StartEnumerate( *this\split_1( ), item )
+            ;                            widget( )\hide = widget( )\resize\hide
+            ;                            Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            ;                            StopEnumerate( )
+            ;                         EndIf
+            ;                      EndIf
+            ;                      If *this\split_2( ) ;And *this\split_2( )\resize\nochildren
+            ;                         *this\split_2( )\resize\nochildren = 0
+            ;                         
+            ;                         If StartEnumerate( *this\split_2( ), item )
+            ;                            widget( )\hide = widget( )\resize\hide
+            ;                            Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            ;                            StopEnumerate( )
+            ;                         EndIf
+            ;                      EndIf
+            ;                   EndIf
+            ;                   
+            ;                   item = 0
+          EndIf
+          
+          ;\\
           If PressedButton( ) And
              PressedButton( )\press = #True
             PressedButton( )\press = #False
@@ -14818,8 +14839,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               y + *LastParent\scroll\v\bar\page\pos
             EndIf
             
-            *this\noscale = 1
-            Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+            Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore, 0 )
           EndIf
           
           ;\\
@@ -21000,7 +21020,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               If eventtype = #__event_MouseMove
                 If *this\caption\interact And *this\press And Not *this\anchors
-                  Resize( *this, DPIUnScaledX(mouse( )\x - mouse( )\delta\x), DPIUnScaledY(mouse( )\y - mouse( )\delta\y) , #PB_Ignore, #PB_Ignore )
+                  Resize( *this, ( mouse( )\x - mouse( )\delta\x ), ( mouse( )\y - mouse( )\delta\y ), #PB_Ignore, #PB_Ignore )
                 EndIf
               EndIf
               
@@ -21956,11 +21976,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ mouse delta (x&y)
             If eventtype <> #__event_MiddleButtonDown
               If Not a_index( )
-                If Not EnteredWidget( )\anchors
-                  If EnteredWidget( )\bar And EnteredButton( ) > 0
-                    mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
-                    mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
-                  Else
+                If EnteredWidget( )\bar And EnteredButton( ) > 0
+                  mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
+                  mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
+                Else
+                  If Not a_transform( ) 
                     mouse( )\delta\x - EnteredWidget( )\container_x( )
                     mouse( )\delta\y - EnteredWidget( )\container_y( )
                     ;
@@ -24316,9 +24336,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21959
-; FirstLine = 21936
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24336
+; FirstLine = 24305
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = widgets-.app.exe

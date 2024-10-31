@@ -103,64 +103,64 @@ CompilerIf #PB_Compiler_IsMainFile
       SetClass(root( ), "[main-root]" )
       ;a_init( root())
       
-;       ;\\
-      *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
-      SetColor( *menu, #__color_back, $FFF7FEE2 )
-      
-      BarTitle("Title-1")
-      BarItem(1, "title-1-item-1")
-      BarSeparator( )
-      
-      OpenBar("title-1-sub-item")
-      BarItem(3, "title-1-item")
-      BarSeparator( )
-      ;
-      OpenBar("title-2-sub-item")   
-      BarItem(13, "title-2-item")
-      BarSeparator( )
-      ;
-      OpenBar("title-3-sub-item")   
-      BarItem(23, "title-3-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(14, "title-2-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(4, "title-1-item")
-      CloseBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(2, "title-1-item-2")
-      
-      BarTitle("Title-(no_items)")
-      
-      BarTitle("Title-(event_test)")
-      BarItem(7, "test")
-      BarSeparator( )
-      BarItem(8, "quit")
-      
-      BarTitle("Title-4")
-      BarItem(9, "item-1(4)")
-      BarItem(10, "item-2(4)")
-      
-      Bind(*menu, @TestHandler(), -1, 7)
-      Bind(*menu, @QuitHandler(), -1, 8)
-      ;
-      *menu = CreatePopupMenuBar( )
-      If *menu                  ; creation of the pop-up menu begins...
-         BarItem(1, "Open")     ; You can use all commands for creating a menu
-         BarItem(2, "Save")     ; just like in a normal menu...
-         BarItem(3, "Save as")
-         BarItem(4, "Quit")
-         BarSeparator( )
-         OpenBar("Recent files")
-         BarItem(5, "PureBasic.exe")
-         BarItem(6, "Test.txt")
-         CloseBar( )
-      EndIf
-      
+; ;       ;\\
+;       *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+;       SetColor( *menu, #__color_back, $FFF7FEE2 )
+;       
+;       BarTitle("Title-1")
+;       BarItem(1, "title-1-item-1")
+;       BarSeparator( )
+;       
+;       OpenBar("title-1-sub-item")
+;       BarItem(3, "title-1-item")
+;       BarSeparator( )
+;       ;
+;       OpenBar("title-2-sub-item")   
+;       BarItem(13, "title-2-item")
+;       BarSeparator( )
+;       ;
+;       OpenBar("title-3-sub-item")   
+;       BarItem(23, "title-3-item")
+;       CloseBar( ) 
+;       ;
+;       BarSeparator( )
+;       BarItem(14, "title-2-item")
+;       CloseBar( ) 
+;       ;
+;       BarSeparator( )
+;       BarItem(4, "title-1-item")
+;       CloseBar( ) 
+;       ;
+;       BarSeparator( )
+;       BarItem(2, "title-1-item-2")
+;       
+;       BarTitle("Title-(no_items)")
+;       
+;       BarTitle("Title-(event_test)")
+;       BarItem(7, "test")
+;       BarSeparator( )
+;       BarItem(8, "quit")
+;       
+;       BarTitle("Title-4")
+;       BarItem(9, "item-1(4)")
+;       BarItem(10, "item-2(4)")
+;       
+;       Bind(*menu, @TestHandler(), -1, 7)
+;       Bind(*menu, @QuitHandler(), -1, 8)
+;       ;
+;       *menu = CreatePopupMenuBar( )
+;       If *menu                  ; creation of the pop-up menu begins...
+;          BarItem(1, "Open")     ; You can use all commands for creating a menu
+;          BarItem(2, "Save")     ; just like in a normal menu...
+;          BarItem(3, "Save as")
+;          BarItem(4, "Quit")
+;          BarSeparator( )
+;          OpenBar("Recent files")
+;          BarItem(5, "PureBasic.exe")
+;          BarItem(6, "Test.txt")
+;          CloseBar( )
+;       EndIf
+;       
       Define widget = CreateWidget( #PB_GadgetType_Container )
       ;     ; CreateWidget( #PB_GadgetType_Editor )
       ;     Resize(Root(), 50,50,50,50)
@@ -169,6 +169,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     Resize(Root(), 80,50,50,50)
       ;     Resize(Root(), 90,50,50,50)
       
+      
+      Resize(widget, 50,50,150,150)
+      
       ;Bind( widget, @Events())
       Bind( #PB_All, @Events())
       
@@ -176,8 +179,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 23
+; CursorPosition = 171
+; FirstLine = 104
 ; Folding = -+
 ; EnableXP
 ; DPIAware
