@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Draw
             Button_DrawCallback(*ew, *ew\x[#__c_frame], *ew\y[#__c_frame], *ew\width[#__c_frame], *ew\height[#__c_frame], *ew\data)
                
-           EndSelect
+      EndSelect
    EndProcedure
    
    ; Custom procedure to create a button object
@@ -381,7 +381,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 333
-; FirstLine = 304
-; Folding = 0--f-
+; CursorPosition = 139
+; FirstLine = 106
+; Folding = 0-0f-
 ; EnableXP
+; DPIAware

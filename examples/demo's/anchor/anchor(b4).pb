@@ -61,8 +61,9 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
   BindEvent( #PB_Event_Menu, @menu_events())
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 31
 ; FirstLine = 28
 ; Folding = -
 ; EnableXP
+; DPIAware

@@ -2,7 +2,13 @@
 Uselib(widget)
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
-    
+
+
+; ;- TEMP DPI
+; Macro a_set( this, mode, size )
+;   PB(a_set)( this, mode, DPIScaled(size) )
+; EndMacro
+
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   ;;*this\_a_\mode = mode  
   SetFrame(*this, size)
@@ -59,6 +65,8 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   ;
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 9
 ; Folding = -
 ; EnableXP
+; DPIAware

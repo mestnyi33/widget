@@ -288,8 +288,9 @@ DataSection
 	Data.q $61F86359FC0F019D,$AFF8C3495FE63029,$C804C013131FCCC2,$DF8800030087C035,$0000CBF81800AA70
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 10
 ; FirstLine = 6
 ; Folding = +
 ; EnableXP
+; DPIAware

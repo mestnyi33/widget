@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 800, 450, "Example 4: Changing the order of the objects (context menu via right click)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (context menu via right click)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;;a_init(root(), 4) ; , 0)
     
     MDI(50, 50, 800-100, 450-100) 
@@ -84,6 +84,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
      WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 37
 ; Folding = -
 ; EnableXP
+; DPIAware

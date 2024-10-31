@@ -4,11 +4,10 @@ Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
 Uselib(widget)
 
-; Procedure a_set( *this._s_widget, mode.i )
-;   If *this\_a_
-;     *this\_a_\mode = mode  
-;   EndIf
-; EndProcedure
+; ;- TEMP DPI
+; Macro a_set( this, mode, size )
+;   PB(a_set)( this, mode, DPIScaled(size) )
+; EndMacro
 
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   ;;*this\_a_set = mode  
@@ -58,8 +57,9 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   ;
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 15
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 9
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
+; DPIAware
