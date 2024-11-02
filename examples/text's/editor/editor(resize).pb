@@ -13,11 +13,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetText(*g1, "left 00000000000000000000000000000000000")
     AddItem(*g1, -1, "left 00000000000000000000000000000000000")
     
-    *g2 = Editor( 30+210, 30, 200, h, #__flag_textcenter|#__flag_texttop)
+    *g2 = Editor( 30+210, 30, 200, h, #__text_center|#__text_top)
     SetText(*g2, "0000000000000000000 center 00000000000000000000" )
     AddItem(*g2, -1, "0000000000000000000 center 00000000000000000000" )
     
-    *g3 = Editor( 30+420, 30, 200, h, #__flag_textright|#__flag_texttop)
+    *g3 = Editor( 30+420, 30, 200, h, #__text_right|#__text_top)
     SetText(*g3, "00000000000000000000000000000000000 right" )
     AddItem(*g3, -1, "00000000000000000000000000000000000 right" )
     
@@ -26,13 +26,14 @@ CompilerIf #PB_Compiler_IsMainFile
     *g6 = Splitter( 30,30,620,h, *g5,#Null)
     
     SetState(*g4, 200)
-    SetState(*g5, 200*2)
-    SetState(*g6, h)
+    SetState(*g5, 200*2+#__splittersize)
+    ;SetState(*g6, h)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 15
+; FirstLine = 11
 ; Folding = -
 ; EnableXP

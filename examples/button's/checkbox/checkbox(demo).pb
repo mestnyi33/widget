@@ -55,8 +55,8 @@ If Open( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Wi
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 18
+; CursorPosition = 44
+; FirstLine = 34
 ; Folding = -
 ; EnableXP
 ; DPIAware

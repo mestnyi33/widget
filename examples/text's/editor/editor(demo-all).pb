@@ -149,8 +149,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "Get gadget text "+GetGadgetText(7)
     
     *S_0 = String( 305+8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly|#__text_top)
-    *S_1 = String( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #PB_String_Numeric|#__flag_textcenter)
-    *S_2 = String( 305+8,  (height+5)*2+10, 290, height, "Right-text StringGadget", #__flag_textright|#__flag_textbottom)
+    *S_1 = String( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #PB_String_Numeric|#__text_center)
+    *S_2 = String( 305+8,  (height+5)*2+10, 290, height, "Right-text StringGadget", #__text_right|#__text_bottom)
     *S_3 = String( 305+8,  (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
     *S_4 = String( 305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
     *S_5 = String( 305+8, (height+5)*5+10, 290, height, Text1, #PB_String_BorderLess)
@@ -364,8 +364,8 @@ CompilerEndIf
 ;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ;   EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 170
-; FirstLine = 156
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 151
+; FirstLine = 147
 ; Folding = ---
 ; EnableXP

@@ -191,8 +191,8 @@ Procedure Message( Title.s, Text.s, flag.q, *parent )
    
    ;\\
    ContainerGadget(#PB_Any, f1, f1, width - f1 * 2, height - bh - f1 - f2 * 2 - 1 )
-   ImageGadget(#PB_Any, f2, f2, iw, iw, img, #PB_Image_Border ); | #__flag_center )
-   TextGadget(#PB_Any, f2 + iw + f2, f2, width - iw, iw, Text) ;, #__flag_textcenter | #__flag_textleft )
+   ImageGadget(#PB_Any, f2, f2, iw, iw, img, #PB_Image_Border )
+   TextGadget(#PB_Any, f2 + iw + f2, f2, width - iw, iw, Text )
    CloseGadgetList( )
    
    ;\\
@@ -312,6 +312,8 @@ If OpenWindow( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #P
    Until Event = #PB_Event_CloseWindow
    
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 193
+; FirstLine = 182
 ; Folding = f--8--
 ; EnableXP

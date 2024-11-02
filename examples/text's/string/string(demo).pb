@@ -149,8 +149,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug GetGadgetText(6)+" - get gadget text"
     
     EString(305+8, 10, 290, height, "Read-only StringGadget..." + null$ + null$, #PB_String_ReadOnly)
-    EString(305+8, (height+5)*1+10, 290, height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__flag_textcenter)
-    EString(305+8, (height+5)*2+10, 290, height, null$ + null$ + " ...Right-text StringGadget", #__flag_textright)
+    EString(305+8, (height+5)*1+10, 290, height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__text_center)
+    EString(305+8, (height+5)*2+10, 290, height, null$ + null$ + " ...Right-text StringGadget", #__text_right)
     EString(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
     EString(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
     EString(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
@@ -170,8 +170,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 30
+; CursorPosition = 151
+; FirstLine = 147
 ; Folding = ---
 ; EnableXP
 ; DPIAware

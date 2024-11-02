@@ -144,11 +144,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     ALIGN
       Structure _s_ALIGN Extends _s_COORDINATE
-         left.b
-         top.b
-         right.b
-         bottom.b
-         autodock._s_COORDINATE
+        update.b
+        left.b
+        top.b
+        right.b
+        bottom.b
+        autodock._s_COORDINATE
       EndStructure
       ;--     ARROW
       Structure _s_ARROW
@@ -745,7 +746,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
-         repaint.b
+        repaint.b
          drawmode.b
          canvas._s_canvas
          *menu._s_WIDGET
@@ -803,8 +804,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 509
-; FirstLine = 340
+; CursorPosition = 149
+; FirstLine = 144
 ; Folding = ---BE5----
 ; Optimizer
 ; EnableXP

@@ -4,7 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   Uselib(widget)
   EnableExplicit
-  #__Text_Border = #PB_Text_Border
+  #__flag_textBorder = #PB_Text_Border
   
   Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
   Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
@@ -15,12 +15,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   window_ide = widget::GetWindow(root())
   canvas_ide = widget::GetGadget(root())
   
-  s_tbar = Text(0,0,0,0,"", #__Text_Border)
-  s_desi = Text(0,0,0,0,"", #__Text_Border)
-  s_view = Text(0,0,0,0,"", #__Text_Border)
-  s_list = Text(0,0,0,0,"", #__Text_Border)
-  s_insp = Text(0,0,0,0,"", #__Text_Border)
-  s_help = Text(0,0,0,0,"", #__Text_Border)
+  s_tbar = Text(0,0,0,0,"", #__flag_textBorder)
+  s_desi = Text(0,0,0,0,"", #__flag_textBorder)
+  s_view = Text(0,0,0,0,"", #__flag_textBorder)
+  s_list = Text(0,0,0,0,"", #__flag_textBorder)
+  s_insp = Text(0,0,0,0,"", #__flag_textBorder)
+  s_help = Text(0,0,0,0,"", #__flag_textBorder)
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
@@ -100,12 +100,12 @@ CompilerEndIf
 ;   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
 ;   window_ide = GetWindow(Open(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)))
 ;   
-;   toolbar_design = Text(0,0,0,0,"", #__Text_Border)
-;   mdi_design = Text(0,0,0,0,"", #__Text_Border)
-;   listview_debug = Text(0,0,0,0,"", #__Text_Border)
-;   tree_inspector = Text(0,0,0,0,"", #__Text_Border)
-;   panel_inspector = Text(0,0,0,0,"", #__Text_Border)
-;   text_help  = Text(0,0,0,0,"", #__Text_Border)
+;   toolbar_design = Text(0,0,0,0,"", #__flag_textBorder)
+;   mdi_design = Text(0,0,0,0,"", #__flag_textBorder)
+;   listview_debug = Text(0,0,0,0,"", #__flag_textBorder)
+;   tree_inspector = Text(0,0,0,0,"", #__flag_textBorder)
+;   panel_inspector = Text(0,0,0,0,"", #__flag_textBorder)
+;   text_help  = Text(0,0,0,0,"", #__flag_textBorder)
 ;   
 ;   Splitter_design = Splitter(0,0,0,0, toolbar_design,mdi_design, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
 ;   Splitter_inspector = Splitter(0,0,0,0, tree_inspector,panel_inspector, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
@@ -166,8 +166,8 @@ CompilerEndIf
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 41
+; CursorPosition = 107
+; FirstLine = 83
 ; Folding = -
 ; Optimizer
 ; EnableXP

@@ -14,10 +14,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *spin1 = Spin(50, 20, 250, 50, 0, 30)
       SetState(*spin1, 0)
       
-      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__flag_textcenter);|#__flag_invert)
+      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__text_center);|#__bar_invert)
       SetState(*spin2, 15)
       
-      Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__flag_textright)
+      Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__text_right)
       SetState(*spin3, 30)
       
       WaitClose( )
@@ -29,14 +29,14 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    ; Spin( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
    ;    
    ;    If vertical
-   ;       #PB_SpinBar_Vertical = #__flag_vertical
+   ;       #PB_SpinBar_Vertical = #__bar_vertical
    ;       ;\\ vertical
    ;       If Open(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    ;          
-   ;          Define *spin1 = Spin(20, 50, 50, 250,  0, 30, #PB_SpinBar_Vertical|#__flag_invert)
+   ;          Define *spin1 = Spin(20, 50, 50, 250,  0, 30, #PB_SpinBar_Vertical|#__bar_invert)
    ;          SetState(*spin1, 5)
    ;          
-   ;          Define *spin2 = Spin(80, 50, 50, 250,  5, 30, #PB_SpinBar_Vertical|#__flag_textcenter)
+   ;          Define *spin2 = Spin(80, 50, 50, 250,  5, 30, #PB_SpinBar_Vertical|#__text_center)
    ;          SetState(*spin2, 10)
    ;          
    ;          Define *spin3 = Spin(140, 50, 50, 250,  0, 30, #PB_SpinBar_Vertical)
@@ -50,13 +50,13 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       ;\\ horizontal
    ;       If Open(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    ;          
-   ;          Define *spin1 = Spin(50, 20, 250, 50,  0, 30, #__flag_invert)
+   ;          Define *spin1 = Spin(50, 20, 250, 50,  0, 30, #__bar_invert)
    ;          SetState(*spin1, 5)
    ;          
-   ;          Define *spin2 = Spin(50, 80, 250, 50,  5, 30, #__flag_textcenter)
+   ;          Define *spin2 = Spin(50, 80, 250, 50,  5, 30, #__text_center)
    ;          SetState(*spin2, 10)
    ;          
-   ;          Define *spin3 = Spin(50, 140, 250, 50,  0, 30, #__flag_textright)
+   ;          Define *spin3 = Spin(50, 140, 250, 50,  0, 30, #__text_right)
    ;          SetState(*spin3, 5)
    ;          
    ;          
@@ -64,7 +64,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       EndIf
    ;    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 55
+; FirstLine = 33
 ; Folding = -
 ; EnableXP

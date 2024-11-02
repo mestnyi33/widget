@@ -1,11 +1,7 @@
 ﻿CompilerIf Not Defined(constants, #PB_Module)
    DeclareModule constants
-      Macro _check_(_variable_, _constant_, _state_ = #True)
-         Bool(_state_ = Bool(((_variable_) & _constant_) = _constant_))
-      EndMacro
-      
-      Macro BinaryFlag(_variable_, _constant_)
-         Bool(((_variable_) & _constant_) = _constant_)
+      Macro BinaryFlag(_variable_, _constant_, _state_ = #True)
+         Bool(Bool(((_variable_) & _constant_) = _constant_) = _state_)
       EndMacro
       
       ;- - CONSTANTs
@@ -194,11 +190,11 @@
          #__flag_textwordwrap
          #__flag_textmultiline
          ;
-         #__flag_textleft
-         #__flag_texttop
-         #__flag_textright
-         #__flag_textbottom
-         #__flag_textcenter
+         #__flag_left_content
+         #__flag_top_content
+         #__flag_right_content
+         #__flag_bottom_content
+         #__flag_center_content
          #__flag_textinline
          
          
@@ -242,22 +238,37 @@
       #__flag_lowercase = #__flag_textlowercase
       #__flag_uppercase = #__flag_textuppercase
       #__flag_password = #__flag_textpassword
-      #__flag_center = #__flag_textcenter
       #__flag_multiline = #__flag_textmultiline
       
       ;     #__flag_autoright  = #__flag_autosize | #__flag_right
       ;     #__flag_autobottom = #__flag_autosize | #__flag_bottom
       
-      ;- \\ align-ment
+      ;-
+      ;- \\ align-ment-widget
       #__align_none         = 0
       #__align_left         = 1 << 1 
       #__align_top          = 1 << 2 
       #__align_right        = 1 << 3 
       #__align_bottom       = 1 << 4 
-      #__align_center       = 1 << 5 
-      #__align_proportional = 1 << 6
-      #__align_full         = 1 << 7
+      ;
       #__align_auto         = 1 << 8 ; #__flag_autoSize
+      #__align_center       = 1 << 5 
+      #__align_full         = 1 << 7
+      #__align_proportional = 1 << 6
+      
+      ;- \\ align-ment-text
+      #__text_left        = #__flag_left_content
+      #__text_top         = #__flag_top_content
+      #__text_right       = #__flag_right_content
+      #__text_bottom      = #__flag_bottom_content
+      #__text_center      = #__flag_center_content
+      
+      ;- \\ align-ment-image
+      #__image_left       = #__flag_left_content
+      #__image_top        = #__flag_top_content
+      #__image_right      = #__flag_right_content
+      #__image_bottom     = #__flag_bottom_content
+      #__image_center     = #__flag_center_content
       
       ;-
       ;-\\ Bar
@@ -274,37 +285,16 @@
       #__bar_vertical   = #__flag_vertical
       #__bar_nobuttons  = #__flag_nogadgets
       
-      
       ;-\\ Text
       #__text_invert    = #__flag_invert
       #__text_vertical  = #__flag_vertical
-      ;
-      #__text_left      = #__flag_textleft
-      #__text_top       = #__flag_texttop
-      #__text_right     = #__flag_textright
-      #__text_bottom    = #__flag_textbottom
-      #__text_center    = #__flag_textcenter
-      ;
-      #__text_multiline = #__flag_textmultiline
-      #__text_wordwrap  = #__flag_textwordwrap
-      #__text_numeric   = #__flag_textnumeric
-      #__text_password  = #__flag_textpassword
-      #__text_readonly  = #__flag_textreadonly
-      #__text_lowercase = #__flag_textlowercase
-      #__text_uppercase = #__flag_textuppercase
-      
-      
+      #__text_update = - 124
       
       
       ;-\\ Image
       #__image_released   = 1
       #__image_pressed    = 2
       #__image_background = 3
-      #__image_left       = #__flag_textleft
-      #__image_top        = #__flag_texttop
-      #__image_center     = #__flag_textcenter
-      #__image_right      = #__flag_textright
-      #__image_bottom     = #__flag_textbottom
       
       ;-\\ MDI
       #__mdi_editable = #__flag_anchorsgadget ; win - 4294967296
@@ -476,10 +466,11 @@
       #__button_toggle    = #PB_Button_Toggle
       #__button_default   = #PB_Button_Default
       #__button_multiline = #PB_Button_MultiLine
-      #__button_left      = #__flag_textleft
-      #__button_right     = #__flag_textright
+      
       #__button_vertical  = #__flag_vertical
       #__button_invert    = #__flag_invert
+      #__button_left      = #__flag_left_content
+      #__button_right     = #__flag_right_content
       
       
       ;       If (#__flag_limit >> 1) > 2147483647 ; 8589934592
@@ -676,8 +667,6 @@
       ;}
       
       
-      
-      #__text_update = - 124
       
       
       
@@ -898,7 +887,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
+; CursorPosition = 2
 ; Folding = ----
 ; Optimizer
 ; EnableXP

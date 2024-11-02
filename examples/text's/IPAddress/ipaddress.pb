@@ -48,8 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;\\
     IPAddress(18+290,  10, 290, 40)
-    IPAddress(18+290,  55, 290, 40, #__flag_textCenter)
-    IPAddress(18+290,  100, 290, 40, #__flag_textRight)
+    IPAddress(18+290,  55, 290, 40, #__text_center)
+    IPAddress(18+290,  100, 290, 40, #__text_right)
     
     ;\\
     SetState(WidgetID(0), MakeIPAddress(127, 0, 30, 1))   ; set a valid ip address
@@ -61,9 +61,9 @@ CompilerIf #PB_Compiler_IsMainFile
      Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 19
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 50
+; FirstLine = 34
 ; Folding = 8
 ; EnableXP
 ; DPIAware

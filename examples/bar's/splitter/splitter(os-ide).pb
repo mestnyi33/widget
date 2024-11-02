@@ -1,5 +1,5 @@
 ﻿EnableExplicit
-#__Text_Border = #PB_Text_Border
+#__flag_textBorder = #PB_Text_Border
 Macro IDWidget( this )
   MacroExpandedCount
 EndMacro
@@ -15,12 +15,12 @@ Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, S
 Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
 window_ide = OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)
 
-toolbar_design = TextGadget(#PB_Any,0,0,0,0,"", #__Text_Border)
-mdi_design = TextGadget(#PB_Any,0,0,0,0,"", #__Text_Border)
-listview_debug = TextGadget(#PB_Any,0,0,0,0,"", #__Text_Border)
-tree_inspector = TextGadget(#PB_Any,0,0,0,0,"", #__Text_Border)
-panel_inspector = TextGadget(#PB_Any,0,0,0,0,"", #__Text_Border)
-text_help  = TextGadget(#PB_Any,0,0,0,0,"", #__Text_Border)
+toolbar_design = TextGadget(#PB_Any,0,0,0,0,"", #__flag_textBorder)
+mdi_design = TextGadget(#PB_Any,0,0,0,0,"", #__flag_textBorder)
+listview_debug = TextGadget(#PB_Any,0,0,0,0,"", #__flag_textBorder)
+tree_inspector = TextGadget(#PB_Any,0,0,0,0,"", #__flag_textBorder)
+panel_inspector = TextGadget(#PB_Any,0,0,0,0,"", #__flag_textBorder)
+text_help  = TextGadget(#PB_Any,0,0,0,0,"", #__flag_textBorder)
 
 Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
 Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
@@ -100,8 +100,7 @@ SetGadgetText(text_help, "size: ("+Str(GadgetWidth(text_help))+"x"+Str(GadgetHei
 
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 69
+; CursorPosition = 22
 ; Folding = -
 ; Optimizer
 ; EnableXP

@@ -447,8 +447,8 @@ ShowAlignWindow()
 
 Repeat :Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 199
-; FirstLine = 195
+; CursorPosition = 370
+; FirstLine = 365
 ; Folding = -------
 ; EnableXP
 ; DPIAware

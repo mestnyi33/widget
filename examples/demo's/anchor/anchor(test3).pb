@@ -4,7 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   Uselib(widget)
   EnableExplicit
-  #__Text_Border = #PB_Text_Border
+  #__flag_textBorder = #PB_Text_Border
   
   Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
   Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
@@ -16,12 +16,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   canvas_ide = widget::GetGadget(root())
   a_init(root())
   
-  s_tbar = Text(0,0,0,0,"", #__Text_Border)
-  s_desi = Text(0,0,0,0,"", #__Text_Border)
-  s_view = Text(0,0,0,0,"", #__Text_Border)
-  s_list = Text(0,0,0,0,"", #__Text_Border)
-  s_insp = Text(0,0,0,0,"", #__Text_Border)
-  s_help  = Text(0,0,0,0,"", #__Text_Border)
+  s_tbar = Text(0,0,0,0,"", #__flag_textBorder)
+  s_desi = Text(0,0,0,0,"", #__flag_textBorder)
+  s_view = Text(0,0,0,0,"", #__flag_textBorder)
+  s_list = Text(0,0,0,0,"", #__flag_textBorder)
+  s_insp = Text(0,0,0,0,"", #__flag_textBorder)
+  s_help  = Text(0,0,0,0,"", #__flag_textBorder)
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
@@ -104,8 +104,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 82
+; CursorPosition = 23
+; FirstLine = 3
 ; Folding = -
 ; Optimizer
 ; EnableXP

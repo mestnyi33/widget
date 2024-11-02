@@ -11,7 +11,7 @@ If vertical
    ;\\ vertical
    If Open(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      Define *spin1 = Progress(20, 50, 50, 250,  0, 30, #PB_ProgressBar_Vertical|#__flag_invert)
+      Define *spin1 = Progress(20, 50, 50, 250,  0, 30, #PB_ProgressBar_Vertical|#__bar_invert)
       SetState(*spin1, 5)
       
       Define *spin2 = Progress(80, 50, 50, 250,  min, 30, #PB_ProgressBar_Vertical)
@@ -28,7 +28,7 @@ Else
    ;\\ horizontal
    If Open(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      Define *spin1 = Progress(50, 20, 250, 50,  0, 30, #__flag_invert)
+      Define *spin1 = Progress(50, 20, 250, 50,  0, 30, #__bar_invert)
       SetState(*spin1, 5)
       
       Define *spin2 = Progress(50, 80, 250, 50,  min, 30)
@@ -42,7 +42,8 @@ Else
    EndIf
 EndIf
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 19
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 30
+; FirstLine = 13
 ; Folding = -
 ; EnableXP

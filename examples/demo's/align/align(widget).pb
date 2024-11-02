@@ -136,7 +136,7 @@ CompilerIf #PB_Compiler_IsMainFile
     wlist(Hex(8)) = Button(0, 0, 80, 40, "left&bottom") ; right         #right
     wlist(Hex(9)) = Button(0, 0, 80, 40, "right&bottom"); right         #right
     
-    Define position = #__align_auto;#__align_auto
+    Define position = 1;#__align_auto
     Define mode = #__align_auto
     SetAlignment( wlist(Hex(1)), mode, position,0,0,0 )
     SetAlignment( wlist(Hex(2)), mode, 0,position,0,0 )
@@ -498,9 +498,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 283
-; FirstLine = 405
-; Folding = ----
+; CursorPosition = 68
+; FirstLine = 64
+; Folding = --D+
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
           Case button_default   : flag = #PB_Button_Default
-          Case button_multiline : flag = #__text_MultiLine
+          Case button_multiline : flag = #__flag_textMultiLine
             ;
           Case button_top,
                button_left,
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
               SetState(button_top,0) 
             EndIf
             If EventWidget <> button_left 
-              Flag(*this, #__text_Left, 0)
+              Flag(*this, #__text_left, 0)
               SetState(button_left,0) 
             EndIf
             If EventWidget <> button_right 
@@ -118,16 +118,16 @@ CompilerIf #PB_Compiler_IsMainFile
               SetState(button_bottom,0) 
             EndIf
             If EventWidget <> button_center 
-              Flag(*this, #__text_Center, 0)
+              Flag(*this, #__text_center, 0)
               SetState(button_center,0) 
             EndIf
             
             Select EventWidget
               Case button_top       : flag = #__text_top     
-              Case button_left      : flag = #__text_Left
+              Case button_left      : flag = #__text_left
               Case button_right     : flag = #__text_right
               Case button_bottom    : flag = #__text_bottom
-              Case button_center    : flag = #__text_Center
+              Case button_center    : flag = #__text_center
             EndSelect
             ;
           ;Case button_toggle    : flag = #PB_ComboBox_ThreeState
@@ -166,9 +166,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ComboBoxGadget(#PB_Any, 100, 100, 250, 200) : HideGadget(gadget, 1)
-    *this  = widget::ComboBox(100, 100, 250, 200, #__text_MultiLine);|#__flag_anchorsgadget)
+    *this  = widget::ComboBox(100, 100, 250, 200, #__flag_textMultiLine);|#__flag_anchorsgadget)
     AddItem( *this, -1, text )
     
     Define y  = 10
@@ -203,7 +203,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(#PB_All, @events_widgets())
     
     ;\\ set button toggled state
-    SetState(button_multiline, Flag(*this, #__text_MultiLine))
+    SetState(button_multiline, Flag(*this, #__flag_textMultiLine))
     SetState(button_center, Flag(*this, #__text_center))
     Hide(Button_type, 1)
     
@@ -223,8 +223,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 129
+; CursorPosition = 206
+; FirstLine = 186
 ; Folding = ---
 ; Optimizer
 ; EnableXP

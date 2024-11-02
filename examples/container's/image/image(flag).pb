@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flag
     
     Select WidgetEvent()
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         Select EventWidget()
           Case *this
             If Flag(*this, #__button_toggle)
@@ -139,8 +139,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 111
+; CursorPosition = 38
+; FirstLine = 29
 ; Folding = ---
 ; Optimizer
 ; EnableXP

@@ -11,10 +11,10 @@ If vertical
    ;\\ vertical
    If Open(0, 0, 0, 230, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      *g = Track(45, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #__flag_invert | #PB_TrackBar_Ticks)
+      *g = Track(45, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #__bar_invert | #PB_TrackBar_Ticks)
       SetState(*g, 5)
       
-      *g = Track(85, 50, 20, 250,  min, 30, #PB_TrackBar_Vertical | #__flag_invert)
+      *g = Track(85, 50, 20, 250,  min, 30, #PB_TrackBar_Vertical | #__bar_invert)
       SetState(*g, 29)
       
       *g = Track(125, 50, 20, 250,  min, 30, #PB_TrackBar_Vertical)
@@ -29,10 +29,10 @@ Else
    ;\\ horizontal
    If Open(0, 0, 0, 350, 230, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      *g = Track(50, 45, 250, 20,  0, 30, #__flag_invert | #PB_TrackBar_Ticks)
+      *g = Track(50, 45, 250, 20,  0, 30, #__bar_invert | #PB_TrackBar_Ticks)
       SetState(*g, 5)
       
-      *g = Track(50, 85, 250, 20,  min, 30, #__flag_invert)
+      *g = Track(50, 85, 250, 20,  min, 30, #__bar_invert)
       SetState(*g, 29)
       
       *g = Track(50, 125, 250, 20,  min, 30)
@@ -46,7 +46,8 @@ Else
    EndIf
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 25
+; CursorPosition = 34
+; FirstLine = 13
 ; Folding = -
 ; EnableXP
 ; DPIAware

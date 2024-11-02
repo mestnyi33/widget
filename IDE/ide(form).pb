@@ -158,7 +158,7 @@ Procedure.s FlagFromFlag( Type, flag.i ) ;
       If flag & #__text_right
         flags + "#PB_Button_Right | "
       EndIf
-      ;         If flag & #__text_border
+      ;         If flag & #__flag_textborder
       ;           flags + "#PB_Text_Border | "
       ;         EndIf
       
@@ -1408,8 +1408,8 @@ DataSection
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1070
-; FirstLine = 1059
+; CursorPosition = 154
+; FirstLine = 150
 ; Folding = -----------------------
 ; EnableXP
 ; DPIAware

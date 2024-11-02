@@ -154,8 +154,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug GetGadgetText(6)+" - get gadget text"
     
     String(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
-    String(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_textcenter)
-    String(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_textright)
+    String(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__text_center)
+    String(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__text_right)
     String(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
     String(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
     String(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
@@ -175,8 +175,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 48
+; CursorPosition = 156
+; FirstLine = 152
 ; Folding = ---
 ; EnableXP
 ; DPIAware

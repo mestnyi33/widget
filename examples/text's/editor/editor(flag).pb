@@ -79,9 +79,9 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__button_multiline);|#__flag_anchorsgadget);|#__text_vertical) 
+    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__button_multiline);|#__flag_anchorsgadget);|#__text_left) 
     Container(10, 10, width, height) : a_init( widget( ))
-    *this = widget::Editor(10, 10, 250, 250);, #__text_wordwrap) 
+    *this = widget::Editor(10, 10, 250, 250);, #__flag_textwordwrap) 
     CloseList( )
     SetText(*this, get_text())
     
@@ -102,8 +102,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(Button_1, Flag(*this, #__text_multiline))
-    SetState(Button_4, Flag(*this, #__text_wordwrap))
+    SetState(Button_1, Flag(*this, #__flag_textmultiline))
+    SetState(Button_4, Flag(*this, #__flag_textwordwrap))
     SetState(Button_5, Flag(*this, #__text_top))
     SetState(Button_2, Flag(*this, #__text_left))
     SetState(Button_3, Flag(*this, #__text_right))
@@ -123,8 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 30
+; CursorPosition = 109
+; FirstLine = 88
 ; Folding = --
 ; EnableXP
 ; DPIAware

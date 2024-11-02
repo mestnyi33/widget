@@ -33,14 +33,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
    Define width = 200
-  If Open(0, 0, 0, width+90, 760, "CanvasGadget", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, width+90, 760, "text multiline", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     canvas_gadget = GetGadget(Root())
     canvas_window = GetWindow(Root())
     
-    *B_0 = Text(10,  10, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_texttop)
-    *B_1 = Text(10, 160, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_textleft)
+    *B_0 = Text(10,  10, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_top)
+    *B_1 = Text(10, 160, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_left)
     *B_2 = Text(10, 310, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#PB_Text_Right)
-    *B_3 = Text(10, 460, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_textBottom)
+    *B_3 = Text(10, 460, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_bottom)
     
 ;     SetAlignment(*B_0, #__align_left|#__align_right)
 ;     SetAlignment(*B_1, #__align_left|#__align_right)
@@ -58,8 +58,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 4
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 38
 ; Folding = -
 ; EnableXP

@@ -109,7 +109,7 @@ Debug  #PB_ListIcon_ThreeState ; 8                 ; 64
 ; - GetGadgetState() can be used To get the current gadget state. 
 ; - SetGadgetState() can be used To change the gadget state. 
 
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 27
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 25
+; FirstLine = 3
 ; EnableXP

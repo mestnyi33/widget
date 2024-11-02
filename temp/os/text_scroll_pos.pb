@@ -43,6 +43,8 @@ If OpenWindow(0, 0, 0, 908, (height+5)*5+20+110, "Buttons on the canvas", #PB_Wi
      
      Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 29
+; FirstLine = 15
 ; Folding = -
 ; EnableXP

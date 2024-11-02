@@ -415,7 +415,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case "#PB_Button_Left"                    : Flag = Flag | #__Button_Left
           Case "#PB_Button_MultiLine"               : Flag = Flag | #__Button_MultiLine
           Case "#PB_Button_Right"                   : Flag = Flag | #__Button_Right
-          Case "#PB_Button_Center"                  : Flag = Flag | #__Text_Center
+          Case "#PB_Button_Center"                  : Flag = Flag | #__text_center
           Case "#PB_Button_Toggle"                  : Flag = Flag | #__Button_Toggle
             ; string
           Case "#PB_String_BorderLess"              : Flag = Flag | #PB_String_BorderLess
@@ -426,10 +426,10 @@ CompilerIf #PB_Compiler_IsMainFile
           Case "#PB_String_ReadOnly"                : Flag = Flag | #PB_String_ReadOnly
           Case "#PB_String_UpperCase"               : Flag = Flag | #PB_String_UpperCase
             ; text
-          Case "#PB_Text_Left"                      : Flag = Flag | #__Text_Left
+          Case "#PB_Text_Left"                      : Flag = Flag | #__text_left
           Case "#PB_Text_Border"                    : Flag = Flag | #__flag_borderflat
-          Case "#PB_Text_Center"                    : Flag = Flag | #__Text_Center
-          Case "#PB_Text_Right"                     : Flag = Flag | #__Text_Right
+          Case "#PB_Text_Center"                    : Flag = Flag | #__text_center
+          Case "#PB_Text_Right"                     : Flag = Flag | #__text_right
             ; option
             ; checkbox
           Case "#PB_CheckBox_Center"                : Flag = Flag | #PB_CheckBox_Center
@@ -618,8 +618,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 610
-; FirstLine = 511
+; CursorPosition = 417
+; FirstLine = 334
 ; Folding = d------28-
 ; EnableXP
 ; DPIAware

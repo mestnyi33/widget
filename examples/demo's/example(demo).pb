@@ -250,7 +250,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     
     ;     ;     Button_1 = widget::Editor(0, 0, 0, 0) : SetText(Button_1, text)
     ;     ;     Button_1 = widget::Button(0, 0, 0, 0, text) ; No need to specify size or coordinates
-    ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__text_border) ; No need to specify size or coordinates
+    ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__flag_textborder) ; No need to specify size or coordinates
     ;     ; ;     Button_1 = widget::MDI(0, 0, 0, 0) ; No need to specify size or coordinates
     ;     ; ;     widget::AddItem(Button_1, -1, "Form_0")
     ;     ; ;     widget::AddItem(Button_1, -1, "Form_1")
@@ -319,8 +319,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 27
-; FirstLine = 286
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 70
+; FirstLine = 66
 ; Folding = --
 ; EnableXP
