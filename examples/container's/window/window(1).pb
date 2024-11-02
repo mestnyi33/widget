@@ -3,7 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Procedure Events_widgets( )
     Debug "event "+ WidgetEvent( ) +" "+ EventWidget( )\index

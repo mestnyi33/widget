@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-Uselib(widget)
+UseWidgets( )
 
 Procedure events_gadgets()
   ; Debug "event - " +EventType()+  " gadget - " + EventGadget() +" focus = "+ #PB_EventType_Focus +" lostfocus = "+ #PB_EventType_LostFocus

@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi"
-Uselib(widget)
+UseWidgets( )
   
 ;-
 ; Sticky window example

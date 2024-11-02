@@ -4,7 +4,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    Declare ParentEvents( )
    Declare ObjectEvents( )

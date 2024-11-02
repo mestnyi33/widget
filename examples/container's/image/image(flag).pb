@@ -2,11 +2,11 @@
 IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 ; ;XIncludeFile "../empty.pb"
-UseLib(widget)
+UseWidgets( )
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   UsePNGImageDecoder()
   
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
@@ -26,6 +26,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Not LoadImage(2, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
     End
+  EndIf
+  
+  If DesktopResolutionX() > 1
+    ResizeImage(0, DesktopScaledX(ImageWidth(0)),DesktopScaledY(ImageHeight(0)))
+    ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+    ResizeImage(2, DesktopScaledX(ImageWidth(2)),DesktopScaledY(ImageHeight(2)))
   EndIf
   
   Procedure.i get_image(m.s=#LF$)
@@ -139,8 +145,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 29
+; CursorPosition = 31
+; FirstLine = 12
 ; Folding = ---
 ; Optimizer
 ; EnableXP

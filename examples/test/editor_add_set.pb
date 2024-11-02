@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
-  Uselib(Widget)
+  UseWidgets( )
   EnableExplicit
   
   Global g, Text.s, a,i, *g._s_widget

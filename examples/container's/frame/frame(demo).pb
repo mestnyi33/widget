@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   If Open(0, 0, 0, 320+310, 250, "FrameGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     FrameGadget(0, 10,  10, 300, 50, "FrameGadget Standard")

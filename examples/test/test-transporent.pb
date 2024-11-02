@@ -1,7 +1,7 @@
 XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-	Uselib(widget)
+	UseWidgets( )
 	
 	Global *Button_0, *String_0, *String_0, *String_1, *String_2, *String_3, *String_4
 	

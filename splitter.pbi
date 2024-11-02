@@ -9520,7 +9520,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Macro IDWidget( this )
     MacroExpandedCount
   EndMacro
-  Uselib(widget)
+  UseWidgets( )
   EnableExplicit
   #__Text_Border = #PB_Text_Border
   

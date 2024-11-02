@@ -8551,7 +8551,7 @@ Macro UseLIB( _name_ )
 EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   Global g,*g._s_widget, b,*b, oc, ic, i, time, Sw = 350, Sh = 300, count;=1000
   
   Procedure events_gadgets()

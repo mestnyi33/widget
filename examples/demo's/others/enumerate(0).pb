@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : UseWidgets( )
 
 ; Shows using of several panels...
 EnableExplicit

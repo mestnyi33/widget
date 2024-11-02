@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi"
 DisableExplicit
 
-UseLib(widget)
+UseWidgets( )
 
 LN=1000; количесвто итемов 
 Global *w._S_widget

@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(Widget)
+  UseWidgets( )
   
   Define a, b
   

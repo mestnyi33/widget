@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseLib(widget)
+  UseWidgets( )
   EnableExplicit
   
   Global NewMap ID.i()

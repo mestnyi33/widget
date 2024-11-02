@@ -22,7 +22,7 @@ XIncludeFile "widgets.pbi"
 		
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   UsePNGImageDecoder()
   

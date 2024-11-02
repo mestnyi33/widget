@@ -1,5 +1,5 @@
 ﻿; 
-; XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+; XIncludeFile "../../../widgets.pbi" : UseWidgets( )
 ; 
 ; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 ;     LoadFont(5, "Arial", 18)
@@ -35,7 +35,7 @@ XIncludeFile "../../../widgets.pbi"
 
    CompilerIf #PB_Compiler_IsMainFile 
    EnableExplicit
-   UseLIB(widget)
+   UseWidgets( )
    
    Enumeration
       #window_0

@@ -15,7 +15,7 @@
 
 
 XIncludeFile "../../../widgets.pbi" 
-Uselib(widget)
+UseWidgets( )
 
 Procedure events_gadgets()
   ;  Debug  ""+EventType()+" "+ EventGadget() +" - gadget "+ GetGadgetState(EventGadget())

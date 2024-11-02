@@ -3,7 +3,7 @@
 
    CompilerIf #PB_Compiler_IsMainFile 
    EnableExplicit
-   UseLIB(widget)
+   UseWidgets( )
    
    Enumeration
       #window_0

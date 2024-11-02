@@ -4,7 +4,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Define flag = #PB_Window_SystemMenu |
          #PB_Window_SizeGadget |

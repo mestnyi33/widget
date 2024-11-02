@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Global *this._s_widget, i, pos = 100, width=450, height=400
   Global Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4

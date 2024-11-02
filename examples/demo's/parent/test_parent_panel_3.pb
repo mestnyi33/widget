@@ -7,7 +7,7 @@
 ; 
 ; CompilerIf #PB_Compiler_IsMainFile
 ;    EnableExplicit
-;    UseLib(widget)
+;    UseWidgets( )
 ;    
 ;    Global i, x = 220, panel, butt1, butt2
 ;    Global._s_WIDGET *root, *panel, *butt0, *butt1, *butt2
@@ -110,7 +110,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(widget)
+   UseWidgets( )
    
    Global._s_WIDGET *CONT, *but0
    

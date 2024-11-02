@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseLib(widget)
+  UseWidgets( )
   
   Global g, *g._S_widget, g_Canvas, NewList *List._S_widget()
   

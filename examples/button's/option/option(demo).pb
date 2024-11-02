@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    Global i
    

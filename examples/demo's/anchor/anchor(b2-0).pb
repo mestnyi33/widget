@@ -2,7 +2,7 @@
 
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
-Uselib(widget)
+UseWidgets( )
 
 ; ;- TEMP DPI
 ; Macro a_set( this, mode, size )

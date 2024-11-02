@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
 EnableExplicit
-Uselib(widget)
+UseWidgets( )
 Global *container._s_WIDGET
 
 Procedure events_widgets()

@@ -6,7 +6,7 @@ XIncludeFile "-widgets.pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseLib(Widget)
+  UseWidgets( )
   
   Global *s1, *s2, *p1, *b0,*b1,*b2,*b3, *b4, *b5
   

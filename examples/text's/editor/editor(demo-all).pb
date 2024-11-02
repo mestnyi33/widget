@@ -2,7 +2,7 @@
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   
   Global *S_0._s_widget
   Global *S_1._s_widget
@@ -205,7 +205,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; CompilerIf #PB_Compiler_IsMainFile 
-;   Uselib(widget)
+;   UseWidgets( )
 ;   
 ;   Global *S_0._s_widget
 ;   Global *S_1._s_widget

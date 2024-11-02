@@ -19,7 +19,7 @@
 ; #PB_MDI_TileVertically
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   
   EnableExplicit
   Global Event.i, MyCanvas, *mdi._s_widget, *spl1,*spl2

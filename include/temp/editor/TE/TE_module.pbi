@@ -1,7 +1,7 @@
 ﻿IncludePath "/Users/as/Documents/GitHub/widget/"
 XIncludeFile "widgets.pbi"
 
-UseLib(widget)
+UseWidgets( )
 
 ; -=PBEdit 1.0.6=-
 ; ----------------------------------------------------------------------------------

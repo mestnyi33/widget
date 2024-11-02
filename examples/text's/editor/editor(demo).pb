@@ -4,7 +4,7 @@
       
 CompilerIf #PB_Compiler_IsMainFile
  EnableExplicit
-  UseLib(widget)
+  UseWidgets( )
   
   Define a,i
   Define g, Text.s

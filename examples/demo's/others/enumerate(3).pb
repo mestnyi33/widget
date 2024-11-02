@@ -4,7 +4,7 @@ XIncludeFile "../../../widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
-   UseLib(widget)
+   UseWidgets( )
    Define i, time.q, count = 10000
    
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )

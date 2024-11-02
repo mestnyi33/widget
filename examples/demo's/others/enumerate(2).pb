@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(widget)
+   UseWidgets( )
    
    ;\\
    Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |

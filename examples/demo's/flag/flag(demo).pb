@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Global *this._s_widget, i, w_type, w_flag
   Define vert=100, horiz=100, width=400, height=400

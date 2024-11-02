@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   Global g,*g, b,*b, i, time, Sw = 350, Sh = 300, count;=10000
   
   Procedure events_gadgets()
@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile = 333
-  Uselib(widget)
+  UseWidgets( )
   Global g,*g, b,*b, i, time, Sw = 350, Sh = 300, count;=10000
   
   Procedure events_gadgets()

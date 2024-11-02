@@ -3,7 +3,7 @@ IncludePath "../../../" : XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseLib(widget)
+  UseWidgets( )
   EnableExplicit
   
   Global *S_0._s_WIDGET

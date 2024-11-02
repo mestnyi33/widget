@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : UseWidgets( )
 
 test_focus_show = 1
 

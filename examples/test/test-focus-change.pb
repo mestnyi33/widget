@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../widgets.pbi" 
 
 EnableExplicit
-Uselib(widget)
+UseWidgets( )
 
 ; IMPORTANT: Dates must be in French format (DD/MM/YY or DD/MM/YYYY)
 #REGEX_DATE=0

@@ -36,7 +36,7 @@ XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    Define *menu._s_widget
    ;-

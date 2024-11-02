@@ -3,7 +3,7 @@
 ; fixed bug then left anchor moveed and width = 0
 	
 	
-Uselib(widget)
+UseWidgets( )
 Global alpha = 64
 Global alpha1 = 128
 Global *Object1,*Object2,*Object3,*Object4,*Object5

@@ -484,6 +484,7 @@
          #PB_EventType_Repaint
          #PB_EventType_MouseWheelX
          #PB_EventType_MouseWheelY
+         #PB_EventType_ScrollChange
       EndEnumeration
       
       Enumeration 1
@@ -887,7 +888,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 486
+; FirstLine = 480
 ; Folding = ----
 ; Optimizer
 ; EnableXP

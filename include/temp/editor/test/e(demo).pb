@@ -2,7 +2,7 @@
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   
   Global *S_0._s_widget
   Global *S_1._s_widget
@@ -107,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define Text.s = get_text(#LF$)
   ;     
   Procedure resize_splitter()
-    SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
+    ;SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 615, 270, "Editor on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -153,8 +153,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 85
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 109
+; FirstLine = 64
 ; Folding = 8--
 ; EnableXP

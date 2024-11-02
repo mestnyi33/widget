@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi"
 
 EnableExplicit
-Uselib(widget)
+UseWidgets( )
 
 Global  *list1, *list2, *list3
 Global i, drop, source, appQuit, dropText$, selectedIndex, selectedText$

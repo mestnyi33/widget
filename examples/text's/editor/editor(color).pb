@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
-UseLib(widget)
+UseWidgets( )
 Global *w._S_widget
 Define i
 Define font = LoadFont(#PB_Any, "Helvetica", 15)

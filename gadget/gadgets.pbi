@@ -5,7 +5,7 @@ XIncludeFile "widgets.pbi"
 ;;XIncludeFile "widget-events.pbi"
 ; XIncludeFile "../examples/empty.pb"
 
- Uselib(widget)
+ UseWidgets( )
 
 
 ;- <<<

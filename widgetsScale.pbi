@@ -10003,7 +10003,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           CompilerIf #PB_Compiler_Version =< 546
             For i = 1 To Len : String.s + "*" : Next
           CompilerElse
-            For i = 1 To Len : String.s + "●" : Next ; "•"
+            For i = 1 To Len : String.s + "?" : Next ; "•"
           CompilerEndIf
           
         Else
@@ -23605,7 +23605,7 @@ EndMacro
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile = 99
-  Uselib(widget)
+  UseWidgets( )
   
   Global MDI, MDI_splitter, Splitter
   
@@ -23630,7 +23630,7 @@ CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile 
   
   EnableExplicit
-  UseLIB(widget)
+  UseWidgets( )
   
   Enumeration
     #window_0

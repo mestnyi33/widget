@@ -2,7 +2,7 @@
 XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   Global show, ev, *g._s_widget, *b, i, time, Sw = 350, Sh = 300, wcount=1000
   
   Procedure events_widgets()

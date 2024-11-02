@@ -3,7 +3,7 @@
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-  UseLib(widget)
+  UseWidgets( )
   
   Global Canvas_0
   Define i, a, g = 1

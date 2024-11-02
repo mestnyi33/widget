@@ -3,7 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(widget)
+   UseWidgets( )
    
    Procedure CallBack( )
       Select WidgetEvent( )

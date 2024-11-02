@@ -2,7 +2,7 @@
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-   UseLib(widget)
+   UseWidgets( )
    EnableExplicit
    
    Define text.s = "abc" + Chr( 10 ) + "def" + Chr( 10 ) + "ghi" + Chr( 10 ) + "jkl" + Chr( 10 ) + "mno" + Chr( 10 ) + "pqr" + Chr( 10 ) + "stu" + Chr( 10 ) + "vwxyz"
@@ -16,7 +16,10 @@ CompilerIf #PB_Compiler_IsMainFile
       ;*gadget = TextGadget(-1, 10,  10, text_gadget_width, 80, text.s, #PB_Text_Border )
       *gadget = StringGadget(-1, 10,  10, text_gadget_width, 80, text.s )
       
-      *widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
+      ;*widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
+      *widget = String( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
+      
+      Repaint(Root())
       
       Define widget_required_size = WidgetHeight( *widget, #__c_Required )
       Define gadget_required_size = GadgetHeight( *gadget, #PB_Gadget_RequiredSize )
@@ -30,6 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 20
-; FirstLine = 20
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
+; DPIAware

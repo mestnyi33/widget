@@ -9,7 +9,7 @@ IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 EnableExplicit
-Uselib(widget)
+UseWidgets( )
 
 Global *Panel 
 Global ChildCount

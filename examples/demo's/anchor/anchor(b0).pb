@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
-  UseLib(Widget)
+  UseWidgets( )
   Global alpha = 192
   
   Procedure CreateContainer( type, x,y,width,height,text.s, parent=0 )

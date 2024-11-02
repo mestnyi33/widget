@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-Uselib(widget)
+UseWidgets( )
 
 Global i, *w._s_widget, *p1,*p2._s_widget, *ch
 

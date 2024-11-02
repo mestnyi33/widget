@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : UseWidgets( )
 
 EnableExplicit
 Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, w_type

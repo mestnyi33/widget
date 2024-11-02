@@ -2,7 +2,7 @@
 ; fixed 778 commit
 ;-
 CompilerIf #PB_Compiler_IsMainFile ;= 100
-  Uselib(widget)
+  UseWidgets( )
   EnableExplicit
   #__flag_textBorder = #PB_Text_Border
   

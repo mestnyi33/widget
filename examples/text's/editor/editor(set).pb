@@ -3,7 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   
-  Uselib(Widget)
+  UseWidgets( )
   EnableExplicit
   
   Define g,*g._s_widget

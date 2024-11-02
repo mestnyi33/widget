@@ -4,12 +4,6 @@ XIncludeFile "../PBEdit_1_0_7/PBEdit_1_0_7.pb" : #ver = 6
 
   UseModule PBEdit
 
-Macro Uselib(_name_)
-;   UseModule _name_
-;   UseModule constants
-;   UseModule structures
-EndMacro
-
 #__sOC = SizeOf(Character)
 #__Flag_GridLines = 1<<1
 
@@ -164,8 +158,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   If CreateToolBar(0, WindowID(0))
-    ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
-    ToolBarStandardButton(#tlb_redo, #PB_ToolBarIcon_Redo)
+   ; ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
+   ; ToolBarStandardButton(#tlb_redo, #PB_ToolBarIcon_Redo)
   EndIf
   
   If CreateStatusBar(0, WindowID(0))
@@ -255,6 +249,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; 	EndIf
   ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = -----
 ; EnableXP

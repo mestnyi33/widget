@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi" ; ok
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   Global *g._S_WIDGET, Quit, *scroll1._s_widget,*scroll2._s_widget,x_0,y_0
   
   Procedure syncCB()

@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../widgets.pbi"
 
 EnableExplicit
-Uselib(widget)
+UseWidgets( )
 
 Global  *list1
 Global  *list2

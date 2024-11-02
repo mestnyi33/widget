@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Global a, *first, *last, *added, *reset,
          *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8,

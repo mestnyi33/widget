@@ -4,7 +4,7 @@ XIncludeFile "../../../widgets.pbi"
 ;- example 1
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(Widget)
+   UseWidgets( )
    
    Global i = 0
    Global._s_widget *PANEL_1, *PANEL_2
@@ -86,7 +86,7 @@ CompilerEndIf
 ; example 2
 CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
-   UseLib(Widget)
+   UseWidgets( )
    
    Global i = 0
    Global._s_widget *PANEL_1, *PANEL_2

@@ -1,6 +1,6 @@
 ﻿XIncludeFile "../../widgets.pbi" 
 
-Uselib(widget)
+UseWidgets( )
    
 Macro EventElement( )
    GetIndex( EventWidget( ) )

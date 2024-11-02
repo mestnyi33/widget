@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(Widget)
+   UseWidgets( )
    test_draw_contex = 0
    
    Global i, *test._s_widget

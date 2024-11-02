@@ -2,7 +2,7 @@
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-  UseLib(widget)
+  UseWidgets( )
   
   Global Panel =- 1
   Global first1=-1,prev1=-1,next1=-1,last1=-1

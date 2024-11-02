@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-Uselib(widget)
+UseWidgets( )
 
 CompilerIf #PB_Compiler_IsMainFile
   Global canvas_gadget, canvas_window, *B_0, *B_1, *B_2, *B_3
@@ -59,7 +59,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 38
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP

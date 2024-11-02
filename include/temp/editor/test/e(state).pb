@@ -25,7 +25,7 @@ XIncludeFile "widgets.pbi"
 ; 0 - gadget set items state time
 ; -------- 
 
-UseLib(widget)
+
 
 LN=100; количесвто итемов 
 Global *w
@@ -115,6 +115,8 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 23
 ; Folding = -
 ; EnableXP

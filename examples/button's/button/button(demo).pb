@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
   EnableExplicit
-  UseLib( Widget )
+  UseWidgets( )
   UsePNGImageDecoder( )
   
   Global i, *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
@@ -144,8 +144,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 113
+; CursorPosition = 6
+; FirstLine = 2
 ; Folding = ---
 ; Optimizer
 ; EnableXP

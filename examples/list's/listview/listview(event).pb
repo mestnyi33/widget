@@ -21,7 +21,7 @@
 
 XIncludeFile "../../../widgets.pbi" 
 ;XIncludeFile "../empty.pb"
-Uselib(widget)
+UseWidgets( )
  
  Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
   Protected g = ListViewGadget(gadget, x,y,width,height,flag)

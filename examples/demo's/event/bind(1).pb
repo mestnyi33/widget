@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
 	EnableExplicit
-	UseLib(Widget)
+	UseWidgets( )
 	
 	Global.i gEvent, gQuit
 	Global *but, *win
@@ -96,7 +96,7 @@ CompilerEndIf
 ; ;- EXAMPLE
 ; CompilerIf #PB_Compiler_IsMainFile
 ;   ;EnableExplicit
-;   Uselib(widget)
+;   UseWidgets( )
 ;   
 ;   Procedure active()
 ;     Protected *ew._s_widget = EventWidget( )

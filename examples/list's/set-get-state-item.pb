@@ -6,7 +6,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Global a, *item2, *item3, *item4, *item1, *this._s_widget, *g1, *g2, countitems=99; количесвто итемов 
   

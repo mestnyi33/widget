@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Define width=500, height=400
   

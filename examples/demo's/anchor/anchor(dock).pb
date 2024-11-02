@@ -7,7 +7,7 @@ XIncludeFile "widgets.pbi"
 ;-
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Procedure.i _SetAlignment(*this._s_widget, Mode.l, Type.l=1)
     ProcedureReturn SetAlignment(*this, Mode, Type)

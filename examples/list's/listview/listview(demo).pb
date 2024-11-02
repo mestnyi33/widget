@@ -24,7 +24,7 @@
 
 XIncludeFile "../../../widgets.pbi" 
 
-Uselib(widget)
+UseWidgets( )
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   ImportC ""
     RevealDataBrowserItem(ControlRef.L, ItemID.L, PropertyID.L, RevealOptions.L)

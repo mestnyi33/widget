@@ -3,7 +3,7 @@
 XIncludeFile "../../../widgets.pbi" 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    Define editable = 1
    Global colorback = colors::*this\blue\fore,

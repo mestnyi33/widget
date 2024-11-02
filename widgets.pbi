@@ -1679,26 +1679,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _address_\align\top = #True
           EndIf
         Else
-          Debug 66
           If _address_\align\left
             If Not _address_\align\right Or
                Not _address_\align\bottom
               _address_\align\top = #True
+            _flag_ | #__flag_top_content
             EndIf
           ElseIf _address_\align\top
             If Not _address_\align\left Or
                Not _address_\align\bottom
               _address_\align\right = #True
+            _flag_ | #__flag_right_content
             EndIf
           ElseIf _address_\align\right
             If Not _address_\align\left Or
                Not _address_\align\top
               _address_\align\bottom = #True
+            _flag_ | #__flag_bottom_content
             EndIf
           ElseIf _address_\align\bottom
             If Not _address_\align\right Or
                Not _address_\align\top
               _address_\align\left = #True
+            _flag_ | #__flag_left_content
             EndIf
           EndIf
         EndIf
@@ -1889,9 +1892,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _this_\text\invert   = constants::BinaryFlag( _flag_, #__text_invert )
         _this_\text\vertical = constants::BinaryFlag( _flag_, #__text_vertical )
         
-        ;
-        align_content( _this_\text, _this_\flag )
-         
         If constants::BinaryFlag( _flag_, #__flag_textwordwrap )
           _this_\text\multiLine = - 1
         ElseIf constants::BinaryFlag( _flag_, #__flag_textmultiline )
@@ -15975,13 +15975,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
              *this\type = #__type_Option Or
              *this\type = #__type_CheckBox
         
-        If Not constants::BinaryFlag( Flag, #__text_center )
+        If constants::BinaryFlag( Flag, #__text_center, #False )
           *this\flag | #__text_center | #__text_left
         EndIf
         
-        If *this\type = #__type_CheckBox And constants::BinaryFlag( Flag, #PB_CheckBox_Right )
-          *this\flag & ~ #__text_left
-          *this\flag | #__text_right
+        If *this\type = #__type_CheckBox 
+          If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
+            *this\flag & ~ #__text_left
+            *this\flag | #__text_right
+          EndIf
         EndIf
       EndIf
       
@@ -16019,11 +16021,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
            *this\type = #__type_Frame
           
           ;
-          If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
-            *this\fs = 1
-          ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle )
-            *this\fs = 1
-          ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+          If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
             *this\fs = 2
           ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
             *this\fs = 2
@@ -16036,9 +16034,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       If *this\type = #__type_Text
         *this\fs = constants::BinaryFlag( Flag, #PB_Text_Border ) 
-        If constants::BinaryFlag( *this\flag, #__text_left )
-          *this\flag & ~ #__text_center
-        EndIf
         *this\flag | #__flag_textwordwrap
       EndIf
       *this\bs = *this\fs
@@ -16599,8 +16594,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;            EndIf
         set_image_( *this, *this\Image, Image )
         set_image_( *this, *this\image[#__image_released], Image )
-        
-         
       EndIf
       
       ;\\ cursor init
@@ -16665,7 +16658,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ;\\ Scroll bars
-      If Not constants::BinaryFlag( Flag, #__flag_noscrollbars )
+      If constants::BinaryFlag( Flag, #__flag_noscrollbars, #False )
         If *this\type = #__type_String
           
           bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize, 0)
@@ -16700,6 +16693,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       If *this\row 
+        ;
+        align_content( *this\text, *this\flag )
+         
         set_text_flag_( *this, text, *this\flag )
       EndIf
       
@@ -23617,18 +23613,25 @@ Macro UseLIB( _name_ )
 EndMacro
 
 
+Macro UseWidgets( )
+  UseModule widget
+  UseModule constants
+  UseModule structures
+EndMacro
+
+
 
 ;-
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile = 99
-  Uselib(widget)
+  UseWidgets( )
   
   Global MDI, MDI_splitter, Splitter
   
   If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    MDI        = MDI(10, 10, 680, 260);, #PB_MDI_AutoSize) ; as they will be sized automatically
+    MDI        = MDI(10, 10, 680, 260) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
     Define *g0 = AddItem(MDI, -1, "form_0")
     ; 		Button(10,10,80,80,"button_0")
     ; 		
@@ -23647,7 +23650,7 @@ CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile 
   
   EnableExplicit
-  UseLIB(widget)
+  UseWidgets( )
   
   Enumeration
     #window_0
@@ -24354,9 +24357,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1666
-; FirstLine = 1666
-; Folding = -------------------------------------------P9-----------------------------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------8---v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 23612
+; FirstLine = 23091
+; Folding = -------------------------------------------P9-----------------------------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------8---v----------------------------------------------------------------------------------------------------------------------fU-+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

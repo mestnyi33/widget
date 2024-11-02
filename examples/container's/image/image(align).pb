@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-Uselib(widget)
+UseWidgets( )
 
 CompilerIf #PB_Compiler_IsMainFile
   Global canvas_gadget, canvas_window
@@ -10,8 +10,8 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    If DesktopResolutionX() > 1
-    ResizeImage(1, 32,32)
-  EndIf
+   ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+   EndIf
   
    Image = 1
    
@@ -22,17 +22,17 @@ CompilerIf #PB_Compiler_IsMainFile
     canvas_gadget = GetGadget(Root())
     canvas_window = GetWindow(Root())
     
-    *B_0 = Image(10,  10, width, 65, Image, #__Image_left)
-    *B_5 = Image(10,  10+65+10, width, 65, Image, #__Image_top)
-    *B_1 = Image(10, 160, width, 65, Image, #__Image_right)
-    *B_1 = Image(10, 160+65+10, width, 65, Image, #__Image_bottom)
+    *B_1 = Image(10,  10, width, 65, Image);, #__Image_left)
+    *B_2 = Image(10,  10+65+10, width, 65, Image, #__Image_top)
+    *B_3 = Image(10, 160, width, 65, Image, #__Image_right)
+    *B_4 = Image(10, 160+65+10, width, 65, Image, #__Image_bottom)
     
-    *B_2 = Image(10, 310, width, 65, Image, #__Image_center|#__Image_left)
-    *B_2 = Image(10, 310+65+10, width, 65, Image, #__Image_center|#__Image_top)
-    *B_3 = Image(10, 460, width, 65, Image, #__Image_center|#__Image_right)
-    *B_3 = Image(10, 460+65+10, width, 65, Image, #__Image_center|#__Image_bottom)
+    *B_5 = Image(10, 310, width, 65, Image, #__Image_center|#__Image_left)
+    *B_6 = Image(10, 310+65+10, width, 65, Image, #__Image_center|#__Image_top)
+    *B_7 = Image(10, 460, width, 65, Image, #__Image_center|#__Image_right)
+    *B_8 = Image(10, 460+65+10, width, 65, Image, #__Image_center|#__Image_bottom)
     
-    *B_4 = Image(10, 610, width, 140, Image, #__Image_center)
+    *B_9 = Image(10, 610, width, 140, Image, #__Image_center)
      
     ;*B_0\flag = 0
     
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP
 ; DPIAware

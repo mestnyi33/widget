@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Define h = 185, bh = 20+9
   Define._s_widget *g1, *g2, *g3, *g4, *g5, *g6

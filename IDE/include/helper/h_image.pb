@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi"
-UseLib(widget)
+UseWidgets( )
 
 EnableExplicit
 
@@ -107,8 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   Wend
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 93
-; FirstLine = 39
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1
 ; Folding = v--
 ; EnableXP
+; DPIAware

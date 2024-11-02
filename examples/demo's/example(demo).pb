@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Procedure.s get_text(m.s = #LF$)
     Protected Text.s = "This is a long line." + m.s  + 

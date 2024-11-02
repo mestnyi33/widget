@@ -25,7 +25,7 @@ XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
-  Uselib(Widget)
+  UseWidgets( )
   EnableExplicit
   Define *w,a, Event
   Define gLN=1500

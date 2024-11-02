@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   EnableExplicit
   
   Global w_this, w_flag

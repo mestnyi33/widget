@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../../widgets.pbi" : UseWidgets( )
 ; #NSTopTabsBezelBorder    = 0
 ; #NSLeftTabsBezelBorder   = 1
 ; #NSBottomTabsBezelBorder = 2

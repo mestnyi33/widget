@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
-  Uselib(Widget)
+  UseWidgets( )
   EnableExplicit
   
   Define set.b = 1

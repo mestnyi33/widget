@@ -18,7 +18,7 @@
 ;         ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, Root()\text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
 ;       CompilerEndIf
       
-XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+XIncludeFile "../../../widgets.pbi" : UseWidgets( )
 
 #WinTemp=0
 #Font18R=0

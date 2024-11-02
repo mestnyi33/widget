@@ -3,7 +3,7 @@
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
-  UseLib(widget)
+  UseWidgets( )
   
   UsePNGImageDecoder()
   

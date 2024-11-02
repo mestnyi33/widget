@@ -1,7 +1,7 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
-UseLib(widget)
+UseWidgets( )
 
 Global *w._S_widget
 

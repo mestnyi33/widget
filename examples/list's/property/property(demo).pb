@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi"
-Uselib(widget)
+UseWidgets( )
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit

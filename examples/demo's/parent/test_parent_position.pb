@@ -4,7 +4,7 @@ XIncludeFile "../../../widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
-   UseLib(widget)
+   UseWidgets( )
    
    Global  pos_x = 10
    Global._S_widget *PARENT, *WINDOW, *CONTAINER, *SCROLLAREA, *CONTAINER_0, *SCROLLAREA_0

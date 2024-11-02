@@ -3,7 +3,7 @@
 XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
-   Uselib(widget)
+   UseWidgets( )
    
    Procedure events(event, EventObject, EventType, EventData )
       

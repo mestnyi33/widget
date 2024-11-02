@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(Widget)
+   UseWidgets( )
    
    Global._s_widget *test, *bind, *unbind
    Global binded

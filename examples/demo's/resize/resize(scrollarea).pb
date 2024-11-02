@@ -7,7 +7,7 @@ XIncludeFile "widget-events.pbi"
 ;-
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseLib(widget)
+  UseWidgets( )
   
   Global count = 1000
   Global Button_1, Button_2, Button_3, Splitter_1, Splitter_2

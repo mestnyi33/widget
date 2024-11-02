@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   If Open( 1, 150, 150, 649, 441, "button - draw parent-inner-clip coordinate", #__Window_SizeGadget | #__Window_SystemMenu)
     a_init( root( ) )

@@ -4,7 +4,7 @@
  
  CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Global object, parent
   Declare CustomEvents( )

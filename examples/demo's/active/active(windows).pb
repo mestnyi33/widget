@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    Procedure active()
       Debug " "+ EventWidget( )\class +"_"+ #PB_Compiler_Procedure 

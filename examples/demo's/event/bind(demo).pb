@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(Widget)
+   UseWidgets( )
    
    Procedure events_widgets( )
       If WidgetEvent() <> #__event_MouseMove And 

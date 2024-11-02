@@ -6,7 +6,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    ; Shows possible flags of ButtonGadget in action...
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
     End

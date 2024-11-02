@@ -3,7 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    ;test_draw_contex = 0
    
    Global object, object1, object2, object3, parent

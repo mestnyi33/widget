@@ -4,7 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
-  UseLib(widget)
+  UseWidgets( )
   
   Global  pos_x = 10
   Global *w._S_widget

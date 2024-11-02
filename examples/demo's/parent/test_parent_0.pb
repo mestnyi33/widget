@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
-   UseLIB(widget)
+   UseWidgets( )
    
    Enumeration
       #window_0
@@ -134,7 +134,7 @@ CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile = 99
    
    EnableExplicit
-   UseLIB(widget)
+   UseWidgets( )
    
    Enumeration
       #window_0
@@ -281,7 +281,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
    
    EnableExplicit
-   UseLib(widget)
+   UseWidgets( )
    
    Global  pos_x = 10
    Global._S_widget *PANEL, *WINDOW, *CONTAINER, *SCROLLAREA, *CONTAINER_0, *SCROLLAREA_0
@@ -366,7 +366,7 @@ CompilerEndIf
 
 ; CompilerIf #PB_Compiler_IsMainFile
 ;    EnableExplicit
-;    UseLib(widget)
+;    UseWidgets( )
 ;    
 ;    Global._s_WIDGET *CONT, *but
 ;    

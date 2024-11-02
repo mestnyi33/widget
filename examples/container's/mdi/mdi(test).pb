@@ -41,7 +41,7 @@
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   
   EnableExplicit
   Global Event.i, MyCanvas, *spl1,*spl2

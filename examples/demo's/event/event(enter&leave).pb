@@ -1,7 +1,7 @@
 ﻿; #__from_mouse_state = 1
 
 XIncludeFile "../../../widgets.pbi" 
-Uselib(widget)
+UseWidgets( )
 
 Declare events_widgets( )
 

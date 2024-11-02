@@ -6,7 +6,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    ; Shows possible flags of ButtonGadget in action...
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
       ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_textmultiline)

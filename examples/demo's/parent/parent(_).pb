@@ -2,7 +2,7 @@
 ; надо исправить Reclip()
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   
   EnableExplicit
   Global Event.i, MyCanvas

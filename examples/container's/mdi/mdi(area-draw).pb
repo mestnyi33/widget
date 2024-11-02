@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-   Uselib(widget)
+   UseWidgets( )
    
    EnableExplicit
    Global Event.i, MyCanvas, *mdi._s_widget, vButton, hButton

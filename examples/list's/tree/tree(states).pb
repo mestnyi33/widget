@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   #PB_Tree_ClickSelect = #__flag_clickselect
   #PB_Tree_MultiSelect = #__flag_multiline

@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #__color_state_entered = 1
   #__color_state_selected = 2
   
-  UseLib(widget)
+  UseWidgets( )
   Global *w._S_widget
   Define i
   Define font = LoadFont(#PB_Any, "Helvetica", 15)

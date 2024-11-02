@@ -1,6 +1,6 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
-UseLib(widget)
+UseWidgets( )
   
 
 ;- EXAMPLE

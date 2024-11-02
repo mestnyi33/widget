@@ -1,7 +1,7 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
-UseLib(widget)
+UseWidgets( )
 
 CompilerIf #PB_Compiler_IsMainFile
   ;     Macro PB(Function)

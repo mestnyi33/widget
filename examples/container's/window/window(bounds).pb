@@ -4,7 +4,7 @@
 ; Bounds window example
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Define object
   Declare CustomEvents( )

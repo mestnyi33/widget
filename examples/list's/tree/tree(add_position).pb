@@ -2,7 +2,7 @@
 XIncludeFile "widgets.pbi"
 
 CompilerIf Defined(WIDGET, #PB_Module)
-  UseLib(widget)
+  UseWidgets( )
   Macro EventGadget() : EventWidget() : EndMacro
   Macro EventType() : ToPBEventType(WidgetEvent()) : EndMacro
   Macro AddGadgetItem(gadget,position,text,imageID=0,flags=) : AddItem(gadget,position,text,imageID,flags) : EndMacro

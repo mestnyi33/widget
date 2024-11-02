@@ -5,7 +5,7 @@
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   Define a
   LoadFont(0, "Helvetica", 13)
   

@@ -1,7 +1,7 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
-UseLib(widget)
+UseWidgets( )
 
 ; ; LN=1000; количесвто итемов 
 ; ; Global *w._S_widget
@@ -41,6 +41,12 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
+   If DesktopResolutionX() > 1
+    ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+    
+    ResizeImage(10, DesktopScaledX(ImageWidth(10)),DesktopScaledY(ImageHeight(10)))
+  EndIf
+  
    Procedure Window_0_widget_events( )
       Select EventWidget( )
          Case *Button
@@ -97,9 +103,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 60
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 46
+; FirstLine = 30
 ; Folding = --
 ; EnableXP
 ; DPIAware

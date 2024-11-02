@@ -4,7 +4,7 @@
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Global *this._s_widget
   Global *button._s_widget

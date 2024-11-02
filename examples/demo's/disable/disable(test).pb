@@ -3,7 +3,7 @@
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
-  UseLib(widget)
+  UseWidgets( )
   Global *enable, *disable, *CHILD, *item1, *item2, *item3, *LIST
   
   Procedure events( )

@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
- UseLib(widget)
+ UseWidgets( )
  
  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
   Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)

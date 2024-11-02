@@ -1,6 +1,6 @@
 ﻿XIncludeFile "widgets.pbi"
 ;XIncludeFile "../empty.pb"
-UseLib(widget)
+
 
 LN=300; количесвто итемов 
 Global *w
@@ -69,6 +69,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP

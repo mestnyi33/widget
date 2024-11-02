@@ -1,7 +1,7 @@
-﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
+﻿IncludePath "../../../../" : XIncludeFile "widgets.pbi"
 ; XIncludeFile "../empty5.pb"
 
-Uselib(widget)
+UseWidgets( )
   Global *g._S_widget, g_Canvas, NewList *List._S_widget()
   
   
@@ -80,10 +80,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_tree_widget()
     ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = *event\widget
-    Protected EventType = *event\type
-    Protected EventData = *event\data
-    Protected EventItem = GetState(EventGadget)
+    Protected EventGadget ;= eventwidget()
+    Protected EventType ;= widgetEventType()
+    Protected EventData ;= widgetEventData()
+    Protected EventItem ;;= GetState(EventGadget)
     
     Select EventType
       Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
@@ -149,6 +149,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 30
 ; Folding = 0----
 ; EnableXP

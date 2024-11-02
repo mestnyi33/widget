@@ -2,7 +2,7 @@
 ; bug scrollstep
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   
   Procedure events_gadgets()
     ;Debug ""+EventGadget()+ " - gadget event - " +EventType()

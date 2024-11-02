@@ -7,7 +7,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseLib(widget)
+  UseWidgets( )
   
   Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"

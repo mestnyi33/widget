@@ -2,7 +2,7 @@
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   
   EnableExplicit
   Global Event.i, MyCanvas

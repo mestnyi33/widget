@@ -4,7 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Procedure Events_windows()
     Debug "gw "+Event() +" "+ EventType() +" "+ EventWindow()

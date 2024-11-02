@@ -2,7 +2,7 @@
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseLib(widget)
+  UseWidgets( )
   EnableExplicit
   
   Procedure StringGadget_( gadget,x,y,width,height,text.s, flag=0 )

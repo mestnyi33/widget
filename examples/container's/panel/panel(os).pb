@@ -8,7 +8,7 @@ XIncludeFile "widgets.pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(Widget)
+   UseWidgets( )
    ;UsePNGImageDecoder()
    
    #BorderNone = 0

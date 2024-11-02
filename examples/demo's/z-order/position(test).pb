@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseLib(Widget)
+   UseWidgets( )
    
    If Open(0, 0, 0, 610, 210, "z-order", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       a_init(root())

@@ -47,7 +47,7 @@ EndProcedure
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;   EnableExplicit
-;   Uselib(widget)
+;   UseWidgets( )
   Global window_ide
   Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
   Global mdi_design, toolbar_design, listview_debug, text_help, tree_inspector,panel_inspector
@@ -138,8 +138,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
  
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 59
-; FirstLine = 97
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP

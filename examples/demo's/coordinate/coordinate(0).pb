@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   Global p,*p, g,*g, b,*b, i, time, Sw = 130, Sh = 300, count;=1000
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 340, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))

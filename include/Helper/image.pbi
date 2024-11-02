@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../widgets.pbi" 
 
 EnableExplicit
-Uselib(widget)
+UseWidgets( )
    
 Global W_IH=-1, 
        G_IH_ScrollArea_0=-1,

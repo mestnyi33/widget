@@ -16,7 +16,7 @@ XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseLib(widget)
+  UseWidgets( )
   
   Define count = 5000
   Define gLN=count;5000;0      ;0; количесвто итемов 

@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi"
- UseLib(widget)
+ UseWidgets( )
 
 LN=300;0; количесвто итемов 
 Global *w._S_widget

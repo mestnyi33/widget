@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../widgets.pbi" 
 
 EnableExplicit
-Uselib(widget)
+UseWidgets( )
  
 Procedure$ GadgetName( Type )
   Protected Result$

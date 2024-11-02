@@ -3,7 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    Global *object._s_widget
    Declare CustomEvents( )

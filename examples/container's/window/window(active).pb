@@ -1,6 +1,6 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
-Uselib(widget)
+UseWidgets( )
 test_focus_show = 1
 test_event_focus = 1
 

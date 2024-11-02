@@ -113,7 +113,7 @@ EndMacro
 
 
 ; CompilerIf #PB_Compiler_IsMainFile
-;   Uselib(widget)
+;   UseWidgets( )
 ;   
 ;   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
 ;   
@@ -141,7 +141,7 @@ EndMacro
 ; CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile 
-  Uselib(widget)
+  UseWidgets( )
   EnableExplicit
   #__Text_Border = #PB_Text_Border
   

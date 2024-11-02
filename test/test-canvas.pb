@@ -4,7 +4,8 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile 
    
    EnableExplicit
-   UseLIB(widget)
+   UseWidgets( )
+   
    test_event_resize = 1
    ;test_atpoint = 1
    ;test_draw_repaint = 1
@@ -128,8 +129,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 96
+; CursorPosition = 7
+; FirstLine = 2
 ; Folding = -
 ; EnableXP
 ; DPIAware

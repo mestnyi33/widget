@@ -24,7 +24,7 @@ Debug #PB_Window_NoGadgets      ; 4096  ; 8          ; Prevents the creation of 
 Debug #PB_Window_NoActivate     ; 8192  ; 33554432   ; Don't activate the window after opening.
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget) 
+  UseWidgets( ) 
   EnableExplicit
   
   Global *Button_0._s_widget
