@@ -164,7 +164,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          EndStructureUnion
          
          StructureUnion
-            enter.b ;
+            _enter.b ;
             mouseenter.b ;
             
             mouseenterframe.b
@@ -314,8 +314,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TRANSFORM
          index.a                             ; a_index( )
          *main._s_WIDGET                     ; a_main( )
-         *enter._s_WIDGET                    ; a_entered( )
-         *focus._s_WIDGET                    ; a_focused( )
+         *entered._s_WIDGET                    ; a_entered( )
+         *focused._s_WIDGET                    ; a_focused( )
          line._s_A_BUTTONS[4]                ; a_line( )
          
          ;
@@ -799,8 +799,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 170
-; FirstLine = 156
-; Folding = ---AA9----
+; CursorPosition = 317
+; FirstLine = 214
+; Folding = ---Ag9----
 ; Optimizer
 ; EnableXP
