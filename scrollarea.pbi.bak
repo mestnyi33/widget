@@ -994,16 +994,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;     Declare.b Disable( *this, State.b = #PB_Default )
     
     Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
-    ;     Declare.i SetAlignment( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
-    ;     Declare.i SetAttachment( *this, *parent, mode.a )
+    ;     Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+    ;     Declare.i SetAttach( *this, *parent, mode.a )
     ;     
     ;     Declare.q ToPBFlag( Type, Flag.q )
     ;     Declare.q FromPBFlag( Type, Flag.q )
     ;     Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
     ; ;     
     ;     Declare   ChildrenBounds( *this )
-    ;     Declare   MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
-    ;     Declare   SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
+    ;     Declare   SetMoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
+    ;     Declare   SetSizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
     ;     
     ;     Declare.l CountItems( *this )
     ;     Declare.l ClearItems( *this )
@@ -4521,7 +4521,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_Button ; ok
           If BinaryFlag( Flag, #PB_Button_MultiLine ) 
             flags & ~ #PB_Button_MultiLine
-            flags | #__text_wordwrap
+            flags | #__flag_textwordwrap
           EndIf
           If BinaryFlag( Flag, #PB_Button_Left ) 
             flags & ~ #PB_Button_Left
@@ -4535,15 +4535,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_String ; ok
           If BinaryFlag( Flag, #PB_String_Password ) 
             flags & ~ #PB_String_Password
-            flags | #__text_password
+            flags | #__flag_textpassword
           EndIf
           If BinaryFlag( Flag, #PB_String_LowerCase )
             flags & ~ #PB_String_LowerCase
-            flags | #__text_lowercase
+            flags | #__flag_textlowercase
           EndIf
           If BinaryFlag( Flag, #PB_String_UpperCase ) 
             flags & ~ #PB_String_UpperCase
-            flags | #__text_uppercase
+            flags | #__flag_textuppercase
           EndIf
           If BinaryFlag( Flag, #PB_String_BorderLess )
             flags & ~ #PB_String_BorderLess
@@ -4551,21 +4551,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           If BinaryFlag( Flag, #PB_String_Numeric ) 
             flags & ~ #PB_String_Numeric
-            flags | #__text_numeric
+            flags | #__flag_textnumeric
           EndIf
           If BinaryFlag( Flag, #PB_String_ReadOnly )
             flags & ~ #PB_String_ReadOnly
-            flags | #__text_readonly
+            flags | #__flag_textreadonly
           EndIf
           ;
         Case #__type_Editor
           If BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
             flags & ~ #PB_Editor_ReadOnly
-            flags | #__text_readonly
+            flags | #__flag_textreadonly
           EndIf
           If BinaryFlag( Flag, #PB_Editor_WordWrap ) 
             flags & ~ #PB_Editor_WordWrap
-            flags | #__text_wordwrap
+            flags | #__flag_textwordwrap
           EndIf
           ;
         Case #__type_Tree
@@ -4644,8 +4644,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
         Case #__type_Button
-          If BinaryFlag( Flag, #__text_wordwrap ) 
-            flags & ~ #__text_wordwrap
+          If BinaryFlag( Flag, #__flag_textwordwrap ) 
+            flags & ~ #__flag_textwordwrap
             flag | #PB_Button_MultiLine
           EndIf
           If BinaryFlag( Flag, #__text_left ) 
@@ -8544,14 +8544,14 @@ CompilerEndIf
 
 
 ;-
-Macro UseLIB( _name_ )
-  UseModule _name_
+Macro UseWidgets( )
+  UseModule widget
   UseModule constants
   UseModule structures
 EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   Global g,*g._s_widget, b,*b, oc, ic, i, time, Sw = 350, Sh = 300, count;=1000
   
   Procedure events_gadgets()
@@ -8622,8 +8622,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Bind(-1, @events_widgets())
     
     *g = ScrollArea(0, 0, 100, 100, Sw, Sh, 30, #PB_ScrollArea_Flat)
-    oc = ContainerGadget(#PB_Any, 0,0,0,0)
-    ic = ContainerGadget(#PB_Any, 0, 0, (Sw), (Sh))
+;     oc = ContainerGadget(#PB_Any, 0,0,1,1)
+;     ic = ContainerGadget(#PB_Any, 0, 0, (Sw), (Sh))
+    oc = CanvasGadget(#PB_Any, 0,0,0,0, #PB_Canvas_Container)
+    ic = CanvasGadget(#PB_Any, 0, 0, (Sw), (Sh), #PB_Canvas_Container)
     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       SetWindowLongPtr_( GadgetID(oc), #GWL_STYLE, GetWindowLongPtr_( GadgetID(oc), #GWL_STYLE ) | #WS_CLIPCHILDREN )
       SetWindowLongPtr_( GadgetID(ic), #GWL_STYLE, GetWindowLongPtr_( GadgetID(ic), #GWL_STYLE ) | #WS_CLIPCHILDREN )
@@ -8650,6 +8652,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;
     Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
+    ;SplitterGadget(#PB_Any,10,10,590,480, SplitterGadget(#PB_Any,0,0,0,0, g,GetGadget(*g\root), #PB_Splitter_Vertical),ButtonGadget  (#PB_Any,  10,  10, 230, 30,"Button 1"))
     
     ;     BindGadgetEvent(g, @events_gadgets())
     ;     Bind(*g, @events_widgets())
@@ -8723,9 +8726,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Until event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2777
-; FirstLine = 2758
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 8654
+; FirstLine = 8633
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

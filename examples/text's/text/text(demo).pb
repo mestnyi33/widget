@@ -42,10 +42,10 @@ CompilerIf #PB_Compiler_IsMainFile
     *B_2 = Text(10, 310, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#PB_Text_Right)
     *B_3 = Text(10, 460, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_bottom)
     
-;     SetAlignment(*B_0, #__align_left|#__align_right)
-;     SetAlignment(*B_1, #__align_left|#__align_right)
-;     SetAlignment(*B_2, #__align_left|#__align_right)
-;     SetAlignment(*B_3, #__align_left|#__align_right)
+;     SetAlign(*B_0, #__align_left|#__align_right)
+;     SetAlign(*B_1, #__align_left|#__align_right)
+;     SetAlign(*B_2, #__align_left|#__align_right)
+;     SetAlign(*B_3, #__align_left|#__align_right)
     
     TextGadget(0, 10, 610, width, 140, Text, #PB_Text_Border|#PB_Text_Center)
     ; EditorGadget(0, 10, 610, width, 140, #PB_Editor_WordWrap) : AddGadgetItem(0, -1, Text)

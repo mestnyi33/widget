@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     ProcedureReturn *parent\tab\widget
 ;      Protected *this._s_WIDGET
 ;      *this = widget::Tab(0, 0, *parent\width, 30);, #__flag_autosize)
-;      SetAlignment(*this, #__align_full|#__align_top )
+;      SetAlign(*this, #__align_full|#__align_top )
 ;      ProcedureReturn *this
 ;   EndProcedure
 ;   
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 20
+; CursorPosition = 55
+; FirstLine = 49
 ; Folding = --
 ; EnableXP

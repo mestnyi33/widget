@@ -2,7 +2,7 @@
 XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+  UseWidgets( )
   Global show, ev, *g._s_widget, *b, i, time, Sw = 350, Sh = 300, wcount=1000
   
   Procedure events_widgets()
@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*g, @events_widgets(), #__event_Resize )
     
     Button(10,  10, 230, 30,"Button 1")
-    Button(50,  50, 230, 30,"Button 2") ;: SetAlignment(widget(), #__align_right)
+    Button(50,  50, 230, 30,"Button 2") ;: SetAlign(widget(), #__align_right)
     Button(90,  90, 230, 30,"Button 3")
     Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_right)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
@@ -53,8 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 16
+; CursorPosition = 18
+; FirstLine = 14
 ; Folding = --
 ; EnableXP
 ; DPIAware

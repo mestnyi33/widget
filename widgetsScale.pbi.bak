@@ -1366,16 +1366,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Declare   IsChild( *this, *parent )
     Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l, scale.b = #True )
-    Declare.i SetAlignment( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
-    Declare.i SetAttachment( *this, *parent, mode.a )
+    Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+    Declare.i SetAttach( *this, *parent, mode.a )
     
     Declare.q ToPBFlag( Type, Flag.q )
     Declare.q FromPBFlag( Type, Flag.q )
     Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
     
     Declare   ChildrenBounds( *this )
-    Declare   MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
-    Declare   SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
+    Declare   SetMoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
+    Declare   SetSizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
     
     Declare.l CountItems( *this )
     Declare.l ClearItems( *this )
@@ -4441,7 +4441,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       If *parent\bounds\children
-        MoveBounds( *this )
+        SetMoveBounds( *this )
       EndIf
     EndProcedure
     
@@ -10003,7 +10003,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           CompilerIf #PB_Compiler_Version =< 546
             For i = 1 To Len : String.s + "*" : Next
           CompilerElse
-            For i = 1 To Len : String.s + "●" : Next ; "•"
+            For i = 1 To Len : String.s + "?" : Next ; "•"
           CompilerEndIf
           
         Else
@@ -14854,7 +14854,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn *this
     EndProcedure
     
-    Procedure.i SetAttachment( *this._s_WIDGET, *parent._s_WIDGET, mode.a )
+    Procedure.i SetAttach( *this._s_WIDGET, *parent._s_WIDGET, mode.a )
       If *parent
         *this\bounds\attach.allocate(BOUNDAttach)
         
@@ -14880,7 +14880,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure SetAlignment( *this._s_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+    Procedure SetAlign( *this._s_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
       Protected flag.q
       ;\\
       If Not (( mode & #__align_full = #__align_full ) Or ( mode & #__align_auto = #__align_auto ))
@@ -15342,7 +15342,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     ;-
-    Procedure MoveBounds( *this._s_WIDGET, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
+    Procedure SetMoveBounds( *this._s_WIDGET, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
       ; If the value is set to #PB_Ignore, the current value is not changed.
       ; If the value is set to #PB_Default, the value is reset to the system default (as it was before this command was invoked).
       Protected.l x = #PB_Ignore, y = #PB_Ignore, width = #PB_Ignore, height = #PB_Ignore
@@ -15393,7 +15393,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           MaximumY - MinimumY
         EndIf
         
-        ProcedureReturn SizeBounds( *this, #PB_Ignore, #PB_Ignore, DPIUnScaled(MaximumX), DPIUnScaled(MaximumY) )
+        ProcedureReturn SetSizeBounds( *this, #PB_Ignore, #PB_Ignore, DPIUnScaled(MaximumX), DPIUnScaled(MaximumY) )
       Else
         ;\\
         If *this\bounds\move\min\x <> #PB_Ignore And
@@ -15422,7 +15422,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
     EndProcedure
     
-    Procedure SizeBounds( *this._s_WIDGET, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
+    Procedure SetSizeBounds( *this._s_WIDGET, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
       ; If the value is set to #PB_Ignore, the current value is not changed.
       ; If the value is set to #PB_Default, the value is reset to the system default (as it was before this command was invoked).
       Protected.l x = #PB_Ignore, y = #PB_Ignore, width = #PB_Ignore, height = #PB_Ignore
@@ -22710,7 +22710,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetParent( *this, *parent, #PB_Default )
           Else
             
-            If Not *parent\autosize And SetAttachment( *this, *parent, 0 )
+            If Not *parent\autosize And SetAttach( *this, *parent, 0 )
               x - DPIUnscaled(*parent\container_x( )) - DPIUnscaled((*parent\fs + (*parent\fs[1] + *parent\fs[3])))
               y - DPIUnScaled(*parent\container_y( )) - DPIUnscaled((*parent\fs + (*parent\fs[2] + *parent\fs[4])))
             Else
@@ -23605,7 +23605,7 @@ EndMacro
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile = 99
-  Uselib(widget)
+  UseWidgets( )
   
   Global MDI, MDI_splitter, Splitter
   
@@ -23630,7 +23630,7 @@ CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile 
   
   EnableExplicit
-  UseLIB(widget)
+  UseWidgets( )
   
   Enumeration
     #window_0

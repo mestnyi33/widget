@@ -20,11 +20,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;*g4 = Splitter( 0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     *g4 = Container( 0,0,0,0 ) 
-;     Button( 0,   0,0,bh, text, #__text_right) : SetAlignment( widget( ), #__align_left|#__align_right)
-;     String( 0,bh*1,0,bh, text, #__text_right) : SetAlignment( widget( ), #__align_left|#__align_right)
-;     Text( 0,bh*2,0,bh, text, #__text_right) : SetAlignment( widget( ), #__align_left|#__align_right)
+;     Button( 0,   0,0,bh, text, #__text_right) : SetAlign( widget( ), #__align_left|#__align_right)
+;     String( 0,bh*1,0,bh, text, #__text_right) : SetAlign( widget( ), #__align_left|#__align_right)
+;     Text( 0,bh*2,0,bh, text, #__text_right) : SetAlign( widget( ), #__align_left|#__align_right)
      Editor( 0,bh*3,0,bh, #__text_right) : SetText( widget( ), text) ;: SetAlignmentFlag( widget( ), #__align_left|#__align_right)
-    ;Button( 0,bh*4,0,bh, text, #__text_right) : SetAlignment( widget( ), #__align_left|#__align_right)
+    ;Button( 0,bh*4,0,bh, text, #__text_right) : SetAlign( widget( ), #__align_left|#__align_right)
     
     CloseList( )
     

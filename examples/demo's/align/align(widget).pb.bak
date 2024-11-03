@@ -5,7 +5,7 @@ XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseLib(widget)
+  UseWidgets( )
   EnableExplicit
   
   Global tree_view
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #__button_right = #__text_right
   
   Procedure _SetAlignment( *this._S_widget, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
-    ProcedureReturn SetAlignment( *this, mode, left, top, right, bottom )
+    ProcedureReturn SetAlign( *this, mode, left, top, right, bottom )
   EndProcedure
   
   Procedure example_1( )
@@ -138,20 +138,20 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define position = 1;#__align_auto
     Define mode = #__align_auto
-    SetAlignment( wlist(Hex(1)), mode, position,0,0,0 )
-    SetAlignment( wlist(Hex(2)), mode, 0,position,0,0 )
-    SetAlignment( wlist(Hex(3)), mode, 0,0,position,0 )
-    SetAlignment( wlist(Hex(4)), mode, 0,0,0,position )
+    SetAlign( wlist(Hex(1)), mode, position,0,0,0 )
+    SetAlign( wlist(Hex(2)), mode, 0,position,0,0 )
+    SetAlign( wlist(Hex(3)), mode, 0,0,position,0 )
+    SetAlign( wlist(Hex(4)), mode, 0,0,0,position )
     
-    SetAlignment( wlist(Hex(6)), mode, position,position,0,0 )
-    SetAlignment( wlist(Hex(7)), mode, 0,position,position,0 )
-    SetAlignment( wlist(Hex(8)), mode, position,0,0,position )
-    SetAlignment( wlist(Hex(9)), mode, 0,0,position,position )
+    SetAlign( wlist(Hex(6)), mode, position,position,0,0 )
+    SetAlign( wlist(Hex(7)), mode, 0,position,position,0 )
+    SetAlign( wlist(Hex(8)), mode, position,0,0,position )
+    SetAlign( wlist(Hex(9)), mode, 0,0,position,position )
     
-    SetAlignment( wlist(Hex(10)), mode, position,0,position,0 )
-    SetAlignment( wlist(Hex(11)), mode, 0,position,0,position )
+    SetAlign( wlist(Hex(10)), mode, position,0,position,0 )
+    SetAlign( wlist(Hex(11)), mode, 0,position,0,position )
     
-    SetAlignment( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
+    SetAlign( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
     
     
     bind(root(), @events())
@@ -188,28 +188,28 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     
     
-    SetAlignment(wlist(Hex(1)), #__align_full|#__align_left ) 
-    SetAlignment(wlist(Hex(2)), #__align_full|#__align_top ) 
-    SetAlignment(wlist(Hex(3)), #__align_full|#__align_right )              
-    SetAlignment(wlist(Hex(4)), #__align_full|#__align_bottom )      
-    ;     SetAlignment(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
-    ;     SetAlignment(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
-    ;     SetAlignment(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
-    ;     SetAlignment(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(1)), #__align_full|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_full|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_full|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_full|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(5)), #__align_full )
+    SetAlign(wlist(Hex(5)), #__align_full )
     
-    SetAlignment(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(55)), #__align_full )
+    SetAlign(wlist(Hex(55)), #__align_full )
     
     bind(root(), @events())
     
@@ -246,28 +246,28 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetFrame(wlist(Hex(1)), 10 )
     ;     SetFrame(wlist(Hex(55)), 1 )
     
-    SetAlignment(wlist(Hex(1)), #__align_full|#__align_left ) 
-    SetAlignment(wlist(Hex(2)), #__align_full|#__align_top ) 
-    SetAlignment(wlist(Hex(3)), #__align_full|#__align_right )              
-    SetAlignment(wlist(Hex(4)), #__align_full|#__align_bottom )      
-    ;     SetAlignment(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
-    ;     SetAlignment(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
-    ;     SetAlignment(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
-    ;     SetAlignment(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(1)), #__align_full|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_full|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_full|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_full|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(5)), #__align_full )
+    SetAlign(wlist(Hex(5)), #__align_full )
     
-    SetAlignment(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(55)), #__align_full )
+    SetAlign(wlist(Hex(55)), #__align_full )
     
     bind(root(), @events())
     
@@ -300,29 +300,29 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CloseList()
     
-    SetAlignment(wlist(Hex(1)), #__align_auto|#__align_left ) 
-    SetAlignment(wlist(Hex(2)), #__align_auto|#__align_top ) 
-    SetAlignment(wlist(Hex(3)), #__align_auto|#__align_right )              
-    SetAlignment(wlist(Hex(4)), #__align_auto|#__align_bottom )      
-    ;     SetAlignment(wlist(Hex(1)), #__align_auto, 1,0,0,0 ) 
-    ;     SetAlignment(wlist(Hex(2)), #__align_auto, 0,1,0,0 ) 
-    ;     SetAlignment(wlist(Hex(3)), #__align_auto, 0,0,1,0 )              
-    ;     SetAlignment(wlist(Hex(4)), #__align_auto, 0,0,0,1 )      
+    SetAlign(wlist(Hex(1)), #__align_auto|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_auto|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_auto|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_auto|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_auto, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_auto, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_auto, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_auto, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(11)), #__align_auto, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(22)), #__align_auto, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(33)), #__align_auto, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(44)), #__align_auto, 0,0,0,1 )      
+    SetAlign(wlist(Hex(11)), #__align_auto, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_auto, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_auto, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_auto, 0,0,0,1 )      
     
     
-    SetAlignment(wlist(Hex(5)), #__align_auto )
+    SetAlign(wlist(Hex(5)), #__align_auto )
     
-    SetAlignment(wlist(Hex(51)), #__align_auto, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(52)), #__align_auto, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(53)), #__align_auto, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(54)), #__align_auto, 0,0,0,1 )      
+    SetAlign(wlist(Hex(51)), #__align_auto, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_auto, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_auto, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_auto, 0,0,0,1 )      
     ;     
-    SetAlignment(wlist(Hex(55)), #__align_auto )
+    SetAlign(wlist(Hex(55)), #__align_auto )
     
     bind(root(), @events())
     
@@ -465,11 +465,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Define tree_container = Window( 10, 10, 230-#__window_frame_size*2,  325-#__window_frame_size*2-#__window_caption_height, "", #PB_Window_SystemMenu)
     tree_view = Tree(10, 10, 230-20-#__window_frame_size*2,  325-20-#__window_frame_size*2-#__window_caption_height)  : CloseList( )
     
-    SetAlignment(tree_container, 0, 1,1,1,1 )
-    SetAlignment(tree_view, 0, 1,1,1,1 )
+    SetAlign(tree_container, 0, 1,1,1,1 )
+    SetAlign(tree_view, 0, 1,1,1,1 )
     
-    SetAlignment(tree_button1, 0, 1,0,1,1 )
-    SetAlignment(tree_button2, 0, 1,0,1,1 )
+    SetAlign(tree_button1, 0, 1,0,1,1 )
+    SetAlign(tree_button2, 0, 1,0,1,1 )
     
     bind(root(), @events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,400)

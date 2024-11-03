@@ -1,6 +1,6 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
-Uselib(widget)
+UseWidgets( )
 Global alpha = 128
 Global *Object1,*Object2,*Object3,*Object4,*Object5
 
@@ -68,11 +68,11 @@ If Open(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", 
   *Object5 = _a_object(300, 250, 200, 100, "Limit in height", 3, RGBA(64, 128, 192, alpha))
   
   ; Limits the position as well as the minimum and maximum size of the objects (#Boundary_ParentSize)
-  MoveBounds(*Object1, 0, 0, 782, 452)
-  MoveBounds(*Object2, 250, #PB_Ignore, 550, #PB_Ignore)
-  MoveBounds(*Object3, #PB_Ignore, 50, #PB_Ignore, 200)
-  SizeBounds(*Object4, 150, #PB_Ignore, 250, #PB_Ignore)
-  SizeBounds(*Object5, #PB_Ignore, 50, #PB_Ignore, 150)
+  SetMoveBounds(*Object1, 0, 0, 782, 452)
+  SetMoveBounds(*Object2, 250, #PB_Ignore, 550, #PB_Ignore)
+  SetMoveBounds(*Object3, #PB_Ignore, 50, #PB_Ignore, 200)
+  SetSizeBounds(*Object4, 150, #PB_Ignore, 250, #PB_Ignore)
+  SetSizeBounds(*Object5, #PB_Ignore, 50, #PB_Ignore, 150)
   
   WaitClose( )
 EndIf

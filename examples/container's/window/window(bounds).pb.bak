@@ -4,7 +4,7 @@
 ; Bounds window example
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Define object
   Declare CustomEvents( )
@@ -15,8 +15,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ; object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   object = Container(150, 150, 300, 300) : CloseList()
   
-  SizeBounds(object, 200, 200, 401, 401)
-  MoveBounds(object, 100, 100, 501, 501)
+  SetSizeBounds(object, 200, 200, 401, 401)
+  SetMoveBounds(object, 100, 100, 501, 501)
   
   Bind( widget( ), @CustomEvents(), #__event_Draw )
   WaitClose( )

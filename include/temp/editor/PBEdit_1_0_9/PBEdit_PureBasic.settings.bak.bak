@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PBEditSettings>
+	<Settings>
+		<Setting name="enableStyling" value="1"/>
+		<Setting name="enableScrollBarHorizontal" value="1"/>
+		<Setting name="enableScrollBarVertical" value="1"/>
+		<Setting name="enableZooming" value="1"/>
+		<Setting name="enableLineNumbers" value="1"/>
+		<Setting name="enableShowCurrentLine" value="1"/>
+		<Setting name="enableFolding" value="1"/>
+		<Setting name="enableIndentation" value="1"/>
+		<Setting name="enableCaseCorrection" value="1"/>
+		<Setting name="enableShowWhiteSpace" value="0"/>
+		<Setting name="enableIndentationLines" value="1"/>
+		<Setting name="enableAutoComplete" value="1"/>
+		<Setting name="enableAutoClosingBracket" value="0"/>
+		<Setting name="enableDictionary" value="1"/>
+		<Setting name="enableSyntaxCheck" value="1"/>
+		<Setting name="enableBeautify" value="1"/>
+		<Setting name="enableMultiCursor" value="1"/>
+		<Setting name="enableSplitScreen" value="1"/>
+		<Setting name="enableHighlightSelection" value="1"/>
+		<Setting name="enableSelectPastedText" value="0"/>
+		<Setting name="enableWordWrap" value="0"/>
+		<Setting name="enableReadOnly" value="0"/>
+		<Setting name="wordWrapMode" value="None"/>
+		<Setting name="wordWrapSize" value="0"/>
+		<Setting name="highlightMode" value="NoCase"/>
+		<Setting name="indentationMode" value="Auto"/>
+		<Setting name="useRealTab" value="1"/>
+		<Setting name="tabSize" value="4"/>
+		<Setting name="fontName" value="Consolas"/>
+		<Setting name="lineHeight" value="11"/>
+		<Setting name="scrollbarWidth" value="15"/>
+		<Setting name="topBorderSize" value="5"/>
+		<Setting name="leftBorderSize" value="15"/>
+		<Setting name="newLineChar" value="10"/>
+		<Setting name="cursorBlinkDelay" value="500"/>
+		<Setting name="cursorClickSpeed" value="500"/>
+		<Setting name="cursorCompareMode" value="NoCase"/>
+		<Setting name="autoCompleteMaxRows" value="10"/>
+		<Setting name="autoCompleteMinCharacterCount" value="3"/>
+		<Setting name="autoCompleteMode" value="FindAtBegin"/>
+	</Settings>
+	
+	<Colors>
+		<Color name="defaultTextColor" value="155,220,255"/>
+		<Color name="selectedTextColor" value=""/>
+		<Color name="cursor" value="255,255,255"/>
+		<Color name="inactiveBackground" value="60,60,55"/>
+		<Color name="currentBackground" value="30,30,25"/>
+		<Color name="selectionBackground" value="40,80,120"/>
+		<Color name="currentLine" value="55,55,50"/>
+		<Color name="currentLineBackground" value="55,55,50"/>
+		<Color name="inactiveLineBackground" value="70,70,65"/>
+		<Color name="indentationGuides" value="80,80,80"/>
+		<Color name="repeatedSelections" value="150,150,145"/>
+		<Color name="lineNr" value="150,150,145"/>
+		<Color name="currentLineNr" value="225,225,220"/>
+		<Color name="lineNrBackground" value="40,40,35"/>
+		<Color name="foldIcon" value="180,180,175"/>
+		<Color name="foldIconBorder" value="100,100,95"/>
+		<Color name="foldIconBackground" value="40,40,35"/>
+	</Colors>
+</PBEditSettings>	

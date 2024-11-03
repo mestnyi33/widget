@@ -3,7 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   Uselib(widget)
+   UseWidgets( )
    
    Global object, object1, object2, parent
    Declare CustomEvents( )
@@ -62,8 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 ;    ;\\
 ;    If object
-;       SizeBounds(object, anchor_size*2, anchor_size*2, 360, 360)
-;       MoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
+;       SetSizeBounds(object, anchor_size*2, anchor_size*2, 360, 360)
+;       SetMoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
 ;    EndIf
    
    ;\\

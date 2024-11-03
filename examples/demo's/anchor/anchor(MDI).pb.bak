@@ -4,7 +4,7 @@
 ; Bounds window example
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Global object, parent, object1
   Declare CustomEvents( )
@@ -26,8 +26,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   SetFrame(object, fs)
   a_set(object, #__a_full, 8)
-; ;   SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
-; ;   MoveBounds(object, fs, fs, 501-fs, 501-fs)
+; ;   SetSizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
+; ;   SetMoveBounds(object, fs, fs, 501-fs, 501-fs)
   
   object1 = ScrollArea(10, 10, 250, 250, 350,350, 1) : SetState( GetBar( object1, #__type_scrollbar, 1 ), 80 )
    ;  object = ScrollArea(100, 100, 250, 250, 150,150, 1) 

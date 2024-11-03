@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ; Widgets(Hex(1)) = Tab(0, 0, 80, 40) : For i=0 To 3 : AddItem(widget( ), -1, "tab_"+Str(i)) : Next  
          CloseList()
          
-         SetAlignment(Widgets(Hex(1)), #__align_Full|#__align_Top)
+         SetAlign(Widgets(Hex(1)), #__align_Full|#__align_Top)
          
          ;Resize(Widgets(Hex(0)), 51, #PB_Ignore, #PB_Ignore,#PB_Ignore)
       EndIf

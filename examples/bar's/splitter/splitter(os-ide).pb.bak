@@ -99,7 +99,7 @@ SetGadgetText(panel_inspector, "size: ("+Str(GadgetWidth(panel_inspector))+"x"+S
 SetGadgetText(text_help, "size: ("+Str(GadgetWidth(text_help))+"x"+Str(GadgetHeight(text_help))+") - " + Str(IDWidget( GetParent( text_help ))))
 
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
 ; CursorPosition = 22
 ; Folding = -
 ; Optimizer

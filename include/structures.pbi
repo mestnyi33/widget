@@ -159,26 +159,25 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     STATE
       Structure _s_STATE
-         round.a
-         
          StructureUnion
-            toggle.b[3]
-            checked.b[3]
+            checked.b
          EndStructureUnion
-         state.b
          
-         hide.b
          StructureUnion
-            enter.b
-            mouseenter.b
+            enter.b ;
+            mouseenter.b ;
+            
             mouseenterframe.b
             mouseenterinner.b
          EndStructureUnion
          
          StructureUnion
-            focus.b
-            _focus.b ; 
+           focus.b
+           _focus.b  
          EndStructureUnion
+         
+         round.a
+         hide.b
          press.b
          disable.b
       EndStructure
@@ -364,17 +363,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
-        _type.b
          _index.l     ; Index of new list element
          itemindex.l
          
          ;*columnaddress
          columnindex.c
-         
-         StructureUnion
-            buttonbox._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
-            box._s_BOX; \box[0]\ -> \button\ -> \collapsebox\
-         EndStructureUnion
          
          change.b
          drawing.b
@@ -401,7 +394,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROWS
       Structure _s_ROWS Extends _s_ITEMS
-         checkbox._s_BOX ; \box[1]\ -> \checkbox\
+         buttonbox._s_BOX ;  buttonbox\
+         checkbox._s_BOX ;  checkbox\
+         
          
          ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
          *first._s_rows           ;TEMP first elemnt in the list
@@ -666,11 +661,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          tab._s_TAB               ; 
                                   ;
-         *box._s_BOX              ; checkbox; optionbox
-         *combobox._s_BUTTONS     ; combobox
+         *togglebox._s_BOX              ; checkbox; optionbox, ToggleButton
+         *combobutton._s_BUTTONS  ; combobox
                                   ;
          *option_group_parent._s_WIDGET         ; = Option( ) group widget
-         *string._s_WIDGET        ; = SpinBar( ) string box
+         *stringBar._s_WIDGET        ; = SpinBar( ) string box
          
          StructureUnion
             *popupBar._s_WIDGET       ; = PopupBar( ) List view box
@@ -804,8 +799,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 144
-; Folding = ---BE5----
+; CursorPosition = 170
+; FirstLine = 156
+; Folding = ---AA9----
 ; Optimizer
 ; EnableXP

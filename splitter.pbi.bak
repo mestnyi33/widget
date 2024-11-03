@@ -994,16 +994,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;     Declare.b Disable( *this, State.b = #PB_Default )
     
     Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
-    ;     Declare.i SetAlignment( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
-    ;     Declare.i SetAttachment( *this, *parent, mode.a )
+    ;     Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+    ;     Declare.i SetAttach( *this, *parent, mode.a )
     ;     
     ;     Declare.q ToPBFlag( Type, Flag.q )
     ;     Declare.q FromPBFlag( Type, Flag.q )
     ;     Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
     ; ;     
     ;     Declare   ChildrenBounds( *this )
-    ;     Declare   MoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
-    ;     Declare   SizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
+    ;     Declare   SetMoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
+    ;     Declare   SetSizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
     ;     
     ;     Declare.l CountItems( *this )
     ;     Declare.l ClearItems( *this )
@@ -5669,7 +5669,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_Button ; ok
           If BinaryFlag( Flag, #PB_Button_MultiLine ) 
             flags & ~ #PB_Button_MultiLine
-            flags | #__text_wordwrap
+            flags | #__flag_textwordwrap
           EndIf
           If BinaryFlag( Flag, #PB_Button_Left ) 
             flags & ~ #PB_Button_Left
@@ -5683,15 +5683,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_String ; ok
           If BinaryFlag( Flag, #PB_String_Password ) 
             flags & ~ #PB_String_Password
-            flags | #__text_password
+            flags | #__flag_textpassword
           EndIf
           If BinaryFlag( Flag, #PB_String_LowerCase )
             flags & ~ #PB_String_LowerCase
-            flags | #__text_lowercase
+            flags | #__flag_textlowercase
           EndIf
           If BinaryFlag( Flag, #PB_String_UpperCase ) 
             flags & ~ #PB_String_UpperCase
-            flags | #__text_uppercase
+            flags | #__flag_textuppercase
           EndIf
           If BinaryFlag( Flag, #PB_String_BorderLess )
             flags & ~ #PB_String_BorderLess
@@ -5699,21 +5699,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           If BinaryFlag( Flag, #PB_String_Numeric ) 
             flags & ~ #PB_String_Numeric
-            flags | #__text_numeric
+            flags | #__flag_textnumeric
           EndIf
           If BinaryFlag( Flag, #PB_String_ReadOnly )
             flags & ~ #PB_String_ReadOnly
-            flags | #__text_readonly
+            flags | #__flag_textreadonly
           EndIf
           ;
         Case #__type_Editor
           If BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
             flags & ~ #PB_Editor_ReadOnly
-            flags | #__text_readonly
+            flags | #__flag_textreadonly
           EndIf
           If BinaryFlag( Flag, #PB_Editor_WordWrap ) 
             flags & ~ #PB_Editor_WordWrap
-            flags | #__text_wordwrap
+            flags | #__flag_textwordwrap
           EndIf
           ;
         Case #__type_Tree
@@ -5792,8 +5792,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
         Case #__type_Button
-          If BinaryFlag( Flag, #__text_wordwrap ) 
-            flags & ~ #__text_wordwrap
+          If BinaryFlag( Flag, #__flag_textwordwrap ) 
+            flags & ~ #__flag_textwordwrap
             flag | #PB_Button_MultiLine
           EndIf
           If BinaryFlag( Flag, #__text_left ) 
@@ -9510,8 +9510,8 @@ CompilerEndIf
 
 
 ;-
-Macro UseLIB( _name_ )
-  UseModule _name_
+Macro UseWidgets( )
+  UseModule widget
   UseModule constants
   UseModule structures
 EndMacro
@@ -9520,7 +9520,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Macro IDWidget( this )
     MacroExpandedCount
   EndMacro
-  Uselib(widget)
+  UseWidgets( )
   EnableExplicit
   #__Text_Border = #PB_Text_Border
   
@@ -9628,10 +9628,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     event = WaitWindowEvent( )
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 234
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 9512
+; FirstLine = 9502
+; Folding = ---------------------------------------------------------------
 ; EnableXP
 ; DPIAware

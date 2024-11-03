@@ -68,10 +68,6 @@ CompilerIf #PB_Compiler_IsMainFile
   #__button_left = #__text_left
   #__button_right = #__text_right
   
-  Procedure _SetAlignment( *this._S_widget, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
-    ProcedureReturn SetAlignment( *this, mode, left, top, right, bottom )
-  EndProcedure
-  
   Procedure example_1( )
     *root = Open( #PB_Any, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
     Canvas_0 = GetGadget(*root)
@@ -96,21 +92,21 @@ CompilerIf #PB_Compiler_IsMainFile
     wlist(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__button_left); proportional
     
     
-    _SetAlignment(wlist(Hex(2)), 0, 0,1,0,#__align_proportional )    
-    _SetAlignment(wlist(Hex(3)), 0, 0,0,1,0 )
-    _SetAlignment(wlist(Hex(4)), 0, 1,#__align_proportional,1,1 )
+    SetAlign(wlist(Hex(2)), 0, 0,1,0,#__align_proportional )    
+    SetAlign(wlist(Hex(3)), 0, 0,0,1,0 )
+    SetAlign(wlist(Hex(4)), 0, 1,#__align_proportional,1,1 )
     
-    _SetAlignment(wlist(Hex(44)), 0, 0,1,0,0 )
-    _SetAlignment(wlist(Hex(5)), 0, #__align_proportional,0,#__align_proportional,1 )
+    SetAlign(wlist(Hex(44)), 0, 0,1,0,0 )
+    SetAlign(wlist(Hex(5)), 0, #__align_proportional,0,#__align_proportional,1 )
     
-    _SetAlignment(wlist(Hex(6)), 0, 1,0,#__align_proportional,1 )
-    _SetAlignment(wlist(Hex(7)), 0, #__align_proportional,0,1,1 )
+    SetAlign(wlist(Hex(6)), 0, 1,0,#__align_proportional,1 )
+    SetAlign(wlist(Hex(7)), 0, #__align_proportional,0,1,1 )
     
-    _SetAlignment(wlist(Hex(8)), 0, 1,0,0,1 )
-    _SetAlignment(wlist(Hex(9)), 0, 1,0,0,1 )
-    _SetAlignment(wlist(Hex(10)), 0, 1,0,1,1 )
-    _SetAlignment(wlist(Hex(11)), 0, 0,0,1,1 )
-    _SetAlignment(wlist(Hex(12)), 0, 0,0,1,1 )
+    SetAlign(wlist(Hex(8)), 0, 1,0,0,1 )
+    SetAlign(wlist(Hex(9)), 0, 1,0,0,1 )
+    SetAlign(wlist(Hex(10)), 0, 1,0,1,1 )
+    SetAlign(wlist(Hex(11)), 0, 0,0,1,1 )
+    SetAlign(wlist(Hex(12)), 0, 0,0,1,1 )
     
     bind(root(), @events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
@@ -138,20 +134,20 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define position = 1;#__align_auto
     Define mode = #__align_auto
-    SetAlignment( wlist(Hex(1)), mode, position,0,0,0 )
-    SetAlignment( wlist(Hex(2)), mode, 0,position,0,0 )
-    SetAlignment( wlist(Hex(3)), mode, 0,0,position,0 )
-    SetAlignment( wlist(Hex(4)), mode, 0,0,0,position )
+    SetAlign( wlist(Hex(1)), mode, position,0,0,0 )
+    SetAlign( wlist(Hex(2)), mode, 0,position,0,0 )
+    SetAlign( wlist(Hex(3)), mode, 0,0,position,0 )
+    SetAlign( wlist(Hex(4)), mode, 0,0,0,position )
     
-    SetAlignment( wlist(Hex(6)), mode, position,position,0,0 )
-    SetAlignment( wlist(Hex(7)), mode, 0,position,position,0 )
-    SetAlignment( wlist(Hex(8)), mode, position,0,0,position )
-    SetAlignment( wlist(Hex(9)), mode, 0,0,position,position )
+    SetAlign( wlist(Hex(6)), mode, position,position,0,0 )
+    SetAlign( wlist(Hex(7)), mode, 0,position,position,0 )
+    SetAlign( wlist(Hex(8)), mode, position,0,0,position )
+    SetAlign( wlist(Hex(9)), mode, 0,0,position,position )
     
-    SetAlignment( wlist(Hex(10)), mode, position,0,position,0 )
-    SetAlignment( wlist(Hex(11)), mode, 0,position,0,position )
+    SetAlign( wlist(Hex(10)), mode, position,0,position,0 )
+    SetAlign( wlist(Hex(11)), mode, 0,position,0,position )
     
-    SetAlignment( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
+    SetAlign( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
     
     
     bind(root(), @events())
@@ -188,28 +184,28 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     
     
-    SetAlignment(wlist(Hex(1)), #__align_full|#__align_left ) 
-    SetAlignment(wlist(Hex(2)), #__align_full|#__align_top ) 
-    SetAlignment(wlist(Hex(3)), #__align_full|#__align_right )              
-    SetAlignment(wlist(Hex(4)), #__align_full|#__align_bottom )      
-    ;     SetAlignment(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
-    ;     SetAlignment(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
-    ;     SetAlignment(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
-    ;     SetAlignment(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(1)), #__align_full|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_full|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_full|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_full|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(5)), #__align_full )
+    SetAlign(wlist(Hex(5)), #__align_full )
     
-    SetAlignment(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(55)), #__align_full )
+    SetAlign(wlist(Hex(55)), #__align_full )
     
     bind(root(), @events())
     
@@ -246,28 +242,28 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetFrame(wlist(Hex(1)), 10 )
     ;     SetFrame(wlist(Hex(55)), 1 )
     
-    SetAlignment(wlist(Hex(1)), #__align_full|#__align_left ) 
-    SetAlignment(wlist(Hex(2)), #__align_full|#__align_top ) 
-    SetAlignment(wlist(Hex(3)), #__align_full|#__align_right )              
-    SetAlignment(wlist(Hex(4)), #__align_full|#__align_bottom )      
-    ;     SetAlignment(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
-    ;     SetAlignment(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
-    ;     SetAlignment(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
-    ;     SetAlignment(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(1)), #__align_full|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_full|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_full|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_full|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(5)), #__align_full )
+    SetAlign(wlist(Hex(5)), #__align_full )
     
-    SetAlignment(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
+    SetAlign(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(55)), #__align_full )
+    SetAlign(wlist(Hex(55)), #__align_full )
     
     bind(root(), @events())
     
@@ -300,29 +296,29 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CloseList()
     
-    SetAlignment(wlist(Hex(1)), #__align_auto|#__align_left ) 
-    SetAlignment(wlist(Hex(2)), #__align_auto|#__align_top ) 
-    SetAlignment(wlist(Hex(3)), #__align_auto|#__align_right )              
-    SetAlignment(wlist(Hex(4)), #__align_auto|#__align_bottom )      
-    ;     SetAlignment(wlist(Hex(1)), #__align_auto, 1,0,0,0 ) 
-    ;     SetAlignment(wlist(Hex(2)), #__align_auto, 0,1,0,0 ) 
-    ;     SetAlignment(wlist(Hex(3)), #__align_auto, 0,0,1,0 )              
-    ;     SetAlignment(wlist(Hex(4)), #__align_auto, 0,0,0,1 )      
+    SetAlign(wlist(Hex(1)), #__align_auto|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_auto|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_auto|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_auto|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_auto, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_auto, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_auto, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_auto, 0,0,0,1 )      
     
-    SetAlignment(wlist(Hex(11)), #__align_auto, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(22)), #__align_auto, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(33)), #__align_auto, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(44)), #__align_auto, 0,0,0,1 )      
+    SetAlign(wlist(Hex(11)), #__align_auto, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_auto, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_auto, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_auto, 0,0,0,1 )      
     
     
-    SetAlignment(wlist(Hex(5)), #__align_auto )
+    SetAlign(wlist(Hex(5)), #__align_auto )
     
-    SetAlignment(wlist(Hex(51)), #__align_auto, 1,0,0,0 ) 
-    SetAlignment(wlist(Hex(52)), #__align_auto, 0,1,0,0 ) 
-    SetAlignment(wlist(Hex(53)), #__align_auto, 0,0,1,0 )              
-    SetAlignment(wlist(Hex(54)), #__align_auto, 0,0,0,1 )      
+    SetAlign(wlist(Hex(51)), #__align_auto, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_auto, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_auto, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_auto, 0,0,0,1 )      
     ;     
-    SetAlignment(wlist(Hex(55)), #__align_auto )
+    SetAlign(wlist(Hex(55)), #__align_auto )
     
     bind(root(), @events())
     
@@ -351,56 +347,56 @@ CompilerIf #PB_Compiler_IsMainFile
     wlist(Hex(9)) = Button(width-130, height-50, 120, 40, "bottom&right")
     
     ;\\ OK example - 1
-    _SetAlignment( wlist(Hex(6)), #__align_proportional, 1,1,0,0 )
-    _SetAlignment( wlist(Hex(2)), #__align_proportional, 0,1,0,0 )
-    _SetAlignment( wlist(Hex(7)), #__align_proportional, 0,1,1,0 )
+    SetAlign( wlist(Hex(6)), #__align_proportional, 1,1,0,0 )
+    SetAlign( wlist(Hex(2)), #__align_proportional, 0,1,0,0 )
+    SetAlign( wlist(Hex(7)), #__align_proportional, 0,1,1,0 )
     
-    _SetAlignment( wlist(Hex(1)), #__align_proportional, 1,0,0,0 )
-    _SetAlignment( wlist(Hex(5)), #__align_proportional ) ; , 0,0,0,0 )
-    _SetAlignment( wlist(Hex(3)), #__align_proportional, 0,0,1,0 )
+    SetAlign( wlist(Hex(1)), #__align_proportional, 1,0,0,0 )
+    SetAlign( wlist(Hex(5)), #__align_proportional ) ; , 0,0,0,0 )
+    SetAlign( wlist(Hex(3)), #__align_proportional, 0,0,1,0 )
     
-    _SetAlignment( wlist(Hex(8)), #__align_proportional, 1,0,0,1 )
-    _SetAlignment( wlist(Hex(4)), #__align_proportional, 0,0,0,1 )
-    _SetAlignment( wlist(Hex(9)), #__align_proportional, 0,0,1,1 )
+    SetAlign( wlist(Hex(8)), #__align_proportional, 1,0,0,1 )
+    SetAlign( wlist(Hex(4)), #__align_proportional, 0,0,0,1 )
+    SetAlign( wlist(Hex(9)), #__align_proportional, 0,0,1,1 )
     
     ;      ;\\ Ok example - 2
-    ;     _SetAlignment( wlist(Hex(6)), #__align_proportional|#__align_top|#__align_left )
-    ;     _SetAlignment( wlist(Hex(2)), #__align_proportional|#__align_top )
-    ;     _SetAlignment( wlist(Hex(7)), #__align_proportional|#__align_top|#__align_right )
+    ;     SetAlign( wlist(Hex(6)), #__align_proportional|#__align_top|#__align_left )
+    ;     SetAlign( wlist(Hex(2)), #__align_proportional|#__align_top )
+    ;     SetAlign( wlist(Hex(7)), #__align_proportional|#__align_top|#__align_right )
     ;     
-    ;     _SetAlignment( wlist(Hex(1)), #__align_proportional|#__align_left )
-    ;     _SetAlignment( wlist(Hex(5)), #__align_proportional )
-    ;     _SetAlignment( wlist(Hex(3)), #__align_proportional|#__align_right )
+    ;     SetAlign( wlist(Hex(1)), #__align_proportional|#__align_left )
+    ;     SetAlign( wlist(Hex(5)), #__align_proportional )
+    ;     SetAlign( wlist(Hex(3)), #__align_proportional|#__align_right )
     ;     
-    ;     _SetAlignment( wlist(Hex(8)), #__align_proportional|#__align_bottom|#__align_left )
-    ;     _SetAlignment( wlist(Hex(4)), #__align_proportional|#__align_bottom )
-    ;     _SetAlignment( wlist(Hex(9)), #__align_proportional|#__align_bottom|#__align_right )
+    ;     SetAlign( wlist(Hex(8)), #__align_proportional|#__align_bottom|#__align_left )
+    ;     SetAlign( wlist(Hex(4)), #__align_proportional|#__align_bottom )
+    ;     SetAlign( wlist(Hex(9)), #__align_proportional|#__align_bottom|#__align_right )
     ;    
     ;     ;\\ OK example - 3
-    ;     _SetAlignment( wlist(Hex(6)), 0, 0                    ,0                    ,#__align_proportional,#__align_proportional )
-    ;     _SetAlignment( wlist(Hex(2)), 0, #__align_proportional,0                    ,#__align_proportional,#__align_proportional )
-    ;     _SetAlignment( wlist(Hex(7)), 0, #__align_proportional,0                    ,0                    ,#__align_proportional )
+    ;     SetAlign( wlist(Hex(6)), 0, 0                    ,0                    ,#__align_proportional,#__align_proportional )
+    ;     SetAlign( wlist(Hex(2)), 0, #__align_proportional,0                    ,#__align_proportional,#__align_proportional )
+    ;     SetAlign( wlist(Hex(7)), 0, #__align_proportional,0                    ,0                    ,#__align_proportional )
     ;     
-    ;     _SetAlignment( wlist(Hex(1)), 0, 0                    ,#__align_proportional,#__align_proportional,#__align_proportional )
-    ;     _SetAlignment( wlist(Hex(5)), 0, #__align_proportional,#__align_proportional,#__align_proportional,#__align_proportional )
-    ;     _SetAlignment( wlist(Hex(3)), 0, #__align_proportional,#__align_proportional,0                    ,#__align_proportional )
+    ;     SetAlign( wlist(Hex(1)), 0, 0                    ,#__align_proportional,#__align_proportional,#__align_proportional )
+    ;     SetAlign( wlist(Hex(5)), 0, #__align_proportional,#__align_proportional,#__align_proportional,#__align_proportional )
+    ;     SetAlign( wlist(Hex(3)), 0, #__align_proportional,#__align_proportional,0                    ,#__align_proportional )
     ;     
-    ;     _SetAlignment( wlist(Hex(8)), 0, 0                    ,#__align_proportional,#__align_proportional,0 )
-    ;     _SetAlignment( wlist(Hex(4)), 0, #__align_proportional,#__align_proportional,#__align_proportional,0 )
-    ;     _SetAlignment( wlist(Hex(9)), 0, #__align_proportional,#__align_proportional,0                    ,0 )
+    ;     SetAlign( wlist(Hex(8)), 0, 0                    ,#__align_proportional,#__align_proportional,0 )
+    ;     SetAlign( wlist(Hex(4)), 0, #__align_proportional,#__align_proportional,#__align_proportional,0 )
+    ;     SetAlign( wlist(Hex(9)), 0, #__align_proportional,#__align_proportional,0                    ,0 )
     
     ;     ;\\ example - 4
-    ;     _SetAlignment( wlist(Hex(6)), #__align_proportional, -5,-5,0,0 )
-    ;     _SetAlignment( wlist(Hex(2)), #__align_proportional, 0,-5,0,0 )
-    ;     _SetAlignment( wlist(Hex(7)), #__align_proportional, 0,-5,-5,0 )
+    ;     SetAlign( wlist(Hex(6)), #__align_proportional, -5,-5,0,0 )
+    ;     SetAlign( wlist(Hex(2)), #__align_proportional, 0,-5,0,0 )
+    ;     SetAlign( wlist(Hex(7)), #__align_proportional, 0,-5,-5,0 )
     ;     
-    ;     _SetAlignment( wlist(Hex(1)), #__align_proportional, -5,0,0,0 )
-    ;     _SetAlignment( wlist(Hex(5)), #__align_proportional ) ; , 0,0,0,0 )
-    ;     _SetAlignment( wlist(Hex(3)), #__align_proportional, 0,0,-5,0 )
+    ;     SetAlign( wlist(Hex(1)), #__align_proportional, -5,0,0,0 )
+    ;     SetAlign( wlist(Hex(5)), #__align_proportional ) ; , 0,0,0,0 )
+    ;     SetAlign( wlist(Hex(3)), #__align_proportional, 0,0,-5,0 )
     ;     
-    ;     _SetAlignment( wlist(hex(8)), #__align_proportional, -5,0,0,-5 )
-    ;     _SetAlignment( wlist(Hex(4)), #__align_proportional, 0,0,0,-5 )
-    ;     _SetAlignment( wlist(Hex(9)), #__align_proportional, 0,0,-5,-5 )
+    ;     SetAlign( wlist(hex(8)), #__align_proportional, -5,0,0,-5 )
+    ;     SetAlign( wlist(Hex(4)), #__align_proportional, 0,0,0,-5 )
+    ;     SetAlign( wlist(Hex(9)), #__align_proportional, 0,0,-5,-5 )
     
     bind(root(), @events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 490,390)
@@ -428,24 +424,24 @@ CompilerIf #PB_Compiler_IsMainFile
     wlist(Hex(9)) = Button(width-130, height-50, 120, 40, "bottom&right")
     
     ;      ;\\ Ok example - 1
-    ;     _SetAlignment( wlist(Hex(2)), #__align_center|#__align_proportional|#__align_top )
-    ;     _SetAlignment( wlist(Hex(1)), #__align_center|#__align_proportional|#__align_left )
-    ;     _SetAlignment( wlist(Hex(5)), #__align_center )
-    ;     _SetAlignment( wlist(Hex(3)), #__align_center|#__align_proportional|#__align_right )
-    ;     _SetAlignment( wlist(Hex(4)), #__align_center|#__align_proportional|#__align_bottom )
+    ;     SetAlign( wlist(Hex(2)), #__align_center|#__align_proportional|#__align_top )
+    ;     SetAlign( wlist(Hex(1)), #__align_center|#__align_proportional|#__align_left )
+    ;     SetAlign( wlist(Hex(5)), #__align_center )
+    ;     SetAlign( wlist(Hex(3)), #__align_center|#__align_proportional|#__align_right )
+    ;     SetAlign( wlist(Hex(4)), #__align_center|#__align_proportional|#__align_bottom )
     
     ;\\ OK example - 3
-    _SetAlignment( wlist(Hex(6)), 0, 1,1,#__align_proportional,#__align_proportional )
-    _SetAlignment( wlist(Hex(2)), 0, 0,1,0,#__align_proportional )
-    _SetAlignment( wlist(Hex(7)), 0, #__align_proportional,1,1,#__align_proportional )
+    SetAlign( wlist(Hex(6)), 0, 1,1,#__align_proportional,#__align_proportional )
+    SetAlign( wlist(Hex(2)), 0, 0,1,0,#__align_proportional )
+    SetAlign( wlist(Hex(7)), 0, #__align_proportional,1,1,#__align_proportional )
     
-    _SetAlignment( wlist(Hex(1)), 0, 1,0,#__align_proportional,0 )
-    _SetAlignment( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
-    _SetAlignment( wlist(Hex(3)), 0, #__align_proportional,0,1,0 )
+    SetAlign( wlist(Hex(1)), 0, 1,0,#__align_proportional,0 )
+    SetAlign( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
+    SetAlign( wlist(Hex(3)), 0, #__align_proportional,0,1,0 )
     
-    _SetAlignment( wlist(Hex(8)), 0, 1,#__align_proportional,#__align_proportional,1 )
-    _SetAlignment( wlist(Hex(4)), 0, 0,#__align_proportional,0,1 )
-    _SetAlignment( wlist(Hex(9)), 0, #__align_proportional,#__align_proportional,1,1 )
+    SetAlign( wlist(Hex(8)), 0, 1,#__align_proportional,#__align_proportional,1 )
+    SetAlign( wlist(Hex(4)), 0, 0,#__align_proportional,0,1 )
+    SetAlign( wlist(Hex(9)), 0, #__align_proportional,#__align_proportional,1,1 )
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 690,490)
   EndProcedure
@@ -465,11 +461,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Define tree_container = Window( 10, 10, 230-#__window_frame_size*2,  325-#__window_frame_size*2-#__window_caption_height, "", #PB_Window_SystemMenu)
     tree_view = Tree(10, 10, 230-20-#__window_frame_size*2,  325-20-#__window_frame_size*2-#__window_caption_height)  : CloseList( )
     
-    SetAlignment(tree_container, 0, 1,1,1,1 )
-    SetAlignment(tree_view, 0, 1,1,1,1 )
+    SetAlign(tree_container, 0, 1,1,1,1 )
+    SetAlign(tree_view, 0, 1,1,1,1 )
     
-    SetAlignment(tree_button1, 0, 1,0,1,1 )
-    SetAlignment(tree_button2, 0, 1,0,1,1 )
+    SetAlign(tree_button1, 0, 1,0,1,1 )
+    SetAlign(tree_button2, 0, 1,0,1,1 )
     
     bind(root(), @events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,400)
@@ -498,9 +494,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 64
-; Folding = --D+
+; CursorPosition = 443
+; FirstLine = 250
+; Folding = --x-
 ; Optimizer
 ; EnableXP
 ; DPIAware

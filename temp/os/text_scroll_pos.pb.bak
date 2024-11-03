@@ -5,7 +5,7 @@
   Define *g1, *g2, *g3, *g4, *g5
   
   
-  Procedure SetAlignment(Editor)
+  Procedure SetAlign(Editor)
     CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_Linux
       gtk_text_view_set_justification_(GadgetID(Editor), #GTK_JUSTIFY_CENTER)

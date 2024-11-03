@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
     Button(10,  10, 230, 30, "Button 1")
-    Button(50,  50, 230, 30, "Button 2") ;: SetAlignment(widget(), #__align_right)
+    Button(50,  50, 230, 30, "Button 2") ;: SetAlign(widget(), #__align_right)
     Button(90,  90, 230, 30, "Button 3")
     Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_right)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 29
+; CursorPosition = 80
+; FirstLine = 9
 ; Folding = v-
 ; Optimizer
 ; EnableXP

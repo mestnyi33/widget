@@ -47,30 +47,30 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-      SetAlignment(ID(Hex(8)), #__align_left   |#__align_center)
-      SetAlignment(ID(Hex(2)), #__align_top    |#__align_center)
-      SetAlignment(ID(Hex(4)), #__align_right  |#__align_center)
-      SetAlignment(ID(Hex(6)), #__align_bottom |#__align_center)
+      SetAlign(ID(Hex(8)), #__align_left   |#__align_center)
+      SetAlign(ID(Hex(2)), #__align_top    |#__align_center)
+      SetAlign(ID(Hex(4)), #__align_right  |#__align_center)
+      SetAlign(ID(Hex(6)), #__align_bottom |#__align_center)
       
-      SetAlignment(ID(Hex(1)), #__align_none)
-      SetAlignment(ID(Hex(3)), #__align_right)
-      SetAlignment(ID(Hex(7)), #__align_bottom)
-      SetAlignment(ID(Hex(5)), #__align_right|#__align_bottom)
+      SetAlign(ID(Hex(1)), #__align_none)
+      SetAlign(ID(Hex(3)), #__align_right)
+      SetAlign(ID(Hex(7)), #__align_bottom)
+      SetAlign(ID(Hex(5)), #__align_right|#__align_bottom)
       
-      SetAlignment(ID(Hex(9)), #__align_center)
+      SetAlign(ID(Hex(9)), #__align_center)
       
       
-;       SetAlignment( ID(Hex(8)), #__align_auto, 1,0,0,0 )
-;       SetAlignment( ID(Hex(2)), #__align_auto, 0,1,0,0 )
-;       SetAlignment( ID(Hex(4)), #__align_auto, 0,0,1,0 )
-;       SetAlignment( ID(Hex(6)), #__align_auto, 0,0,0,1 )
+;       SetAlign( ID(Hex(8)), #__align_auto, 1,0,0,0 )
+;       SetAlign( ID(Hex(2)), #__align_auto, 0,1,0,0 )
+;       SetAlign( ID(Hex(4)), #__align_auto, 0,0,1,0 )
+;       SetAlign( ID(Hex(6)), #__align_auto, 0,0,0,1 )
 ;       
-;       SetAlignment( ID(Hex(9)), #__align_center )
+;       SetAlign( ID(Hex(9)), #__align_center )
 ;       
-;       SetAlignment( ID(Hex(1)), #__align_auto, 1,1,0,0 )
-;       SetAlignment( ID(Hex(3)), #__align_auto, 0,1,1,0 )
-;       SetAlignment( ID(Hex(7)), #__align_auto, 1,0,0,1 )
-;       SetAlignment( ID(Hex(5)), #__align_auto, 0,0,1,1 )
+;       SetAlign( ID(Hex(1)), #__align_auto, 1,1,0,0 )
+;       SetAlign( ID(Hex(3)), #__align_auto, 0,1,1,0 )
+;       SetAlign( ID(Hex(7)), #__align_auto, 1,0,0,1 )
+;       SetAlign( ID(Hex(5)), #__align_auto, 0,0,1,1 )
       
       
       

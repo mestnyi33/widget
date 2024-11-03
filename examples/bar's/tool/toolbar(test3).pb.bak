@@ -115,7 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       ;  Debug *this\TabAddIndex( ) ; TabState( ) ; TabIndex( )
 ;       ;*this\type = #__type_ToolBar
 ;       ;SetFrame(*this, 10 )
-;       ;SetAlignment( *this, #__align_full|#__align_top )
+;       ;SetAlign( *this, #__align_full|#__align_top )
 ;       
 ;       Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
 ;       
@@ -287,7 +287,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 20
+; CursorPosition = 117
+; FirstLine = 113
 ; Folding = -0
 ; EnableXP

@@ -73,7 +73,6 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   
   ; = Open(#PB_Any, #PB_Ignore,#PB_Ignore,200,300, "Image editor",Flag, Parent) 
   
-  ; Alignment(, Flag)
   If ((Flag & #PB_Window_ScreenCentered) = #PB_Window_ScreenCentered)
 ;     X = (WidgetWidth(0)-Width)/2 
 ;     Y = (WidgetHeight(0)-Height)/2
@@ -127,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9
-; FirstLine = 5
+; CursorPosition = 74
+; FirstLine = 71
 ; Folding = ---
 ; Optimizer
 ; EnableXP

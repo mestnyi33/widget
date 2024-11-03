@@ -1,6 +1,6 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
-UseLib(widget)
+UseWidgets( )
 
 Global Window_3, demo
 
@@ -378,7 +378,7 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   S_Screen = Container(x+pos+butt_size, y+pos+butt_size, screen_size, screen_size) ;:Disable(S_Screen,1)
   Sha = Button(0, 0, butt_size+2, butt_size+2, "", #__button_Toggle) 
 ;   SetState(*this, 1)
-;   SetAlignment( *this, 1,1,0,0 )
+;   SetAlign( *this, 1,1,0,0 )
   CloseList()
   
   C_Button  = Button(x+pos+(screen_size+butt_size)/2, y+pos+(screen_size+butt_size)/2, butt_size, butt_size, "", 0, -1, 7)                                     ;:ToolTip(C_Button,  "Включить привязку (вцентре)")
@@ -437,7 +437,7 @@ Procedure Sha_Events()
   EndIf
   
   Debug ""+left +" "+ right +" "+ top +" "+ bottom
-  SetAlignment( demo, left, right, top, bottom )
+  SetAlign( demo, left, right, top, bottom )
 EndProcedure
 
 Bind(Sha, @Sha_Events( ), #__event_resize)

@@ -57,10 +57,10 @@ SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
 *Object1 = a_object(50, 50, 300, 100, "Simple attachment", RGBA(192, 64, 128, alpha1))
 
 *Object2 = a_object(0, 120, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
-SetAttachment( *Object2, *Object1, 0 ) ; Прикрепите Object2 непосредственно к Object1, тогда позиция будет относительно Object1
+SetAttach( *Object2, *Object1, 0 ) ; Прикрепите Object2 непосредственно к Object1, тогда позиция будет относительно Object1
 
 *Object3 = a_object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
-SetAttachment( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, но только к x-позиции
+SetAttach( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, но только к x-позиции
 
 
 ; --- Panel container ---
@@ -76,13 +76,13 @@ SetFrame(widget(), 2)
 
 AddItem( *Object4, 0, "panel-item-0" )
 *Object5 = a_object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
-MoveBounds(*Object5)
+SetMoveBounds(*Object5)
 AddItem( *Object4, 1, "panel-item-1" )
 *Object6 = a_object( 150, 150, 140, 100, "parent-item-1", RGBA(0, 64, 128, alpha1));, #Object4, 1) ; Attach object 6 directly to object 1 into the second frame
-MoveBounds(*Object6)
+SetMoveBounds(*Object6)
 AddItem( *Object4, 2, "panel-item-2" )
 *Object7 = a_object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
-MoveBounds(*Object7)
+SetMoveBounds(*Object7)
 CloseList( )
 SetState(*Object4, 2)
 
@@ -97,7 +97,7 @@ SetColor(widget(), #__color_Frame, RGB(128, 192, 64))
 ; SetFrame(widget(), 2)
 
 ; Attach some objects to #Object8
-ChildrenBounds( *Object8 )
+SetChildrenBounds( *Object8 )
 ;;AddObjectFrame(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
 OpenList( *Object8 )
 a_object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
@@ -289,8 +289,8 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 84
+; FirstLine = 65
 ; Folding = +
 ; EnableXP
 ; DPIAware

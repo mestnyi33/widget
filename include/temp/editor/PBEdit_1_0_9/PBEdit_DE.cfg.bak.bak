@@ -1,0 +1,47 @@
+﻿[FindReplace]
+wnd_findReplace = Suchen/Ersetzen
+txt_search = Suche nach
+chk_replace = Ersetzen durch
+chk_caseSensitive = Groß-/Kleinschreibung
+chk_wholeWords = nur ganze Wörter suchen
+chk_insideSelection = innerhalb der Auswahl suchen
+chk_noComments = nicht in Kommentaren suchen
+chk_noStrings = nicht in Strings suchen
+chk_regEx = Regulärer Ausdruck
+btn_findNext = Weitersuchen
+btn_findPrevious = Rückwärts
+btn_replace = Ersetzen
+btn_replaceAll = Alle ersetzen
+btn_close = Schließen
+
+[PopupMenu]
+Cut = Ausschneiden\t\t\t\t\tCtrl+X
+Copy = Kopieren\t\t\t\t\tCtrl+C
+Paste = Einfügen\t\t\t\t\tCtrl+V
+InsertComments = Auskommentieren\t\t\t\t\tCtrl+B
+RemoveComments = Kommentar entfernen\t\t\t\t\tCtrl+Shift+B
+FormatIndentation = Einrücken\t\t\t\t\tCtrl+I
+ToggleFold = Faltung umkehren\t\t\t\t\tF4
+ToggleAllFolds = Alle Faltungen umkehren\t\t\t\t\tCtrl+F4
+SplitView = Fenster teilen
+Horizontal = Horizontal
+Vertical = Vertikal
+UnsplitView = Teilung entfernen
+Select All = Alles auswählen\t\t\t\t\tCtrl+A
+
+[Messages]
+WarningTitle = Warnung
+WarningLongText = Sehr langer Text (%N1 Zeichen) an %N2 Positionen.\n Trotzdem einfügen ?
+
+ErrorTitle = Fehler
+ErrorRegEx = Fehler in regulärem Ausdruck	
+ErrorNotFound = nicht gefunden
+
+GotoTitle = Gehe zu...
+GotoMessage = Zeilennummer
+
+MessageTitleFindReplace = Suchen/Ersetzen
+MessageNoMoreMatches = keine weiteren Treffer.
+MessageNoMoreMatchesEnd = keine weiteren Treffer.\nSuche am Anfang der Datei fortsetzen?
+MessageNoMoreMatchesStart = keine weiteren Treffer.\nSuche am Ende der Datei fortsetzen?
+MessageReplaceComplete = Suchen/Ersetzen beendet.\n%N1 Übereinstimmungen gefunden.

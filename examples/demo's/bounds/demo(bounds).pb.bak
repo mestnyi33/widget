@@ -4,7 +4,7 @@
 ; Bounds window example
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
+  UseWidgets( )
   
   Global object, parent
   Declare CustomEvents( )
@@ -31,8 +31,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   a_set(object, #__a_full, DPIScaled(8))
-  SizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
-  MoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
+  SetSizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
+  SetMoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
   
   ;\\
   Bind( widget( ), @CustomEvents(), #__event_Draw )

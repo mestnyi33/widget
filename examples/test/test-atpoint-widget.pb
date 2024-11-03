@@ -40,9 +40,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ; ;   a_set(object, #__a_full, anchor_size)
    ;   
    ;   ;\\
-   ;   SizeBounds(object, anchor_size*2, anchor_size*2, 460, 460)
-   ;   ;MoveBounds(object, fs, fs, 501-fs, 501-fs)
-   ;   MoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
+   ;   SetSizeBounds(object, anchor_size*2, anchor_size*2, 460, 460)
+   ;   ;SetMoveBounds(object, fs, fs, 501-fs, 501-fs)
+   ;   SetMoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
    ;   
    ;\\
    Bind( parent, @CustomEvents( ), #__event_statuschange )
@@ -97,8 +97,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 55
+; CursorPosition = 44
+; FirstLine = 40
 ; Folding = --
 ; EnableXP
 ; DPIAware

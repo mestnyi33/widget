@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-   UseLib(widget)
+   UseWidgets( )
    EnableExplicit
    
    
@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;SetAlignment(Button_0, #__align_auto, 0,0,1,1 )
    ;SetAlignment(Button_0, #__align_auto|#__align_right|#__align_bottom )
    ;
-   SetAlignment(Button_0, #__align_auto, 0,0, -5,-5 )
+   SetAlign(Button_0, #__align_auto, 0,0, -5,-5 )
    
    While WaitWindowEvent(1000) : Wend ;: Delay(1000)
    
