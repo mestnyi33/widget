@@ -1,38 +1,43 @@
-﻿XIncludeFile "../../../widgets.pbi" : UseWidgets( )
+﻿XIncludeFile "../../../widgets.pbi" 
 
 EnableExplicit
+UseWidgets( )
+
 Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, w_type
+
+Procedure SetRound( *this._S_WIDGET, round.a )
+  *this\round = DesktopScaledX(round)
+  ;
+  If *this\type = #__type_ProgressBar
+    *this\bar\button[1]\round = *this\round
+    *this\bar\button[2]\round = *this\round
+  EndIf
+EndProcedure
 
 Procedure events_widgets()
   Select WidgetEvent( )
-    Case #PB_EventType_Change
+    Case #__event_Change
       Select EventWidget( )
         Case w_type
           
         Case Button_2
-          EventWidget( ) = Button_1
-          EventWidget( )\round = GetState(Button_2)
-          EventWidget( )\bar\button[1]\round = EventWidget( )\round
-          EventWidget( )\bar\button[2]\round = EventWidget( )\round
+          SetRound( Button_1, GetState(EventWidget( )) )
           
         Case Button_3
-          SetState(Button_1, GetState(Button_3))
+          SetState(Button_1, GetState(EventWidget( )))
           
         Case Button_4
-          EventWidget( ) = Button_0
-          EventWidget( )\round = GetState(Button_4)
-          EventWidget( )\bar\button[1]\round = EventWidget( )\round
-          EventWidget( )\bar\button[2]\round = EventWidget( )\round
-          
+          SetRound( Button_0, GetState(EventWidget( )) )
+         
         Case Button_5
-          SetState(Button_0, GetState(Button_5))
+          SetState(Button_0, GetState(EventWidget( )))
           
       EndSelect
   EndSelect
 EndProcedure
 
 If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  If Open(0);, 425, 40)
+  If Open(0)
     Button_0 = Progress(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
     Button_1 = Progress(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
     
@@ -68,8 +73,7 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 19
-; Folding = -
+; CursorPosition = 17
+; Folding = --
 ; EnableXP
 ; DPIAware

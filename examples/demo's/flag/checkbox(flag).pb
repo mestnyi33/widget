@@ -100,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
                button_bottom,
                button_center
             
-            Flag(*this, #__text_left|#__text_right|#__text_top|#__text_bottom, 0)
+            Flag(*this, #__text_left|#PB_CheckBox_Right|#__text_top|#__text_bottom, 0)
             ;
             If EventWidget <> button_top And EventWidget <> button_left And EventWidget <> button_right
               SetState(button_top,0) 
@@ -122,15 +122,15 @@ CompilerIf #PB_Compiler_IsMainFile
             If GetState(button_left) And GetState(button_bottom)
               Flag(*this, #__text_left|#__text_bottom, 1)
             ElseIf GetState(button_right) And GetState(button_bottom)
-              Flag(*this, #__text_right|#__text_bottom, 1)
+              Flag(*this, #PB_CheckBox_Right|#__text_bottom, 1)
             ElseIf GetState(button_left) And GetState(button_top)
               Flag(*this, #__text_left|#__text_top, 1)
             ElseIf GetState(button_right) And GetState(button_top)
-              Flag(*this, #__text_right|#__text_top, 1)
+              Flag(*this, #PB_CheckBox_Right|#__text_top, 1)
             ElseIf GetState(button_left)
               Flag(*this, #__text_left, 1)
             ElseIf GetState(button_right) 
-              Flag(*this, #__text_right, 1)
+              Flag(*this, #PB_CheckBox_Right, 1)
             ElseIf GetState(button_bottom)
               Flag(*this, #__text_bottom, 1)
             ElseIf GetState(button_top)
@@ -142,18 +142,18 @@ CompilerIf #PB_Compiler_IsMainFile
                GetState(button_right)=0 And
                GetState(button_bottom)=0
               SetState(button_center,1) 
-              Flag(*this, #__text_center, 1)
+              Flag(*this, #PB_CheckBox_Center, 1)
             EndIf
             
             Select EventWidget
               Case button_top       : flag = #__text_top     
               Case button_left      : flag = #__text_left
-              Case button_right     : flag = #__text_right
+              Case button_right     : flag = #PB_CheckBox_Right
               Case button_bottom    : flag = #__text_bottom
-              Case button_center    : flag = #__text_center
+              Case button_center    : flag = #PB_CheckBox_Center
             EndSelect
             ;
-          ;Case button_toggle    : flag = #PB_Option_ThreeState
+          Case button_toggle    : flag = #PB_CheckBox_ThreeState
           Case button_invert    : flag = #__text_invert
           Case button_vertical  : flag = #__text_vertical
         EndSelect
@@ -189,27 +189,28 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    gadget = OptionGadget(#PB_Any, 100, 100, 250, 200, text) : HideGadget(gadget, 1)
-    *this  = widget::Option(100, 100, 250, 200, text, #__flag_textMultiLine);|#__flag_anchorsgadget)
+  If Open(OpenWindow(#PB_Any, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+    gadget = CheckBoxGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
+    *this  = widget::CheckBox(100, 100, 250, 200, text, #__flag_textMultiLine);|#__flag_anchorsgadget)
     
     Define y  = 10
     Define bh = 24
+    Define p = bh+5
     ; flag
-    Button_type      = widget::Button(width + 45, y, 100, 26, "gadget", #PB_Button_Toggle)
-    button_default   = widget::Button(width + 45, y + bh * 1, 100, 26, "default", #PB_Button_Toggle)
-    button_multiline = widget::Button(width + 45, y + bh * 2, 100, 26, "multiline", #PB_Button_Toggle)
-    button_top       = widget::Button(width + 45, y + bh * 3, 100, 26, "top", #PB_Button_Toggle)
-    button_left      = widget::Button(width + 45, y + bh * 4, 100, 26, "left", #PB_Button_Toggle)
-    button_center    = widget::Button(width + 45, y + bh * 5, 100, 26, "center", #PB_Button_Toggle)
-    button_right     = widget::Button(width + 45, y + bh * 6, 100, 26, "right", #PB_Button_Toggle)
-    button_bottom    = widget::Button(width + 45, y + bh * 7, 100, 26, "bottom", #PB_Button_Toggle)
-    button_toggle    = widget::Button(width + 45, y + bh * 8, 100, 26, "toggle", #PB_Button_Toggle)
-    button_vertical  = widget::Button(width + 45, y + bh * 9, 100, 26, "vertical", #PB_Button_Toggle)
-    button_invert    = widget::Button(width + 45, y + bh * 10, 100, 26, "invert", #PB_Button_Toggle)
+    Button_type      = widget::Button(width + 45, y, 100, p, "gadget", #PB_Button_Toggle)
+    button_default   = widget::Button(width + 45, y + p * 1, 100, bh, "default", #PB_Button_Toggle)
+    button_multiline = widget::Button(width + 45, y + p * 2, 100, bh, "multiline", #PB_Button_Toggle)
+    button_top       = widget::Button(width + 45, y + p * 3, 100, bh, "top", #PB_Button_Toggle)
+    button_left      = widget::Button(width + 45, y + p * 4, 100, bh, "left", #PB_Button_Toggle)
+    button_center    = widget::Button(width + 45, y + p * 5, 100, bh, "center", #PB_Button_Toggle)
+    button_right     = widget::Button(width + 45, y + p * 6, 100, bh, "right", #PB_Button_Toggle)
+    button_bottom    = widget::Button(width + 45, y + p * 7, 100, bh, "bottom", #PB_Button_Toggle)
+    button_toggle    = widget::Button(width + 45, y + p * 8, 100, bh, "toggle", #PB_Button_Toggle)
+    button_vertical  = widget::Button(width + 45, y + p * 9, 100, bh, "vertical", #PB_Button_Toggle)
+    button_invert    = widget::Button(width + 45, y + p * 10, 100, bh, "invert", #PB_Button_Toggle)
     
 ;     ; flag
-;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__flag_optionboxes | #__tree_Optiones | #__Tree_threestate)
+;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__flag_optionboxes | #__tree_CheckBoxes | #__Tree_threestate)
 ;     AddItem(tree, #tree_item_default, "default")
 ;     AddItem(tree, #tree_item_multiline, "multiline")
 ;     AddItem(tree, #tree_item_text, "text alignment", -1, 0)
@@ -245,8 +246,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 152
-; FirstLine = 144
+; CursorPosition = 210
+; FirstLine = 192
 ; Folding = ----
 ; EnableXP
 ; DPIAware

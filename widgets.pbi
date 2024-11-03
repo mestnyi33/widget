@@ -209,10 +209,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     UseModule events
     
     ;-  -----------------
-    ;-   DECLARE_globals
+    ;-   GLOBALS
     ;-  -----------------
-    Declare.l Update_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
-    
     Global _macro_call_count_
     Global __gui._s_STRUCT
     ;Global NewMap *roots._s_root( )
@@ -294,25 +292,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;       Macro EnableDrop( Widget, Format, Actions, PrivateType = 0 ) : EnableDrop( Widget, Format, Actions, PrivateType ) : EndMacro
     ;       Macro EnableGadgetDrop( Gadget, Format, Actions, PrivateType = 0 ) : EnableDrop( Gadget, Format, Actions, PrivateType ) : EndMacro
     ;       Macro EnableWindowDrop( Window, Format, Actions, PrivateType = 0 ) : EnableDrop( Window, Format, Actions, PrivateType ) : EndMacro
-    
-    Declare.l DropX( )
-    Declare.l DropY( )
-    Declare.l DropWidth( )
-    Declare.l DropHeight( )
-    
-    Declare.s DropFiles( )
-    Declare.s DropText( )
-    Declare.i DropType( )
-    Declare.i DropAction( )
-    Declare.i DropPrivate( )
-    Declare.i DropImage( Image.i = -1, Depth.i = 24 )
-    
-    Declare.i DragDropText( Text.S, Actions.b = #PB_Drag_Copy )
-    Declare.i DragDropImage( Image.i, Actions.b = #PB_Drag_Copy )
-    Declare.i DragDropPrivate( Type.i, Actions.b = #PB_Drag_Copy )
-    Declare.i DragDropFiles( Files.s, Actions.b = #PB_Drag_Copy )
-    
-    Declare.i EnableDrop( *this, Format.l, Actions.b, PrivateType.i = 0 )
     
     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       ;          Macro BindGadgetEvent( _gadget_, _callback_, _eventtype_=#PB_All )
@@ -482,7 +461,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro RowFocusedIndex( ): row\id[0]: EndMacro
     
     ;-
-    Macro ToggleBox( ): togglebox: EndMacro ;  
     Macro ComboButton( ): combobutton: EndMacro
     
     
@@ -491,7 +469,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro ScrollState( ): scroll\state: EndMacro
     
     Macro TabItemState( ): checked: EndMacro
-    Macro ToggleBoxState( ): ToggleBox( )\TabItemState( ): EndMacro
+    Macro ToggleBoxState( ): togglebox\TabItemState( ): EndMacro
     Macro RowBoxState( ): checkbox\TabItemState( ): EndMacro
     Macro RowButtonState( ): buttonbox\TabItemState( ): EndMacro
     
@@ -929,13 +907,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     
-    ;-
-    Declare a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
-    Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
-    Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
-    Declare a_update( *parent )
-    Declare a_free( *this )
-    Declare a_object( x.l, y.l, width.l, height.l, text.s, Color.l, flag.q = #Null, framesize = 1 )
     ;
     Macro a_anchors( )
       mouse( )\anchors
@@ -1301,12 +1272,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;       PB(CloseGadgetList)( )
     ;     EndMacro
     
-    ;-  -------------------
-    ;-   DECLARE_functions
-    ;-  -------------------
-    ;{
-    ; Requester
-    Global resize_one
+    ;-  
+    ;-\\   DECLARE_globals
+    ;-  
+    Declare.l Update_TreeItems( *this._s_WIDGET, List *items._s_ROWS( ), _change_ = 1 )
+    
+    Declare.l DropX( )
+    Declare.l DropY( )
+    Declare.l DropWidth( )
+    Declare.l DropHeight( )
+    
+    Declare.s DropFiles( )
+    Declare.s DropText( )
+    Declare.i DropType( )
+    Declare.i DropAction( )
+    Declare.i DropPrivate( )
+    Declare.i DropImage( Image.i = -1, Depth.i = 24 )
+    
+    Declare.i DragDropText( Text.S, Actions.b = #PB_Drag_Copy )
+    Declare.i DragDropImage( Image.i, Actions.b = #PB_Drag_Copy )
+    Declare.i DragDropPrivate( Type.i, Actions.b = #PB_Drag_Copy )
+    Declare.i DragDropFiles( Files.s, Actions.b = #PB_Drag_Copy )
+    
+    Declare.i EnableDrop( *this, Format.l, Actions.b, PrivateType.i = 0 )
+    
+    Declare a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
+    Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
+    Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
+    Declare a_update( *parent )
+    Declare a_free( *this )
+    Declare a_object( x.l, y.l, width.l, height.l, text.s, Color.l, flag.q = #Null, framesize = 1 )
     
     Declare   CanvasEvents( )
     Declare   EventRepaint( )
@@ -1458,6 +1453,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare   GetPositionAfter( *this, tabindex.l )
     Declare   GetPositionLast( *this, tabindex.l = #PB_Default )
     
+    ;
     Declare.i Create( *parent, class.s, type.l, x.l, y.l, width.l, height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.f = 1.0 )
     
     ; button
@@ -1526,7 +1522,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare   Open( Window, x.l = 0, y.l = 0, width.l = #PB_Ignore, height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, canvas = #PB_Any )
     Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, width.l, height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null )
     Declare   Free( *this )
-    ;}
   EndDeclareModule
   
   Module Widget
@@ -6800,7 +6795,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\type = #__type_Button Or
          *this\type = #__type_ButtonImage
         
-        If *this\ToggleBox( )
+        If *this\togglebox
           ProcedureReturn *this\ToggleBoxState( )
         EndIf
       EndIf
@@ -6875,7 +6870,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;\\ Ok
-      If *this\ToggleBox( )
+      If *this\togglebox
         If *this\ToggleBoxState( ) <> state
           *this\ToggleBoxState( ) = state
           
@@ -14801,10 +14796,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\type = #__type_Button
               ; set toggle button
-              If constants::BinaryFlag( *this\flag, #PB_Button_Toggle )
-                If constants::BinaryFlag( Flag, #PB_Button_Toggle )
-                  If Not *this\ToggleBox( )
-                    *this\ToggleBox( ).allocate( BOX )
+              If constants::BinaryFlag( flag, #PB_Button_Toggle )
+                If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
+                  If Not *this\togglebox
+                    *this\togglebox.allocate( BOX )
                   EndIf
                   ;
                   *this\ToggleBoxState( ) = state
@@ -14816,8 +14811,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                 EndIf
               Else
-                If *this\ToggleBox( )
-                  *this\ToggleBox( ) = #Null
+                If *this\togglebox
+                  *this\togglebox = #Null
                   *this\ColorState( ) = #__s_0
                 EndIf
               EndIf
@@ -15527,27 +15522,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       If *this\type = #__type_Button 
         If constants::BinaryFlag( flag, #PB_Button_Toggle )
-          *this\ToggleBox( ).allocate( BOX )
+          flag &~ #PB_Button_Toggle
+          *this\togglebox.allocate( BOX )
         EndIf
-      EndIf
+        *this\deffocus = Bool( flag & #PB_Button_Default )
+     EndIf
       If *this\type = #__type_CheckBox 
-        *this\ToggleBox( ).allocate( BOX )
-        *this\ToggleBox( )\round  = DPIScaled( 2 )
-        *this\ToggleBox( )\width = DPIScaled( #__buttonsize ) 
-        *this\ToggleBox( )\width  - Bool( Not *this\ToggleBox( )\width % 2)
-        *this\ToggleBox( )\height = *this\ToggleBox( )\width
+        *this\togglebox.allocate( BOX )
+        *this\togglebox\round  = DPIScaled( 2 )
+        *this\togglebox\width = DPIScaled( #__buttonsize ) 
+        *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
+        *this\togglebox\height = *this\togglebox\width
       EndIf
       If *this\type = #__type_Option
-        *this\ToggleBox( ).allocate( BOX )
-        *this\ToggleBox( )\round  = DPIScaled( #__buttonround )
-        *this\ToggleBox( )\width  = DPIScaled( #__buttonsize ) 
-        *this\ToggleBox( )\width  - Bool( Not *this\ToggleBox( )\width % 2)
-        *this\ToggleBox( )\height = *this\ToggleBox( )\width
+        *this\togglebox.allocate( BOX )
+        *this\togglebox\round  = DPIScaled( #__buttonround )
+        *this\togglebox\width  = DPIScaled( #__buttonsize ) 
+        *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
+        *this\togglebox\height = *this\togglebox\width
       EndIf
        
-      If *this\ToggleBox( ) And
-         *this\ToggleBox( )\width
-        *this\text\padding\x = *this\ToggleBox( )\width + DPIScaled(8)
+      If *this\togglebox And
+         *this\togglebox\width
+        *this\text\padding\x = *this\togglebox\width + DPIScaled(8)
       EndIf
         
       ;          ;\\ set activate state
@@ -17449,7 +17446,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *this\type = #__type_Button Or
            *this\type = #__type_ButtonImage
           state = *this\ColorState( )
-          If *this\ToggleBox( ) And *this\ToggleBoxState( )
+          If *this\togglebox And *this\ToggleBoxState( )
             state = #__s_2
           EndIf
         EndIf
@@ -17525,23 +17522,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ draw box
         Protected _box_type_, _box_x_, _box_y_
         ; update widget ( option&checkbox ) position
-        If *this\ToggleBox( ) And *this\ToggleBox( )\width And *this\WidgetChange( ) 
-          *this\ToggleBox( )\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\ToggleBox( )\height ) / 2
+        If *this\togglebox And *this\togglebox\width And *this\WidgetChange( ) 
+          *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
           
           If *this\text\align\right
-            *this\ToggleBox( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\ToggleBox( )\height - 3 )
+            *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - 3 )
           ElseIf Not *this\text\align\left
-            *this\ToggleBox( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\ToggleBox( )\width ) / 2
+            *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
             
             If Not *this\text\align\top
               If *this\text\rotate = 0
-                *this\ToggleBox( )\y = *this\inner_y( ) + *this\scroll_y( ) - *this\ToggleBox( )\height
+                *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
               Else
-                *this\ToggleBox( )\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
               EndIf
             EndIf
           Else
-            *this\ToggleBox( )\x = *this\inner_x( ) + 3
+            *this\togglebox\x = *this\inner_x( ) + 3
           EndIf
         EndIf
         
@@ -17553,7 +17550,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           _box_type_ = 3
         EndIf
         If _box_type_
-          draw_button_( _box_type_, *this\ToggleBox( )\x, *this\ToggleBox( )\y, *this\ToggleBox( )\width, *this\ToggleBox( )\height, *this\ToggleBoxState( ), *this\ToggleBox( )\round )
+          draw_button_( _box_type_, *this\togglebox\x, *this\togglebox\y, *this\togglebox\width, *this\togglebox\height, *this\ToggleBoxState( ), *this\togglebox\round )
         EndIf
         
         ;\\ draw image
@@ -17571,7 +17568,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ draw frame defaul focus widget
         If *this\type = #__type_Button
-          If constants::BinaryFlag( *this\flag, #PB_Button_Default )
+          If *this\deffocus 
             draw_mode_( #PB_2DDrawing_Outlined )
             draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ),
                             *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
@@ -20848,7 +20845,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
           Case #__type_Button, #__type_ButtonImage
-            If Not ( *this\ToggleBox( ) And *this\ToggleBoxState( ))
+            If Not ( *this\togglebox And *this\ToggleBoxState( ))
               Select eventtype
                 Case #__event_MouseEnter
                   If *this\mouseenter 
@@ -20896,7 +20893,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_Up
               If mouse( )\buttons & #PB_Canvas_LeftButton
                 If *this\mouseenter 
-                  If *this\ToggleBox( )
+                  If *this\togglebox
                     SetState( *this, Bool( *this\ToggleBoxState( ) ! 1 ))
                   EndIf
                 EndIf
@@ -24328,9 +24325,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 962
-; FirstLine = 582
-; Folding = AGAABQs+-------------PgHA5------AAABDAAAA9HZAAIAAAAAgdCAAAAw-------------PQAAAAAAAyfcDAY58H9vPAAAxfAAAADAAAAAAAA9jQ97BC-AABAAGjAAAAAAAAAAAw-PARAw-RCAAAAAAAAAAA+CACAgBAA+-DSA5N+D5x+PAAgzAUxbhNAQDAAAAEjhEAGAAAAAOAAAAAAAAAAAAAAAAw-A+HAAAAAAAAAAAAAAA-------------AAEAAAfAAAAAAyQHAAAAAAAAAAAAAAAAAAgHAAAAAAAAAAAAAACAAAwDYAAABAAAAAAAAAAAAAAA1DAAYAAAAAACAAA-HAAAAAAAAAAAAAAAAAAQFduABAAAAAAAAc5KIAgLAA5HAAAAAAAAAAAAAAAg9BA60DQEHiMAgAAIAAAAAAAAAQAw3sNAMCAeCAAAeAAAAAAAAO9-zrAAAEPwhQAAohBADAAMAAOOzZOAAAAAA9H5PBwBA+5twAAcgDAAAA+BAAAAAAAwBAwBxA+BAA9DoHwP9RnwMwFME9w-whgAAAAPRAA5wPcAaHAAAAAAAAAAAAwBAAAAAAAAAAAAA+------BQCCAYABAAAAAAAAgDYgbAAAAAAAAAQCAAAeAA9
+; CursorPosition = 15527
+; FirstLine = 4746
+; Folding = AGA1BQs+-------------HwDA9-----fAAggBAAAA+RGAACAAAAAYnAAAAA9-------------DEAAAAAAg9H4AAG++B-8DAAQ9HAAAwAAAAAAAAA-IEvewwPAQAAgxIAAAAAAAAAAA9-DQEA9fkAAAAAAAAAAAgvAgAAYAAg--gEAej-Aes-DAA5MAV9WYDA1AAAAAxYIBgBAAAAgDAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAAAAAAw------------PAABAAwHAAAAAgM1BAAAAAAAAAAAAAAAAAA5BAAAAAAAAAAAAAgAAAA9AGAAQAAAAAAAAAAAAAAAA0AAAGAAAAAgAAAw-BAAAAAAAAAAAAAAAAAAURnLQAAAAAAAAAHuCCA5DAA+BAAAAAAAAAAAAAAAIfAQe-AExhIDAIAACAAAAAAAAAEAsNbDAjAgnAAAgHAAAAAAAgD--9KAAAxDcIEAAaYAwAAADAgjzcmDAAAAAA-B+TAcAgPeLMAAH5AAAAgfAAAAAAAAcAAcQMgfAAA-A7B9Df1JMDcBDBP9PcIIAABwTEAAO9DHg3BAAAAAAAAAAAAcAAAAAAAAAAAAAg------fAkgAAGQAAAAAAAAA5AG5GAAAAAAACAkAAAgHAA-
 ; Optimizer
 ; EnableXP
 ; DPIAware

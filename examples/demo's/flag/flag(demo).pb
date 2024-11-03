@@ -572,7 +572,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flag
     
     Select WidgetEvent( )
-      Case #PB_EventType_Change
+      Case #__event_Change
         Select EventWidget( )
           Case w_type 
             flag = Flag(*this)
@@ -584,7 +584,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;  Debug GetCheckedText(w_flag)
         EndSelect
         
-      Case #PB_EventType_LeftClick
+      Case #__event_LeftClick
         Select EventWidget( )
           Case w_flag
             SetFlag(w_flag, *this)
@@ -599,7 +599,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *this = widget::Button(100, 100, 250, 200, text, #__button_toggle|#__button_multiline|#__flag_anchorsgadget) 
     
     
@@ -618,8 +618,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 417
-; FirstLine = 334
+; CursorPosition = 587
+; FirstLine = 291
 ; Folding = d------28-
 ; EnableXP
 ; DPIAware
