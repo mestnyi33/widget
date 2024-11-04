@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick
         Select EventWidget
           Case *this
-            If Flag(*this, #PB_Button_Toggle)
+            If Flag(*this, #__flag_ButtonToggle)
               SetState(button_toggle, GetState(EventWidget))
             EndIf
             
@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
           Case button_default   : flag = #PB_Button_Default
-          Case button_multiline : flag = #__flag_textMultiLine
+          Case button_multiline : flag = #__flag_Textmultiline
             ;
           Case button_top,
                button_left,
@@ -102,37 +102,37 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
             If EventWidget <> button_top 
-              Flag(*this, #__text_top, 0)
+              Flag(*this, #__flag_Texttop, 0)
               SetState(button_top,0) 
             EndIf
             If EventWidget <> button_left 
-              Flag(*this, #__text_left, 0)
+              Flag(*this, #__flag_Textleft, 0)
               SetState(button_left,0) 
             EndIf
             If EventWidget <> button_right 
-              Flag(*this, #__text_right, 0)
+              Flag(*this, #__flag_Textright, 0)
               SetState(button_right,0) 
             EndIf
             If EventWidget <> button_bottom 
-              Flag(*this, #__text_bottom, 0)
+              Flag(*this, #__flag_Textbottom, 0)
               SetState(button_bottom,0) 
             EndIf
             If EventWidget <> button_center 
-              Flag(*this, #__text_center, 0)
+              Flag(*this, #__flag_Textcenter, 0)
               SetState(button_center,0) 
             EndIf
             
             Select EventWidget
-              Case button_top       : flag = #__text_top     
-              Case button_left      : flag = #__text_left
-              Case button_right     : flag = #__text_right
-              Case button_bottom    : flag = #__text_bottom
-              Case button_center    : flag = #__text_center
+              Case button_top       : flag = #__flag_Texttop     
+              Case button_left      : flag = #__flag_Textleft
+              Case button_right     : flag = #__flag_Textright
+              Case button_bottom    : flag = #__flag_Textbottom
+              Case button_center    : flag = #__flag_Textcenter
             EndSelect
             ;
           ;Case button_toggle    : flag = #PB_ComboBox_ThreeState
-          Case button_invert    : flag = #__text_invert
-          Case button_vertical  : flag = #__text_vertical
+          Case button_invert    : flag = #__flag_Textinvert
+          Case button_vertical  : flag = #__flag_Textvertical
         EndSelect
         
         If flag
@@ -168,24 +168,24 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ComboBoxGadget(#PB_Any, 100, 100, 250, 200) : HideGadget(gadget, 1)
-    *this  = widget::ComboBox(100, 100, 250, 200, #__flag_textMultiLine);|#__flag_anchorsgadget)
+    *this  = widget::ComboBox(100, 100, 250, 200, #__flag_Textmultiline);|#__flag_anchorsgadget)
     AddItem( *this, -1, text )
     
     Define y  = 10
     Define bh = 24
     Define p = bh+5
     ; flag
-    Button_type      = widget::Button(width + 45, y, 100, p, "gadget", #PB_Button_Toggle)
-    button_default   = widget::Button(width + 45, y + p * 1, 100, bh, "default", #PB_Button_Toggle)
-    button_multiline = widget::Button(width + 45, y + p * 2, 100, bh, "multiline", #PB_Button_Toggle)
-    button_top       = widget::Button(width + 45, y + p * 3, 100, bh, "top", #PB_Button_Toggle)
-    button_left      = widget::Button(width + 45, y + p * 4, 100, bh, "left", #PB_Button_Toggle)
-    button_center    = widget::Button(width + 45, y + p * 5, 100, bh, "center", #PB_Button_Toggle)
-    button_right     = widget::Button(width + 45, y + p * 6, 100, bh, "right", #PB_Button_Toggle)
-    button_bottom    = widget::Button(width + 45, y + p * 7, 100, bh, "bottom", #PB_Button_Toggle)
-    button_toggle    = widget::Button(width + 45, y + p * 8, 100, bh, "toggle", #PB_Button_Toggle)
-    button_vertical  = widget::Button(width + 45, y + p * 9, 100, bh, "vertical", #PB_Button_Toggle)
-    button_invert    = widget::Button(width + 45, y + p * 10, 100, bh, "invert", #PB_Button_Toggle)
+    Button_type      = widget::Button(width + 45, y, 100, p, "gadget", #__flag_ButtonToggle)
+    button_default   = widget::Button(width + 45, y + p * 1, 100, bh, "default", #__flag_ButtonToggle)
+    button_multiline = widget::Button(width + 45, y + p * 2, 100, bh, "multiline", #__flag_ButtonToggle)
+    button_top       = widget::Button(width + 45, y + p * 3, 100, bh, "top", #__flag_ButtonToggle)
+    button_left      = widget::Button(width + 45, y + p * 4, 100, bh, "left", #__flag_ButtonToggle)
+    button_center    = widget::Button(width + 45, y + p * 5, 100, bh, "center", #__flag_ButtonToggle)
+    button_right     = widget::Button(width + 45, y + p * 6, 100, bh, "right", #__flag_ButtonToggle)
+    button_bottom    = widget::Button(width + 45, y + p * 7, 100, bh, "bottom", #__flag_ButtonToggle)
+    button_toggle    = widget::Button(width + 45, y + p * 8, 100, bh, "toggle", #__flag_ButtonToggle)
+    button_vertical  = widget::Button(width + 45, y + p * 9, 100, bh, "vertical", #__flag_ButtonToggle)
+    button_invert    = widget::Button(width + 45, y + p * 10, 100, bh, "invert", #__flag_ButtonToggle)
     
 ;     ; flag
 ;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_ComboBoxBoxes | #__tree_ComboBoxes | #__Tree_threestate)
@@ -204,8 +204,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(#PB_All, @events_widgets())
     
     ;\\ set button toggled state
-    SetState(button_multiline, Flag(*this, #__flag_textMultiLine))
-    SetState(button_center, Flag(*this, #__text_center))
+    SetState(button_multiline, Flag(*this, #__flag_Textmultiline))
+    SetState(button_center, Flag(*this, #__flag_Textcenter))
     Hide(Button_type, 1)
     
     ;\\
@@ -224,8 +224,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 188
-; FirstLine = 175
+; CursorPosition = 206
+; FirstLine = 177
 ; Folding = ---
 ; Optimizer
 ; EnableXP

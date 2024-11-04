@@ -196,7 +196,7 @@ Procedure Message( Title.s, Text.s, flag.q, *parent )
    CloseGadgetList( )
    
    ;\\
-   *ok = ButtonGadget(#PB_Any, width - bw - f2, height - bh - f2, bw, bh, "Ok");, #__button_Default )
+   *ok = ButtonGadget(#PB_Any, width - bw - f2, height - bh - f2, bw, bh, "Ok");, #__flag_ButtonDefault )
    BindGadgetEvent( *ok, @MessageEvents( ), #PB_EventType_LeftClick )
    If Flag & #PB_MessageRequester_YesNo Or
       Flag & #PB_MessageRequester_YesNoCancel

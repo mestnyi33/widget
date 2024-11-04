@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    #__s_Check = 1
    #__event_CloseItem = 300
    
-   ; Attribute für das TabBar
+   ; Attribute fur das TabBar
    Enumeration
       #__tab_None                 = 0<<0
       #__tab_CloseButton          = 1<<0
@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
       #__tab_ImageSize            = 1<<23
       #__tab_TabTextAlignment     = 1<<24
       #__tab_ScrollPosition       = 1<<25
-      #__tab_NormalTabLength      = 1<<26 ; für Später
+      #__tab_NormalTabLength      = 1<<26 ; fur Spater
       #__tab_MaxTabLength         = 1<<27
       #__tab_MinTabLength         = 1<<28
       #__tab_TabRounding          = 1<<29
@@ -38,20 +38,20 @@ CompilerIf #PB_Compiler_IsMainFile
    Enumeration #PB_EventType_FirstCustomValue
       #__event_Pushed 
       #__event_Updated      ; Das  hat sich aktualisiert (intern)
-                            ;;;#__event_Change       ; Der aktive Tab wurde geändert
-                            ;;;#__event_Resize       ; Die größe der Leiste hat sich geändert
+                            ;;;#__event_Change       ; Der aktive Tab wurde geandert
+                            ;;;#__event_Resize       ; Die gro?e der Leiste hat sich geandert
       #__event_NewItem      ; ein neuer Tab wird angefordert
                             ;;;#__event_CloseItem    ; ein Tab soll geschlossen werden
       #__event_SwapItem     ; der aktive Tab wurde verschoben
-      #__event_EditItem     ; der Text einer Karte wurde geändert
-      #__event_CheckBox     ; der Status der Checkbox hat sich geändert
-      #__event_PopupButton  ; der Popup-Button wurde gedrückt
+      #__event_EditItem     ; der Text einer Karte wurde geandert
+      #__event_CheckBox     ; der Status der Checkbox hat sich geandert
+      #__event_PopupButton  ; der Popup-Button wurde gedruckt
    EndEnumeration
    
    
    
    
-   ; Positions-Konstanten für "Item"-Befehle
+   ; Positions-Konstanten fur "Item"-Befehle
    Enumeration
       #__tab_item_None        = -1
       #__tab_item_NewTab      = -2
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    
-   ; Gibt die Position der angegebenen Registerkarte zurück.
+   ; Gibt die Position der angegebenen Registerkarte zuruck.
    Procedure GetItemPosition(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
       
       
@@ -284,7 +284,7 @@ CompilerIf #PB_Compiler_IsMainFile
          *g_ItemChecked = CheckBox(10, 140, 100, 20, "checked")
          *g_ItemCloseButton = CheckBox(210, 100, 100, 20, "close button")
          *g_ItemCheckBox = CheckBox(210, 120, 100, 20, "check box")
-         *g_ItemImage = Button(10, 165, 100, 20, "image or icon", #PB_Button_Toggle)
+         *g_ItemImage = Button(10, 165, 100, 20, "image or icon", #__flag_ButtonToggle)
          CloseList()
       EndIf
       
@@ -437,7 +437,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    #__s_Check = 1
    #__event_CloseItem = 300
    
-   ; Attribute für das TabBar
+   ; Attribute fur das TabBar
    Enumeration
       #__tab_None                 = 0<<0
       #__tab_CloseButton          = 1<<0
@@ -457,7 +457,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       #__tab_ImageSize            = 1<<23
       #__tab_TabTextAlignment     = 1<<24
       #__tab_ScrollPosition       = 1<<25
-      #__tab_NormalTabLength      = 1<<26 ; für Später
+      #__tab_NormalTabLength      = 1<<26 ; fur Spater
       #__tab_MaxTabLength         = 1<<27
       #__tab_MinTabLength         = 1<<28
       #__tab_TabRounding          = 1<<29
@@ -469,20 +469,20 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Enumeration #PB_EventType_FirstCustomValue
       #__event_Pushed 
       #__event_Updated      ; Das Gadget hat sich aktualisiert (intern)
-                            ;;;#__event_Change       ; Der aktive Tab wurde geändert
-                            ;;;#__event_Resize       ; Die größe der Leiste hat sich geändert
+                            ;;;#__event_Change       ; Der aktive Tab wurde geandert
+                            ;;;#__event_Resize       ; Die gro?e der Leiste hat sich geandert
       #__event_NewItem      ; ein neuer Tab wird angefordert
                             ;;;#__event_CloseItem    ; ein Tab soll geschlossen werden
       #__event_SwapItem     ; der aktive Tab wurde verschoben
-      #__event_EditItem     ; der Text einer Karte wurde geändert
-      #__event_CheckBox     ; der Status der Checkbox hat sich geändert
-      #__event_PopupButton  ; der Popup-Button wurde gedrückt
+      #__event_EditItem     ; der Text einer Karte wurde geandert
+      #__event_CheckBox     ; der Status der Checkbox hat sich geandert
+      #__event_PopupButton  ; der Popup-Button wurde gedruckt
    EndEnumeration
    
    
    
    
-   ; Positions-Konstanten für "Item"-Befehle
+   ; Positions-Konstanten fur "Item"-Befehle
    Enumeration
       #__tab_item_None        = -1
       #__tab_item_NewTab      = -2
@@ -569,7 +569,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    
    
-   ; Gibt die Position der angegebenen Registerkarte zurück.
+   ; Gibt die Position der angegebenen Registerkarte zuruck.
    Procedure GetItemPosition(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
       
       
@@ -865,7 +865,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 510
-; FirstLine = 506
+; CursorPosition = 721
+; FirstLine = 718
 ; Folding = --------
 ; EnableXP

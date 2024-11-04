@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftClick
         Select EventWidget( )
           Case *this
-            If Flag(*this, #__button_toggle)
+            If Flag(*this, #__flag_ButtonToggle)
               SetState(Button_4, GetState(EventWidget( )))
             EndIf
             
@@ -57,11 +57,11 @@ CompilerIf #PB_Compiler_IsMainFile
               SetText(Button_type, "gadget")
             EndIf
             
-          Case Button_0 : flag = #__button_default
-          Case Button_1 : flag = #__button_multiline
-          Case Button_2 : flag = #__button_left
+          Case Button_0 : flag = #__flag_ButtonDefault
+          Case Button_1 : flag = #__text_multiline
+          Case Button_2 : flag = #__flag_TextLeft
           Case Button_3 : flag = #__button_right
-          Case Button_4 : flag = #__button_toggle
+          Case Button_4 : flag = #__flag_ButtonToggle
           Case Button_5 : flag = #__text_top
           Case Button_6 : flag = #__text_bottom
           Case Button_7 : flag = #__text_invert
@@ -79,28 +79,28 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__button_multiline);|#__flag_anchorsgadget);|#__text_left) 
-    *this = widget::Editor(100, 100, 250, 250, #__flag_textwordwrap) : SetText(*this, get_text())
+    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__text_multiline);|#__flag_anchorsgadget);|#__text_left) 
+    *this = widget::Editor(100, 100, 250, 250, #__text_wordwrap) : SetText(*this, get_text())
     
     Define y = 10
     ; flag
-    Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 
-    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "default", #__button_toggle) 
-    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__button_toggle) 
-    Button_4 = widget::Button(width+45, y+30*3, 100, 26, "wordwrap", #__button_toggle) 
+    Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__flag_ButtonToggle) 
+    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "default", #__flag_ButtonToggle) 
+    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__flag_ButtonToggle) 
+    Button_4 = widget::Button(width+45, y+30*3, 100, 26, "wordwrap", #__flag_ButtonToggle) 
     
-    Button_5 = widget::Button(width+45, y+30*4, 100, 26, "top", #__button_toggle) 
-    Button_2 = widget::Button(width+45, y+30*5, 45, 26, "left", #__button_toggle) 
-    Button_3 = widget::Button(width+45 + 55, y+30*5, 45, 26, "right", #__button_toggle) 
-    Button_6 = widget::Button(width+45, y+30*6, 100, 26, "bottom", #__button_toggle) 
+    Button_5 = widget::Button(width+45, y+30*4, 100, 26, "top", #__flag_ButtonToggle) 
+    Button_2 = widget::Button(width+45, y+30*5, 45, 26, "left", #__flag_ButtonToggle) 
+    Button_3 = widget::Button(width+45 + 55, y+30*5, 45, 26, "right", #__flag_ButtonToggle) 
+    Button_6 = widget::Button(width+45, y+30*6, 100, 26, "bottom", #__flag_ButtonToggle) 
     
-    Button_8 = widget::Button(width+45, y+30*7, 100, 26, "vertical", #__button_toggle) 
-    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "invert", #__button_toggle) 
+    Button_8 = widget::Button(width+45, y+30*7, 100, 26, "vertical", #__flag_ButtonToggle) 
+    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "invert", #__flag_ButtonToggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(Button_1, Flag(*this, #__flag_textmultiline))
-    SetState(Button_4, Flag(*this, #__flag_textwordwrap))
+    SetState(Button_1, Flag(*this, #__text_multiline))
+    SetState(Button_4, Flag(*this, #__text_wordwrap))
     SetState(Button_5, Flag(*this, #__text_top))
     SetState(Button_2, Flag(*this, #__text_left))
     SetState(Button_3, Flag(*this, #__text_right))
@@ -120,8 +120,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 81
+; FirstLine = 56
 ; Folding = --
 ; Optimizer
 ; EnableXP

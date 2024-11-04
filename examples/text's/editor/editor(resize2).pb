@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 800, 600, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Open(0, 10,10)
     
-    g = Editor( 0, 0, 0, 0 , #__flag_textWordWrap) 
+    g = Editor( 0, 0, 0, 0 , #__flag_Textwordwrap) 
     *g = Editor(0, 0, 0, 0) 
     
     If g
@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
+; CursorPosition = 60
 ; FirstLine = 52
 ; Folding = --
 ; EnableXP

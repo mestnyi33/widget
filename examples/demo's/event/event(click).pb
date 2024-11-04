@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(1, 0, 0, 170, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     w_flag = widget::Tree(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
-    w_this = widget::Button(10, 220, 150, 70, "Click me", #__button_multiline );| #__button_toggle) 
+    w_this = widget::Button(10, 220, 150, 70, "Click me", #__flag_Textmultiline );| #__flag_ButtonToggle) 
     
     ; widget::Bind(w_this, @events_widgets( ), #PB_All )
     ; widget::Bind(w_this, @events_widgets( ), #__Event_Draw)
@@ -58,8 +58,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 9
+; CursorPosition = 42
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
 ; DPIAware

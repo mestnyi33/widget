@@ -314,7 +314,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(*button_panel, 2)
    CloseList( ) ; close panel lists
    
-   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_textpassword | #__text_right)
+   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__text_right)
    
    ;\\
    Global *button_item1, *button_item2
@@ -329,8 +329,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure 
    
-   *button_item1 = Button( 220, 220, 25, 50, "1", #PB_Button_Toggle)
-   *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #PB_Button_Toggle)
+   *button_item1 = Button( 220, 220, 25, 50, "1", #__flag_ButtonToggle)
+   *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #__flag_ButtonToggle)
    Bind(*button_item1, @button_tab_events( ), #__event_Down )
    Bind(*button_item2, @button_tab_events( ), #__event_Down )
    ;\\Close( )
@@ -420,7 +420,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ; Button( 10,10, 80,80, "item_2")
    Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
    Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
-   Bind(Option( 5, 55, 95, 22, "show_children", #PB_Button_Toggle ), @hide_show_panel_events( ))
+   Bind(Option( 5, 55, 95, 22, "show_children", #__flag_ButtonToggle ), @hide_show_panel_events( ))
    ;SetState(widget( ), 1)
    
    *c = Panel(110, 5, 150, 155)
@@ -690,8 +690,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 2
+; CursorPosition = 422
+; FirstLine = 381
 ; Folding = NA+----
 ; EnableXP
 ; DPIAware

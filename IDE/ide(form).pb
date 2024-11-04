@@ -152,13 +152,13 @@ Procedure.s FlagFromFlag( Type, flag.i ) ;
   
   Select type
     Case #__Type_Text
-      If flag & #__text_center
+      If flag & #__flag_TextCenter
         flags + "#PB_Text_Center | "
       EndIf
-      If flag & #__text_right
+      If flag & #__flag_TextRight
         flags + "#PB_Button_Right | "
       EndIf
-      ;         If flag & #__flag_textborder
+      ;         If flag & #__flag_Textborder
       ;           flags + "#PB_Text_Border | "
       ;         EndIf
       
@@ -1408,8 +1408,8 @@ DataSection
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 2
+; CursorPosition = 164
+; FirstLine = 150
 ; Folding = -----------------------
 ; EnableXP
 ; DPIAware

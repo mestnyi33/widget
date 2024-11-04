@@ -65,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  #__button_left = #__text_left
-  #__button_right = #__text_right
+  #__flag_TextLeft = #__flag_Textleft
+  #__button_right = #__flag_Textright
   
   Procedure example_1( )
     *root = Open( #PB_Any, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
@@ -83,13 +83,13 @@ CompilerIf #PB_Compiler_IsMainFile
     wlist(Hex(5)) = Button(55, 65, 80, 20, ">>|<<")    ; proportional  #proportion
     
     wlist(Hex(6)) = Button(10, 90, 80, 20, ">>|", #__button_right) ; proportional
-    wlist(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__button_left) ; proportional
+    wlist(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__flag_TextLeft) ; proportional
     
     wlist(Hex(8)) = Button(10, 115, 50, 20, ">>|", #__button_right) ; proportional
     wlist(Hex(9)) = Button(60, 115, 20, 20, "|")                    ; proportional
     wlist(Hex(10)) = Button(80, 115, 30, 20, "<<>>")                ; proportional
     wlist(Hex(11)) = Button(110, 115, 20, 20, "|")                  ; proportional
-    wlist(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__button_left); proportional
+    wlist(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__flag_TextLeft); proportional
     
     
     SetAlign(wlist(Hex(2)), 0, 0,1,0,#__align_proportional )    

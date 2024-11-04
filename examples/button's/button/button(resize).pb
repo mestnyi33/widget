@@ -9,8 +9,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *g1 = Button(    30, 30, 200, h, "butt_left", #__button_left)
-    *g2 = Button(30+210, 30, 200, h, "butt" + #LF$ + "center" + #LF$ + "multi", #__button_multiline)
+    *g1 = Button(    30, 30, 200, h, "butt_left", #__flag_TextLeft)
+    *g2 = Button(30+210, 30, 200, h, "butt" + #LF$ + "center" + #LF$ + "multi", #__flag_Textmultiline)
     *g3 = Button(30+420, 30, 200, h, "right_butt", #__button_right)
     
     *g4 = Splitter(0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
@@ -26,6 +26,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 12
 ; Folding = -
 ; EnableXP

@@ -87,15 +87,15 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define y = 10
     ; flag
-    Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 
-    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "nolines", #__button_toggle) 
-    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "nobuttons", #__button_toggle) 
-    Button_2 = widget::Button(width+45, y+30*3, 100, 26, "checkboxes", #__button_toggle) 
-    Button_3 = widget::Button(width+45, y+30*4, 100, 26, "optionboxes", #__button_toggle) 
-    Button_4 = widget::Button(width+45, y+30*5, 100, 26, "threestate", #__button_toggle) 
-    Button_5 = widget::Button(width+45, y+30*6, 100, 26, "collapsed", #__button_toggle) 
-    ;Button_6 = widget::Button(width+45, y+30*7, 100, 26, "expanded", #__button_toggle) 
-    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "gridlines", #__button_toggle) 
+    Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__flag_ButtonToggle) 
+    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "nolines", #__flag_ButtonToggle) 
+    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "nobuttons", #__flag_ButtonToggle) 
+    Button_2 = widget::Button(width+45, y+30*3, 100, 26, "checkboxes", #__flag_ButtonToggle) 
+    Button_3 = widget::Button(width+45, y+30*4, 100, 26, "optionboxes", #__flag_ButtonToggle) 
+    Button_4 = widget::Button(width+45, y+30*5, 100, 26, "threestate", #__flag_ButtonToggle) 
+    Button_5 = widget::Button(width+45, y+30*6, 100, 26, "collapsed", #__flag_ButtonToggle) 
+    ;Button_6 = widget::Button(width+45, y+30*7, 100, 26, "expanded", #__flag_ButtonToggle) 
+    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "gridlines", #__flag_ButtonToggle) 
     
     ; set button toggled state
     SetState(Button_0, Flag(*this, #__tree_nolines))

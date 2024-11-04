@@ -426,7 +426,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*button_panel, 2)
   CloseList( ) ; close panel lists
   
-  *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_textpassword | #__text_right)
+  *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__text_right)
   
   ;\\
   Global *button_item1, *button_item2, *button_menu
@@ -446,8 +446,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   *button_menu = Button( 180, 5, 87, 25, "popup menu")
   Bind(*button_menu, @button_tab_events( ), #__event_Down )
-  *button_item1 = Button( 220, 220, 25, 50, "1", #PB_Button_Toggle)
-  *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #PB_Button_Toggle)
+  *button_item1 = Button( 220, 220, 25, 50, "1", #__flag_ButtonToggle)
+  *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #__flag_ButtonToggle)
   Bind(*button_item1, @button_tab_events( ), #__event_Down )
   Bind(*button_item2, @button_tab_events( ), #__event_Down )
   ;\\Close( )
@@ -701,8 +701,8 @@ CompilerIf #PB_Compiler_IsMainFile = 555
 CompilerEndIf
    
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 449
+; FirstLine = 445
 ; Folding = -------
 ; EnableXP
 ; DPIAware

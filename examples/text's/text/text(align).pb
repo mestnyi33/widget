@@ -21,17 +21,17 @@ CompilerIf #PB_Compiler_IsMainFile
     canvas_gadget = GetGadget(Root())
     canvas_window = GetWindow(Root())
     
-    *B_1 = Text(10,  10, width, 65, Text);, #__text_left)
-    *B_2 = Text(10,  10+65+10, width, 65, Text, #__text_top)
-    *B_3 = Text(10, 160, width, 65, Text, #__text_right)
-    *B_4 = Text(10, 160+65+10, width, 65, Text, #__text_bottom)
+    *B_1 = Text(10,  10, width, 65, Text);, #__flag_Textleft)
+    *B_2 = Text(10,  10+65+10, width, 65, Text, #__flag_Texttop)
+    *B_3 = Text(10, 160, width, 65, Text, #__flag_Textright)
+    *B_4 = Text(10, 160+65+10, width, 65, Text, #__flag_Textbottom)
     
-    *B_5 = Text(10, 310, width, 65, Text, #__text_center|#__text_left)
-    *B_6 = Text(10, 310+65+10, width, 65, Text, #__text_center|#__text_top)
-    *B_7 = Text(10, 460, width, 65, Text, #__text_center|#__text_right)
-    *B_8 = Text(10, 460+65+10, width, 65, Text, #__text_center|#__text_bottom)
+    *B_5 = Text(10, 310, width, 65, Text, #__flag_Textcenter|#__flag_Textleft)
+    *B_6 = Text(10, 310+65+10, width, 65, Text, #__flag_Textcenter|#__flag_Texttop)
+    *B_7 = Text(10, 460, width, 65, Text, #__flag_Textcenter|#__flag_Textright)
+    *B_8 = Text(10, 460+65+10, width, 65, Text, #__flag_Textcenter|#__flag_Textbottom)
     
-    *B_9 = Text(10, 610, width, 140, Text, #__text_center)
+    *B_9 = Text(10, 610, width, 140, Text, #__flag_Textcenter)
      
   
     Repeat

@@ -222,7 +222,7 @@ If Open(0, 322+50, 0, 322+50, 220)
   
   AddItem (WidgetID(0), -1,"Panel 3")
   Button(10, 15, 100, 24,"Button 3_1")
-  *b = Button(10+110, 15, 100, 24,"automatically resize button when changing font", #__flag_textMultiLine)
+  *b = Button(10+110, 15, 100, 24,"automatically resize button when changing font", #__flag_Textmultiline)
   SetFont(*b, 5)
   
   ;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
@@ -274,8 +274,8 @@ If Open(0, 322+50, 0, 322+50, 220)
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 73
+; CursorPosition = 224
+; FirstLine = 220
 ; Folding = ----
 ; EnableXP
 ; DPIAware

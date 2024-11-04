@@ -165,6 +165,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          StructureUnion
             _enter.b ;
+            enter.b ;
             mouseenter.b ;
             
             mouseenterframe.b
@@ -800,8 +801,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 610
-; FirstLine = 483
+; CursorPosition = 167
+; FirstLine = 159
 ; Folding = ---Ag9----
 ; Optimizer
 ; EnableXP

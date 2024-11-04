@@ -38,7 +38,7 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   Splitter(5, 5, 220, 120, WidgetID(#Button0), WidgetID(#Button1));, #PB_Splitter_Separator)
   Bind(WidgetID(#Splitter2), @events_widgets())
   
-  Text(5, 135, 220, 60, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Border|#__text_center|#__text_top )
+  Text(5, 135, 220, 60, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Border|#__flag_Textcenter|#__flag_Texttop )
   Splitter(5, 5, 220, 190, WidgetID(#Splitter2), WidgetID(3), #PB_Splitter_Separator)
   ;Bind(WidgetID(#Splitter4), @events_widgets())
   

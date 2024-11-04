@@ -37,7 +37,7 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
   CloseList()
   
   
-  *b=Button(10,430, 200, 30, "change parent", #__Button_Toggle) : SetData(*b, 8) 
+  *b=Button(10,430, 200, 30, "change parent", #__flag_ButtonToggle) : SetData(*b, 8) 
   
   i = 1
   

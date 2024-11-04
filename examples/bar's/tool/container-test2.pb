@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ToolBarButton( #_tb_file_open, -1, 0, "Open" )
     ToolBarButton( #_tb_file_save, -1, 0, "Save" )
     Separator( )
-    ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) 
+    ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) 
     Separator( )
     ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
     ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )

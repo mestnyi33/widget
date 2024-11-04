@@ -99,7 +99,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, a, "Line "+Str(a))
   Next 
   
-  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password|#__text_right)
+  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password|#__flag_Textright)
   
   
   Define *root1._S_widget = Open(#window,300,10,300-20,300-20): *root1\class = "root1": SetText(*root1, "root1")

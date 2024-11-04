@@ -247,21 +247,21 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define *cont = Container(15,15,100,100)
     Define s2=10+6, s = s2+6, r2 = 4+3, r = r2+3-1, o=1, o2 = 1
-     *lt = Button(o,o,s,s,"",#__button_toggle,0,r)
-     *rt = Button(98-s-o*2,o,s,s,"",#__button_toggle,0,r)
-     *rb = Button(98-s-o*2,98-s-o*2,s,s,"",#__button_toggle,0,r)
-     *lb = Button(o,98-s-o*2,s,s,"",#__button_toggle,0,r)
+     *lt = Button(o,o,s,s,"",#__flag_ButtonToggle,0,r)
+     *rt = Button(98-s-o*2,o,s,s,"",#__flag_ButtonToggle,0,r)
+     *rb = Button(98-s-o*2,98-s-o*2,s,s,"",#__flag_ButtonToggle,0,r)
+     *lb = Button(o,98-s-o*2,s,s,"",#__flag_ButtonToggle,0,r)
     
      
-;      *dt = Button(o2,o2,s2,s2,"",#__button_toggle,0,r2)
-      *dl = Button(o2,s+1,s2,98-s*2-o2*4 ,"",#__button_toggle,0,r2)
-      *dr = Button(98-s2-o2*2,s+1,s2,98-s*2-o2*4,"",#__button_toggle,0,r2)
-;      *db = Button(o2,98-s2-o2*2,s2,s2,"",#__button_toggle,0,r2)
+;      *dt = Button(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+      *dl = Button(o2,s+1,s2,98-s*2-o2*4 ,"",#__flag_ButtonToggle,0,r2)
+      *dr = Button(98-s2-o2*2,s+1,s2,98-s*2-o2*4,"",#__flag_ButtonToggle,0,r2)
+;      *db = Button(o2,98-s2-o2*2,s2,s2,"",#__flag_ButtonToggle,0,r2)
      
-      *t = Button(o2,o2,s2,s2,"",#__button_toggle,0,r2)
-     *l = Button(o2,o2,s2,s2,"",#__button_toggle,0,r2)
-     *r = Button(98-s2-o2*2,o2,s2,s2,"",#__button_toggle,0,r2)
-     *b = Button(o2,98-s2-o2*2,s2,s2,"",#__button_toggle,0,r2)
+      *t = Button(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+     *l = Button(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+     *r = Button(98-s2-o2*2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+     *b = Button(o2,98-s2-o2*2,s2,s2,"",#__flag_ButtonToggle,0,r2)
     SetState(*lt, 1)
      
     Define *c._s_widget = Container(s2+o2*3-1,s2+o2*3-1,(98-s2*2-o2*6+1),(98-s2*2-o2*6+1))

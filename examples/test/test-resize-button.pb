@@ -17,8 +17,8 @@
   parent = Container(50, 50, 500, 500)
   
   object1 = Button(50, 50, 30, 150, "button")
-  object2 = Button(100, 150, 30, 150, "button wordwrap text", #__flag_textwordwrap)
-  object3 = Button(150, 250, 30, 150, "button"+#LF$+" multiline "+#LF$+"text", #__flag_textmultiline)
+  object2 = Button(100, 150, 30, 150, "button wordwrap text", #__flag_Textwordwrap)
+  object3 = Button(150, 250, 30, 150, "button"+#LF$+" multiline "+#LF$+"text", #__flag_Textmultiline)
   
   
   ;\\
@@ -52,8 +52,8 @@
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 37
+; CursorPosition = 19
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
 ; DPIAware

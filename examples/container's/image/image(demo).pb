@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
          *Image = Image(10, 10, 230,  225, 10)
          
-         *Button = Button( 5,   245, 240,  25, "change image", #PB_Button_Toggle)
+         *Button = Button( 5,   245, 240,  25, "change image", #__flag_ButtonToggle)
          *ComboBox = ComboBox( 5,   245+30, 240,  30)
          AddItem(*ComboBox, -1, "Default")
          AddItem(*ComboBox, -1, "Center")

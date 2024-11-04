@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
     ;     SetClass(widget(), "first_2")
     ;     CloseList()
-    Button(3, 4, 17, 25+6, "1", #__Button_left) : SetClass(widget(), GetText(widget())) 
+    Button(3, 4, 17, 25+6, "1", #__flag_TextLeft) : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     CloseList()
@@ -91,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container(10, 4, 60, 74-4)   
     SEtColor(widget(), #PB_Gadget_BackColor, $ffff00)
-    Button(10, 4, 60, 68-8, "5", #__Button_left) : SetClass(widget(), GetText(widget())) 
+    Button(10, 4, 60, 68-8, "5", #__flag_TextLeft) : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     CloseList()
@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     ;     SetClass(widget(), "last_2")
     ;     CloseList()
-    Button(3, -3, 17, 25+6, "9", #__Button_left) : SetClass(widget(), GetText(widget())) 
+    Button(3, -3, 17, 25+6, "9", #__flag_TextLeft) : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     CloseList()

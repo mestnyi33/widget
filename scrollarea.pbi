@@ -4500,50 +4500,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_CheckBox
           If BinaryFlag( Flag, #PB_CheckBox_Right )
             flags & ~ #PB_CheckBox_Right
-            flags | #__text_right
+            flags | #__flag_Textright
           EndIf
           If BinaryFlag( Flag, #PB_CheckBox_Center )
             flags & ~ #PB_CheckBox_Center
-            flags | #__text_center
+            flags | #__flag_Textcenter
           EndIf
           ;
         Case #__type_Text
           If BinaryFlag( Flag, #PB_Text_Center )
             flags & ~ #PB_Text_Center
-            flags | #__text_center
-            ;flags & ~ #__text_left
+            flags | #__flag_Textcenter
+            ;flags & ~ #__flag_Textleft
           EndIf
           If BinaryFlag( Flag, #PB_Text_Right )
             flags & ~ #PB_Text_Right
-            flags | #__text_right
+            flags | #__flag_Textright
           EndIf
           ;
         Case #__type_Button ; ok
           If BinaryFlag( Flag, #PB_Button_MultiLine ) 
             flags & ~ #PB_Button_MultiLine
-            flags | #__flag_textwordwrap
+            flags | #__flag_Textwordwrap
           EndIf
           If BinaryFlag( Flag, #PB_Button_Left ) 
             flags & ~ #PB_Button_Left
-            flags | #__text_left
+            flags | #__flag_Textleft
           EndIf
           If BinaryFlag( Flag, #PB_Button_Right ) 
             flags & ~ #PB_Button_Right
-            flags | #__text_right
+            flags | #__flag_Textright
           EndIf
           ;
         Case #__type_String ; ok
           If BinaryFlag( Flag, #PB_String_Password ) 
             flags & ~ #PB_String_Password
-            flags | #__flag_textpassword
+            flags | #__flag_Textpassword
           EndIf
           If BinaryFlag( Flag, #PB_String_LowerCase )
             flags & ~ #PB_String_LowerCase
-            flags | #__flag_textlowercase
+            flags | #__flag_Textlowercase
           EndIf
           If BinaryFlag( Flag, #PB_String_UpperCase ) 
             flags & ~ #PB_String_UpperCase
-            flags | #__flag_textuppercase
+            flags | #__flag_Textuppercase
           EndIf
           If BinaryFlag( Flag, #PB_String_BorderLess )
             flags & ~ #PB_String_BorderLess
@@ -4551,21 +4551,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           If BinaryFlag( Flag, #PB_String_Numeric ) 
             flags & ~ #PB_String_Numeric
-            flags | #__flag_textnumeric
+            flags | #__flag_Textnumeric
           EndIf
           If BinaryFlag( Flag, #PB_String_ReadOnly )
             flags & ~ #PB_String_ReadOnly
-            flags | #__flag_textreadonly
+            flags | #__flag_Textreadonly
           EndIf
           ;
         Case #__type_Editor
           If BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
             flags & ~ #PB_Editor_ReadOnly
-            flags | #__flag_textreadonly
+            flags | #__flag_Textreadonly
           EndIf
           If BinaryFlag( Flag, #PB_Editor_WordWrap ) 
             flags & ~ #PB_Editor_WordWrap
-            flags | #__flag_textwordwrap
+            flags | #__flag_Textwordwrap
           EndIf
           ;
         Case #__type_Tree
@@ -4644,16 +4644,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
         Case #__type_Button
-          If BinaryFlag( Flag, #__flag_textwordwrap ) 
-            flags & ~ #__flag_textwordwrap
+          If BinaryFlag( Flag, #__flag_Textwordwrap ) 
+            flags & ~ #__flag_Textwordwrap
             flag | #PB_Button_MultiLine
           EndIf
-          If BinaryFlag( Flag, #__text_left ) 
-            flags & ~ #__text_left
+          If BinaryFlag( Flag, #__flag_Textleft ) 
+            flags & ~ #__flag_Textleft
             flags | #PB_Button_Left
           EndIf
-          If BinaryFlag( Flag, #__text_right ) 
-            flags & ~ #__text_right
+          If BinaryFlag( Flag, #__flag_Textright ) 
+            flags & ~ #__flag_Textright
             flags | #PB_Button_Right
           EndIf
       EndSelect

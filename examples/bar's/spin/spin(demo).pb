@@ -85,8 +85,8 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
     
     If Open(0, 320,0,320,200)
        Spin(10, 30, 250, 18, 0, 30)
-       Spin(10, 30+18+1, 250, 21, 0, 30, #__text_center)
-       Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__text_right)
+       Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_Textcenter)
+       Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_Textright)
        SetState(WidgetID(0), 0)
        SetState(WidgetID(1), 15)
        SetState(WidgetID(2), 30)
@@ -98,9 +98,9 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
        ; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
        ; ; ;   SetState(WidgetID(2), 8000)
        
-       Text(10,  10, 250, 20,"Spin Standard", #__text_center)
-       Text(10, 100, 250, 20, "Spin plus&minus", #__text_center)
-       ;   Text(90, 180, 200, 20, "Spin Vertical", #__text_right)
+       Text(10,  10, 250, 20,"Spin Standard", #__flag_Textcenter)
+       Text(10, 100, 250, 20, "Spin plus&minus", #__flag_Textcenter)
+       ;   Text(90, 180, 200, 20, "Spin Vertical", #__flag_Textright)
        
        ;Bind(#PB_All, @events_widgets())
        

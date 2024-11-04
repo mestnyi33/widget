@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick
         Select EventWidget()
           Case *this
-            If Flag(*this, #__button_toggle)
+            If Flag(*this, #__flag_ButtonToggle)
               SetState(f_4, GetState(EventWidget()))
             EndIf
             
@@ -66,18 +66,18 @@ CompilerIf #PB_Compiler_IsMainFile
               SetText(EventWidget(), "gadget")
             EndIf
             
-          Case f_0 : flag = #__button_default
-          Case f_1 : flag = #__button_multiline
-          Case f_4 : flag = #__button_toggle
+          Case f_0 : flag = #__flag_ButtonDefault
+          Case f_1 : flag = #__flag_Textmultiline
+          Case f_4 : flag = #__flag_ButtonToggle
             
-          Case f_5 : flag = #__text_top
+          Case f_5 : flag = #__flag_Texttop
             ;SetState(f_6, 0)
-          Case f_2 : flag = #__text_left
-          Case f_3 : flag = #__text_right
-          Case f_6 : flag = #__text_bottom
+          Case f_2 : flag = #__flag_Textleft
+          Case f_3 : flag = #__flag_Textright
+          Case f_6 : flag = #__flag_Textbottom
             
-          Case f_7 : flag = #__text_invert
-          Case f_8 : flag = #__text_vertical
+          Case f_7 : flag = #__flag_Textinvert
+          Case f_8 : flag = #__flag_Textvertical
         EndSelect
         
         If flag
@@ -107,26 +107,26 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(f, -1, "vertical")
     AddItem(f, -1, "invert")
     
-    Button_type = widget::Button(width+20,   y, 150, 26, "gadget", #__button_toggle) 
-    f_5 = widget::Button(width+20, y+30*1, 150, 26, "top", #__button_toggle) 
-    f_2 = widget::Button(width+20, y+30*2, 73, 26, "left", #__button_toggle) 
-    f_3 = widget::Button(width+20 + 21 + 55, y+30*2, 73, 26, "right", #__button_toggle) 
-    f_6 = widget::Button(width+20, y+30*3, 150, 26, "bottom", #__button_toggle) 
+    Button_type = widget::Button(width+20,   y, 150, 26, "gadget", #__flag_ButtonToggle) 
+    f_5 = widget::Button(width+20, y+30*1, 150, 26, "top", #__flag_ButtonToggle) 
+    f_2 = widget::Button(width+20, y+30*2, 73, 26, "left", #__flag_ButtonToggle) 
+    f_3 = widget::Button(width+20 + 21 + 55, y+30*2, 73, 26, "right", #__flag_ButtonToggle) 
+    f_6 = widget::Button(width+20, y+30*3, 150, 26, "bottom", #__flag_ButtonToggle) 
     
-    f_0 = widget::Button(width+20, y+30*4, 150, 26, "center", #__button_toggle) 
-    f_1 = widget::Button(width+20, y+30*5, 150, 26, "strech", #__button_toggle) 
-    f_4 = widget::Button(width+20, y+30*6, 150, 26, "proportional", #__button_toggle) 
+    f_0 = widget::Button(width+20, y+30*4, 150, 26, "center", #__flag_ButtonToggle) 
+    f_1 = widget::Button(width+20, y+30*5, 150, 26, "strech", #__flag_ButtonToggle) 
+    f_4 = widget::Button(width+20, y+30*6, 150, 26, "proportional", #__flag_ButtonToggle) 
     
-    f_8 = widget::Button(width+20, y+30*7, 150, 26, "auto", #__button_toggle) 
-;     f_7 = widget::Button(width+20, y+30*8, 150, 26, "invert", #__button_toggle) 
+    f_8 = widget::Button(width+20, y+30*7, 150, 26, "auto", #__flag_ButtonToggle) 
+;     f_7 = widget::Button(width+20, y+30*8, 150, 26, "invert", #__flag_ButtonToggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(f_1, Flag(*this, #__button_multiline))
-    SetState(f_5, Flag(*this, #__text_top))
-    SetState(f_2, Flag(*this, #__text_left))
-    SetState(f_3, Flag(*this, #__text_right))
-    SetState(f_6, Flag(*this, #__text_bottom))
+    SetState(f_1, Flag(*this, #__flag_Textmultiline))
+    SetState(f_5, Flag(*this, #__flag_Texttop))
+    SetState(f_2, Flag(*this, #__flag_Textleft))
+    SetState(f_3, Flag(*this, #__flag_Textright))
+    SetState(f_6, Flag(*this, #__flag_Textbottom))
     
     Hide(Button_type, 1)
     
@@ -145,8 +145,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 12
+; CursorPosition = 124
+; FirstLine = 95
 ; Folding = ---
 ; Optimizer
 ; EnableXP

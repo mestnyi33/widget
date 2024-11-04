@@ -148,17 +148,17 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetText(7, "GaT")
     Debug "Get gadget text "+GetGadgetText(7)
     
-    *S_0 = String( 305+8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly|#__text_top)
-    *S_1 = String( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #PB_String_Numeric|#__text_center)
-    *S_2 = String( 305+8,  (height+5)*2+10, 290, height, "Right-text StringGadget", #__text_right|#__text_bottom)
+    *S_0 = String( 305+8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly|#__flag_Texttop)
+    *S_1 = String( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #PB_String_Numeric|#__flag_Textcenter)
+    *S_2 = String( 305+8,  (height+5)*2+10, 290, height, "Right-text StringGadget", #__flag_Textright|#__flag_Textbottom)
     *S_3 = String( 305+8,  (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
     *S_4 = String( 305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
     *S_5 = String( 305+8, (height+5)*5+10, 290, height, Text1, #PB_String_BorderLess)
     *S_6 = String( 305+8, (height+5)*6+10, 140, height, "")
     *S_7 = String( 305+150+8, (height+5)*6+10, 140, height, "Password", #PB_String_Password )
-    ;     ; *S_8 = String( 305+8, (height+5)*8+10, 290, 90+150, Text, #__flag_gridlines|#__flag_textnumeric|#__flag_textmultiline)
-    ;     *S_8 = String( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_textnumeric|#__flag_textmultiline)
-    ;     *S_9 = String( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_textnumeric|#__flag_textwordwrap)
+    ;     ; *S_8 = String( 305+8, (height+5)*8+10, 290, 90+150, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
+    ;     *S_8 = String( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
+    ;     *S_9 = String( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textwordwrap)
     
     SetText(*S_7, "GaT")
     Debug "Get widget text "+GetText(*S_7)
@@ -365,7 +365,7 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 151
-; FirstLine = 147
+; CursorPosition = 160
+; FirstLine = 156
 ; Folding = ---
 ; EnableXP

@@ -37,10 +37,10 @@ CompilerIf #PB_Compiler_IsMainFile
     canvas_gadget = GetGadget(Root())
     canvas_window = GetWindow(Root())
     
-    *B_0 = Text(10,  10, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_top)
-    *B_1 = Text(10, 160, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_left)
+    *B_0 = Text(10,  10, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Texttop)
+    *B_1 = Text(10, 160, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Textleft)
     *B_2 = Text(10, 310, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#PB_Text_Right)
-    *B_3 = Text(10, 460, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_bottom)
+    *B_3 = Text(10, 460, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Textbottom)
     
 ;     SetAlign(*B_0, #__align_left|#__align_right)
 ;     SetAlign(*B_1, #__align_left|#__align_right)

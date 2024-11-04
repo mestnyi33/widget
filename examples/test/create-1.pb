@@ -24,10 +24,10 @@
   ;\\
   ;object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
   ;object = Container(100, 100, 250, 250) : CloseList( )
-  ;object = String(100, 100, 250, 250, text, #__flag_textwordwrap|#__text_center)
-  ;object = Button(100, 100, 250, 250, text, #__flag_textmultiline);, #__flag_borderless)
-  ;object = Button(100, 100, 250, 250, text, #__flag_textwordwrap);, #__flag_borderless)
-  object = Editor(100, 100, 250, 250, #__flag_textwordwrap|#__text_center) : SetText(object, text)
+  ;object = String(100, 100, 250, 250, text, #__flag_Textwordwrap|#__flag_Textcenter)
+  ;object = Button(100, 100, 250, 250, text, #__flag_Textmultiline);, #__flag_borderless)
+  ;object = Button(100, 100, 250, 250, text, #__flag_Textwordwrap);, #__flag_borderless)
+  object = Editor(100, 100, 250, 250, #__flag_Textwordwrap|#__flag_Textcenter) : SetText(object, text)
   ;object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1, "tree element line "+Str(i)) : Next
    
 ; ;   ;\\
@@ -74,7 +74,7 @@ CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 29
-; FirstLine = 22
+; FirstLine = 25
 ; Folding = -
 ; EnableXP
 ; DPIAware

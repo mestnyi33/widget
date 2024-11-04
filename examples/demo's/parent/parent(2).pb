@@ -38,7 +38,7 @@ If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   Button(-25, 10, 100, 30, "Button_4_5")       ; 5
   CloseList()
   
-  *b=Button(10,430, 200, 30, "change parent", #__Button_Toggle)
+  *b=Button(10,430, 200, 30, "change parent", #__flag_ButtonToggle)
   
 ;   ForEach widgets( )
 ;     widgets( )\class = widgets( )\class +"-"+ widgets( )\index

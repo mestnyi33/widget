@@ -229,7 +229,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;SetAlignmentFlag(widget(), #__align_top)
   ;ToolBar(toolbar, window, flags)
   
-  group_select = ToolBarButton_(1, - 1, #__button_Toggle)
+  group_select = ToolBarButton_(1, - 1, #__flag_ButtonToggle)
   SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
   SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
   

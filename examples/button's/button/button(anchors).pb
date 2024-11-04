@@ -172,7 +172,7 @@ Module AnchorBox
     Protected box_height = width/2
     Protected height1 = box_height-size*2 ; -2
     
-    Button_10 = widget::Button(x,y,width, height, "LEFT&TOP",constants::#__button_toggle);,-1,radius)
+    Button_10 = widget::Button(x,y,width, height, "LEFT&TOP",constants::#__flag_ButtonToggle);,-1,radius)
     Protected *a.Structures::_s_widget = widget::Container(0,0,width,box_height)         ;, constants::#__flag_child)
     Protected fs = 1
     ;widget::SetFrame(a,fs)
@@ -182,17 +182,17 @@ Module AnchorBox
     Protected y1 = size + height1
     Button_0 = widget::Button(size, size, size*2, size*2, "",0,-1,radius)
     
-    Button_1 = widget::Button(0, size, size, height1, "",constants::#__button_toggle,-1,radius)
-    Button_2 = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
-    Button_3 = widget::Button(size, 0, width1, size, "",constants::#__button_toggle,-1,radius)
+    Button_1 = widget::Button(0, size, size, height1, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_2 = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_3 = widget::Button(size, 0, width1, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
-    Button_4 = widget::Button(x1, 0, size, size, "",constants::#__button_toggle,-1,radius)
-    Button_5 = widget::Button(x1, size, size, height1, "",constants::#__button_toggle,-1,radius)
-    Button_6 = widget::Button(x1, y1, size, size, "",constants::#__button_toggle,-1,radius)
+    Button_4 = widget::Button(x1, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_5 = widget::Button(x1, size, size, height1, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_6 = widget::Button(x1, y1, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
-    Button_7 = widget::Button(size, y1, width1, size, "",constants::#__button_toggle,-1,radius)
-    Button_8 = widget::Button(0, y1, size, size, "",constants::#__button_toggle,-1,radius)
-    Button_9 = widget::Button((width1+size)/2, (height1+size)/2, size, size, "",constants::#__button_toggle,-1,radius)
+    Button_7 = widget::Button(size, y1, width1, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_8 = widget::Button(0, y1, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_9 = widget::Button((width1+size)/2, (height1+size)/2, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
     widget::SetState( Button_1,1 )
     widget::SetState( Button_2,1 )

@@ -107,15 +107,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Define y = 10
     
     ;\\ flag
-    Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #PB_Button_Toggle) 
-    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "nolines", #PB_Button_Toggle) 
-    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "nobuttons", #PB_Button_Toggle) 
-    Button_2 = widget::Button(width+45, y+30*3, 100, 26, "checkboxes", #PB_Button_Toggle) 
-    Button_3 = widget::Button(width+45, y+30*4, 100, 26, "optionboxes", #PB_Button_Toggle) 
-    Button_4 = widget::Button(width+45, y+30*5, 100, 26, "threestate", #PB_Button_Toggle) 
-    ;Button_5 = widget::Button(width+45, y+30*6, 100, 26, "collapsed", #PB_Button_Toggle) 
-    ;Button_6 = widget::Button(width+45, y+30*7, 100, 26, "expanded", #pb_button_toggle) 
-    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "gridlines", #PB_Button_Toggle) 
+    Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__flag_ButtonToggle) 
+    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "nolines", #__flag_ButtonToggle) 
+    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "nobuttons", #__flag_ButtonToggle) 
+    Button_2 = widget::Button(width+45, y+30*3, 100, 26, "checkboxes", #__flag_ButtonToggle) 
+    Button_3 = widget::Button(width+45, y+30*4, 100, 26, "optionboxes", #__flag_ButtonToggle) 
+    Button_4 = widget::Button(width+45, y+30*5, 100, 26, "threestate", #__flag_ButtonToggle) 
+    ;Button_5 = widget::Button(width+45, y+30*6, 100, 26, "collapsed", #__flag_ButtonToggle) 
+    ;Button_6 = widget::Button(width+45, y+30*7, 100, 26, "expanded", #__flag_ButtonToggle) 
+    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "gridlines", #__flag_ButtonToggle) 
     
     ;\\ set button toggled state
     widget::SetState(Button_0, Flag(*this, #__tree_nolines))
@@ -154,8 +154,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 108
+; CursorPosition = 117
+; FirstLine = 107
 ; Folding = --
 ; EnableXP
 ; DPIAware

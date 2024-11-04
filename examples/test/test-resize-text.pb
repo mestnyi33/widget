@@ -16,9 +16,9 @@
   ;\\
   parent = Container(50, 50, 500, 500)
   
-  object1 = Text(50, 50, width, 150, "thisis text element", #__flag_textwordwrap)
-  object2 = String(100, 150, width, 150, "thisis text element", #__flag_textwordwrap)
-  object3 = Editor(150, 250, width, 150, #__flag_textwordwrap) : SetText(object3, "thisis text element")
+  object1 = Text(50, 50, width, 150, "thisis text element", #__flag_Textwordwrap)
+  object2 = String(100, 150, width, 150, "thisis text element", #__flag_Textwordwrap)
+  object3 = Editor(150, 250, width, 150, #__flag_Textwordwrap) : SetText(object3, "thisis text element")
   
 ;   a_free( object1 )
 ;   a_free( object2 )
@@ -54,7 +54,7 @@
  
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 40
+; CursorPosition = 20
+; FirstLine = 14
 ; Folding = -
 ; EnableXP

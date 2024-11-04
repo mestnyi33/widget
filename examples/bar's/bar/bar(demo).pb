@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
       
       ; example scroll widget bar
-      widget::Text(300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#__text_center)
+      widget::Text(300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#__flag_Textcenter)
       *w = widget::Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
       widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
       *w = widget::Scroll  (300+10, 42+30, 250,  15, 30, 100, 30, #__bar_invert|#__bar_nobuttons, 7)
@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       *w = widget::Scroll  (300+10, 42+30+20, 250,  10, 30, 150, 230, #__bar_invert, 7)
       widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-      widget::Text(300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#__text_right)
+      widget::Text(300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#__flag_Textright)
       *w = widget::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
       widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
       *w = widget::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_invert, 7)
@@ -67,16 +67,16 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState(1212, 8000)
       
       ; example_2 track widget bar
-      widget::Text(300+10,  140+10, 250, 20,"TrackBar Standard");, #__text_center)
+      widget::Text(300+10,  140+10, 250, 20,"TrackBar Standard");, #__flag_Textcenter)
       *w = widget::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
       widget::SetState(*w, 5000)
       *w = widget::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_invert)
       widget::SetState(*w, 5000)
-      widget::Text(300+10, 140+90, 250, 20, "TrackBar Ticks", #__text_center)
+      widget::Text(300+10, 140+90, 250, 20, "TrackBar Ticks", #__flag_Textcenter)
       ;     widget::Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
       *w = widget::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
       widget::SetState(*w, 60)
-      widget::Text(300+60, 140+160, 200, 20, "TrackBar Vertical", #__text_right)
+      widget::Text(300+60, 140+160, 200, 20, "TrackBar Vertical", #__flag_Textright)
       *w = widget::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
       widget::SetState(*w, 8000)
       *w = widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_invert)
@@ -92,12 +92,12 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
       
       ; example_3 progress widget bar
-      widget::Text(300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#__text_center)
+      widget::Text(300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#__flag_Textcenter)
       *w = widget::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
       widget::SetState   (*w,  50)  
       *w = widget::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_invert, 4)
       widget::SetState   (*w,  50)  
-      widget::Text(300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#__text_right)
+      widget::Text(300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#__flag_Textright)
       *w = widget::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
       widget::SetState   (*w, 100)   
       *w = widget::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_invert)
@@ -252,7 +252,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     
       ;     ;     Button_1 = widget::Editor(0, 0, 0, 0) : SetText(Button_1, text)
       ;     ;     Button_1 = widget::Button(0, 0, 0, 0, text) ; No need to specify size or coordinates
-      ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__flag_textborder) ; No need to specify size or coordinates
+      ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__flag_Textborder) ; No need to specify size or coordinates
       ;     ; ;     Button_1 = widget::MDI(0, 0, 0, 0) ; No need to specify size or coordinates
       ;     ; ;     widget::AddItem(Button_1, -1, "Form_0")
       ;     ; ;     widget::AddItem(Button_1, -1, "Form_1")

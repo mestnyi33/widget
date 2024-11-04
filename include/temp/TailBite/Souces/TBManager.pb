@@ -566,7 +566,7 @@ Procedure Open_Window_TBManager()
     EndIf
     
     ;Command line options
-    Frame3DGadget(#Frame3D_cmdlops, #gap, #gap, WWidth-(#gap*2), (#cmdlops*(#lh))+(#gap*5), Language("TBManager","Options"))
+    FrameGadget(#Frame3D_cmdlops, #gap, #gap, WWidth-(#gap*2), (#cmdlops*(#lh))+(#gap*5), Language("TBManager","Options"))
     YCSR = #gap*5
     CheckBoxGadget(#CheckBox_AskDelete, #gap*3, YCSR, widthcmdlop(0), #lh, CmdLOp(0))
     YCSR+#lh;+#gap
@@ -624,7 +624,7 @@ Procedure Open_Window_TBManager()
     EndIf
     YCSR = (#gap*2)+GadgetHeight(#Frame3D_cmdlops)
     ;Folders
-    Frame3DGadget(#Frame3D_Folders, #gap, YCSR, WWidth-(#gap*2), ((#folders+#fcombo)*((#lh*2)+(#gap*2)))+(#gap*5), Language("TBManager","Folders"))
+    FrameGadget(#Frame3D_Folders, #gap, YCSR, WWidth-(#gap*2), ((#folders+#fcombo)*((#lh*2)+(#gap*2)))+(#gap*5), Language("TBManager","Folders"))
     YCSR+(#gap*5)
     TextGadget(#Text_PBFolder, #gap*3, YCSR, FoldersWidth, #lh, Folders(0))
     StringGadget(#String_PBFolder, #gap*3, YCSR+#lh, WWidth-(#gap*8)-BrWidth, #lh, "")
@@ -679,7 +679,7 @@ Procedure Open_Window_TBManager()
     EndIf
     ;Console
     YCSR = (#gap*3)+GadgetHeight(#Frame3D_cmdlops)+GadgetHeight(#Frame3D_Folders)
-    Frame3DGadget(#Frame3D_TailBiteConsole, #gap, YCSR, WWidth-(#gap*2), (#lh*4)+(#gap*9),ReplaceString(Language("TBManager","Version"),"%version%",Version$))
+    FrameGadget(#Frame3D_TailBiteConsole, #gap, YCSR, WWidth-(#gap*2), (#lh*4)+(#gap*9),ReplaceString(Language("TBManager","Version"),"%version%",Version$))
     ContainerGadget(#Container1,#gap+WWidth-(#gap*4)-24,YCSR+(#lh*4)+(#gap*7)-24,24,24,#PB_Container_BorderLess)
     CheckManagerOnTop(1)
     CloseGadgetList()
@@ -746,7 +746,7 @@ Procedure Open_Window_TBManager()
     YCSR+#lh+#gap
     WHeight=YCSR
     ResizeWindow(#WID, WindowX(#WID), WindowY(#WID), WWidth, WHeight)
-    Frame3DGadget(#Batch_Options,#gap,YCSR,WWidth-#gap*2,#hbatch-#gap*2,Language("TBManager","Batchoptions"))
+    FrameGadget(#Batch_Options,#gap,YCSR,WWidth-#gap*2,#hbatch-#gap*2,Language("TBManager","Batchoptions"))
     YCSR+(#gap*5)
     ButtonGadget(#Button_Addjob,#gap*3,YCSR,jobWidth,#lh,addjobStr$)
     ButtonGadget(#Button_Deletejob,#gap*4+jobWidth,YCSR,jobWidth,#lh,deletejobStr$)
@@ -1355,10 +1355,10 @@ DataSection
     IncludeBinary "Images"+#DirSeparator+"Arrow_down.png"
   Expand2e:
 EndDataSection
-; IDE Options = PureBasic 4.51 (Windows - x86)
-; CursorPosition = 1104
-; FirstLine = 1062
-; Folding = ---
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 748
+; FirstLine = 744
+; Folding = -------------------------------
 ; EnableXP
 ; EnableAdmin
 ; EnableOnError

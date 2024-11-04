@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(*w2, @widget_events())
     widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
-    *reset = widget::Button( 10, 435, 100, 30, "reset state", #__button_toggle)
+    *reset = widget::Button( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
     widget::SetState( *reset, 1)
     widget::Bind(*reset, @button_events())
     

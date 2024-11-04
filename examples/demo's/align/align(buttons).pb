@@ -187,7 +187,7 @@ Module AnchorBox
     Protected height1 = box_height-size*2 ; -2
     Protected fs = 1
      
-    BUTTON = widget::Button(x,y,width, height, "LEFT&TOP",constants::#__button_toggle);,-1,radius)
+    BUTTON = widget::Button(x,y,width, height, "LEFT&TOP",constants::#__flag_ButtonToggle);,-1,radius)
     
     Protected *a.Structures::_s_widget = widget::Container(0,0,width,box_height)         ;, constants::#__flag_child)
    ;widget::SetFrame(a,fs)
@@ -197,17 +197,17 @@ Module AnchorBox
     Protected y1 = size + height1
     DBUTTON = widget::Button(size, size, size*2, size*2, "",0,-1,radius)
     
-    LBUTTON = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
-    LTBUTTON = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
-    TBUTTON = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
+    LBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    LTBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    TBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
-    RTBUTTON = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
-    RBUTTON = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
-    RBBUTTON = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
+    RTBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    RBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    RBBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
-    BBUTTON = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
-    LBBUTTON = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
-    CENTER = widget::Button(0, 0, size, size, "",constants::#__button_toggle,-1,radius)
+    BBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    LBBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    CENTER = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
     
     ;widget::SetAlignment( button_full, #__align_full, 0,0,0,0)

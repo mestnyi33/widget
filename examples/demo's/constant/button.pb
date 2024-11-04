@@ -1,29 +1,29 @@
 ﻿
 EnumerationBinary 
-  #__text_left
-  #__text_top
-  #__text_right
-  #__text_bottom
-  #__text_center
+  #__flag_Textleft
+  #__flag_Texttop
+  #__flag_Textright
+  #__flag_Textbottom
+  #__flag_Textcenter
 EndEnumeration
 
 
-#__button_toggle       = 1<<1
+#__flag_ButtonToggle       = 1<<1
 #__toolBar_toggle      = 1<<1
 
-#__button_default      = 1<<1
+#__flag_ButtonDefault      = 1<<1
 #__checkbox_threestate = 1<<1
 
-#__button_multiLine    = 1<<1
+#__flag_Textmultiline    = 1<<1
 
-#__button_left         = #__text_left
-#__checkBox_left       = #__text_left
+#__flag_TextLeft         = #__flag_Textleft
+#__checkBox_left       = #__flag_Textleft
 
-#__button_right        = #__text_right
-#__checkBox_right      = #__text_right
+#__button_right        = #__flag_Textright
+#__checkBox_right      = #__flag_Textright
 
-#__button_center       = #__text_center
-#__checkBox_center     = #__text_center
+#__button_center       = #__flag_Textcenter
+#__checkBox_center     = #__flag_Textcenter
 
 ;                              ; m       ; l       ; w
 Debug  #PB_ToolBar_Normal      ; 0       ; 0       ; 0
@@ -110,6 +110,6 @@ Debug  #PB_ListIcon_ThreeState ; 8                 ; 64
 ; - SetGadgetState() can be used To change the gadget state. 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 3
+; CursorPosition = 16
+; FirstLine = 12
 ; EnableXP

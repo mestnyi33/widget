@@ -17,9 +17,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    parent = Container(50, 50, 200, 500)
    
-   object1 = Text(10, 10, 30, 150, "thisis text element", #__flag_textwordwrap)
-   object2 = String(10, 170, 30, 150, "thisis text element", #__flag_textwordwrap)
-   object3 = Editor(10, 330, 30, 150, #__flag_textwordwrap) : SetText(object3, "thisis text element")
+   object1 = Text(10, 10, 30, 150, "thisis text element", #__flag_Textwordwrap)
+   object2 = String(10, 170, 30, 150, "thisis text element", #__flag_Textwordwrap)
+   object3 = Editor(10, 330, 30, 150, #__flag_Textwordwrap) : SetText(object3, "thisis text element")
    
    SetColor(object1, #__color_back, $FFC2C2C2)
    SetColor(object2, #__color_back, $FFC2C2C2)
@@ -66,8 +66,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 43
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
 ; DPIAware

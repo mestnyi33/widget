@@ -369,7 +369,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;       EndMacro
     
     Macro IPAddress( x,y,width,height, flag=0 )
-      String( x,y,width,height, "", #__flag_textnumeric|flag )
+      String( x,y,width,height, "", #__flag_Textnumeric|flag )
       widget( )\class = "IPAddress"
     EndMacro
     
@@ -1780,11 +1780,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       If test_align
-        Debug " left "+ constants::BinaryFlag( _flag_, #__text_left) +" "+  _address_\align\left +
-                " top "+ constants::BinaryFlag( _flag_, #__text_top) +" "+  _address_\align\top + 
-                " right "+ constants::BinaryFlag( _flag_, #__text_right) +" "+  _address_\align\right + 
-                " bottom "+ constants::BinaryFlag( _flag_, #__text_bottom) +" "+  _address_\align\bottom +
-                " center "+ constants::BinaryFlag( _flag_, #__text_center)
+        Debug " left "+ constants::BinaryFlag( _flag_, #__flag_Textleft) +" "+  _address_\align\left +
+                " top "+ constants::BinaryFlag( _flag_, #__flag_Texttop) +" "+  _address_\align\top + 
+                " right "+ constants::BinaryFlag( _flag_, #__flag_Textright) +" "+  _address_\align\right + 
+                " bottom "+ constants::BinaryFlag( _flag_, #__flag_Textbottom) +" "+  _address_\align\bottom +
+                " center "+ constants::BinaryFlag( _flag_, #__flag_Textcenter)
        EndIf   
     EndMacro
     
@@ -1909,16 +1909,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
         _this_\text\x        = _x_
         _this_\text\y        = _y_
         
-        _this_\text\editable = Bool( Not constants::BinaryFlag( _flag_, #__flag_textreadonly ))
-        _this_\text\lower    = constants::BinaryFlag( _flag_, #__flag_textlowercase )
-        _this_\text\upper    = constants::BinaryFlag( _flag_, #__flag_textuppercase )
-        _this_\text\pass     = constants::BinaryFlag( _flag_, #__flag_textpassword )
-        _this_\text\invert   = constants::BinaryFlag( _flag_, #__text_invert )
-        _this_\text\vertical = constants::BinaryFlag( _flag_, #__text_vertical )
+        _this_\text\editable = Bool( Not constants::BinaryFlag( _flag_, #__flag_Textreadonly ))
+        _this_\text\lower    = constants::BinaryFlag( _flag_, #__flag_Textlowercase )
+        _this_\text\upper    = constants::BinaryFlag( _flag_, #__flag_Textuppercase )
+        _this_\text\pass     = constants::BinaryFlag( _flag_, #__flag_Textpassword )
+        _this_\text\invert   = constants::BinaryFlag( _flag_, #__flag_Textinvert )
+        _this_\text\vertical = constants::BinaryFlag( _flag_, #__flag_Textvertical )
         
-        If constants::BinaryFlag( _flag_, #__flag_textwordwrap )
+        If constants::BinaryFlag( _flag_, #__flag_Textwordwrap )
           _this_\text\multiLine = - 1
-        ElseIf constants::BinaryFlag( _flag_, #__flag_textmultiline )
+        ElseIf constants::BinaryFlag( _flag_, #__flag_Textmultiline )
           _this_\text\multiLine = 1
         Else
           _this_\text\multiLine = 0
@@ -1942,8 +1942,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not _this_\text\multiLine
               _this_\text\multiLine = 1
             EndIf
-            ;           Else
-            ;             _this_\text\multiline = constants::BinaryFlag( _this_\flag, #__flag_textmultiline )
           EndIf
         EndIf
         
@@ -1962,7 +1960,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
           Else
             _this_\MarginLine( )\hide = 1
-            _this_\text\numeric       = Bool( _flag_ & #__flag_textnumeric = #__flag_textnumeric )
+            _this_\text\numeric       = Bool( _flag_ & #__flag_Textnumeric = #__flag_Textnumeric )
           EndIf
         EndIf
         
@@ -6716,8 +6714,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.i GetState( *this._s_WIDGET )
       ; This is a universal function which works For almost all gadgets: 
       ; 
-      ; - ButtonImage( )  : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
-      ; - Button( )       : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
+      ; - ButtonImage( )  : returns 1 If a #__flag_ButtonToggle button is toggled, Else 0. 
+      ; - Button( )       : returns 1 If a #__flag_ButtonToggle button is toggled, Else 0. 
       ; - Option( )       : returns 1 If activated, 0 otherwise. 
       ; - CheckBox( )     : returns one of the following values:
       ;                           #PB_Checkbox_Checked  : The check mark is set.
@@ -6818,8 +6816,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Procedure.b SetState( *this._s_WIDGET, state.i )
       ; This is a universal function which works For almost all gadgets: 
       ; 
-      ; - ButtonImage( ) : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
-      ; - Button( )      : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
+      ; - ButtonImage( ) : change the current state of a #__flag_ButtonToggle gadget (1 = toggled, 0 = normal). 
+      ; - Button( )      : change the current state of a #__flag_ButtonToggle gadget (1 = toggled, 0 = normal). 
       ; - Option( )      : 1 To activate it, 0 otherwise. 
       ; - CheckBox( )    : Change the state of the checkbox. The following values are possible:
       ;                     #PB_Checkbox_Checked  : Set the check mark.
@@ -13418,7 +13416,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           CompilerIf #PB_Compiler_Version =< 546
             For i = 1 To Len : String.s + "*" : Next
           CompilerElse
-            For i = 1 To Len : String.s + "●" : Next ; "•●"
+            For i = 1 To Len : String.s + "?" : Next ; "•?"
           CompilerEndIf
           
         Else
@@ -14737,67 +14735,67 @@ CompilerIf Not Defined( Widget, #PB_Module )
           If string_bar
             *this\text\TextChange( ) = #__text_Update
             ; 
-            If constants::BinaryFlag( Flag, #__text_invert )
+            If constants::BinaryFlag( Flag, #__flag_Textinvert )
               *this\text\invert = state
             EndIf
-            If constants::BinaryFlag( Flag, #__text_vertical )
+            If constants::BinaryFlag( Flag, #__flag_Textvertical )
               *this\text\vertical = state
             EndIf
-            If constants::BinaryFlag( Flag, #__flag_textwordwrap )
+            If constants::BinaryFlag( Flag, #__flag_Textwordwrap )
               *this\text\multiline = - state
             EndIf
-            If constants::BinaryFlag( Flag, #__flag_textmultiline )
+            If constants::BinaryFlag( Flag, #__flag_Textmultiline )
               *this\text\multiline = state
             EndIf
             ;
-            If constants::BinaryFlag( Flag, #__text_left )
+            If constants::BinaryFlag( Flag, #__flag_Textleft )
               *this\text\align\left = state
               ;
               If Not *this\text\align\left 
-                If constants::BinaryFlag( *this\flag, #__text_right )
+                If constants::BinaryFlag( *this\flag, #__flag_Textright )
                   *this\text\align\right = #True
                 EndIf
               EndIf
             EndIf
-            If constants::BinaryFlag( Flag, #__text_top )
+            If constants::BinaryFlag( Flag, #__flag_Texttop )
               *this\text\align\top = state
               ;
               If Not *this\text\align\top 
-                If constants::BinaryFlag( *this\flag, #__text_bottom )
+                If constants::BinaryFlag( *this\flag, #__flag_Textbottom )
                   *this\text\align\bottom = #True
                 EndIf
               EndIf
             EndIf
-            If constants::BinaryFlag( Flag, #__text_right )
+            If constants::BinaryFlag( Flag, #__flag_Textright )
               *this\text\align\right = state
               ;
               If Not *this\text\align\right 
-                If constants::BinaryFlag( *this\flag, #__text_left )
+                If constants::BinaryFlag( *this\flag, #__flag_Textleft )
                   *this\text\align\left = #True
                 EndIf
               EndIf
             EndIf
-            If constants::BinaryFlag( Flag, #__text_bottom )
+            If constants::BinaryFlag( Flag, #__flag_Textbottom )
               *this\text\align\bottom = state
               ;
               If Not *this\text\align\bottom 
-                If constants::BinaryFlag( *this\flag, #__text_top )
+                If constants::BinaryFlag( *this\flag, #__flag_Texttop )
                   *this\text\align\top = #True
                 EndIf
               EndIf
             EndIf
-            If constants::BinaryFlag( Flag, #__text_center )
+            If constants::BinaryFlag( Flag, #__flag_Textcenter )
               *this\text\align\left   = #False
               *this\text\align\top    = #False
               *this\text\align\right  = #False
               *this\text\align\bottom = #False
             EndIf
             ;
-            ;\\
+            ;\\0в ,
             If *this\type = #__type_Button
               ; set toggle button
-              If constants::BinaryFlag( flag, #PB_Button_Toggle )
-                If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
+              If constants::BinaryFlag( flag, #__flag_ButtonToggle )
+                If constants::BinaryFlag( *this\Flag, #__flag_ButtonToggle )
                   If Not *this\togglebox
                     *this\togglebox.allocate( BOX )
                   EndIf
@@ -14924,16 +14922,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-          ;           If constants::BinaryFlag( Flag, #__text_bottom ) 
-          ;             *this\image\ImageChange( )              = #__text_Update
+          ;           If constants::BinaryFlag( Flag, #__flag_Textbottom ) 
+          ;             *this\image\ImageChange( )              = #__flag_TextUpdate
           ;             *this\image\align\top    = 0
           ;             *this\image\align\bottom = state
           ;           EndIf
           
           
-          ; ;           If constants::BinaryFlag( Flag, #__text_right )
+          ; ;           If constants::BinaryFlag( Flag, #__flag_Textright )
           ; ;             *this\image\align\left  = 0
-          ; ;             *this\image\ImageChange( )             = #__text_Update
+          ; ;             *this\image\ImageChange( )             = #__flag_TextUpdate
           ; ;             *this\image\align\right = state
           ; ;           EndIf
           
@@ -15030,6 +15028,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       EndIf
     EndProcedure
     
+    Procedure.q ToPBFlag( Type, Flag.q )
+      Protected flags.q = Flag
+      
+      Select Type
+        Case #__type_Container
+          If constants::BinaryFlag( Flag, #__flag_BorderLess )
+            flags & ~ #__flag_BorderLess
+            flags | #PB_Container_BorderLess
+          EndIf
+          If constants::BinaryFlag( Flag, #__flag_BorderFlat )
+            flags & ~ #__flag_BorderFlat
+            flags | #PB_Container_Flat
+          EndIf
+          If constants::BinaryFlag( Flag, #__flag_BorderSingle )
+            flags & ~ #__flag_BorderSingle
+            flags | #PB_Container_Single
+          EndIf
+          If constants::BinaryFlag( Flag, #__flag_BorderRaised )
+            flags & ~ #__flag_BorderRaised
+            flags | #PB_Container_Raised
+          EndIf
+          If constants::BinaryFlag( Flag, #__flag_BorderDouble ) 
+            flags & ~ #__flag_BorderDouble
+            flags | #PB_Container_Double
+          EndIf
+          
+        Case #__type_Button
+          If constants::BinaryFlag( Flag, #__flag_Textwordwrap ) 
+            flags & ~ #__flag_Textwordwrap
+            flag | #PB_Button_MultiLine
+          EndIf
+          If constants::BinaryFlag( Flag, #__flag_Textleft ) 
+            flags & ~ #__flag_Textleft
+            flags | #PB_Button_Left
+          EndIf
+          If constants::BinaryFlag( Flag, #__flag_Textright ) 
+            flags & ~ #__flag_Textright
+            flags | #PB_Button_Right
+          EndIf
+      EndSelect
+      
+      ProcedureReturn flags
+    EndProcedure
+    
+    ;
     Procedure.q FromPBFlag( Type, Flag.q )
       Protected flags.q = Flag
       
@@ -15097,50 +15140,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_CheckBox
           If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
             flags & ~ #PB_CheckBox_Right
-            flags | #__text_right
+            flags | #__flag_Textright
           EndIf
           If constants::BinaryFlag( Flag, #PB_CheckBox_Center )
             flags & ~ #PB_CheckBox_Center
-            flags | #__text_center
+            flags | #__flag_Textcenter
           EndIf
           ;
         Case #__type_Text
           If constants::BinaryFlag( Flag, #PB_Text_Center )
             flags & ~ #PB_Text_Center
-            flags | #__text_center
-            ;flags & ~ #__text_left
+            flags | #__flag_Textcenter
+            ;flags & ~ #__flag_Textleft
           EndIf
           If constants::BinaryFlag( Flag, #PB_Text_Right )
             flags & ~ #PB_Text_Right
-            flags | #__text_right
+            flags | #__flag_Textright
           EndIf
           ;
         Case #__type_Button ; ok
           If constants::BinaryFlag( Flag, #PB_Button_MultiLine ) 
             flags & ~ #PB_Button_MultiLine
-            flags | #__flag_textwordwrap
+            flags | #__flag_Textwordwrap
           EndIf
           If constants::BinaryFlag( Flag, #PB_Button_Left ) 
             flags & ~ #PB_Button_Left
-            flags | #__text_left
+            flags | #__flag_Textleft
           EndIf
           If constants::BinaryFlag( Flag, #PB_Button_Right ) 
             flags & ~ #PB_Button_Right
-            flags | #__text_right
+            flags | #__flag_Textright
           EndIf
           ;
         Case #__type_String ; ok
           If constants::BinaryFlag( Flag, #PB_String_Password ) 
             flags & ~ #PB_String_Password
-            flags | #__flag_textpassword
+            flags | #__flag_Textpassword
           EndIf
           If constants::BinaryFlag( Flag, #PB_String_LowerCase )
             flags & ~ #PB_String_LowerCase
-            flags | #__flag_textlowercase
+            flags | #__flag_Textlowercase
           EndIf
           If constants::BinaryFlag( Flag, #PB_String_UpperCase ) 
             flags & ~ #PB_String_UpperCase
-            flags | #__flag_textuppercase
+            flags | #__flag_Textuppercase
           EndIf
           If constants::BinaryFlag( Flag, #PB_String_BorderLess )
             flags & ~ #PB_String_BorderLess
@@ -15148,21 +15191,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           If constants::BinaryFlag( Flag, #PB_String_Numeric ) 
             flags & ~ #PB_String_Numeric
-            flags | #__flag_textnumeric
+            flags | #__flag_Textnumeric
           EndIf
           If constants::BinaryFlag( Flag, #PB_String_ReadOnly )
             flags & ~ #PB_String_ReadOnly
-            flags | #__flag_textreadonly
+            flags | #__flag_Textreadonly
           EndIf
           ;
         Case #__type_Editor
           If constants::BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
             flags & ~ #PB_Editor_ReadOnly
-            flags | #__flag_textreadonly
+            flags | #__flag_Textreadonly
           EndIf
           If constants::BinaryFlag( Flag, #PB_Editor_WordWrap ) 
             flags & ~ #PB_Editor_WordWrap
-            flags | #__flag_textwordwrap
+            flags | #__flag_Textwordwrap
           EndIf
           ;
         Case #__type_Tree
@@ -15214,50 +15257,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn flags
     EndProcedure
     
-    Procedure.q ToPBFlag( Type, Flag.q )
-      Protected flags.q = Flag
-      
-      Select Type
-        Case #__type_Container
-          If constants::BinaryFlag( Flag, #__flag_BorderLess )
-            flags & ~ #__flag_BorderLess
-            flags | #PB_Container_BorderLess
-          EndIf
-          If constants::BinaryFlag( Flag, #__flag_BorderFlat )
-            flags & ~ #__flag_BorderFlat
-            flags | #PB_Container_Flat
-          EndIf
-          If constants::BinaryFlag( Flag, #__flag_BorderSingle )
-            flags & ~ #__flag_BorderSingle
-            flags | #PB_Container_Single
-          EndIf
-          If constants::BinaryFlag( Flag, #__flag_BorderRaised )
-            flags & ~ #__flag_BorderRaised
-            flags | #PB_Container_Raised
-          EndIf
-          If constants::BinaryFlag( Flag, #__flag_BorderDouble ) 
-            flags & ~ #__flag_BorderDouble
-            flags | #PB_Container_Double
-          EndIf
-          
-        Case #__type_Button
-          If constants::BinaryFlag( Flag, #__flag_textwordwrap ) 
-            flags & ~ #__flag_textwordwrap
-            flag | #PB_Button_MultiLine
-          EndIf
-          If constants::BinaryFlag( Flag, #__text_left ) 
-            flags & ~ #__text_left
-            flags | #PB_Button_Left
-          EndIf
-          If constants::BinaryFlag( Flag, #__text_right ) 
-            flags & ~ #__text_right
-            flags | #PB_Button_Right
-          EndIf
-      EndSelect
-      
-      ProcedureReturn flags
-    EndProcedure
-    
+    ;
     Procedure.i TypeFromClass( class.s )
       Protected result.i
       
@@ -15359,6 +15359,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result.s
     EndProcedure
     
+    ;
     Procedure$ ClassFromEvent( event.i )
       Protected result$
       
@@ -15521,12 +15522,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       *this\frame_height( ) = #PB_Ignore
       
       If *this\type = #__type_Button 
-        If constants::BinaryFlag( flag, #PB_Button_Toggle )
-          flag &~ #PB_Button_Toggle
-          *this\togglebox.allocate( BOX )
+        If constants::BinaryFlag( flag, #__flag_ButtonToggle )
+          flag &~ #__flag_ButtonToggle
+          If Not *this\togglebox
+            *this\togglebox.allocate( BOX )
+          EndIf
         EndIf
         *this\deffocus = Bool( flag & #PB_Button_Default )
-     EndIf
+      EndIf
       If *this\type = #__type_CheckBox 
         *this\togglebox.allocate( BOX )
         *this\togglebox\round  = DPIScaled( 2 )
@@ -15557,7 +15560,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\type = #__type_Button Or
          *this\type = #__type_ButtonImage Or
          *this\type = #__type_HyperLink
-        *this\flag | #__text_center
+        *this\flag | #__flag_Textcenter
         
       ElseIf *this\type = #__type_ComboBox Or
              *this\type = #__type_Spin Or
@@ -15565,14 +15568,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
              *this\type = #__type_Option Or
              *this\type = #__type_CheckBox
         
-        If constants::BinaryFlag( Flag, #__text_center, #False )
-          *this\flag | #__text_center | #__text_left
+        If constants::BinaryFlag( Flag, #__flag_Textcenter, #False )
+          *this\flag | #__flag_Textcenter | #__flag_Textleft
         EndIf
         
         If *this\type = #__type_CheckBox 
           If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
-            *this\flag & ~ #__text_left
-            *this\flag | #__text_right
+            *this\flag & ~ #__flag_Textleft
+            *this\flag | #__flag_Textright
           EndIf
         EndIf
       EndIf
@@ -15624,7 +15627,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       If *this\type = #__type_Text
         *this\fs = constants::BinaryFlag( Flag, #PB_Text_Border ) 
-        *this\flag | #__flag_textwordwrap
+        *this\flag | #__flag_Textwordwrap
       EndIf
       *this\bs = *this\fs
       
@@ -15688,7 +15691,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\mode\fullselection = constants::BinaryFlag( *this\flag, #__flag_fullselection, #False ) * 7
           *this\mode\gridlines     = constants::BinaryFlag( *this\flag, #__flag_gridlines ) * 10
           
-          *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_textnumeric, #False )
+          *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_Textnumeric, #False )
           *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
           *this\MarginLine( )\color\back  = $C8F0F0F0 ; *this\color\back[0]
           
@@ -15950,7 +15953,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                constants::BinaryFlag( Flag, #PB_Splitter_Vertical )
               *this\bar\vertical = #True
             EndIf
-            *this\flag = flag | #__text_center
+            *this\flag = flag | #__flag_Textcenter
           Else
             If Not Bool( constants::BinaryFlag( Flag, #__bar_vertical ) Or 
                          constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
@@ -15967,7 +15970,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;\\
           *this\StringWidgetBar( ) = Create( *this, "SpinString",
                                        #__type_String, 0, 0, 0, 0, #Null$,
-                                       #__flag_child | #__flag_textnumeric | #__flag_borderless | *this\flag )
+                                       #__flag_child | #__flag_Textnumeric | #__flag_borderless | *this\flag )
           
           
         EndIf
@@ -23530,7 +23533,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       Container( f1, f1, width - f1 * 2, height - bh - f1 - f2 * 2 - 1 )
       Image( f2, f2, iw, iw, img, #PB_Image_Border | #__image_center )
-      Text( f2 + iw + f2, f2, width - iw - f2 * 3, iw, Text, #__text_center | #__text_left )
+      Text( f2 + iw + f2, f2, width - iw - f2 * 3, iw, Text, #__flag_Textcenter | #__flag_Textleft )
       CloseList( )
       
       ;\\
@@ -23940,7 +23943,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*button_panel, 2)
   CloseList( ) ; close panel lists
   
-  *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_textpassword | #__text_right)
+  *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__flag_Textright)
   
   ;\\
   Global *button_item1, *button_item2, *button_menu
@@ -23960,8 +23963,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   *button_menu = Button( 120, 5, 150, 25, "popup menu")
   Bind(*button_menu, @button_tab_events( ), #__event_Down )
-  *button_item1 = Button( 220, 220, 25, 50, "1", #PB_Button_Toggle)
-  *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #PB_Button_Toggle)
+  *button_item1 = Button( 220, 220, 25, 50, "1", #__flag_ButtonToggle)
+  *button_item2 = Button( 220 + 25, 220, 25, 50, "2", #__flag_ButtonToggle)
   Bind(*button_item1, @button_tab_events( ), #__event_Down )
   Bind(*button_item2, @button_tab_events( ), #__event_Down )
   ;\\Close( )
@@ -24051,7 +24054,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Button( 10,10, 80,80, "item_2")
   Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
   Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
-  Bind(Option( 5, 55, 95, 22, "show_children", #PB_Button_Toggle ), @hide_show_panel_events( ))
+  Bind(Option( 5, 55, 95, 22, "show_children", #__flag_ButtonToggle ), @hide_show_panel_events( ))
   ;SetState(widget( ), 1)
   
   *c = Panel(110, 5, 150, 155)
@@ -24240,7 +24243,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(Splitter_3, 40)
   SetState(Splitter_1, 50)
   
-  Spin(10, 210, 250, 25, 25, 30, #__text_right )
+  Spin(10, 210, 250, 25, 25, 30, #__flag_Textright )
   Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
   
   ;\\
@@ -24325,9 +24328,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15527
-; FirstLine = 4746
-; Folding = AGA1BQs+-------------HwDA9-----fAAggBAAAA+RGAACAAAAAYnAAAAA9-------------DEAAAAAAg9H4AAG++B-8DAAQ9HAAAwAAAAAAAAA-IEvewwPAQAAgxIAAAAAAAAAAA9-DQEA9fkAAAAAAAAAAAgvAgAAYAAg--gEAej-Aes-DAA5MAV9WYDA1AAAAAxYIBgBAAAAgDAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAAAAAAw------------PAABAAwHAAAAAgM1BAAAAAAAAAAAAAAAAAA5BAAAAAAAAAAAAAgAAAA9AGAAQAAAAAAAAAAAAAAAA0AAAGAAAAAgAAAw-BAAAAAAAAAAAAAAAAAAURnLQAAAAAAAAAHuCCA5DAA+BAAAAAAAAAAAAAAAIfAQe-AExhIDAIAACAAAAAAAAAEAsNbDAjAgnAAAgHAAAAAAAgD--9KAAAxDcIEAAaYAwAAADAgjzcmDAAAAAA-B+TAcAgPeLMAAH5AAAAgfAAAAAAAAcAAcQMgfAAA-A7B9Df1JMDcBDBP9PcIIAABwTEAAO9DHg3BAAAAAAAAAAAAcAAAAAAAAAAAAAg------fAkgAAGQAAAAAAAAA5AG5GAAAAAAACAkAAAgHAA-
+; CursorPosition = 6819
+; FirstLine = 2915
+; Folding = AGA1BQs+-------------HwDA9-----fAAggBAAAA+RGQACAAAAAYnAAAAA9-------------DEAAAAAAg9H4AAG++B-8DAAQ9HAAAwAAAAAAAAA-IEvewwPAQAAgxIAAAAAAAAAAA9-DQEA9fkAAAAAAAAAAAgvAgAAYAAg--gEAej-Aes-DAA5MAV9WYDA1AAAAAxYIBgBAAAAgDAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAAAAAAw------------PAABAAwHAAAAAgM1BAAAAAAAAAAAAAAAAAA5BAAAAAAAAAAAAAgAAAA9AGAAQAAAAAAAAAAAAAAAA0AAAGAAAAAgAAAw-BAAAAAAAAGQAAAAAAAAURnLQAfADAAAAAHuCCA5zGG+BAAAAAA9-DAQGEAEM-Aw9+BIiDRGAQAAEAAAAAAAAAIAYb3GAGBAPBAAAPAAAAAAAAH+-6VAAAiH5QIAA1wAgBAAGAAHn6MHAAAAAA+D9nA5AAf9WYAAOwBAAAA-AAAAAAAA5AA5gYA-AAA+B1D5H+oTYG5CGCe5f5QQAACgnIAAc5HOAtDAAAAAAAAAAAA5AAAAAAAAAAAAAA-------AIBBAMgAAAAAAAAAwBMwNAAAAAAAEAIBAAAPAA+
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__Type_Button         
         ;{- Ok
         Flags.S = "#PB_Button_Default|"+
-                  "#PB_Button_Toggle|"+
+                  "#__flag_ButtonToggle|"+
                   "#PB_Button_Left|"+
                   "#PB_Button_Center|"+
                   "#PB_Button_Right|"+
@@ -205,7 +205,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #__Type_ButtonImage    
         ;{- Ok
-        Flags.S = "#PB_Button_Toggle"
+        Flags.S = "#__flag_ButtonToggle"
         ;}
         
       Case #__Type_Calendar       
@@ -302,10 +302,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select type
       Case #PB_GadgetType_Text
-        If flag & #__text_center
+        If flag & #__flag_Textcenter
           flags + "#PB_Text_Center|"
         EndIf
-        If flag & #__text_right
+        If flag & #__flag_Textright
           flags + "#PB_Button_Right|"
         EndIf
         If flag & #__flag_borderflat
@@ -313,19 +313,19 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
       Case #PB_GadgetType_Button
-        If flag & #__button_left
+        If flag & #__flag_TextLeft
           flags + "#PB_Button_Left|"
         EndIf
         If flag & #__button_right
           flags + "#PB_Button_Right|"
         EndIf
-        If flag & #__button_multiline
+        If flag & #__flag_Textmultiline
           flags + "#PB_Button_MultiLine|"
         EndIf
-        If flag & #__button_toggle
-          flags + "#PB_Button_Toggle|"
+        If flag & #__flag_ButtonToggle
+          flags + "#__flag_ButtonToggle|"
         EndIf
-        If flag & #__button_default
+        If flag & #__flag_ButtonDefault
           flags + "#PB_Button_Default|"
         EndIf
         
@@ -411,12 +411,12 @@ CompilerIf #PB_Compiler_IsMainFile
           Case "#PB_Button_Image"                   : Flag = Flag | #PB_Button_Image
           Case "#PB_Button_PressedImage"            : Flag = Flag | #PB_Button_PressedImage
             ; button  
-          Case "#PB_Button_Default"                 : Flag = Flag | #__Button_Default
-          Case "#PB_Button_Left"                    : Flag = Flag | #__Button_Left
-          Case "#PB_Button_MultiLine"               : Flag = Flag | #__Button_MultiLine
+          Case "#PB_Button_Default"                 : Flag = Flag | #__flag_ButtonDefault
+          Case "#PB_Button_Left"                    : Flag = Flag | #__flag_TextLeft
+          Case "#PB_Button_MultiLine"               : Flag = Flag | #__flag_Textmultiline
           Case "#PB_Button_Right"                   : Flag = Flag | #__Button_Right
-          Case "#PB_Button_Center"                  : Flag = Flag | #__text_center
-          Case "#PB_Button_Toggle"                  : Flag = Flag | #__Button_Toggle
+          Case "#PB_Button_Center"                  : Flag = Flag | #__flag_Textcenter
+          Case "#__flag_ButtonToggle"                  : Flag = Flag | #__flag_ButtonToggle
             ; string
           Case "#PB_String_BorderLess"              : Flag = Flag | #PB_String_BorderLess
           Case "#PB_String_LowerCase"               : Flag = Flag | #PB_String_LowerCase
@@ -426,10 +426,10 @@ CompilerIf #PB_Compiler_IsMainFile
           Case "#PB_String_ReadOnly"                : Flag = Flag | #PB_String_ReadOnly
           Case "#PB_String_UpperCase"               : Flag = Flag | #PB_String_UpperCase
             ; text
-          Case "#PB_Text_Left"                      : Flag = Flag | #__text_left
+          Case "#PB_Text_Left"                      : Flag = Flag | #__flag_Textleft
           Case "#PB_Text_Border"                    : Flag = Flag | #__flag_borderflat
-          Case "#PB_Text_Center"                    : Flag = Flag | #__text_center
-          Case "#PB_Text_Right"                     : Flag = Flag | #__text_right
+          Case "#PB_Text_Center"                    : Flag = Flag | #__flag_Textcenter
+          Case "#PB_Text_Right"                     : Flag = Flag | #__flag_Textright
             ; option
             ; checkbox
           Case "#PB_CheckBox_Center"                : Flag = Flag | #PB_CheckBox_Center
@@ -600,7 +600,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *this = widget::Button(100, 100, 250, 200, text, #__button_toggle|#__button_multiline|#__flag_anchorsgadget) 
+    *this = widget::Button(100, 100, 250, 200, text, #__flag_ButtonToggle|#__flag_Textmultiline|#__flag_anchorsgadget) 
     
     
     w_type = widget::ListView(width+45, 10, 150, 200) 
@@ -618,8 +618,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 587
-; FirstLine = 291
+; CursorPosition = 602
+; FirstLine = 484
 ; Folding = d------28-
 ; EnableXP
 ; DPIAware
