@@ -189,9 +189,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = HyperLinkGadget(#PB_Any, 100, 100, 250, 200, text, $FF00FFFF) : HideGadget(gadget, 1)
-    *this  = widget::Hyperlink(100, 100, 250, 200, text, $FF00FFFF, #__flag_Textmultiline);|#__flag_anchorsgadget)
+    *this  = widget::Hyperlink(100, 100, 250, 200, text, $FF00FFFF, #__flag_Textmultiline);|)
     
     Define y  = 10
     Define bh = 24
@@ -247,7 +247,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 228
-; FirstLine = 199
+; CursorPosition = 191
+; FirstLine = 189
 ; Folding = ----
 ; EnableXP

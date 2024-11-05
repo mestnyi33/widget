@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 12
-    *g = ListIcon(180, 230, 165, 210, "Column_1",90, #__Flag_FullSelection) ;: *g = GetGadgetData(g)                                          
+    *g = ListIcon(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 13
-    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes) ;#__Flag_FullSelection|: *g = GetGadgetData(g)                                          
+    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes) ;#__flag_RowFullSelect|: *g = GetGadgetData(g)                                          
     
     ;HideListIcon(g,1)
     For i=1 To 2
@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 93
+; CursorPosition = 103
 ; FirstLine = 91
 ; Folding = --
 ; EnableXP

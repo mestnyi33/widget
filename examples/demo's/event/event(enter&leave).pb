@@ -5,7 +5,7 @@ UseWidgets( )
 
 Declare events_widgets( )
 
-Define editable = #__flag_BorderFlat;|#__flag_anchorsgadget  ; #__flag_flat ; 
+Define editable = #__flag_BorderFlat;|  ; #__flag_flat ; 
 Global colorback = colors::*this\blue\fore,
        colorframe=colors::*this\blue\frame, 
        colorback1 = $ff00ff00,
@@ -13,7 +13,7 @@ Global colorback = colors::*this\blue\fore,
 
 ;\\
 Open(0, 0, 0, 240, 240, "enter&leave demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-If editable = #__flag_anchorsgadget
+If editable 
    a_init(root())
 EndIf
 
@@ -101,8 +101,7 @@ Procedure events_widgets()
    EndIf
 EndProcedure
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 57
+; CursorPosition = 15
 ; Folding = ---
 ; EnableXP
 ; DPIAware

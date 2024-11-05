@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Button( 10+222, 10, 200, 20, "Standard button", #__flag_ButtonDefault,-1,8 )
     Button( 10+222, 40, 200, 20, "Left button", #__flag_TextLeft )
-    Button( 10+222, 70, 200, 20, "Right button", #__button_right )
+    Button( 10+222, 70, 200, 20, "Right button", #__flag_TextRight )
     Button( 10+222,100, 200, 60, "Default button and change font", #__flag_ButtonDefault, -1,4 )
     SetFont(widget(), FontID(0))
     Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline, -1,4 )

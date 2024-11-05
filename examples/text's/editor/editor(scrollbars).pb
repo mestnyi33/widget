@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Next
   ;\\
   AddItem(*button_panel, -1, "3")
-  *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__Flag_FullSelection | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
+  *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__flag_RowFullSelect | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
   For a = 1 To 2
     AddColumn(*g, a, "Column_" + Str(a + 1), 90)
   Next
@@ -138,8 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   WaitClose( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 34
+; CursorPosition = 110
+; FirstLine = 106
 ; Folding = -
 ; EnableXP
 ; DPIAware

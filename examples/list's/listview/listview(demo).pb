@@ -166,7 +166,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(WidgetID(0), 9) 
   ;SetItemState(WidgetID(0), 5, 1) 
   
-  ListView(10+270, 190, 250, 120, #__flag_clickselect)
+  ListView(10+270, 190, 250, 120, #__flag_RowClickSelect)
   For a = 0 To 12
     AddItem (WidgetID(1), -1, "Item " + Str(a) + " of the Listview long long long long long") ; define listview content
   Next
@@ -174,7 +174,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(WidgetID(1), 7) 
   SetState(WidgetID(1), 9) 
   
-  ListView(10+270+270, 190, 250, 120, #__flag_multiselect)
+  ListView(10+270+270, 190, 250, 120, #__flag_RowMultiSelect)
   For a = 0 To 12
     AddItem (WidgetID(2), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
@@ -199,8 +199,8 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 68
+; CursorPosition = 176
+; FirstLine = 172
 ; Folding = --
 ; EnableXP
 ; DPIAware

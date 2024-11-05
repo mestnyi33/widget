@@ -19,7 +19,7 @@ EndEnumeration
 #__flag_TextLeft         = #__flag_Textleft
 #__checkBox_left       = #__flag_Textleft
 
-#__button_right        = #__flag_Textright
+#__flag_TextRight        = #__flag_Textright
 #__checkBox_right      = #__flag_Textright
 
 #__button_center       = #__flag_Textcenter

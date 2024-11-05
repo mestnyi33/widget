@@ -260,8 +260,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   ;Container(0,40,600,600);, #__flag_autosize) 
   ;SetAlignmentFlag(widget(), #__align_full) 
-  mdi(0,40,600,600, #__mdi_editable)
-  ; a_init(widget()) 
+  
+  a_init(mdi(0,40,600,600)) 
   
   
   additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = widget()
@@ -311,6 +311,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 267
+; FirstLine = 252
 ; Folding = --
 ; EnableXP

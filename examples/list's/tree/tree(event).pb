@@ -149,7 +149,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   Next
   
   
-  Tree(270, 30+150, 250, 120, #__tree_CheckBoxes|#__flag_clickselect|#__Flag_GridLines)
+  Tree(270, 30+150, 250, 120, #__tree_CheckBoxes|#__flag_RowClickSelect|#__Flag_GridLines)
   For a = 0 To 2
     AddItem (WidgetID(1), -1, "Item " + Str(a) + " of the Tree long long long long long", -1, 0) ; define Tree content
     AddItem (WidgetID(1), -1, "Subitem " + Str(a) + " of the Tree", -1, 1)                       ; define Tree content
@@ -165,7 +165,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   SetState(WidgetID(1), 9) 
   
   
-  Tree(270, 30+150+150, 250, 120, #__tree_CheckBoxes|#__flag_multiselect|#__Flag_GridLines)
+  Tree(270, 30+150+150, 250, 120, #__tree_CheckBoxes|#__flag_RowMultiSelect|#__Flag_GridLines)
   For a = 0 To 6
     AddItem (WidgetID(2), -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
     AddItem (WidgetID(2), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
@@ -193,8 +193,8 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 24
+; CursorPosition = 167
+; FirstLine = 163
 ; Folding = ---
 ; EnableXP
 ; DPIAware

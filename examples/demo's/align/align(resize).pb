@@ -25,8 +25,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected iw = 280
       ;a_init(root())
       
-      ;ID(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
-      ID(Hex(0)) = Container(50, 50, 280, 200);, #__flag_AnchorsGadget);#__flag_AutoSize)
+      ;ID(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, )
+      ID(Hex(0)) = Container(50, 50, 280, 200);, );#__flag_AutoSize)
       
       ;ID(Hex(0)) = Panel(50, 50, 280, 200) : AddItem(ID(Hex(0)), -1, "panel")
       ;ID(Hex(0)) = ScrollArea(50, 50, 280, 200, iw,300)
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 42
+; CursorPosition = 28
+; FirstLine = 23
 ; Folding = --
 ; EnableXP

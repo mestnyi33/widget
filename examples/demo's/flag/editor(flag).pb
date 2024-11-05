@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case Button_0 : flag = #__flag_ButtonDefault
           Case Button_1 : flag = #__flag_Textmultiline
           Case Button_2 : flag = #__flag_TextLeft
-          Case Button_3 : flag = #__button_right
+          Case Button_3 : flag = #__flag_TextRight
           Case Button_4 : flag = #__flag_ButtonToggle
           Case Button_5 : flag = #__flag_Texttop
           Case Button_6 : flag = #__flag_Textbottom
@@ -79,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_Textmultiline);|#__flag_anchorsgadget);|#__flag_Textleft) 
+    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_Textmultiline);|);|#__flag_Textleft) 
     Container(10, 10, width, height) : a_init( widget( ))
     *this = widget::Editor(10, 10, 250, 250);, #__flag_Textwordwrap) 
     CloseList( )
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 81
-; FirstLine = 60
+; FirstLine = 77
 ; Folding = --
 ; EnableXP
 ; DPIAware

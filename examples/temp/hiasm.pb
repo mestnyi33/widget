@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define img = 0
     Container(10,10,width, height)
-    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget |#__flag_optionboxes | #__tree_nolines | #__tree_nobuttons );| #__flag_optionboxes)  ; |#__tree_GridLines
+    *this = widget::tree(100, 100, 250, 200,  #__flag_optionboxes | #__tree_nolines | #__tree_nobuttons );| #__flag_optionboxes)  ; |#__tree_GridLines
     CloseList()
     
     ; ;     Define i
@@ -134,7 +134,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 53
+; FirstLine = 46
 ; Folding = --
 ; EnableXP
 ; DPIAware

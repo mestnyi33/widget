@@ -154,15 +154,15 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
             Select EventWidget
-              Case button_top       : flag = #__flag_Texttop     
+              Case button_top       : flag = #__flag_TextTop     
               Case button_left      : flag = #__flag_TextLeft
               Case button_right     : flag = #__flag_TextRight
-              Case button_bottom    : flag = #__flag_Textbottom
-              Case button_center    : flag = #__flag_Textcenter
+              Case button_bottom    : flag = #__flag_TextBottom
+              Case button_center    : flag = #__flag_TextCenter
             EndSelect
             ;
           Case button_toggle    : flag = #__flag_ButtonToggle
-          Case button_invert    : flag = #__flag_Textinvert
+          Case button_invert    : flag = #__flag_TextInvert
           Case button_vertical  : flag = #__flag_Textvertical
         EndSelect
         
@@ -283,8 +283,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 245
-; FirstLine = 199
+; CursorPosition = 164
+; FirstLine = 151
 ; Folding = ----
 ; EnableXP
 ; DPIAware

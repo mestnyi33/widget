@@ -191,7 +191,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = OptionGadget(#PB_Any, 100, 100, 250, 200, text) : HideGadget(gadget, 1)
-    *this  = widget::Option(100, 100, 250, 200, text, #__flag_Textmultiline);|#__flag_anchorsgadget)
+    *this  = widget::Option(100, 100, 250, 200, text, #__flag_Textmultiline);|)
     
     Define y  = 10
     Define bh = 24
@@ -246,8 +246,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 228
-; FirstLine = 199
+; CursorPosition = 193
+; FirstLine = 189
 ; Folding = ----
 ; EnableXP
 ; DPIAware

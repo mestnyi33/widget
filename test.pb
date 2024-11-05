@@ -11991,11 +11991,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__type_ListView ; Ok
           If constants::BinaryFlag( Flag, #PB_ListView_ClickSelect ) 
             flags & ~ #PB_ListView_ClickSelect
-            flags | #__flag_clickselect
+            flags | #__flag_RowClickSelect
           EndIf
           If constants::BinaryFlag( Flag, #PB_ListView_MultiSelect ) 
             flags & ~ #PB_ListView_MultiSelect
-            flags | #__flag_multiselect
+            flags | #__flag_RowMultiSelect
           EndIf
           ;  
         Case #__type_listicon
@@ -12243,10 +12243,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
           
           ;\\
           If list_bar
-            If constants::BinaryFlag( Flag, #__flag_clickselect )
+            If constants::BinaryFlag( Flag, #__flag_RowClickSelect )
               *this\mode\clickSelect = 1
             EndIf
-            If constants::BinaryFlag( Flag, #__flag_multiselect )
+            If constants::BinaryFlag( Flag, #__flag_RowMultiSelect )
               *this\mode\multiSelect = 1
             EndIf
             
@@ -14769,10 +14769,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         SetTypeCount( *this )
         ;
         ;\\ a_new( )
-        If *this\type = #__type_MDI And constants::BinaryFlag( *this\flag, #__mdi_editable )
-          a_init( *this )
-        Else
-          ;
+         ;
           If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
             If *this\parent\type = #__type_splitter
               ; Debug ""+*this\class +" "+ *this\parent\class
@@ -14785,7 +14782,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
           EndIf
-        EndIf
         ;
         ;\\
         If ReParent
@@ -16095,7 +16091,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ;\\ - Create Editor
         If *this\type = #__type_Editor
-          *this\mode\fullselection = constants::BinaryFlag( *this\flag, #__flag_fullselection, #False ) * 7
+          *this\mode\fullselection = constants::BinaryFlag( *this\flag, #__flag_RowFullSelect, #False ) * 7
           *this\mode\gridlines     = constants::BinaryFlag( *this\flag, #__flag_gridlines ) * 10
           
           *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_Textnumeric, #False )
@@ -17017,7 +17013,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         If *items( )\color\back[state]
           If ListSize( *this\columns( )) = 1
             draw_mode_alpha_( #PB_2DDrawing_Default )
-            If constants::BinaryFlag( *this\flag, #__Flag_FullSelection )
+            If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
               draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
             Else
               draw_roundbox_( xs, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\back[state] )
@@ -17044,7 +17040,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ;\\ Draw selector frame
         If *items( )\color\frame[state]
           draw_mode_( #PB_2DDrawing_Outlined )
-          If constants::BinaryFlag( *this\flag, #__Flag_FullSelection )
+          If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
             draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *items( )\height, *items( )\round, *items( )\round, *items( )\color\frame[state] )
           Else
             draw_roundbox_( x, ys, *items( )\width, *items( )\height, *items( )\round, *items( )\round, *items( )\color\frame[state] )
@@ -23961,7 +23957,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Next
   ;\\
   AddItem(*button_panel, -1, "3")
-  *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__Flag_FullSelection | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
+  *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__flag_RowFullSelect | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
   For a = 1 To 2
     AddColumn(*g, a, "Column_" + Str(a + 1), 90)
   Next
@@ -24287,7 +24283,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetItemFont(*tree, 4, 6)
   
   ;\\
-  *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_multiselect) ; |#__flag_gridlines
+  *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_RowMultiSelect) ; |#__flag_gridlines
   SetColor( *w, #__color_back, $FF07EAF6 )
   For i = 1 To 10;00000
     AddItem(*w, i, "text-" + Str(i))
@@ -24297,7 +24293,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetItemFont(*w, 5, 6)
   
   ;\\
-  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_clickselect )
+  *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_RowClickSelect )
   For i = 1 To 100;0000
     If (i & 5)
       AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -24365,8 +24361,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12205
-; FirstLine = 12201
+; CursorPosition = 23959
+; FirstLine = 23935
 ; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

@@ -215,11 +215,11 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     ;}
     
-    Button(55, 86, 170, 25, "2",#__Button_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(8, 
-    Button(55, 82, 150, 25, "3",#__Button_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(7, 
-    Button(55, 78, 130, 25, "4",#__Button_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(6, 
+    Button(55, 86, 170, 25, "2",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(8, 
+    Button(55, 82, 150, 25, "3",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(7, 
+    Button(55, 78, 130, 25, "4",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(6, 
     
-    ;*current = Button(55, 74, 110, 25, "5",#__Button_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(5, 
+    ;*current = Button(55, 74, 110, 25, "5",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(5, 
     
     ;{ current container
     *this = Container(10, 50, 60, 80)              ; Gadget(10, 
@@ -236,9 +236,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*this, @this_events(), #PB_EventType_LeftButtonUp)
     ;}
     
-    Button(55, 70, 90, 25, "6",#__Button_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(4, 
-    Button(55, 66, 70, 25, "7",#__Button_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(3, 
-    Button(55, 62, 50, 25, "8",#__Button_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(2, 
+    Button(55, 70, 90, 25, "6",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(4, 
+    Button(55, 66, 70, 25, "7",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(3, 
+    Button(55, 62, 50, 25, "8",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(2, 
     
     ;{ last container
     *c0 = Panel(35, 10, 50, 73) : SetClass(widget(), "last_0")                           ; Gadget(1,

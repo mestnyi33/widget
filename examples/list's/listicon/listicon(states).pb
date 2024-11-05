@@ -174,16 +174,16 @@ CompilerIf #PB_Compiler_IsMainFile
     *w2 = widget::ListIcon(265+125, 10, 120, 180, "column", 100 )
     
     ;\\
-    *w3 = widget::ListIcon(265, 195, 120, 180, "column", 100, #__flag_ClickSelect )
-    *w4 = widget::ListIcon(265+125, 195, 120, 180, "column", 100, #__flag_ClickSelect )
+    *w3 = widget::ListIcon(265, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
+    *w4 = widget::ListIcon(265+125, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
     
     ;\\
-    *w5 = widget::ListIcon(265, 380, 120, 180, "column", 100, #__flag_MultiSelect )
-    *w6 = widget::ListIcon(265+125, 380, 120, 180, "column", 100, #__flag_MultiSelect )
+    *w5 = widget::ListIcon(265, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
+    *w6 = widget::ListIcon(265+125, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
     
     ;\\
-    *w7 = widget::ListIcon(265, 565, 120, 180, "column", 100, #__flag_MultiSelect|#__flag_ClickSelect )
-    *w8 = widget::ListIcon(265+125, 565, 120, 180, "column", 100, #__flag_MultiSelect|#__flag_ClickSelect )
+    *w7 = widget::ListIcon(265, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
+    *w8 = widget::ListIcon(265+125, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
     
     ;\\
     For a = 0 To countitems
@@ -229,8 +229,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 94
+; CursorPosition = 185
+; FirstLine = 181
 ; Folding = ---
 ; EnableXP
 ; DPIAware

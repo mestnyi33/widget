@@ -204,7 +204,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CloseList( )
   
   OpenList( *root3 )
-  *w = Tree( 10,20, 150,200, #__flag_multiselect)
+  *w = Tree( 10,20, 150,200, #__flag_RowMultiSelect)
   For i=1 To 100;0000
     AddItem(*w, i, "text-"+Str(i))
   Next
@@ -241,8 +241,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 103
+; CursorPosition = 206
+; FirstLine = 202
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -79,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__text_multiline);|#__flag_anchorsgadget);|#__text_left) 
+    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__text_multiline);|);|#__text_left) 
     *this = widget::Editor(100, 100, 250, 250, #__text_wordwrap) : SetText(*this, get_text())
     
     Define y = 10
@@ -121,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 81
-; FirstLine = 56
+; FirstLine = 77
 ; Folding = --
 ; Optimizer
 ; EnableXP

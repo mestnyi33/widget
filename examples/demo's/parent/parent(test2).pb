@@ -820,16 +820,16 @@ CompilerIf #PB_Compiler_IsMainFile
     id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
     id_design_code = TreeGadget(-1, 590,270,200,250 )
     id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
-    id_design_form = MDI( 10,10,410,510, #__mdi_editable ) 
-    
+    id_design_form = MDI( 10,10,410,510 ) 
+    a_init( id_design_form )
     
     ; ;     ; gadgets
     ; ;     id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
     ; ;     ;EnableDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
     ; ;     
     ; ;     
-    ; ;     ;id_design_form = Container( 0,0,0,0, #__mdi_editable ) : CloseList( )
-    ; ;     id_design_form = MDI( 0,0,0,0, #__mdi_editable ) 
+    ; ;     ;id_design_form = Container( 0,0,0,0 ) : a_init( id_design_form ) : CloseList( )
+    ; ;     id_design_form = MDI( 0,0,0,0 ) : a_init( id_design_form )
     ; ;     ;id_design_form = MDI(10,10, WidgetWidth( widget( ), #__c_inner )-20, WidgetHeight( widget( ), #__c_inner )-20);, #__flag_autosize)
     ; ;     id_design_panel = id_design_form
     ; ;     ;id_design_code = listview_debug
@@ -908,8 +908,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7
-; FirstLine = 3
+; CursorPosition = 839
+; FirstLine = 836
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

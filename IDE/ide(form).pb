@@ -1119,7 +1119,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
   ;\\\ 
   ide_design_panel = Panel( 0,0,0,0 ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__bar_vertical ) : OpenList( ide_design_panel )
   AddItem( ide_design_panel, -1, "Form" )
-  ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize|#__mdi_editable ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
+  ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
   SetColor( ide_design_MDI, #__color_back, RGBA(195, 156, 191, 255) )
   a_init( ide_design_MDI);, 0 )
   
@@ -1408,8 +1408,8 @@ DataSection
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 150
+; CursorPosition = 1121
+; FirstLine = 1109
 ; Folding = -----------------------
 ; EnableXP
 ; DPIAware

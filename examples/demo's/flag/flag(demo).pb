@@ -316,7 +316,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If flag & #__flag_TextLeft
           flags + "#PB_Button_Left|"
         EndIf
-        If flag & #__button_right
+        If flag & #__flag_TextRight
           flags + "#PB_Button_Right|"
         EndIf
         If flag & #__flag_Textmultiline
@@ -414,7 +414,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case "#PB_Button_Default"                 : Flag = Flag | #__flag_ButtonDefault
           Case "#PB_Button_Left"                    : Flag = Flag | #__flag_TextLeft
           Case "#PB_Button_MultiLine"               : Flag = Flag | #__flag_Textmultiline
-          Case "#PB_Button_Right"                   : Flag = Flag | #__Button_Right
+          Case "#PB_Button_Right"                   : Flag = Flag | #__flag_TextRight
           Case "#PB_Button_Center"                  : Flag = Flag | #__flag_Textcenter
           Case "#__flag_ButtonToggle"                  : Flag = Flag | #__flag_ButtonToggle
             ; string
@@ -600,7 +600,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *this = widget::Button(100, 100, 250, 200, text, #__flag_ButtonToggle|#__flag_Textmultiline|#__flag_anchorsgadget) 
+    *this = widget::Button(100, 100, 250, 200, text, #__flag_ButtonToggle|#__flag_Textmultiline) 
     
     
     w_type = widget::ListView(width+45, 10, 150, 200) 
@@ -619,7 +619,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 602
-; FirstLine = 484
+; FirstLine = 501
 ; Folding = d------28-
 ; EnableXP
 ; DPIAware

@@ -303,7 +303,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Next
    ;\\
    AddItem(*button_panel, -1, "3")
-   *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__Flag_FullSelection | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
+   *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__flag_RowFullSelect | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
    For a = 1 To 2
       AddColumn(*g, a, "Column_" + Str(a + 1), 90)
    Next
@@ -623,7 +623,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetItemFont(*tree, 4, 6)
    
    ;\\
-   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_multiselect) ; |#__flag_gridlines
+   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_RowMultiSelect) ; |#__flag_gridlines
    SetColor( *w, #__color_back, $FF07EAF6 )
    For i = 1 To 10;00000
       AddItem(*w, i, "text-" + Str(i))
@@ -633,7 +633,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetItemFont(*w, 5, 6)
    
    ;\\
-   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_clickselect )
+   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_RowClickSelect )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -690,8 +690,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 422
-; FirstLine = 381
+; CursorPosition = 305
+; FirstLine = 264
 ; Folding = NA+----
 ; EnableXP
 ; DPIAware

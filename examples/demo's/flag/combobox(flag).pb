@@ -168,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ComboBoxGadget(#PB_Any, 100, 100, 250, 200) : HideGadget(gadget, 1)
-    *this  = widget::ComboBox(100, 100, 250, 200, #__flag_Textmultiline);|#__flag_anchorsgadget)
+    *this  = widget::ComboBox(100, 100, 250, 200, #__flag_Textmultiline);|)
     AddItem( *this, -1, text )
     
     Define y  = 10
@@ -224,8 +224,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 177
+; CursorPosition = 170
+; FirstLine = 166
 ; Folding = ---
 ; Optimizer
 ; EnableXP

@@ -109,8 +109,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    Bind(*menu, @QuitHandler(), #__event_LeftClick, 4)
 ;    
 ;    ;\\
-;    *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__Flag_FullSelection | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
-   *g = ListIcon(10, 10, 260, 235, "Column_1", 90, #__Flag_FullSelection | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
+;    *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__flag_RowFullSelect | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
+   *g = ListIcon(10, 10, 260, 235, "Column_1", 90, #__flag_RowFullSelect | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
    
    Define a
    For a = 1 To 2
@@ -129,8 +129,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7
-; FirstLine = 2
+; CursorPosition = 112
+; FirstLine = 104
 ; Folding = -
 ; EnableXP
 ; DPIAware

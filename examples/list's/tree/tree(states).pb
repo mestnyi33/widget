@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  #PB_Tree_ClickSelect = #__flag_clickselect
+  #PB_Tree_ClickSelect = #__flag_RowClickSelect
   #PB_Tree_MultiSelect = #__flag_multiline
   
   
@@ -246,8 +246,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 99
+; CursorPosition = 8
+; FirstLine = 4
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 500, 500, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      Define Editable ; = #__flag_AnchorsGadget
+      Define Editable ; = 
       
       If Open(0, 10,10, 480, 480)
         ; Bind(#PB_All, @events_roots())
@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 20
+; CursorPosition = 30
+; FirstLine = 26
 ; Folding = --
 ; EnableXP
