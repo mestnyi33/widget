@@ -27,12 +27,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LostFocus       : Debug  " - "+ *this +" - lfocus"
       Case #__event_MouseEnter      : Debug  " - "+ *this +" - enter"
       Case #__event_MouseLeave      : Debug  " - "+ *this +" - leave"
-      Case #__event_LeftButtonDown  : Debug  " - "+ *this +" - down"
+      Case #__event_LeftDown  : Debug  " - "+ *this +" - down"
       Case #__event_DragStart       : Debug  " - "+ *this +" - drag"
       Case #__event_Drop            : Debug  " - "+ *this +" - drop"
-      Case #__event_LeftButtonUp    : Debug  " - "+ *this +" - up"
+      Case #__event_LeftUp    : Debug  " - "+ *this +" - up"
       Case #__event_LeftClick       : Debug  " - "+ *this +" - click"
-      Case #__event_LeftDoubleClick : Debug  " - "+ *this +" - 2_click"
+      Case #__event_Left2Click : Debug  " - "+ *this +" - 2_click"
     EndSelect
   EndProcedure
   
@@ -241,8 +241,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 202
+; CursorPosition = 34
+; FirstLine = 18
 ; Folding = -
 ; EnableXP
 ; DPIAware

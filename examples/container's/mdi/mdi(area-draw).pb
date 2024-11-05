@@ -51,10 +51,10 @@ CompilerIf #PB_Compiler_IsMainFile
             ;       Case #__event_MouseLeave
             ;         SetCursor( *ew, #PB_Cursor_Default )
             
-         Case #__event_LeftButtonUp 
+         Case #__event_LeftUp 
             DragWidget = #Null
             
-         Case #__event_LeftButtonDown
+         Case #__event_LeftDown
             DragWidget = *ew
             
          Case #__event_MouseMove
@@ -113,8 +113,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Resize(*Object, x, y, width, height)
       
       *Object = *Object\root\widget
-      Bind( *Object, @MDI_ObjectEvents(), #__event_LeftButtonUp )
-      Bind( *Object, @MDI_ObjectEvents(), #__event_LeftButtonDown )
+      Bind( *Object, @MDI_ObjectEvents(), #__event_LeftUp )
+      Bind( *Object, @MDI_ObjectEvents(), #__event_LeftDown )
       Bind( *Object, @MDI_ObjectEvents(), #__event_MouseMove )
       Bind( *Object, @MDI_ObjectEvents(), #__event_MouseEnter )
       Bind( *Object, @MDI_ObjectEvents(), #__event_MouseLeave )
@@ -241,8 +241,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 174
+; CursorPosition = 115
+; FirstLine = 111
 ; Folding = ---
 ; EnableXP
 ; DPIAware

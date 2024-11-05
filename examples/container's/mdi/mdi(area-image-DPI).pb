@@ -70,10 +70,10 @@ CompilerIf #PB_Compiler_IsMainFile
             ;       Case #__event_MouseLeave
             ;         SetCursor( *ew, #PB_Cursor_Default )
             
-         Case #__event_LeftButtonUp 
+         Case #__event_LeftUp 
             DragWidget = #Null
             
-         Case #__event_LeftButtonDown
+         Case #__event_LeftDown
 ;             ; get alpha
 ;             If *ew\image[#__image_background]\id And
 ;                *ew\image[#__image_background]\depth > 31 And 
@@ -141,8 +141,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Resize(*this, x, y, width, height )
       
-      Bind( *this, @MDI_ImageEvents(), #__event_LeftButtonUp )
-      Bind( *this, @MDI_ImageEvents(), #__event_LeftButtonDown )
+      Bind( *this, @MDI_ImageEvents(), #__event_LeftUp )
+      Bind( *this, @MDI_ImageEvents(), #__event_LeftDown )
       Bind( *this, @MDI_ImageEvents(), #__event_MouseMove )
       Bind( *this, @MDI_ImageEvents(), #__event_MouseEnter )
       Bind( *this, @MDI_ImageEvents(), #__event_MouseLeave )
@@ -301,8 +301,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 30
+; CursorPosition = 143
+; FirstLine = 119
 ; Folding = ------
 ; EnableXP
 ; DPIAware

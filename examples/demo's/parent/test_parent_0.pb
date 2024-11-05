@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   
             EndSelect
             
-            ;         ;Case #__event_LeftButtonUp
+            ;         ;Case #__event_LeftUp
             ;         ClearDebugOutput( )
             ; PushListPosition( panel_children( ))
             ;         If StartEnumerate(*panel);Root( ))
@@ -447,8 +447,8 @@ CompilerEndIf
 ;    EndIf   
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 179
-; FirstLine = 144
+; CursorPosition = 77
+; FirstLine = 73
 ; Folding = ------
 ; EnableXP
 ; DPIAware

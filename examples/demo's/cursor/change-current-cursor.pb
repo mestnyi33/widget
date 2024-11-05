@@ -85,8 +85,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    Bind( object1, @CustomEvents(), #__event_cursor )
 ;    Bind( object2, @CustomEvents(), #__event_cursor )
    
-   Bind( root(), @CustomEvents(), #__event_enter )
-  Bind( root(), @CustomEvents(), #__event_leave )
+   Bind( root(), @CustomEvents(), #__event_MouseEnter )
+  Bind( root(), @CustomEvents(), #__event_MouseLeave )
 ;   Bind( root(), @CustomEvents(), #__event_Draw )
   
    ;\\
@@ -96,9 +96,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CustomEvents( )
       Protected *enter._s_WIDGET = object1
       Select WidgetEvent( )
-         Case #__event_enter
+         Case #__event_MouseEnter
             Debug "enter " + EventWidget( )\class
-         Case #__event_leave
+         Case #__event_MouseLeave
             Debug "leave " + EventWidget( )\class
             
             ;\\ current cursor
@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 93
+; CursorPosition = 100
+; FirstLine = 84
 ; Folding = --
 ; EnableXP

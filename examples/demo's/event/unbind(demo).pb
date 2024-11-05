@@ -39,14 +39,14 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ; post this events
         ;;Bind(*id, @events_roots())
-        Bind(*id, @events_widgets1(), #__event_LeftButtonDown)
-        Bind(*id, @events_widgets1(), #__event_LeftButtonUp)
+        Bind(*id, @events_widgets1(), #__event_LeftDown)
+        Bind(*id, @events_widgets1(), #__event_LeftUp)
         
-        Bind(*id, @events_widgets2(), #__event_LeftButtonDown)
-        Bind(*id, @events_widgets2(), #__event_LeftButtonUp)
+        Bind(*id, @events_widgets2(), #__event_LeftDown)
+        Bind(*id, @events_widgets2(), #__event_LeftUp)
         
         ;;Unbind(*id, @events_roots())
-        Unbind(*id, @events_widgets1(), #__event_LeftButtonDown)
+        Unbind(*id, @events_widgets1(), #__event_LeftDown)
        
 ;         Debug @events_widgets()
 ;         
@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 26
+; CursorPosition = 45
+; FirstLine = 38
 ; Folding = --
 ; EnableXP

@@ -29,10 +29,10 @@ CompilerIf #PB_Compiler_IsMainFile
         ;     Case #__event_Focus    : Debug "gadget focus item = " + EventItem +" data "+ EventData
         ;     Case #__event_LostFocus    : Debug "gadget lfocus item = " + EventItem +" data "+ EventData
       Case #__event_LeftClick : Debug "gadget " +EventGadget+ " lclick item = " + EventItem +" data "+ EventData +" State "+ State
-      Case #__event_LeftDoubleClick : Debug "gadget " +EventGadget+ " ldclick item = " + EventItem +" data "+ EventData +" State "+ State
+      Case #__event_Left2Click : Debug "gadget " +EventGadget+ " ldclick item = " + EventItem +" data "+ EventData +" State "+ State
       Case #__event_Change    : Debug "gadget " +EventGadget+ " change item = " + EventItem +" data "+ EventData +" State "+ State
       Case #__event_RightClick : Debug "gadget " +EventGadget+ " rclick item = " + EventItem +" data "+ EventData +" State "+ State
-      Case #__event_RightDoubleClick : Debug "gadget " +EventGadget+ " rdclick item = " + EventItem +" data "+ EventData +" State "+ State
+      Case #__event_Right2Click : Debug "gadget " +EventGadget+ " rdclick item = " + EventItem +" data "+ EventData +" State "+ State
       Case #__event_DragStart : Debug "gadget " +EventGadget+ " sdrag item = " + EventItem +" Data "+ EventData +" State "+ State
       Case #__event_Drop
     EndSelect 
@@ -255,8 +255,8 @@ Define a
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 18
+; CursorPosition = 34
+; FirstLine = 30
 ; Folding = --yC--
 ; EnableXP
 ; DPIAware

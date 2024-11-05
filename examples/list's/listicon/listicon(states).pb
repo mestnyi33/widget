@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick
         Debug  ""+IDWidget(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
-;       Case #__event_LeftDoubleClick
+;       Case #__event_Left2Click
 ;         Debug  ""+IDWidget(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
 ;       Case #__event_RightClick
@@ -229,8 +229,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 185
-; FirstLine = 181
+; CursorPosition = 125
+; FirstLine = 121
 ; Folding = ---
 ; EnableXP
 ; DPIAware

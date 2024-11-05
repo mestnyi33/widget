@@ -388,7 +388,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   
             EndSelect
             
-            ;         ;Case #__event_LeftButtonUp
+            ;         ;Case #__event_LeftUp
             ;         ClearDebugOutput( )
             ;         If StartEnumerate(*panel);Root( ))
             ;           If Not hide(widget( )) ;And GetParent(widget( )) = *panel
@@ -690,8 +690,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 305
-; FirstLine = 264
+; CursorPosition = 390
+; FirstLine = 349
 ; Folding = NA+----
 ; EnableXP
 ; DPIAware

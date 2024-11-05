@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CloseList()
   
   Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child ;|#__flag_borderless
-  Define vfs ;= #__window_caption_height+#__window_frame_size*2
+  Define vfs ;= #__window_CaptionHeight+#__window_FrameSize*2
   
   Define *g0._s_widget = Window(50, 50, 400, 400-vfs, "main",flag|#__window_child, *mdi) : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
@@ -84,9 +84,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 6
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 57
 ; Folding = -
 ; EnableXP
 ; DPIAware

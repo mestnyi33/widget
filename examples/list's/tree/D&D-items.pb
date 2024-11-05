@@ -115,7 +115,7 @@ Procedure DrawBarEvents( )
   ;Left down
   ;¯¯¯¯¯¯¯¯¯
   
-  If EventType = #__event_LeftButtonDown
+  If EventType = #__event_LeftDown
     ;\\ Store MouseDown
     MouseDownX = MouseX
     MouseDownY = MouseY
@@ -195,7 +195,7 @@ Procedure DrawBarEvents( )
   ;Left up
   ;¯¯¯¯¯¯¯
   
-  If EventType = #__event_LeftButtonUp
+  If EventType = #__event_LeftUp
     
     ;Sum-up Offsets and sort list
     ForEach Tabs()
@@ -519,8 +519,8 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   ;Bind( *tree, @events( ) )
   
   Bind( *tree, @DrawBarEvents( ), #__event_Draw )
-  Bind( *tree, @DrawBarEvents( ), #__event_LeftButtonDown )
-  Bind( *tree, @DrawBarEvents( ), #__event_LeftButtonUp )
+  Bind( *tree, @DrawBarEvents( ), #__event_LeftDown )
+  Bind( *tree, @DrawBarEvents( ), #__event_LeftUp )
   Bind( *tree, @DrawBarEvents( ), #__event_MouseMove )
   Repeat
     Event = WaitWindowEvent()
@@ -529,8 +529,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 11
+; CursorPosition = 522
+; FirstLine = 497
 ; Folding = -----
 ; EnableXP
 ; DPIAware

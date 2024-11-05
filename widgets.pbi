@@ -2882,7 +2882,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           Debug "displayBar - create " + *this\class +" "+ *this\root
-          *displayroot = Open( #PB_Any, 0, 0, 1, 1, "", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool,  parentID )
+          *displayroot = Open( #PB_Any, 0, 0, 1, 1, "", #__window_NoActivate | #__window_NoGadgets | #__window_BorderLess | #__window_Invisible | #__window_Tool,  parentID )
           *displayroot\parent = *display
           *displayroot\class = "["+*this\class+"]"+"-root" ; "root_"+
                                                            ;\\
@@ -3072,7 +3072,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ResizeGadget( *this\root\canvas\gadget, 0, 0, width, height )
           
           ;
-          HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
+          HideWindow( *this\root\canvas\window, #False, #__window_NoActivate )
           DisableWindow( *this\root\canvas\window, #False)
           
           PostRepaint( *this\root )
@@ -4333,7 +4333,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf   
       
       ;
-      If eventtype = #__event_down
+      If eventtype = #__event_Down
         If mouse( )\buttons & #PB_Canvas_LeftButton
           ;\\ set current
           If a_entered( )
@@ -6759,12 +6759,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       If *this\type = #__type_Window
         If *this\resize\flag & #__resize_minimize
-          ProcedureReturn #PB_Window_Minimize
+          ProcedureReturn #__window_Minimize
         EndIf
         If *this\resize\flag & #__resize_maximize
-          ProcedureReturn #PB_Window_Maximize
+          ProcedureReturn #__window_Maximize
         EndIf
-        ProcedureReturn #PB_Window_Normal
+        ProcedureReturn #__window_Normal
       EndIf
       
       ;\\
@@ -6948,7 +6948,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\ - widget::Window_SetState( )
       If *this\type = #__type_Window
         ; restore state
-        If state = #PB_Window_Normal
+        If state = #__window_Normal
           If Not Send( *this, #__event_restore )
             *this\resize\flag | #__resize_restore
             If *this\resize\flag & #__resize_minimize
@@ -6976,7 +6976,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ; maximize state
-        If state = #PB_Window_Maximize
+        If state = #__window_Maximize
           If Not Send( *this, #__event_maximize )
             *this\resize\flag | #__resize_maximize
             If *this\resize\flag & #__resize_minimize
@@ -7005,7 +7005,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ; minimize state
-        If state = #PB_Window_Minimize
+        If state = #__window_Minimize
           If Not Send( *this, #__event_Minimize )
             *this\resize\flag | #__resize_minimize
             If *this\resize\flag & #__resize_maximize
@@ -9179,14 +9179,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If *this\type = #__type_MDI
         *this\countitems + 1 ;?
         
-        flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
-        If Not constants::BinaryFlag( Flag, #__flag_BorderLess ) 
-          flag | #__window_sizegadget
+        flag | #__window_SystemMenu | #__window_MaximizeGadget | #__window_MinimizeGadget
+        If Not constants::BinaryFlag( Flag, #__window_BorderLess ) 
+          flag | #__window_SizeGadget
         EndIf
-        result = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__flag_child, *this )
+        result = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__window_Child, *this )
         
         If IsImage( Image )
-          If constants::BinaryFlag( Flag, #__flag_BorderLess ) 
+          If constants::BinaryFlag( Flag, #__window_BorderLess ) 
             SetBackgroundImage( result, Image )
           Else
             SetImage( result, Image )
@@ -14425,11 +14425,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
           *this\RowToolTip( )\height = *this\__items( )\height
           Protected flag
           CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-            flag = #PB_Window_Tool
+            flag = #__window_Tool
           CompilerEndIf
           
           *this\RowToolTip( )\window = OpenWindow( #PB_Any, *this\RowToolTip( )\x, *this\RowToolTip( )\y, *this\RowToolTip( )\width, *this\RowToolTip( )\height, "",
-                                                   #PB_Window_BorderLess | #PB_Window_NoActivate | flag, WindowID( *this\root\canvas\window ))
+                                                   #__window_BorderLess | #__window_NoActivate | flag, WindowID( *this\root\canvas\window ))
           
           *this\RowToolTip( )\gadget      = CanvasGadget( #PB_Any, 0, 0, *this\RowToolTip( )\width, *this\RowToolTip( )\height )
           *this\RowToolTip( )\color       = *this\__items( )\color
@@ -14946,10 +14946,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i ToPBEventType( event.i )
-      If event = #__event_Enter
+      If event = #__event_MouseEnter
         ProcedureReturn #PB_EventType_MouseEnter
       EndIf
-      If event = #__event_Leave
+      If event = #__event_MouseLeave
         ProcedureReturn #PB_EventType_MouseLeave
       EndIf
       If event = #__event_MouseMove
@@ -14991,10 +14991,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ProcedureReturn #PB_EventType_KeyUp
       EndIf
       
-      If event = #__event_LeftButtonDown
+      If event = #__event_LeftDown
         ProcedureReturn #PB_EventType_LeftButtonDown
       EndIf
-      If event = #__event_LeftButtonUp
+      If event = #__event_LeftUp
         ProcedureReturn #PB_EventType_LeftButtonUp
       EndIf
       If event = #__event_LeftClick
@@ -15004,10 +15004,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
         ProcedureReturn #PB_EventType_LeftDoubleClick
       EndIf
       
-      If event = #__event_RightButtonDown
+      If event = #__event_RightDown
         ProcedureReturn #PB_EventType_RightButtonDown
       EndIf
-      If event = #__event_RightButtonUp
+      If event = #__event_RightUp
         ProcedureReturn #PB_EventType_RightButtonUp
       EndIf
       If event = #__event_RightClick
@@ -15075,8 +15075,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Select Type
         Case #__type_window
-          If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
-            flags & ~ #PB_Window_BorderLess
+          If constants::BinaryFlag( Flag, #__window_BorderLess )
+            flags & ~ #__window_BorderLess
             flags | #__flag_BorderLess
           EndIf
           ;
@@ -15282,7 +15282,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case "listicon" : result = #__type_ListIcon
         Case "listview" : result = #__type_ListView
         Case "mdi" : result = #__type_MDI
-        Case "opengl" : result = #__type_OpenGL
+        ;Case "opengl" : result = #__type_OpenGL
         Case "option" : result = #__type_Option
         Case "panel" : result = #__type_Panel
         Case "progress" : result = #__type_ProgressBar
@@ -15381,16 +15381,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
         Case #__event_MouseLeave      : result$ = "MouseLeave"       ; The mouse cursor left the gadget
         Case #__event_MouseMove       : result$ = "MouseMove"        ; The mouse cursor moved
         Case #__event_MouseWheel      : result$ = "MouseWheel"       ; The mouse wheel was moved
-        Case #__event_LeftButtonDown  : result$ = "LeftButtonDown"   ; The left mouse button was pressed
-        Case #__event_LeftButtonUp    : result$ = "LeftButtonUp"     ; The left mouse button was released
+        Case #__event_LeftDown        : result$ = "LeftButtonDown"   ; The left mouse button was pressed
+        Case #__event_LeftUp          : result$ = "LeftButtonUp"     ; The left mouse button was released
         Case #__event_LeftClick       : result$ = "LeftClick"        ; A click With the left mouse button
         Case #__event_Left2Click      : result$ = "Left2Click"       ; A double-click With the left mouse button
-        Case #__event_RightButtonDown : result$ = "RightButtonDown"  ; The right mouse button was pressed
-        Case #__event_RightButtonUp   : result$ = "RightButtonUp"    ; The right mouse button was released
+        Case #__event_RightDown       : result$ = "RightButtonDown"  ; The right mouse button was pressed
+        Case #__event_RightUp         : result$ = "RightButtonUp"    ; The right mouse button was released
         Case #__event_RightClick      : result$ = "RightClick"       ; A click With the right mouse button
         Case #__event_Right2Click     : result$ = "Right2Click"      ; A double-click With the right mouse button
-                                                                     ;Case #__event_MiddleButtonDown : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
-                                                                     ;Case #__event_MiddleButtonUp : result$ = "MiddleButtonUp"     ; The middle mouse button was released
+                                                                     ;Case #__event_MiddleDown : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
+                                                                     ;Case #__event_MiddleUp : result$ = "MiddleButtonUp"     ; The middle mouse button was released
         Case #__event_Focus           : result$ = "Focus"            ; The gadget gained keyboard focus
         Case #__event_LostFocus       : result$ = "LostFocus"        ; The gadget lost keyboard focus
         Case #__event_KeyDown         : result$ = "KeyDown"          ; A key was pressed
@@ -15401,14 +15401,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
           ;Case #__event_TitleChange : result$ = "TitleChange"
         Case #__event_Change          : result$ = "Change"
         Case #__event_DragStart       : result$ = "DragStart"
-        Case #__event_ReturnKey       : result$ = "returnKey"
+        Case #__event_Return          : result$ = "ReturnKey"
           ;Case #__event_CloseItem : result$ = "CloseItem"
           
         Case #__event_Down            : result$ = "Down"
         Case #__event_Up              : result$ = "Up"
           
-        Case #__event_mousewheelX     : result$ = "MouseWheelX"
-        Case #__event_mousewheelY     : result$ = "MouseWheelY"
+        Case #__event_MouseWheelX     : result$ = "MouseWheelX"
+        Case #__event_MouseWheelY     : result$ = "MouseWheelY"
       EndSelect
       
       ProcedureReturn result$
@@ -20710,13 +20710,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                #__event_MouseLeave,
                #__event_Down,
                #__event_Up,
-               #__event_LeftButtonDown,
-               #__event_LeftButtonUp,
+               #__event_LeftDown,
+               #__event_LeftUp,
                #__event_LeftClick,
                #__event_Left2Click,
                #__event_Left3Click,
-               #__event_RightButtonDown,
-               #__event_RightButtonUp,
+               #__event_RightDown,
+               #__event_RightUp,
                #__event_RightClick,
                #__event_Right2Click,
                #__event_Right3Click,
@@ -20797,9 +20797,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
               If eventtype = #__event_Left2Click
                 If *this\caption\interact
                   If Not *this\resize\flag & #__resize_maximize
-                    ProcedureReturn SetState( *this, #PB_Window_Maximize )
+                    ProcedureReturn SetState( *this, #__window_Maximize )
                   Else
-                    ProcedureReturn SetState( *this, #PB_Window_Normal )
+                    ProcedureReturn SetState( *this, #__window_Normal )
                   EndIf
                 EndIf
               EndIf
@@ -20817,17 +20817,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     ; maximize button
                   Case *this\MaximizeButton( )
                     If Not *this\resize\flag & #__resize_maximize
-                      ProcedureReturn SetState( *this, #PB_Window_Maximize )
+                      ProcedureReturn SetState( *this, #__window_Maximize )
                     Else
-                      ProcedureReturn SetState( *this, #PB_Window_Normal )
+                      ProcedureReturn SetState( *this, #__window_Normal )
                     EndIf
                     
                     ; minimize button
                   Case *this\MinimizeButton( )
                     If Not *this\resize\flag & #__resize_minimize
-                      ProcedureReturn SetState( *this, #PB_Window_Minimize )
+                      ProcedureReturn SetState( *this, #__window_Minimize )
                     Else
-                      ProcedureReturn SetState( *this, #PB_Window_Normal )
+                      ProcedureReturn SetState( *this, #__window_Normal )
                     EndIf
                 EndSelect
               EndIf
@@ -21349,23 +21349,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         ;
         If eventtype = #PB_EventType_LeftButtonDown
-          eventtype = #__event_LeftButtonDown
+          eventtype = #__event_LeftDown
         EndIf
         If eventtype = #PB_EventType_MiddleButtonDown
-          eventtype = #__event_MiddleButtonDown
+          eventtype = #__event_MiddleDown
         EndIf
         If eventtype = #PB_EventType_RightButtonDown
-          eventtype = #__event_RightButtonDown
+          eventtype = #__event_RightDown
         EndIf
         ;
         If eventtype = #PB_EventType_LeftButtonUp
-          eventtype = #__event_LeftButtonUp
+          eventtype = #__event_LeftUp
         EndIf
         If eventtype = #PB_EventType_MiddleButtonUp
-          eventtype = #__event_MiddleButtonUp
+          eventtype = #__event_MiddleUp
         EndIf
         If eventtype = #PB_EventType_RightButtonUp
-          eventtype = #__event_RightButtonUp
+          eventtype = #__event_RightUp
         EndIf
         ;
         If eventtype = #PB_EventType_Focus
@@ -21423,9 +21423,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If eventtype = #__event_LeftButtonUp Or
-           eventtype = #__event_RightButtonDown Or
-           eventtype = #__event_MiddleButtonDown
+        If eventtype = #__event_LeftUp Or
+           eventtype = #__event_RightDown Or
+           eventtype = #__event_MiddleDown
           ;
           If EnteredCanvasID
             If EnteredCanvasID <> root( )\canvas\gadgetID
@@ -21552,9 +21552,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
               EndIf
             EndIf
             
-          Case #__event_LeftButtonDown,
-               #__event_RightButtonDown,
-               #__event_MiddleButtonDown
+          Case #__event_LeftDown,
+               #__event_RightDown,
+               #__event_MiddleDown
             ;Debug "      canvas down " + eventgadget
             ;
             ;\\
@@ -21574,13 +21574,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             mouse( )\delta\x = mouse( )\x
             mouse( )\delta\y = mouse( )\y
             ;
-            If eventtype = #__event_LeftButtonDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
-            If eventtype = #__event_RightButtonDown : mouse( )\buttons | #PB_Canvas_RightButton : EndIf
-            If eventtype = #__event_MiddleButtonDown : mouse( )\buttons | #PB_Canvas_MiddleButton : EndIf
+            If eventtype = #__event_LeftDown : mouse( )\buttons | #PB_Canvas_LeftButton : EndIf
+            If eventtype = #__event_RightDown : mouse( )\buttons | #PB_Canvas_RightButton : EndIf
+            If eventtype = #__event_MiddleDown : mouse( )\buttons | #PB_Canvas_MiddleButton : EndIf
             ;
-          Case #__event_LeftButtonUp,
-               #__event_RightButtonUp,
-               #__event_MiddleButtonUp
+          Case #__event_LeftUp,
+               #__event_RightUp,
+               #__event_MiddleUp
             ;Debug "     canvas up " + eventgadget
             ;
             If mouse( )\interact = 1
@@ -21612,9 +21612,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
               GetAtPoint( root( ), mouse( )\x, mouse( )\y, widgets( ) )
               ;                      EndIf
               
-              If eventtype = #__event_LeftButtonDown Or
-                 eventtype = #__event_MiddleButtonDown Or
-                 eventtype = #__event_RightButtonDown
+              If eventtype = #__event_LeftDown Or
+                 eventtype = #__event_MiddleDown Or
+                 eventtype = #__event_RightDown
                 
                 If EnteredWidget( )
                   If EnteredWidget( )\image[#__image_background]\id And
@@ -21737,14 +21737,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-        ElseIf eventtype = #__event_LeftButtonDown Or
-               eventtype = #__event_MiddleButtonDown Or
-               eventtype = #__event_RightButtonDown
+        ElseIf eventtype = #__event_LeftDown Or
+               eventtype = #__event_MiddleDown Or
+               eventtype = #__event_RightDown
           ;
           If EnteredWidget( )
             ;
             ;\\ mouse delta (x&y)
-            If eventtype <> #__event_MiddleButtonDown
+            If eventtype <> #__event_MiddleDown
               If Not a_index( )
                 If Not EnteredWidget( )\anchors
                   If EnteredWidget( )\bar And EnteredButton( ) > 0
@@ -21767,7 +21767,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ;\\ set active widget
             If EnteredWidget( )\disable
-              If eventtype = #__event_LeftButtonDown
+              If eventtype = #__event_LeftDown
                 If GetActive( ) <> EnteredWidget( )\parent
                   If EnteredButton( )
                     ;
@@ -21782,7 +21782,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
               PressedWidget( )       = EnteredWidget( )
               PressedWidget( )\press = #True
               ;
-              If eventtype = #__event_LeftButtonDown
+              If eventtype = #__event_LeftDown
                 If a_focused( ) <> EnteredWidget( )
                   If GetActive( ) <> EnteredWidget( )
                     SetActive( EnteredWidget( ))
@@ -21799,9 +21799,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
           EndIf
           
-        ElseIf eventtype = #__event_LeftButtonUp Or
-               eventtype = #__event_MiddleButtonUp Or
-               eventtype = #__event_RightButtonUp
+        ElseIf eventtype = #__event_LeftUp Or
+               eventtype = #__event_MiddleUp Or
+               eventtype = #__event_RightUp
           
           ;\\
           If PressedWidget( )
@@ -21886,10 +21886,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 DragState( ) = #PB_Drag_None
               Else
                 If PressedWidget( ) = EnteredWidget( )
-                  If eventtype = #__event_LeftButtonUp
+                  If eventtype = #__event_LeftUp
                     DoEvents( PressedWidget( ), #__event_LeftClick )
                   EndIf
-                  If eventtype = #__event_RightButtonUp
+                  If eventtype = #__event_RightUp
                     DoEvents( PressedWidget( ), #__event_RightClick )
                   EndIf
                 EndIf
@@ -21897,19 +21897,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
               ;\\ do 2click events
               If mouse( )\click = 2
-                If eventtype = #__event_LeftButtonUp
+                If eventtype = #__event_LeftUp
                   DoEvents( PressedWidget( ), #__event_Left2Click )
                 EndIf
-                If eventtype = #__event_RightButtonUp
+                If eventtype = #__event_RightUp
                   DoEvents( PressedWidget( ), #__event_Right2Click )
                 EndIf
                 
                 ;\\ do 3click events
               ElseIf mouse( )\click = 3
-                If eventtype = #__event_LeftButtonUp
+                If eventtype = #__event_LeftUp
                   DoEvents( PressedWidget( ), #__event_Left3Click )
                 EndIf
-                If eventtype = #__event_RightButtonUp
+                If eventtype = #__event_RightUp
                   DoEvents( PressedWidget( ), #__event_Right3Click )
                 EndIf
                 
@@ -21952,9 +21952,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ; reset
-        If eventtype = #__event_LeftButtonUp Or
-           eventtype = #__event_MiddleButtonUp Or
-           eventtype = #__event_RightButtonUp
+        If eventtype = #__event_LeftUp Or
+           eventtype = #__event_MiddleUp Or
+           eventtype = #__event_RightUp
           ;
           
           ;\\ reset mouse states
@@ -22308,8 +22308,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If PB(IsWindow)( Window )
         w = WindowID( Window )
         ;
-        ;             If constants::BinaryFlag( Flag, #PB_Window_NoGadgets )
-        ;                flag &~ #PB_Window_NoGadgets
+        ;             If constants::BinaryFlag( Flag, #__window_NoGadgets )
+        ;                flag &~ #__window_NoGadgets
         ;             EndIf
         If constants::BinaryFlag( Flag, #PB_Canvas_Container ) 
           flag &~ #PB_Canvas_Container
@@ -22320,8 +22320,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
           canvasflag | #PB_Canvas_Container
         EndIf
       Else
-        If constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
-          flag &~ #PB_Window_NoGadgets
+        If constants::BinaryFlag( Flag, #__window_NoGadgets ) 
+          flag &~ #__window_NoGadgets
         Else
           canvasflag | #PB_Canvas_Container
         EndIf
@@ -22337,7 +22337,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           w = WindowID( Window ) 
         EndIf
         ;
-        If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
+        If constants::BinaryFlag( Flag, #__window_BorderLess )
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             If CocoaMessage(0, w, "hasShadow") = 0
               CocoaMessage(0, w, "setHasShadow:", 1)
@@ -22432,7 +22432,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If Not constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
+        If Not constants::BinaryFlag( Flag, #__window_NoGadgets ) 
           If Opened( )
             Opened( )\Afterroot( ) = *root
           EndIf
@@ -22443,7 +22443,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         EndIf
         
         ;\\
-        If constants::BinaryFlag( Flag, #PB_Window_NoActivate )
+        If constants::BinaryFlag( Flag, #__window_NoActivate )
           *root\focus =- 1
         Else
           SetActive( *root )
@@ -22517,8 +22517,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndProcedure
     
     Procedure.i Window( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, *parent._s_WIDGET = 0 )
-      Protected fs = DPIScaled(#__window_frame_size)
-      Protected barHeight = DPIScaled( #__window_caption_height )
+      Protected fs = DPIScaled(#__window_FrameSize)
+      Protected barHeight = DPIScaled( #__window_CaptionHeight )
       
       ;Protected *this.allocate( Widget )
       If Opened( )
@@ -22544,7 +22544,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           ;\\ open root list
         Else
-          *this = Open( #PB_Any, x, y, width + fs * 2, height + fs * 2 + barHeight, Text, flag | #PB_Window_BorderLess, *parent )
+          *this = Open( #PB_Any, x, y, width + fs * 2, height + fs * 2 + barHeight, Text, flag | #__window_BorderLess, *parent )
           x     = 0
           y     = 0
           ;EndIf
@@ -23194,13 +23194,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #PB_Event_MaximizeWindow
               Debug "maximize.... "
               If Send( root( ), #__event_Maximize )
-                SetWindowState( window, #PB_Window_Normal )
+                SetWindowState( window, #__window_Normal )
               EndIf
               
             Case #PB_Event_MinimizeWindow
               Debug "minimize.... "
               If Send( root( ), #__event_Minimize )
-                SetWindowState( window, #PB_Window_Normal )
+                SetWindowState( window, #__window_Normal )
               EndIf
               
           EndSelect
@@ -23359,18 +23359,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;          ;\\ 1)
       ;          x = ( root( )\width - width )/2
-      ;          y = ( root( )\height - height )/2 - #__window_caption_height
-      ;          *message = Window( x, y, width, height, Title, #PB_Window_TitleBar, *parent)
+      ;          y = ( root( )\height - height )/2 - #__window_CaptionHeight
+      ;          *message = Window( x, y, width, height, Title, #__window_TitleBar, *parent)
       ; ;
       ; ; ;          ;\\ 2)
-      ; ; ;          ; *message = Window( x, y, width, height, Title, #PB_Window_TitleBar | #PB_Window_WindowCentered, *parent)
+      ; ; ;          ; *message = Window( x, y, width, height, Title, #__window_TitleBar | #__window_WindowCentered, *parent)
       ;
       ;\\ 3)
-      Define newflag = #PB_Window_TitleBar | #PB_Window_Invisible | #PB_Window_NoActivate
+      Define newflag = #__window_TitleBar | #__window_Invisible | #__window_NoActivate
       If constants::BinaryFlag( Flag, #__message_ScreenCentered )
-        newflag | #PB_Window_ScreenCentered
+        newflag | #__window_ScreenCentered
       Else
-        newflag | #PB_Window_WindowCentered
+        newflag | #__window_WindowCentered
       EndIf
       
       *message = Open( #PB_Any, x, y, width, height, Title, newflag, WindowID( *parent\canvas\window ))
@@ -23539,7 +23539,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;\\
       Sticky( *message, #True )
-      HideWindow( *message\root\canvas\window, 0);, #PB_Window_NoActivate )
+      HideWindow( *message\root\canvas\window, 0);, #__window_NoActivate )
       
       ;\\
       ;Disable( *parent, 1 )
@@ -23587,7 +23587,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   Global MDI, MDI_splitter, Splitter
   
-  If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, 700, 280, "MDI", #__window_SystemMenu | #__window_ScreenCentered)
     
     MDI        = MDI(10, 10, 680, 260) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
     Define *g0 = AddItem(MDI, -1, "form_0")
@@ -23700,7 +23700,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
+  OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #__window_SystemMenu )
   
   Define i
   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
@@ -23791,7 +23791,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\Close( )
   
   
-  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #__window_SystemMenu | #__window_ScreenCentered)
   
   ;\\ Open root0
   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
@@ -24009,7 +24009,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
         EndSelect
         
-        ;         ;Case #__event_LeftButtonUp
+        ;         ;Case #__event_LeftUp
         ;         ClearDebugOutput( )
         ;         If StartEnumerate(*panel);root( ))
         ;           If Not hide(widget( )) ;And GetParent(widget( )) = *panel
@@ -24273,7 +24273,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define i, y = 5
   OpenList( *root4 )
   For i = 1 To 4
-    Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
+    Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #__window_SystemMenu | #__window_MaximizeGadget)
     ;Container(5, y, 150, 95 + 2)
     If i = 2
       Disable( widget( ), 1)
@@ -24315,9 +24315,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23921
-; FirstLine = 7982
-; Folding = AGA1BQs+-------------HwDA9-----fAAggBAAAA+RmQACAAAAAYnAAAAA9-------------DEAAAAAAg9H45AG++B-8DAAQ9HAAAwAAAAAAAAA-IEvewwPAQAAgxIAAAAAAAAAAA9-DQEA9fkAAAAAAAAAAAgvAgAAYAfg--gEAej-Aes-DAA5MAV9WYDA1AAAAAxYIBgBAAAAgDAAAAAAAAAAAAABAA9Pg-BAAAAAAAAAAAAAAw------------PAABAAwHAAAAAgM1BAAAAAAAAAAAAAAAAAA5BAAAAAAAAAAAAAgAAAA9AGAAQAAAAAAAAAAAAAAAA0AAAGAAAAAgAAAw-BAAAAAAAAGQAAAAAAAAURnLQAfADAAAAAHuCSA5zGG+6AAAAAA9-DAQGEMEM-3z8-AR+QkBAIA9BAAAMAAAAA6Ybz3AwIA5JAAA5BAAAAAAA5w-PvCAAQ9AHCBAgGGAMAAwAA55Mn6AAAAAAwfg-EAHA5j4CDAwBOAAAA5HAAAAAAAAHAAHED5HAAwPgeA-wHdCzAXwQwD-DHCCAQA9EBAgD-wBodAAAAAAAAAAAAAHAAAAAAAAAAAAA5------HAJIAgBEAAAAAAAAAOgBuBAAAAAAgAAJAAA5BAw
+; CursorPosition = 15284
+; FirstLine = 5463
+; Folding = -HA1BQs+-------------HwDA9-----fAAggBAAAA+RmQACAAAgGYnAAAAA9-------------DEAAAAAAg9H45AG++B-8DAAw9HIAAwQAAAAAAAA-IEvewwPAQAAgxIAAAAAAAAAAA9-DQEA9fkAAAAAAAAAAAgvAgAAYAfg--gEAej-ces-DwI6MAV9WYDA1AAAAAxYIBgBAAAAgDAAAAAAAADgg-BBAA9Pg-BAAAAAAAAAAAAAAw------------PAABAAwHAAAAAgM1BAAAAAAAAAAAAAAAAAA5BAAAAAAAAAAAAAgAAAA9AGAAQAAAAAAAAAAAAAAAA0AAAGAAAAAgACAw-BBAAAAAAAGQAAAAAAAAURnLQAfADAAAALHuCSA5zGG+6AA5DBz9-HAQGEMmP-3z8-AR+QkBAIA9BAAAMAAAAA6Ybz3AwIA5JAAA5BAAAAAAA5w-PvCAAQ9AHCBAgGGAMAAwAA55Mn6AAAAAAwfg-EAHA-v4CDC1BOAIIA5HAAAAAAAAPYAHED5HIAwPgeA-wHdizAXwQwD-DHGO00A9Uh9gX-wBodQAAAS5vBIAAmAnH+-BADGxAA--C5------HAJYJhTUFUAAAAAAAOgBuBAwhIzAmEAvBAA8BMw
 ; Optimizer
 ; EnableXP
 ; DPIAware

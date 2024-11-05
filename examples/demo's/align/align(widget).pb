@@ -458,8 +458,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\
     Define tree_button1 = Button( 5,   345, 240,  25, "")
     Define tree_button2 = Button( 5,   345+30, 240, 30,"")
-    Define tree_container = Window( 10, 10, 230-#__window_frame_size*2,  325-#__window_frame_size*2-#__window_caption_height, "", #PB_Window_SystemMenu)
-    tree_view = Tree(10, 10, 230-20-#__window_frame_size*2,  325-20-#__window_frame_size*2-#__window_caption_height)  : CloseList( )
+    Define tree_container = Window( 10, 10, 230-#__window_FrameSize*2,  325-#__window_FrameSize*2-#__window_CaptionHeight, "", #PB_Window_SystemMenu)
+    tree_view = Tree(10, 10, 230-20-#__window_FrameSize*2,  325-20-#__window_FrameSize*2-#__window_CaptionHeight)  : CloseList( )
     
     SetAlign(tree_container, 0, 1,1,1,1 )
     SetAlign(tree_view, 0, 1,1,1,1 )
@@ -494,8 +494,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 443
-; FirstLine = 250
+; CursorPosition = 461
+; FirstLine = 295
 ; Folding = --x-
 ; Optimizer
 ; EnableXP

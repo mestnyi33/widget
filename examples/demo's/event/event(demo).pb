@@ -30,10 +30,10 @@ CompilerIf #PB_Compiler_IsMainFile
                Case #__event_LostFocus
                   Debug "lostfocus - "+EventObject +" "+ EventData
                   
-               Case #__event_LeftButtonDown
+               Case #__event_LeftDown
                   Debug "down - "+EventObject
                   
-               Case #__event_LeftButtonUp
+               Case #__event_LeftUp
                   Debug "up - "+EventObject
                   
                Case #__event_MouseEnter
@@ -94,8 +94,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 60
+; CursorPosition = 35
+; FirstLine = 31
 ; Folding = --
 ; EnableXP
 ; DPIAware

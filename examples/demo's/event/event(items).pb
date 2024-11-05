@@ -36,16 +36,16 @@ CompilerIf #PB_Compiler_IsMainFile
         widget::Bind(widget( ), @events_widgets(), #__event_MouseEnter)
         widget::Bind(widget( ), @events_widgets(), #__event_MouseLeave)
     
-      Case #__event_LeftButtonDown
+      Case #__event_LeftDown
         If _2click = 2
           _2click = 0
           ClearItems(w_flag)
         EndIf
         AddItem(w_flag, -1, Space + "down")
         
-      Case #__event_LeftButtonUp    : AddItem(w_flag, -1, Space + " up")
+      Case #__event_LeftUp    : AddItem(w_flag, -1, Space + " up")
       Case #__event_LeftClick       : AddItem(w_flag, -1, Space + "  click") : _2click + 1
-      Case #__event_LeftDoubleClick : AddItem(w_flag, -1, Space + "   2_click") : _2click = 2
+      Case #__event_Left2Click : AddItem(w_flag, -1, Space + "   2_click") : _2click = 2
     EndSelect
     
     SetState(w_flag, countitems(w_flag) - 1)
@@ -56,10 +56,10 @@ CompilerIf #PB_Compiler_IsMainFile
     w_flag = widget::Tree( 10, 10, 180, 200, #__tree_nobuttons | #__tree_nolines ) 
     w_this = widget::Tree( 10, 220, 180, 70, #__tree_nobuttons | #__tree_nolines )
     
-    widget::Bind(w_this, @events_widgets(), #__event_LeftButtonDown)
-    widget::Bind(w_this, @events_widgets(), #__event_LeftButtonUp)
+    widget::Bind(w_this, @events_widgets(), #__event_LeftDown)
+    widget::Bind(w_this, @events_widgets(), #__event_LeftUp)
     widget::Bind(w_this, @events_widgets(), #__event_LeftClick)
-    widget::Bind(w_this, @events_widgets(), #__event_LeftDoubleClick)
+    widget::Bind(w_this, @events_widgets(), #__event_Left2Click)
     
     widget::Bind(w_this, @events_widgets(), #__event_MouseEnter)
     widget::Bind(w_this, @events_widgets(), #__event_MouseLeave)
@@ -70,10 +70,10 @@ CompilerIf #PB_Compiler_IsMainFile
     w_this1 = widget::Tree( 140, 235, 40, 40, #__tree_nobuttons | #__tree_nolines) 
     EnableDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
   
-    widget::Bind(w_this1, @events_widgets(), #__event_LeftButtonDown)
-    widget::Bind(w_this1, @events_widgets(), #__event_LeftButtonUp)
+    widget::Bind(w_this1, @events_widgets(), #__event_LeftDown)
+    widget::Bind(w_this1, @events_widgets(), #__event_LeftUp)
     widget::Bind(w_this1, @events_widgets(), #__event_LeftClick)
-    widget::Bind(w_this1, @events_widgets(), #__event_LeftDoubleClick)
+    widget::Bind(w_this1, @events_widgets(), #__event_Left2Click)
     
     widget::Bind(w_this1, @events_widgets(), #__event_MouseEnter)
     widget::Bind(w_this1, @events_widgets(), #__event_MouseLeave)
@@ -85,8 +85,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 18
+; CursorPosition = 75
+; FirstLine = 60
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -535,7 +535,7 @@ Procedure widget_events( )
   ;    Static *beforeWidget
   
   Select eventtype 
-    Case #__event_RightButtonDown
+    Case #__event_RightDown
       Debug "right"
       
       ; disable window-toolbar-buttons events
@@ -613,7 +613,7 @@ Procedure widget_events( )
           
       EndSelect
       
-    Case #__event_LeftButtonDown
+    Case #__event_LeftDown
       If IsContainer( *e_widget )
         If a_selector( )\type > 0 Or group_select
           If group_select 
@@ -628,7 +628,7 @@ Procedure widget_events( )
         ;           EndIf
       EndIf
       
-    Case #__event_LeftButtonUp
+    Case #__event_LeftUp
       ; then group select
       If IsContainer( *e_widget )
         If a_transform( ) And a_focused( ) And a_focused( )\anchors = - 1
@@ -674,8 +674,8 @@ Procedure widget_events( )
   
   ;\\
   If eventtype = #__event_Drop Or 
-     eventtype = #__event_LeftButtonUp Or 
-     eventtype = #__event_RightButtonUp 
+     eventtype = #__event_LeftUp Or 
+     eventtype = #__event_RightUp 
     
     ; end new create
     If GetState( ide_inspector_elements ) > 0 
@@ -1408,8 +1408,8 @@ DataSection
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1121
-; FirstLine = 1109
+; CursorPosition = 677
+; FirstLine = 673
 ; Folding = -----------------------
 ; EnableXP
 ; DPIAware

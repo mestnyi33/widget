@@ -257,11 +257,11 @@ CompilerIf #PB_Compiler_IsMainFile
         width = ( width/mouse( )\steps ) * mouse( )\steps + 1
         height = ( height/mouse( )\steps ) * mouse( )\steps + 1
         
-        ;Debug ( a_transform( )\pos + #__window_frame_size )
+        ;Debug ( a_transform( )\pos + #__window_FrameSize )
         
         If class = "window"
-          width + ( #__window_frame_size * 2 )%mouse( )\steps
-          height + ( #__window_frame_size * 2 + #__window_caption_height )%mouse( )\steps
+          width + ( #__window_FrameSize * 2 )%mouse( )\steps
+          height + ( #__window_FrameSize * 2 + #__window_CaptionHeight )%mouse( )\steps
         EndIf
       EndIf
       
@@ -757,7 +757,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         
-        ;       Case #__event_LeftButtonUp
+        ;       Case #__event_LeftUp
         ;         If GetState( id_elements_tree) <> 0 
         ;           Debug ""+mouse( )\x+" "+mouse( )\delta\x
         ;           widget_add( EventWidget( ), GetText( id_elements_tree ), mouse( )\delta\x-X(EventWidget( ), #PB_Gadget_ContainerCoordinate), mouse( )\delta\y-Y(EventWidget( ), #PB_Gadget_ContainerCoordinate) )
@@ -776,7 +776,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventWidget = EventWidget( )
     
     Select e_type
-      Case #__event_LeftButtonDown
+      Case #__event_LeftDown
         
       Case #__event_DragStart
         If EventWidget = id_elements_tree
@@ -908,8 +908,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 839
-; FirstLine = 836
+; CursorPosition = 759
+; FirstLine = 755
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

@@ -17,12 +17,12 @@ CompilerIf #PB_Compiler_IsMainFile
            
         Case #__Event_Down           : result = 1 : AddItem(w_flag, -1, "down")
            
-        Case #__Event_LeftButtonDown : 
+        Case #__event_LeftDown : 
            Debug "leftdown"
            result = 1 : AddItem(w_flag, -1, " leftdown")
            Message( "message", "demo click", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
            
-        Case #__Event_LeftButtonUp   : result = 1 : AddItem(w_flag, -1, "  leftup")
+        Case #__event_LeftUp   : result = 1 : AddItem(w_flag, -1, "  leftup")
            Debug "leftup"
            
         Case #__Event_LeftClick      : result = 1 : AddItem(w_flag, -1, "   click") 
@@ -48,8 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(w_this, @events_widgets( ), #__Event_Drop)
     ; widget::Bind(w_this, @events_widgets( ), #__Event_Down)
     ; widget::Bind(w_this, @events_widgets( ), #__Event_Up)
-    widget::Bind(w_this, @events_widgets( ), #__Event_LeftButtonDown)
-    widget::Bind(w_this, @events_widgets( ), #__Event_LeftButtonUp)
+    widget::Bind(w_this, @events_widgets( ), #__event_LeftDown)
+    widget::Bind(w_this, @events_widgets( ), #__event_LeftUp)
     widget::Bind(w_this, @events_widgets( ), #__Event_LeftClick)
     widget::Bind(w_this, @events_widgets( ), #__Event_Left2Click)
     widget::Bind(w_this, @events_widgets( ), #__Event_Left3Click)
@@ -58,8 +58,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 29
+; CursorPosition = 51
+; FirstLine = 27
 ; Folding = -
 ; EnableXP
 ; DPIAware

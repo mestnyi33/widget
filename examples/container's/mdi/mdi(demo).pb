@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,80,80,"button_2")
   
   Define *g3 = AddItem(*mdi, -1, "form_3")
-  BinD(Button(10,10,80,80,"test"), @button_3_events(), #__event_LeftButtonDown)
+  BinD(Button(10,10,80,80,"test"), @button_3_events(), #__event_LeftDown)
   
   ; use root list
   OpenList(Root())
@@ -93,8 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 62
+; CursorPosition = 68
+; FirstLine = 64
 ; Folding = -
 ; EnableXP
 ; DPIAware

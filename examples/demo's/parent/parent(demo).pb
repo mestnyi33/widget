@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
               EventData.i = WidgetEventData()
     
    Select EventType
-   	Case #__event_LeftButtonDown
+   	Case #__event_LeftDown
    		;ClearDebugOutput()
    		
    	Case #__event_LeftClick, #__event_Change
@@ -218,8 +218,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 23
+; CursorPosition = 32
+; FirstLine = 28
 ; Folding = -0
 ; EnableXP
 ; DPIAware

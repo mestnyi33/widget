@@ -8,8 +8,8 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 30, 30, 540, 340)
     SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
     
-    Define vfs = #__window_caption_height+#__window_frame_size*2
-    Define hfs = #__window_frame_size*2
+    Define vfs = #__window_CaptionHeight+#__window_FrameSize*2
+    Define hfs = #__window_FrameSize*2
   
     ;a_init(Root())
     ;Window(50,50,440-hfs,240-vfs,"window", #__window_systemmenu)
@@ -34,7 +34,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = -
 ; EnableXP
 ; DPIAware

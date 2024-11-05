@@ -26,13 +26,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected eventobject = EventWidget( )
       
       Select WidgetEvent( )
-         Case #__event_RightButtonUp
+         Case #__event_RightUp
             DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
                
          Case #__event_DragStart
             DraggedGadget = eventobject
             
-         Case #__event_LeftButtonUp
+         Case #__event_LeftUp
             DraggedGadget = 0
             
          Case #__event_ResizeBegin
@@ -179,8 +179,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 28
+; FirstLine = 24
 ; Folding = -+
 ; EnableXP
 ; DPIAware

@@ -73,7 +73,7 @@ Procedure events_widgets()
     Case #__event_LeftClick
       Debug  ""+IDWidget(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
-    Case #__event_LeftDoubleClick
+    Case #__event_Left2Click
       Debug  ""+IDWidget(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_RightClick
@@ -178,8 +178,8 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 61
+; CursorPosition = 75
+; FirstLine = 71
 ; Folding = --
 ; EnableXP
 ; DPIAware

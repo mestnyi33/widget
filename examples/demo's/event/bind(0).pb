@@ -31,10 +31,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind( *butt, @events_roots( ), #__event_Input )
       Bind( *butt, @events_roots( ), #__event_KeyDown )
       Bind( *butt, @events_roots( ), #__event_KeyUp )
-      Bind( *butt, @events_roots( ), #__event_LeftButtonDown )
-      Bind( *butt, @events_roots( ), #__event_LeftButtonUp )
+      Bind( *butt, @events_roots( ), #__event_LeftDown )
+      Bind( *butt, @events_roots( ), #__event_LeftUp )
       Bind( *butt, @events_roots( ), #__event_LeftClick )
-      Bind( *butt, @events_roots( ), #__event_LeftDoubleClick )
+      Bind( *butt, @events_roots( ), #__event_Left2Click )
       Bind( *butt, @events_roots( ), #__event_LostFocus )
       Bind( *butt, @events_roots( ), #__event_MiddleDown )
       Bind( *butt, @events_roots( ), #__event_MiddleUp )
@@ -45,10 +45,10 @@ CompilerIf #PB_Compiler_IsMainFile
       ;Bind( *butt, @events_roots( ), #__event_PopupMenu )
       ;Bind( *butt, @events_roots( ), #__event_PopupWindow )
       Bind( *butt, @events_roots( ), #__event_Resize )
-      Bind( *butt, @events_roots( ), #__event_RightButtonDown )
-      Bind( *butt, @events_roots( ), #__event_RightButtonUp )
+      Bind( *butt, @events_roots( ), #__event_RightDown )
+      Bind( *butt, @events_roots( ), #__event_RightUp )
       Bind( *butt, @events_roots( ), #__event_RightClick )
-      Bind( *butt, @events_roots( ), #__event_RightDoubleClick )
+      Bind( *butt, @events_roots( ), #__event_Right2Click )
       ;Bind( *butt, @events_roots( ), #__event_SizeItem )
       Bind( *butt, @events_roots( ), #__event_StatusChange )
       ;Bind( *butt, @events_roots( ), #__event_TitleChange )
@@ -83,8 +83,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 5
+; CursorPosition = 50
+; FirstLine = 46
 ; Folding = --
 ; EnableXP
 ; DPIAware
