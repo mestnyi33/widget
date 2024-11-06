@@ -24,10 +24,6 @@
       #PB_EventType_SizeItem = 65534
     CompilerEndIf
     
-    ;-\\ DD
-    ;#PB_Drag_Resize = - 1; #PB_Drag_Move
-    
-    ;{
     
     Enumeration - 1
       #SelectionStyle_Default
@@ -60,17 +56,17 @@
     ;
     ;\\ default values
     ;
-    #__Splittersize = 9
-    #__Splitterround = 2
+    #__SplitterSize = 9
+    #__SplitterRound = 2
+    
+    #__ButtonSize = 16
+    #__ButtonRound = 7
     
     #__Draw_plus_Size = 5
     
-    #__Buttonround = 7
-    #__Buttonsize = 16
     
-    #__Sublevelsize = 16
+    #__SublevelSize = 16
     
-    #__Scroll_Border = 2
     #__tracksize = 4
     #__arrow_Size = 4
     #__arrow_type = - 1 ; ;-1 ;0 ;1
@@ -82,7 +78,7 @@
     #__wb_help  = 4
     
     
-    #__SOC = SizeOf(Character)
+    #__sOC = SizeOf(Character)
     
     ;-\\ Anchors
     #__a_anchors_Size = 7
@@ -107,18 +103,15 @@
     #__a_Line_Bottom  = 3
     
     ; a_Set( ) flags
-    Enumeration;Binary 1
-      #__a_position = 1<<1 ; положение
-      #__a_width    = 1<<2 ; по ширине
-      #__a_height   = 1<<3 ; по высоте
-      #__a_Corner   = 1<<4 ; по углам
-      #__a_zoom     = 1<<5 ; по растянутый
-      #__a_nodraw
-    EndEnumeration
-    ;
-    #__a_edge = #__a_width | #__a_height ; по крайам
-    #__a_Size = #__a_Corner | #__a_edge
-    #__a_Full = #__a_position | #__a_Size
+    #__a_NoDraw   = 1<<0
+    #__a_Position = 1<<1 ; положение
+    #__a_Width    = 1<<2 ; по ширине
+    #__a_Height   = 1<<3 ; по высоте
+    #__a_Corner   = 1<<4 ; по углам
+    #__a_Zoom     = 1<<5 ; растянутый
+    #__a_Edge     = #__a_Width | #__a_Height ; по крайам
+    #__a_Size     = #__a_Corner | #__a_Edge
+    #__a_Full     = #__a_position | #__a_Size
     
     ;-\\ edit errors
     Enumeration 1
@@ -128,45 +121,41 @@
     EndEnumeration
     
     ;-\\ edit selection
-    #__Sel_to_Line   = 1
-    #__Sel_to_First  = 2
-    #__Sel_to_Remove = - 1
-    #__Sel_to_Last   = - 2
-    #__Sel_to_Set    = 5
+    #__sel_to_Line   = 1
+    #__sel_to_First  = 2
+    #__sel_to_Remove = - 1
+    #__sel_to_Last   = - 2
+    #__sel_to_Set    = 5
     
     ;-\\ Coordinate (pos & size)
-    Enumeration _C_Coordinate
-      #__C_Screen    = 0 ; screen
-      #__C_Frame     = 1 ; frame screen
-      #__C_Inner     = 2 ; inner screen
-      #__C_Container = 3 ; container
-      #__C_Required  = 4 ; required
-      #__C_window    = 5 ; window
-      #__C_Draw      = 6 ; clip screen
-      #__C_Draw1     = 7 ; clip frame
-      #__C_Draw2     = 8 ; clip inner
-      #__C_Restore   = 9
-      #__C
-    EndEnumeration
+    #__c_Screen    = 0 ; screen
+    #__c_Frame     = 1 ; frame screen
+    #__c_Inner     = 2 ; inner screen
+    #__c_Container = 3 ; container
+    #__c_Required  = 4 ; required
+    #__c_window    = 5 ; window
+    #__c_Draw      = 6 ; clip screen
+    #__c_Draw1     = 7 ; clip frame
+    #__c_Draw2     = 8 ; clip inner
+    #__c_Restore   = 9
+    #__c           = 10
     
     ;-\\ Color
-    Enumeration 1
-      #__Color_Front
-      #__Color_Back
-      #__Color_Line
-      #__Color_titlefront
-      #__Color_titleback
-      #__Color_graytext
-      #__Color_Frame
-      #__Color_Fore
-    EndEnumeration
+    #__color_Front      = 1
+    #__color_Back       = 2
+    #__color_Line       = 3
+    #__color_titlefront = 4
+    #__color_titleback  = 5
+    #__color_graytext   = 6
+    #__color_Frame      = 7
+    #__color_Fore       = 8
     
     ;-\\ Color (state)
     Enumeration
-      #__S_0
-      #__S_1
-      #__S_2
-      #__S_3
+      #__s_0
+      #__s_1
+      #__s_2
+      #__s_3
     EndEnumeration
     
     ;-\\ Attribute
@@ -236,7 +225,7 @@
       #__event_ResizeEnd
       #__event_Close
       #__event_Free
-      #__event_Count
+      #__event
     EndEnumeration
     
     #__eventmask_Create       = 1<<#__event_Create
@@ -342,118 +331,118 @@
     EndEnumeration
     
     ;-\\ create-flags
-    ; #__Flag_ = 1<<0
-    #__Flag_ButtonDefault  = 1<<0
-    ; #__Flag_ = 1<<1
-    ; #__Flag_ = 1<<2
-    ; #__Flag_ = 1<<3
-    ; #__Flag_ = 1<<4
-    ; #__Flag_ = 1<<5
-    ; #__Flag_ = 1<<6
-    #__Flag_Collapsed      = 1<<6
-    #__Flag_OptionBoxes    = 1<<7
-    ; #__Flag_ = 1<<8
-    #__Flag_CheckBoxes     = 1<<8 
-    ; #__Flag_ = 1<<9
-    ; #__Flag_ = 1<<10
-    ; #__Flag_ = 1<<11
-    ; #__Flag_ = 1<<12
-    #__Flag_ButtonToggle   = 1<<12 
-    ; #__Flag_ = 1<<13
-    ; #__Flag_ = 1<<14
-    ; #__Flag_ = 1<<15
-    #__Flag_BorderFlat     = 1<<16   
-    ; #__Flag_ = 1<<17
-    ; #__Flag_ = 1<<18
-    ; #__Flag_ = 1<<19
-    ; #__Flag_ = 1<<20
-    ; #__Flag_ = 1<<21
-    #__Flag_RowMultiSelect = 1<<21
-    ; #__Flag_ = 1<<22
-    #__Flag_GridLines      = 1<<22
-    ; #__Flag_ = 1<<23
-    ; #__Flag_ = 1<<24
-    ; #__Flag_ = 1<<25
-    #__Flag_RowFullSelect  = 1<<25
-    #__Flag_BorderRaised   = 1<<26
-    #__Flag_BorderDouble   = 1<<27
-    ; #__Flag_ = 1<<28
-    #__Flag_BorderSingle   = 1<<29  
-    ; #__Flag_ = 1<<30
-    #__Flag_Borderless     = 1<<31
-    #__Flag_Invert         = 1<<32
-    #__Flag_Vertical       = 1<<33
-    #__Flag_Transparent    = 1<<34
-    #__Flag_NoScrollBars   = 1<<35
-    #__Flag_TextNumeric    = 1<<36
-    #__Flag_TextReadonly   = 1<<37
-    #__Flag_TextLowerCase  = 1<<38
-    #__Flag_TextUpperCase  = 1<<39
-    #__Flag_TextPassword   = 1<<40
-    #__Flag_TextWordWrap   = 1<<41
-    #__Flag_TextMultiLine  = 1<<42
-    #__Flag_TextInLine     = 1<<43
-    #__Flag_NoLines        = 1<<44
-    #__Flag_NoButtons      = 1<<45
-    #__Flag_ThreeState     = 1<<46
-    #__Flag_Child          = 1<<47
-    #__Flag_AutoSize       = 1<<48
-    #__Flag_Left           = 1<<49
-    #__Flag_Top            = 1<<50
-    #__Flag_Right          = 1<<51
-    #__Flag_Bottom         = 1<<52
-    #__Flag_Center         = 1<<53
-    #__Flag_Full           = 1<<54
-    #__Flag_Proportional   = 1<<55
-    ; #__Flag_   = 1<<56
-    ; #__Flag_   = 1<<57
-    ; #__Flag_   = 1<<58
-    ; #__Flag_   = 1<<59
-    ; #__Flag_   = 1<<60
-    ; #__Flag_   = 1<<61
-    ; #__Flag_   = 1<<62
-    ; #__Flag_Limit = 1<<63
+    ; #__flag_ = 1<<0
+    #__flag_ButtonDefault  = 1<<0
+    ; #__flag_ = 1<<1
+    ; #__flag_ = 1<<2
+    ; #__flag_ = 1<<3
+    ; #__flag_ = 1<<4
+    ; #__flag_ = 1<<5
+    ; #__flag_ = 1<<6
+    #__flag_Collapsed      = 1<<6
+    #__flag_OptionBoxes    = 1<<7
+    ; #__flag_ = 1<<8
+    #__flag_CheckBoxes     = 1<<8 
+    ; #__flag_ = 1<<9
+    ; #__flag_ = 1<<10
+    ; #__flag_ = 1<<11
+    ; #__flag_ = 1<<12
+    #__flag_ButtonToggle   = 1<<12 
+    ; #__flag_ = 1<<13
+    ; #__flag_ = 1<<14
+    ; #__flag_ = 1<<15
+    #__flag_BorderFlat     = 1<<16   
+    ; #__flag_ = 1<<17
+    ; #__flag_ = 1<<18
+    ; #__flag_ = 1<<19
+    ; #__flag_ = 1<<20
+    ; #__flag_ = 1<<21
+    #__flag_RowMultiSelect = 1<<21
+    ; #__flag_ = 1<<22
+    #__flag_GridLines      = 1<<22
+    ; #__flag_ = 1<<23
+    ; #__flag_ = 1<<24
+    ; #__flag_ = 1<<25
+    #__flag_RowFullSelect  = 1<<25
+    #__flag_BorderRaised   = 1<<26
+    #__flag_BorderDouble   = 1<<27
+    ; #__flag_ = 1<<28
+    #__flag_BorderSingle   = 1<<29  
+    ; #__flag_ = 1<<30
+    #__flag_Borderless     = 1<<31
+    #__flag_Invert         = 1<<32
+    #__flag_Vertical       = 1<<33
+    #__flag_Transparent    = 1<<34
+    #__flag_NoScrollBars   = 1<<35
+    #__flag_TextNumeric    = 1<<36
+    #__flag_TextReadonly   = 1<<37
+    #__flag_TextLowerCase  = 1<<38
+    #__flag_TextUpperCase  = 1<<39
+    #__flag_TextPassword   = 1<<40
+    #__flag_TextWordWrap   = 1<<41
+    #__flag_TextMultiLine  = 1<<42
+    #__flag_TextInLine     = 1<<43
+    #__flag_NoLines        = 1<<44
+    #__flag_NoButtons      = 1<<45
+    #__flag_ThreeState     = 1<<46
+    #__flag_Child          = 1<<47
+    #__flag_AutoSize       = 1<<48
+    #__flag_Left           = 1<<49
+    #__flag_Top            = 1<<50
+    #__flag_Right          = 1<<51
+    #__flag_Bottom         = 1<<52
+    #__flag_Center         = 1<<53
+    #__flag_Full           = 1<<54
+    #__flag_Proportional   = 1<<55
+    ; #__flag_   = 1<<56
+    ; #__flag_   = 1<<57
+    ; #__flag_   = 1<<58
+    ; #__flag_   = 1<<59
+    ; #__flag_   = 1<<60
+    ; #__flag_   = 1<<61
+    ; #__flag_   = 1<<62
+    ; #__flag_Limit = 1<<63
     
-    #__Flag_RowClickSelect = #__Flag_ButtonToggle ; 1<<3 ; 8
-    #__Flag_NoGadgets      = #__Flag_NoButtons
+    #__flag_RowClickSelect = #__flag_ButtonToggle ; 1<<3 ; 8
+    #__flag_NoGadgets      = #__flag_NoButtons
     
-    ;-
-    ;- \\ align-ment-widget
+    ;- \\ align-flag
     #__align_none            = 0
-    #__align_top             = #__Flag_top
-    #__align_Bottom          = #__Flag_Bottom
-    #__align_Left            = #__Flag_Left
-    #__align_Right           = #__Flag_Right
+    #__align_top             = #__flag_top
+    #__align_Bottom          = #__flag_Bottom
+    #__align_Left            = #__flag_Left
+    #__align_Right           = #__flag_Right
     ;
-    #__align_Center          = #__Flag_Center 
-    #__align_auto            = #__Flag_autoSize
-    #__align_Full            = #__Flag_Full
-    #__align_proportional    = #__Flag_Proportional
+    #__align_Center          = #__flag_Center 
+    #__align_auto            = #__flag_autoSize
+    #__align_Full            = #__flag_Full
+    #__align_proportional    = #__flag_Proportional
     
     ;-
     ;-\\ Bar
+    ; attribute
     #__Bar_Minimum           = 1
     #__Bar_Maximum           = 2
-    #__Bar_pagelength        = 3
-    #__Bar_Scrollstep        = 5
-    ;
-    ;\\ binary
-    #__Bar_Buttonsize        = 1<<3
-    #__Bar_Direction         = 1<<4
-    #__Bar_Invert            = #__Flag_Invert
-    #__Bar_vertical          = #__Flag_vertical
-    #__Bar_nobuttons         = #__Flag_nobuttons
+    #__Bar_PageLength        = 3
+    #__Bar_ScrollStep        = 5
+    #__Bar_ButtonSize        = 6
+    #__Bar_Direction         = 7
+    ; flag
+    #__Bar_Invert            = #__flag_Invert
+    #__Bar_Vertical          = #__flag_Vertical
+    #__Bar_NoButtons         = #__flag_NoButtons 
     
     ;-\\ Window
-    #__window_normal         = #PB_Window_Normal
-    #__window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers sUpport this)
-    #__window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
-    
+    ; constant
     #__window_FrameSize      = 4
     #__window_CaptionHeight  = 24
-    #__window_Child          = #__Flag_Child
+    ; attribute
+    #__window_Normal         = #PB_Window_Normal
+    #__window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers sUpport this)
+    #__window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
+    ; flag
+    #__window_Child          = #__flag_Child
     #__window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
-    
     #__window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
     #__window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
                                                          ; (MacOS only ; #PB_window_SizeGadget will be also automatically added).
@@ -461,49 +450,49 @@
     #__window_Invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
     #__window_TitleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
     #__window_Tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
-    #__window_BorderLess     = #__Flag_BorderLess        ; Creates a window without any borders.
+    #__window_BorderLess     = #__flag_BorderLess        ; Creates a window without any borders.
     #__window_ScreenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
     #__window_WindowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
-    #__window_NoGadgets      = #__Flag_NoGadgets         ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+    #__window_NoGadgets      = #__flag_NoGadgets         ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
     #__window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
                                                         
     ;-\\ Tree
-    #__tree_nolines          = #__Flag_NoLines
-    #__tree_nobuttons        = #__Flag_NoButtons
-    #__tree_Checkboxes       = #__Flag_CheckBoxes
-    #__tree_threestate       = #__Flag_ThreeState
-    #__tree_Collapsed        = #__Flag_Collapsed
-    #__tree_OptionBoxes      = #__Flag_OptionBoxes
+    #__tree_nolines          = #__flag_NoLines
+    #__tree_nobuttons        = #__flag_NoButtons
+    #__tree_Checkboxes       = #__flag_CheckBoxes
+    #__tree_threestate       = #__flag_ThreeState
+    #__tree_Collapsed        = #__flag_Collapsed
+    #__tree_OptionBoxes      = #__flag_OptionBoxes
     
     #__tree_property         = 1<<63
     
     ;-\\ Spin
-    #__Spin_vertical         = #__Bar_vertical
-    #__Spin_Left             = 1<<1
-    #__Spin_Right            = 1<<2
-    #__Spin_plus             = 1<<3
+    #__spin_vertical         = #__Bar_vertical
+    #__spin_Left             = 1<<1
+    #__spin_Right            = 1<<2
+    #__spin_plus             = 1<<3
     
     ;-\\ Text
     #__text_Update           = - 124
-    #__Flag_Textinvert       = #__Flag_Invert
-    #__Flag_Textvertical     = #__Flag_vertical
+    #__flag_Textinvert       = #__flag_Invert
+    #__flag_Textvertical     = #__flag_vertical
     ;  alignment
-    #__Flag_Textleft         = #__Flag_Left
-    #__Flag_Texttop          = #__Flag_top
-    #__Flag_Textright        = #__Flag_Right
-    #__Flag_Textbottom       = #__Flag_Bottom
-    #__Flag_Textcenter       = #__Flag_Center
+    #__flag_Textleft         = #__flag_Left
+    #__flag_Texttop          = #__flag_top
+    #__flag_Textright        = #__flag_Right
+    #__flag_Textbottom       = #__flag_Bottom
+    #__flag_Textcenter       = #__flag_Center
     
     ;-\\ Image
     #__Image_Released        = 1
     #__Image_pressed         = 2
     #__Image_Background      = 3
     ;  alignment
-    #__Image_Left            = #__Flag_Left
-    #__Image_top             = #__Flag_top
-    #__Image_Right           = #__Flag_Right
-    #__Image_Bottom          = #__Flag_Bottom
-    #__Image_Center          = #__Flag_Center
+    #__Image_Left            = #__flag_Left
+    #__Image_top             = #__flag_top
+    #__Image_Right           = #__flag_Right
+    #__Image_Bottom          = #__flag_Bottom
+    #__Image_Center          = #__flag_Center
     
     ; Debug #PB_Checkbox_Unchecked ; 0
     ; Debug #PB_Checkbox_Checked   ; 1
@@ -587,29 +576,29 @@
     ;     #PB_ListIcon_Report    : Режим отчета (столбцы, режим по умолчанию)
     
     ;       ;-\\ Editor
-    ;       ;#__editor_Inline = #__Flag_InLine
-    ;       #__editor_Readonly = #__Flag_Readonly
-    ;       #__editor_wordwrap = #__Flag_Textwordwrap
-    ;       ;#__editor_nomultiline   = #__Flag_nolines
-    ;       ;#__editor_numeric       = #__Flag_numeric | #__text_Multiline
-    ;       ;#__editor_Fullselection = #__Flag_Fullselection
-    ;       ;#__editor_gridlines     = #__Flag_gridLines
-    ;       ;#__editor_Borderless    = #__Flag_Borderless
+    ;       ;#__editor_Inline = #__flag_InLine
+    ;       #__editor_Readonly = #__flag_Readonly
+    ;       #__editor_wordwrap = #__flag_Textwordwrap
+    ;       ;#__editor_nomultiline   = #__flag_nolines
+    ;       ;#__editor_numeric       = #__flag_numeric | #__text_Multiline
+    ;       ;#__editor_Fullselection = #__flag_Fullselection
+    ;       ;#__editor_gridlines     = #__flag_gridLines
+    ;       ;#__editor_Borderless    = #__flag_Borderless
     ;       
     ; ;       ;-\\ String
-    ;       #__String_Right     = #__text_Right
-    ;       #__String_Center    = #__text_Center
-    ;       #__String_numeric   = #__text_numeric
-    ;       #__String_password  = #__text_password
-    ;       #__String_Readonly  = #__text_Readonly
-    ;       #__String_Uppercase = #__text_Uppercase
-    ;       #__String_Lowercase = #__text_Lowercase
-    ;       #__String_Multiline = #__text_Multiline
-    ;       ;#__String_Borderless = #__Flag_Borderless
+    ;       #__string_Right     = #__text_Right
+    ;       #__string_Center    = #__text_Center
+    ;       #__string_numeric   = #__text_numeric
+    ;       #__string_password  = #__text_password
+    ;       #__string_Readonly  = #__text_Readonly
+    ;       #__string_Uppercase = #__text_Uppercase
+    ;       #__string_Lowercase = #__text_Lowercase
+    ;       #__string_Multiline = #__text_Multiline
+    ;       ;#__string_Borderless = #__flag_Borderless
     
     
-    ;       If (#__Flag_Limit >> 1) > 2147483647 ; 8589934592
-    ;          Debug "Исчерпан лимит в x32 (" + Str(#__Flag_Limit >> 1) + ")"
+    ;       If (#__flag_Limit >> 1) > 2147483647 ; 8589934592
+    ;          Debug "Исчерпан лимит в x32 (" + Str(#__flag_Limit >> 1) + ")"
     ;       EndIf
     
     ;- \\ ToolBar
@@ -697,10 +686,10 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.24 LTS (Windows - x64)
-; CursorPosition = 323
-; FirstLine = 315
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 51
 ; Folding = ----
+; Optimizer
 ; EnableXP
 ; DPIAware
-; Optimizer

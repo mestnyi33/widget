@@ -4,15 +4,12 @@ EnableExplicit
 UseWidgets( )
 
 Macro IsFlag( _flags_, _flag_ )
-  constants::BinaryFlag( _flags_, _flag_ )
+  Bool(((_flags_) & _flag_) = _flag_)
 EndMacro
 
 Macro RemoveFlag( _flags_, _flag_ )
-  _flags_ &~ _flag_
-EndMacro
-Define i
-Macro RemoveFlag( _flags_, _flag_ )
-  For i = 1 To #__flag_count
+  Define i
+  For i = 0 To 63
     If IsFlag(_flag_, (1<<i))
       _flags_ &~ (1<<i)
     EndIf
@@ -20,35 +17,15 @@ Macro RemoveFlag( _flags_, _flag_ )
 EndMacro
 
 Macro AddFlag( _flags_, _flag_ )
-  If _flag_ & #__flag_Texttop
-    _flags_ | #__flag_Texttop
-  EndIf
-  If _flag_ & #__flag_Textright
-    _flags_ | #__flag_Textright
+  Define i
+  If Not _flags_ & _flag_
+    For i = 0 To 63
+      If IsFlag(_flag_, (1<<i))
+        _flags_ | (1<<i)
+      EndIf
+    Next i
   EndIf
 EndMacro
-
-; Procedure DeleteFlag( flags.q, flag.q  )
-;   Protected _flag_.q
-;   
-;   If flag & #__flag_Texttop
-;     flag &~ #__flag_Texttop
-;     flags &~ #__flag_Texttop
-;   EndIf
-;   If flag & #__flag_Textright
-;     flag &~ #__flag_Textright
-;     flags &~ #__flag_Textright
-;   EndIf
-;   
-;   ProcedureReturn flags
-; EndProcedure
-
-; Procedure RemoveFlag( *this._s_WIDGET, flag.q )
-;   If *this\flag & flag
-;     *this\flag &~ flag
-;     ProcedureReturn #True
-;   EndIf
-; EndProcedure
 
 Procedure SetFlag( *this._s_WIDGET, flag.q )
   If Not *this\flag & flag
@@ -67,7 +44,7 @@ Define flag.q = #__flag_TextLeft|#__flag_Texttop|#__flag_Textright;|#__flag_Text
 Define flags.q = #__flag_Textbottom | flag
 
 ;RemoveFlag( )
-RemoveFlags( flags, #__flag_Texttop|#__flag_Textright )
+RemoveFlag( flags, #__flag_Texttop|#__flag_Textright )
 
 Debug constants::BinaryFlag( flag, #__flag_TextLeft )
 Debug constants::BinaryFlag( flag, #__flag_Texttop )
@@ -179,7 +156,8 @@ Procedure Flag_Button( *this._s_WIDGET, flag.q )
   EndIf
 EndProcedure
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14
+; CursorPosition = 156
+; FirstLine = 125
 ; Folding = -----
 ; EnableXP
 ; DPIAware

@@ -973,6 +973,12 @@ Procedure ide_events( )
         If *e_widget = ide_inspector_elements
           SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
         EndIf
+        If *e_widget = ide_inspector_properties
+          SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+        EndIf
+        If *e_widget = ide_inspector_events
+          SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+        EndIf
       EndIf
       
     Case #__event_Change
@@ -1149,7 +1155,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
   
   ; ide_inspector_splitter_panel_item_2 
   AddItem( ide_inspector_panel, -1, "properties", 0, 0 )  
-  ide_inspector_properties = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
+  ide_inspector_properties = Properties( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
   If ide_inspector_properties
     AddItem( ide_inspector_properties, #_pi_group_0,  "Common" )
     AddItem( ide_inspector_properties, #_pi_id,       "ID"      , #__Type_String, 1 )
@@ -1169,7 +1175,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
   
   ; ide_inspector_splitter_panel_item_3 
   AddItem( ide_inspector_panel, -1, "events", 0, 0 )  
-  ide_inspector_events = Tree_properties( 0,0,0,0, #__flag_autosize | #__flag_borderless ) : SetClass(ide_inspector_events, "ide_inspector_events" ) 
+  ide_inspector_events = Properties( 0,0,0,0, #__flag_autosize | #__flag_borderless ) : SetClass(ide_inspector_events, "ide_inspector_events" ) 
   If ide_inspector_events
     AddItem( ide_inspector_events, #_ei_leftclick,  "LeftClick" )
     AddItem( ide_inspector_events, #_ei_change,  "Change" )
@@ -1252,6 +1258,12 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
   ;
   Bind( ide_design_code, @ide_events( ), #__event_Change )
   Bind( ide_design_code, @ide_events( ), #__event_StatusChange )
+  ;
+  Bind( ide_inspector_events, @ide_events( ), #__event_Change )
+  Bind( ide_inspector_events, @ide_events( ), #__event_StatusChange )
+  ;
+  Bind( ide_inspector_properties, @ide_events( ), #__event_Change )
+  Bind( ide_inspector_properties, @ide_events( ), #__event_StatusChange )
   ;
   Bind( ide_inspector_elements, @ide_events( ), #__event_Change )
   Bind( ide_inspector_elements, @ide_events( ), #__event_StatusChange )
@@ -1408,8 +1420,8 @@ DataSection
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 677
-; FirstLine = 673
+; CursorPosition = 1261
+; FirstLine = 1249
 ; Folding = -----------------------
 ; EnableXP
 ; DPIAware

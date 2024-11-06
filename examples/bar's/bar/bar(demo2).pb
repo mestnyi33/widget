@@ -96,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       EndIf
 ;     Next
     
-    Tree_Properties(5, 215, 150, 150, #__flag_Checkboxes)
+    Tree(5, 215, 150, 150, #__flag_Checkboxes)
     For i=0 To 10;20
       If i=3 Or i=8 Or i=14
         AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
@@ -229,7 +229,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 5
+; CursorPosition = 98
+; FirstLine = 91
 ; Folding = --
 ; EnableXP

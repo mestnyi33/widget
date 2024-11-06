@@ -36,63 +36,61 @@ CompilerIf #PB_Compiler_IsMainFile
      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
      
      Select WidgetEvent( )
-        Case #__event_StatusChange
-           
-;         Case #__event_Focus;, #__event_LostFocus
-; ;            If GetItem( *first )
-; ;              ; SetItemState(*second, GetItem( *first )\index , GetItemState(*first, GetItem( *first )\index  ) )
-; ;            EndIf
-;            Debug 888
-;            If *first\RowEntered( )
-;               Debug 777
-;               SelectElement(*second\__items( ), *first\RowEntered( )\index)
-;               *second\__items( )\color = *first\RowEntered( )\color
-;            EndIf
-; ;            If *first\RowEntered( )
-; ;               SelectElement(*second\__items( ), *first\RowEntered( )\index)
-; ;               *second\__items( )\color = *first\RowEntered( )\color
-; ;            EndIf
-;            
-;        Case #__event_LostFocus;#__event_Down
-; ;            If GetItem( *first )
-; ;              ; SetItemState(*second, GetItem( *first )\index , GetItemState(*first, GetItem( *first )\index  ) )
-; ;            EndIf
-;           Debug 333
-;           If *first\RowFocused( )
-;              Debug 222
-;              SelectElement(*second\__items( ), *first\RowFocused( )\index)
-;               *second\__items( )\color = *first\RowFocused( )\color
-;            EndIf
-; ;            If *first\RowEntered( )
-; ;               SelectElement(*second\__items( ), *first\RowEntered( )\index)
-; ;               *second\__items( )\color = *first\RowEntered( )\color
-; ;            EndIf
-           
-        Case #__event_StatusChange
-           If *first\RowLeaved( )
-              SelectElement(*second\__items( ), *first\RowLeaved( )\_index)
-              *second\__items( )\color = *first\RowLeaved( )\color
-           EndIf
-           If *first\RowEntered( )
-              SelectElement(*second\__items( ), *first\RowEntered( )\_index)
-              *second\__items( )\color = *first\RowEntered( )\color
+       Case #__event_Focus
+         
+       Case #__event_LostFocus
+       Case #__event_Down
+        ; Debug 99
+       Case #__event_Change
+         ; Debug 333
+         
+       Case #__event_ScrollChange
+         If EventWidget( ) = *second 
+           SetState(*first\scroll\v, GetState( *second\scroll\v ) )
+         EndIf
+         
+       Case #__event_StatusChange
+          Select EventWidget( )
+            Case *first
               
-              ; CopyStructure( *first\__items( )\color, *second\__items( )\color, _s_COLOR )
-              ;SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
-           EndIf
-           
-           Debug 7788888
-           
-           If *second\RowLeaved( )
-              SelectElement(*first\__items( ), *second\RowLeaved( )\_index)
-              *first\__items( )\color = *second\RowLeaved( )\color
-           EndIf
-           If *second\RowEntered( )
-              SelectElement(*first\__items( ), *second\RowEntered( )\_index)
-              *first\__items( )\color = *second\RowEntered( )\color
-           EndIf
-           
-     EndSelect
+              If *first\RowLeaved( )
+                SelectElement(*second\__items( ), *first\RowLeaved( )\index)
+                *second\__items( )\color = *first\RowLeaved( )\color
+              EndIf
+              If *first\RowEntered( )
+                SelectElement(*second\__items( ), *first\RowEntered( )\index)
+                *second\__items( )\color = *first\RowEntered( )\color
+                
+                ;\\
+                If WidgetEventData( ) = #PB_Tree_Expanded Or
+                   WidgetEventData( ) = #PB_Tree_Collapsed
+                  SetItemState( *second, WidgetEventItem( ), WidgetEventData( ) )
+                EndIf
+                
+;                 ;\\
+;                 If *second\__items( )\RowButtonState( ) <> *first\RowEntered( )\RowButtonState( )
+;                   If *first\RowEntered( )\RowButtonState( )
+;                     SetItemState( *second, *first\RowEntered( )\index, #PB_Tree_Collapsed )
+;                   Else
+;                     SetItemState( *second, *first\RowEntered( )\index, #PB_Tree_Expanded )
+;                   EndIf
+;                 EndIf
+                
+                ; CopyStructure( *first\__items( )\color, *second\__items( )\color, _s_COLOR )
+                ;SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
+              EndIf
+              
+            Case *second
+              If *second\RowLeaved( )
+                SelectElement(*first\__items( ), *second\RowLeaved( )\index)
+                *first\__items( )\color = *second\RowLeaved( )\color
+              EndIf
+              If *second\RowEntered( )
+                SelectElement(*first\__items( ), *second\RowEntered( )\index)
+                *first\__items( )\color = *second\RowEntered( )\color
+              EndIf
+          EndSelect
+        EndSelect
   EndProcedure
   
   Procedure AddItem_( *this._s_WIDGET, item, text.s, image=-1, mode=0 )
@@ -102,20 +100,26 @@ CompilerIf #PB_Compiler_IsMainFile
      
      AddItem( *first, item, StringField(text.s, 1, Chr(10)), image, mode )
      AddItem( *second, item, StringField(text.s, 2, Chr(10)), image, mode )
-     
-     
   EndProcedure
   
-  Procedure property( x,y,width,height, flag=0 )
-     Protected *this._s_WIDGET = Container(x,y,width,height) 
+  Procedure Properties_( x,y,width,height, flag=0 )
+    Protected position = 70
+    Protected *this._s_WIDGET = Container(x,y,width,height) 
      Protected *first._s_WIDGET = Tree(0,0,0,0, #__flag_autosize)
      Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_autosize)
      
      Protected *splitter._s_WIDGET = Splitter(0,0,0,0, *first,*second, #PB_Splitter_Vertical |#PB_Splitter_FirstFixed| #__flag_autosize )
-     SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, 50 )
-     SetState(*splitter, 50 )
+     SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
+     SetState(*splitter, width-position )
      SetData(*this, *splitter)
      
+     *splitter\bar\button\size = 5
+     *splitter\bar\button\round = 0
+     
+     Hide( *first\scroll\v, 1 )
+     Hide( *first\scroll\h, 1 )
+     ;Hide( *second\scroll\v, 1 )
+     Hide( *second\scroll\h, 1 )
      Closelist( )
      
      
@@ -128,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Define *Tree = property(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
+    Define *Tree = Properties_(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *Tree
     AddItem_(*Tree, #_pi_group_0, "common")
     AddItem_(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
@@ -145,7 +149,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
     AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
     
-    Define *Tree1 = property(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
+    Define *Tree1 = Properties_(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *Tree1
     AddItem_(*Tree1, #_pi_group_0, "common")
     AddItem_(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
@@ -165,14 +169,20 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_0 = Splitter(0, 0, 300, 300, Button_1, *Tree)
     Splitter_1 = Splitter(30, 30, 300, 300, Splitter_0, *Tree1, #PB_Splitter_Vertical)
     
-    
+    Define *splitter._s_WIDGET = GetData(*Tree1)
+     Define *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+     Define *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+     ;*first\scroll\h\hide = 1
+     Repaint( *splitter\root )
+     Debug *first\scroll\h\hide
+     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 158
-; FirstLine = 137
-; Folding = --
+; CursorPosition = 49
+; FirstLine = 33
+; Folding = ---
 ; Optimizer
 ; EnableXP
 ; DPIAware

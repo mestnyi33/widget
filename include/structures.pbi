@@ -159,7 +159,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     STATE
       Structure _s_STATE
-         StructureUnion
+        ;show.b
+        StructureUnion
             checked.b
          EndStructureUnion
          
@@ -364,9 +365,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
-         _index.l     ; Index of new list element
-         itemindex.l
-         
+        StructureUnion
+          _index.l     ; Index of new list element
+          index.l      ; Index of new list element
+        EndStructureUnion
+        itemindex.l
+        
          ;*columnaddress
          columnindex.c
          
@@ -801,7 +805,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 167
+; CursorPosition = 161
 ; FirstLine = 159
 ; Folding = ---Ag9----
 ; Optimizer
