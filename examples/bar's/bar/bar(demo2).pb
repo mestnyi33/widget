@@ -224,12 +224,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Repeat
     Define Event = WaitWindowEvent()
-    ; repaint()
   Until Event= #PB_Event_CloseWindow
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 91
+; CursorPosition = 226
+; FirstLine = 203
 ; Folding = --
 ; EnableXP

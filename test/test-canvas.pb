@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
    Next
    
-   Repaint( Root( ) )
+   ReDraw( Root( ) )
    
    ;\\Close( )
    ;Debug  *g\scroll\v\hide
@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 112
+; CursorPosition = 122
 ; FirstLine = 104
 ; Folding = -
 ; EnableXP

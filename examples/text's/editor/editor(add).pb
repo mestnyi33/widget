@@ -70,8 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
     
-    ;Repaints( ) 
-    Repaint( ROOT( ) )
+    ReDraw( ROOT( ) )
     
     EditorGadget(0, 10, 10, 250, 680)
     ; HideGadget(0, 1)
@@ -104,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 35
+; CursorPosition = 72
+; FirstLine = 70
 ; Folding = --
 ; EnableXP

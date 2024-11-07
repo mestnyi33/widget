@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;*widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
       *widget = String( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
       
-      Repaint(Root())
+      ReDraw(Root())
       
       Define widget_required_size = WidgetHeight( *widget, #__c_Required )
       Define gadget_required_size = GadgetHeight( *gadget, #PB_Gadget_RequiredSize )
@@ -32,8 +32,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 3
+; CursorPosition = 21
+; FirstLine = 7
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   setparent(*w, *scrollarea)
   
   ;\\ get required pos&size
-  RePaint( Root( ) )
+  ReDraw( Root( ) )
   
   ;\\
   Debug "POSITION (x&y)"
@@ -100,13 +100,12 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat
     Define Event = WaitWindowEvent()
     
-    ; repaint()
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 87
+; CursorPosition = 102
+; FirstLine = 79
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -209,7 +209,7 @@ CompilerIf #PB_Compiler_IsMainFile
               ;             ;               Debug "prev №1 < № "+GetPrev(1)
               ;             ;               Debug "next №1 > № "+GetNext(1)
               
-              Repaint( Root( ) )
+              ReDraw( Root( ) )
              EndIf
             
         EndSelect
@@ -221,8 +221,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 65
+; CursorPosition = 211
+; FirstLine = 196
 ; Folding = ----
 ; EnableXP
 ; DPIAware

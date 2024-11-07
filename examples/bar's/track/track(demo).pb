@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ; 
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               Repaint( Root( ) )
+               ReDraw( Root( ) )
             CompilerEndIf
       EndSelect
    EndProcedure
@@ -95,7 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 21
+; FirstLine = 18
 ; Folding = --
 ; EnableXP
 ; DPIAware

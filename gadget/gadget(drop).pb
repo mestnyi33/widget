@@ -197,7 +197,6 @@ If OpenWindow( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
   EnableGadgetDrop( TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1 )
   EnableGadgetDrop( TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2 )
   
-  ; Bind( -1, @Events( ) )
   
   BindGadgetEvent( SourceImage, @Events( ), #PB_EventType_DragStart )
   BindGadgetEvent( TargetImage, @Events( ), #PB_EventType_Drop )
@@ -208,8 +207,6 @@ If OpenWindow( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
   BindGadgetEvent( SourcePrivate, @Events( ), #PB_EventType_DragStart )
   BindGadgetEvent( TargetPrivate1, @Events( ), #PB_EventType_Drop )
   BindGadgetEvent( TargetPrivate2, @Events( ), #PB_EventType_Drop )
-  
-  ;ReDraw( Root( ) )
   
   Repeat
     Event = WaitWindowEvent( )
@@ -222,6 +219,8 @@ If OpenWindow( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB
 EndIf
 
 End
-; IDE Options = PureBasic 5.72 (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 199
+; FirstLine = 130
 ; Folding = --9
 ; EnableXP

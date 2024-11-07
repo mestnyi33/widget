@@ -39,7 +39,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     Global NewMap *roots._s_root() 
     
-    Declare   ReDraw( )
+    Declare   DrawingRoot( )
     
     Declare.i Panel( x.l,y.l,width.l,height.l, Flag.i = 0 )
     Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.i = 0 )
@@ -62,7 +62,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug "AddItem - "+*this\tab +" "+ *this\_s( ) 
     EndProcedure
     
-    Procedure   ReDraw( )
+    Procedure   DrawingRoot( )
       
       Debug "ListSize - "+ListSize(Root( )\child( ))
       
@@ -160,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
   AddItem( id_design_panel, -1, "Form" )
   Button( 0,0,0,0,"" )
   Button( 0,0,0,0,"" )
-  ReDraw()
+  DrawingRoot()
   
   Repeat 
     event = WaitWindowEvent( ) 
@@ -168,8 +168,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 78
-; FirstLine = 40
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 64
+; FirstLine = 60
 ; Folding = ----
 ; EnableXP

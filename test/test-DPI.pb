@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
    *button_menu = Button( 10, 5, 120, 25, "popup menu")
    Bind(*button_menu, @button_tab_events( ), #__event_Down )
    
-   Repaint(root( ))
+   ReDraw(root( ))
    
    ; WaitClose( )
    
@@ -55,8 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 2
+; CursorPosition = 43
+; FirstLine = 29
 ; Folding = -
 ; Optimizer
 ; EnableXP

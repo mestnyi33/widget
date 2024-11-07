@@ -16,7 +16,6 @@ CompilerIf #PB_Compiler_IsMainFile
         SelectElement( *this\tab\widget\__tabs( ), item )
         *this\tab\widget\__tabs( )\hide = state
         ;*this\state\repaint = #True
-        ;PostCanvasRepaint(*this) ;
       EndIf
     EndIf
   EndProcedure
@@ -62,8 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
      
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 16
-; FirstLine = 12
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 18
 ; Folding = --
 ; EnableXP

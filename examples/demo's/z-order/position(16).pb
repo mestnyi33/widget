@@ -159,7 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
             
             If repaint
-               Repaint( Root( ) )
+               ReDraw( Root( ) )
                
                text = ""
               Debug ""+ *this +" "+ GetPosition(*this, #PB_List_After) +" "+ GetPosition(*this, #PB_List_Before)
@@ -212,8 +212,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 59
+; CursorPosition = 161
+; FirstLine = 80
 ; Folding = -0--
 ; EnableXP
 ; DPIAware
