@@ -127,46 +127,51 @@ Procedure PropertiesEvents( )
          
       Case #__event_Down
          ; Debug 99
-      Case #__event_Change
-         Protected *this._s_WIDGET
-         
          If EventWidget( ) = *second
-            *this = GetItemData(*second, WidgetEventItem( ))
-            
-            If *last <> *this
-               If *last
-                  Hide( *last, 1 )
-               EndIf
+            Protected *this._s_WIDGET
+            If *second\RowEntered( )
+               *this = GetItemData(*second, *second\RowEntered( )\index)
                
-               *last = *this
-               Debug 333
-               If *this And *second\RowEntered( )
-                  SelectElement(*second\__items( ), *second\RowEntered( )\index)
-                  *this\noscale = 1
-                  Select *this\type
-                     Case #__type_String
-                        SetText( *this, (*second\__items( )\text\string) )
-                     Case #__type_Spin
-                        SetState( *this, Val(*second\__items( )\text\string) )
-                     Case #__type_ComboBox
-                        SetState( *this, Val(*second\__items( )\text\string) )
-                  EndSelect
-                  SetActive( *this )
-                  Resize(*this, *second\__items( )\x, *second\scroll_y( ) +*second\__items( )\y, *second\__items( )\width, *second\__items( )\height )
-                  Hide( *this, 0 )
+               If *last <> *this
+                  If *last
+                     Hide( *last, 1 )
+                  EndIf
+                  
+                  *last = *this
+                  
+                  If *this
+                     PushListPosition(*second\__items( ))
+                     SelectElement(*second\__items( ), *second\RowEntered( )\index)
+                     Select *this\type
+                        Case #__type_String
+                           SetText( *this, (*second\__items( )\text\string) )
+                        Case #__type_Spin
+                           SetState( *this, Val(*second\__items( )\text\string) )
+                        Case #__type_ComboBox
+                           SetState( *this, Val(*second\__items( )\text\string) )
+                     EndSelect
+                     
+                     *this\noscale = 1
+                     Resize(*this, *second\__items( )\x, *second\scroll_y( ) +*second\__items( )\y, *second\__items( )\width, *second\__items( )\height )
+                     Hide( *this, 0 )
+                     SetActive( *this )
+                     PopListPosition(*second\__items( ))
+                  EndIf
                EndIf
             EndIf
-         Else
-            Select EventWidget( )\type
-               Case #__type_String
-                  SetItemText(EventWidget( )\parent, GetData(EventWidget( )), (GetText(EventWidget( ))) )
-               Case #__type_Spin
-                  SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-               Case #__type_ComboBox
-                  SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-            EndSelect
-            
          EndIf
+         
+         
+      Case #__event_Change
+         
+         Select EventWidget( )\type
+            Case #__type_String
+               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), (GetText(EventWidget( ))) )
+            Case #__type_Spin
+               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+            Case #__type_ComboBox
+               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+         EndSelect
          
       Case #__event_ScrollChange
          Select EventWidget( )
@@ -1624,8 +1629,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 154
-; FirstLine = 144
+; CursorPosition = 157
+; FirstLine = 139
 ; Folding = ---------------------------
 ; EnableXP
 ; DPIAware
