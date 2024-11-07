@@ -4776,19 +4776,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.l WidgetX( *this._s_WIDGET, mode.l = #__c_frame )
-         ProcedureReturn ( Bool( Not *this\hide ) * DPIUnScaledX( *this\x[mode] ) )
+         ProcedureReturn DPIUnScaledX( *this\x[mode] ) 
       EndProcedure
       
       Procedure.l WidgetY( *this._s_WIDGET, mode.l = #__c_frame )
-         ProcedureReturn ( Bool( Not *this\hide ) * DPIUnScaledY( *this\y[mode] ) )
+         ProcedureReturn DPIUnScaledY( *this\y[mode] )
       EndProcedure
       
       Procedure.l WidgetWidth( *this._s_WIDGET, mode.l = #__c_frame )
-         ProcedureReturn ( Bool( Not *this\hide ) * DPIUnScaledX( *this\width[mode] ) )
+         ProcedureReturn DPIUnScaledX( *this\width[mode] ) 
       EndProcedure
       
       Procedure.l WidgetHeight( *this._s_WIDGET, mode.l = #__c_frame )
-         ProcedureReturn ( Bool( Not *this\hide ) * DPIUnScaledY( *this\height[mode] ) )
+         ProcedureReturn DPIUnScaledY( *this\height[mode] ) 
       EndProcedure
       
       ;-
@@ -19154,10 +19154,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure DoEvent_Lines( *this._s_WIDGET, eventtype.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged = DragState( )
+         Protected dragged 
          Protected repaint, *item._s_ROWS
          mouse_x - *this\inner_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
+         
+         If *this\press
+            dragged = DragState( )
+         EndIf
          
          ;
          If *this\row
@@ -24331,9 +24335,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11124
-; FirstLine = 11110
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20203
+; FirstLine = 19328
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------0-f---------n----------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

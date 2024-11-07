@@ -113,8 +113,9 @@ Procedure PropertiesEvents( )
    Protected *splitter._s_WIDGET = EventWidget( )\parent
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+   Protected *this._s_WIDGET
    Static *last._s_WIDGET
-         
+   
    Select WidgetEvent( )
       Case #__event_Focus
          
@@ -124,22 +125,29 @@ Procedure PropertiesEvents( )
             *last = 0
          EndIf
          
+      Case #__event_Change
+         Select EventWidget( )\type
+            Case #__type_String
+               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), (GetText(EventWidget( ))) )
+            Case #__type_Spin
+               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+            Case #__type_ComboBox
+               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+         EndSelect
          
       Case #__event_Down
-         ; Debug 99
          If EventWidget( ) = *second
-            Protected *this._s_WIDGET
             If *second\RowEntered( )
                *this = GetItemData(*second, *second\RowEntered( )\index)
                
-               If *last <> *this
-                  If *last
-                     Hide( *last, 1 )
-                  EndIf
-                  
-                  *last = *this
-                  
-                  If *this
+               If *this
+                  If *last <> *this
+                     If *last
+                        Hide( *last, 1 )
+                     EndIf
+                     
+                     *last = *this
+                     
                      PushListPosition(*second\__items( ))
                      SelectElement(*second\__items( ), *second\RowEntered( )\index)
                      Select *this\type
@@ -152,77 +160,66 @@ Procedure PropertiesEvents( )
                      EndSelect
                      
                      *this\noscale = 1
-                     Resize(*this, *second\__items( )\x, *second\scroll_y( ) +*second\__items( )\y, *second\__items( )\width, *second\__items( )\height )
+                     Resize(*this,
+                            *second\__items( )\x+30, 
+                            *second\__items( )\y+*second\scroll_y( ), 
+                            *second\__items( )\width-30, 
+                            *second\__items( )\height )
                      Hide( *this, 0 )
                      SetActive( *this )
                      PopListPosition(*second\__items( ))
                   EndIf
                EndIf
+               
             EndIf
          EndIf
          
          
-      Case #__event_Change
+      Case #__event_StatusChange
+         If EventWidget( ) = *first
+            If WidgetEventData( ) = #PB_Tree_Expanded Or
+               WidgetEventData( ) = #PB_Tree_Collapsed
+               If SetItemState( *second, WidgetEventItem( ), WidgetEventData( ) )
+                  ReDraw( *second )
+               EndIf
+            EndIf
+         EndIf   
          
-         Select EventWidget( )\type
-            Case #__type_String
-               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), (GetText(EventWidget( ))) )
-            Case #__type_Spin
-               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-            Case #__type_ComboBox
-               SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-         EndSelect
+         If EventWidget( ) = *first
+            If *first\RowLeaved( )
+               SelectElement(*second\__items( ), *first\RowLeaved( )\index)
+               *second\__items( )\color = *first\RowLeaved( )\color
+            EndIf
+            If *first\RowEntered( )
+               SelectElement(*second\__items( ), *first\RowEntered( )\index)
+               *second\__items( )\color = *first\RowEntered( )\color
+            EndIf
+         EndIf
+         
+         If EventWidget( ) = *second
+            If *second\RowLeaved( )
+               SelectElement(*first\__items( ), *second\RowLeaved( )\index)
+               *first\__items( )\color = *second\RowLeaved( )\color
+            EndIf
+            If *second\RowEntered( )
+               SelectElement(*first\__items( ), *second\RowEntered( )\index)
+               *first\__items( )\color = *second\RowEntered( )\color
+            EndIf
+         EndIf
          
       Case #__event_ScrollChange
-         Select EventWidget( )
-            Case *first 
-               If GetState( *second\scroll\v ) <> GetState( EventWidget( )\scroll\v )
-                  SetState(*second\scroll\v, GetState( EventWidget( )\scroll\v ) )
-               EndIf
-            Case *second
-               If GetState( *first\scroll\v ) <> GetState( EventWidget( )\scroll\v )
-                  SetState(*first\scroll\v, GetState( EventWidget( )\scroll\v ) )
-               EndIf
-         EndSelect
+         If EventWidget( ) = *first 
+            If GetState( *second\scroll\v ) <> WidgetEventData( )
+               SetState(*second\scroll\v, WidgetEventData( ) )
+            EndIf
+         EndIf   
          
-      Case #__event_StatusChange
-         Select EventWidget( )
-            Case *first
-               If *first\RowLeaved( )
-                  SelectElement(*second\__items( ), *first\RowLeaved( )\index)
-                  *second\__items( )\color = *first\RowLeaved( )\color
-               EndIf
-               If *first\RowEntered( )
-                  SelectElement(*second\__items( ), *first\RowEntered( )\index)
-                  *second\__items( )\color = *first\RowEntered( )\color
-                  
-                  ;\\
-                  If *second\__items( )\RowButtonState( ) <> *first\RowEntered( )\RowButtonState( )
-                     If *first\RowEntered( )\RowButtonState( )
-                        SetItemState( *second, *first\RowEntered( )\index, #PB_Tree_Collapsed )
-                     Else
-                        SetItemState( *second, *first\RowEntered( )\index, #PB_Tree_Expanded )
-                     EndIf
-                     
-                     Redraw( *second )
-                     ;Repaint( *second\root )
-                     ;Resize( *second, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  EndIf
-                  
-                  ; CopyStructure( *first\__items( )\color, *second\__items( )\color, _s_COLOR )
-                  ;SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
-               EndIf
-               
-            Case *second
-               If *second\RowLeaved( )
-                  SelectElement(*first\__items( ), *second\RowLeaved( )\index)
-                  *first\__items( )\color = *second\RowLeaved( )\color
-               EndIf
-               If *second\RowEntered( )
-                  SelectElement(*first\__items( ), *second\RowEntered( )\index)
-                  *first\__items( )\color = *second\RowEntered( )\color
-               EndIf
-         EndSelect
+         If EventWidget( ) = *second
+            If GetState( *first\scroll\v ) <> WidgetEventData( )
+               SetState(*first\scroll\v, WidgetEventData( ) )
+            EndIf
+         EndIf
+         
    EndSelect
 EndProcedure
 
@@ -1629,9 +1626,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 139
-; Folding = ---------------------------
+; CursorPosition = 166
+; FirstLine = 146
+; Folding = ----------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
