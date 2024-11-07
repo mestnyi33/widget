@@ -20265,6 +20265,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   
                   If *this\RowPressed( )
+                     If is_atpoint_( *this\RowPressed( ), mouse( )\x-*this\inner_x( )-*this\scroll_x( ), mouse( )\y-*this\inner_y( )-*this\scroll_y( ) )
+                        *this\RowEntered( ) = *this\RowPressed( )
+                     EndIf
+                     
                      If *this\mode\clickSelect
                         If *this\mode\multiSelect
                            PushListPosition( *items( ) )
@@ -20276,7 +20280,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                            Next
                            PopListPosition( *items( ) )
-                        Else
+                         EndIf
+                         
+                        If Not *this\mode\multiSelect
                            If dragged
                               If *this\RowPressed( ) <> *this\RowEntered( )
                                  If *this\RowEntered( )
@@ -20299,11 +20305,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  EndIf
                               EndIf
                            Else
-                              ;Debug "change2" ; click-select flag
+                              ; Debug "change2" ; click-select flag
                               DoEvents(*this, #__event_Change, *this\RowPressed( )\_index, *this\RowPressed( ))
                            EndIf
                         EndIf
-                     Else
+                     EndIf
+                     
+                     If Not *this\mode\clickSelect
                         If *this\RowEntered( ) And
                            *this\RowEntered( )\_enter
                            ;
@@ -20322,9 +20330,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         If Not *this\mode\multiSelect
-                           If *this\RowPressed( ) <> *this\RowEntered( )
-                              If Not *this\RowPressed( )\_focus
-                                 *this\RowPressed( )\_enter       = 0
+                           If Not *this\RowPressed( )\_focus
+                              If *this\RowPressed( ) <> *this\RowEntered( )
+                                 *this\RowPressed( )\_enter        = 0
                                  *this\RowPressed( )\ColorState( ) = #__s_0
                               EndIf
                            EndIf
@@ -20343,7 +20351,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\RowFocused( )\_focus = 0
                               *this\RowFocused( )\_focus = 1
                               
-                              ; Debug "change3"
+                              ;Debug "change3"
                               If is_integral_( *this ) And *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
                                  ; Debug " combo send change event"
                                  DoEvents(*this\parent\parent, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ))
@@ -24334,10 +24342,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20203
-; FirstLine = 19328
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------0-f---------n----------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 20268
+; FirstLine = 19362
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------0-f---------nf8---------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

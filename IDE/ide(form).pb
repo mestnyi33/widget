@@ -161,9 +161,9 @@ Procedure PropertiesEvents( )
                      
                      *this\noscale = 1
                      Resize(*this,
-                            *second\__items( )\x+30, 
+                            *second\__items( )\x, ;+30, 
                             *second\__items( )\y+*second\scroll_y( ), 
-                            *second\__items( )\width-30, 
+                            *second\__items( )\width, ;-30, 
                             *second\__items( )\height )
                      Hide( *this, 0 )
                      SetActive( *this )
@@ -190,7 +190,7 @@ Procedure PropertiesEvents( )
                SelectElement(*second\__items( ), *first\RowLeaved( )\index)
                *second\__items( )\color = *first\RowLeaved( )\color
             EndIf
-            If *first\RowEntered( )
+            If *first\RowEntered( ) And Not *first\RowEntered( )\childrens
                SelectElement(*second\__items( ), *first\RowEntered( )\index)
                *second\__items( )\color = *first\RowEntered( )\color
             EndIf
@@ -201,9 +201,15 @@ Procedure PropertiesEvents( )
                SelectElement(*first\__items( ), *second\RowLeaved( )\index)
                *first\__items( )\color = *second\RowLeaved( )\color
             EndIf
-            If *second\RowEntered( )
-               SelectElement(*first\__items( ), *second\RowEntered( )\index)
-               *first\__items( )\color = *second\RowEntered( )\color
+            If *second\RowEntered( ) 
+               If *second\RowEntered( )\childrens
+                  *second\RowEntered( )\ColorState( ) = #__s_0
+                  *second\RowEntered( )\enter = 0
+                  *second\RowEntered( ) = 0
+               Else
+                  SelectElement(*first\__items( ), *second\RowEntered( )\index)
+                  *first\__items( )\color = *second\RowEntered( )\color
+               EndIf
             EndIf
          EndIf
          
@@ -1625,10 +1631,10 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 166
-; FirstLine = 146
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 165
+; FirstLine = 150
 ; Folding = ----------------------------
 ; EnableXP
 ; DPIAware
-; Executable = ..\widgets-ide.app.exe
+; Executable = ../widgets-ide.app.exe
