@@ -633,7 +633,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          height.l[constants::#__c]
          width.l[constants::#__c]
          ;
-         type.c
+         type.w
          class.s
          ;
          level.c
@@ -805,8 +805,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 159
-; Folding = ---Ag9----
+; CursorPosition = 635
+; FirstLine = 527
+; Folding = ---Ag0----
 ; Optimizer
 ; EnableXP

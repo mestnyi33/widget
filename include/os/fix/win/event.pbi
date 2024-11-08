@@ -21,7 +21,7 @@ Module events
       Protected text.s, gadget = GetProp_( hWnd, "PB_ID" )
       Protected sysProc = GetProp_(hWnd, "sysProc")
       Protected *callBack = GetProp_(hWnd, "sysProc"+Str(GetProp_(hWnd, "sysProcType")))
-      Static enter.b
+      Static focus.i, enter.b
       
       Select uMsg
          Case #WM_NCDESTROY 
@@ -57,6 +57,21 @@ Module events
             CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelY , HIWORD(wparam) );(delta * step / #WHEEL_DELTA))
             ProcedureReturn 0
             
+         Case #WM_SETFOCUS
+            If focus <> hWnd
+               focus = hWnd
+               CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_Focus )
+            Else
+               ProcedureReturn 0
+            EndIf
+            
+         Case #WM_KILLFOCUS
+            If GetFocus_( ) = hWnd
+               focus = 0
+               ProcedureReturn 0
+            Else
+               CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_LostFocus)
+            EndIf
             
             ;          Case #WM_SETFOCUS
             ;             ;text = "Focus on gadget #" + Str(gadget)
@@ -111,8 +126,8 @@ Module events
    Procedure   SetCallBack(*callback)
    EndProcedure
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 36
-; Folding = --
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 54
+; Folding = ---
 ; EnableXP

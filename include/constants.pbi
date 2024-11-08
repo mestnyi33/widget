@@ -274,8 +274,23 @@
     
     
     ;-\\ create-type
-    Enumeration - 1
-      #__type_All
+    #__type_Root          = - 1
+    #__type_Window        = - 2
+    #__type_Message       = - 3
+    #__type_PopupMenu     = - 4
+    #__type_Menu          = - 5
+    #__type_ToolBar       = - 6
+    #__type_TabBar        = - 7
+    #__type_StatusBar     = - 8
+    #__type_Properties    = - 9
+    
+;     #__type_toggled
+;     
+;     #__type_ImageButton
+;     #__type_StringButton
+;     #__type_Hiasm
+    
+    Enumeration 
       #__type_Unknown       = #PB_GadgetType_Unknown       ; 0
       #__type_Button        = #PB_GadgetType_Button        ; 1
       #__type_String        = #PB_GadgetType_String        ; 2
@@ -308,26 +323,9 @@
       #__type_Splitter      = #PB_GadgetType_Splitter      ; 29
       #__type_MDI           = #PB_GadgetType_MDI           ; 30
       #__type_Scintilla     = #PB_GadgetType_Scintilla     ; 31
-      #__type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
-      #__type_Canvas        = #PB_GadgetType_Canvas        ; 33
+      ;#__type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
+      ;#__type_Canvas        = #PB_GadgetType_Canvas        ; 33
       ;#__type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
-      
-      #__type_tabBar        = 50
-      #__type_toolBar
-      #__type_StatusBar
-      
-      #__type_toggled
-      #__type_property
-      #__type_ImageButton
-      #__type_StringButton
-      
-      #__type_Menu
-      #__type_popUpMenu
-      #__type_window
-      #__type_Message
-      #__type_Root
-      
-      #__type_Hiasm
     EndEnumeration
     
     ;-\\ create-flags
@@ -687,8 +685,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 51
+; CursorPosition = 276
+; FirstLine = 270
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         
       Case *LIST
         Select WidgetEvent( )
-          Case #PB_EventType_Change
+          Case #__Event_Change
             If *CHILD
               Free(*CHILD)
             EndIf
@@ -86,26 +86,24 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         EndSelect
         
     EndSelect
-    
-    Debug " active - "+GetActive( )\gadget\class
-  EndProcedure
+ EndProcedure
   
   If Open(#PB_Any, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *item1 = Button( 10, 10, 50, 25, "item-1") : SetClass( *item1, "button-item-1" )
     *item2 = Button( 60, 10, 50, 25, "item-2") : SetClass( *item2, "button-item-2" )
     *item3 = Button( 110, 10, 50, 25, "item-3") : SetClass( *item3, "button-item-3" )
-    Bind( *item1, @events( ), #PB_EventType_LeftButtonDown )
-    Bind( *item2, @events( ), #PB_EventType_LeftButtonDown )
-    Bind( *item3, @events( ), #PB_EventType_LeftButtonDown )
+    Bind( *item1, @events( ), #__event_LeftDown )
+    Bind( *item2, @events( ), #__event_LeftDown )
+    Bind( *item3, @events( ), #__event_LeftDown )
     
     *disable = Button( 180, 10, 50, 25, "disable") : SetClass( *disable, "button-disable" )
     *enable = Button( 240, 10, 50, 25, "enable") : SetClass( *enable, "button-enable" )
-    Bind( *enable, @events( ), #PB_EventType_LeftButtonDown )
-    Bind( *disable, @events( ), #PB_EventType_LeftButtonDown )
+    Bind( *enable, @events( ), #__event_LeftDown )
+    Bind( *disable, @events( ), #__event_LeftDown )
     
     ;*LIST = ComboBox(400-110,40,100,150) 
     *LIST = ListView(300,10,150,180) 
-    Bind( *LIST, @events( ), #PB_EventType_Change )
+    Bind( *LIST, @events( ), #__event_Change )
     AddItem(*LIST, -1, "Selected  to move")
     AddItem(*LIST, -1, "Button")
     AddItem(*LIST, -1, "String")
@@ -150,6 +148,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 88
+; FirstLine = 2
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -108,21 +108,73 @@ Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Tool
 ;- PUBLICs
 ;-
 
+Procedure ShowButtonBox( *second._S_WIDGET, item.i )
+   Static *last._s_WIDGET
+   Protected *this._s_WIDGET
+      *this = GetItemData(*second, item )
+      
+      If *this
+         If *last <> *this
+            If *last
+               Hide( *last, 1 )
+            EndIf
+            
+            *last = *this
+            
+            PushListPosition(*second\__items( ))
+            SelectElement(*second\__items( ), item)
+            Select *this\type
+               Case #__type_String
+                  SetText( *this, (*second\__items( )\text\string) )
+               Case #__type_Spin
+                  SetState( *this, Val(*second\__items( )\text\string) )
+               Case #__type_ComboBox
+                  SetState( *this, Val(*second\__items( )\text\string) )
+            EndSelect
+            
+            *this\noscale = 1
+            Resize(*this,
+                   *second\__items( )\x,;+30, 
+                   *second\__items( )\y+*second\scroll_y( ), 
+                   *second\__items( )\width,;-30, 
+                   *second\__items( )\height )
+            Hide( *this, 0 )
+            ; SetActive( *this )
+            PopListPosition(*second\__items( ))
+         EndIf
+      
+   EndIf
+   ProcedureReturn *last
+EndProcedure
+
 ;-
 Procedure PropertiesEvents( )
    Protected *splitter._s_WIDGET = EventWidget( )\parent
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-   Protected *this._s_WIDGET
-   Static *last._s_WIDGET
-   
+    Static *last._s_WIDGET
+  
    Select WidgetEvent( )
-      Case #__event_Focus
+      Case #__event_Focus,
+           #__event_LostFocus
+         ;
+         If EventWidget( ) = *first
+            If *first\RowFocused( ) 
+               SelectElement(*second\__items( ), *first\RowFocused( )\index)
+               *second\__items( )\color = *first\RowFocused( )\color
+            EndIf
+         EndIf
          
-      Case #__event_LostFocus
-         If *last And *last = EventWidget( )
-            Hide( *last, 1 )
-            *last = 0
+         If EventWidget( ) = *second
+            If *second\RowFocused( )
+               SelectElement(*first\__items( ), *second\RowFocused( )\index)
+               *first\__items( )\color = *second\RowFocused( )\color
+            EndIf
+         EndIf
+         
+      Case #__event_Down
+         If EventWidget( ) = *second
+            
          EndIf
          
       Case #__event_Change
@@ -133,69 +185,37 @@ Procedure PropertiesEvents( )
                SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
             Case #__type_ComboBox
                SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-         EndSelect
-         
-      Case #__event_Down
-         If EventWidget( ) = *second
-            If *second\RowEntered( )
-               *this = GetItemData(*second, *second\RowEntered( )\index)
+            Default
+               ;Debug "change item"
                
-               If *this
-                  If *last <> *this
-                     If *last
-                        Hide( *last, 1 )
-                     EndIf
-                     
-                     *last = *this
-                     
-                     PushListPosition(*second\__items( ))
-                     SelectElement(*second\__items( ), *second\RowEntered( )\index)
-                     Select *this\type
-                        Case #__type_String
-                           SetText( *this, (*second\__items( )\text\string) )
-                        Case #__type_Spin
-                           SetState( *this, Val(*second\__items( )\text\string) )
-                        Case #__type_ComboBox
-                           SetState( *this, Val(*second\__items( )\text\string) )
-                     EndSelect
-                     
-                     *this\noscale = 1
-                     Resize(*this,
-                            *second\__items( )\x, ;+30, 
-                            *second\__items( )\y+*second\scroll_y( ), 
-                            *second\__items( )\width, ;-30, 
-                            *second\__items( )\height )
-                     Hide( *this, 0 )
-                     SetActive( *this )
-                     PopListPosition(*second\__items( ))
-                  EndIf
+               If EventWidget( ) = *second Or 
+                  EventWidget( ) = *first
+                  ; 
+                  ShowButtonBox( *second, WidgetEventItem( ) )
                EndIf
-               
-            EndIf
-         EndIf
-         
+         EndSelect
          
       Case #__event_StatusChange
          If EventWidget( ) = *first
             If WidgetEventData( ) = #PB_Tree_Expanded Or
                WidgetEventData( ) = #PB_Tree_Collapsed
+               ;
                If SetItemState( *second, WidgetEventItem( ), WidgetEventData( ) )
                   ReDraw( *second )
                EndIf
             EndIf
-         EndIf   
-         
-         If EventWidget( ) = *first
+            
+            ;
             If *first\RowLeaved( )
                SelectElement(*second\__items( ), *first\RowLeaved( )\index)
                *second\__items( )\color = *first\RowLeaved( )\color
             EndIf
-            If *first\RowEntered( ) And Not *first\RowEntered( )\childrens
+            If *first\RowEntered( ) 
                SelectElement(*second\__items( ), *first\RowEntered( )\index)
                *second\__items( )\color = *first\RowEntered( )\color
             EndIf
          EndIf
-         
+         ;
          If EventWidget( ) = *second
             If *second\RowLeaved( )
                SelectElement(*first\__items( ), *second\RowLeaved( )\index)
@@ -209,6 +229,7 @@ Procedure PropertiesEvents( )
                Else
                   SelectElement(*first\__items( ), *second\RowEntered( )\index)
                   *first\__items( )\color = *second\RowEntered( )\color
+                 ;   *first\__items( )\text\string = "change2"
                EndIf
             EndIf
          EndIf
@@ -753,7 +774,6 @@ Procedure widget_events( )
       Case #__event_Focus
          If a_focused( ) = *e_widget
             If GetData( *e_widget ) >= 0
-               ;Debug GetData( *e_widget )
                If IsGadget( ide_g_code )
                   SetGadgetState( ide_g_code, GetData( *e_widget ) )
                EndIf
@@ -762,14 +782,10 @@ Procedure widget_events( )
             
             properties_updates( ide_inspector_properties, *e_widget )
             
-            ;Debug "Focus "+*e_widget\class +" ("+*e_widget\text\string+")"
-            
             If GetActive( ) <> ide_inspector_view 
-               ; Debug "reFocus (ide_inspector_view)"   
                SetActive( ide_inspector_view )
+               Debug "------------- "+GetActive( )\class
             EndIf
-            
-            ;Debug "focus " + GetActive( )\RowFocused( )\color\state
          EndIf
          
       Case #__event_DragStart
@@ -1631,10 +1647,10 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 165
-; FirstLine = 150
-; Folding = ----------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 138
+; FirstLine = 121
+; Folding = --8d0------------------------
 ; EnableXP
 ; DPIAware
-; Executable = ../widgets-ide.app.exe
+; Executable = ..\widgets-ide.app.exe
