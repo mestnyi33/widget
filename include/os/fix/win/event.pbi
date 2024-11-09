@@ -58,19 +58,19 @@ Module events
             ProcedureReturn 0
             
          Case #WM_SETFOCUS
-            If focus <> hWnd
-               focus = hWnd
-               CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_Focus )
-            Else
+            If focus = hWnd
                ProcedureReturn 0
+            Else
+               CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_Focus )
+               focus = hWnd
             EndIf
             
          Case #WM_KILLFOCUS
             If GetFocus_( ) = hWnd
-               focus = 0
                ProcedureReturn 0
             Else
                CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_LostFocus)
+               focus = 0
             EndIf
             
             ;          Case #WM_SETFOCUS
@@ -127,7 +127,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 54
+; CursorPosition = 71
+; FirstLine = 51
 ; Folding = ---
 ; EnableXP

@@ -580,14 +580,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro WidgetEventData( ): widget::__gui\event\data: EndMacro
       Macro WidgetEventItem( ): widget::__gui\event\item: EndMacro
       ;
-      Macro WaitEvent( _callback_, _eventtype_ = #PB_All )
-         widget::Bind( #PB_All, _callback_, _eventtype_ )
+      Macro WaitEvent( _callback_ = #Null, _eventmask_ = #PB_All )
+         If _callback_
+            widget::Bind( #PB_All, _callback_, _eventmask_ )
+         EndIf
          widget::WaitClose( )
       EndMacro
-      
-      ;       Macro BindEvents(_callback_, _this_=#PB_Any, _item_=#PB_All, _event_=0 ) 
-      ;          Bind( _this_, _callback_, _event_, _item_ )
-      ;       EndMacro
       
       ;-
       Global *before_start_enumerate_widget._s_WIDGET
@@ -2268,45 +2266,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Procedure DoFocus( *this._s_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
          ProcedureReturn DoEvents( *this, eventtype, *button, *data )
-         
-         ; Debug "---   "+*this\text\string
-         If test_event_focus
-            Debug "DoFocus - ["+ ClassFromEvent( eventtype )+"] " + *this\class
-         EndIf
-         
-         ;\\
-         If __gui\eventexit = 1
-            If eventtype = #__event_Focus
-               If GetActiveGadget( ) <> *this\root\canvas\gadget
-                  ; SetActiveGadget( *this\root\canvas\gadget )
-                  
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     ; Debug " - makeFirstResponder "+*this\root\canvas\gadget
-                     CocoaMessage(0, WindowID(*this\root\canvas\window), "makeFirstResponder:", GadgetID(*this\root\canvas\gadget))
-                  CompilerEndIf
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\root <> root( )
-               ChangeCurrentCanvas( *this\root\canvas\gadgetID )
-            EndIf
-            
-            ;\\
-            If Not Send( *this, eventtype, *button, *data )
-               DoEvents( *this, eventtype, *button, *data )
-            EndIf
-            
-            ;\\
-            If EnteredWidget( ) And
-               EnteredWidget( )\root <> root( )
-               ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
-            EndIf
-            
-         Else
-            Post( *this, eventtype, *button, *data )
-         EndIf
-         
+;          
+;          ; Debug "---   "+*this\text\string
+;          If test_event_focus
+;             Debug "DoFocus - ["+ ClassFromEvent( eventtype )+"] " + *this\class
+;          EndIf
+;          
+;          ;\\
+;          If __gui\eventexit = 1
+;             If eventtype = #__event_Focus
+;                If GetActiveGadget( ) <> *this\root\canvas\gadget
+;                   ; SetActiveGadget( *this\root\canvas\gadget )
+;                   
+;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;                      ; Debug " - makeFirstResponder "+*this\root\canvas\gadget
+;                      CocoaMessage(0, WindowID(*this\root\canvas\window), "makeFirstResponder:", GadgetID(*this\root\canvas\gadget))
+;                   CompilerEndIf
+;                EndIf
+;             EndIf
+;             
+;             ;\\
+;             If *this\root <> root( )
+;                ChangeCurrentCanvas( *this\root\canvas\gadgetID )
+;             EndIf
+;             
+;             ;\\
+;             If Not Send( *this, eventtype, *button, *data )
+;                DoEvents( *this, eventtype, *button, *data )
+;             EndIf
+;             
+;             ;\\
+;             If EnteredWidget( ) And
+;                EnteredWidget( )\root <> root( )
+;                ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+;             EndIf
+;             
+;          Else
+;             Post( *this, eventtype, *button, *data )
+;          EndIf
+;          
       EndProcedure
       
       
@@ -8315,31 +8313,79 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.i SetActive( *this._s_WIDGET )
          Protected result.i, *active._s_WIDGET
-         Static *focus._s_WIDGET
          
-         ; deactivate canvas
          If GetActive( )
-            If GetActive( ) = *this
-               If GetActive( )\focus = 3
-                  GetActive( )\focus = 2
-                  Debug "Active( ) "+GetActive( )\class
-                  ;
-                  DoFocus( GetActive( ), #__event_Focus )
+            ; deactivate canvas
+            If Not *this
+               If ActiveWindow( ) 
+                  If ActiveWindow( )\focus = 2
+                     ActiveWindow( )\focus = 3
+                     Debug "Deactive canvas&widgetwindow "+ActiveWindow( )\class
+                     ;
+                     DoFocus( ActiveWindow( ), #__event_LostFocus )
+                  EndIf
+                  
+                  If ActiveGadget( ) And
+                     ActiveGadget( )\focus = 2
+                     ActiveGadget( )\focus = 3
+                     Debug "Deactive canvas&widgetgadget "+ActiveGadget( )\class
+                     ;
+                     DoFocus( ActiveGadget( ), #__event_LostFocus )
+                  EndIf
                EndIf
+               
+               ;\\
+               If is_integral_( GetActive( ) )
+                  If GetActive( )\focus = 2
+                     GetActive( )\focus = 3
+                     Debug "Deactive canvas&widgetintegral "+GetActive( )\class
+                     ;
+                     DoFocus( GetActive( ), #__event_Focus )
+                  EndIf
+               EndIf
+               ProcedureReturn 0
             EndIf
             
-            If Not *this
-               If GetActive( )\focus = 2
-                  GetActive( )\focus = 3
-                  Debug "DEActive( ) "+GetActive( )\class
-                  ;
-                  DoFocus( GetActive( ), #__event_LostFocus )
+            ; activate canvas
+            If GetActive( ) = *this
+               If ActiveWindow( ) And ActiveWindow( )\root = *this\root
+                  If ActiveWindow( )\focus = 3
+                     ActiveWindow( )\focus = 2
+                     Debug "Active canvas&widgetwindow "+ActiveWindow( )\class
+                     ;
+                     DoFocus( ActiveWindow( ), #__event_Focus )
+                  EndIf
+                  
+                  If ActiveGadget( ) And
+                     ActiveGadget( )\focus = 3
+                     ActiveGadget( )\focus = 2
+                     Debug "Active canvas&widgetgadget "+ActiveGadget( )\class
+                     ;
+                     DoFocus( ActiveGadget( ), #__event_Focus )
+                  EndIf
+               Else
+                 If *this\focus = 3
+                     *this\focus = 2
+                     Debug "Active canvas&widget "+*this\class
+                     ;
+                     DoFocus( *this, #__event_Focus )
+                  EndIf 
+               EndIf
+               
+               ;\\
+               If is_integral_( *this )
+                  If *this\focus = 3
+                     *this\focus = 2
+                     Debug "Active canvas&widgetintegral "+*this\class
+                     ;
+                     DoFocus( *this, #__event_Focus )
+                  EndIf
                EndIf
                ProcedureReturn 0
             EndIf
          EndIf
          
-         If *this And Not *this\disable
+         If *this
             If *this\focus =- 1 Or 
                *this\root\focus =- 1
                ProcedureReturn 0
@@ -8362,81 +8408,88 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If GetActive( ) <> *this
-               Protected *deactive._s_WIDGET = GetActive( )
-               Protected *deactiveWindow._s_WIDGET = ActiveWindow( )
-               If *deactiveWindow
-                  Protected *deactiveGadget._s_WIDGET = ActiveGadget( )
-               EndIf
-               
-               GetActive( ) = *this
-               
-               If is_Window_( *this )
-                  ActiveWindow( ) = *this
-               Else
-                  ActiveWindow( ) = *this\window
-                  If ActiveWindow( ) 
-                     If is_gadget_( *this )
-                        ActiveGadget( ) = *this
+            If Not *active\disable
+               If GetActive( ) <> *this
+                  Protected *deactive._s_WIDGET = GetActive( )
+                  Protected *deactiveWindow._s_WIDGET = ActiveWindow( )
+                  If *deactiveWindow
+                     Protected *deactiveGadget._s_WIDGET = ActiveGadget( )
+                  EndIf
+                  
+                  GetActive( ) = *this
+                  
+                  If is_Window_( *active )
+                     ActiveWindow( ) = *active
+                  Else
+                     ActiveWindow( ) = *active\window
+                     If ActiveWindow( ) 
+                        If is_gadget_( *active )
+                           ActiveGadget( ) = *active
+                        EndIf
                      EndIf
                   EndIf
-               EndIf
-               
-               If *deactiveWindow <> *this 
-                  If *deactiveWindow  
-                     If Not IsChild( *this, *deactiveWindow )
-                        If *deactiveWindow\focus <> 3 
-                           *deactiveWindow\focus = 3
-                           Debug "DEActiveWindow( ) "+*deactiveWindow\class
-                           ;
-                           DoFocus( *deactiveWindow, #__event_LostFocus )
+                  
+                  
+                  If *deactive
+                     If *deactiveWindow And *deactiveWindow <> *active  
+                        If Not IsChild( *active, *deactiveWindow )
+                           If *deactiveWindow\focus <> 3 
+                              *deactiveWindow\focus = 3
+                              Debug "Deactive widgetwindow "+*deactiveWindow\class
+                              ;
+                              DoFocus( *deactiveWindow, #__event_LostFocus )
+                           EndIf
+                        EndIf
+                        
+                        If *deactiveGadget And *deactiveGadget <> *active
+                           If *deactiveGadget\focus <> 3
+                              *deactiveGadget\focus = 3
+                              Debug "Deactive widgetgadget "+*deactiveGadget\class
+                              ;
+                              DoFocus( *deactiveGadget, #__event_LostFocus )
+                           EndIf
                         EndIf
                      EndIf
                      
-                     If *deactiveGadget
-                        If *deactiveGadget\focus <> 3
-                           *deactiveGadget\focus = 3
-                           Debug "DEActiveGadget( ) "+*deactiveGadget\class
+                     ;\\
+                     If is_integral_( *deactive )
+                        If *deactive\focus <> 3
+                           *deactive\focus = 3
+                           Debug "Deactive widgetintegral "+*deactive\class
                            ;
-                           DoFocus( *deactiveGadget, #__event_LostFocus )
+                           DoFocus( *deactive, #__event_Focus )
                         EndIf
                      EndIf
-;                   Else
-;                      If *deactive
-;                         If *deactive\focus <> 3
-;                            *deactive\focus = 3
-;                            Debug "DEActiveThis "+*deactive\class
-;                            ;
-;                            DoFocus( *deactive, #__event_LostFocus )
-;                         EndIf
-;                      EndIf
-                  EndIf
-               EndIf
-               
-               If ActiveWindow( ) 
-                  If ActiveWindow( )\focus <> 2
-                     ActiveWindow( )\focus = 2
-                     Debug "ActiveWindow( ) "+ActiveWindow( )\class
-                     ;
-                     DoFocus( ActiveWindow( ), #__event_Focus )
                   EndIf
                   
-                  If ActiveGadget( ) And
-                     ActiveGadget( )\focus <> 2
-                     ActiveGadget( )\focus = 2
-                     Debug "ActiveGadget( ) "+ActiveGadget( )\class
-                     ;
-                     DoFocus( ActiveGadget( ), #__event_Focus )
+                  ;\\
+                  If ActiveWindow( ) 
+                     If ActiveWindow( )\focus <> 2
+                        ActiveWindow( )\focus = 2
+                        Debug "Active widgetwindow "+ActiveWindow( )\class
+                        ;
+                        DoFocus( ActiveWindow( ), #__event_Focus )
+                     EndIf
+                     
+                     If ActiveGadget( ) And
+                        ActiveGadget( )\focus <> 2
+                        ActiveGadget( )\focus = 2
+                        Debug "Active widgetgadget "+ActiveGadget( )\class
+                        ;
+                        DoFocus( ActiveGadget( ), #__event_Focus )
+                     EndIf
                   EndIf
-;                Else
-;                   If *this And
-;                      *this\focus <> 2
-;                      *this\focus = 2
-;                      Debug "ActiveThis "+*this\class
-;                      ;
-;                      DoFocus( *this, #__event_Focus )
-;                   EndIf
-               EndIf
+                  
+                  ;\\
+                  If is_integral_( *this )
+                     If *this\focus <> 2
+                        *this\focus = 2
+                        Debug "Active widgetintegral "+*this\class
+                        ;
+                        DoFocus( *this, #__event_Focus )
+                     EndIf
+                  EndIf
+               EndIf 
             EndIf 
          EndIf
          
@@ -21453,46 +21506,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If event = #PB_Event_DeactivateWindow
-            If ActiveWindow( )
-               ForEach roots( )
-                  If roots( )\canvas\window = EventWindow( )
-                     If ActiveWindow( ) = roots( )
-                        root( ) = roots( )
-                       ; Debug "Deactivate - "+root( )\class +" "+ root( )\focus +" "+ root( )\canvas\gadget
-                        
-                        ;                         If Popup( )
-                        
-                        ;                         EndIf
-                        ;SetDeactive( root( ) )
-                        ;ActiveWindow( ) = 0
-                        Break
-                     EndIf
-                  EndIf
-               Next
-            EndIf
+;             If ActiveWindow( )
+;                ForEach roots( )
+;                   If roots( )\canvas\window = EventWindow( )
+;                      If ActiveWindow( ) = roots( )
+;                         root( ) = roots( )
+;                        ; Debug "Deactivate - "+root( )\class +" "+ root( )\focus +" "+ root( )\canvas\gadget
+;                         
+;                         ;                         If Popup( )
+;                         
+;                         ;                         EndIf
+;                         ;SetDeactive( root( ) )
+;                         ;ActiveWindow( ) = 0
+;                         Break
+;                      EndIf
+;                   EndIf
+;                Next
+;             EndIf
             ProcedureReturn event
          EndIf
          
          ;\\
          If event = #PB_Event_ActivateWindow
-            If __gui\eventexit = 1
-               If Not EnteredWidget( )
-                  ForEach roots( )
-                     If roots( )\canvas\window = EventWindow( )
-                        root( ) = roots( )
-                        ;Debug "Activate - "+root( )\class +" "+ root( )\focus +" "+ root( )\canvas\gadget
-                        ;Protected *active = GetActive( )
-                        ;GetActive( ) = 0
-;                         If ActiveWindow( )
-;                            ActiveGadget( ) = 0
-;                         EndIf
-;                         ActiveWindow( ) = 0
-                        ;SetActive( *active )
-                        Break
-                     EndIf
-                  Next
-               EndIf
-            EndIf
+;             If __gui\eventexit = 1
+;                If Not EnteredWidget( )
+;                   ForEach roots( )
+;                      If roots( )\canvas\window = EventWindow( )
+;                         root( ) = roots( )
+;                         ;Debug "Activate - "+root( )\class +" "+ root( )\focus +" "+ root( )\canvas\gadget
+;                         ;Protected *active = GetActive( )
+;                         ;GetActive( ) = 0
+; ;                         If ActiveWindow( )
+; ;                            ActiveGadget( ) = 0
+; ;                         EndIf
+; ;                         ActiveWindow( ) = 0
+;                         ;SetActive( *active )
+;                         Break
+;                      EndIf
+;                   Next
+;                EndIf
+;             EndIf
             ProcedureReturn event
          EndIf
          
@@ -21543,6 +21596,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             If eventtype = #PB_EventType_Focus
+               ; из за ошибки в окнах событие фокус происходить ранше чем событие нажим
+               If EnteredWidget( ) And 
+                  GetActive( ) <> EnteredWidget( )\root
+                  GetActive( ) = EnteredWidget( )\root
+               EndIf
+               
                eventtype = #__event_Focus
             EndIf
             If eventtype = #PB_EventType_LostFocus
@@ -21817,10 +21876,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If eventtype = #__event_Focus
                If GetActive( ) And
                   GetActive( )\root\canvas\gadget = eventgadget
-                   Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-                   
-                   SetActive( GetActive( ) )
-                   
+                  Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                  
+                  SetActive( GetActive( ) )
                EndIf
                
             ElseIf eventtype = #__event_LostFocus
@@ -24432,9 +24490,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8333
-; FirstLine = 8311
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------f--4---------64+---------------v8-v-4q+--------f------22+-6ff-v4--+--f------------------------------------------------
+; CursorPosition = 21600
+; FirstLine = 20410
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------f--4---------64+---------------v8-v-4q+--------f8f+--rr0-z-++fv--0---+-----------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
