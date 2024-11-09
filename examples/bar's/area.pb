@@ -276,7 +276,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
       If Repaint
-         Repaint( Root( ))
+         Redraw( Root( ))
 ;          If StartDrawingRoot( Root( ) )
 ;             DrawingRoot( )
 ;             Canvas_Draw( MyCanvas, Images( ) ) 
@@ -415,7 +415,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 280
-; FirstLine = 261
+; CursorPosition = 278
+; FirstLine = 256
 ; Folding = ---------
 ; EnableXP

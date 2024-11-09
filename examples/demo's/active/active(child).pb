@@ -35,22 +35,37 @@ CompilerIf #PB_Compiler_IsMainFile
       SetWindowTitle( 1, "Root_0_canvas_"+Str(GetGadget(Root())))
    EndIf
    
-   If Open(2, 0, 0, 400, 300, " focus demo ", #PB_Window_SystemMenu |
+   If Open(2, 0, 0, 500, 300, " focus demo ", #PB_Window_SystemMenu |
                                               #PB_Window_ScreenCentered )
       SetClass(root( ), "RootWindow" )
       
       ;\\
-      Window( 30, 30, 300, 200, "Form", #PB_Window_SystemMenu |
+      Window( 30, 30, 200, 200, "Form", #PB_Window_SystemMenu |
                                             #PB_Window_MaximizeGadget |
                                             #PB_Window_MinimizeGadget )
       
       SetClass(widget( ), "Form" )
-      ScrollArea( 30,30,240,140, 300,300,1 ) 
+      ScrollArea( 30,30,140,140, 300,300,1 ) 
       SetClass(widget( ), "ScrollArea" )
-      Spin(10,10,200,50, 0,100)
+      Spin(10,10,100,50, 0,100)
       SetClass(widget( ), "Spin" )
-      String(10,65,200,50,"String")
+      String(10,65,100,50,"String")
       SetClass(widget( ), "String" )
+      SetActive( widget( ) )
+      CloseList( )
+      
+      ;\\
+      Window( 260, 30, 200, 200, "Form2", #PB_Window_SystemMenu |
+                                            #PB_Window_MaximizeGadget |
+                                            #PB_Window_MinimizeGadget )
+      
+      SetClass(widget( ), "Form2" )
+      ScrollArea( 30,30,140,140, 300,300,1 ) 
+      SetClass(widget( ), "ScrollArea2" )
+      Spin(10,10,100,50, 0,100)
+      SetClass(widget( ), "Spin2" )
+      String(10,65,100,50,"String2")
+      SetClass(widget( ), "String2" )
       SetActive( widget( ) )
       CloseList( )
       
@@ -59,8 +74,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 30
+; CursorPosition = 46
+; FirstLine = 37
 ; Folding = --
 ; EnableXP
 ; DPIAware

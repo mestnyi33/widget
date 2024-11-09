@@ -744,6 +744,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CANVAS
       Structure _s_CANVAS
+         *active._s_WIDGET
          post.b
          *gadgetID                ; canvas handle
          window.i                 ; canvas window
@@ -810,8 +811,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 485
-; FirstLine = 381
+; CursorPosition = 746
+; FirstLine = 647
 ; Folding = ---Ag0----
 ; Optimizer
 ; EnableXP

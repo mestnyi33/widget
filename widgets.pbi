@@ -8428,6 +8428,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   GetActive( ) = *this
+                  *this\root\canvas\active = *this
                   
                   If is_Window_( *active )
                      ActiveWindow( ) = *active
@@ -21576,10 +21577,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ForEach roots( )
                   If roots( )\canvas\window = EventWindow( )
                      If roots( )\focus = 2
-                         Debug "---- Deactivate - "+ GetActiveGadget( ) +" "+ roots( )\canvas\gadget
-                            SetActive( 0 )
-                            ;EventHandler( #PB_Event_Gadget, GetActive( )\root\canvas\gadget, #__event_LostFocus, 0 )
-                         Break
+                        Debug "---- Deactivate - "+ GetActiveGadget( ) +" "+ roots( )\canvas\gadget
+                        SetActive( 0 )
+                        Break
                      EndIf
                   EndIf
                Next
@@ -21595,12 +21595,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ForEach roots( )
                   If roots( )\canvas\window = EventWindow( )
                      If Not is_atpoint_( roots( ), mouse( )\x, mouse( )\y )
-                        If StartEnumerate( roots( ) )
-                           If widget( )\focus = 3
-                              ; Debug "---- Activate - "+roots( )\class +" "+ roots( )\focus +" "+ roots( )\canvas\gadget
-                              SetActive( widget( ) )
-                           EndIf
-                           StopEnumerate( )
+                        If roots( )\canvas\active 
+                           SetActive( roots( )\canvas\active )
                         EndIf
                      EndIf
                      Break
@@ -21937,12 +21933,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      PushMapPosition( roots( ) )
                      ForEach roots( )
                         If roots( )\canvas\gadget = eventgadget
-                           If StartEnumerate( roots( ) )
-                              If widget( )\focus = 3
-                                 Debug "canvas - Focus "+roots( )\class +" "+ roots( )\focus +" "+ roots( )\canvas\gadget
-                                 SetActive( widget( ) )
-                              EndIf
-                              StopEnumerate( )
+                           If roots( )\canvas\active 
+                              SetActive( roots( )\canvas\active )
                            EndIf
                            Break
                         EndIf
@@ -24560,9 +24552,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8503
-; FirstLine = 8465
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------4--0--------f+t----------------8+-8-tq---------4+-----22+-6ff--00-4---8-----------------------------------------------
+; CursorPosition = 8561
+; FirstLine = 8406
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------4--0--------f+t----------------8+-8-tq---------4+-----7a--9vv-ff--0---+-----------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
