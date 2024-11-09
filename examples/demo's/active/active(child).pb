@@ -25,8 +25,6 @@ CompilerIf #PB_Compiler_IsMainFile
          StopDrawing()
       EndIf
    EndProcedure
-
-
    If OpenWindow(0, 100, 100, 270, 140, "CanvasWindow", #PB_Window_SystemMenu )
       CanvasButtonGadget(10, 10, 10, 250, 120, "CanvasGadget")
    EndIf
@@ -39,19 +37,21 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(2, 0, 0, 400, 300, " focus demo ", #PB_Window_SystemMenu |
                                               #PB_Window_ScreenCentered )
+      SetClass(root( ), "RootWindow" )
       
       ;\\
-      Window( 30, 30, 300, 200, "Window", #PB_Window_SystemMenu |
+      Window( 30, 30, 300, 200, "Form", #PB_Window_SystemMenu |
                                             #PB_Window_MaximizeGadget |
                                             #PB_Window_MinimizeGadget )
       
-      SetClass(widget( ), "Window" )
+      SetClass(widget( ), "Form" )
       ScrollArea( 30,30,240,140, 300,300,1 ) 
-      SetClass(widget( ), "ScrollArea1" )
-      Button(10,10,200,50,"Button1")
-      SetClass(widget( ), "Button1" )
-      Button(10,65,200,50,"Button2")
-      SetClass(widget( ), "Button2" )
+      SetClass(widget( ), "ScrollArea" )
+      Spin(10,10,200,50, 0,100)
+      SetClass(widget( ), "Spin" )
+      String(10,65,200,50,"String")
+      SetClass(widget( ), "String" )
+      SetActive( widget( ) )
       CloseList( )
       
       
@@ -59,8 +59,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 24
+; CursorPosition = 52
+; FirstLine = 30
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -482,7 +482,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       Structure _s_BAR
         change.w
-        
+        *gadget._s_WIDGET[3]
+         ; \root\gadget[0] - active gadget bar
+         ; \gadget[0] - window active child gadget
+         ; \gadget[1] - splitter( ) first gadget
+         ; \gadget[2] - splitter( ) second gadget
+         
         max.l
         min.l[3]   ; fixed min[1&2] bar size
         fixed.l[3] ; fixed bar[1&2] position (splitter)
@@ -703,7 +708,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          scroll._s_SCROLL            ; vertical & horizontal scrollbars
          text._s_TEXT
          ;
-         *gadget._s_WIDGET[3]
+         *gadget._s_WIDGET;[3]
          ; \root\gadget[0] - active gadget
          ; \gadget[0] - window active child gadget
          ; \gadget[1] - splitter( ) first gadget
@@ -805,8 +810,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 635
-; FirstLine = 527
+; CursorPosition = 485
+; FirstLine = 381
 ; Folding = ---Ag0----
 ; Optimizer
 ; EnableXP

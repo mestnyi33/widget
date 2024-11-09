@@ -420,8 +420,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro WidgetChange( ): change: EndMacro      ; temp
       
       ;-
-      Macro split_1( ) : gadget[1] : EndMacro ; temp
-      Macro split_2( ) : gadget[2] : EndMacro ; temp
+      Macro split_1( ) : bar\gadget[1] : EndMacro ; temp
+      Macro split_2( ) : bar\gadget[2] : EndMacro ; temp
                                               ;       Macro split_1( ) : bar\button[1]\gadget : EndMacro ; temp
                                               ;       Macro split_2( ) : bar\button[2]\gadget : EndMacro ; temp
       
@@ -508,6 +508,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro GetActive( ): Keyboard( )\widget: EndMacro        ; Returns activeed object
       Macro ActiveWindow( ): Keyboard( )\window: EndMacro     ; Returns activeed window
       Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro ; Returns activeed gadget
+      Macro ActiveBar( ): ActiveWindow( )\gadget\bar\gadget: EndMacro ; Returns activeed gadget
       
       ;-
       ; ;       Macro DPIResolutionX( ): DPIScaleResolutionX: EndMacro
@@ -788,7 +789,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro is_widget_( _this_ ) : Bool( _this_ >= 65536 And _this_\address ) : EndMacro
       Macro is_menu_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_menu ) : EndMacro
       Macro is_gadget_( _this_ ) : Bool( Not is_root_( _this_ ) And _this_\type > 0 ) : EndMacro
-      Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
+      Macro is_window_( _this_ ) : Bool( _this_\type = constants::#__type_window ) : EndMacro ; is_widget_( _this_ ) And 
       
       Macro is_child_( _this_, _parent_ )
          Bool( _this_\parent = _parent_ And Not ( _parent_\TabWidgetBar( ) And _this_\TabIndex( ) <> _parent_\TabWidgetBar( )\TabState( ) ))
@@ -802,7 +803,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro is_integral_( _this_ ) ; It is an integral part
-         Bool( _this_\child > 0 )
+         Bool( _this_\child > 0 And Not is_window_(_this_) )
       EndMacro
       
       Macro is_inside_( _position_, _size_, _mouse_ ) ;
@@ -4800,7 +4801,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result
          ;
          If *this And
-            *this <> *parent And
+            *this <> *parent And 
             *parent\haschildren
             ;
             Repeat
@@ -6059,376 +6060,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\TabWidgetBar( )\class = ClassFromType( *this\TabWidgetBar( )\type ) +"-"+ *this\class
             EndIf
             ProcedureReturn *this
-         EndIf
-      EndProcedure
-      
-      ;-
-      Procedure.i GetParent( *this._s_WIDGET )
-         ProcedureReturn *this\parent
-      EndProcedure
-      
-      Procedure SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
-         Protected parent, ReParent.b, x, y
-         Protected *after._s_WIDGET, *last._s_WIDGET, *lastParent._s_WIDGET
-         Protected NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
-         
-         ;\\
-         If *this = *parent
-            ProcedureReturn 0
-         EndIf
-         
-         If *parent
-            If *parent\container = 0 And *parent\child
-               Debug "SetParent("
-               *parent = *parent\parent
-            EndIf
-            ;
-            If *this\parent = *parent And
-               *this\TabIndex( ) = tabindex
-               ProcedureReturn #False
-            EndIf
-            ;
-            If tabindex < 0
-               tabindex = *parent\TabAddIndex( )
-            EndIf
-            ;
-            ;\\ get the last widget to add it after it
-            If *parent\LastWidget( )
-               *after = GetPositionAfter( *parent, tabindex )
-               ;
-               If *after\parent = *parent
-                  *last = GetPositionLast( *after, tabindex )
-                  
-                  ;                   *last = *after 
-                  ;                   If StartEnumerate( *after )
-                  ;                      *last = widgets( )
-                  ;                      StopEnumerate( )
-                  ;                   EndIf
-                  ;
-                  If *this = *after Or IsChild( *last, *this )
-                     *last = GetPositionLast( *this\BeforeWidget( ), tabindex )
-                     
-                     ;                      *last = *this\BeforeWidget( )
-                     ;                      If StartEnumerate( *this\BeforeWidget( ) )
-                     ;                        *last = widgets( )
-                     ;                        StopEnumerate( )
-                     ;                      EndIf
-                     
-                  EndIf
-               Else
-                  *last = *after
-               EndIf
-               
-               ;                If tabindex = 2
-               ;                    Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
-               ;                EndIf
-            EndIf
-            ;
-            If *parent\type = #__type_Splitter
-               If tabindex > 0
-                  If tabindex % 2
-                     *parent\FirstWidget( ) = *this
-                     *parent\split_1( )    = *this
-                     bar_Update( *parent, #True )
-                     If IsGadget( *parent\split_1( ) )
-                        ProcedureReturn 0
-                     EndIf
-                  Else
-                     *parent\LastWidget( ) = *this
-                     *parent\split_2( )    = *this
-                     bar_Update( *parent, #True )
-                     If IsGadget( *parent\split_2( ) )
-                        ProcedureReturn 0
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            *this\TabIndex( ) = tabindex
-            
-            ;
-            ; set hide state
-            If *parent\hide
-               *this\hide = #True
-            ElseIf *parent\TabWidgetBar( )
-               ; hide all children's except the selected tab
-               *this\hide = Bool(*parent\TabWidgetBar( )\TabState( ) <> *this\TabIndex( ))
-            ElseIf Not *this\hidden
-               If *this\hide = #True
-                  *this\hide = #False
-               EndIf
-            EndIf
-            ;
-            ;\\
-            If *this And
-               *this\parent
-               ;
-               If *this\address
-                  *lastParent = *this\parent
-                  *lastParent\haschildren - 1
-                  
-                  ChangeCurrentElement( widgets( ), *this\address )
-                  AddElement( *D( ) ) : *D( ) = widgets( )
-                  
-                  If *this\haschildren
-                     PushListPosition( widgets( ) )
-                     While NextElement( widgets( ) )
-                        If Not IsChild( widgets( ), *this )
-                           Break
-                        EndIf
-                        
-                        AddElement( *D( ) )
-                        *D( ) = widgets( )
-                        
-                        ; ChangeParent
-                        If *parent\window
-                           *D( )\window = *parent\window
-                        Else
-                           *D( )\window = *parent
-                        EndIf
-                        If *parent\root
-                           *D( )\root = *parent\root
-                        Else
-                           *D( )\root = *parent
-                        EndIf
-                        ;; Debug " children's - "+ *D( )\data +" - "+ *this\data
-                        
-                        ;\\ integrall children's
-                        If *D( )\scroll
-                           If *D( )\scroll\v
-                              *D( )\scroll\v\root   = *D( )\root
-                              *D( )\scroll\v\window = *D( )\window
-                           EndIf
-                           If *D( )\scroll\h
-                              *D( )\scroll\h\root   = *D( )\root
-                              *D( )\scroll\h\window = *D( )\window
-                           EndIf
-                        EndIf
-                        
-                        *D( )\hide = HideState( *D( ) )
-                        ;Debug *D( )\hidden
-                        
-                     Wend
-                     PopListPosition( widgets( ) )
-                  EndIf
-                  
-                  ;\\ move with a parent and his children's
-                  If *last
-                     PushListPosition( widgets( ) )
-                     LastElement( *D( ) )
-                     Repeat
-                        ChangeCurrentElement( widgets( ), *D( )\address )
-                        MoveElement( widgets( ), #PB_List_After, *last\address )
-                     Until PreviousElement( *D( ) ) = #False
-                     PopListPosition( widgets( ) )
-                  EndIf
-                  ;
-                  ReParent = #True
-               EndIf
-               ;
-            Else
-               ;
-               If *last
-                  ChangeCurrentElement( widgets( ) , *last\address )
-               Else
-                  LastElement( widgets( ) )
-               EndIf
-               ;
-               AddElement( widgets( ) )
-               widgets( )  = *this
-               *this\index     = ListIndex( widgets( ) )
-               *this\address = @widgets( )
-            EndIf
-            ;
-            ;\\
-            ;
-            If *this\parent 
-               If *this\parent\FirstWidget( ) = *this
-                  *this\parent\FirstWidget( ) = *this\AfterWidget( )
-               EndIf
-               ;
-               If *this\parent\LastWidget( ) = *this
-                  *this\parent\LastWidget( ) = *this\BeforeWidget( )
-               EndIf
-            Else
-               *this\LastWidget( ) = *this 
-            EndIf
-            ;
-            If *parent\TabWidgetBar( )
-               If *this\TabIndex( ) = *parent\TabWidgetBar( )\countitems - 1
-                  *parent\LastWidget( ) = *this
-               EndIf
-            Else
-               *parent\LastWidget( ) = *this
-            EndIf
-            ;
-            If *this\BeforeWidget( )
-               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
-            EndIf
-            ;
-            If *this\AfterWidget( )
-               *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
-            EndIf
-            ;
-            If *after
-               If *after\parent = *parent
-                  If *after\AfterWidget( )
-                     *after\AfterWidget( )\BeforeWidget( ) = *this
-                  EndIf
-                  *this\AfterWidget( ) = *after\AfterWidget( )
-                  ;
-                  *this\BeforeWidget( ) = *after
-                  *after\AfterWidget( ) = *this
-               Else
-                  *this\AfterWidget( ) = *parent\FirstWidget( )
-                  If *parent\FirstWidget( )
-                     *this\AfterWidget( )\BeforeWidget( ) = *this
-                  EndIf
-                  ;
-                  *this\BeforeWidget( ) = #Null
-                  *parent\FirstWidget( ) = *this
-               EndIf
-            EndIf
-            ;
-            If *parent\FirstWidget( ) = #Null
-               *parent\FirstWidget( ) = *this
-            EndIf
-            ;
-            ;\\
-            ReParent( *this, *parent )
-            ;
-            ;\\ TODO
-            SetTypeCount( *this )
-            ;
-            ;\\ a_new( )
-            If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
-               If *this\parent\type = #__type_splitter
-                  ; Debug ""+*this\class +" "+ *this\parent\class
-                  a_free( *this )
-               Else
-                  If Not *this\autosize
-                     If Not *this\anchors
-                        If *this\parent\anchors 
-                           a_create( *this, #__a_full )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ;\\
-            If ReParent
-               ;
-               If is_drag_move( )
-                  *this\resize\clip = #True
-                  
-                  x = *this\frame_x( ) - *parent\inner_x( )
-                  y = *this\frame_y( ) - *parent\inner_y( )
-                  
-                  If *this\anchors > 0
-                     x + ( x % mouse( )\steps )
-                     x = ( x / mouse( )\steps ) * mouse( )\steps
-                     
-                     y + ( y % mouse( )\steps )
-                     y = ( y / mouse( )\steps ) * mouse( )\steps
-                  EndIf
-                  
-                  *this\container_x( ) = x
-                  *this\container_y( ) = y
-               Else
-                  ;\\ resize
-                  x = *this\container_x( )
-                  y = *this\container_y( )
-                  
-                  ;\\ for the scrollarea container childrens
-                  ;\\ if new parent - scrollarea container
-                  If *parent\scroll And
-                     *parent\scroll\v And *parent\scroll\h
-                     x - *parent\scroll\h\bar\page\pos
-                     y - *parent\scroll\v\bar\page\pos
-                  EndIf
-                  
-                  ;\\ if last parent - scrollarea container
-                  If *LastParent\scroll And
-                     *LastParent\scroll\v And *LastParent\scroll\h
-                     x + *LastParent\scroll\h\bar\page\pos
-                     y + *LastParent\scroll\v\bar\page\pos
-                  EndIf
-                  
-                  *this\noscale = 1
-                  Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
-               EndIf
-               
-               ;\\
-               PostRepaint( *parent\root )
-               If *parent\root <> *lastParent\root
-                  PostRepaint( *lastParent\root )
-               EndIf
-            EndIf
-         EndIf
-         
-         widget( ) = *this
-         ProcedureReturn *this
-      EndProcedure
-      
-      Procedure ReParent( *this._s_WIDGET, *parent._s_WIDGET )
-         ;\\
-         If Not is_integral_( *this )
-            If *parent\container
-               *parent\haschildren + 1
-            EndIf
-         EndIf
-         
-         ;\\
-         If *parent\root
-            If Not is_integral_( *this )
-               If Not is_root_( *parent )
-                  *parent\root\haschildren + 1
-               EndIf
-            EndIf
-            *this\root = *parent\root
-         Else
-            *this\root = *parent
-         EndIf
-         
-         ;\\
-         If is_window_( *parent )
-            *this\window = *parent
-         Else
-            *this\window = *parent\window
-         EndIf
-         
-         ;\\
-         *this\level  = *parent\level + 1
-         *this\parent = *parent
-         
-         ;\\ is integrall scroll bars
-         If *this\scroll
-            If *this\scroll\v
-               *this\scroll\v\root   = *this\root
-               *this\scroll\v\window = *this\window
-            EndIf
-            If *this\scroll\h
-               *this\scroll\h\root   = *this\root
-               *this\scroll\h\window = *this\window
-            EndIf
-         EndIf
-         
-         ;\\ is integrall tab bar
-         If *this\TabWidgetBar( )
-            *this\TabWidgetBar( )\root   = *this\root
-            *this\TabWidgetBar( )\window = *this\window
-         EndIf
-         
-         ;\\ is integrall string bar
-         If *this\StringWidgetBar( )
-            *this\StringWidgetBar( )\root   = *this\root
-            *this\StringWidgetBar( )\window = *this\window
-         EndIf
-         
-         ;\\
-         If *parent\bounds\children
-            SetMoveBounds( *this )
          EndIf
       EndProcedure
       
@@ -8071,6 +7702,376 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure.i GetParent( *this._s_WIDGET )
+         ProcedureReturn *this\parent
+      EndProcedure
+      
+      Procedure SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
+         Protected parent, ReParent.b, x, y
+         Protected *after._s_WIDGET, *last._s_WIDGET, *lastParent._s_WIDGET
+         Protected NewList *D._s_WIDGET( ), NewList *C._s_WIDGET( )
+         
+         ;\\
+         If *this = *parent
+            ProcedureReturn 0
+         EndIf
+         
+         If *parent
+            If *parent\container = 0 And *parent\child
+               Debug "SetParent("
+               *parent = *parent\parent
+            EndIf
+            ;
+            If *this\parent = *parent And
+               *this\TabIndex( ) = tabindex
+               ProcedureReturn #False
+            EndIf
+            ;
+            If tabindex < 0
+               tabindex = *parent\TabAddIndex( )
+            EndIf
+            ;
+            ;\\ get the last widget to add it after it
+            If *parent\LastWidget( )
+               *after = GetPositionAfter( *parent, tabindex )
+               ;
+               If *after\parent = *parent
+                  *last = GetPositionLast( *after, tabindex )
+                  
+                  ;                   *last = *after 
+                  ;                   If StartEnumerate( *after )
+                  ;                      *last = widgets( )
+                  ;                      StopEnumerate( )
+                  ;                   EndIf
+                  ;
+                  If *this = *after Or IsChild( *last, *this )
+                     *last = GetPositionLast( *this\BeforeWidget( ), tabindex )
+                     
+                     ;                      *last = *this\BeforeWidget( )
+                     ;                      If StartEnumerate( *this\BeforeWidget( ) )
+                     ;                        *last = widgets( )
+                     ;                        StopEnumerate( )
+                     ;                      EndIf
+                     
+                  EndIf
+               Else
+                  *last = *after
+               EndIf
+               
+               ;                If tabindex = 2
+               ;                    Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
+               ;                EndIf
+            EndIf
+            ;
+            If *parent\type = #__type_Splitter
+               If tabindex > 0
+                  If tabindex % 2
+                     *parent\FirstWidget( ) = *this
+                     *parent\split_1( )    = *this
+                     bar_Update( *parent, #True )
+                     If IsGadget( *parent\split_1( ) )
+                        ProcedureReturn 0
+                     EndIf
+                  Else
+                     *parent\LastWidget( ) = *this
+                     *parent\split_2( )    = *this
+                     bar_Update( *parent, #True )
+                     If IsGadget( *parent\split_2( ) )
+                        ProcedureReturn 0
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            *this\TabIndex( ) = tabindex
+            
+            ;
+            ; set hide state
+            If *parent\hide
+               *this\hide = #True
+            ElseIf *parent\TabWidgetBar( )
+               ; hide all children's except the selected tab
+               *this\hide = Bool(*parent\TabWidgetBar( )\TabState( ) <> *this\TabIndex( ))
+            ElseIf Not *this\hidden
+               If *this\hide = #True
+                  *this\hide = #False
+               EndIf
+            EndIf
+            ;
+            ;\\
+            If *this And
+               *this\parent
+               ;
+               If *this\address
+                  *lastParent = *this\parent
+                  *lastParent\haschildren - 1
+                  
+                  ChangeCurrentElement( widgets( ), *this\address )
+                  AddElement( *D( ) ) : *D( ) = widgets( )
+                  
+                  If *this\haschildren
+                     PushListPosition( widgets( ) )
+                     While NextElement( widgets( ) )
+                        If Not IsChild( widgets( ), *this )
+                           Break
+                        EndIf
+                        
+                        AddElement( *D( ) )
+                        *D( ) = widgets( )
+                        
+                        ; ChangeParent
+                        If *parent\window
+                           *D( )\window = *parent\window
+                        Else
+                           *D( )\window = *parent
+                        EndIf
+                        If *parent\root
+                           *D( )\root = *parent\root
+                        Else
+                           *D( )\root = *parent
+                        EndIf
+                        ;; Debug " children's - "+ *D( )\data +" - "+ *this\data
+                        
+                        ;\\ integrall children's
+                        If *D( )\scroll
+                           If *D( )\scroll\v
+                              *D( )\scroll\v\root   = *D( )\root
+                              *D( )\scroll\v\window = *D( )\window
+                           EndIf
+                           If *D( )\scroll\h
+                              *D( )\scroll\h\root   = *D( )\root
+                              *D( )\scroll\h\window = *D( )\window
+                           EndIf
+                        EndIf
+                        
+                        *D( )\hide = HideState( *D( ) )
+                        ;Debug *D( )\hidden
+                        
+                     Wend
+                     PopListPosition( widgets( ) )
+                  EndIf
+                  
+                  ;\\ move with a parent and his children's
+                  If *last
+                     PushListPosition( widgets( ) )
+                     LastElement( *D( ) )
+                     Repeat
+                        ChangeCurrentElement( widgets( ), *D( )\address )
+                        MoveElement( widgets( ), #PB_List_After, *last\address )
+                     Until PreviousElement( *D( ) ) = #False
+                     PopListPosition( widgets( ) )
+                  EndIf
+                  ;
+                  ReParent = #True
+               EndIf
+               ;
+            Else
+               ;
+               If *last
+                  ChangeCurrentElement( widgets( ) , *last\address )
+               Else
+                  LastElement( widgets( ) )
+               EndIf
+               ;
+               AddElement( widgets( ) )
+               widgets( )  = *this
+               *this\index     = ListIndex( widgets( ) )
+               *this\address = @widgets( )
+            EndIf
+            ;
+            ;\\
+            ;
+            If *this\parent 
+               If *this\parent\FirstWidget( ) = *this
+                  *this\parent\FirstWidget( ) = *this\AfterWidget( )
+               EndIf
+               ;
+               If *this\parent\LastWidget( ) = *this
+                  *this\parent\LastWidget( ) = *this\BeforeWidget( )
+               EndIf
+            Else
+               *this\LastWidget( ) = *this 
+            EndIf
+            ;
+            If *parent\TabWidgetBar( )
+               If *this\TabIndex( ) = *parent\TabWidgetBar( )\countitems - 1
+                  *parent\LastWidget( ) = *this
+               EndIf
+            Else
+               *parent\LastWidget( ) = *this
+            EndIf
+            ;
+            If *this\BeforeWidget( )
+               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
+            EndIf
+            ;
+            If *this\AfterWidget( )
+               *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
+            EndIf
+            ;
+            If *after
+               If *after\parent = *parent
+                  If *after\AfterWidget( )
+                     *after\AfterWidget( )\BeforeWidget( ) = *this
+                  EndIf
+                  *this\AfterWidget( ) = *after\AfterWidget( )
+                  ;
+                  *this\BeforeWidget( ) = *after
+                  *after\AfterWidget( ) = *this
+               Else
+                  *this\AfterWidget( ) = *parent\FirstWidget( )
+                  If *parent\FirstWidget( )
+                     *this\AfterWidget( )\BeforeWidget( ) = *this
+                  EndIf
+                  ;
+                  *this\BeforeWidget( ) = #Null
+                  *parent\FirstWidget( ) = *this
+               EndIf
+            EndIf
+            ;
+            If *parent\FirstWidget( ) = #Null
+               *parent\FirstWidget( ) = *this
+            EndIf
+            ;
+            ;\\
+            ReParent( *this, *parent )
+            ;
+            ;\\ TODO
+            SetTypeCount( *this )
+            ;
+            ;\\ a_new( )
+            If a_transform( ) And a_main( ) And IsChild( *this, a_main( ))
+               If *this\parent\type = #__type_splitter
+                  ; Debug ""+*this\class +" "+ *this\parent\class
+                  a_free( *this )
+               Else
+                  If Not *this\autosize
+                     If Not *this\anchors
+                        If *this\parent\anchors 
+                           a_create( *this, #__a_full )
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ;\\
+            If ReParent
+               ;
+               If is_drag_move( )
+                  *this\resize\clip = #True
+                  
+                  x = *this\frame_x( ) - *parent\inner_x( )
+                  y = *this\frame_y( ) - *parent\inner_y( )
+                  
+                  If *this\anchors > 0
+                     x + ( x % mouse( )\steps )
+                     x = ( x / mouse( )\steps ) * mouse( )\steps
+                     
+                     y + ( y % mouse( )\steps )
+                     y = ( y / mouse( )\steps ) * mouse( )\steps
+                  EndIf
+                  
+                  *this\container_x( ) = x
+                  *this\container_y( ) = y
+               Else
+                  ;\\ resize
+                  x = *this\container_x( )
+                  y = *this\container_y( )
+                  
+                  ;\\ for the scrollarea container childrens
+                  ;\\ if new parent - scrollarea container
+                  If *parent\scroll And
+                     *parent\scroll\v And *parent\scroll\h
+                     x - *parent\scroll\h\bar\page\pos
+                     y - *parent\scroll\v\bar\page\pos
+                  EndIf
+                  
+                  ;\\ if last parent - scrollarea container
+                  If *LastParent\scroll And
+                     *LastParent\scroll\v And *LastParent\scroll\h
+                     x + *LastParent\scroll\h\bar\page\pos
+                     y + *LastParent\scroll\v\bar\page\pos
+                  EndIf
+                  
+                  *this\noscale = 1
+                  Resize( *this, x - *parent\scroll_x( ), y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+               EndIf
+               
+               ;\\
+               PostRepaint( *parent\root )
+               If *parent\root <> *lastParent\root
+                  PostRepaint( *lastParent\root )
+               EndIf
+            EndIf
+         EndIf
+         
+         widget( ) = *this
+         ProcedureReturn *this
+      EndProcedure
+      
+      Procedure ReParent( *this._s_WIDGET, *parent._s_WIDGET )
+         ;\\
+         ;If Not is_integral_( *this )
+            If *parent\container
+               *parent\haschildren + 1
+            EndIf
+         ;EndIf
+         
+         ;\\
+         If *parent\root
+            If Not is_integral_( *this )
+               If Not is_root_( *parent )
+                  *parent\root\haschildren + 1
+               EndIf
+            EndIf
+            *this\root = *parent\root
+         Else
+            *this\root = *parent
+         EndIf
+         
+         ;\\
+         If is_window_( *parent )
+            *this\window = *parent
+         Else
+            *this\window = *parent\window
+         EndIf
+         
+         ;\\
+         *this\level  = *parent\level + 1
+         *this\parent = *parent
+         
+         ;\\ is integrall scroll bars
+         If *this\scroll
+            If *this\scroll\v
+               *this\scroll\v\root   = *this\root
+               *this\scroll\v\window = *this\window
+            EndIf
+            If *this\scroll\h
+               *this\scroll\h\root   = *this\root
+               *this\scroll\h\window = *this\window
+            EndIf
+         EndIf
+         
+         ;\\ is integrall tab bar
+         If *this\TabWidgetBar( )
+            *this\TabWidgetBar( )\root   = *this\root
+            *this\TabWidgetBar( )\window = *this\window
+         EndIf
+         
+         ;\\ is integrall string bar
+         If *this\StringWidgetBar( )
+            *this\StringWidgetBar( )\root   = *this\root
+            *this\StringWidgetBar( )\window = *this\window
+         EndIf
+         
+         ;\\
+         If *parent\bounds\children
+            SetMoveBounds( *this )
+         EndIf
+      EndProcedure
+      
+      ;-
       Procedure SetForeground( *this._s_WIDGET )
          While is_window_( *this )
             ; SetPosition( *this, #PB_List_Last )
@@ -8333,16 +8334,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      DoFocus( ActiveGadget( ), #__event_LostFocus )
                   EndIf
                EndIf
-               
-               ;\\
-               If is_integral_( GetActive( ) )
-                  If GetActive( )\focus = 2
-                     GetActive( )\focus = 3
-                     Debug "Deactive canvas&widgetintegral "+GetActive( )\class
-                     ;
-                     DoFocus( GetActive( ), #__event_Focus )
-                  EndIf
-               EndIf
                ProcedureReturn 0
             EndIf
             
@@ -8370,16 +8361,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      DoFocus( *this, #__event_Focus )
                   EndIf 
-               EndIf
-               
-               ;\\
-               If is_integral_( *this )
-                  If *this\focus = 3
-                     *this\focus = 2
-                     Debug "Active canvas&widgetintegral "+*this\class
-                     ;
-                     DoFocus( *this, #__event_Focus )
-                  EndIf
                EndIf
                ProcedureReturn 0
             EndIf
@@ -8432,6 +8413,40 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *deactive
                      If *deactiveWindow And *deactiveWindow <> *active  
+                        ;\\ set deactive all parents
+                        If *deactive And
+                           *deactive\address And
+                           Not is_root_( *deactive )
+                           
+                           If Not IsChild( *this, *deactive )
+                              PushListPosition( widgets( ) )
+                              ChangeCurrentElement( widgets( ), *deactive\address )
+                              While PreviousElement( widgets( ))
+                                 widget( ) = widgets( )
+                                 
+                                 If widget( ) = *this\window
+                                    Break
+                                 EndIf
+                                 If widget( ) = *this
+                                    Break
+                                 EndIf
+                                 If IsChild( *deactive, widget( ))
+                                    ;If Not IsChild( *this, widget( ) )
+                                    If widget( )\focus = 2
+                                       widget( )\focus = 3
+                                       
+                                       Debug "Deactive widget( ) "+widget( )\class
+                                       
+                                       DoFocus( widget( ), #__event_LostFocus )
+                                    EndIf
+                                    ;EndIf
+                                 EndIf
+                              Wend
+                              PopListPosition( widgets( ) )
+                           EndIf
+                        EndIf
+                        
+                        ;\\
                         If Not IsChild( *active, *deactiveWindow )
                            If *deactiveWindow\focus <> 3 
                               *deactiveWindow\focus = 3
@@ -8450,22 +8465,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                      EndIf
-                     
-                     ;\\
-                     If is_integral_( *deactive )
-                        If *deactive\focus <> 3
-                           *deactive\focus = 3
-                           Debug "Deactive widgetintegral "+*deactive\class
-                           ;
-                           DoFocus( *deactive, #__event_Focus )
-                        EndIf
-                     EndIf
-                  EndIf
+                   EndIf
                   
-                  ;\\
-                  If ActiveWindow( ) 
+                   ;\\
+                   If ActiveWindow( ) 
+                       
+                     ;                       ;\\ set active all parents
+;                       If StartEnumerate( *active\root )
+;                          If IsChild( *active, widget( ) )
+;                             Debug widget( )
+;                          EndIf
+;                          StopEnumerate( )
+;                       EndIf
+                      
+                      ;\\ set active all parents
+                      If *active\address
+                         If Not is_root_( *active )
+                            PushListPosition( widgets( ) )
+                            ChangeCurrentElement( widgets( ), *active\address )
+                            While PreviousElement( widgets( ) )
+                               widget( ) = widgets( )
+                               
+                               If is_window_( widgets( ) )
+                                  If IsChild( *active, widgets( ) )
+                                     If widgets( )\focus = 3
+                                        widgets( )\focus = 2
+                                        Debug "Active widget( ) "+widget( )\class
+                                       ;
+                                        DoFocus( widgets( ), #__event_Focus )
+                                     EndIf
+                                  EndIf
+                               EndIf
+                            Wend
+                            PopListPosition( widgets( ) )
+                         EndIf
+                      EndIf
+                      
+                      
                      If ActiveWindow( )\focus <> 2
-                        ActiveWindow( )\focus = 2
+                         ActiveWindow( )\focus = 2
                         Debug "Active widgetwindow "+ActiveWindow( )\class
                         ;
                         DoFocus( ActiveWindow( ), #__event_Focus )
@@ -8477,16 +8515,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Debug "Active widgetgadget "+ActiveGadget( )\class
                         ;
                         DoFocus( ActiveGadget( ), #__event_Focus )
-                     EndIf
-                  EndIf
-                  
-                  ;\\
-                  If is_integral_( *this )
-                     If *this\focus <> 2
-                        *this\focus = 2
-                        Debug "Active widgetintegral "+*this\class
-                        ;
-                        DoFocus( *this, #__event_Focus )
                      EndIf
                   EndIf
                EndIf 
@@ -21506,46 +21534,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If event = #PB_Event_DeactivateWindow
-;             If ActiveWindow( )
-;                ForEach roots( )
-;                   If roots( )\canvas\window = EventWindow( )
-;                      If ActiveWindow( ) = roots( )
-;                         root( ) = roots( )
-;                        ; Debug "Deactivate - "+root( )\class +" "+ root( )\focus +" "+ root( )\canvas\gadget
-;                         
-;                         ;                         If Popup( )
-;                         
-;                         ;                         EndIf
-;                         ;SetDeactive( root( ) )
-;                         ;ActiveWindow( ) = 0
-;                         Break
-;                      EndIf
-;                   EndIf
-;                Next
-;             EndIf
+            If GetActive( )
+               PushMapPosition( roots( ) )
+               ForEach roots( )
+                  If roots( )\canvas\window = EventWindow( )
+                     If roots( )\focus = 2
+                         Debug "---- Deactivate - "+ GetActiveGadget( ) +" "+ roots( )\canvas\gadget
+                            SetActive( 0 )
+                            ;EventHandler( #PB_Event_Gadget, GetActive( )\root\canvas\gadget, #__event_LostFocus, 0 )
+                         Break
+                     EndIf
+                  EndIf
+               Next
+               PopMapPosition( roots( ) )
+            EndIf
             ProcedureReturn event
          EndIf
          
          ;\\
          If event = #PB_Event_ActivateWindow
-;             If __gui\eventexit = 1
-;                If Not EnteredWidget( )
-;                   ForEach roots( )
-;                      If roots( )\canvas\window = EventWindow( )
-;                         root( ) = roots( )
-;                         ;Debug "Activate - "+root( )\class +" "+ root( )\focus +" "+ root( )\canvas\gadget
-;                         ;Protected *active = GetActive( )
-;                         ;GetActive( ) = 0
-; ;                         If ActiveWindow( )
-; ;                            ActiveGadget( ) = 0
-; ;                         EndIf
-; ;                         ActiveWindow( ) = 0
-;                         ;SetActive( *active )
-;                         Break
-;                      EndIf
-;                   Next
-;                EndIf
-;             EndIf
+            If GetActive( )
+               PushMapPosition( roots( ) )
+               ForEach roots( )
+                  If roots( )\canvas\window = EventWindow( )
+                     If Not is_atpoint_( roots( ), mouse( )\x, mouse( )\y )
+                        If StartEnumerate( roots( ) )
+                           If widget( )\focus = 3
+                              ; Debug "---- Activate - "+roots( )\class +" "+ roots( )\focus +" "+ roots( )\canvas\gadget
+                              SetActive( widget( ) )
+                           EndIf
+                           StopEnumerate( )
+                        EndIf
+                     EndIf
+                     Break
+                  EndIf
+               Next
+               PopMapPosition( roots( ) )
+            EndIf
             ProcedureReturn event
          EndIf
          
@@ -21596,12 +21621,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             If eventtype = #PB_EventType_Focus
-               ; из за ошибки в окнах событие фокус происходить ранше чем событие нажим
-               If EnteredWidget( ) And 
-                  GetActive( ) <> EnteredWidget( )\root
-                  GetActive( ) = EnteredWidget( )\root
-               EndIf
-               
                eventtype = #__event_Focus
             EndIf
             If eventtype = #PB_EventType_LostFocus
@@ -21874,20 +21893,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ do all events
             If eventtype = #__event_Focus
-               If GetActive( ) And
-                  GetActive( )\root\canvas\gadget = eventgadget
-                  Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-                  
-                  SetActive( GetActive( ) )
+               If GetActive( )
+                  If EnteredWidget( )
+                     SetActive( EnteredWidget( ))
+                  Else
+                     PushMapPosition( roots( ) )
+                     ForEach roots( )
+                        If roots( )\canvas\gadget = eventgadget
+                           If StartEnumerate( roots( ) )
+                              If widget( )\focus = 3
+                                 Debug "canvas - Focus "+roots( )\class +" "+ roots( )\focus +" "+ roots( )\canvas\gadget
+                                 SetActive( widget( ) )
+                              EndIf
+                              StopEnumerate( )
+                           EndIf
+                           Break
+                        EndIf
+                     Next
+                     PopMapPosition( roots( ) )
+                  EndIf
                EndIf
                
             ElseIf eventtype = #__event_LostFocus
-               If GetActive( ) And
-                  GetActive( )\root\canvas\gadget = eventgadget
-                   Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-                   
-                   SetActive( 0 )
-                EndIf
+;                If GetActive( ) And
+;                   GetActive( )\root\canvas\gadget = eventgadget
+;                    Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+;                    
+;                    SetActive( 0 )
+;                 EndIf
                
             ElseIf eventtype = #__event_MouseMove
                If mouse( )\change > 1
@@ -24490,9 +24523,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21600
-; FirstLine = 20410
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------f--4---------64+---------------v8-v-4q+--------f8f+--rr0-z-++fv--0---+-----------------------------------------------
+; CursorPosition = 8490
+; FirstLine = 8480
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------8--+--------P-3----------------d--0-W2---------b------7a--9vv--++-8---0-----------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
