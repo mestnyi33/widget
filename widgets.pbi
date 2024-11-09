@@ -8319,6 +8319,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; deactivate canvas
             If Not *this
                If ActiveWindow( ) 
+                  If ActiveWindow( )\root\focus = 2
+                     ActiveWindow( )\root\focus = 3
+                     Debug "Deactive canvas&root( ) "+ActiveWindow( )\root\class
+                     ;
+                     DoFocus( ActiveWindow( )\root, #__event_LostFocus )
+                  EndIf
+                  
+                  ;\\ set deactive all parents
+                  If GetActive( )\address
+                     If Not is_root_( GetActive( ) )
+                        PushListPosition( widgets( ) )
+                        ChangeCurrentElement( widgets( ), GetActive( )\address )
+                        While PreviousElement( widgets( ) )
+                           widget( ) = widgets( )
+                           
+                           If is_window_( widgets( ) )
+                              If IsChild( GetActive( ), widgets( ) )
+                                 If widgets( )\focus = 2
+                                    widgets( )\focus = 3
+                                    Debug "Deactive canvas&widget( ) "+widgets( )\class
+                                    ;
+                                    DoFocus( widgets( ), #__event_LostFocus )
+                                 EndIf
+                              EndIf
+                           EndIf
+                        Wend
+                        PopListPosition( widgets( ) )
+                     EndIf
+                  EndIf
+                  
                   If ActiveWindow( )\focus = 2
                      ActiveWindow( )\focus = 3
                      Debug "Deactive canvas&widgetwindow "+ActiveWindow( )\class
@@ -8469,7 +8499,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                    ;\\
                    If ActiveWindow( ) 
-                       
+                       If ActiveWindow( )\root\focus = 3
+                     ActiveWindow( )\root\focus = 2
+                     Debug "Active widgetroot "+ActiveWindow( )\root\class
+                     ;
+                     DoFocus( ActiveWindow( )\root, #__event_Focus )
+                  EndIf
+                  
+                   
                      ;                       ;\\ set active all parents
 ;                       If StartEnumerate( *active\root )
 ;                          If IsChild( *active, widget( ) )
@@ -24523,9 +24560,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8490
-; FirstLine = 8480
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------8--+--------P-3----------------d--0-W2---------b------7a--9vv--++-8---0-----------------------------------------------
+; CursorPosition = 8503
+; FirstLine = 8465
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------4--0--------f+t----------------8+-8-tq---------4+-----22+-6ff--00-4---8-----------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
