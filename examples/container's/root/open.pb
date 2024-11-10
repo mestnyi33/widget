@@ -67,7 +67,6 @@ CompilerIf #PB_Compiler_IsMainFile
   pos_text = Text(8, 288, 40, 24, "0")
   grid_text = Text(8, 320, 40, 24, "0")
   
-  ;;Bind( *root, @WidgetEventHandler( ) )
   
   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
@@ -241,8 +240,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 18
+; CursorPosition = 69
+; FirstLine = 60
 ; Folding = -
 ; EnableXP
 ; DPIAware

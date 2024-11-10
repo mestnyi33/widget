@@ -236,8 +236,8 @@
   Wend 
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 137
-; FirstLine = 126
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 142
+; FirstLine = 137
 ; Folding = --
 ; EnableXP

@@ -39,29 +39,29 @@ Module events
          Case #WM_MOUSELEAVE
             enter = 0
             ; text = "leave gadget #" + Str(gadget)
-            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_MouseLeave )
+            CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseLeave )
             
          Case #WM_MOUSEHOVER
             If enter = 0
                enter = 1
                ; text = "enter gadget #" + Str(gadget)
-               CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_MouseEnter )
+               CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseEnter )
             EndIf
-            ;CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_MouseMove )
+            ;CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
             
          Case #WM_MOUSEHWHEEL 
-            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelX, - HIWORD(wparam) );(delta * step / #WHEEL_DELTA) )
+            CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelX, - HIWORD(wparam) );(delta * step / #WHEEL_DELTA) )
             ProcedureReturn 0
             
          Case #WM_MOUSEWHEEL 
-            CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, constants::#PB_EventType_MouseWheelY , HIWORD(wparam) );(delta * step / #WHEEL_DELTA))
+            CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelY , HIWORD(wparam) );(delta * step / #WHEEL_DELTA))
             ProcedureReturn 0
             
          Case #WM_SETFOCUS
             If focus = hWnd
                ProcedureReturn 0
             Else
-               CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_Focus )
+               CallFunctionFast( *callBack,  gadget, #PB_EventType_Focus )
                focus = hWnd
             EndIf
             
@@ -69,36 +69,36 @@ Module events
             If GetFocus_( ) = hWnd
                ProcedureReturn 0
             Else
-               CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_LostFocus)
+               CallFunctionFast( *callBack,  gadget, #PB_EventType_LostFocus)
                focus = 0
             EndIf
             
             ;          Case #WM_SETFOCUS
             ;             ;text = "Focus on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_Focus )
+            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_Focus )
             ;             
             ;          Case #WM_KILLFOCUS
             ;             ; text = "Lost focus on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_LostFocus)
+            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LostFocus)
             ;           
             ;          Case #WM_LBUTTONDOWN
             ;             ;text = "Left button down on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_LeftButtonDown )
+            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonDown )
             ;             
             ;          Case #WM_LBUTTONUP
             ;             ;text = "Left button up on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_LeftButtonUp )
+            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonUp )
             ;             
             ;          Case #WM_LBUTTONDBLCLK
             ;             text = "Left button click on gadget #" + Str(gadget)
             ;             
             ;          Case #WM_RBUTTONDOWN
             ;             ;text = "Right button down on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_RightButtonDown )
+            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_RightButtonDown )
             ;             
             ;          Case #WM_RBUTTONUP
             ;             ; text = "Right button up on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  #PB_Event_Gadget, gadget, #PB_EventType_RightButtonUp )
+            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_RightButtonUp )
             ;             
             ;          Case #WM_RBUTTONDBLCLK
             ;             text = "Right button click on gadget #" + Str(gadget)
@@ -127,7 +127,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 54
-; Folding = --
+; CursorPosition = 100
+; FirstLine = 97
+; Folding = ---
 ; EnableXP
