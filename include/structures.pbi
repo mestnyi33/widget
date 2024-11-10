@@ -144,12 +144,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     ALIGN
       Structure _s_ALIGN Extends _s_COORDINATE
-        update.b
-        left.b
-        top.b
-        right.b
-        bottom.b
-        autodock._s_COORDINATE
+         update.b
+         left.b
+         top.b
+         right.b
+         bottom.b
+         autodock._s_COORDINATE
       EndStructure
       ;--     ARROW
       Structure _s_ARROW
@@ -159,14 +159,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     STATE
       Structure _s_STATE
-        ;show.b
-        StructureUnion
+         ;show.b
+         StructureUnion
             checked.b
          EndStructureUnion
          
          StructureUnion
             _enter.b ;
-            enter.b ;
+            enter.b  ;
             mouseenter.b ;
             
             mouseenterframe.b
@@ -174,8 +174,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          EndStructureUnion
          
          StructureUnion
-           focus.b
-           _focus.b  
+            focus.b
+            _focus.b  
          EndStructureUnion
          
          round.a
@@ -185,15 +185,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BOX
       Structure _s_BOX Extends _s_STATE
-        x.l
-        y.l
-        width.l
-        height.l
+         x.l
+         y.l
+         width.l
+         height.l
       EndStructure
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_BOX
-        noFocus.a ; без него при наведении на кнопку трии итем, теряется итем
-        size.w
+         noFocus.a ; без него при наведении на кнопку трии итем, теряется итем
+         size.w
          color._s_color
          arrow._s_arrow
       EndStructure
@@ -316,14 +316,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TRANSFORM
          index.a                             ; a_index( )
          *main._s_WIDGET                     ; a_main( )
-         *entered._s_WIDGET                    ; a_entered( )
-         *focused._s_WIDGET                    ; a_focused( )
+         *entered._s_WIDGET                  ; a_entered( )
+         *focused._s_WIDGET                  ; a_focused( )
          line._s_A_BUTTONS[4]                ; a_line( )
          
          ;
          cursor.a[constants::#__a_count] ;
-                                             ;
-         *transform._s_TRANSFORMDATA         ;
+                                         ;
+         *transform._s_TRANSFORMDATA     ;
          
          backcolor.l[3]
          framecolor.l[3]
@@ -348,10 +348,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          wheel._s_POINT          ;
          
          ;StructureUnion
-            press.b                 ; mouse buttons state
-            *delta._s_POINT         ;
-         ;EndStructureUnion
-         ;
+         press.b                 ; mouse buttons state
+         *delta._s_POINT         ;
+                                 ;EndStructureUnion
+                                 ;
          entered._s_OBJECTTYPE   ; mouse entered element
          pressed._s_OBJECTTYPE   ; mouse button's pushed element
          
@@ -365,12 +365,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
-        StructureUnion
-          _index.l     ; Index of new list element
-          index.l      ; Index of new list element
-        EndStructureUnion
-        itemindex.l
-        
+         StructureUnion
+            _index.l     ; Index of new list element
+            index.l      ; Index of new list element
+         EndStructureUnion
+         itemindex.l
+         
          ;*columnaddress
          columnindex.c
          
@@ -400,7 +400,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ROWS
       Structure _s_ROWS Extends _s_ITEMS
          buttonbox._s_BOX ;  buttonbox\
-         checkbox._s_BOX ;  checkbox\
+         checkbox._s_BOX  ;  checkbox\
          
          
          ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
@@ -449,7 +449,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *tt._s_tt
          
-       ;  List lines._s_rows( )
+         ;  List lines._s_rows( )
       EndStructure
       
       ;--     TAB
@@ -481,16 +481,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
          change.w
       EndStructure
       Structure _s_BAR
-        change.w
-        *gadget._s_WIDGET[3]
+         change.w
+         *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget bar
          ; \gadget[0] - window active child gadget
          ; \gadget[1] - splitter( ) first gadget
          ; \gadget[2] - splitter( ) second gadget
          
-        max.l
-        min.l[3]   ; fixed min[1&2] bar size
-        fixed.l[3] ; fixed bar[1&2] position (splitter)
+         max.l
+         min.l[3]   ; fixed min[1&2] bar size
+         fixed.l[3] ; fixed bar[1&2] position (splitter)
          
          invert.b
          vertical.b
@@ -504,7 +504,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *button._s_buttons[3]
          
-        ; List *_s._s_ITEMS( )
+         ; List *_s._s_ITEMS( )
       EndStructure
       ;--     SCROLL
       Structure _s_SCROLL Extends _s_COORDINATE
@@ -614,21 +614,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-;          Map *eventshook._s_HOOK( )
-;         
+         ;          Map *eventshook._s_HOOK( )
+         ;         
          List lines._s_rows( )
          noscale.b
          deffocus.b ; default focus
          
          haseventhook.b
-;          *eventhook._s_HOOK[constants::#__event_count]
-;          ; TEMP
-;          hashook.b
-;          List *hook._s_HOOK( ) ; hook of events
+         ;          *eventhook._s_HOOK[constants::#__event_count]
+         ;          ; TEMP
+         ;          hashook.b
+         ;          List *hook._s_HOOK( ) ; hook of events
          
          
          redraw.b
-      ;          size.SIZEINFO                 
+         ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
          resize.RESIZEINFO                 
          
@@ -672,11 +672,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          tab._s_TAB               ; 
                                   ;
-         *togglebox._s_BOX              ; checkbox; optionbox, ToggleButton
+         *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
          *combobutton._s_BUTTONS  ; combobox
                                   ;
          *option_group_parent._s_WIDGET         ; = Option( ) group widget
-         *stringBar._s_WIDGET        ; = SpinBar( ) string box
+         *stringBar._s_WIDGET                   ; = SpinBar( ) string box
          
          StructureUnion
             *popupBar._s_WIDGET       ; = PopupBar( ) List view box
@@ -691,8 +691,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          StatusBarHeight.w
          
          StructureUnion
-         ToolBarHeight.w
-         TabHeight.i
+            ToolBarHeight.w
+            TabHeight.i
          EndStructureUnion
          
          
@@ -709,10 +709,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          text._s_TEXT
          ;
          *gadget._s_WIDGET;[3]
-         ; \root\gadget[0] - active gadget
-         ; \gadget[0] - window active child gadget
-         ; \gadget[1] - splitter( ) first gadget
-         ; \gadget[2] - splitter( ) second gadget
+                          ; \root\gadget[0] - active gadget
+                          ; \gadget[0] - window active child gadget
+                          ; \gadget[1] - splitter( ) first gadget
+                          ; \gadget[2] - splitter( ) second gadget
          
          image._s_image[4]
          ; \image[0] - draw image
@@ -737,29 +737,23 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *parent._s_WIDGET
          *address                 ; widget( )\ list address
          *contex
-         
-         ; TEMP
-         *parent_menu._s_WIDGET
       EndStructure
       
       ;--     CANVAS
       Structure _s_CANVAS
-         *active._s_WIDGET
-         post.b
-         *gadgetID                ; canvas handle
+         postrepaint.b
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
+         *gadgetID                ; canvas handle
       EndStructure
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
-        repaint.b
+         repaint.b
          drawmode.b
          canvas._s_canvas
          *menu._s_WIDGET
-         
-         ; TEMP
-         *widget._s_WIDGET
+         *active._s_WIDGET
       EndStructure
       
       ;--     STICKY
@@ -812,7 +806,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 746
-; FirstLine = 647
-; Folding = ---Ag0----
+; FirstLine = 689
+; Folding = ----------
 ; Optimizer
 ; EnableXP

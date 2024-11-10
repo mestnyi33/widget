@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Next
    SetState(*combobox, 0)
    
-   Repaint(root( ))
+   Redraw(root( ))
    
    
    DisplayPopupMenuBar( *combobox\PopupBar( ), *button_menu, 10, 125+25 )
@@ -99,8 +99,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 2
+; CursorPosition = 61
+; FirstLine = 57
 ; Folding = -
 ; EnableXP
 ; DPIAware

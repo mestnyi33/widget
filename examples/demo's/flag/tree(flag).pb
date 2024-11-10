@@ -128,8 +128,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ;widget::SetState(Button_7, Flag(*this, #__tree_gridlines))
     ;     widget::SetState(Button_8, Flag(*this, #__tree_nolines))
     ;     widget::SetState(Button_9, Flag(*this, #__tree_nobuttons))
-    widget::Hide(Button_type, 1)
-    
+    If Button_type
+       widget::Hide(Button_type, 1)
+    EndIf
+
     widget::Button(10, height+20, 60, 24,"remove")
     widget::Button(75, height+20, 100, 24,"add")
     widget::Button(180, height+20, 30, 24,"1")
@@ -154,8 +156,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 107
+; CursorPosition = 130
+; FirstLine = 123
 ; Folding = --
 ; EnableXP
 ; DPIAware

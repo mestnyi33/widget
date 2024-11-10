@@ -127,7 +127,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 51
-; Folding = ---
+; CursorPosition = 59
+; FirstLine = 54
+; Folding = --
 ; EnableXP

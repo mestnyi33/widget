@@ -128,8 +128,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(f_3, Flag(*this, #__flag_Textright))
     SetState(f_6, Flag(*this, #__flag_Textbottom))
     
-    Hide(Button_type, 1)
-    
+    If Button_type
+       Hide(Button_type, 1)
+    EndIf
+
     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
     Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
     Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
@@ -145,8 +147,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 95
+; CursorPosition = 133
+; FirstLine = 113
 ; Folding = ---
 ; Optimizer
 ; EnableXP

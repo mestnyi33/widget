@@ -49,8 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ElseIf FindString(Class.S, LCase("Splitter")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Splitter
     ElseIf FindString(Class.S, LCase("MDI")           ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_MDI
     ElseIf FindString(Class.S, LCase("Scintilla")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Scintilla
-    ElseIf FindString(Class.S, LCase("Shortcut")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Shortcut
-    ElseIf FindString(Class.S, LCase("Canvas")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Canvas
+    ;ElseIf FindString(Class.S, LCase("Shortcut")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Shortcut
+    ;ElseIf FindString(Class.S, LCase("Canvas")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Canvas
     EndIf
     
     ProcedureReturn #False
@@ -280,16 +280,16 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__Type_Scintilla      
         Flags.S = ""
         
-      Case #__Type_Shortcut       
-        Flags.S = ""
-        
-      Case #__Type_Canvas 
-        ;{- Ok
-        Flags.S = "#PB_Canvas_Border|"+
-                  "#PB_Canvas_Container|"+
-                  "#PB_Canvas_ClipMouse|"+
-                  "#PB_Canvas_Keyboard|"+
-                  "#PB_Canvas_DrawFocus"
+;       Case #__Type_Shortcut       
+;         Flags.S = ""
+;         
+;       Case #__Type_Canvas 
+;         ;{- Ok
+;         Flags.S = "#PB_Canvas_Border|"+
+;                   "#PB_Canvas_Container|"+
+;                   "#PB_Canvas_ClipMouse|"+
+;                   "#PB_Canvas_Keyboard|"+
+;                   "#PB_Canvas_DrawFocus"
         ;}
         
     EndSelect
@@ -618,8 +618,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 602
-; FirstLine = 501
-; Folding = d------28-
+; CursorPosition = 291
+; FirstLine = 257
+; Folding = f------70-
 ; EnableXP
 ; DPIAware

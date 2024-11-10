@@ -1,59 +1,95 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿; commit 1,460 Ok
+XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  UseWidgets( )
-  
-  Define width=500, height=400
-  
-  Procedure active()
-   ; Debug ""+#PB_Compiler_Procedure +" - "+ GetClass( EventWidget( ) ) +"_"+ GetText( EventWidget( ) )
-  EndProcedure
-  
-  Procedure deactive()
-   ; Debug " "+#PB_Compiler_Procedure +" - "+ GetClass( EventWidget( ) ) +"_"+ GetText( EventWidget( ) )
-  EndProcedure
-  
-  ;
-  If Open(0, 100, 200, width, height, "demo focus widget", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+   EnableExplicit
+   UseWidgets( )
+   
+   Procedure CallBack( )
+;       Select WidgetEvent( )
+;          Case #__event_Focus
+;             Debug "active - event " + EventWidget( )\class
+;             
+;          Case #__event_LostFocus
+;             Debug "deactive - event " + EventWidget( )\class
+;             
+;       EndSelect
+   EndProcedure
+   
+   Procedure CanvasButtonGadget( gadget, x,y,width,height,text.s )
+      CanvasGadget(gadget, x,y,width,height, #PB_Canvas_DrawFocus )
       
-    Window(10, 10, 190, 90, "10", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget) : SetClass(widget(), "window_10")
-    string(10,10,170,30,"1") : SetClass(widget(), "gadget_1")
-    string(10,50,170,30,"4") : SetClass(widget(), "gadget_4")
-    
-    Window(110, 30, 190, 90, "20", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget) : SetClass(widget(), "window_20")
-    string(10,10,170,30,"2") : SetClass(widget(), "gadget_2")
-    string(10,50,170,30,"5") : SetClass(widget(), "gadget_5")
-    
-    Window(220, 50, 190, 90, "30", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget) : SetClass(widget(), "window_30")
-    string(10,10,170,30,"3") : SetClass(widget(), "gadget_3")
-    string(10,50,170,30,"6") : SetClass(widget(), "gadget_6")
-    
-    
-;     a_init(root())
-;     Window(10, 10, 190, 90, "10", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget) : SetClass(widget(), "window_10")
-;     Button(10,10,170,30,"1") : SetClass(widget(), "gadget_1")
-;     Button(10,50,170,30,"4") : SetClass(widget(), "gadget_4")
-;     
-;     Window(110, 30, 190, 90, "20", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget) : SetClass(widget(), "window_20")
-;     Button(10,10,170,30,"2") : SetClass(widget(), "gadget_2")
-;     Button(10,50,170,30,"5") : SetClass(widget(), "gadget_5")
-;     
-;     Window(220, 50, 190, 90, "30", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget) : SetClass(widget(), "window_30")
-;     Button(10,10,170,30,"3") : SetClass(widget(), "gadget_3")
-;     Button(10,50,170,30,"6") : SetClass(widget(), "gadget_6")
-    
-    ; Bind(widget(), @active(), #__event_Focus)
-    Bind(#PB_All, @active(), #__event_Focus)
-    Bind(#PB_All, @deactive(), #__event_LostFocus)
-    
-    WaitClose()
-  EndIf
-  
-  End  
+      If StartDrawing(CanvasOutput(gadget))
+         DrawingFont(GetGadgetFont(-1))
+         DrawText((DesktopScaledX(width)-TextWidth(text))/2, (DesktopScaledY(height)-TextHeight(text))/2, text)
+         StopDrawing()
+      EndIf
+   EndProcedure
+   If OpenWindow(0, 100, 100, 270, 140, "CanvasWindow", #PB_Window_SystemMenu )
+      CanvasButtonGadget(10, 10, 10, 250, 120, "CanvasGadget")
+   EndIf
+   If Open(1, 100, 300, 270, 140, "Root_0_Window", #PB_Window_SystemMenu )
+       Window( 30, 30, 200, 200, "Form", #PB_Window_SystemMenu )
+      ;Root( )\text\align\right = 0
+      SetClass(Root( ), "Root_0")
+      SetText(Root( ), "Root_0")
+      SetWindowTitle( 1, "Root_0_canvas_"+Str(GetGadget(Root())))
+   EndIf
+   
+   If OpenWindow(2, 0, 0, 500, 500, " focus demo ", #PB_Window_SystemMenu |
+                                              #PB_Window_ScreenCentered )
+      SetWindowColor( 2, $ACC0DB)
+      Open( 2, 10,10,235, 190 )
+      SetClass(Root( ), "Root_2")
+      SetText(Root( ), "Root_2")
+   
+      CanvasButtonGadget(20, 255, 10, 235, 190, "CanvasGadget")
+      
+      Open( 2, 10,210,480, 280 )
+      Resize( Root( ), 10,10,460,260 )
+      SetClass(root( ), "RootWindow" )
+      
+      ;\\
+      Window( 30, 30, 200, 200, "Form", #PB_Window_SystemMenu |
+                                            #PB_Window_MaximizeGadget |
+                                            #PB_Window_MinimizeGadget )
+      
+      SetClass(widget( ), "Form" )
+      ScrollArea( 30,30,140,140, 300,300,1 ) 
+      SetClass(widget( ), "ScrollArea" )
+      Spin(10,10,100,50, 0,100)
+      SetClass(widget( ), "Spin" )
+      String(10,65,100,50,"String")
+      SetClass(widget( ), "String" )
+      SetActive( widget( ) )
+      CloseList( )
+      
+      ;\\
+      Window( 260, 30, 200, 200, "Form2", #PB_Window_SystemMenu |
+                                            #PB_Window_MaximizeGadget |
+                                            #PB_Window_MinimizeGadget )
+      
+      SetClass(widget( ), "Form2" )
+      ScrollArea( 30,30,140,140, 300,300,1 ) 
+      SetClass(widget( ), "ScrollArea2" )
+      Spin(10,10,100,50, 0,100)
+      SetClass(widget( ), "Spin2" )
+      String(10,65,100,50,"String2")
+      SetClass(widget( ), "String2" )
+      SetActive( widget( ) )
+      CloseList( )
+      
+;       ;
+       SetActive( 0 )
+       SetActiveGadget( root( )\canvas\gadget )
+      ;SetActiveGadget( widget( )\root\canvas\gadget )
+      
+      WaitEvent( );@CallBack( ) )
+   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 11
-; Folding = -
+; CursorPosition = 83
+; FirstLine = 55
+; Folding = --
 ; EnableXP
+; DPIAware

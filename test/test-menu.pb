@@ -292,12 +292,15 @@ CompilerIf #PB_Compiler_IsMainFile
    Next
    SetState(*combobox, 0)
    
-   Repaint(root( ))
+   Redraw(root( ))
    
-   
+   Define *open = Opened( )
    DisplayPopupMenuBar( *combobox\PopupBar( ), *menu, 10, 190 )
    ;DisplayPopupMenuBar( *combobox\PopupBar( ), *combobox, 10, 150 )
-   
+   OpenList( *open ) 
+   Debug ""+*open+" "+*root0
+  
+  
 ;   
 ;   SetActive( *menu )
 ;   SetActiveGadget( *menu\root\canvas\gadget )
@@ -364,6 +367,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Bind(*menu, @QuitHandler(), #__event_LeftClick, 4)
   
   
+  
+  
+  
+  
+  
   ;\\
   Global *button_panel = Panel(10, 10, 200 + 60, 200)
   Define Text.s, m.s   = #LF$, a
@@ -426,7 +434,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*button_panel, 2)
   CloseList( ) ; close panel lists
   
-  *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__text_right)
+  *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_TextPassword | #__flag_TextRight)
   
   ;\\
   Global *button_item1, *button_item2, *button_menu
@@ -701,8 +709,8 @@ CompilerIf #PB_Compiler_IsMainFile = 555
 CompilerEndIf
    
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 417
-; FirstLine = 413
+; CursorPosition = 300
+; FirstLine = 283
 ; Folding = -------
 ; EnableXP
 ; DPIAware

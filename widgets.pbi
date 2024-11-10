@@ -704,8 +704,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   widget::ReDraw( _root_ )
                EndIf
             Else
-               If _root_\canvas\post = 0
-                  _root_\canvas\post = 1
+               If _root_\canvas\postrepaint = 0
+                  _root_\canvas\postrepaint = 1
                   If Not widget::Send( _root_, constants::#__event_Repaint )
                      PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
                   EndIf
@@ -2264,49 +2264,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      ;-
-      Procedure DoFocus( *this._s_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
-         ProcedureReturn DoEvents( *this, eventtype, *button, *data )
-;          
-;          ; Debug "---   "+*this\text\string
-;          If test_event_focus
-;             Debug "DoFocus - ["+ ClassFromEvent( eventtype )+"] " + *this\class
-;          EndIf
-;          
-;          ;\\
-;          If __gui\eventexit = 1
-;             If eventtype = #__event_Focus
-;                If GetActiveGadget( ) <> *this\root\canvas\gadget
-;                   ; SetActiveGadget( *this\root\canvas\gadget )
-;                   
-;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-;                      ; Debug " - makeFirstResponder "+*this\root\canvas\gadget
-;                      CocoaMessage(0, WindowID(*this\root\canvas\window), "makeFirstResponder:", GadgetID(*this\root\canvas\gadget))
-;                   CompilerEndIf
-;                EndIf
-;             EndIf
-;             
-;             ;\\
-;             If *this\root <> root( )
-;                ChangeCurrentCanvas( *this\root\canvas\gadgetID )
-;             EndIf
-;             
-;             ;\\
-;             If Not Send( *this, eventtype, *button, *data )
-;                DoEvents( *this, eventtype, *button, *data )
-;             EndIf
-;             
-;             ;\\
-;             If EnteredWidget( ) And
-;                EnteredWidget( )\root <> root( )
-;                ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
-;             EndIf
-;             
-;          Else
-;             Post( *this, eventtype, *button, *data )
-;          EndIf
-;          
-      EndProcedure
       
       
       
@@ -2880,7 +2837,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *displayroot = Open( #PB_Any, 0, 0, 1, 1, "", #__window_NoActivate | #__window_NoGadgets | #__window_BorderLess | #__window_Invisible | #__window_Tool,  parentID )
                *displayroot\parent = *display
                *displayroot\class = "["+*this\class+"]"+"-root" ; "root_"+
-                                                                ;\\
+               ;\\
                Protected Window = GetWindow( *displayroot )
                Protected WindowID = WindowID( Window )
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -3071,8 +3028,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                DisableWindow( *this\root\canvas\window, #False)
                
                PostRepaint( *this\root )
-               If *display\root\canvas\post 
-                  *display\root\canvas\post = 0
+               If *display\root\canvas\postrepaint 
+                  *display\root\canvas\postrepaint = 0
                   PostEventRepaint( *display\root )
                EndIf
                
@@ -8072,6 +8029,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
+      ;-
+      Procedure DoFocus( *this._s_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
+         ProcedureReturn DoEvents( *this, eventtype, *button, *data )
+      EndProcedure
+      
       Procedure SetForeground( *this._s_WIDGET )
          While is_window_( *this )
             ; SetPosition( *this, #PB_List_Last )
@@ -8319,14 +8281,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; deactivate canvas
             If Not *this
                If ActiveWindow( ) 
+                  ;\\ set deactive all parents
                   If ActiveWindow( )\root\focus = 2
                      ActiveWindow( )\root\focus = 3
                      Debug "Deactive canvas&root( ) "+ActiveWindow( )\root\class
                      ;
                      DoFocus( ActiveWindow( )\root, #__event_LostFocus )
                   EndIf
-                  
-                  ;\\ set deactive all parents
                   If GetActive( )\address
                      If Not is_root_( GetActive( ) )
                         PushListPosition( widgets( ) )
@@ -8336,7 +8297,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            If is_window_( widgets( ) )
                               If IsChild( GetActive( ), widgets( ) )
-                                 If widgets( )\focus = 2
+                                If widgets( )\focus = 2
                                     widgets( )\focus = 3
                                     Debug "Deactive canvas&widget( ) "+widgets( )\class
                                     ;
@@ -8369,6 +8330,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; activate canvas
             If GetActive( ) = *this
+               ;\\ set active all parents
+               If ActiveWindow( )\root\focus = 3
+                  ActiveWindow( )\root\focus = 2
+                  Debug "Active widgetroot "+ActiveWindow( )\root\class
+                  ;
+                  DoFocus( ActiveWindow( )\root, #__event_Focus )
+               EndIf
+               If GetActive( )\address
+                  If Not is_root_( GetActive( ) )
+                     PushListPosition( widgets( ) )
+                     ChangeCurrentElement( widgets( ), GetActive( )\address )
+                     While PreviousElement( widgets( ) )
+                        widget( ) = widgets( )
+                        
+                        If is_window_( widgets( ) )
+                           If IsChild( GetActive( ), widgets( ) )
+                              If widgets( )\focus = 3
+                                 widgets( )\focus = 2
+                                 Debug "Active widget( ) "+widget( )\class
+                                 ;
+                                 DoFocus( widgets( ), #__event_Focus )
+                              EndIf
+                           EndIf
+                        EndIf
+                     Wend
+                     PopListPosition( widgets( ) )
+                  EndIf
+               EndIf
+               
                If ActiveWindow( ) And ActiveWindow( )\root = *this\root
                   If ActiveWindow( )\focus = 3
                      ActiveWindow( )\focus = 2
@@ -8428,7 +8418,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   GetActive( ) = *this
-                  *this\root\canvas\active = *this
+                  *this\root\active = *this
                   
                   If is_Window_( *active )
                      ActiveWindow( ) = *active
@@ -8500,23 +8490,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                    ;\\
                    If ActiveWindow( ) 
-                       If ActiveWindow( )\root\focus = 3
-                     ActiveWindow( )\root\focus = 2
-                     Debug "Active widgetroot "+ActiveWindow( )\root\class
-                     ;
-                     DoFocus( ActiveWindow( )\root, #__event_Focus )
-                  EndIf
-                  
-                   
-                     ;                       ;\\ set active all parents
-;                       If StartEnumerate( *active\root )
-;                          If IsChild( *active, widget( ) )
-;                             Debug widget( )
-;                          EndIf
-;                          StopEnumerate( )
-;                       EndIf
-                      
                       ;\\ set active all parents
+                      If ActiveWindow( )\root\focus = 3
+                         ActiveWindow( )\root\focus = 2
+                         Debug "Active widgetroot "+ActiveWindow( )\root\class
+                         ;
+                         DoFocus( ActiveWindow( )\root, #__event_Focus )
+                      EndIf
                       If *active\address
                          If Not is_root_( *active )
                             PushListPosition( widgets( ) )
@@ -12985,7 +12965,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If result ; And *this\width And *this\height ; есть проблемы с imagegadget и scrollareagadget
                       ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                
-               ;If *this\root ;And *this\root\canvas\postevent = #False
+               ;If *this\root ;And *this\root\canvas\postrepaintevent = #False
                If ( *bar\vertical And *this\height ) Or ( *bar\vertical = 0 And *this\width )
                   ; Debug "bar_SetAttribute - "+*this\height +" "+ *this\width +" "+ *bar\vertical
                   bar_Update( *this, #True ) ; ??????????????
@@ -21546,7 +21526,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If eventdata <> root( )\canvas\gadgetID
                   ChangeCurrentCanvas( eventdata )
                EndIf
-               If root( )\canvas\post = 1
+               If root( )\canvas\postrepaint = 1
                   If __gui\eventexit <> 1
                      Repost( )
                   EndIf
@@ -21556,7 +21536,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ReDraw( root( ) )
-                  root( )\canvas\post = 0
+                  root( )\canvas\postrepaint = 0
                EndIf
                If test_draw_repaint
                   Debug "   REPAINT " + root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
@@ -21572,38 +21552,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If event = #PB_Event_DeactivateWindow
-            If GetActive( )
-               PushMapPosition( roots( ) )
-               ForEach roots( )
-                  If roots( )\canvas\window = EventWindow( )
-                     If roots( )\focus = 2
-                        Debug "---- Deactivate - "+ GetActiveGadget( ) +" "+ roots( )\canvas\gadget
-                        SetActive( 0 )
-                        Break
-                     EndIf
-                  EndIf
-               Next
-               PopMapPosition( roots( ) )
-            EndIf
+;             If GetActive( )
+;                PushMapPosition( roots( ) )
+;                ForEach roots( )
+;                   If roots( )\canvas\window = EventWindow( )
+;                      If roots( )\focus = 2
+                          Debug "---- Deactivate - "+ GetActiveGadget( ) +" "+ roots( )\canvas\gadget
+;                         SetActive( 0 )
+;                         Break
+;                      EndIf
+;                   EndIf
+;                Next
+;                PopMapPosition( roots( ) )
+;             EndIf
             ProcedureReturn event
          EndIf
          
          ;\\
          If event = #PB_Event_ActivateWindow
-            If GetActive( )
-               PushMapPosition( roots( ) )
-               ForEach roots( )
-                  If roots( )\canvas\window = EventWindow( )
-                     If Not is_atpoint_( roots( ), mouse( )\x, mouse( )\y )
-                        If roots( )\canvas\active 
-                           SetActive( roots( )\canvas\active )
-                        EndIf
-                     EndIf
-                     Break
-                  EndIf
-               Next
-               PopMapPosition( roots( ) )
-            EndIf
+;             If GetActive( )
+;                PushMapPosition( roots( ) )
+;                ForEach roots( )
+;                   If roots( )\canvas\window = EventWindow( )
+;                      If Not is_atpoint_( roots( ), mouse( )\x, mouse( )\y )
+;                         If roots( )\active 
+                             Debug "---- Activate - "+ GetActiveGadget( ) +" "+ roots( )\canvas\gadget
+;                            SetActive( roots( )\active )
+;                         EndIf
+;                      EndIf
+;                      Break
+;                   EndIf
+;                Next
+;                PopMapPosition( roots( ) )
+;             EndIf
             ProcedureReturn event
          EndIf
          
@@ -21926,15 +21907,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ do all events
             If eventtype = #__event_Focus
+               Debug 999
                If GetActive( )
                   If EnteredWidget( )
-                     SetActive( EnteredWidget( ))
+                      Debug "canvas - eFocus " + EnteredWidget( )\root\canvas\gadget + " " + eventgadget
+                      
+                      SetActive( EnteredWidget( ))
                   Else
+;                      If GetActive( )\root\canvas\gadget = eventgadget
+;                         Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+;                         
+;                         SetActive( GetActive( ) );\root\active )
+;                      EndIf
+                     
                      PushMapPosition( roots( ) )
                      ForEach roots( )
                         If roots( )\canvas\gadget = eventgadget
-                           If roots( )\canvas\active 
-                              SetActive( roots( )\canvas\active )
+                           If roots( )\active 
+                               Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                               
+                               SetActive( roots( )\active )
                            EndIf
                            Break
                         EndIf
@@ -21944,12 +21936,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
             ElseIf eventtype = #__event_LostFocus
-;                If GetActive( ) And
-;                   GetActive( )\root\canvas\gadget = eventgadget
-;                    Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-;                    
-;                    SetActive( 0 )
-;                 EndIf
+               If GetActive( ) And
+                  GetActive( )\root\canvas\gadget = eventgadget
+                   Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                   
+                   SetActive( 0 )
+                EndIf
                
             ElseIf eventtype = #__event_MouseMove
                If mouse( )\change > 1
@@ -22626,7 +22618,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If PB(IsGadget)(Canvas)
             g = GadgetID( Canvas )
          Else
-            g = CanvasGadget( Canvas, x, y, width, height, canvasflag )
+            g = CanvasGadget( Canvas, x, y, width, height, canvasflag|#PB_Canvas_DrawFocus )
             If Canvas = - 1 : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
          EndIf
          ;
@@ -23319,7 +23311,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *root <> root( )
                      If *repaint
                         If ChangeCurrentCanvas( *repaint\canvas\gadgetID )
-                           *repaint\canvas\post = 0
+                           *repaint\canvas\postrepaint = 0
                            PostEventRepaint( *repaint )
                         EndIf
                      EndIf
@@ -23354,7 +23346,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *repaint
-               *repaint\canvas\post = 0
+               *repaint\canvas\postrepaint = 0
                PostEventRepaint( *repaint )
                *repaint = 0
             EndIf
@@ -24552,9 +24544,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8561
-; FirstLine = 8406
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------4--0--------f+t----------------8+-8-tq---------4+-----7a--9vv-ff--0---+-----------------------------------------------
+; CursorPosition = 21920
+; FirstLine = 20425
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------4--0--------f+t----------------8+-8-tq---------4+---fdt-f+44-ff--0---+-----------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
