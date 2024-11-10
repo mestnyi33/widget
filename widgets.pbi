@@ -1297,8 +1297,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare   CanvasEvents( )
       Declare   EventRepaint( )
-      Declare   EventActivate( )
-      Declare   EventDeactivate( )
       Declare   EventResize( )
       
       
@@ -21551,44 +21549,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If event = #PB_Event_DeactivateWindow
-;             If GetActive( )
-;                PushMapPosition( roots( ) )
-;                ForEach roots( )
-;                   If roots( )\canvas\window = EventWindow( )
-;                      If roots( )\focus = 2
-                          Debug "---- Deactivate - "+ GetActiveGadget( ) +" "+ roots( )\canvas\gadget
-;                         SetActive( 0 )
-;                         Break
-;                      EndIf
-;                   EndIf
-;                Next
-;                PopMapPosition( roots( ) )
-;             EndIf
-            ProcedureReturn event
-         EndIf
-         
-         ;\\
-         If event = #PB_Event_ActivateWindow
-;             If GetActive( )
-;                PushMapPosition( roots( ) )
-;                ForEach roots( )
-;                   If roots( )\canvas\window = EventWindow( )
-;                      If Not is_atpoint_( roots( ), mouse( )\x, mouse( )\y )
-;                         If roots( )\active 
-                             Debug "---- Activate - "+ GetActiveGadget( ) +" "+ roots( )\canvas\gadget
-;                            SetActive( roots( )\active )
-;                         EndIf
-;                      EndIf
-;                      Break
-;                   EndIf
-;                Next
-;                PopMapPosition( roots( ) )
-;             EndIf
-            ProcedureReturn event
-         EndIf
-         
-         ;\\
          If event = #PB_Event_Gadget
             ; from PB event to widget event 
             If eventtype = #PB_EventType_Resize
@@ -22219,14 +22179,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure EventActivate( )
-         EventHandler( #PB_Event_ActivateWindow, #PB_Default, #PB_Default, #Null )
-      EndProcedure
-      
-      Procedure EventDeactivate( )
-         EventHandler( #PB_Event_DeactivateWindow, #PB_Default, #PB_Default, #Null )
-      EndProcedure
-      
       ;-
       Procedure.i Post( *this._s_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
          If *this > 0
@@ -22707,8 +22659,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; BindGadgetEvent( Canvas, @CanvasEvents( ))
             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
-            BindEvent( #PB_Event_ActivateWindow, @EventActivate( ), Window )
-            BindEvent( #PB_Event_DeactivateWindow, @EventDeactivate( ), Window )
             If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
             EndIf
@@ -24544,9 +24494,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21920
-; FirstLine = 20425
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------4--0--------f+t----------------8+-8-tq---------4+---fdt-f+44-ff--0---+-----------------------------------------------
+; CursorPosition = 1299
+; FirstLine = 1288
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------4--0--------f+t----------------8+-8-tq---------4+---XX8-n-00-44-f---v-----------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
