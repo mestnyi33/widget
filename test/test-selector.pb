@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -7,23 +7,26 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 30, 30, 540, 340)
     SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
-    a_init(root(), 20 )
+   ; a_init(root(), 20 )
     
     Define vfs = #__window_CaptionHeight+#__window_FrameSize*2
     Define hfs = #__window_FrameSize*2
-  
+    
+    ;
     ;a_init(Root())
     ;Window(50,50,440-hfs,240-vfs,"window", #__window_systemmenu)
     ;MDI(50,50,440,240) : OpenList(widget())
     ;Container(50,50,440,240)
+    Window(50,50,440,240, "", #__window_systemmenu|#__flag_child, root() )
     ;ScrollArea(50,50,440,240, 800,500)
     ;Panel(50,50,440,240) : AddItem(widget(), -1, "panel")
     ;a_init(widget())
     ;SetColor(widget( ), #__color_back, $ff00ff00 )
+    a_init(widget(), 20 )
     
     ;
     ;String(0,0,0,0,"", #__flag_autosize);|#__flag_transparent)
-    Button(0,0,0,0,"button", #__flag_autosize)
+    Window(50,50,250,250, "", #__window_systemmenu|#__flag_child, widget() )
     ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize, widget())
     ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize|#__flag_child, widget())
     ;MDI(0,0,0,0, #__flag_autosize)
@@ -35,8 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 4
+; CursorPosition = 18
 ; Folding = -
 ; EnableXP
 ; DPIAware

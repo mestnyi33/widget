@@ -94,13 +94,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Enter.i
          Leave.i
       EndStructure
-      ;--     OBJECTTYPE
-      Structure _s_OBJECTTYPE
-         *root._s_ROOT
-         *row._s_ROWS
-         *widget._s_WIDGET
-         *button._s_BUTTONS
-      EndStructure
+;       ;--     OBJECTTYPE
+;       Structure _s_OBJECTTYPE
+;          *root._s_ROOT
+;          ;*row._s_ROWS
+;          ;*widget._s_WIDGET
+;          ;*button._s_BUTTONS
+;       EndStructure
       ;--     D&D
       Structure _s_DROP
          format.l
@@ -277,7 +277,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;       *background._s_image
       EndStructure
       
-      ;--     ANCHORS
+      ;--     SELECTOR
       Structure _s_SELECTOR Extends _s_COORDINATE
          type.a
          
@@ -285,14 +285,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
          dot_line.a
          dot_space.a
          
-         backcolor.i
-         framecolor.i
+         backcolor.l
+         framecolor.l
+         fontcolor.l
       EndStructure
       ;
       Structure _s_A_BUTTONS Extends _s_COORDINATE
          state.b
       EndStructure
-      ;
+      ;--     ANCHORS
       Structure _s_ANCHORS
          pos.b;w 
          size.a;c
@@ -331,34 +332,26 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
          *cursor                 ; current visible cursor
+         *drag._s_DRAG           ;
          
          click.a                 ; mouse clicked count
          change.b                ; mouse moved state
          buttons.a               ; mouse clicked button
          dragstart.b
          
-         interact.b              ; TEMP determines the behavior of the mouse in a clamped (pushed) state
-         
          steps.a
          anchors._s_TRANSFORM    ; a_anchors( )
-         selector._s_SELECTOR    ; a_selector( )
+         *selector._s_SELECTOR   ; mouse select frame
          
-         *drag._s_DRAG           ;
-                                 ;
-         wheel._s_POINT          ;
-         
-         ;StructureUnion
          press.b                 ; mouse buttons state
-         *delta._s_POINT         ;
-                                 ;EndStructureUnion
-                                 ;
-         entered._s_OBJECTTYPE   ; mouse entered element
-         pressed._s_OBJECTTYPE   ; mouse button's pushed element
+         wheel._s_POINT          ;
+         *delta._s_POINT         ; 
          
-         *widget._s_WIDGET[2]
+         *button._s_BUTTONS[3]   ;
+         *widget._s_WIDGET[3]    ;
       EndStructure
       ;;--     margin
-      Structure _s_margin Extends _s_coordinate
+      Structure _s_margin Extends _s_COORDINATE
          color._s_color
          hide.b
       EndStructure
@@ -699,10 +692,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          index.i      ; - widget index
          
          ; placing layout
-         first._s_OBJECTTYPE
-         after._s_OBJECTTYPE
-         before._s_OBJECTTYPE
-         last._s_OBJECTTYPE
+         *afterroot._s_ROOT
+         *beforeroot._s_ROOT
+         *lastroot._s_ROOT
+         
+         *firstwidget._s_WIDGET
+         *afterwidget._s_WIDGET
+         *beforewidget._s_WIDGET
+         *lastwidget._s_WIDGET
          ;
          bounds._s_BOUNDS
          scroll._s_SCROLL            ; vertical & horizontal scrollbars
@@ -805,8 +802,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 746
-; FirstLine = 689
+; CursorPosition = 289
+; FirstLine = 279
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

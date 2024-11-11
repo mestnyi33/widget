@@ -17,10 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure ClickHandler( )
-      ;       Debug " "+DesktopMouseX();mouse( )\x +" "+ mouse( )\y 
-      ;          ; DisplayPopupMenuBar( *menu, EventWidget( ), DesktopMouseX(), DesktopMouseY() )
-      ;          ; DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-      DisplayPopupMenuBar( *menu, EventWidget( ));, GetMouseX( ), GetMouseY( ) )
+      DisplayPopupMenuBar( *menu, EventWidget( ) )
    EndProcedure
    
    ;\\
@@ -141,8 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 19
+; FirstLine = 6
 ; Folding = --
 ; EnableXP
 ; DPIAware

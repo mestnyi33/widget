@@ -35,13 +35,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure button_tab_events( )
       Select GetText( EventWidget( ) )
          Case "popup menu"
-            ; DisplayPopupMenuBar( *menu, EventWidget( ), DesktopUnscaledX(mouse( )\x - EventWidget( )\x[#__c_inner]), mouse( )\y - EventWidget( )\y[#__c_inner] )
-             ; DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-             ;DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
+          ;Protected mouse_x = DesktopUnscaledX(DesktopMouseX( )) - GadgetX( EventGadget(), #PB_Gadget_ScreenCoordinate )
+         ; Protected mouse_x = DesktopUnscaledX(WindowMouseX( EventWindow())) - GadgetX( EventGadget(), #PB_Gadget_WindowCoordinate )
+;           Protected mouse_x = DesktopUnscaledX(GetGadgetAttribute( EventGadget(), #PB_Canvas_MouseX ))
+;           DisplayPopupMenuBar( *menu, EventWidget( ), Mouse_x, CanvasMouseY( ) )
+          
+             ;DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+             ;DisplayPopupMenuBar( *menu, EventWidget( ), CanvasMouseX( ), CanvasMouseY( ) )
+             ;DisplayPopupMenuBar( *menu, EventWidget( ), DesktopMouseX( ), DesktopMouseY( ) )
             
            ; Debug "mouse_x = "+DesktopMouseX( ) +" gadget_x = "+ GadgetX(EventGadget(), #PB_Gadget_ScreenCoordinate) +" window_x = "+ WindowX(EventWindow(), #PB_Window_InnerCoordinate)
-         
-           DisplayPopupMenuBar( *menu, EventWidget( ) );, DesktopMouseX( ), DesktopMouseY( ) )
+            DisplayPopupMenuBar( *menu, EventWidget( ) )
             
             
       EndSelect
@@ -99,8 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 57
+; CursorPosition = 43
+; FirstLine = 40
 ; Folding = -
 ; EnableXP
 ; DPIAware

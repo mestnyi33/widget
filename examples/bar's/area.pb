@@ -198,28 +198,6 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure Canvas_SetCursor( mouse_x, mouse_y, cur = #PB_Cursor_Default )
-      Static set_cursor 
-      Protected cursor
-      
-      If cur <> #PB_Cursor_Default
-         cursor = cur
-      Else
-         If Not Mouse( )\buttons
-            If Bool( Canvas_HitTest( Images( ), mouse_x, mouse_y ) ) 
-               cursor = #PB_Cursor_Hand
-            Else 
-               cursor = #PB_Cursor_Default
-            EndIf
-         EndIf
-      EndIf
-      
-      If set_cursor <> cursor
-         set_cursor = cursor
-         SetGadgetAttribute( MyCanvas, #PB_Canvas_Cursor, cursor )
-      EndIf
-   EndProcedure
-   
    Procedure Canvas_Events( )
       Protected Repaint
       Protected Event = EventType( )
@@ -415,7 +393,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 278
-; FirstLine = 256
-; Folding = ---------
+; CursorPosition = 58
+; FirstLine = 58
+; Folding = --------
 ; EnableXP

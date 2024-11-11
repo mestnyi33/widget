@@ -456,7 +456,7 @@ Procedure MouseState()
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows 
     If      (GetAsyncKeyState_(#VK_LBUTTON) >> 15 & 1) : Click = #PB_Event_LeftButtonDown
     ElseIf  (GetAsyncKeyState_(#VK_RBUTTON) >> 15 & 1) : Click = #PB_Event_RightButtonDown
-    ElseIf  (GetAsyncKeyState_(#VK_MBUTTON) >> 15 & 1) : Click = #PB_Event_MidleButtonDown
+    ElseIf  (GetAsyncKeyState_(#VK_MBUTTON) >> 15 & 1) : Click = #PB_Event_MiddleButtonDown
     EndIf  
     
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -470,7 +470,7 @@ Procedure MouseState()
       gdk_window_get_pointer_( gtk_widget_get_toplevel_( handle ), @x, @y, @mask)
       If     (mask & #GDK_BUTTON1_MASK) : Click = #PB_Event_LeftButtonDown
       ElseIf (mask & #GDK_BUTTON3_MASK) : Click = #PB_Event_RightButtonDown
-      ElseIf (mask & #GDK_BUTTON2_MASK) : Click = #PB_Event_MidleButtonDown
+      ElseIf (mask & #GDK_BUTTON2_MASK) : Click = #PB_Event_MiddleButtonDown
       EndIf
     EndIf
     
@@ -600,6 +600,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 472
+; FirstLine = 451
 ; Folding = -------------------
 ; EnableXP

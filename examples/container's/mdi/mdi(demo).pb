@@ -79,12 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Resize(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
   Resize(*g3, 10, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;   mouse( )\buttons = 1
-;   Resize(*g2, 110, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;   mouse( )\buttons = 0
-;   ;Resize(*g3, #PB_Ignore, 100, #PB_Ignore, #PB_Ignore)
-;   Resize(*g1, 30, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;   
+  
   Bind(#PB_All, @events(), #__event_down)
   Bind(#PB_All, @events(), #__event_dragstart)
   
@@ -93,8 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 64
+; CursorPosition = 82
+; FirstLine = 56
 ; Folding = -
 ; EnableXP
 ; DPIAware

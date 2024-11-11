@@ -359,7 +359,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure button_tab_events( )
     Select GetText( EventWidget( ) )
       Case "popup menu"
-        DisplayPopupMenuBar( *menu, EventWidget( ) );, GetMouseX( ), GetMouseY( ) )
+        DisplayPopupMenuBar( *menu, EventWidget( ) )
         
       Case "1"
         SetState(*button_panel, 0)
@@ -745,8 +745,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 433
-; FirstLine = 429
+; CursorPosition = 361
+; FirstLine = 354
 ; Folding = --------
 ; EnableXP
 ; DPIAware

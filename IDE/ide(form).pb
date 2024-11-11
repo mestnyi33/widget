@@ -520,6 +520,12 @@ EndProcedure
 ;-
 Declare widget_events( )
 
+Procedure DisplaySelector( mode.a )
+   If mouse( )\selector
+      mouse( )\selector\type = mode
+   EndIf  
+EndProcedure
+
 ;-
 Macro widget_copy( )
    ClearList( *copy( ) )
@@ -539,8 +545,8 @@ Macro widget_copy( )
       
    EndIf
    
-   a_selector( )\x = mouse( )\steps
-   a_selector( )\y = mouse( )\steps
+   mouse( )\selector\x = mouse( )\steps
+   mouse( )\selector\y = mouse( )\steps
 EndMacro
 
 Macro widget_delete( )
@@ -566,14 +572,14 @@ Macro widget_paste( )
       ForEach *copy( )
          widget_add( *copy( )\widget\parent, 
                      *copy( )\widget\class, 
-                     *copy( )\widget\x[#__c_container] + ( a_selector( )\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
-                     *copy( )\widget\y[#__c_container] + ( a_selector( )\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
+                     *copy( )\widget\x[#__c_container] + ( mouse( )\selector\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
+                     *copy( )\widget\y[#__c_container] + ( mouse( )\selector\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
                      *copy( )\widget\width[#__c_frame],
                      *copy( )\widget\height[#__c_frame] )
       Next
       
-      a_selector( )\x + mouse( )\steps
-      a_selector( )\y + mouse( )\steps
+      mouse( )\selector\x + mouse( )\steps
+      mouse( )\selector\y + mouse( )\steps
       
       ClearList( a_group( ) )
       CopyList( *copy( ), a_group( ) )
@@ -839,7 +845,7 @@ Procedure widget_events( )
          
       Case #__event_LeftDown
          If IsContainer( *e_widget )
-            If a_selector( )\type > 0 Or group_select
+            If mouse( )\selector\type > 0 Or group_select
                If group_select 
                   group_drag = *e_widget
                EndIf
@@ -878,7 +884,7 @@ Procedure widget_events( )
            #__event_MouseLeave,
            #__event_MouseMove
          
-         If Not MouseButtons( ) 
+         If Not mouse( )\press
             If IsContainer( *e_widget ) 
                If GetState( ide_inspector_elements ) > 0 
                   If eventtype = #__event_MouseLeave
@@ -905,7 +911,7 @@ Procedure widget_events( )
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
          ChangeCursor( *e_widget, #PB_Cursor_Default )
-         a_selector( )\type = 0
+         mouse( )\selector\type = 0
       EndIf
    EndIf
 EndProcedure
@@ -1093,36 +1099,36 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, toolbarbutton )
            #_tb_group_height
          
          ;\\ toolbar buttons events
-         move_x = a_selector( )\x - a_focused( )\x[#__c_inner]
-         move_y = a_selector( )\y - a_focused( )\y[#__c_inner]
+         move_x = mouse( )\selector\x - a_focused( )\x[#__c_inner]
+         move_y = mouse( )\selector\y - a_focused( )\y[#__c_inner]
          
          ForEach a_group( )
             Select toolbarbutton
                Case #_tb_group_left ; left
-                                    ;a_selector( )\x = 0
-                  a_selector( )\width = 0
+                                    ;mouse( )\selector\x = 0
+                  mouse( )\selector\width = 0
                   Resize( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   
                Case #_tb_group_right ; right
-                  a_selector( )\x = 0
-                  a_selector( )\width = 0
+                  mouse( )\selector\x = 0
+                  mouse( )\selector\width = 0
                   Resize( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   
                Case #_tb_group_top ; top
-                                   ;a_selector( )\y = 0
-                  a_selector( )\height = 0
+                                   ;mouse( )\selector\y = 0
+                  mouse( )\selector\height = 0
                   Resize( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
                   
                Case #_tb_group_bottom ; bottom
-                  a_selector( )\y = 0
-                  a_selector( )\height = 0
+                  mouse( )\selector\y = 0
+                  mouse( )\selector\height = 0
                   Resize( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
                   
                Case #_tb_group_width ; stretch horizontal
-                  Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, a_selector( )\width, #PB_Ignore )
+                  Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, mouse( )\selector\width, #PB_Ignore )
                   
                Case #_tb_group_height ; stretch vertical
-                  Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_selector( )\height )
+                  Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mouse( )\selector\height )
                   
             EndSelect
          Next
@@ -1158,7 +1164,7 @@ Procedure ide_events( )
          
       Case #__event_DragStart
          If *e_widget = ide_inspector_elements
-            a_selector( )\type = 0
+            mouse( )\selector\type = 0
             
             Debug " ------ drag ide_events() ----- "
             If DragDropPrivate( #_DD_CreateNew )
@@ -1216,7 +1222,7 @@ Procedure ide_events( )
          EndIf
          
          If *e_widget = ide_inspector_elements
-            a_selector( )\type = GetState( *e_widget )
+            DisplaySelector( GetState( *e_widget ) )
          EndIf
          
          If *e_widget = ide_design_code
@@ -1648,8 +1654,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 121
+; CursorPosition = 766
+; FirstLine = 775
 ; Folding = --8d0------------------------
 ; EnableXP
 ; DPIAware
