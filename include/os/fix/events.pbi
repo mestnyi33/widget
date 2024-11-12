@@ -9,17 +9,18 @@ DeclareModule events
      Declare BindGadget( gadget, *callBack, eventtype = #PB_All )
   CompilerEndIf
 
-  Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
-    ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
-    DesktopMouseX() - GadgetX(_canvas_, _mode_)
-    ; WindowMouseX(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetX(_canvas_, #PB_Gadget_WindowCoordinate)  
+  Macro GadgetMouseX( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
+     ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
+     ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
+     DesktopMouseX( ) - DesktopScaledX(GadgetX( _canvas_, _mode_ ))
   EndMacro
-  Macro GadgetMouseY(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
-    ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseY)
-    DesktopMouseY() - GadgetY(_canvas_, _mode_)
-    ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
+  Macro GadgetMouseY( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
+     ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
+     ;WindowMouseY(  ID::Window(ID::GetWindowID(GadgetID(_canvas_)))  ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
+     DesktopMouseY( ) - DesktopScaledY(GadgetY( _canvas_, _mode_ ))
   EndMacro
-  
+      
+      
   ;-
   Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
   
@@ -272,7 +273,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 16
+; FirstLine = 6
 ; Folding = -------
 ; EnableXP

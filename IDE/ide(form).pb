@@ -520,12 +520,6 @@ EndProcedure
 ;-
 Declare widget_events( )
 
-Procedure DisplaySelector( mode.a )
-   If mouse( )\selector
-      mouse( )\selector\type = mode
-   EndIf  
-EndProcedure
-
 ;-
 Macro widget_copy( )
    ClearList( *copy( ) )
@@ -845,23 +839,17 @@ Procedure widget_events( )
          
       Case #__event_LeftDown
          If IsContainer( *e_widget )
-            If mouse( )\selector\type > 0 Or group_select
-               If group_select 
-                  group_drag = *e_widget
+            If mouse( )\selector
+               If GetState( ide_inspector_elements) > 0 
+                  mouse( )\selector\dotted = 0
                EndIf
             EndIf
-            
-            ;           If a_focused( )\transform <> 1
-            ;             ForEach a_group( )
-            ;               SetItemState( ide_inspector_view, GetData( a_group( )\widget ), 0 )
-            ;             Next
-            ;           EndIf
          EndIf
          
       Case #__event_LeftUp
          ; then group select
          If IsContainer( *e_widget )
-            If a_transform( ) And a_focused( ) And a_focused( )\anchors = - 1
+            If ListSize( a_group( ) )
                SetState( ide_inspector_view, - 1 )
                If IsGadget( ide_g_code )
                   SetGadgetState( ide_g_code, - 1 )
@@ -911,7 +899,6 @@ Procedure widget_events( )
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
          ChangeCursor( *e_widget, #PB_Cursor_Default )
-         mouse( )\selector\type = 0
       EndIf
    EndIf
 EndProcedure
@@ -1164,8 +1151,6 @@ Procedure ide_events( )
          
       Case #__event_DragStart
          If *e_widget = ide_inspector_elements
-            mouse( )\selector\type = 0
-            
             Debug " ------ drag ide_events() ----- "
             If DragDropPrivate( #_DD_CreateNew )
                ChangeCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, GetState( *e_widget ) ) ) ) )
@@ -1219,10 +1204,6 @@ Procedure ide_events( )
          If *e_widget = ide_inspector_properties
             Debug "  change-["+*e_widget\class+"]"
             properties_updates( ide_inspector_properties, a_focused( ) )
-         EndIf
-         
-         If *e_widget = ide_inspector_elements
-            DisplaySelector( GetState( *e_widget ) )
          EndIf
          
          If *e_widget = ide_design_code
@@ -1654,9 +1635,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 766
-; FirstLine = 775
-; Folding = --8d0------------------------
+; CursorPosition = 851
+; FirstLine = 821
+; Folding = --8d0-----------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

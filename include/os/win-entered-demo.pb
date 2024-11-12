@@ -14,16 +14,6 @@ Macro EnteredGadget() : *entered : EndMacro
 Macro FocusedGadget() : *focused : EndMacro
 Macro PressedGadget() : *pressed : EndMacro
 
-Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
-  ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
-  DesktopMouseX() - GadgetX(_canvas_, _mode_)
-  ; WindowMouseX(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetX(_canvas_, #PB_Gadget_WindowCoordinate)  
-EndMacro
-Macro GadgetMouseY(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
-  ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseY)
-  DesktopMouseY() - GadgetY(_canvas_, _mode_)
-  ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
-EndMacro
 
 
 DraggedGadget() =- 1 
@@ -257,7 +247,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 8
-; Folding = -v--
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 4
+; Folding = -8--
 ; EnableXP

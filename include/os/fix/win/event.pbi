@@ -21,13 +21,21 @@ Module events
       Protected text.s, gadget = GetProp_( hWnd, "PB_ID" )
       Protected sysProc = GetProp_(hWnd, "sysProc")
       Protected *callBack = GetProp_(hWnd, "sysProc"+Str(GetProp_(hWnd, "sysProcType")))
-      Static focus.i, enter.b
+      Static focus.i, enter.b, move.b 
       
       Select uMsg
          Case #WM_NCDESTROY 
             SetWindowLongPtr_(hwnd, #GWLP_USERDATA, sysProc)
             RemoveProp_(hwnd, sysProc)
             
+         Case #WM_LBUTTONDOWN
+            move = 0
+           ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonDown )
+             
+         Case #WM_LBUTTONUP
+            move = 0
+          ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonUp )
+              
          Case #WM_MOUSEFIRST
             Protected TRACK.TRACKMOUSEEVENT
             TRACK\cbSize = SizeOf(TRACK)
@@ -36,18 +44,25 @@ Module events
             TRACK\dwHoverTime = 1
             TrackMouseEvent_(@TRACK)
             
-         Case #WM_MOUSELEAVE
-            enter = 0
-            ; text = "leave gadget #" + Str(gadget)
-            CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseLeave )
+            ;Case #WM_MOUSEMOVE
+            If move
+               CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
+            ProcedureReturn 0
+            Else
+               move = 1
+            EndIf
             
          Case #WM_MOUSEHOVER
             If enter = 0
                enter = 1
-               ; text = "enter gadget #" + Str(gadget)
                CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseEnter )
+            ProcedureReturn 0
             EndIf
-            ;CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
+            
+         Case #WM_MOUSELEAVE
+            enter = 0
+            CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseLeave )
+            ProcedureReturn 0
             
          Case #WM_MOUSEHWHEEL 
             CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelX, - HIWORD(wparam) );(delta * step / #WHEEL_DELTA) )
@@ -80,14 +95,6 @@ Module events
             ;          Case #WM_KILLFOCUS
             ;             ; text = "Lost focus on gadget #" + Str(gadget)
             ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LostFocus)
-            ;           
-            ;          Case #WM_LBUTTONDOWN
-            ;             ;text = "Left button down on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonDown )
-            ;             
-            ;          Case #WM_LBUTTONUP
-            ;             ;text = "Left button up on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonUp )
             ;             
             ;          Case #WM_LBUTTONDBLCLK
             ;             text = "Left button click on gadget #" + Str(gadget)
@@ -127,7 +134,7 @@ Module events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 97
+; CursorPosition = 50
+; FirstLine = 30
 ; Folding = ---
 ; EnableXP

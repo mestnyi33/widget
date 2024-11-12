@@ -21,9 +21,9 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__Event_Focus
             Debug "focus ["+IDWidget(EventWidget()) +"]eventgadget ["+ IDWidget(GetActive()) +"]getactivegadget"
             
-;             If GetActive( ) = WidgetID(1)
-;                SetActive( WidgetID(0))
-;             EndIf
+            If GetActiveGadget( ) <> EventWidget( )\root\canvas\gadget
+               SetActiveGadget( EventWidget( )\root\canvas\gadget )
+            EndIf
             
          Case #__Event_LostFocus
             Debug "lostfocus ["+IDWidget(EventWidget()) +"]eventgadget ["+ IDWidget(GetActive()) +"]getactivegadget"
@@ -75,8 +75,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 45
+; CursorPosition = 23
+; FirstLine = 9
 ; Folding = ---
 ; EnableXP
 ; DPIAware

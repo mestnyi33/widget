@@ -436,17 +436,18 @@ Enumeration #PB_Event_FirstCustomValue
   #PB_Event_MouseMove
 EndEnumeration
 
-Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
-  ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
-  DesktopMouseX() - GadgetX(_canvas_, _mode_)
-  ; WindowMouseX(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetX(_canvas_, #PB_Gadget_WindowCoordinate)  
-EndMacro
-Macro GadgetMouseY(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
-  ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseY)
-  DesktopMouseY() - GadgetY(_canvas_, _mode_)
-  ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
-EndMacro
 
+Macro GadgetMouseX( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
+   ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
+   ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
+   DesktopMouseX( ) - DesktopScaledX(GadgetX( _canvas_, _mode_ ))
+EndMacro
+Macro GadgetMouseY( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
+   ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
+   ;WindowMouseY(  ID::Window(ID::GetWindowID(GadgetID(_canvas_)))  ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
+   DesktopMouseY( ) - DesktopScaledY(GadgetY( _canvas_, _mode_ ))
+EndMacro
+     
 Procedure MouseState()
   Static State = 0, Gadget =-1
   Protected Click, Window, EnterGadget=-1
@@ -601,7 +602,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 472
-; FirstLine = 451
+; CursorPosition = 447
+; FirstLine = 436
 ; Folding = -------------------
 ; EnableXP

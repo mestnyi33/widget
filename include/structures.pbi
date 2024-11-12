@@ -159,7 +159,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     STATE
       Structure _s_STATE
-         ;show.b
          StructureUnion
             checked.b
          EndStructureUnion
@@ -168,19 +167,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
             _enter.b ;
             enter.b  ;
             mouseenter.b ;
-            
             mouseenterframe.b
             mouseenterinner.b
          EndStructureUnion
-         
          StructureUnion
             focus.b
             _focus.b  
          EndStructureUnion
+         press.b
          
          round.a
          hide.b
-         press.b
          disable.b
       EndStructure
       ;--     BOX
@@ -192,7 +189,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_BOX
-         noFocus.a ; без него при наведении на кнопку трии итем, теряется итем
+         ;noFocus.a ; без него при наведении на кнопку трии итем, теряется итем
          size.w
          color._s_color
          arrow._s_arrow
@@ -277,41 +274,32 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;       *background._s_image
       EndStructure
       
+      ;
+      Structure _s_A_GROUP Extends _s_COORDINATE
+         *widget._s_WIDGET
+      EndStructure
       ;--     SELECTOR
       Structure _s_SELECTOR Extends _s_COORDINATE
-         type.a
+         List *group._s_A_GROUP( )
          
-         dot_ted.a
-         dot_line.a
-         dot_space.a
+         dotted.a
+         dotline.a
+         dotspace.a
          
          backcolor.l
          framecolor.l
          fontcolor.l
       EndStructure
-      ;
-      Structure _s_A_BUTTONS Extends _s_COORDINATE
-         state.b
-      EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
-         pos.b;w 
-         size.a;c
-         mode.a;i
-         *id._s_A_BUTTONS[constants::#__a_count]
-      EndStructure
-      ;
-      Structure _s_A_GROUP Extends _s_COORDINATE
-         *widget._s_WIDGET
+         state.b
+         pos.b
+         size.a
+         mode.a
+         *id._s_COORDINATE[constants::#__a_count]
       EndStructure
       ;
       Structure _s_TRANSFORMDATA
-         List *group._s_A_GROUP( )
-         *grab ; grab image handle
-         
-         *grid_image
-         grid_type.l
-         *grid_widget._s_WIDGET
       EndStructure
       ;--     TRANSFORM
       Structure _s_TRANSFORM
@@ -319,13 +307,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *main._s_WIDGET                     ; a_main( )
          *entered._s_WIDGET                  ; a_entered( )
          *focused._s_WIDGET                  ; a_focused( )
-         line._s_A_BUTTONS[4]                ; a_line( )
+         line._s_COORDINATE[4]               ; a_line( )
          
          ;
          cursor.a[constants::#__a_count] ;
                                          ;
-         *transform._s_TRANSFORMDATA     ;
-         
+         ;*transform._s_TRANSFORMDATA     ;
+         grid_type.l
+         *grid_image
+      
          backcolor.l[3]
          framecolor.l[3]
       EndStructure
@@ -802,8 +792,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 289
-; FirstLine = 279
+; CursorPosition = 314
+; FirstLine = 292
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

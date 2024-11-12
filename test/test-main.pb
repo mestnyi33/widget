@@ -314,7 +314,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(*button_panel, 2)
    CloseList( ) ; close panel lists
    
-   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__text_right)
+   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__flag_textright)
    
    ;\\
    Global *button_item1, *button_item2
@@ -608,7 +608,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
    
-   Spin(10, 210, 250, 25, 25, 30, #__text_right )
+   Spin(10, 210, 250, 25, 25, 30, #__flag_textright )
    Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
    
    ;\\
@@ -690,8 +690,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 390
-; FirstLine = 349
+; CursorPosition = 610
+; FirstLine = 541
 ; Folding = NA+----
 ; EnableXP
 ; DPIAware
