@@ -30,11 +30,11 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #__event_DragStart       : AddItem(*view, -1, Space + " drag <<" + Trim(getText(*eventWidget)) + ">>")
         If *eventWidget = *dragbutton
-           DragDropText( "drag", #PB_Drag_Copy )
+           DDragText( "drag", #PB_Drag_Copy )
         EndIf
         
         If *eventWidget = *dropbutton
-          DragDropText( "drag" )
+          DDragText( "drag" )
         EndIf
         
       Case #__event_Drop            : AddItem(*view, -1, Space + " drop <<" + Trim(getText(*eventWidget)) + ">>")
@@ -110,7 +110,7 @@ CompilerEndIf
 ; enter <<drag>>
 ; leave <<drag>>
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 53
+; CursorPosition = 39
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

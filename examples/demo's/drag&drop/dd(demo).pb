@@ -30,7 +30,7 @@ Global Gadget_SourceText,
 Global i, Event, font = LoadFont( 0, "Aria", (13) )
 
 ; Macro EnableDrop( this, Format, Actions, PrivateType = 0 )
-;    DropEnable( this, Format, Actions, PrivateType)
+;    DDropEnable( this, Format, Actions, PrivateType)
 ; EndMacro
 
 CompilerIf #PB_Compiler_DPIAware And #PB_Compiler_OS = #PB_OS_Windows
@@ -116,7 +116,7 @@ Procedure widget_events( )
           If SourceItem =- 1
             Debug " item не выбран"
           Else
-            If DragDropPrivate(#PrivateType_0, #PB_Drag_Move)
+            If DDragPrivate(#PrivateType_0, #PB_Drag_Move)
               Protected img =- 1
               
               SelectElement(EventWidget( )\__items( ), SourceItem)
@@ -134,10 +134,10 @@ Procedure widget_events( )
           
         Case Gadget_SourceText
           Text$ = GetItemText( Gadget_SourceText, GetState( Gadget_SourceText ) )
-          DragDropText( Text$ )
+          DDragText( Text$ )
           
         Case Gadget_SourceImage
-          DragDropImage( #ImageGadget_Source )
+          DDragImage( #ImageGadget_Source )
           
         Case Gadget_SourceFiles
           Files$ = ""       
@@ -149,7 +149,7 @@ Procedure widget_events( )
           Next i 
           
           If Files$ <> ""
-            DragDropFiles( Files$ )
+            DDragFiles( Files$ )
           EndIf
           
           ; "Private" Drags only work within the program, everything else
@@ -157,9 +157,9 @@ Procedure widget_events( )
           ;
         Case Gadget_SourcePrivate
           If GetState( Gadget_SourcePrivate ) = 0
-            DragDropPrivate( 1 )
+            DDragPrivate( 1 )
           Else
-            DragDropPrivate( 2 )
+            DDragPrivate( 2 )
           EndIf
           
           ChangeCursor( Gadget_SourcePrivate, cursor::#__cursor_Hand) 
@@ -181,8 +181,8 @@ Procedure widget_events( )
           ; Здесь мы получаем событие падения. Убедитесь, что он находится на правильном гаджете и имеет правильный тип,
           ; особенно если в вашей программе есть несколько элементов Drag & Drop.
           ;
-          If DropType( ) = #PB_Drop_Private And
-             DropPrivate( ) = #PrivateType_0
+          If DDropType( ) = #PB_Drop_Private And
+             DDropPrivate( ) = #PrivateType_0
             Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
             
             TargetItem = GetState(Gadget_TargetItem)        
@@ -350,15 +350,15 @@ Procedure widget_events( )
           EndIf
           
         Case Gadget_TargetText
-          ;;Debug "EventDropText - "+ DropText( )
+          ;;Debug "EventDropText - "+ DDropText( )
           ;           If EnteredItem( )
-          ;             AddItem( Gadget_TargetText, EnteredItem( )\index, DropText( ) )
+          ;             AddItem( Gadget_TargetText, EnteredItem( )\index, DDropText( ) )
           ;           Else
-          AddItem( Gadget_TargetText, - 1, DropText( ) )
+          AddItem( Gadget_TargetText, - 1, DDropText( ) )
           ;           EndIf
           
         Case Gadget_TargetImage
-          If DropImage( #ImageGadget_Target )
+          If DDropImage( #ImageGadget_Target )
             If StartDrawing( ImageOutput( #ImageGadget_Target ) )
               DrawingFont( font )
               
@@ -372,7 +372,7 @@ Procedure widget_events( )
           EndIf
           
         Case Gadget_TargetFiles
-          Files$ = DropFiles( )
+          Files$ = DDropFiles( )
           Count  = CountString( Files$, Chr( 10 ) ) + 1
           
           For i = 1 To Count
@@ -498,8 +498,9 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3
-; Folding = ---0-
+; CursorPosition = 200
+; FirstLine = 197
+; Folding = -----
 ; Optimizer
 ; EnableXP
 ; DPIAware

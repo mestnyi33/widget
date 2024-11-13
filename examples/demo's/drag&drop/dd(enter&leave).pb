@@ -17,7 +17,7 @@ Procedure event_widget()
           source = EventWidget()
           selectedIndex = GetState(EventWidget())           
           selectedText$ = GetItemText(EventWidget(), selectedIndex)
-          DragDropText(selectedText$)                                           
+          DDragText(selectedText$)                                           
           
       EndSelect
       
@@ -26,7 +26,7 @@ Procedure event_widget()
       drop = EventWidget()
       
       If drop <> source
-        dropText$ = DropText()
+        dropText$ = DDropText()
         
         For i = 0 To CountItems(drop)-1
           If GetItemText(drop, i) = dropText$
@@ -96,8 +96,8 @@ WaitClose()
 ;   
 ; Until appQuit
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 6
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
 ; DPIAware

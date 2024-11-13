@@ -790,7 +790,7 @@ Procedure widget_events( )
          
       Case #__event_DragStart
          If is_drag_move( )
-            If DragDropPrivate( #_DD_reParent )
+            If DDragPrivate( #_DD_reParent )
                ; ChangeCursor( *e_widget, #PB_Cursor_Arrows )
             EndIf
          Else
@@ -798,11 +798,11 @@ Procedure widget_events( )
                If MouseEnter( *e_widget )
                   If Not a_index( )
                      If GetState( ide_inspector_elements) > 0 
-                        If DragDropPrivate( #_DD_CreateNew )
+                        If DDragPrivate( #_DD_CreateNew )
                            ChangeCursor( *e_widget, #PB_Cursor_Cross )
                         EndIf
                      Else
-                        If DragDropPrivate( #_DD_Group )
+                        If DDragPrivate( #_DD_Group )
                            ChangeCursor( *e_widget, #PB_Cursor_Cross )
                         EndIf
                      EndIf
@@ -812,7 +812,7 @@ Procedure widget_events( )
          EndIf
          
       Case #__event_Drop
-         Select DropPrivate( )
+         Select DDropPrivate( )
             Case #_DD_Group
                Debug " ----- DD_group ----- " + *e_widget\class
                
@@ -823,8 +823,8 @@ Procedure widget_events( )
                EndIf
                
             Case #_DD_CreateNew 
-               Debug " ----- DD_new ----- "+ GetText( ide_inspector_elements ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
-               widget_add( *e_widget, GetText( ide_inspector_elements ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+               Debug " ----- DD_new ----- "+ GetText( ide_inspector_elements ) +" "+ DDropX( ) +" "+ DDropY( ) +" "+ DDropWidth( ) +" "+ DDropHeight( )
+               widget_add( *e_widget, GetText( ide_inspector_elements ), DDropX( ), DDropY( ), DDropWidth( ), DDropHeight( ) )
                
             Case #_DD_CreateCopy
                Debug " ----- DD_copy ----- " + GetText( PressedWidget( ) )
@@ -832,8 +832,8 @@ Procedure widget_events( )
                ;            *new = widget_add( *e_widget, GetClass( PressedWidget( ) ), 
                ;                         WidgetX( PressedWidget( ) ), WidgetY( PressedWidget( ) ), WidgetWidth( PressedWidget( ) ), WidgetHeight( PressedWidget( ) ) )
                
-               *new = widget_add( *e_widget, DropText( ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
-               SetText( *new, "Copy_"+DropText( ) )
+               *new = widget_add( *e_widget, DDropText( ), DDropX( ), DDropY( ), DDropWidth( ), DDropHeight( ) )
+               SetText( *new, "Copy_"+ DDropText( ) )
                
          EndSelect
          
@@ -849,7 +849,7 @@ Procedure widget_events( )
       Case #__event_LeftUp
          ; then group select
          If IsContainer( *e_widget )
-            If ListSize( a_group( ) )
+            If mouse( )\selector And ListSize( a_group( ) )
                SetState( ide_inspector_view, - 1 )
                If IsGadget( ide_g_code )
                   SetGadgetState( ide_g_code, - 1 )
@@ -1152,7 +1152,7 @@ Procedure ide_events( )
       Case #__event_DragStart
          If *e_widget = ide_inspector_elements
             Debug " ------ drag ide_events() ----- "
-            If DragDropPrivate( #_DD_CreateNew )
+            If DDragPrivate( #_DD_CreateNew )
                ChangeCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, GetState( *e_widget ) ) ) ) )
             EndIf
          EndIf
@@ -1635,8 +1635,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 851
-; FirstLine = 821
+; CursorPosition = 835
+; FirstLine = 793
 ; Folding = --8d0-----------------------
 ; EnableXP
 ; DPIAware
