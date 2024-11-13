@@ -4314,37 +4314,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If eventtype = #__event_DragStart
-            ;\\ change frame color
-            If a_anchors( ) 
-               If mouse( )\selector
-                  If mouse( )\selector\dotted 
-                     mouse( )\selector\dotspace = DPIScaled(3)
-                     mouse( )\selector\dotline  = DPIScaled(5)
-                     
-                     mouse( )\selector\backcolor  = $80DFE2E2
-                     mouse( )\selector\framecolor = $BA161616
-                  Else
-                     mouse( )\selector\backcolor  = $9F646565
-                     mouse( )\selector\framecolor = $BA161616
-                  EndIf
-               EndIf
-               
-               ;\\
-               If *this\container > 0 And MouseEnter( *this )
-                  If Not a_index( )
-                     If a_anchors( )\grid_image
-                        SetBackgroundImage( *this\parent, 0 )
-                        SetBackgroundImage( *this, a_anchors( )\grid_image )
+            If *this\anchors
+               ;\\ change frame color
+               If a_anchors( ) 
+                  If mouse( )\selector
+                     If mouse( )\selector\dotted 
+                        mouse( )\selector\dotspace = DPIScaled(3)
+                        mouse( )\selector\dotline  = DPIScaled(5)
+                        
+                        mouse( )\selector\backcolor  = $80DFE2E2
+                        mouse( )\selector\framecolor = $BA161616
+                     Else
+                        mouse( )\selector\backcolor  = $9F646565
+                        mouse( )\selector\framecolor = $BA161616
                      EndIf
-                     
-                     ;                      
-                     ;                      If StartDrawingRoot( *this\root )
-                     ;                         DrawingRoot( )
-                     ;                         
-                     ;                         a_anchors( )\grab = GrabDrawingImage( #PB_Any, 0, 0, *this\root\width, *this\root\height )
-                     ;                         
-                     ;                         StopDrawingRoot( )
-                     ;                      EndIf
+                  EndIf
+                  
+                  ;\\
+                  If *this\container > 0 And MouseEnter( *this )
+                     If Not a_index( )
+                        If a_anchors( )\grid_image
+                           SetBackgroundImage( *this\parent, 0 )
+                           SetBackgroundImage( *this, a_anchors( )\grid_image )
+                        EndIf
+                        
+                        ;                      
+                        ;                      If StartDrawingRoot( *this\root )
+                        ;                         DrawingRoot( )
+                        ;                         
+                        ;                         a_anchors( )\grab = GrabDrawingImage( #PB_Any, 0, 0, *this\root\width, *this\root\height )
+                        ;                         
+                        ;                         StopDrawingRoot( )
+                        ;                      EndIf
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -5485,7 +5487,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ if the integral tab bar
             If *this\TabWidgetBar( )
-               ;If *this\container
+               ;If *this\container 
                ;;Debug ""+*this\class +" "+ x
                *this\inner_x( ) = x ; - *this\fs - *this\fs[1]
                *this\inner_y( ) = y ; - *this\fs - *this\fs[2]
@@ -7865,7 +7867,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure ReParent( *this._s_WIDGET, *parent._s_WIDGET )
          ;\\
          ;If Not is_integral_( *this )
-         If *parent\container
+         If *parent\container 
             *parent\haschildren + 1
          EndIf
          ;EndIf
@@ -18458,37 +18460,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   If a_main( ) And
                      a_main( )\root = *root
-                     ;                      ;
-                     ;                      If a_anchors( )\grab
-                     ;                         ;\\ draw grab background
-                     ;                         draw_mode_alpha_( #PB_2DDrawing_Default )
-                     ;                         DrawImage( ImageID( a_anchors( )\grab ), 0, 0 )
-                     ;                       EndIf
-                     
+                     ;
                      If mouse( )\selector
                         ;\\ draw mouse selector
-                        Protected selector_backcolor = mouse( )\selector\backcolor & $FFFFFF | 100 << 24
-                        Protected selector_framecolor = mouse( )\selector\framecolor
-                        Protected selector_frontcolor = $ff000000;selector_framecolor
+                        Protected selector_backcolor = mouse( )\selector\backcolor & $FFFFFF | 80 << 24
+                        Protected selector_framecolor = mouse( )\selector\framecolor & $FFFFFF | 255 << 24
+                        ;Protected selector_frontcolor = mouse( )\selector\fontcolor & $FFFFFF | 255 << 24
                         
                         ;
                         ;\\ draw selector back
                         If selector_backcolor
+                           draw_mode_alpha_( #PB_2DDrawing_Default )
                            draw_box_( mouse( )\selector\x, mouse( )\selector\y, mouse( )\selector\width, mouse( )\selector\height, selector_backcolor )
                         EndIf
                         ;
-                        ;\\ draw selector frame
-                        If mouse( )\selector\dotted
-                           CustomFilterCallback( @Draw_Datted( ))
-                           draw_mode_alpha_( #PB_2DDrawing_CustomFilter | #PB_2DDrawing_Outlined )
-                           draw_box_( mouse( )\selector\x, mouse( )\selector\y, mouse( )\selector\width, mouse( )\selector\height, selector_framecolor )
-                        Else
-                           ;
-                           If selector_framecolor
-                              draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                              draw_box_( mouse( )\selector\x, mouse( )\selector\y, mouse( )\selector\width, mouse( )\selector\height, selector_framecolor )
-                           EndIf
-                           DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend )
+                        If Not mouse( )\selector\dotted
                            CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
                               If CurrentFontID( )
                                  DrawingFont( CurrentFontID( ) )
@@ -18497,7 +18483,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Protected selector_text.s = Str( mouse( )\selector\width ) + "x" + Str( mouse( )\selector\height )
                            DrawText( mouse( )\selector\x + (mouse( )\selector\width - TextWidth(selector_text))/2, 
                                      mouse( )\selector\y + (mouse( )\selector\height - TextHeight(selector_text))/2, 
-                                     selector_text, selector_frontcolor, selector_backcolor )
+                                     selector_text );, selector_frontcolor, selector_backcolor )
+                        EndIf
+                        ;
+                        ;\\ draw selector frame
+                        If selector_framecolor
+                           If mouse( )\selector\dotted
+                              CustomFilterCallback( @Draw_Datted( ))
+                              draw_mode_alpha_( #PB_2DDrawing_CustomFilter | #PB_2DDrawing_Outlined )
+                           Else
+                              draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                           EndIf
+                           draw_box_( mouse( )\selector\x, mouse( )\selector\y, mouse( )\selector\width, mouse( )\selector\height, selector_framecolor )
                         EndIf
                      EndIf
                   EndIf
@@ -21504,8 +21501,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                event            = #__event_LeftDown
                mouse( )\press   = #PB_MouseButton_Left
                mouse( )\buttons | #PB_Canvas_LeftButton 
-               ;
-               If Not a_index( )
+               
+               ; Должно сработат только внутри настоящего контейнера
+               If Not a_index( ) And EnteredWidget( ) And EnteredWidget( )\container > 0
                   mouse( )\selector.allocate( SELECTOR )
                   mouse( )\selector\x = mouse( )\delta\x 
                   mouse( )\selector\y = mouse( )\delta\y
@@ -21646,10 +21644,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;
-            ; mouse( )\delta = 0
             mouse( )\press = 0
             mouse( )\change = 1 << 6
-            ;mouse( )\selector = #Null
             ;
             If root( ) And
                root( )\canvas\gadget = eventgadget
@@ -21758,23 +21754,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;          If Mouse( )\buttons
-         ;             If mouse( )\change & 1 << 0
-         ;                Debug "- "+Mouse( )\buttons +" "+ Mouse( )\press +" "+ mouse( )\change
-         ;             EndIf
-         ;             If mouse( )\change & 1 << 5
-         ;                Debug "p"+Mouse( )\buttons +" "+ Mouse( )\press +" "+ mouse( )\change
-         ;             EndIf
-         ;             If mouse( )\change & 1 << 6
-         ;                Debug ""+Mouse( )\buttons +" "+ Mouse( )\press +" "+ mouse( )\change
-         ;             EndIf
-         ;          EndIf
-         
-         ;          If mouse( )\change
-         ;             If mouse( )\selector
-         ;                Debug "selector "+mouse( )\selector\x +" "+ mouse( )\selector\y +" "+ mouse( )\selector\width +" "+ mouse( )\selector\height
-         ;             EndIf
-         ;          EndIf
          ;
          ;\\ do all events
          ;
@@ -21994,12 +21973,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ reset mouse states
+            mouse( )\delta = 0
             mouse( )\buttons = 0
-            ; ClearStructure( mouse( )\selector, _s_SELECTOR )
-            ; ClearStructure( mouse( )\delta, _s_POINT )
-            ; mouse( )\selector = #Null
-            mouse( )\delta = #Null
-            
             If mouse( )\selector
                If DragState( )
                   Debug "selector "+mouse( )\selector\x +" "+ mouse( )\selector\y +" "+ mouse( )\selector\width +" "+ mouse( )\selector\height
@@ -22009,8 +21984,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
-         If mouse( )\change <> #False
-            mouse( )\change = #False
+         If mouse( )\change <> 0
+            mouse( )\change = 0
          EndIf
          ProcedureReturn #PB_Event_Gadget
          
@@ -24334,9 +24309,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 894
-; FirstLine = 891
-; Folding = -----------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84-f--+0------------------------------------------------------
+; CursorPosition = 21987
+; FirstLine = 21675
+; Folding = -----------------------------------------------------------------------------------------------e---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0q0--vf--0-84------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
