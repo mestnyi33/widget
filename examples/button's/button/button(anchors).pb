@@ -31,7 +31,7 @@ Module AnchorBox
         
         If *this = Button_10 
           Protected a = widget::GetData(*this)
-          widget::Hide(a, Bool( Not widget::GetState(*this)))
+          widget::HideWidget(a, Bool( Not widget::GetState(*this)))
           widget::Resize(a, widget::WidgetX(*this), widget::WidgetY(*this)+widget::WidgetHeight(*this), #PB_Ignore, #PB_Ignore )
           ; widget::Display(a, *this)
         Else
@@ -211,7 +211,7 @@ Module AnchorBox
     widget::Bind(Button_7, @Events( ), constants::#__event_LeftClick )
     widget::Bind(Button_8, @Events( ), constants::#__event_LeftClick )
     
-    widget::Hide(*a,1)
+    widget::HideWidget(*a,1)
     widget::SetData(Button_10, *a)
     widget::Bind(Button_10, @Events( ), constants::#__event_LeftClick )
     
@@ -230,8 +230,8 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 211
-; FirstLine = 20
+; CursorPosition = 213
+; FirstLine = 201
 ; Folding = ---
 ; Optimizer
 ; EnableXP

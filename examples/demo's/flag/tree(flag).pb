@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     widget::SetState(Button_8, Flag(*this, #__tree_nolines))
     ;     widget::SetState(Button_9, Flag(*this, #__tree_nobuttons))
     If Button_type
-       widget::Hide(Button_type, 1)
+       widget::HideWidget(Button_type, 1)
     EndIf
 
     widget::Button(10, height+20, 60, 24,"remove")
@@ -156,7 +156,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 130
+; CursorPosition = 131
 ; FirstLine = 123
 ; Folding = --
 ; EnableXP

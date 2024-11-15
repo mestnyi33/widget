@@ -1,5 +1,5 @@
 ﻿Global NewMap IDGadget( )
-Global NewMap IsEnableDrop( )
+Global NewMap IsEnableDDrop( )
 
 Global PressedGadgetID = 0, MouseX =- 1, MouseY =- 1
 Global EnteredGadget =- 1, PressedGadget =- 1, 
@@ -165,13 +165,13 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
   
 CompilerEndIf
 
-Macro CanvasMouseX( _canvas_ )
+Macro GadgetMouseX( _canvas_ )
   ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
   DesktopMouseX( ) - GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate )
   ; WindowMouseX( window ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )  
 EndMacro
 
-Macro CanvasMouseY( _canvas_ )
+Macro GadgetMouseY( _canvas_ )
   ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
   DesktopMouseY( ) - GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate )
   ; WindowMouseY( window ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
@@ -212,8 +212,8 @@ Procedure DoCanvasEvents( event )
     ;
     If EnterID  
       If FindMapElement( IDGadget( ), Str( EnterID ) )
-        mouse_x = CanvasMouseX( IDGadget( ) )
-        mouse_y = CanvasMouseY( IDGadget( ) )
+        mouse_x = GadgetMouseX( IDGadget( ) )
+        mouse_y = GadgetMouseY( IDGadget( ) )
       Else
         mouse_x =- 1
         mouse_y =- 1
@@ -224,8 +224,8 @@ Procedure DoCanvasEvents( event )
     
     ;
     If PressedGadgetID  
-      mouse_x = CanvasMouseX( PressedGadget )
-      mouse_y = CanvasMouseY( PressedGadget )
+      mouse_x = GadgetMouseX( PressedGadget )
+      mouse_y = GadgetMouseY( PressedGadget )
       
       MouseChange = #True
     EndIf
@@ -302,7 +302,7 @@ Procedure DoCanvasEvents( event )
           ;time_click = ElapsedMilliseconds( )
           
           If PressedGadget = DraggedGadget
-            If FindMapElement( IsEnableDrop( ), Str(EnterID) )
+            If FindMapElement( IsEnableDDrop( ), Str(EnterID) )
               DroppedGadget = EnteredGadget
               
               CanvasEvents( DroppedGadget, #PB_EventType_Drop )
@@ -335,11 +335,11 @@ EndProcedure
 
 Macro CanvasGadget(gadget, x,y,width,height, flag=0 )
   IDGadget( Str( PB(CanvasGadget)(gadget, x,y,width,height, flag ) ) ) = gadget
-  IsEnableDrop( Str( GadgetID( gadget ) ) ) = 1
+  IsEnableDDrop( Str( GadgetID( gadget ) ) ) = 1
 EndMacro
 
 OpenWindow(1, 200, 100, 320, 320, "click hire", #PB_Window_SystemMenu)
-  IsEnableDrop( Str( WindowID( 1 ) ) ) = 1
+  IsEnableDDrop( Str( WindowID( 1 ) ) ) = 1
 
 CanvasGadget(1, 10, 10, 200, 200)
 CanvasGadget(2, 110, 110, 200, 200)
@@ -358,6 +358,8 @@ Until event = #PB_Event_CloseWindow
 ;   2 #PB_EventType_LeftButtonUp 
 ;   2 #PB_EventType_LeftClick 
 ;   2 #PB_EventType_LeftDoubleClick 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 341
+; FirstLine = 328
 ; Folding = ---------
 ; EnableXP

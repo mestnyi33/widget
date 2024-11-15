@@ -220,7 +220,7 @@ Define a
     Next
     
     ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ WidgetType(*tree)
-    EnableDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
+    EnableDDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     ;\\
     For a=0 To CountItems(*tree) : SetItemState(*tree, a, #PB_Tree_Collapsed) : Next
@@ -255,8 +255,8 @@ Define a
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 30
+; CursorPosition = 222
+; FirstLine = 167
 ; Folding = --yC--
 ; EnableXP
 ; DPIAware

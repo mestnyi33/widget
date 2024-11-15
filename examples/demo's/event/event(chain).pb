@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *view = Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
     *dragbutton = Button( 10, 280, 240, 70, "   drag", #__flag_TextLeft|#__flag_Textmultiline );| #__flag_ButtonToggle) 
-    ;EnableDrop( *dragbutton, #PB_Drop_Text, #PB_Drag_Copy )
+    ;EnableDDrop( *dragbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
     Bind(*dragbutton, @events_widgets(), #__event_LeftDown)
     Bind(*dragbutton, @events_widgets(), #__event_LeftUp)
@@ -75,11 +75,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*dragbutton, @events_widgets(), #__event_MouseEnter)
     Bind(*dragbutton, @events_widgets(), #__event_MouseLeave)
     
-    bind(*dragbutton, @events_widgets(), #__event_DragStart)
-    bind(*dragbutton, @events_widgets(), constants::#__event_Drop)
+    Bind(*dragbutton, @events_widgets(), #__event_DragStart)
+    Bind(*dragbutton, @events_widgets(), constants::#__event_Drop)
       
     *dropbutton = Button( 195, 295, 40, 40, "drop", #__flag_Textmultiline );| #__flag_ButtonToggle) 
-    EnableDrop( *dropbutton, #PB_Drop_Text, #PB_Drag_Copy )
+    EnableDDrop( *dropbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
     Bind(*dropbutton, @events_widgets(), #__event_LeftDown)
     Bind(*dropbutton, @events_widgets(), #__event_LeftUp)
@@ -88,8 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*dropbutton, @events_widgets(), #__event_MouseEnter)
     Bind(*dropbutton, @events_widgets(), #__event_MouseLeave)
     
-    bind(*dropbutton, @events_widgets(), #__event_DragStart)
-    bind(*dropbutton, @events_widgets(), constants::#__event_Drop)
+    Bind(*dropbutton, @events_widgets(), #__event_DragStart)
+    Bind(*dropbutton, @events_widgets(), constants::#__event_Drop)
       
     WaitClose( )
   EndIf
@@ -110,7 +110,7 @@ CompilerEndIf
 ; enter <<drag>>
 ; leave <<drag>>
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 36
+; CursorPosition = 81
+; FirstLine = 68
 ; Folding = --
 ; EnableXP

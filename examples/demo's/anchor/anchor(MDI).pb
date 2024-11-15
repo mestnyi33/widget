@@ -9,6 +9,20 @@ CompilerIf #PB_Compiler_IsMainFile
   Global object, parent, object1
   Declare CustomEvents( )
   
+  Procedure GetBar( *this._s_WIDGET, type.w, index.b = 0 )
+         If type = #__type_scrollbar
+            If *this\scroll
+               If index = 1
+                  ProcedureReturn *this\scroll\v
+               EndIf
+               If index = 2
+                  ProcedureReturn *this\scroll\h
+               EndIf
+            EndIf
+         EndIf
+      EndProcedure
+      
+      
   ;\\
   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
@@ -80,7 +94,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 40
-; Folding = -
+; CursorPosition = 11
+; Folding = --
 ; EnableXP

@@ -239,7 +239,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     widget::SetState(*w7, countitems-1) 
     
     ;\\
-    EnableDrop( *w3, #PB_Drop_Text, #PB_Drag_Copy )
+    EnableDDrop( *w3, #PB_Drop_Text, #PB_Drag_Copy )
     
     ;\\
     SetActive( *w5 )
@@ -265,8 +265,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 88
+; CursorPosition = 241
+; FirstLine = 181
 ; Folding = V--
 ; EnableXP
 ; DPIAware

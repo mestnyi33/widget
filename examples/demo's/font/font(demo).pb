@@ -230,10 +230,10 @@ If Open(0, 322+50, 0, 322+50, 220)
 	Define iw = 2 + (*b\bs+*b\text\x)*4 
 	
 	Macro Repaint( )
-		DrawingRoot( Root( ) )
+		Drawing( root( ) )
 	EndMacro
 	
-	If StartDrawingRoot( Root( ) )
+	If StartDraw( root( ) )
 		Repaint()
 		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
 		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
@@ -249,7 +249,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 		Repaint()
 		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
 		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
-		StopDrawingRoot( )
+		StopDraw( )
 	EndIf
 	
 	CloseList()
@@ -278,8 +278,8 @@ If Open(0, 322+50, 0, 322+50, 220)
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 247
+; CursorPosition = 232
+; FirstLine = 229
 ; Folding = ----
 ; EnableXP
 ; DPIAware

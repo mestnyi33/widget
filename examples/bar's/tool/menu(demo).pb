@@ -2,7 +2,7 @@
 ;                                                                     - IsMenu( #Menu )
 ;                                                                     - MenuID( #Menu )
 ;                                                    Free( *address ) - FreeMenu( #Menu )
-;                                                    Hide( *address ) - HideMenu( #Menu, State )
+;                                                    HideWidget( *address ) - HideMenu( #Menu, State )
 ;                                                  WidgetHeight( *address ) - MenuHeight( )
 ; 
 ;                                             PopupMenuBar( [flags] ) - CreatePopupMenu( #Menu )
@@ -52,9 +52,9 @@ CompilerIf #PB_Compiler_IsMainFile
          ForEach roots( )
             Debug ""+roots( )\canvas\gadget +" "+ roots( )\canvas\window +" "+ roots( )\class +" "+ roots( )\focus
             
-            If StartEnumerate( roots( ) )
+            If StartEnum( roots( ) )
                Debug "   "+ widget( )\class +" "+ widget( )\focus
-               StopEnumerate( )
+               StopEnum( )
             EndIf
          Next
          Debug ""
@@ -246,8 +246,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 34
+; CursorPosition = 56
+; FirstLine = 52
 ; Folding = --
 ; EnableXP
 ; DPIAware

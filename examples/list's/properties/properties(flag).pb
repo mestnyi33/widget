@@ -50,8 +50,8 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tree, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
     
     widget::AddItem(*Tree, #_pi_group_2, "state")
-    widget::AddItem(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-    widget::AddItem(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+    widget::AddItem(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
+    widget::AddItem(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
     
     ;;;SetAttribute(*Tree, #__Transformation, #PB_All)
     Define vert=20, horiz=60, width=400, height=500
@@ -68,8 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 35
+; CursorPosition = 52
+; FirstLine = 41
 ; Folding = -
 ; Optimizer
 ; EnableXP

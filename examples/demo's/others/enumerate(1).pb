@@ -124,42 +124,42 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       Debug "--- enumerate all gadgets ---"
-      If StartEnumerate( root( ) )
+      If StartEnum( root( ) )
          If Not is_window_( widget(  ) )
             Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
          EndIf
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       Debug "--- enumerate all gadgets PANEL ---"
-      If StartEnumerate( *PARENT )
+      If StartEnum( *PARENT )
          Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       Debug "--- enumerate all (item 0) PANEL ---"
-      If StartEnumerate( *PARENT, 0 )
+      If StartEnum( *PARENT, 0 )
          Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       Debug "--- enumerate all (item 1) PANEL ---"
-      If StartEnumerate( *PARENT, 1 )
+      If StartEnum( *PARENT, 1 )
          Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       Debug "--- enumerate all (item 2) PANEL ---"
-      If StartEnumerate( *PARENT, 2 )
+      If StartEnum( *PARENT, 2 )
          Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 52
+; CursorPosition = 154
+; FirstLine = 127
 ; Folding = ---
 ; EnableXP

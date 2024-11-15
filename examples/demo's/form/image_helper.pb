@@ -95,7 +95,7 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   ;
   Bind(Window_0, @CFE_Helper_Buttons_Events())
   ; BindGadgetEvent(e, @ButtonEvent(), #_Event_LeftClick)
-  Hide(Window_0, #False)
+  HideWidget(Window_0, #False)
   CloseList()
   
   ; WaitQuit( )
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 71
+; CursorPosition = 97
+; FirstLine = 93
 ; Folding = ---
 ; Optimizer
 ; EnableXP

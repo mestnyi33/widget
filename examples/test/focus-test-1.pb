@@ -17,7 +17,7 @@
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
-;                                                    Hide( *address ) - HideMenu( #Menu, State )
+;                                                    HideWidget( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
 ;                                                  WidgetHeight( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
@@ -54,11 +54,11 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug ">"
       Debug ""+*this\class +" "+ *this\focus
-      If StartEnumerate( *this )
+      If StartEnum( *this )
          
          Debug ""+widget( )\class +" "+ widget( )\focus
          
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       Debug "<"
    EndProcedure
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 81
+; CursorPosition = 60
+; FirstLine = 52
 ; Folding = --
 ; EnableXP

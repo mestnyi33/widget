@@ -75,14 +75,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case Button_type
             If GetState(EventWidget)
-              Hide(*this, 1)
+              HideWidget(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
               SetText(Button_type, "widget")
             Else
-              Hide(*this, 0)
+              HideWidget(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
@@ -207,7 +207,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(button_multiline, Flag(*this, #__flag_Textmultiline))
     SetState(button_center, Flag(*this, #__flag_Textcenter))
     If Button_type
-       Hide(Button_type, 1)
+       HideWidget(Button_type, 1)
     EndIf
  
     ;\\
@@ -226,8 +226,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 211
-; FirstLine = 193
+; CursorPosition = 209
+; FirstLine = 180
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -297,7 +297,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
           
           ;  SetBackgroundImage( *new, Points( mouse( )\steps-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
-          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
+          EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
         EndIf
         
         Class.s = "Form_"+GetClass( *new )+"_"+GetTypeCount( *new )
@@ -825,7 +825,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; ;     ; gadgets
     ; ;     id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
-    ; ;     ;EnableDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
+    ; ;     ;EnableDDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
     ; ;     
     ; ;     
     ; ;     ;id_design_form = Container( 0,0,0,0 ) : a_init( id_design_form ) : CloseList( )
@@ -908,8 +908,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 759
-; FirstLine = 755
+; CursorPosition = 827
+; FirstLine = 793
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

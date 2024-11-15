@@ -902,7 +902,7 @@ DeclareModule _PBEdit_
 	Declare Find_Close(*te.TE_STRUCT)
 	Declare Find_SetSelectionCheckbox(*te.TE_STRUCT)
 	
-	Declare Autocomplete_Hide(*te.TE_STRUCT)
+	Declare Autocomplete_HideWidget(*te.TE_STRUCT)
 	
 	Declare Event_Button()
 	Declare Event_Gadget()
@@ -1496,7 +1496,7 @@ Module _PBEdit_
 			*view\zoom = 2.0
 		EndIf
 		
-		Autocomplete_Hide(*te.TE_STRUCT)
+		Autocomplete_HideWidget(*te.TE_STRUCT)
 		Scroll_Update(*te, *view, *te\currentCursor, -1, 1)
 		*te\redrawMode | #TE_Redraw_All
 		
@@ -6558,7 +6558,7 @@ Module _PBEdit_
 	;- ----------- AUTOCOMPLETE -----------
 	;-
 	
-	Procedure Autocomplete_Hide(*te.TE_STRUCT)
+	Procedure Autocomplete_HideWidget(*te.TE_STRUCT)
 		ProcedureReturnIf(*te = #Null)
 		
 		If *te\autoComplete\isVisible
@@ -6613,7 +6613,7 @@ Module _PBEdit_
 		EndIf
 		
 		If (textLen < *te\autocomplete\minCharacterCount)
-			Autocomplete_Hide(*te.TE_STRUCT)
+			Autocomplete_HideWidget(*te.TE_STRUCT)
 			ProcedureReturn #False
 		EndIf
 		
@@ -6651,7 +6651,7 @@ Module _PBEdit_
 		Next
 		
 		If ListSize(*te\autoComplete\entry()) = 0
-			Autocomplete_Hide(*te.TE_STRUCT)
+			Autocomplete_HideWidget(*te.TE_STRUCT)
 		Else
 			; 			If *te\autoComplete\mode = #TE_Autocomplete_FindAtBegind
 			SortStructuredList(*te\autoComplete\entry(), #PB_Sort_Ascending, OffsetOf(TE_KEYWORDITEM\length), #PB_Long)
@@ -6721,7 +6721,7 @@ Module _PBEdit_
 			EndIf
 		EndIf
 		
-		Autocomplete_Hide(*te.TE_STRUCT)
+		Autocomplete_HideWidget(*te.TE_STRUCT)
 		
 		ProcedureReturn result
 	EndProcedure
@@ -8224,7 +8224,7 @@ Module _PBEdit_
 					Cursor_Clear(*te, *te\maincursor)
 					Find_Close(*te)
 					DragDrop_Cancel(*te)
-					Autocomplete_Hide(*te.TE_STRUCT)
+					Autocomplete_HideWidget(*te.TE_STRUCT)
 					
 				Case #PB_Shortcut_Insert
 					
@@ -8784,7 +8784,7 @@ Module _PBEdit_
 				ElseIf autocompleteKey = #PB_Shortcut_Tab
 					Autocomplete_Insert(*te)
 				ElseIf autocompleteShow = #False
-					Autocomplete_Hide(*te.TE_STRUCT)
+					Autocomplete_HideWidget(*te.TE_STRUCT)
 				EndIf
 			EndIf
 			
@@ -8916,7 +8916,7 @@ Module _PBEdit_
 				If mousePosition = #TE_MousePosition_AutoComplete
 					ProcedureReturn
 				EndIf
-				Autocomplete_Hide(*te.TE_STRUCT)
+				Autocomplete_HideWidget(*te.TE_STRUCT)
 				
 				If (time - *te\cursorState\firstClickTime) > *te\cursorState\clickSpeed
 					*te\cursorState\clickCount = 0
@@ -9128,7 +9128,7 @@ Module _PBEdit_
 				
 			Case #PB_EventType_RightButtonDown
 				
-				Autocomplete_Hide(*te.TE_STRUCT)
+				Autocomplete_HideWidget(*te.TE_STRUCT)
 				Draw(*te, *view, -1, #TE_Redraw_All)
 				
 			Case #PB_EventType_RightButtonUp
@@ -9137,7 +9137,7 @@ Module _PBEdit_
 				
 			Case #PB_EventType_MiddleButtonDown
 				
-				Autocomplete_Hide(*te.TE_STRUCT)
+				Autocomplete_HideWidget(*te.TE_STRUCT)
 				
 			Case #PB_EventType_MouseMove
 				
@@ -9299,7 +9299,7 @@ Module _PBEdit_
 		Protected *te.TE_STRUCT = *view\editor
 		ProcedureReturnIf(*te = #Null)
 		
-		Autocomplete_Hide(*te.TE_STRUCT)
+		Autocomplete_HideWidget(*te.TE_STRUCT)
 		
 		If *te\currentCursor And (*view <> *te\currentView)
 			*te\currentView = *view
@@ -9521,7 +9521,7 @@ Module _PBEdit_
 		ProcedureReturnIf( (*te = #Null) Or (*te\view = #Null))
 		
 		If EventWindow() = *te\window
-			Autocomplete_Hide(*te.TE_STRUCT)
+			Autocomplete_HideWidget(*te.TE_STRUCT)
 			
 			View_Resize(*te, *te\view, x, y, width, height)
 			Draw(*te, *te\view)
@@ -9538,12 +9538,12 @@ Module _PBEdit_
 		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
 		
 		If GetActiveWindow() <> *te\window
-			Autocomplete_Hide(*te.TE_STRUCT)
+			Autocomplete_HideWidget(*te.TE_STRUCT)
 		EndIf
 		
 		Select Event()
 			Case #PB_Event_MoveWindow
-				Autocomplete_Hide(*te.TE_STRUCT)
+				Autocomplete_HideWidget(*te.TE_STRUCT)
 			Case #PB_Event_SizeWindow
 				; 				View_Resize(*te, *te\view, #PB_Ignore, #PB_Ignore, WindowWidth(wNr), WindowHeight(wNr))
 				;Draw(*te, *te\view, 1, #TE_Redraw_All)
@@ -10334,8 +10334,10 @@ CompilerIf #PB_Compiler_IsMainFile
 		EndSelect
 	ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = -----------------------f--------------------------------------------------------------------------------------------------------------------------------------------4-v+-----------------X0-f9vN8----------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 6653
+; FirstLine = 6602
+; Folding = -----------------------f----------------------------------------------------------------------------------------------------------------------------------------------v+-----------------X0-f9vN8----------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = TextEditor_x64.exe

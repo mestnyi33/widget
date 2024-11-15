@@ -64,11 +64,11 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(w_this, @events_widgets(), #__event_MouseEnter)
     widget::Bind(w_this, @events_widgets(), #__event_MouseLeave)
     
-    widget::bind(w_this, @events_widgets(), #__event_DragStart)
-    widget::bind(w_this, @events_widgets(), constants::#__event_Drop)
+    widget::Bind(w_this, @events_widgets(), #__event_DragStart)
+    widget::Bind(w_this, @events_widgets(), constants::#__event_Drop)
       
     w_this1 = widget::Tree( 140, 235, 40, 40, #__tree_nobuttons | #__tree_nolines) 
-    EnableDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
+    EnableDDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
   
     widget::Bind(w_this1, @events_widgets(), #__event_LeftDown)
     widget::Bind(w_this1, @events_widgets(), #__event_LeftUp)
@@ -78,15 +78,15 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(w_this1, @events_widgets(), #__event_MouseEnter)
     widget::Bind(w_this1, @events_widgets(), #__event_MouseLeave)
     
-    widget::bind(w_this1, @events_widgets(), #__event_DragStart)
-    widget::bind(w_this1, @events_widgets(), constants::#__event_Drop)
+    widget::Bind(w_this1, @events_widgets(), #__event_DragStart)
+    widget::Bind(w_this1, @events_widgets(), constants::#__event_Drop)
       
     widget::WaitClose()
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 60
+; CursorPosition = 70
+; FirstLine = 51
 ; Folding = --
 ; EnableXP
 ; DPIAware

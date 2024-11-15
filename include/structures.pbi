@@ -45,7 +45,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure RESIZEINFO Extends _s_COORDINATE
          flag.c
          clip.b
-         send.b
+         Send.b
          change.b
          nochildren.b
       EndStructure
@@ -312,7 +312,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          cursor.a[constants::#__a_count] ;
                                          ;
-         ;*transform._s_TRANSFORMDATA     ;
          grid_type.l
          *grid_image
       
@@ -322,12 +321,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
          *cursor                 ; current visible cursor
-         *drag._s_DRAG           ;
+         
+         drag.b
+         *drop._s_DRAG           ;
          
          click.a                 ; mouse clicked count
          change.b                ; mouse moved state
          buttons.a               ; mouse clicked button
-         dragstart.b
          
          steps.a
          anchors._s_TRANSFORM    ; a_anchors( )
@@ -613,7 +613,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          redraw.b
          ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
-         resize.RESIZEINFO                 
+         Resize.RESIZEINFO                 
          
          
          y.l[constants::#__c]
@@ -792,8 +792,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 314
-; FirstLine = 292
+; CursorPosition = 324
+; FirstLine = 314
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

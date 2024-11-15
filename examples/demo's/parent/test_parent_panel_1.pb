@@ -34,10 +34,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\
       Debug "----panel all childrens-----"
-      If StartEnumerate( *panel1 )
+      If StartEnum( *panel1 )
          Debug widget( )\text\string
          
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       ;\\ 
@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 44
+; CursorPosition = 39
+; FirstLine = 32
 ; Folding = -
 ; EnableXP

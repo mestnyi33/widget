@@ -100,17 +100,17 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       Debug "--- enumerate all gadgets ---"
-      If StartEnumerate( root( ) )
+      If StartEnum( root( ) )
          If Not is_window_( widget(  ) )
          Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
       EndIf
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       Debug "--- enumerate all gadgets ScrollArea ---"
-      If StartEnumerate( *PARENT )
+      If StartEnum( *PARENT )
          Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       ; Show_DEBUG()
@@ -119,8 +119,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 40
+; CursorPosition = 112
+; FirstLine = 91
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -188,7 +188,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    
-   Bind( Root( ), @anchor_events( ) )
+   Bind( root( ), @anchor_events( ) )
    
    ;\\Close( )
    
@@ -377,24 +377,24 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select GetText( EventWidget( ) )
                Case "hide_children"
-                  hide(*p, 1)
-                  ; Disable(*c, 1)
+                  HideWidget(*p, 1)
+                  ; DisableWidget(*c, 1)
                   
                Case "show_children"
-                  hide(*p, 0)
+                  HideWidget(*p, 0)
                   
                Case "hide_parent"
-                  hide(*c, GetState( EventWidget( ) ))
+                  HideWidget(*c, GetState( EventWidget( ) ))
                   
             EndSelect
             
             ;         ;Case #__event_LeftUp
             ;         ClearDebugOutput( )
-            ;         If StartEnumerate(*panel);Root( ))
-            ;           If Not hide(widget( )) ;And GetParent(widget( )) = *panel
+            ;         If StartEnum(*panel);Root( ))
+            ;           If Not HideWidget(widget( )) ;And GetParent(widget( )) = *panel
             ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
             ;           EndIf
-            ;           StopEnumerate( )
+            ;           StopEnum( )
             ;         EndIf
             
             
@@ -464,7 +464,7 @@ CompilerIf #PB_Compiler_IsMainFile
               #__event_MouseLeave,
               #__event_MouseMove
             
-            If EventWidget( ) <> Root( )
+            If EventWidget( ) <> root( )
                If EventWidget( )\mouseenter
                   If EventWidget( )\color\frame <> colorframe1
                      repaint                    = 1
@@ -540,11 +540,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    If *panel\root
-      If StartEnumerate( *panel, 2 )
+      If StartEnum( *panel, 2 )
          Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseEnter)
          Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseMove)
          Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseLeave)
-         StopEnumerate( )
+         StopEnum( )
       EndIf
    EndIf
    
@@ -654,7 +654,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
       ;Container(5, y, 150, 95 + 2)
       If i = 2
-         Disable( widget( ), 1)
+         DisableWidget( widget( ), 1)
       EndIf
       Container(5, 5, 120 + 2, 85 + 2) ;, #PB_Container_Flat)
       If i = 3
@@ -666,7 +666,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Button(10, 10, 100, 30, "Button_" + Trim(Str(i + 10)))
       EndIf
       If i = 3
-         Disable( widget( ), 1)
+         DisableWidget( widget( ), 1)
       EndIf
       If i = 4 Or i = 3
          Option(10, 45, 100, 30, "Option_" + Trim(Str(i + 20)))
@@ -675,7 +675,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Button(10, 45, 100, 30, "Button_" + Trim(Str(i + 20)))
       EndIf
       If i = 3
-         Disable( widget( ), 1)
+         DisableWidget( widget( ), 1)
       EndIf
       CloseList( )
       ;CloseList( )
@@ -690,8 +690,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 610
-; FirstLine = 541
+; CursorPosition = 546
+; FirstLine = 478
 ; Folding = NA+----
 ; EnableXP
 ; DPIAware

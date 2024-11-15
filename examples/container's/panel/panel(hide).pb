@@ -15,32 +15,32 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select GetText( EventWidget( ) )
           Case "hide_2"
-            hide(*c, 1)
-            ; Disable(*c, 1)
+            HideWidget(*c, 1)
+            ; DisableWidget(*c, 1)
             
           Case "show_2" 
-            hide(*c, 0)
+            HideWidget(*c, 0)
             
           Case "hide_3"
-            hide(*s, 1)
+            HideWidget(*s, 1)
             
           Case "show_3" 
-            hide(*s, 0)
+            HideWidget(*s, 0)
           
         EndSelect
         
         ;Case #PB_EventType_LeftButtonUp
         ClearDebugOutput( )
         
-        If StartEnumerate(*w1);Root())
-          If Not hide(widget( )) ;And GetParent(widget()) = *w1
+        If StartEnum(*w1);Root())
+          If Not HideWidget(widget( )) ;And GetParent(widget()) = *w1
             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
           EndIf
-          StopEnumerate( )
+          StopEnum( )
         EndIf
         
      Case #PB_EventType_Change
-         Debug "hide c - "+hide(*c)+" s - "+hide(*s)
+         Debug "hide c - "+HideWidget(*c)+" s - "+HideWidget(*s)
         
     EndSelect
   EndProcedure
@@ -142,7 +142,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; CursorPosition = 38
+; FirstLine = 30
 ; Folding = --
 ; EnableXP

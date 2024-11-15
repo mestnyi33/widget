@@ -35,17 +35,17 @@ Procedure Tool_Gadget_Event( )
                Protected State1 = Bool(GetState(Tool_Align_To_Line) = #PB_Checkbox_Checked)
                Protected State2 = Bool(GetState(Tool_Align_To_Grid) = #PB_Checkbox_Checked)
                
-               Disable(Tool_Grid_Show,State1)
-               Disable(Tool_Grid_Snap,State1)
-               Disable(Tool_Grid_Size,State1)
-               ;Disable(Tool_Grid_Frame,State1)
-               Disable(Tool_Grid_Container,State1)
+               DisableWidget(Tool_Grid_Show,State1)
+               DisableWidget(Tool_Grid_Snap,State1)
+               DisableWidget(Tool_Grid_Size,State1)
+               ;DisableWidget(Tool_Grid_Frame,State1)
+               DisableWidget(Tool_Grid_Container,State1)
                
-               Disable(Tool_Line_Show,State2)
-               Disable(Tool_Line_Snap,State2)
-               Disable(Tool_Line_Size,State2)
-               ;Disable(Tool_Line_Frame,State2)
-               Disable(Tool_Line_Container,State2)  
+               DisableWidget(Tool_Line_Show,State2)
+               DisableWidget(Tool_Line_Snap,State2)
+               DisableWidget(Tool_Line_Size,State2)
+               ;DisableWidget(Tool_Line_Frame,State2)
+               DisableWidget(Tool_Line_Container,State2)  
                
                ;\\
                SetColor(Tool_Align_To_Grid, #__Color_Front, State1 * $757B7B)
@@ -97,11 +97,11 @@ Procedure Tool_Gadget( Window, Width, Height )
    
    ;
     SetState( Tool_Align_To_Grid, 1) ; 
-;    Disable(Tool_Line_Show,1)
-;    Disable(Tool_Line_Snap,1)
-;    Disable(Tool_Line_Size,1)
-;    ;Disable(Tool_Line_Frame,1)
-;    Disable(Tool_Line_Container,1)
+;    DisableWidget(Tool_Line_Show,1)
+;    DisableWidget(Tool_Line_Snap,1)
+;    DisableWidget(Tool_Line_Size,1)
+;    ;DisableWidget(Tool_Line_Frame,1)
+;    DisableWidget(Tool_Line_Container,1)
 ;    SetColor(Tool_Align_To_Line, #__Color_Front, $757B7B)
    
    Bind(root( ), @Tool_Gadget_Event( ))
@@ -124,8 +124,8 @@ CompilerEndIf
 DisableExplicit
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 103
+; FirstLine = 76
 ; Folding = --
 ; Optimizer
 ; EnableXP

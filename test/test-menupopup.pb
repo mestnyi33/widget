@@ -38,10 +38,10 @@ CompilerIf #PB_Compiler_IsMainFile
           ;Protected mouse_x = DesktopUnscaledX(DesktopMouseX( )) - GadgetX( EventGadget(), #PB_Gadget_ScreenCoordinate )
          ; Protected mouse_x = DesktopUnscaledX(WindowMouseX( EventWindow())) - GadgetX( EventGadget(), #PB_Gadget_WindowCoordinate )
 ;           Protected mouse_x = DesktopUnscaledX(GetGadgetAttribute( EventGadget(), #PB_Canvas_MouseX ))
-;           DisplayPopupMenuBar( *menu, EventWidget( ), Mouse_x, CanvasMouseY( ) )
+;           DisplayPopupMenuBar( *menu, EventWidget( ), Mouse_x, GetMouseY( ) )
           
              ;DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-             ;DisplayPopupMenuBar( *menu, EventWidget( ), CanvasMouseX( ), CanvasMouseY( ) )
+             ;DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
              ;DisplayPopupMenuBar( *menu, EventWidget( ), DesktopMouseX( ), DesktopMouseY( ) )
             
            ; Debug "mouse_x = "+DesktopMouseX( ) +" gadget_x = "+ GadgetX(EventGadget(), #PB_Gadget_ScreenCoordinate) +" window_x = "+ WindowX(EventWindow(), #PB_Window_InnerCoordinate)
@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Next
    SetState(*combobox, 0)
    
-   Redraw(root( ))
+   Redraw(Root( ))
    
    
    DisplayPopupMenuBar( *combobox\PopupBar( ), *button_menu, 10, 125+25 )
@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 43
-; FirstLine = 40
+; FirstLine = 39
 ; Folding = -
 ; EnableXP
 ; DPIAware

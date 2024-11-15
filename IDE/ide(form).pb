@@ -116,7 +116,7 @@ Procedure ShowButtonBox( *second._S_WIDGET, item.i )
       If *this
          If *last <> *this
             If *last
-               Hide( *last, 1 )
+               HideWidget( *last, 1 )
             EndIf
             
             *last = *this
@@ -138,7 +138,7 @@ Procedure ShowButtonBox( *second._S_WIDGET, item.i )
                    *second\__items( )\y+*second\scroll_y( ), 
                    *second\__items( )\width,;-30, 
                    *second\__items( )\height )
-            Hide( *this, 0 )
+            HideWidget( *this, 0 )
             ; SetActive( *this )
             PopListPosition(*second\__items( ))
          EndIf
@@ -304,11 +304,11 @@ Procedure CreateProperties( x,y,width,height, flag=0 )
    SetClass(*second\scroll\v, "second_v")
    SetClass(*second\scroll\h, "second_h")
    
-   Hide( *first\scroll\v, 1 )
-   Hide( *first\scroll\h, 1 )
-   ;Hide( *second\scroll\v, 1 )
-   Hide( *second\scroll\h, 1 )
-   Closelist( )
+   HideWidget( *first\scroll\v, 1 )
+   HideWidget( *first\scroll\h, 1 )
+   ;HideWidget( *second\scroll\v, 1 )
+   HideWidget( *second\scroll\h, 1 )
+   CloseList( )
    
    
    SetData(*second, *first)
@@ -349,11 +349,11 @@ Macro properties_update_class( _gadget_, _value_ )
 EndMacro
 
 Macro properties_update_hide( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 )+Str( Hide( _value_ ) ) )
+   SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 )+Str( HideWidget( _value_ ) ) )
 EndMacro
 
 Macro properties_update_disable( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 )+Str( Disable( _value_ ) ) )
+   SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 )+Str( DisableWidget( _value_ ) ) )
 EndMacro
 
 Macro properties_update_coordinate( _gadget_, _value_ )
@@ -501,7 +501,7 @@ Procedure add_code( *new._s_widget, Class.s, Position.i, SubLevel.i )
    ;          FlagFromFlag( *new\type, *new\flag )+
    ;          " )"
    
-   code = Space( ( *new\level-2 )*4 ) + add_line( *new._s_widget, Class.s )
+   code = Space( ( GetLevel(*new)-GetLevel(ide_design_MDI) )*5 ) + add_line( *new._s_widget, Class.s )
    
    ;   ForEach widget( )
    ;     If Child( widget( ), ide_design_MDI )
@@ -681,11 +681,11 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
          
          ;
          If IsContainer( *new )
-            EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
-            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew )
-            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_reParent )
-            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
-            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
+            EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
+            ;           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew )
+            ;           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_reParent )
+            ;           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
+            ;           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
             If is_window
                a_set(*new, #__a_full, (14))
             Else
@@ -872,7 +872,14 @@ Procedure widget_events( )
            #__event_MouseLeave,
            #__event_MouseMove
          
-         If Not mouse( )\press
+         If mouse( )\press
+            If eventtype = #__event_MouseEnter
+               If mouse( )\drag
+                  Debug "drag entered "+EnteredWidget( )\class
+                 ; EnteredWidget( )\root\repaint = 1
+               EndIf
+            EndIf
+         Else
             If IsContainer( *e_widget ) 
                If GetState( ide_inspector_elements ) > 0 
                   If eventtype = #__event_MouseLeave
@@ -1039,7 +1046,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, toolbarbutton )
                group_select = 0
             EndIf
          Else
-            If Getstate( *e_widget )  
+            If GetState( *e_widget )  
                ; group
                group_select = *e_widget
                ; SetAtributte( *e_widget, #PB_Button_PressedImage )
@@ -1356,7 +1363,7 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    
    ;\\\ open inspector gadgets 
    ide_inspector_view = Tree( 0,0,0,0 ) : SetClass(ide_inspector_view, "ide_inspector_view" ) ;, #__flag_gridlines )
-   EnableDrop( ide_inspector_view, #PB_Drop_Text, #PB_Drag_Link )
+   EnableDDrop( ide_inspector_view, #PB_Drop_Text, #PB_Drag_Link )
    
    ; ide_inspector_splitter_panel_open
    ide_inspector_panel = Panel( 0,0,0,0 ) : SetClass(ide_inspector_panel, "ide_inspector_panel" )
@@ -1588,9 +1595,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;    Define._S_WIDGET *this, *parent
    ;    Debug "--- enumerate all gadgets ---"
-   ;    If StartEnumerate( root( ) )
+   ;    If StartEnum( root( ) )
    ;       Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
-   ;       StopEnumerate( )
+   ;       StopEnum( )
    ;    EndIf
    ;    
    ;    Debug ""
@@ -1599,9 +1606,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    Debug ""+*this\class +"           ("+ *parent\class +")" ;  +" - ("+ *this\text\string +")"
    ;    
    ;    
-   ;    If StartEnumerate( *parent )
+   ;    If StartEnum( *parent )
    ;       Debug "   *parent  gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
-   ;       StopEnumerate( )
+   ;       StopEnum( )
    ;    EndIf
    ;    
    If SetActive( ide_inspector_view )
@@ -1635,9 +1642,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 835
-; FirstLine = 793
-; Folding = --8d0-----------------------
+; CursorPosition = 1610
+; FirstLine = 1573
+; Folding = ---d0------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

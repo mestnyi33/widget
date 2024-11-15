@@ -30,9 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   
 ;   widget::Splitter(300, 110, 300, 70, *w1, -1, #PB_Splitter_Vertical)
    
-  ; ReDraw( Root( ) )
-   
- ;  widget::bar_Tab_SetState(*w0, -1)
+  ;  widget::bar_Tab_SetState(*w0, -1)
 ;    Debug "max "+*w0\bar\max
 ;  *w0\bar\page\pos = 165;*w0\bar\max
 ;   
@@ -45,6 +43,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 32
-; FirstLine = 19
+; FirstLine = 12
 ; Folding = -
 ; EnableXP

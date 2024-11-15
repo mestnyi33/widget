@@ -106,8 +106,8 @@ Procedure DrawBarEvents( )
   Protected y, *this._s_widget = EventWidget( )
   Protected EventType = WidgetEvent( )
   
-  MouseX = Mouse()\x 
-  MouseY = Mouse()\y 
+  MouseX = mouse()\x 
+  MouseY = mouse()\y 
   ;Debug MouseY
   
     
@@ -514,7 +514,7 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   
   ; this enables dropping our private type with a move operation
   ; это позволяет переместить наш частный тип с помощью операции перемещения
-  EnableDrop(*tree, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
+  EnableDDrop(*tree, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
   
   ;Bind( *tree, @events( ) )
   
@@ -529,8 +529,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 522
-; FirstLine = 497
+; CursorPosition = 516
+; FirstLine = 498
 ; Folding = -----
 ; EnableXP
 ; DPIAware

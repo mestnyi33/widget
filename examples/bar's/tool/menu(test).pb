@@ -17,7 +17,7 @@
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
-;                                                    Hide( *address ) - HideMenu( #Menu, State )
+;                                                    HideWidget( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
 ;                                                  WidgetHeight( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Define windowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
+   Define WindowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    ;\\
    ; Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
    *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
@@ -108,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    
-   If StartEnumerate( root( ) )
+   If StartEnum( root( ) )
       Debug widget( )\class
-      StopEnumerate( )
+      StopEnum( )
    EndIf
    
    Define Event
@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 34
+; CursorPosition = 112
+; FirstLine = 93
 ; Folding = -
 ; EnableXP
 ; DPIAware

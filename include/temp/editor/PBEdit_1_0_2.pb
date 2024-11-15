@@ -773,7 +773,7 @@ DeclareModule _PBEdit_
 	Declare		Find_Close(*te.TE_STRUCT)
 	Declare		Find_SetSelectionCheckbox(*te.TE_STRUCT)
 	
-	Declare		Autocomplete_Hide(*te.TE_STRUCT)
+	Declare		Autocomplete_HideWidget(*te.TE_STRUCT)
 	
 	Declare     Event_Gadget()
 	Declare		Event_Keyboard(*te.TE_STRUCT, *view.TE_VIEW, eventType)
@@ -1352,7 +1352,7 @@ Module _PBEdit_
 			*view\zoom = 2.0
 		EndIf
 		
-		Autocomplete_Hide(*te)
+		Autocomplete_HideWidget(*te)
 		Scroll_Update(*te, *view, *te\currentCursor, -1, 1)
 		*te\redrawMode | #TE_Redraw_All
 	EndProcedure
@@ -6634,7 +6634,7 @@ Module _PBEdit_
 	;- ----------- AUTOCOMPLETE -----------
 	;-
 	
-	Procedure Autocomplete_Hide(*te.TE_STRUCT)
+	Procedure Autocomplete_HideWidget(*te.TE_STRUCT)
 		ProcedureReturnIf((*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0))
 		
 		If *te\autocomplete\isVisible
@@ -6749,10 +6749,10 @@ Module _PBEdit_
 				
 				*te\autocomplete\isVisible = #True
 			Else
-				Autocomplete_Hide(*te)
+				Autocomplete_HideWidget(*te)
 			EndIf
 		Else
-			Autocomplete_Hide(*te)
+			Autocomplete_HideWidget(*te)
 		EndIf
 		
 		SetActiveWindow(*te\window)
@@ -6789,7 +6789,7 @@ Module _PBEdit_
 			Next
 		EndIf
 		
-		Autocomplete_Hide(*te)
+		Autocomplete_HideWidget(*te)
 		
 		ProcedureReturn result
 	EndProcedure
@@ -8576,7 +8576,7 @@ Module _PBEdit_
 				ElseIf autocompleteKey = #PB_Shortcut_Tab
 					Autocomplete_Insert(*te)
 				ElseIf autocompleteShow = #False
-					Autocomplete_Hide(*te)
+					Autocomplete_HideWidget(*te)
 				EndIf
 			EndIf
 			
@@ -8674,7 +8674,7 @@ Module _PBEdit_
 				
 			Case #PB_EventType_LeftButtonDown
 				
-				Autocomplete_Hide(*te)
+				Autocomplete_HideWidget(*te)
 				
 				If (time - *te\cursorState\firstClickTime) > *te\cursorState\clickSpeed
 					*te\cursorState\clickCount = 0
@@ -8902,7 +8902,7 @@ Module _PBEdit_
 				
 			Case #PB_EventType_RightButtonDown
 				
-				Autocomplete_Hide(*te)
+				Autocomplete_HideWidget(*te)
 				
 				Draw(*te, *view, 1, #TE_Redraw_All)
 				
@@ -8912,7 +8912,7 @@ Module _PBEdit_
 				
 			Case #PB_EventType_MiddleButtonDown
 				
-				Autocomplete_Hide(*te)
+				Autocomplete_HideWidget(*te)
 				
 			Case #PB_EventType_MouseMove
 				
@@ -9282,7 +9282,7 @@ Module _PBEdit_
 		ProcedureReturnIf((*te = #Null) Or (*te\view = #Null))
 		
 		If EventWindow() = *te\window
-			Autocomplete_Hide(*te)
+			Autocomplete_HideWidget(*te)
 			
 			View_Resize(*te, *te\view, x, y, width, height)
 			Draw(*te, *te\view)
@@ -9299,7 +9299,7 @@ Module _PBEdit_
 		ProcedureReturnIf((*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
 		
 		If GetActiveWindow() <> *te\window
-			Autocomplete_Hide(*te.TE_STRUCT)
+			Autocomplete_HideWidget(*te.TE_STRUCT)
 		EndIf
 	EndProcedure	
 	
@@ -9922,7 +9922,9 @@ Repeat
 	; 		StatusBarText(0, 2, "type: " + _PBEdit_::TokenEnumName(*token\type) + " text: " + PeekS(*token\text, *token\size))
 	; 	EndIf
 ForEver
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 6751
+; FirstLine = 6747
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

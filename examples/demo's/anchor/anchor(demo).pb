@@ -51,13 +51,13 @@ CompilerIf #PB_Compiler_IsMainFile
             SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
             
             ; 
-            If StartEnumerate( a_transform( )\grid_widget )
+            If StartEnum( a_transform( )\grid_widget )
               Resize(widget(), 
                      DPIUnScaled(widget()\container_x()),
                      DPIUnScaled(widget()\container_y()),
                      DPIUnScaled(widget()\container_width()),
                      DPIUnScaled(widget()\container_height()))
-              StopEnumerate( )
+              StopEnum( )
             EndIf
             ;Resize(a_transform( )\grid_widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
-; FirstLine = 4
+; CursorPosition = 59
+; FirstLine = 49
 ; Folding = ---
 ; EnableXP
 ; DPIAware

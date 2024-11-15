@@ -29,7 +29,7 @@ Global Gadget_SourceText,
 
 Global i, Event, font = LoadFont( 0, "Aria", (13) )
 
-; Macro EnableDrop( this, Format, Actions, PrivateType = 0 )
+; Macro EnableDDrop( this, Format, Actions, PrivateType = 0 )
 ;    DDropEnable( this, Format, Actions, PrivateType)
 ; EndMacro
 
@@ -76,7 +76,16 @@ If StartDrawing( ImageOutput( #ImageGadget_Source ) )
   StopDrawing( )
 EndIf  
 ;ResizeImage(#ImageGadget_Source, DPIScaled(ImageWidth(#ImageGadget_Source)), DPIScaled(ImageHeight(#ImageGadget_Source)))
-          
+; CopyImage( #ImageGadget_Source, #ImageGadget_Target )
+; If StartDrawing( ImageOutput( #ImageGadget_Target ) )
+;               DrawingFont( font )
+;               
+;               Box( 5,5,OutputWidth(),30, $FFFFFF)
+;               DrawText( 5, 5, "EventDrop image", $000000, $FFFFFF )        
+;               
+;               StopDrawing( )
+;            EndIf  
+;            
 CreateImage( #ImageGadget_Target, 136, 136 )
 If StartDrawing( ImageOutput( #ImageGadget_Target ) )
   DrawingFont( font )
@@ -465,12 +474,12 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   
   ; Now enable the dropping on the Gadget_Target s
   ;
-  EnableDrop( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
-  EnableDrop( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
-  EnableDrop( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
-  EnableDrop( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
-  EnableDrop( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
-  EnableDrop( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
+  EnableDDrop( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
+  EnableDDrop( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
+  EnableDDrop( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
+  EnableDDrop( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
+  EnableDDrop( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
+  EnableDDrop( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
   
   ; Bind( -1, @widget_events( ) )
   ;
@@ -498,8 +507,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 200
-; FirstLine = 197
+; CursorPosition = 481
+; FirstLine = 448
 ; Folding = -----
 ; Optimizer
 ; EnableXP

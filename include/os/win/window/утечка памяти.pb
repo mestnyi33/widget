@@ -1,8 +1,8 @@
 ﻿
 
-CompilerIf Not Defined( Widget, #PB_Module )
+CompilerIf Not Defined( widget, #PB_Module )
   ;-  >>>
-  DeclareModule Widget
+  DeclareModule widget
     EnableExplicit
     
     Structure _s_STATE
@@ -34,12 +34,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       _S_#_struct_name_#_struct_type_ = AllocateStructure( _S_#_struct_name_ )
     EndMacro
     
-    Macro Root( ) : *roots( ): EndMacro
+    Macro root( ) : *roots( ): EndMacro
     
     
     Global NewMap *roots._s_root() 
     
-    Declare   DrawingRoot( )
+    Declare   Drawing( )
     
     Declare.i Panel( x.l,y.l,width.l,height.l, Flag.i = 0 )
     Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.i = 0 )
@@ -49,7 +49,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     ;}
   EndDeclareModule
   
-  Module Widget
+  Module widget
     
     Procedure   AddItem( *this._S_widget, Item.l, Text.s, Image.i =- 1, flag.i = 0 )
       LastElement( *this\_s( ))
@@ -62,22 +62,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Debug "AddItem - "+*this\tab +" "+ *this\_s( ) 
     EndProcedure
     
-    Procedure   DrawingRoot( )
+    Procedure   Drawing( )
       
-      Debug "ListSize - "+ListSize(Root( )\child( ))
+      Debug "ListSize - "+ListSize(root( )\child( ))
       
-      ForEach Root( )\child( )
+      ForEach root( )\child( )
         
         
-        Debug Root( )\child( )
-        Debug "object class - "+Root( )\child( )\class
-        Debug "class "+Root( )\child( )\root\class
+        Debug root( )\child( )
+        Debug "object class - "+root( )\child( )\class
+        Debug "class "+root( )\child( )\root\class
         
         
-        If Root( )\child( )\tab
+        If root( )\child( )\tab
 ;           ChangeCurrentElement(Root( )\_s(), Root( )\child( )\tab)
 ;           Root( )\_s()\state\focus = #False
-          Root( )\child( )\tab\state\focus = #False
+          root( )\child( )\tab\state\focus = #False
         EndIf
       Next
       
@@ -85,30 +85,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
     
     
     Procedure.i Button( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, Image.i = -1, round.l = 0 )
-      Protected *this.allocate( Widget )
+      Protected *this.allocate( widget )
       
       *this\class = "button"
       
-      If Root( )
-        LastElement( Root( )\child( )  )
-        AddElement( Root( )\child( )  ) 
-        Root( )\child( )  = *this
-        *this\root = Root( )
+      If root( )
+        LastElement( root( )\child( )  )
+        AddElement( root( )\child( )  ) 
+        root( )\child( )  = *this
+        *this\root = root( )
       EndIf
       
       ProcedureReturn *this
     EndProcedure
     
     Procedure.i Panel( x.l,y.l,width.l,height.l, Flag.i = 0 )
-      Protected *this.allocate( Widget )
+      Protected *this.allocate( widget )
       
       *this\class = "panel"
       
-      If Root( )
-        LastElement( Root( )\child( )  )
-        AddElement( Root( )\child( )  ) 
-        Root( )\child( )  = *this
-        *this\root = Root( )
+      If root( )
+        LastElement( root( )\child( )  )
+        AddElement( root( )\child( )  ) 
+        root( )\child( )  = *this
+        *this\root = root( )
       EndIf
       
       ProcedureReturn *this
@@ -124,14 +124,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       If Canvas =- 1 : Canvas = g : g = GadgetID( Canvas ) : EndIf
       
       ;
-      If Not FindMapElement( Root( ), Str( g ) )
-        result = AddMapElement( Root( ), Str( g ) )
-        Root( ) = AllocateStructure( _S_root )
-        Root( )\class = "root"
-        Root( )\root = Root( )
+      If Not FindMapElement( root( ), Str( g ) )
+        result = AddMapElement( root( ), Str( g ) )
+        root( ) = AllocateStructure( _S_root )
+        root( )\class = "root"
+        root( )\root = root( )
       EndIf
       
-      ProcedureReturn Root( )
+      ProcedureReturn root( )
     EndProcedure
     
     
@@ -148,7 +148,7 @@ EndMacro
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   
-  UseModule Widget
+  UseModule widget
   
   Define event
   Define id_design_panel
@@ -160,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
   AddItem( id_design_panel, -1, "Form" )
   Button( 0,0,0,0,"" )
   Button( 0,0,0,0,"" )
-  DrawingRoot()
+  Drawing()
   
   Repeat 
     event = WaitWindowEvent( ) 
@@ -170,6 +170,6 @@ CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 64
-; FirstLine = 60
+; FirstLine = 61
 ; Folding = ----
 ; EnableXP

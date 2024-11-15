@@ -46,16 +46,16 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\beforeWidget( )
+            line + widgets( )\beforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\afterWidget( )
+            line +"  >> "+ widgets( )\afterWidget( )\class ;+"_"+widgets( )\after\widget\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    
-   Macro StartEnumerate2( _parent_, _item_ = #PB_All )
+   Macro StartEnum2( _parent_, _item_ = #PB_All )
          Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
          PushListPosition( widgets( ) )
          ;
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
                Break
             EndMacro
             ;
-            Macro StopEnumerate2( )
+            Macro StopEnum2( )
             Until Not NextElement( widgets( ) )
          EndIf
          PopListPosition( widgets( ) )
@@ -159,17 +159,17 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       Debug "--- enumerate all gadgets ---"
-      If StartEnumerate( root( ) )
+      If StartEnum( root( ) )
          If Not is_window_( widget(  ) )
          Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
       EndIf
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
-      Debug "--- enumerate all gadgets PANEL ---"
-      If StartEnumerate2( *PARENT )
+      Debug "--- enumerate2 all gadgets PANEL ---"
+      If StartEnum2( *PARENT )
          Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
-         StopEnumerate2( )
+         StopEnum2( )
       EndIf
       
       Show_DEBUG()
@@ -178,8 +178,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 123
+; CursorPosition = 171
+; FirstLine = 146
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -108,7 +108,7 @@ EndProcedure
   LoadFont(5, "Arial", 16)
     LoadFont(6, "Arial", 25)
     
-  Procedure LoadControls(Widget, Directory$)
+  Procedure LoadControls(widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
     If FileSize(ZipFile$) < 1
@@ -164,39 +164,39 @@ EndProcedure
                       Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
                       PackEntryName.S = " "+Left.S+Right.S
                       
-                      If IsGadget(Widget)
+                      If IsGadget(widget)
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 0, ImageID(Image))
+                          AddGadgetItem(widget, 0, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, 0, ImageID(Image))
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
-                          AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 1, ImageID(Image))
+                          AddGadgetItem(widget, 1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, 1, ImageID(Image))
                           
                         Else
-                          AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
+                          AddGadgetItem(widget, -1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, CountGadgetItems(widget)-1, ImageID(Image))
                         EndIf
                         
                       Else
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddItem(Widget, 0, PackEntryName.S, Image)
+                          AddItem(widget, 0, PackEntryName.S, Image)
                           ;SetItemData(Widget, 0, Image)
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
-                          AddItem(Widget, 1, PackEntryName.S, Image)
+                          AddItem(widget, 1, PackEntryName.S, Image)
                           ;SetItemData(Widget, 1, Image)
                           
                         Else
-                          AddItem(Widget, -1, PackEntryName.S, Image)
+                          AddItem(widget, -1, PackEntryName.S, Image)
                           ;SetItemData(Widget, CountItems(Widget)-1, Image)
                         EndIf
                       EndIf
@@ -512,7 +512,7 @@ EndProcedure
     AddItem(*g, 13, "Tree_6", -1 )
     AddItem(*g, 14, "Tree_7", -1 )
 ; ;     ;Bind(*g, @events_tree_widget())
-; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
+; ;     DD::EnableDDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
   ;  For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Collapsed) : Next
     
@@ -586,7 +586,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
+; CursorPosition = 514
+; FirstLine = 356
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware

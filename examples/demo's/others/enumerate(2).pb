@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                        #PB_Window_MinimizeGadget |
                                        #PB_Window_MaximizeGadget )
    
-   SetClass(Root( ), "window_0_root" )
+   SetClass(root( ), "window_0_root" )
    Button(10,10,200,50,"window_0_root_butt_1")
    SetClass(widget( ), "window_0_root_butt_1" )
    Button(10,65,200,50,"window_0_root_butt_2")
@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
    
-   SetClass(Root( ), "window_1_root" )
+   SetClass(root( ), "window_1_root" )
    Button(10,10,200,50,"window_1_root_butt_1")
    SetClass(widget( ), "window_1_root_butt_1" )
    Button(10,65,200,50,"window_1_root_butt_2")
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
    
-   SetClass(Root( ), "window_2_root" )
+   SetClass(root( ), "window_2_root" )
    Button(10,10,200,50,"window_2_root_butt_1")
    SetClass(widget( ), "window_2_root_butt_1" )
    Button(10,65,200,50,"window_2_root_butt_2")
@@ -48,9 +48,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Debug "--- enumerate all widgets ---"
    ForEach roots( )
       Debug "     window "+ roots( )\class
-      If StartEnumerate( roots( ) )
+      If StartEnum( roots( ) )
          Debug "       gadget - "+ widget()\class
-         StopEnumerate( )
+         StopEnum( )
       EndIf
    Next
    
@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 43
+; CursorPosition = 52
+; FirstLine = 30
 ; Folding = -
 ; EnableXP

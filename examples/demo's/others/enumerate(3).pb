@@ -17,17 +17,17 @@ CompilerIf #PB_Compiler_IsMainFile
       
       time = ElapsedMilliseconds( )
       Debug "--- enumerate all gadgets ---"
-      If StartEnumerate( root( ) )
+      If StartEnum( root( ) )
          ;Debug "     gadget - "+ widget( )\index +" "+ widget( )\class
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       Debug "time - "+Str(ElapsedMilliseconds( ) - time)
       
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 20
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 21
 ; Folding = -
 ; EnableXP
 ; DPIAware

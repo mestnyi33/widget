@@ -44,11 +44,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
       Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
-      BindGadgetEvent( GetGadget( Root( ) ), _callback_ )
+      BindGadgetEvent( GetGadget( root( ) ), _callback_ )
    EndMacro
    
    Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
-      _parent_\root = Root( ) 
+      _parent_\root = root( ) 
       _parent_\class = "Area"
       _parent_\fs = _frame_size_
       
@@ -209,11 +209,11 @@ CompilerIf #PB_Compiler_IsMainFile
       
       widget::EventHandler( Canvas, Event )
       
-      MouseX = widget::Mouse( )\x
-      MouseY = widget::Mouse( )\y
+      MouseX = widget::mouse( )\x
+      MouseY = widget::mouse( )\y
       ;     Width = widget::Root( )\width - x*2
       ;     Height = widget::Root( )\height - y*2
-      
+     
       Select Event
          Case #PB_EventType_Repaint
             Repaint = #True
@@ -254,11 +254,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
       If Repaint
-         Redraw( Root( ))
-;          If StartDrawingRoot( Root( ) )
-;             DrawingRoot( )
+         Redraw( root( ))
+;          If StartDraw( Root( ) )
+;             Drawing( )
 ;             Canvas_Draw( MyCanvas, Images( ) ) 
-;             StopDrawingRoot( )
+;             StopDraw( )
 ;          EndIf
       EndIf
    EndProcedure
@@ -393,7 +393,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 58
+; CursorPosition = 256
+; FirstLine = 240
 ; Folding = --------
 ; EnableXP

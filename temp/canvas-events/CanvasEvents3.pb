@@ -1,5 +1,5 @@
 ﻿EnableExplicit
-Global NewMap IsEnableDrop( )
+Global NewMap IsEnableDDrop( )
 
 Global MouseX =- 1, MouseY =- 1, ClickTime
 Global PressedGadgetID = 0, PressedGadget =- 1
@@ -195,13 +195,13 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 CompilerEndIf
 
 
-Macro CanvasMouseX( _canvas_ )
+Macro GadgetMouseX( _canvas_ )
   ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
   DesktopMouseX( ) - GadgetX( _canvas_, #PB_Gadget_ScreenCoordinate )
   ; WindowMouseX( window ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )  
 EndMacro
 
-Macro CanvasMouseY( _canvas_ )
+Macro GadgetMouseY( _canvas_ )
   ; GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
   DesktopMouseY( ) - GadgetY( _canvas_, #PB_Gadget_ScreenCoordinate )
   ; WindowMouseY( window ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
@@ -260,8 +260,8 @@ Procedure DoCanvasEvents( event )
       EndIf
       
       If Canvas >= 0
-        mouse_x = CanvasMouseX( Canvas )
-        mouse_y = CanvasMouseY( Canvas )
+        mouse_x = GadgetMouseX( Canvas )
+        mouse_y = GadgetMouseY( Canvas )
       Else
         mouse_x =- 1
         mouse_y =- 1
@@ -280,8 +280,8 @@ Procedure DoCanvasEvents( event )
     
     ;
     If PressedGadgetID  
-      mouse_x = CanvasMouseX( PressedGadget )
-      mouse_y = CanvasMouseY( PressedGadget )
+      mouse_x = GadgetMouseX( PressedGadget )
+      mouse_y = GadgetMouseY( PressedGadget )
       
       MouseChange = #True
     EndIf
@@ -357,7 +357,7 @@ Procedure DoCanvasEvents( event )
       If Not ( ClickTime And ElapsedMilliseconds( ) - ClickTime < DoubleClickTime( ) )
         If PressedGadget = DraggedGadget
           If EnteredGadget >= 0 And
-             FindMapElement( IsEnableDrop( ), Str(EnteredGadget) )
+             FindMapElement( IsEnableDDrop( ), Str(EnteredGadget) )
             DroppedGadget = EnteredGadget
             
             CanvasEvents( DroppedGadget, #PB_EventType_Drop )
@@ -391,7 +391,7 @@ Macro CanvasGadget(gadget, x,y,width,height, flag=0 )
   If flag & #PB_Canvas_Keyboard
     FocusedGadget = gadget
   EndIf
-  IsEnableDrop( Str( gadget ) ) = 1
+  IsEnableDDrop( Str( gadget ) ) = 1
   ;SetGadgetState( 
   StartDrawing( CanvasOutput( Gadget ) )
   Box( 0,0, OutputWidth( ), OutputHeight( ), RGB( Red(Random( 255 )), Blue(Random( 255 )), Green(Random( 255 )) ) )
@@ -417,6 +417,8 @@ Until event = #PB_Event_CloseWindow
 ;   2 #PB_EventType_LeftButtonUp 
 ;   2 #PB_EventType_LeftClick 
 ;   2 #PB_EventType_LeftDoubleClick 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 393
+; FirstLine = 361
 ; Folding = ----------
 ; EnableXP

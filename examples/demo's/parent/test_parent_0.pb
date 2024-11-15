@@ -64,25 +64,25 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select GetText( EventWidget( ) )
                Case "hide_children"
-                  hide(*p, 1)
-                  ; Disable(*c, 1)
+                  HideWidget(*p, 1)
+                  ; DisableWidget(*c, 1)
                   
                Case "show_children"
-                  hide(*p, 0)
+                  HideWidget(*p, 0)
                   
                Case "hide_parent"
-                  hide(*c, GetState( EventWidget( ) ))
+                  HideWidget(*c, GetState( EventWidget( ) ))
                   
             EndSelect
             
             ;         ;Case #__event_LeftUp
             ;         ClearDebugOutput( )
             ; PushListPosition( panel_children( ))
-            ;         If StartEnumerate(*panel);Root( ))
-            ;           If Not hide(widget( )) ;And GetParent(widget( )) = *panel
+            ;         If StartEnum(*panel);Root( ))
+            ;           If Not HideWidget(widget( )) ;And GetParent(widget( )) = *panel
             ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
             ;           EndIf
-            ;           StopEnumerate( )
+            ;           StopEnum( )
             ;         EndIf
             ; PopListPosition( panel_children( ))
             
@@ -200,7 +200,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
               #__event_MouseLeave,
               #__event_MouseMove
             
-            If EventWidget( ) <> Root( )
+            If EventWidget( ) <> root( )
                If EventWidget( )\enter
                   If EventWidget( )\color\frame <> colorframe1
                      repaint                    = 1
@@ -262,11 +262,11 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    ;\\
    If *panel\root
       ;PushListPosition( *panel\root\children( ))
-      If StartEnumerate( *panel)
+      If StartEnum( *panel)
          Bind(widget( ), @events_containers( ), #__event_MouseEnter)
          Bind(widget( ), @events_containers( ), #__event_MouseMove)
          Bind(widget( ), @events_containers( ), #__event_MouseLeave)
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       ;PopListPosition( *panel\root\children( ))
    EndIf
@@ -407,10 +407,10 @@ CompilerEndIf
 ; ;   
 ;       
 ;       Debug "----CONT all childrens-----"
-;       If StartEnumerate( *CONT )
+;       If StartEnum( *CONT )
 ;          Debug widget( )\text\string
 ;          
-;          StopEnumerate( )
+;          StopEnum( )
 ;       EndIf
 ;       
 ;       Debug "----all childrens-----"
@@ -447,8 +447,8 @@ CompilerEndIf
 ;    EndIf   
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 73
+; CursorPosition = 412
+; FirstLine = 385
 ; Folding = ------
 ; EnableXP
 ; DPIAware

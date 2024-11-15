@@ -20,7 +20,7 @@ DeclareModule Transformation
   Declare Is(Gadget.i)
   Declare Gadget()
   Declare Update(Gadget.i)
-  Declare Disable(Gadget.i)
+  Declare DisableWidget(Gadget.i)
   Declare Enable(Gadget.i, Grid.i=1, Flags.i=#Anchor_All)
  
 EndDeclareModule
@@ -208,7 +208,7 @@ Module Transformation
     EndWith
   EndProcedure
  
-  Procedure Disable(Gadget.i)
+  Procedure DisableWidget(Gadget.i)
     Protected I.i
    
     If ListSize(AnChor())
@@ -233,7 +233,7 @@ Module Transformation
     Protected *Cursors.DataBuffer = ?Cursors
     Protected *Flags.DataBuffer = ?Flags
      
-    Disable(Gadget)
+    DisableWidget(Gadget)
    
     *Anchor = AddElement(AnChor())
    
@@ -244,16 +244,16 @@ Module Transformation
      \Pos = 0;\Size/2 ;- \Size/6
       
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        Static open
+        Static Open
         Protected ParentID = GetParent_(GadgetID(Gadget))
         Protected Parent = GetProp_( ParentID, "PB_ID" )
         If ( IsGadget( Parent ) And GadgetID( Parent ) = ParentID )
           OpenGadgetList(Parent)
-          open=1
+          Open=1
         Else
-          If open
+          If Open
             CloseGadgetList()
-            open=0
+            Open=0
           EndIf
           UseGadgetList(ParentID) ; WindowID(GetActiveWindow()))
         EndIf
@@ -390,13 +390,13 @@ CompilerIf #PB_Compiler_IsMainFile
             Select GetGadgetState(#Transformation)
               Case #False
                 SetGadgetText(#Transformation, "Enable Transformation")
-                Disable(#EditorGadget)
-                Disable(#ButtonGadget)
-                Disable(#TrackBarGadget)
-                Disable(#SpinGadget)
-                Disable(#CanvasGadget)
-                Disable(#ContainerGadget)
-                Disable(#ContainerGadget2)
+                DisableWidget(#EditorGadget)
+                DisableWidget(#ButtonGadget)
+                DisableWidget(#TrackBarGadget)
+                DisableWidget(#SpinGadget)
+                DisableWidget(#CanvasGadget)
+                DisableWidget(#ContainerGadget)
+                DisableWidget(#ContainerGadget2)
               Case #True
                 SetGadgetText(#Transformation, "Disable Transformation")
                 Enable(#EditorGadget, 5, #Anchor_All)
@@ -413,6 +413,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
   ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 398
+; FirstLine = 313
 ; Folding = v-8------
 ; EnableXP

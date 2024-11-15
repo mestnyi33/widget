@@ -63,8 +63,8 @@ AddItem(*list2, -1, "22JAN21#789")
 AddItem(*list2, -1, "28JAN21#123")
 AddItem(*list2, -1, "30JAN21#999")
 
-EnableDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
-EnableDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
+EnableDDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
+EnableDDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
 
 Bind(*list1, @event_widget( ), #__event_DragStart)
 Bind(*list1, @event_widget( ), #__event_Drop)
@@ -84,8 +84,8 @@ WaitClose()
 ;   
 ; Until appQuit
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 7
+; CursorPosition = 66
+; FirstLine = 52
 ; Folding = -
 ; EnableXP
 ; DPIAware

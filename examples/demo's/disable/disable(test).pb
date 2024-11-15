@@ -17,18 +17,18 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         
       Case *enable
         Debug "enable"
-        Disable( *CHILD, 0 )
-        Disable( *enable, 1 )
-        If Disable( *disable )
-          Disable( *disable, 0 )
+        DisableWidget( *CHILD, 0 )
+        DisableWidget( *enable, 1 )
+        If DisableWidget( *disable )
+          DisableWidget( *disable, 0 )
         EndIf
         
       Case *disable
         Debug "disable"
-        Disable( *CHILD, 1 )
-        Disable( *disable, 1 )
-        If Disable( *enable )
-          Disable( *enable, 0 )
+        DisableWidget( *CHILD, 1 )
+        DisableWidget( *disable, 1 )
+        If DisableWidget( *enable )
+          DisableWidget( *enable, 0 )
         EndIf
         
       Case *LIST
@@ -78,10 +78,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             
             Resize(*CHILD,10,40, 280, 150)
             
-            Disable( *CHILD, 1  )
-            Disable( *disable, 1 )
-            If Disable( *enable )
-              Disable( *enable, 0 )
+            DisableWidget( *CHILD, 1  )
+            DisableWidget( *disable, 1 )
+            If DisableWidget( *enable )
+              DisableWidget( *enable, 0 )
             EndIf
         EndSelect
         
@@ -141,15 +141,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     SetState(*LIST, #PB_GadgetType_Button)
     *CHILD = Button(10,40, 280, 150,"Button") 
-    Disable( *CHILD, 1 )
-    Disable( *disable, 1 )
+    DisableWidget( *CHILD, 1 )
+    DisableWidget( *disable, 1 )
     
     WaitClose( )
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 2
+; CursorPosition = 144
+; FirstLine = 117
 ; Folding = --
 ; EnableXP
 ; DPIAware

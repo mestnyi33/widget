@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../-widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -50,8 +50,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Resize(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
 ;   Resize(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   Debug "---->>"
-  ForEach widget()
-    Debug "  "+ Space(widget()\level*4) +" "+ widget()\class
+  ForEach widgets()
+    Debug ""+ Space((widgets()\level-1)*5) +" "+ widgets()\class
   Next
   Debug "<<----"
   
@@ -82,6 +82,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 53
+; FirstLine = 45
 ; Folding = -
 ; EnableXP

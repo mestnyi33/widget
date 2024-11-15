@@ -271,7 +271,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 14, "Tree_14", -1 )
     AddItem(*g, 15, "Tree_15", -1 )
 ; ;     ;Bind(*g, @events_tree_widget())
-; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
+; ;     DD::EnableDDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
     
  ;{  4_example
@@ -332,8 +332,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 49
+; CursorPosition = 273
+; FirstLine = 269
 ; Folding = ---
 ; Optimizer
 ; EnableXP

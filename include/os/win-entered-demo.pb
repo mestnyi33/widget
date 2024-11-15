@@ -1,6 +1,6 @@
 ﻿; splitter !!!!!!
 
-IncludePath "../../os/win/"
+IncludePath "../os/win/"
 XIncludeFile "id.pbi"
 XIncludeFile "mouse.pbi"
 XIncludeFile "cursor.pbi"
@@ -248,6 +248,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 2
 ; Folding = -8--
 ; EnableXP

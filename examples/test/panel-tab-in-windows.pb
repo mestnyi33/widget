@@ -8,10 +8,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Global._s_WIDGET *panel, *butt0, *butt1, *butt2
   
   Procedure events()
-    If eventwidget( )\TabBox( )
-        Debug "TabBox( ) "+eventwidget( )\TabBox( )\draw_x( ) +" "+ eventwidget( )\TabBox( )\draw_y( ) +" "+ eventwidget( )\TabBox( )\draw_width( ) +" "+ eventwidget( )\TabBox( )\draw_height( )
+    If EventWidget( )\TabBox( )
+        Debug "TabBox( ) "+EventWidget( )\TabBox( )\draw_x( ) +" "+ EventWidget( )\TabBox( )\draw_y( ) +" "+ EventWidget( )\TabBox( )\draw_width( ) +" "+ EventWidget( )\TabBox( )\draw_height( )
       Else
-        Debug ""+eventwidget( )\class +" "+ eventwidget( )\draw_x( ) +" "+ eventwidget( )\draw_y( ) +" "+ eventwidget( )\draw_width( ) +" "+ eventwidget( )\draw_height( )
+        Debug ""+EventWidget( )\class +" "+ EventWidget( )\draw_x( ) +" "+ EventWidget( )\draw_y( ) +" "+ EventWidget( )\draw_width( ) +" "+ EventWidget( )\draw_height( )
       EndIf
   EndProcedure
   
@@ -26,19 +26,19 @@ CompilerIf #PB_Compiler_IsMainFile
      
      
     Debug "----panel all childrens-----"
-    If StartEnumerate( Root())
+    If StartEnum( root())
       Debug widget( )\text\string
       
       If widget( )\TabBox( )
         Debug "TabBox( ) "+widget( )\TabBox( )\draw_x( ) +" "+ widget( )\TabBox( )\draw_y( ) +" "+ widget( )\TabBox( )\draw_width( ) +" "+ widget( )\TabBox( )\draw_height( )
-        bind(widget( ), @events(), #__event_down)
-        bind(widget( ), @events(), #__event_up)
-        bind(widget( )\TabBox( ), @events(), #__event_down)
-        bind(widget( )\TabBox( ), @events(), #__event_up)
+        Bind(widget( ), @events(), #__event_down)
+        Bind(widget( ), @events(), #__event_up)
+        Bind(widget( )\TabBox( ), @events(), #__event_down)
+        Bind(widget( )\TabBox( ), @events(), #__event_up)
       Else
         Debug ""+widget( )\class +" "+ widget( )\draw_x( ) +" "+ widget( )\draw_y( ) +" "+ widget( )\draw_width( ) +" "+ widget( )\draw_height( )
       EndIf
-      StopEnumerate( )
+      StopEnum( )
     EndIf
     
     
@@ -60,8 +60,8 @@ CompilerEndIf
 ; 90 90
 ; --221 90 158 0
 ; 221 90 158 0
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 26
-; FirstLine = 23
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 40
+; FirstLine = 24
 ; Folding = --
 ; EnableXP

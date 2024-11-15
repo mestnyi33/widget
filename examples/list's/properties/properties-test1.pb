@@ -155,10 +155,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetClass(*second\scroll\v, "second_v")
       SetClass(*second\scroll\h, "second_h")
       
-      Hide( *first\scroll\v, 1 )
-      Hide( *first\scroll\h, 1 )
-      ;Hide( *second\scroll\v, 1 )
-      Hide( *second\scroll\h, 1 )
+      HideWidget( *first\scroll\v, 1 )
+      HideWidget( *first\scroll\h, 1 )
+      ;HideWidget( *second\scroll\v, 1 )
+      HideWidget( *second\scroll\h, 1 )
       Closelist( )
       
       SetData(*second, *first)
@@ -200,8 +200,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItemProperties(*Tree, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)),              #__type_Spin, 1)
       
       AddItemProperties(*Tree, #_pi_group_2, "state")
-      AddItemProperties(*Tree, #_pi_disable, "disable:"+Chr(10)+"",                                  #__type_ComboBox, 1);Str(Disable(Value)))
-      AddItemProperties(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)),                          #__type_ComboBox, 1)
+      AddItemProperties(*Tree, #_pi_disable, "disable:"+Chr(10)+"",                                  #__type_ComboBox, 1);Str(DisableWidget(Value)))
+      AddItemProperties(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)),                          #__type_ComboBox, 1)
       
       Define *Tree1 = CreateProperties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
       Define Value = *Tree1
@@ -217,8 +217,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItemProperties(*Tree1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)),              #__type_Spin, 1)
       
       AddItemProperties(*Tree1, #_pi_group_2, "state")
-      AddItemProperties(*Tree1, #_pi_disable, "disable:"+Chr(10)+"",                                  #__type_ComboBox, 1);Str(Disable(Value)))
-      AddItemProperties(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)),                          #__type_ComboBox, 1)
+      AddItemProperties(*Tree1, #_pi_disable, "disable:"+Chr(10)+"",                                  #__type_ComboBox, 1);Str(DisableWidget(Value)))
+      AddItemProperties(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)),                          #__type_ComboBox, 1)
       
       Splitter_0 = Splitter(0, 0, 300, 300, Button_1, *Tree)
       Splitter_1 = Splitter(30, 30, 300, 300, Splitter_0, *Tree1, #PB_Splitter_Vertical)
@@ -234,8 +234,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 38
+; CursorPosition = 219
+; FirstLine = 198
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #CHILD = 5
   Global *enable, *disable, *item1, *item2, *item3, *LIST
   
-  Procedure Disable( Gadget, state = #PB_Default )
+  Procedure DisableWidget( Gadget, state = #PB_Default )
     If IsGadget(Gadget) 
       If state >= 0
         DisableGadget( Gadget, state )
@@ -26,18 +26,18 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case *enable
         Debug "enable"
-        Disable( #CHILD, 0 )
-        Disable( *enable, 1 )
-        If Disable( *disable )
-          Disable( *disable, 0 )
+        DisableWidget( #CHILD, 0 )
+        DisableWidget( *enable, 1 )
+        If DisableWidget( *disable )
+          DisableWidget( *disable, 0 )
         EndIf
         
       Case *disable
         Debug "disable"
-        Disable( #CHILD, 1 )
-        Disable( *disable, 1 )
-        If Disable( *enable )
-          Disable( *enable, 0 )
+        DisableWidget( #CHILD, 1 )
+        DisableWidget( *disable, 1 )
+        If DisableWidget( *enable )
+          DisableWidget( *enable, 0 )
         EndIf
         
       Case *LIST
@@ -94,9 +94,9 @@ CompilerIf #PB_Compiler_IsMainFile
             CompilerEndIf
             
             ResizeGadget( #CHILD,10,40, 280, 150 )
-            Disable( #CHILD, 1 )
-            Disable( *disable, 1 )
-            Disable( *enable, 0 )
+            DisableWidget( #CHILD, 1 )
+            DisableWidget( *disable, 1 )
+            DisableWidget( *enable, 0 )
             
         EndSelect
         
@@ -159,8 +159,8 @@ ListViewGadget( *LIST,300,10,150,180 )
   
   SetGadgetState( *LIST, #PB_GadgetType_Button );:  PostEvent( #PB_Event_gadget, #CHILD, *LIST, #PB_EventType_Change )
   ButtonGadget( #CHILD, 10,40, 280, 150,"Button") 
-    Disable( #CHILD, 1 )
-    Disable( *disable, 1 )
+    DisableWidget( #CHILD, 1 )
+    DisableWidget( *disable, 1 )
     
    
     
@@ -168,8 +168,8 @@ ListViewGadget( *LIST,300,10,150,180 )
       Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 63
-; FirstLine = 50
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 162
+; FirstLine = 137
 ; Folding = ---
 ; EnableXP

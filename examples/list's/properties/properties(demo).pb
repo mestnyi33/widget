@@ -44,8 +44,8 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*prop, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
     
     widget::AddItem(*prop, #_pi_group_2, "state")
-    widget::AddItem(*prop, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-    widget::AddItem(*prop, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+    widget::AddItem(*prop, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
+    widget::AddItem(*prop, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
     
     Define *prop1 = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *prop1
@@ -61,8 +61,8 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*prop1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
     
     widget::AddItem(*prop1, #_pi_group_2, "state")
-    widget::AddItem(*prop1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-    widget::AddItem(*prop1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+    widget::AddItem(*prop1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
+    widget::AddItem(*prop1, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
     
     Splitter_0 = widget::Splitter(0, 0, 300, 300, Button_1, *prop)
     Splitter_1 = widget::Splitter(30, 30, 300, 300, Splitter_0, *prop1, #PB_Splitter_Vertical)
@@ -72,7 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 67
+; CursorPosition = 63
+; FirstLine = 42
 ; Folding = -
 ; Optimizer
 ; EnableXP

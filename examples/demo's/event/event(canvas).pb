@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       If event = #__event_MouseMove
-         Debug " -move- "+*this\class +" "+ DesktopMouseX( ) +" "+ Str(CanvasMouseX(*this\root\canvas\gadget)) +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height 
+         Debug " -move- "+*this\class +" "+ DesktopMouseX( ) +" "+ Str(GetMouseX(*this\root\canvas\gadget)) +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height 
       EndIf
    EndProcedure
    
@@ -63,17 +63,17 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonGadget(-1, 0,0,500,20,"")
       Button( 0,30,500,20,"")
       
-      Debug WindowX( root()\canvas\window, #PB_Window_InnerCoordinate ) ; 518
-      Debug GadgetX( root()\canvas\gadget, #PB_Gadget_ScreenCoordinate ) ; 518
-      Debug WindowWidth( root()\canvas\window, #PB_Window_InnerCoordinate ) ; 500
-      Debug GadgetWidth( root()\canvas\gadget ) ; 500
+      Debug WindowX( Root()\canvas\window, #PB_Window_InnerCoordinate ) ; 518
+      Debug GadgetX( Root()\canvas\gadget, #PB_Gadget_ScreenCoordinate ) ; 518
+      Debug WindowWidth( Root()\canvas\window, #PB_Window_InnerCoordinate ) ; 500
+      Debug GadgetWidth( Root()\canvas\gadget ) ; 500
       
       WaitClose( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 35
+; CursorPosition = 55
+; FirstLine = 44
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -63,10 +63,10 @@
 ; ;       EndIf
 ; ;       
 ;       Debug "----panel all childrens-----"
-;       If StartEnumerate( *panel )
+;       If StartEnum( *panel )
 ;          Debug widget( )\text\string
 ;          
-;          StopEnumerate( )
+;          StopEnum( )
 ;       EndIf
 ;       
 ;       Define line.s
@@ -145,10 +145,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetParent( *but0, *CONT, 0 )
       
       Debug "----CONT all childrens-----"
-      If StartEnumerate( *CONT )
+      If StartEnum( *CONT )
          Debug widget( )\text\string
          
-         StopEnumerate( )
+         StopEnum( )
       EndIf
       
       Debug "----all childrens-----"
@@ -189,7 +189,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 154
+; CursorPosition = 150
+; FirstLine = 125
 ; Folding = -
 ; EnableXP

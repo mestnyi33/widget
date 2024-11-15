@@ -54,19 +54,9 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   
   
   WaitClose( )
-  
-  ;     Define event
-  ;     Repeat
-  ;       event = WaitWindowEvent()
-  ;       If event = #PB_Event_Gadget
-  ;         ;If GadgetType(EventGadget()) = #PB_GadgetType_Canvas
-  ;           EventHandler( EventGadget(), EventType(), EventData() )
-  ;         ;EndIf
-  ;       EndIf
-  ;     Until event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 62
+; CursorPosition = 44
 ; FirstLine = 36
 ; Folding = -
 ; Optimizer

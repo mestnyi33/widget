@@ -345,8 +345,8 @@ CompilerIf #PB_Compiler_IsMainFile
    *Object_CheckBox2 = CheckBox_Add(300, 100, 200, 30, "Disabled Check Box")
    *Object_CheckBox3 = CheckBox_Add(300, 150, 200, 50, "Another Check Box with longer text")
    
-   Disable(*Object_Button2, 1)
-   Disable(*Object_CheckBox2, 1)
+   DisableWidget(*Object_Button2, 1)
+   DisableWidget(*Object_CheckBox2, 1)
    SetState(*Object_CheckBox2, 1)
    SetState(*Object_CheckBox3, 1)
    
@@ -381,7 +381,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 348
+; FirstLine = 225
 ; Folding = 0-0f-
 ; EnableXP
 ; DPIAware

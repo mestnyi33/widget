@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Button_7, Flag(*this, #__flag_gridlines))
     ;     SetState(Button_8, Flag(*this, #__tree_nolines))
     ;     SetState(Button_9, Flag(*this, #__tree_nobuttons))
-    Hide(Button_type, 1)
+    HideWidget(Button_type, 1)
     
     Button(10, height+20, 60, 24,"remove")
     Button(75, height+20, 100, 24,"add")
@@ -134,8 +134,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 46
+; CursorPosition = 110
+; FirstLine = 105
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -138,14 +138,13 @@ CompilerIf #PB_Compiler_IsMainFile
         CloseWindow( EventWindow( ) ) 
         Break
       Default
-        ; CanvasEvents(  )
     EndSelect
   ForEver
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 90
+; CursorPosition = 140
+; FirstLine = 119
 ; Folding = ---
 ; Optimizer
 ; EnableXP

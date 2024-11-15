@@ -848,7 +848,7 @@ DeclareModule _PBEdit_
 	Declare Find_Close(*te.TE_STRUCT)
 	Declare Find_SetSelectionCheckbox(*te.TE_STRUCT)
 	
-	Declare Autocomplete_Hide(*te.TE_STRUCT)
+	Declare Autocomplete_HideWidget(*te.TE_STRUCT)
 	
 	Declare Event_Gadget()
 	Declare Event_Keyboard(*te.TE_STRUCT, *view.TE_VIEW, eventType)
@@ -1210,8 +1210,8 @@ Module _PBEdit_
 		
 		*view\scrollBarV\isHidden = #True
 		*view\scrollBarH\isHidden = #True
-		widget::Hide(*view\scrollBarV\gadget, #True)
-		widget::Hide(*view\scrollBarH\gadget, #True)
+		widget::HideWidget(*view\scrollBarV\gadget, #True)
+		widget::HideWidget(*view\scrollBarH\gadget, #True)
 		
 		widget::SetAttribute(*view\scrollBarV\gadget, constants::#__Bar_Maximum, #TE_MaxScrollbarHeight)
 		
@@ -1426,7 +1426,7 @@ Module _PBEdit_
 			*view\zoom = 2.0
 		EndIf
 		
-		Autocomplete_Hide(*te)
+		Autocomplete_HideWidget(*te)
 		Scroll_Update(*te, *view, *te\currentCursor, -1, 1)
 		*te\redrawMode | #TE_Redraw_All
 		
@@ -5917,7 +5917,7 @@ Module _PBEdit_
 			widget::Resize(*view\scrollBarV\gadget, x + width, -y, *te\scrollbarWidth, height - *te\scrollbarWidth)
 			widget::Resize(*view\scrollBarH\gadget, -x, y + height - *te\scrollbarWidth, width, *te\scrollbarWidth)
 			
-			widget::Hide(*view\scrollBarH\gadget, #False)
+			widget::HideWidget(*view\scrollBarH\gadget, #False)
 			
 			result = 1
 		ElseIf (isHidden = #True) And (*view\scrollBarH\isHidden = #False)
@@ -5926,7 +5926,7 @@ Module _PBEdit_
 			*view\scrollBarH\isHidden = #True
 			;;ResizeGadget(*view\canvas, x, y, width, height)
 			widget::Resize(*view\scrollBarV\gadget, x + *view\width, -y, *te\scrollbarWidth, *view\height)
-			widget::Hide(*view\scrollBarH\gadget, #True)
+			widget::HideWidget(*view\scrollBarH\gadget, #True)
 			
 			result = 1
 		Else;If *view\scrollBarV\isHidden = #False
@@ -5955,13 +5955,13 @@ Module _PBEdit_
 			widget::Resize(*view\scrollBarV\gadget, x + width - *te\scrollbarWidth, -y, *te\scrollbarWidth, height)
 			widget::Resize(*view\scrollBarH\gadget, -x, y + height, width - *te\scrollbarWidth, *te\scrollbarWidth)
 			
-			widget::Hide(*view\scrollBarV\gadget, #False)
+			widget::HideWidget(*view\scrollBarV\gadget, #False)
 		ElseIf (isHidden = #True) And (*view\scrollBarV\isHidden = #False)
 			; hide verical scrollbar
 			*view\scrollBarV\isHidden = #True
 			;;ResizeGadget(*view\canvas, x, y, width, height)
 			widget::Resize(*view\scrollBarH\gadget, -x, y + height, width, *te\scrollbarWidth)
-			widget::Hide(*view\scrollBarV\gadget, #True)
+			widget::HideWidget(*view\scrollBarV\gadget, #True)
 		Else;If *view\scrollBarV\isHidden = #False
 		;	widget::Resize(*view\scrollBarV\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, height);GadgetHeight(*view\canvas))
 		EndIf
@@ -6433,7 +6433,7 @@ Module _PBEdit_
 	;- ----------- AUTOCOMPLETE -----------
 	;-
 	
-	Procedure Autocomplete_Hide(*te.TE_STRUCT)
+	Procedure Autocomplete_HideWidget(*te.TE_STRUCT)
 		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0))
 		
 		If *te\autocomplete\isVisible
@@ -6548,10 +6548,10 @@ Module _PBEdit_
 				
 				*te\autocomplete\isVisible = #True
 			Else
-				Autocomplete_Hide(*te)
+				Autocomplete_HideWidget(*te)
 			EndIf
 		Else
-			Autocomplete_Hide(*te)
+			Autocomplete_HideWidget(*te)
 		EndIf
 		
 		SetActiveWindow(*te\window)
@@ -6588,7 +6588,7 @@ Module _PBEdit_
 			Next
 		EndIf
 		
-		Autocomplete_Hide(*te)
+		Autocomplete_HideWidget(*te)
 		
 		ProcedureReturn result
 	EndProcedure
@@ -8427,7 +8427,7 @@ Module _PBEdit_
 				ElseIf autocompleteKey = #PB_Shortcut_Tab
 					Autocomplete_Insert(*te)
 				ElseIf autocompleteShow = #False
-					Autocomplete_Hide(*te)
+					Autocomplete_HideWidget(*te)
 				EndIf
 			EndIf
 			
@@ -8542,7 +8542,7 @@ Module _PBEdit_
 				
 			Case #PB_EventType_LeftButtonDown
 				
-				Autocomplete_Hide(*te)
+				Autocomplete_HideWidget(*te)
 				
 				If (time - *te\cursorState\firstClickTime) > *te\cursorState\clickSpeed
 					*te\cursorState\clickCount = 0
@@ -8733,7 +8733,7 @@ Module _PBEdit_
 				
 			Case #PB_EventType_RightButtonDown
 				
-				Autocomplete_Hide(*te)
+				Autocomplete_HideWidget(*te)
 				
 				Draw(*te, *view, -1, #TE_Redraw_All)
 				
@@ -8743,7 +8743,7 @@ Module _PBEdit_
 				
 			Case #PB_EventType_MiddleButtonDown
 				
-				Autocomplete_Hide(*te)
+				Autocomplete_HideWidget(*te)
 				
 			Case #PB_EventType_MouseMove
 				
@@ -9129,7 +9129,7 @@ Module _PBEdit_
 		ProcedureReturnIf( (*te = #Null) Or (*te\view = #Null))
 		
 		If EventWindow() = *te\window
-			Autocomplete_Hide(*te)
+			Autocomplete_HideWidget(*te)
 			
 			View_Resize(*te, *te\view, x, y, width, height)
 			Draw(*te, *te\view)
@@ -9146,7 +9146,7 @@ Module _PBEdit_
 		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
 		
 		If GetActiveWindow() <> *te\window
-			Autocomplete_Hide(*te.TE_STRUCT)
+			Autocomplete_HideWidget(*te.TE_STRUCT)
 		EndIf
 	EndProcedure
 	
@@ -9734,7 +9734,8 @@ Repeat
 	EndSelect
 ForEver
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3
-; Folding = -----------0-----------------------------------------------------------------------------------------------------00---------------------------------------------------------------------------------------------
+; CursorPosition = 9148
+; FirstLine = 9068
+; Folding = -----------------------------------------------------------------------------------------------------------------00---------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP

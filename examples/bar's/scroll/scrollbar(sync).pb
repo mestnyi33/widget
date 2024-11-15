@@ -122,10 +122,10 @@ CompilerIf #PB_Compiler_IsMainFile
       *splitter\bar\button\size = 5
       *splitter\bar\button\round = 0
       
-      Hide( *first\scroll\v, 1 )
-      Hide( *first\scroll\h, 1 )
-      ;Hide( *second\scroll\v, 1 )
-      Hide( *second\scroll\h, 1 )
+      HideWidget( *first\scroll\v, 1 )
+      HideWidget( *first\scroll\h, 1 )
+      ;HideWidget( *second\scroll\v, 1 )
+      HideWidget( *second\scroll\h, 1 )
       Closelist( )
       
       
@@ -153,8 +153,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
       
       AddItem_(*Tree, #_pi_group_2, "state")
-      AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-      AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+      AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
+      AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
       
       Define *Tree1 = Properties_(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
       Define Value = *Tree1
@@ -170,8 +170,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
       
       AddItem_(*Tree1, #_pi_group_2, "state")
-      AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-      AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+      AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
+      AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
       
       Splitter_0 = Splitter(0, 0, 300, 300, *Tree1, *Tree)
       Splitter_1 = Splitter(30, 30, 300, 300, -1, Splitter_0, #PB_Splitter_Vertical)
@@ -195,8 +195,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 46
+; CursorPosition = 172
+; FirstLine = 151
 ; Folding = ----
 ; EnableXP
 ; DPIAware
