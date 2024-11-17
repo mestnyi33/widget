@@ -29,10 +29,10 @@ Procedure CFE_Helper_Buttons_Events( )
           
           Select Event_ ; Is(*Create\Checked)
             Case Properties_ImageBg
-              SetBackGroundImage(Checked, Window_0_0_Image)
+              SetBackgroundImage(Checked, Window_0_0_Image)
               
             Case Properties_Image
-              If WidgetWidth(Checked) <> ImageWidth(Window_0_0_Image) And Not IsContainer(Checked)
+              If Width(Checked) <> ImageWidth(Window_0_0_Image) And Not IsContainer(Checked)
                 
                 If MessageRequester("Сообщение","Хотите изменить размер элемента?", #PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
                   SetText(Checked, "")
@@ -74,13 +74,13 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   ; = Open(#PB_Any, #PB_Ignore,#PB_Ignore,200,300, "Image editor",Flag, Parent) 
   
   If ((Flag & #PB_Window_ScreenCentered) = #PB_Window_ScreenCentered)
-;     X = (WidgetWidth(0)-Width)/2 
-;     Y = (WidgetHeight(0)-Height)/2
+;     X = (Width(0)-Width)/2 
+;     Y = (Height(0)-Height)/2
     
   ElseIf ((Flag & #PB_Window_WindowCentered) = #PB_Window_WindowCentered)
     If Parent
-      X = (WidgetWidth(Parent)-Width)/2 
-      Y = (WidgetHeight(Parent)-Height)/2
+      X = (Width(Parent)-Width)/2 
+      Y = (Height(Parent)-Height)/2
     EndIf
   EndIf
   
@@ -95,7 +95,7 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   ;
   Bind(Window_0, @CFE_Helper_Buttons_Events())
   ; BindGadgetEvent(e, @ButtonEvent(), #_Event_LeftClick)
-  HideWidget(Window_0, #False)
+  Hide(Window_0, #False)
   CloseList()
   
   ; WaitQuit( )
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 93
+; CursorPosition = 82
+; FirstLine = 73
 ; Folding = ---
 ; Optimizer
 ; EnableXP

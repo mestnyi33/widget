@@ -31,8 +31,8 @@ Procedure events_buttons()
       ; Debug "click widget - " + Str(EventWidget( )\index - 1)
       
       Select (EventWidget( )\index)
-        Case 3 : SetActive(WidgetID(0))   ; Activate StringGadget
-        Case 4 : SetActive(WidgetID(1))   ; Activate ComboBoxGadget
+        Case 3 : SetActive(ID(0))   ; Activate StringGadget
+        Case 4 : SetActive(ID(1))   ; Activate ComboBoxGadget
       EndSelect
   EndSelect
 EndProcedure
@@ -69,10 +69,10 @@ If Open(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Wi
   Button(10+270, 115, 250, 20, "Activate ComboBox")
   
   For i = 0 To 2
-    Bind(WidgetID(i), @events_widgets())
+    Bind(ID(i), @events_widgets())
   Next
   For i = 3 To 4
-    Bind(WidgetID(i), @events_buttons())
+    Bind(ID(i), @events_buttons())
   Next
   
   Repeat
@@ -86,8 +86,8 @@ If Open(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Wi
   Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 12
+; CursorPosition = 74
+; FirstLine = 50
 ; Folding = --
 ; EnableXP
 ; DPIAware

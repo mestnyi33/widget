@@ -17,9 +17,9 @@
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
-;                                                    HideWidget( *address ) - HideMenu( #Menu, State )
+;                                                    Hide( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
-;                                                  WidgetHeight( *address ) - MenuHeight( )
+;                                                  Height( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
 ;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
@@ -106,33 +106,33 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;\\
-   *menu = CreateMenuBar( root( ) ) : SetClass(menu(), "root_MenuBar" )
+   *menu = CreateBar( root( ) ) : SetClass(menu(), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
-   BarSeparator( )
+   BarBar( )
    
-   OpenBar("title-1-sub-item")
+   OpenSubBar("title-1-sub-item")
    BarItem(3, "title-1-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-2-sub-item")   
+   OpenSubBar("title-2-sub-item")   
    BarItem(13, "title-2-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-3-sub-item")   
+   OpenSubBar("title-3-sub-item")   
    BarItem(23, "title-3-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(14, "title-2-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(4, "title-1-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(2, "title-1-item-2")
    
    BarTitle("Title-2")
@@ -141,15 +141,15 @@ CompilerIf #PB_Compiler_IsMainFile
    
    BarTitle("Title-event-test")
    BarItem(7, "test")
-   BarSeparator( )
+   BarBar( )
    BarItem(8, "quit")
    
    BarTitle("Title-4")
    BarItem(9, "title-4-item-1")
    BarItem(10, "title-4-item-2")
    
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
+   BindBarEvent(*menu, 7, @TestHandler())
+   BindBarEvent(*menu, 8, @QuitHandler())
    
    ;\\
    Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
@@ -162,33 +162,33 @@ CompilerIf #PB_Compiler_IsMainFile
    String( 10, 100, 80, 35, "String1" )
    String( 10, 140, 80, 35, "String2" )
    
-   *menu = CreateMenuBar( *window ) : SetClass(menu(), "window_MenuBar" )
+   *menu = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
-   BarSeparator( )   
+   BarBar( )   
    ;
-   OpenBar("title-1-sub-item")
+   OpenSubBar("title-1-sub-item")
    BarItem(3, "title-1-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-2-sub-item")   
+   OpenSubBar("title-2-sub-item")   
    BarItem(13, "title-2-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-3-sub-item")   
+   OpenSubBar("title-3-sub-item")   
    BarItem(23, "title-3-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(14, "title-2-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(4, "title-1-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(2, "title-1-item-2")
    
    BarTitle("Title-2")
@@ -197,15 +197,15 @@ CompilerIf #PB_Compiler_IsMainFile
    
    BarTitle("Title-event-test")
    BarItem(7, "test")
-   BarSeparator( )
+   BarBar( )
    BarItem(8, "quit")
    
    BarTitle("Title-4")
    BarItem(9, "title-4-item-1")
    BarItem(10, "title-4-item-2")
    
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
+   BindBarEvent(*menu, 7, @TestHandler())
+   BindBarEvent(*menu, 8, @QuitHandler())
    
    Define Event
    Repeat
@@ -213,7 +213,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 15
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = -
 ; EnableXP

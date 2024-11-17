@@ -136,50 +136,50 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   ;}
   ;--------------
   
-  listview(270, 30, 250, 120) : SetFrame( widget( ), 2)
+  ListView(270, 30, 250, 120) : SetFrame( widget( ), 2)
   For a = 0 To 12
-    AddItem (WidgetID(0), -1, "listview item " + Str(a)) ; define listview content
-    SetItemState(WidgetID(0), a, #PB_Tree_Selected) 
+    AddItem (ID(0), -1, "listview item " + Str(a)) ; define listview content
+    SetItemState(ID(0), a, #PB_Tree_Selected) 
   Next
-  SetState(WidgetID(0), 5) 
-  SetState(WidgetID(0), 7) 
-  SetState(WidgetID(0), 9) 
+  SetState(ID(0), 5) 
+  SetState(ID(0), 7) 
+  SetState(ID(0), 9) 
   
-  listview(270, 30+150, 250, 120, #PB_ListView_ClickSelect) : SetFrame( widget( ), 2)
+  ListView(270, 30+150, 250, 120, #PB_ListView_ClickSelect) : SetFrame( widget( ), 2)
   For a = 0 To 12
-    AddItem (WidgetID(1), -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
+    AddItem (ID(1), -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
     If a%2
-      SetItemState(WidgetID(1), a, #PB_Tree_Selected) 
+      SetItemState(ID(1), a, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState(WidgetID(1), 5) 
-  SetState(WidgetID(1), 7) 
-  SetState(WidgetID(1), 9) 
+  SetState(ID(1), 5) 
+  SetState(ID(1), 7) 
+  SetState(ID(1), 9) 
   
-  listview(270, 30+150+150, 250, 120, #PB_ListView_MultiSelect) : SetFrame( widget( ), 2)
+  ListView(270, 30+150+150, 250, 120, #PB_ListView_MultiSelect) : SetFrame( widget( ), 2)
   For a = 0 To 12
-    AddItem (WidgetID(2), -1, "listview item " + Str(a)) ; define listview content
+    AddItem (ID(2), -1, "listview item " + Str(a)) ; define listview content
     If a%2
-      SetItemState(WidgetID(2), a, #PB_Tree_Selected) 
+      SetItemState(ID(2), a, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState(WidgetID(2), 5) 
-  SetState(WidgetID(2), 7) 
-  SetState(WidgetID(2), 9) 
+  SetState(ID(2), 5) 
+  SetState(ID(2), 7) 
+  SetState(ID(2), 9) 
   
   Text(270,10, 250,20, "flag = no")
   Text(270,10+150, 250,20, "flag = ClickSelect")
   Text(270,10+150+150, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-    Bind(WidgetID(i), @events_widgets())
+    Bind(ID(i), @events_widgets())
   Next
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 71
+; CursorPosition = 174
+; FirstLine = 149
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -10,7 +10,7 @@ Procedure events_gadgets()
   
   Select EventType()
     Case #PB_EventType_LeftClick
-      ;SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+      ;SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
       Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
@@ -127,7 +127,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = -
 ; EnableXP
 ; DPIAware

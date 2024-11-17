@@ -32,13 +32,14 @@ CompilerIf #PB_Compiler_IsMainFile
     ;MDI(0,0,0,0, #__flag_autosize)
     ;SetColor(widget( ), #__color_back, -1 )
     
-    Debug ""+ WidgetWidth(widget()) +" "+ WidgetHeight(widget())
+    Debug ""+ Width(widget()) +" "+ Height(widget())
     
     WaitClose( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18
+; CursorPosition = 34
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -37,13 +37,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Text
   EndProcedure
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   ; cr = "" : text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  text.s = get_text( )
+  Text.s = get_text( )
   Global *this._s_widget,
-         tree,
+         Tree,
          gadget,
-         container,
+         Container,
          Button_type,
          button_default,
          button_multiline,
@@ -81,14 +81,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case Button_type
             If GetState(EventWidget)
-              HideWidget(*this, 1)
+              Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
               SetText(Button_type, "widget")
             Else
-              HideWidget(*this, 0)
+              Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
@@ -200,14 +200,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
       
   If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-    *this  = widget::Text(100, 100, 250, 200, text)
+    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
+    *this  = widget::Text(100, 100, 250, 200, Text)
     
     Define y  = 10
     Define bh = 24
     ; flag
     ; Button_type      = widget::Button(width + 45, y, 100, bh, "gadget", #__flag_ButtonToggle)
-    container = Container( width + 45, y + bh * 1, 100, 100)
+    Container = Container( width + 45, y + bh * 1, 100, 100)
     button_full       = widget::Button(0,0,0,0, "full", #__flag_ButtonToggle,-1,20)
     button_lt       = widget::Button(0,0,bh,bh, "lt", #__flag_ButtonToggle,-1,20)
     button_rt      = widget::Button(0,0,bh,bh, "rt", #__flag_ButtonToggle,-1,20)
@@ -265,7 +265,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\ set button toggled state
 ;     SetState(button_multiline, Flag(*this, #PB_Button_MultiLine ))
 ;     SetState(button_center, Flag(*this, #__flag_Textcenter))
-;     HideWidget(Button_type, 1)
+;     Hide(Button_type, 1)
     
     ;\\
     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
@@ -284,7 +284,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 267
-; FirstLine = 238
+; FirstLine = 242
 ; Folding = ----
 ; EnableXP
 ; DPIAware

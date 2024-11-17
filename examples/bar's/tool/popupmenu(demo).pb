@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure ClickHandler( )
-      DisplayPopupMenuBar( *menu, EventWidget( ) )
+      DisplayPopupBar( *menu, EventWidget( ) )
    EndProcedure
    
    ;\\
@@ -77,30 +77,30 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(menu, 4, @QuitHandler())
    
    ;\\
-   *menu = CreatePopupMenuBar( )
+   *menu = CreatePopupBar( )
    BarItem(1, "test")      ; You can use all commands for creating a menu
    BarItem(2, "Save")      ; just like in a normal menu...
    BarSeparator( )
    ;
-   OpenBar("open sub item 1")
+   OpenSubBar("open sub item 1")
    BarItem(5, "5 sub item")
    BarItem(6, "6 sub item")
-   CloseBar()
+   CloseSubBar()
    ;
    BarSeparator( )
    BarItem(3, "Before")
    BarItem(4, "After")
    BarSeparator( )
    ;
-   OpenBar("open sub item 2")
+   OpenSubBar("open sub item 2")
    BarItem(10, "10 sub item")
    BarItem(11, "11 sub item")
    BarSeparator( )
    ;
-   OpenBar("open sub item 3")
+   OpenSubBar("open sub item 3")
    BarItem(12, "12 sub item")
    BarItem(13, "13 sub item")
-   CloseBar()
+   CloseSubBar()
    ;
    BarSeparator( )
    BarItem(14, "14 sub item")
@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
    BarSeparator( )
    BarItem(16, "16 sub item")
    BarItem(17, "17 sub item")
-   CloseBar( )
+   CloseSubBar( )
    ;
    BarSeparator( )
    BarItem(7, "exit")
@@ -119,10 +119,10 @@ CompilerIf #PB_Compiler_IsMainFile
       BarItem(3, "Save as")
       BarItem(4, "Quit")
       BarSeparator( )
-      OpenBar("Recent files")
+      OpenSubBar("Recent files")
       BarItem(5, "PureBasic.exe")
       BarItem(6, "Test.txt")
-      CloseBar( )
+      CloseSubBar( )
    EndIf
    
    Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 19
-; FirstLine = 6
+; FirstLine = 15
 ; Folding = --
 ; EnableXP
 ; DPIAware

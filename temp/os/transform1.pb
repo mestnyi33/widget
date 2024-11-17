@@ -20,7 +20,7 @@ DeclareModule Transformation
   Declare Is(Gadget.i)
   Declare Gadget()
   Declare Update(Gadget.i)
-  Declare DisableWidget(Gadget.i)
+  Declare Disable(Gadget.i)
   Declare Enable(Gadget.i, Grid.i=1, Flags.i=#Anchor_All)
  
 EndDeclareModule
@@ -208,7 +208,7 @@ Module Transformation
     EndWith
   EndProcedure
  
-  Procedure DisableWidget(Gadget.i)
+  Procedure Disable(Gadget.i)
     Protected I.i
    
     If ListSize(AnChor())
@@ -233,7 +233,7 @@ Module Transformation
     Protected *Cursors.DataBuffer = ?Cursors
     Protected *Flags.DataBuffer = ?Flags
      
-    DisableWidget(Gadget)
+    Disable(Gadget)
    
     *Anchor = AddElement(AnChor())
    
@@ -390,13 +390,13 @@ CompilerIf #PB_Compiler_IsMainFile
             Select GetGadgetState(#Transformation)
               Case #False
                 SetGadgetText(#Transformation, "Enable Transformation")
-                DisableWidget(#EditorGadget)
-                DisableWidget(#ButtonGadget)
-                DisableWidget(#TrackBarGadget)
-                DisableWidget(#SpinGadget)
-                DisableWidget(#CanvasGadget)
-                DisableWidget(#ContainerGadget)
-                DisableWidget(#ContainerGadget2)
+                Disable(#EditorGadget)
+                Disable(#ButtonGadget)
+                Disable(#TrackBarGadget)
+                Disable(#SpinGadget)
+                Disable(#CanvasGadget)
+                Disable(#ContainerGadget)
+                Disable(#ContainerGadget2)
               Case #True
                 SetGadgetText(#Transformation, "Disable Transformation")
                 Enable(#EditorGadget, 5, #Anchor_All)
@@ -415,6 +415,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 398
-; FirstLine = 313
+; FirstLine = 318
 ; Folding = v-8------
 ; EnableXP

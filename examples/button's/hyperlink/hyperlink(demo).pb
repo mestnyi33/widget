@@ -6,7 +6,7 @@ Procedure events_gadgets()
    
    Select EventType()
       Case #PB_EventType_LeftClick
-         SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+         SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
          Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
    EndSelect
 EndProcedure
@@ -45,14 +45,14 @@ EndIf
 If Open(0, 270,0,270,100)
    HyperLink(10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline)
    HyperLink(10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline)
-   SetFont(WidgetID(1), FontID(5))
-   SetColor(WidgetID(1), #PB_Gadget_FrontColor, $ffff0000)
-   SetColor(WidgetID(1), #PB_Gadget_BackColor, $ff0000ff)
+   SetFont(ID(1), FontID(5))
+   SetColor(ID(1), #PB_Gadget_FrontColor, $ffff0000)
+   SetColor(ID(1), #PB_Gadget_BackColor, $ff0000ff)
    
    ;Bind(#PB_All, @events_widgets())
    
    For i = 0 To 1
-      Bind(WidgetID(i), @events_widgets(), #PB_EventType_LeftClick)
+      Bind(ID(i), @events_widgets(), #PB_EventType_LeftClick)
    Next
 EndIf
 
@@ -60,6 +60,8 @@ EndIf
 WaitClose( )
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 54
+; FirstLine = 30
 ; Folding = --
 ; EnableXP
 ; DPIAware

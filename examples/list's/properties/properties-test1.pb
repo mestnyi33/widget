@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
       _address_\RowEntered( )  
    EndMacro
    
-   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
    Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
    Procedure PropertiesEvents( )
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
                            SetItemState( *second, *first\RowEntered( )\index, #PB_Tree_Expanded )
                         EndIf
                         
-                        Redraw( *second )
+                        ReDraw( *second )
                         ;Repaint( *second\root )
                         ;Resize( *second, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                      EndIf
@@ -105,12 +105,12 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure AddItemProperties( *splitter._s_WIDGET, item, text.s, type=0, mode=0 )
+   Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, type=0, mode=0 )
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       
-      AddItem( *first, item, StringField(text.s, 1, Chr(10)), -1, mode )
-      AddItem( *second, item, StringField(text.s, 2, Chr(10)), -1, mode )
+      AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+      AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
       
       Protected *this._s_WIDGET
       
@@ -121,10 +121,10 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__type_Spin
            ; *this = Spin(0,0,0,0,0,100)
             *this = Create( *second, #PB_Compiler_Procedure, #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__buttonsize, 0, 1 )
-            SetState( *this, Val(StringField(text.s, 2, Chr(10))))
+            SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_String
            ; *this = String(0,0,0,0,"")
-            *this = Create( *second, #PB_Compiler_Procedure, #__type_String, 0, 0, 0, 0, StringField(text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
+            *this = Create( *second, #PB_Compiler_Procedure, #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
       Case #__type_ComboBox
            ; *this = ComboBox(0,0,0,0)
          *this = Create( *second, #PB_Compiler_Procedure, #__type_ComboBox, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
@@ -155,11 +155,11 @@ CompilerIf #PB_Compiler_IsMainFile
       SetClass(*second\scroll\v, "second_v")
       SetClass(*second\scroll\h, "second_h")
       
-      HideWidget( *first\scroll\v, 1 )
-      HideWidget( *first\scroll\h, 1 )
-      ;HideWidget( *second\scroll\v, 1 )
-      HideWidget( *second\scroll\h, 1 )
-      Closelist( )
+      Hide( *first\scroll\v, 1 )
+      Hide( *first\scroll\h, 1 )
+      ;Hide( *second\scroll\v, 1 )
+      Hide( *second\scroll\h, 1 )
+      CloseList( )
       
       SetData(*second, *first)
       SetData(*first, *second)
@@ -175,12 +175,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn GetItemText( *first, item )
    EndProcedure
    
-   Procedure SetItemTextProperties( *splitter._s_WIDGET, item, text.s )
+   Procedure SetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       
-      SetItemText( *first, item, StringField(text.s, 1, Chr(10)) )
-      SetItemText( *second, item, StringField(text.s, 2, Chr(10)) )
+      SetItemText( *first, item, StringField(Text.s, 1, Chr(10)) )
+      SetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
    EndProcedure
    
    
@@ -194,14 +194,14 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItemProperties(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value),                            #__type_String, 1)
       
       AddItemProperties(*Tree, #_pi_group_1, "layout")
-      AddItemProperties(*Tree, #_pi_x, "x:"+Chr(10)+Str(WidgetX(Value)),                             #__type_Spin, 1)
-      AddItemProperties(*Tree, #_pi_y, "y:"+Chr(10)+Str(WidgetY(Value)),                             #__type_Spin, 1)
-      AddItemProperties(*Tree, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)),                 #__type_Spin, 1)
-      AddItemProperties(*Tree, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)),              #__type_Spin, 1)
+      AddItemProperties(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)),                             #__type_Spin, 1)
+      AddItemProperties(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)),                             #__type_Spin, 1)
+      AddItemProperties(*Tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)),                 #__type_Spin, 1)
+      AddItemProperties(*Tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)),              #__type_Spin, 1)
       
       AddItemProperties(*Tree, #_pi_group_2, "state")
-      AddItemProperties(*Tree, #_pi_disable, "disable:"+Chr(10)+"",                                  #__type_ComboBox, 1);Str(DisableWidget(Value)))
-      AddItemProperties(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)),                          #__type_ComboBox, 1)
+      AddItemProperties(*Tree, #_pi_disable, "disable:"+Chr(10)+"",                                  #__type_ComboBox, 1);Str(Disable(Value)))
+      AddItemProperties(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)),                          #__type_ComboBox, 1)
       
       Define *Tree1 = CreateProperties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
       Define Value = *Tree1
@@ -211,14 +211,14 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItemProperties(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value),                            #__type_String, 1)
       
       AddItemProperties(*Tree1, #_pi_group_1, "layout")
-      AddItemProperties(*Tree1, #_pi_x, "x:"+Chr(10)+Str(WidgetX(Value)),                             #__type_Spin, 1)
-      AddItemProperties(*Tree1, #_pi_y, "y:"+Chr(10)+Str(WidgetY(Value)),                             #__type_Spin, 1)
-      AddItemProperties(*Tree1, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)),                 #__type_Spin, 1)
-      AddItemProperties(*Tree1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)),              #__type_Spin, 1)
+      AddItemProperties(*Tree1, #_pi_x, "x:"+Chr(10)+Str( X(Value)),                             #__type_Spin, 1)
+      AddItemProperties(*Tree1, #_pi_y, "y:"+Chr(10)+Str( Y(Value)),                             #__type_Spin, 1)
+      AddItemProperties(*Tree1, #_pi_width, "width:"+Chr(10)+Str( Width(Value)),                 #__type_Spin, 1)
+      AddItemProperties(*Tree1, #_pi_height, "height:"+Chr(10)+Str( Height(Value)),              #__type_Spin, 1)
       
       AddItemProperties(*Tree1, #_pi_group_2, "state")
-      AddItemProperties(*Tree1, #_pi_disable, "disable:"+Chr(10)+"",                                  #__type_ComboBox, 1);Str(DisableWidget(Value)))
-      AddItemProperties(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)),                          #__type_ComboBox, 1)
+      AddItemProperties(*Tree1, #_pi_disable, "disable:"+Chr(10)+"",                                  #__type_ComboBox, 1);Str(Disable(Value)))
+      AddItemProperties(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)),                          #__type_ComboBox, 1)
       
       Splitter_0 = Splitter(0, 0, 300, 300, Button_1, *Tree)
       Splitter_1 = Splitter(30, 30, 300, 300, Splitter_0, *Tree1, #PB_Splitter_Vertical)
@@ -234,8 +234,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 198
+; CursorPosition = 214
+; FirstLine = 197
 ; Folding = ----
 ; Optimizer
 ; EnableXP

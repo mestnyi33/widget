@@ -8,7 +8,7 @@ Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, S
 Procedure SetRound( *this._S_WIDGET, round.a )
   *this\round = DesktopScaledX(round)
   ;
-  If *this\type = #__type_ProgressBar
+  If *this\type = #__type_Progress
     *this\bar\button[1]\round = *this\round
     *this\bar\button[2]\round = *this\round
   EndIf
@@ -73,7 +73,8 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = --
 ; EnableXP
 ; DPIAware

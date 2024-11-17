@@ -92,8 +92,8 @@ SetGadgetState(13, 30)
 ; ;   Debug widget::GetState(*w_13)
 ; ;   Debug widget::GetState(*w_15)
 ; ;   
-; ;   Debug widget::WidgetWidth(*w_11)
-; ;   Debug widget::WidgetWidth(*w_14)
+; ;   Debug widget::Width(*w_11)
+; ;   Debug widget::Width(*w_14)
   
   Define event
   Repeat
@@ -102,8 +102,8 @@ SetGadgetState(13, 30)
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9
-; FirstLine = 5
+; CursorPosition = 95
+; FirstLine = 78
 ; Folding = -
 ; Optimizer
 ; EnableXP

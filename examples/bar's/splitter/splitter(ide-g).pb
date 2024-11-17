@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Procedure events_widgets()
     Select WidgetEvent( )
       Case #__event_Change
-        Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ WidgetHeight( WidgetID(0) ) +" "+ WidgetHeight( WidgetID(1) )
+        Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
     EndSelect
   EndProcedure
 
@@ -86,9 +86,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   If state
     ; set splitters dafault positions
     ;widget::SetState(Splitter_ide, -130)
-    widget::SetState(Splitter_ide, widget::WidgetWidth(Splitter_ide)-220)
-    widget::SetState(splitter_help, widget::WidgetHeight(splitter_help)-80)
-    widget::SetState(splitter_debug, widget::WidgetHeight(splitter_debug)-150)
+    widget::SetState(Splitter_ide, widget::Width(Splitter_ide)-220)
+    widget::SetState(splitter_help, widget::Height(splitter_help)-80)
+    widget::SetState(splitter_debug, widget::Height(splitter_debug)-150)
     widget::SetState(Splitter_inspector, 200)
     widget::SetState(Splitter_design, 30)
     widget::SetState(Splitter_5, 120)
@@ -115,8 +115,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7
-; FirstLine = 3
+; CursorPosition = 19
+; FirstLine = 15
 ; Folding = --
 ; Optimizer
 ; EnableXP

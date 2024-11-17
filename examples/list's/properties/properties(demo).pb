@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndEnumeration
   
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
   
@@ -38,14 +38,14 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*prop, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     widget::AddItem(*prop, #_pi_group_1, "layout")
-    widget::AddItem(*prop, #_pi_x, "x:"+Chr(10)+Str(WidgetX(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop, #_pi_y, "y:"+Chr(10)+Str(WidgetY(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
     
     widget::AddItem(*prop, #_pi_group_2, "state")
-    widget::AddItem(*prop, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
-    widget::AddItem(*prop, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
+    widget::AddItem(*prop, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
+    widget::AddItem(*prop, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
     
     Define *prop1 = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *prop1
@@ -55,14 +55,14 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*prop1, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     widget::AddItem(*prop1, #_pi_group_1, "layout")
-    widget::AddItem(*prop1, #_pi_x, "x:"+Chr(10)+Str(WidgetX(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop1, #_pi_y, "y:"+Chr(10)+Str(WidgetY(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop1, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop1, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop1, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
     
     widget::AddItem(*prop1, #_pi_group_2, "state")
-    widget::AddItem(*prop1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
-    widget::AddItem(*prop1, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
+    widget::AddItem(*prop1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
+    widget::AddItem(*prop1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
     
     Splitter_0 = widget::Splitter(0, 0, 300, 300, Button_1, *prop)
     Splitter_1 = widget::Splitter(30, 30, 300, 300, Splitter_0, *prop1, #PB_Splitter_Vertical)
@@ -72,8 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 42
+; CursorPosition = 58
+; FirstLine = 37
 ; Folding = -
 ; Optimizer
 ; EnableXP

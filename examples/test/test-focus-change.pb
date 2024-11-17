@@ -19,8 +19,8 @@ Procedure   Pc_DateTypingControl()
       ; [...]
     Case #PB_EventType_Focus ; Get the content of the gadget if no previous error
       Select NoGadget
-          Case WidgetID(0):If Not StartDateError:AncStartDate=GetText(NoGadget):EndIf
-          Case WidgetID(1):If Not EndDateError:AncEndDate=GetText(NoGadget):EndIf
+          Case ID(0):If Not StartDateError:AncStartDate=GetText(NoGadget):EndIf
+          Case ID(1):If Not EndDateError:AncEndDate=GetText(NoGadget):EndIf
       EndSelect
     Case #PB_EventType_LostFocus
        Debug NoGadget
@@ -39,14 +39,14 @@ EndProcedure
 If Open(0,0,0,120,65,"Test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   String(10,10,100,20,"32/12/2024")
   String(10,35,100,20,"31/12/2024")
-  Bind(WidgetID(0),@Pc_DateTypingControl())
-  Bind(WidgetID(1),@Pc_DateTypingControl())
+  Bind(ID(0),@Pc_DateTypingControl())
+  Bind(ID(1),@Pc_DateTypingControl())
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; CursorPosition = 42
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
 ; DPIAware

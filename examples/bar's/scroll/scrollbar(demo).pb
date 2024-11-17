@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_gadgets()
       Select EventType()
          Case #PB_EventType_LeftClick
-            SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+            SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
             Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
       EndSelect
    EndProcedure
@@ -44,24 +44,24 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    If Open     (0, 305,0, 305,140)
       Scroll   (10, 42, 250,  20, 30, 100, 30)
-      SetState (WidgetID(0),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+      SetState (ID(0),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
       
       Scroll   (270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-      SetState (WidgetID(1), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+      SetState (ID(1), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
       
       Text     (10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#__flag_Textcenter)
       Text     (10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#__flag_Textright)
       
       For i = 0 To 1
-         Bind  (WidgetID(i), @events_widgets())
+         Bind  (ID(i), @events_widgets())
       Next
    EndIf
    
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
-; FirstLine = 3
+; CursorPosition = 55
+; FirstLine = 30
 ; Folding = --
 ; Optimizer
 ; EnableXP

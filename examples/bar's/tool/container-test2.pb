@@ -39,31 +39,31 @@ CompilerIf #PB_Compiler_IsMainFile
     Container( 100,100,200,100, #__flag_BorderFlat ) ; #__flag_BorderSingle ; #__flag_borderDouble
     
     ToolBar( widget( ) );, #PB_ToolBar_Small )
-    ToolBarButton( #_tb_file_open, -1, 0, "Open" )
-    ToolBarButton( #_tb_file_save, -1, 0, "Save" )
+    BarButton( #_tb_file_open, -1, 0, "Open" )
+    BarButton( #_tb_file_save, -1, 0, "Save" )
     Separator( )
-    ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) 
+    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) 
     Separator( )
-    ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
-    ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
+    BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
+    BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
     Separator( )
-    ToolBarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
-    ToolBarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
+    BarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
+    BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
     Separator( )
-    ToolBarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
-    ToolBarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
+    BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
+    BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
     
     Separator( )
-    ToolBarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
-    ToolBarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
-    ToolBarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
-    ToolBarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+    BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
+    BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
+    BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
+    BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
     Separator( )
-    ToolBarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-    ToolBarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-    ToolBarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-    ToolBarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-    ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+    BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+    BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+    BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+    BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
     
     
     Button( 0,0,80,30,"button")
@@ -94,7 +94,7 @@ DataSection
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 2
+; CursorPosition = 65
+; FirstLine = 44
 ; Folding = -
 ; EnableXP

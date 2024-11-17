@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
       _address_\RowEntered( )  
    EndMacro
    
-   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
    Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
    Procedure Property_Events( )
@@ -99,13 +99,13 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure AddItem_( *this._s_WIDGET, item, text.s, image=-1, mode=0 )
+   Procedure AddItem_( *this._s_WIDGET, item, Text.s, Image=-1, mode=0 )
       Protected *splitter._s_WIDGET = GetData(*this)
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       
-      AddItem( *first, item, StringField(text.s, 1, Chr(10)), image, mode )
-      AddItem( *second, item, StringField(text.s, 2, Chr(10)), image, mode )
+      AddItem( *first, item, StringField(Text.s, 1, Chr(10)), Image, mode )
+      AddItem( *second, item, StringField(Text.s, 2, Chr(10)), Image, mode )
    EndProcedure
    
    Procedure Properties_( x,y,width,height, flag=0 )
@@ -122,11 +122,11 @@ CompilerIf #PB_Compiler_IsMainFile
       *splitter\bar\button\size = 5
       *splitter\bar\button\round = 0
       
-      HideWidget( *first\scroll\v, 1 )
-      HideWidget( *first\scroll\h, 1 )
-      ;HideWidget( *second\scroll\v, 1 )
-      HideWidget( *second\scroll\h, 1 )
-      Closelist( )
+      Hide( *first\scroll\v, 1 )
+      Hide( *first\scroll\h, 1 )
+      ;Hide( *second\scroll\v, 1 )
+      Hide( *second\scroll\h, 1 )
+      CloseList( )
       
       
       SetData(*second, *first)
@@ -147,14 +147,14 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
       
       AddItem_(*Tree, #_pi_group_1, "layout")
-      AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(WidgetX(Value)), #__type_Spin, 1)
-      AddItem_(*Tree, #_pi_y, "y:"+Chr(10)+Str(WidgetY(Value)), #__type_Spin, 1)
-      AddItem_(*Tree, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #__type_Spin, 1)
-      AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
+      AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
+      AddItem_(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
+      AddItem_(*Tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
+      AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
       
       AddItem_(*Tree, #_pi_group_2, "state")
-      AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
-      AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
+      AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
+      AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
       
       Define *Tree1 = Properties_(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
       Define Value = *Tree1
@@ -164,14 +164,14 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
       
       AddItem_(*Tree1, #_pi_group_1, "layout")
-      AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(WidgetX(Value)), #__type_Spin, 1)
-      AddItem_(*Tree1, #_pi_y, "y:"+Chr(10)+Str(WidgetY(Value)), #__type_Spin, 1)
-      AddItem_(*Tree1, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #__type_Spin, 1)
-      AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #__type_Spin, 1)
+      AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
+      AddItem_(*Tree1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
+      AddItem_(*Tree1, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
+      AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
       
       AddItem_(*Tree1, #_pi_group_2, "state")
-      AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(DisableWidget(Value)))
-      AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(HideWidget(Value)), #__type_ComboBox, 1)
+      AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
+      AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
       
       Splitter_0 = Splitter(0, 0, 300, 300, *Tree1, *Tree)
       Splitter_1 = Splitter(30, 30, 300, 300, -1, Splitter_0, #PB_Splitter_Vertical)
@@ -195,8 +195,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 172
-; FirstLine = 151
+; CursorPosition = 167
+; FirstLine = 146
 ; Folding = ----
 ; EnableXP
 ; DPIAware

@@ -33,8 +33,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Bind(*test, @events_1(), #__event_LeftUp, 1)
          Bind(*test, @events_2(), #__event_LeftUp, 2)
          
-         DisableWidget( *unbind, 0 )
-         DisableWidget( *bind, 1 )
+         Disable( *unbind, 0 )
+         Disable( *bind, 1 )
       EndIf
    EndProcedure
    
@@ -54,8 +54,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Unbind(*test, @events_2(), #__event_LeftUp, 2)
          
          
-         DisableWidget( *bind, 0 )
-         DisableWidget( *unbind, 1 )
+         Disable( *bind, 0 )
+         Disable( *unbind, 1 )
          
       EndIf
    EndProcedure
@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ;
          *bind = Button(10, 190, 135, 80, "Bind (events)")
          *unbind = Button(155, 190, 135, 80, "Unbind (events)")
-         DisableWidget( *unbind, 1 )
+         Disable( *unbind, 1 )
          
          Bind(*unbind, @events_Unbind(), #__event_LeftClick)
          Bind(*bind, @events_Bind(), #__event_LeftClick)
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 73
-; FirstLine = 46
+; FirstLine = 51
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -64,27 +64,27 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       For a = 0 To 4            ; add columns to each of the first 5 listicons
         For b = 2 To 4          ; add 3 more columns to each listicon
-          AddColumn(WidgetID(a), b, "Column " + Str(b), 65)
+          AddColumn(ID(a), b, "Column " + Str(b), 65)
         Next
         For b = 0 To 2          ; add 4 items to each line of the listicons
-          AddItem(WidgetID(a), b, "Item 1"+Chr(10)+"Item 2"+Chr(10)+"Item 3"+Chr(10)+"Item 4")
+          AddItem(ID(a), b, "Item 1"+Chr(10)+"Item 2"+Chr(10)+"Item 3"+Chr(10)+"Item 4")
         Next
       Next
       
       ; Here we change the ListIcon display to large icons and show an image
       If LoadImage(0, #PB_Compiler_Home+"Examples/Sources/Data/File.bmp")     ; change path/filename to your own 32x32 pixel image
-        SetAttribute(WidgetID(5), #PB_ListIcon_DisplayMode, #PB_ListIcon_LargeIcon)
-        AddItem(WidgetID(5), 1, "Picture 1", ImageID(0))
-        AddItem(WidgetID(5), 2, "Picture 2", ImageID(0))
+        SetAttribute(ID(5), #PB_ListIcon_DisplayMode, #PB_ListIcon_LargeIcon)
+        AddItem(ID(5), 1, "Picture 1", ImageID(0))
+        AddItem(ID(5), 2, "Picture 2", ImageID(0))
       EndIf
       
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
     EndIf
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 77
-; FirstLine = 46
+; FirstLine = 61
 ; Folding = -
 ; EnableXP
 ; DPIAware

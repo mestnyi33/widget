@@ -14,7 +14,7 @@ Procedure events_widgets()
         EndIf
         
         If *ch
-          Debug ""+GetParent(*w) +" "+ GetParent(*ch) +" "+  WidgetY(*ch) +" "+  WidgetY(*ch, 3)
+          Debug ""+GetParent(*w) +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
         EndIf
         
         i!1
@@ -57,8 +57,8 @@ If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 36
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = --
 ; EnableXP
 ; DPIAware

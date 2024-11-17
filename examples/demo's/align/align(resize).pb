@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_Event_Timer
         If Width = 480
           direction = 1
-        ElseIf Width = WidgetWidth(Root())-100
+        ElseIf Width = Width(root())-100
           direction =- 1
         EndIf
         ;         
@@ -109,8 +109,8 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventGadget()
           Case 0
             Define *th._s_widget = ID(Str(0))
-            Width = WidgetWidth(*th)
-            Height = WidgetHeight(*th)
+            Width = Width(*th)
+            Height = Height(*th)
             
             If GetGadgetState(0)
               AddWindowTimer(0, 1, 200)
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 23
+; CursorPosition = 112
+; FirstLine = 100
 ; Folding = --
 ; EnableXP

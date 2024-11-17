@@ -110,24 +110,24 @@ CompilerIf #PB_Compiler_IsMainFile
   ;    Define *toolbar = ToolBar( *root )
   ;     
   ;     If *toolbar
-  ;       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-  ;       ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
-  ;       ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
+  ;       BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+  ;       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
+  ;       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
   ;       
   ;       Separator( )
   ;       
-  ;       ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+  ;       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
   ;       ; ToolTip(*toolbar, 3, "Cut")
   ;       
-  ;       ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+  ;       BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
   ;       ; ToolTip(*toolbar, 4, "Copy")
   ;       
-  ;       ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+  ;       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
   ;       ; ToolTip(*toolbar, 5, "Paste")
   ;       
   ;       Separator( )
   ;       
-  ;       ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+  ;       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
   ;       ; ToolTip(*toolbar, 6, "Find a document")
   ;    EndIf
 
@@ -143,24 +143,24 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Define *toolbar ;= ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
 ;   
 ;   If *toolbar
-;     ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-;     ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-;     ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
+;     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+;     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
+;     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
 ;     
 ;     Separator( )
 ;     
-;     ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+;     BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
 ;     ; ToolTip(*toolbar, 3, "Cut")
 ;     
-;     ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+;     BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
 ;     ; ToolTip(*toolbar, 4, "Copy")
 ;     
-;     ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+;     BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
 ;     ; ToolTip(*toolbar, 5, "Paste")
 ;     
 ;     Separator( )
 ;     
-;     ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+;     BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
 ;     ; ToolTip(*toolbar, 6, "Find a document")
 ;   EndIf
 ;   
@@ -171,24 +171,24 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
   
   If *toolbar
-    ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-    ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-    ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
+    BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+    BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
+    BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
     
     Separator( )
     
-    ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+    BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
     ; ToolTip(*toolbar, 3, "Cut")
     
-    ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+    BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
     ; ToolTip(*toolbar, 4, "Copy")
     
-    ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+    BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
     ; ToolTip(*toolbar, 5, "Paste")
     
     Separator( )
     
-    ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+    BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
     ; ToolTip(*toolbar, 6, "Find a document")
   EndIf
   
@@ -196,7 +196,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *a1._s_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
   ;Define *a2._s_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
   Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
-  Define *a3._s_WIDGET = image( 150, 110, 60, 60, -1 )
+  Define *a3._s_WIDGET = Image( 150, 110, 60, 60, -1 )
   
   a_set( *a3, -1, 10)
   
@@ -221,42 +221,42 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   
-  Bind( Root( ), @anchor_events( ) )
+  Bind( root( ), @anchor_events( ) )
   
   OpenWindow(#window, 0, 0, 400, 300, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
  
   ;\\ Open Root0
   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
   ;BindWidgetEvent( *root2, @HandlerEvents( ) )
-  Global *menu._S_WIDGET = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
+  Global *menu._S_WIDGET = CreateBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
   
   SetColor( *menu, #__color_back, $FFC8ECF0 )
   
   BarTitle("Title-1")
   BarItem(1, "title-1-item-1")
-  BarSeparator( )   
+  BarBar( )   
   ;
-  OpenBar("title-1-sub-item")
+  OpenSubBar("title-1-sub-item")
   BarItem(3, "title-1-item")
-  BarSeparator( )
+  BarBar( )
   ;
-  OpenBar("title-2-sub-item")   
+  OpenSubBar("title-2-sub-item")   
   BarItem(13, "title-2-item")
-  BarSeparator( )
+  BarBar( )
   ;
-  OpenBar("title-3-sub-item")   
+  OpenSubBar("title-3-sub-item")   
   BarItem(23, "title-3-item")
-  CloseBar( ) 
+  CloseSubBar( ) 
   ;
-  BarSeparator( )
+  BarBar( )
   BarItem(14, "title-2-item")
-  CloseBar( ) 
+  CloseSubBar( ) 
   ;
-  BarSeparator( )
+  BarBar( )
   BarItem(4, "title-1-item")
-  CloseBar( ) 
+  CloseSubBar( ) 
   ;
-  BarSeparator( )
+  BarBar( )
   BarItem(2, "title-1-item-2")
   
   BarTitle("Title-2")
@@ -265,7 +265,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   BarTitle("Title-event-test")
   BarItem(7, "test")
-  BarSeparator( )
+  BarBar( )
   BarItem(8, "quit")
   
   BarTitle("Title-4")
@@ -292,11 +292,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Next
    SetState(*combobox, 0)
    
-   Redraw(root( ))
+   ReDraw(root( ))
    
    Define *open = Opened( )
-   DisplayPopupMenuBar( *combobox\PopupBar( ), *menu, 10, 190 )
-   ;DisplayPopupMenuBar( *combobox\PopupBar( ), *combobox, 10, 150 )
+   DisplayPopupBar( *combobox\PopupBar( ), *menu, 10, 190 )
+   ;DisplayPopupBar( *combobox\PopupBar( ), *combobox, 10, 150 )
    OpenList( *open ) 
    Debug ""+*open+" "+*root0
   
@@ -309,20 +309,20 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   ;*menu\__tabs( )\focus = 1
 ;   *menu\FocusedTab( ) = *menu\__tabs( )
 ;   
-;   DisplayPopupMenuBar( *menu\__tabs( )\menu, root(), 10, 32 )
+;   DisplayPopupBar( *menu\__tabs( )\menu, root(), 10, 32 )
   
 ;    
-;   *menu = CreatePopupMenuBar( )
+;   *menu = CreatePopupBar( )
 ;   If *menu                  ; creation of the pop-up menu begins...
 ;     BarItem(1, "Open")      ; You can use all commands for creating a menu
 ;     BarItem(2, "Save")      ; just like in a normal menu...
 ;     BarItem(3, "Save as")
 ;     BarItem(4, "event-Quit")
-;     BarSeparator( )
-;     OpenBar("Recent files")
+;     BarBar( )
+;     OpenSubBar("Recent files")
 ;     BarItem(5, "PureBasic.exe")
 ;     BarItem(6, "event-Test")
-;     CloseBar( )
+;     CloseSubBar( )
 ;   EndIf
 ;   
 ;   Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
@@ -350,17 +350,17 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   
 
 
-  *menu = CreatePopupMenuBar( )
+  *menu = CreatePopupBar( )
   If *menu                  ; creation of the pop-up menu begins...
     BarItem(1, "Open")      ; You can use all commands for creating a menu
     BarItem(2, "Save")      ; just like in a normal menu...
     BarItem(3, "Save as")
     BarItem(4, "event-Quit")
-    BarSeparator( )
-    OpenBar("Recent files")
+    BarBar( )
+    OpenSubBar("Recent files")
     BarItem(5, "PureBasic.exe")
     BarItem(6, "event-Test")
-    CloseBar( )
+    CloseSubBar( )
   EndIf
   
   Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
@@ -441,7 +441,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure button_tab_events( )
     Select GetText( EventWidget( ) )
       Case "popup menu"
-        DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+        DisplayPopupBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
         
       Case "1"
         SetState(*button_panel, 0)
@@ -598,24 +598,24 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    ;    Define *toolbar = ToolBar( *root )
    ;     
    ;     If *toolbar
-   ;       ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-   ;       ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
-   ;       ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
+   ;       BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+   ;       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
+   ;       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
    ;       
    ;       Separator( )
    ;       
-   ;       ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+   ;       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
    ;       ; ToolTip(*toolbar, 3, "Cut")
    ;       
-   ;       ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+   ;       BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
    ;       ; ToolTip(*toolbar, 4, "Copy")
    ;       
-   ;       ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+   ;       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
    ;       ; ToolTip(*toolbar, 5, "Paste")
    ;       
    ;       Separator( )
    ;       
-   ;       ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+   ;       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
    ;       ; ToolTip(*toolbar, 6, "Find a document")
    ;    EndIf
    
@@ -625,34 +625,34 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    ;a_init( view, 8 )
    
    
-   Global *menu = CreateMenuBar( view ) : SetClass(*menu, "*root_MenuBar" )
+   Global *menu = CreateBar( view ) : SetClass(*menu, "*root_MenuBar" )
    SetColor( *menu, #__color_back, $FFC8ECF0 )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
-   BarSeparator( )   
+   BarBar( )   
    ;
-   OpenBar("title-1-sub-item")
+   OpenSubBar("title-1-sub-item")
    BarItem(3, "title-1-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-2-sub-item")   
+   OpenSubBar("title-2-sub-item")   
    BarItem(13, "title-2-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-3-sub-item")   
+   OpenSubBar("title-3-sub-item")   
    BarItem(23, "title-3-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(14, "title-2-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(4, "title-1-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(2, "title-1-item-2")
    
    BarTitle("Title-2")
@@ -661,7 +661,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    
    BarTitle("Title-event-test")
    BarItem(7, "test")
-   BarSeparator( )
+   BarBar( )
    BarItem(8, "quit")
    
    BarTitle("Title-4")
@@ -683,24 +683,24 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
    
    If *toolbar
-      ToolBarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-      ToolBarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-      ToolBarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
+      BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
+      BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
       
       Separator( )
       
-      ToolBarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+      BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
       ; ToolTip(*toolbar, 3, "Cut")
       
-      ToolBarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+      BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
       ; ToolTip(*toolbar, 4, "Copy")
       
-      ToolBarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+      BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
       ; ToolTip(*toolbar, 5, "Paste")
       
       Separator( )
       
-      ToolBarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+      BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
       ; ToolTip(*toolbar, 6, "Find a document")
    EndIf
 
@@ -709,8 +709,8 @@ CompilerIf #PB_Compiler_IsMainFile = 555
 CompilerEndIf
    
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 300
-; FirstLine = 283
+; CursorPosition = 663
+; FirstLine = 477
 ; Folding = -------
 ; EnableXP
 ; DPIAware

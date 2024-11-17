@@ -8,7 +8,7 @@ Procedure events_gadgets()
   
   Select EventType()
     Case #PB_EventType_LeftClick
-      SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+      SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
       Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
@@ -21,7 +21,7 @@ Procedure events_widgets()
     Case #__event_Change
       state = GetState(EventWidget( ))
       SetGadgetState(IDWidget(EventWidget( )), state)
-      Debug  Str(IDWidget(EventWidget( )))+" - widget change " + state +" "+ WidgetHeight( WidgetID(0) ) +" "+ WidgetHeight( WidgetID(1) )
+      Debug  Str(IDWidget(EventWidget( )))+" - widget change " + state +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
   EndSelect
 EndProcedure
 
@@ -35,12 +35,12 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   Open(0, 230,0, 230,200)
   Button(0, 0, 0, 0, "Button 0") ; No need to specify size or coordinates
   Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-  Splitter(5, 5, 220, 120, WidgetID(#Button0), WidgetID(#Button1));, #PB_Splitter_Separator)
-  Bind(WidgetID(#Splitter2), @events_widgets())
+  Splitter(5, 5, 220, 120, ID(#Button0), ID(#Button1));, #PB_Splitter_Separator)
+  Bind(ID(#Splitter2), @events_widgets())
   
   Text(5, 135, 220, 60, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Border|#__flag_Textcenter|#__flag_Texttop )
-  Splitter(5, 5, 220, 190, WidgetID(#Splitter2), WidgetID(3), #PB_Splitter_Separator)
-  ;Bind(WidgetID(#Splitter4), @events_widgets())
+  Splitter(5, 5, 220, 190, ID(#Splitter2), ID(3), #PB_Splitter_Separator)
+  ;Bind(ID(#Splitter4), @events_widgets())
   
   
   ButtonGadget(#Button0, 0, 0, 0, 0, "Button 0") ; No need to specify size or coordinates
@@ -56,8 +56,8 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 36
+; CursorPosition = 42
+; FirstLine = 18
 ; Folding = -
 ; Optimizer
 ; EnableXP

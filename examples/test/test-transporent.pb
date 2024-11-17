@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		;SetColor(root(), #__color_back, $FFF7F7F7)
 		
 		; 		If StartEnum( root( ))
-		; 			If WidgetType( widget( ) ) = #__type_Text
+		; 			If Type( widget( ) ) = #__type_Text
 		; 				widget()\color\back =- 1
 		; 				; SetColor(widget(), #__color_back, Root()\color\back)
 		; 			EndIf
@@ -87,8 +87,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 60
+; CursorPosition = 77
+; FirstLine = 66
 ; Folding = --
 ; EnableXP
 ; DPIAware

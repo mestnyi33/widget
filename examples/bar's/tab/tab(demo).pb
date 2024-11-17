@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select EventType()
       Case #PB_EventType_LeftClick
-        SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+        SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
         Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
     EndSelect
   EndProcedure
@@ -111,7 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = --
 ; Optimizer
 ; EnableXP

@@ -279,8 +279,8 @@
     #__type_Message       = - 3
     #__type_PopupMenu     = - 4
     #__type_Menu          = - 5
-    #__type_ToolBar       = - 6
-    #__type_TabBar        = - 7
+    #__type_Tool       = - 6
+    #__type_Tab           = - 7
     #__type_StatusBar     = - 8
     #__type_Properties    = - 9
     
@@ -294,7 +294,7 @@
       #__type_Unknown       = #PB_GadgetType_Unknown       ; 0
       #__type_Button        = #PB_GadgetType_Button        ; 1
       #__type_String        = #PB_GadgetType_String        ; 2
-      #__type_text          = #PB_GadgetType_Text          ; 3
+      #__type_Text          = #PB_GadgetType_Text          ; 3
       #__type_CheckBox      = #PB_GadgetType_CheckBox      ; 4
       #__type_Option        = #PB_GadgetType_Option        ; 5
       #__type_ListView      = #PB_GadgetType_ListView      ; 6
@@ -305,11 +305,11 @@
       #__type_Container     = #PB_GadgetType_Container     ; 11
       #__type_ListIcon      = #PB_GadgetType_ListIcon      ; 12
       #__type_IPAddress     = #PB_GadgetType_IPAddress     ; 13
-      #__type_progressBar   = #PB_GadgetType_ProgressBar   ; 14
-      #__type_ScrollBar     = #PB_GadgetType_ScrollBar     ; 15
+      #__type_Progress      = #PB_GadgetType_ProgressBar   ; 14
+      #__type_Scroll        = #PB_GadgetType_ScrollBar     ; 15
       #__type_ScrollArea    = #PB_GadgetType_ScrollArea    ; 16
-      #__type_trackBar      = #PB_GadgetType_TrackBar      ; 17
-      #__type_web           = #PB_GadgetType_Web           ; 18
+      #__type_Track         = #PB_GadgetType_TrackBar      ; 17
+      #__type_Web           = #PB_GadgetType_Web           ; 18
       #__type_ButtonImage   = #PB_GadgetType_ButtonImage   ; 19
       #__type_Calendar      = #PB_GadgetType_Calendar      ; 20
       #__type_Date          = #PB_GadgetType_Date          ; 21
@@ -318,14 +318,15 @@
       #__type_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
       #__type_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
       #__type_Spin          = #PB_GadgetType_Spin          ; 26
-      #__type_tree          = #PB_GadgetType_Tree          ; 27
-      #__type_panel         = #PB_GadgetType_Panel         ; 28
+      #__type_Tree          = #PB_GadgetType_Tree          ; 27
+      #__type_Panel         = #PB_GadgetType_Panel         ; 28
       #__type_Splitter      = #PB_GadgetType_Splitter      ; 29
       #__type_MDI           = #PB_GadgetType_MDI           ; 30
+      
       #__type_Scintilla     = #PB_GadgetType_Scintilla     ; 31
-      ;#__type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
-      ;#__type_Canvas        = #PB_GadgetType_Canvas        ; 33
-      ;#__type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
+      #__type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
+      #__type_Canvas        = #PB_GadgetType_Canvas        ; 33
+      #__type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
     EndEnumeration
     
     ;-\\ create-flags
@@ -685,8 +686,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 276
-; FirstLine = 270
+; CursorPosition = 281
+; FirstLine = 267
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -20,6 +20,14 @@ CompilerIf #PB_Compiler_IsMainFile
       ; End
    EndProcedure
    
+   Macro MouseMoveX( )
+      DesktopUnscaledX( mouse( )\x - mouse( )\delta\x )
+   EndMacro
+   
+   Macro MouseMoveY( )
+      DesktopUnscaledY( mouse( )\y - mouse( )\delta\y )
+   EndMacro
+   
    Procedure Events()
       Static DraggedGadget
       
@@ -27,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__event_RightUp
-            DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+            DisplayPopupBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
                
          Case #__event_DragStart
             DraggedGadget = eventobject
@@ -47,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_MouseMove
             If DraggedGadget 
                ;Debug Root()\canvas\resizebeginwidget ;GetClass(DraggedGadget)
-               Resize(DraggedGadget, Mouse()\x-Mouse()\delta\x, Mouse()\y-Mouse()\delta\y, #PB_Ignore, #PB_Ignore)
+               Resize(DraggedGadget, MouseMoveX( ), MouseMoveY( ), #PB_Ignore, #PB_Ignore)
                ;Debug Root()\canvas\resizebeginwidget
             EndIf
             
@@ -104,32 +112,32 @@ CompilerIf #PB_Compiler_IsMainFile
       ;a_init( root())
       
 ; ;       ;\\
-;       *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+;       *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
 ;       SetColor( *menu, #__color_back, $FFF7FEE2 )
 ;       
 ;       BarTitle("Title-1")
 ;       BarItem(1, "title-1-item-1")
 ;       BarSeparator( )
 ;       
-;       OpenBar("title-1-sub-item")
+;       OpenSubBar("title-1-sub-item")
 ;       BarItem(3, "title-1-item")
 ;       BarSeparator( )
 ;       ;
-;       OpenBar("title-2-sub-item")   
+;       OpenSubBar("title-2-sub-item")   
 ;       BarItem(13, "title-2-item")
 ;       BarSeparator( )
 ;       ;
-;       OpenBar("title-3-sub-item")   
+;       OpenSubBar("title-3-sub-item")   
 ;       BarItem(23, "title-3-item")
-;       CloseBar( ) 
+;       CloseSubBar( ) 
 ;       ;
 ;       BarSeparator( )
 ;       BarItem(14, "title-2-item")
-;       CloseBar( ) 
+;       CloseSubBar( ) 
 ;       ;
 ;       BarSeparator( )
 ;       BarItem(4, "title-1-item")
-;       CloseBar( ) 
+;       CloseSubBar( ) 
 ;       ;
 ;       BarSeparator( )
 ;       BarItem(2, "title-1-item-2")
@@ -148,17 +156,17 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Bind(*menu, @TestHandler(), -1, 7)
 ;       Bind(*menu, @QuitHandler(), -1, 8)
 ;       ;
-;       *menu = CreatePopupMenuBar( )
+;       *menu = CreatePopupBar( )
 ;       If *menu                  ; creation of the pop-up menu begins...
 ;          BarItem(1, "Open")     ; You can use all commands for creating a menu
 ;          BarItem(2, "Save")     ; just like in a normal menu...
 ;          BarItem(3, "Save as")
 ;          BarItem(4, "Quit")
 ;          BarSeparator( )
-;          OpenBar("Recent files")
+;          OpenSubBar("Recent files")
 ;          BarItem(5, "PureBasic.exe")
 ;          BarItem(6, "Test.txt")
-;          CloseBar( )
+;          CloseSubBar( )
 ;       EndIf
 ;       
       Define widget = CreateWidget( #PB_GadgetType_Container )
@@ -170,7 +178,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     Resize(Root(), 90,50,50,50)
       
       
-      Resize(widget, 50,50,150,150)
+      ;Resize(widget, 50,50,150,150)
       
       ;Bind( widget, @Events())
       Bind( #PB_All, @Events())
@@ -179,8 +187,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 24
-; Folding = -+
+; CursorPosition = 31
+; FirstLine = 10
+; Folding = -8
 ; EnableXP
 ; DPIAware

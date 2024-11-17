@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected width 
       Select WidgetEvent( )
          Case #__event_resize
-            width = WidgetWidth( EventWidget( ), #__c_inner ) - 20
+            width = Width( EventWidget( ), #__c_inner ) - 20
             
             Debug ">"
             Resize( object1, #PB_Ignore, #PB_Ignore, width, #PB_Ignore) 
@@ -66,8 +66,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 17
+; CursorPosition = 45
+; FirstLine = 41
 ; Folding = -
 ; EnableXP
 ; DPIAware

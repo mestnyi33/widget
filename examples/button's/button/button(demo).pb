@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug FontID(0)
   
   If Open( 0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-    Global main = GetWindow( Root( ) )
+    Global main = GetWindow( root( ) )
     ;BindEventCanvas( )
     
     ButtonGadget( 0, 10, 10, 200, 20, "Standard button", #PB_Button_Default )
@@ -84,8 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline, -1,4 )
     Button( 10+222,170+70, 200, 25, "Toggle button", #__flag_ButtonToggle )
     
-    SetState( WidgetID( 5 ), 1 )
-    SetFont( WidgetID( 5 ), FontID( 0 ) )
+    SetState( ID( 5 ), 1 )
+    SetFont( ID( 5 ), FontID( 0 ) )
     Bind( #PB_All, @events_widgets( ) )
     
   EndIf
@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
-    c2 = GetGadget( Root( ) )
+    c2 = GetGadget( root( ) )
     
     *Button_0 = Button( 15, 42, 250,  60, "Button (Horisontal)", #__flag_Textmultiline,-1 )
 ;     SetColor( *Button_0, #__Color_fore, $0000FF )
@@ -143,8 +143,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 119
+; CursorPosition = 87
+; FirstLine = 83
 ; Folding = ---
 ; Optimizer
 ; EnableXP

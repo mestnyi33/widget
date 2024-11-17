@@ -66,8 +66,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Resize( object, #PB_Ignore, #PB_Ignore, i, #PB_Ignore)
          PostEventRepaint( root( ))
       Else
-         If WidgetWidth( object, #__c_frame ) < 250
-            i = WidgetWidth( object, #__c_frame ) + 5
+         If Width( object, #__c_frame ) < 250
+            i = Width( object, #__c_frame ) + 5
             
             Debug "timer "+i
             Resize( object, #PB_Ignore, #PB_Ignore, i, #PB_Ignore)
@@ -97,8 +97,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 40
+; CursorPosition = 69
+; FirstLine = 64
 ; Folding = --
 ; EnableXP
 ; DPIAware

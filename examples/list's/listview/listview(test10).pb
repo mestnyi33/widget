@@ -12,19 +12,19 @@ CompilerIf #PB_Compiler_IsMainFile
 If Open(0, 0, 0, 270*2, 140, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ListView(10, 10, 250, 120)
   For a = 1 To 12
-    AddItem (widgetID(0), -1, "Item yyy " + Str(a) + " of the Listview")   ; definieren des Listview-Inhalts
+    AddItem (ID(0), -1, "Item yyy " + Str(a) + " of the Listview")   ; definieren des Listview-Inhalts
   Next
-  SetState(widgetID(0), 0)
+  SetState(ID(0), 0)
   ListView(10+270, 10, 250, 120)
-  SetFont(widgetID(1), FontID(0))
+  SetFont(ID(1), FontID(0))
   For a = 1 To 12
-    AddItem (widgetID(1), -1, "Item yyy " + Str(a) + " of the Listview")   ; definieren des Listview-Inhalts
+    AddItem (ID(1), -1, "Item yyy " + Str(a) + " of the Listview")   ; definieren des Listview-Inhalts
   Next
-  SetState(widgetID(1), 0)
+  SetState(ID(1), 0)
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 9
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 22
 ; Folding = -
 ; EnableXP

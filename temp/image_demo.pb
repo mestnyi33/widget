@@ -50,7 +50,7 @@ DeclareModule Scroll
     front.l[4]
     fore.l[4]
     back.l[4]
-    frame.l[4]
+    Frame.l[4]
   EndStructure
   
   ;- - _S_page
@@ -95,7 +95,7 @@ DeclareModule Scroll
     area._S_page
     thumb._S_page
     color._S_color[4]
-    button._S_button[4] 
+    Button._S_button[4] 
   EndStructure
   
   ;- - _S_scroll
@@ -113,10 +113,10 @@ DeclareModule Scroll
   ;- DECLAREs
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1)
   Declare.b Draw(*this._S_widget)
-  Declare.l WidgetY(*this._S_widget)
-  Declare.l WidgetX(*this._S_widget)
-  Declare.l WidgetWidth(*this._S_widget)
-  Declare.l WidgetHeight(*this._S_widget)
+  Declare.l Y(*this._S_widget)
+  Declare.l X(*this._S_widget)
+  Declare.l Width(*this._S_widget)
+  Declare.l Height(*this._S_widget)
   
   Declare.i GetState(*this._S_widget)
   Declare.i GetAttribute(*this._S_widget, Attribute.i)
@@ -369,19 +369,19 @@ Module Scroll
   EndProcedure
   
   ;-
-  Procedure.l WidgetX(*this._S_widget)
+  Procedure.l X(*this._S_widget)
     ProcedureReturn *this\x + Bool(*this\hide[1]) * *this\width
   EndProcedure
   
-  Procedure.l WidgetY(*this._S_widget)
+  Procedure.l Y(*this._S_widget)
     ProcedureReturn *this\y + Bool(*this\hide[1]) * *this\height
   EndProcedure
   
-  Procedure.l WidgetWidth(*this._S_widget)
+  Procedure.l Width(*this._S_widget)
     ProcedureReturn Bool(Not *this\hide[1]) * *this\width
   EndProcedure
   
-  Procedure.l WidgetHeight(*this._S_widget)
+  Procedure.l Height(*this._S_widget)
     ProcedureReturn Bool(Not *this\hide[1]) * *this\height
   EndProcedure
   
@@ -617,7 +617,7 @@ Module Scroll
   
   Procedure.b Updates(*scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     With *scroll
-      Protected iWidth = WidgetX(\v), iHeight = WidgetY(\h)
+      Protected iWidth = X(\v), iHeight = Y(\h)
       Static hPos, vPos : vPos = \v\page\pos : hPos = \h\page\pos
       
       ; Вправо работает как надо
@@ -980,7 +980,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 383
-; FirstLine = 383
+; CursorPosition = 619
+; FirstLine = 596
 ; Folding = --------------------------
 ; EnableXP

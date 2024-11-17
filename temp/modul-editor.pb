@@ -49,7 +49,7 @@ DeclareModule Scroll
     front.l[4]
     fore.l[4]
     back.l[4]
-    frame.l[4]
+    Frame.l[4]
   EndStructure
   
   ;- - _S_page
@@ -94,7 +94,7 @@ DeclareModule Scroll
     area._S_page
     thumb._S_page
     color._S_color[4]
-    button._S_button[4] 
+    Button._S_button[4] 
   EndStructure
   
   ;- - _S_scroll
@@ -112,10 +112,10 @@ DeclareModule Scroll
   ;- DECLAREs
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1)
   Declare.b Draw(*this._S_widget)
-  Declare.l WidgetY(*this._S_widget)
-  Declare.l WidgetX(*this._S_widget)
-  Declare.l WidgetWidth(*this._S_widget)
-  Declare.l WidgetHeight(*this._S_widget)
+  Declare.l Y(*this._S_widget)
+  Declare.l X(*this._S_widget)
+  Declare.l Width(*this._S_widget)
+  Declare.l Height(*this._S_widget)
   
   Declare.i GetState(*this._S_widget)
   Declare.i GetAttribute(*this._S_widget, Attribute.i)
@@ -368,19 +368,19 @@ Module Scroll
   EndProcedure
   
   ;-
-  Procedure.l WidgetX(*this._S_widget)
+  Procedure.l X(*this._S_widget)
     ProcedureReturn *this\x + Bool(*this\hide[1]) * *this\width
   EndProcedure
   
-  Procedure.l WidgetY(*this._S_widget)
+  Procedure.l Y(*this._S_widget)
     ProcedureReturn *this\y + Bool(*this\hide[1]) * *this\height
   EndProcedure
   
-  Procedure.l WidgetWidth(*this._S_widget)
+  Procedure.l Width(*this._S_widget)
     ProcedureReturn Bool(Not *this\hide[1]) * *this\width
   EndProcedure
   
-  Procedure.l WidgetHeight(*this._S_widget)
+  Procedure.l Height(*this._S_widget)
     ProcedureReturn Bool(Not *this\hide[1]) * *this\height
   EndProcedure
   
@@ -616,7 +616,7 @@ Module Scroll
   
   Procedure.b Updates(*scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     With *scroll
-      Protected iWidth = WidgetX(\v), iHeight = WidgetY(\h)
+      Protected iWidth = X(\v), iHeight = Y(\h)
       Static hPos, vPos : vPos = \v\page\pos : hPos = \h\page\pos
       
       ; Вправо работает как надо
@@ -954,14 +954,14 @@ DeclareModule Editor
     Width.l[3]
   EndStructure
  
-  Structure Mouse
+  Structure mouse
     X.l
     Y.l
     Buttons.l
   EndStructure
  
   Structure Canvas
-    Mouse.Mouse
+    mouse.mouse
     Gadget.l
     Window.l
    
@@ -1923,7 +1923,7 @@ Module Editor
         PopListPosition(*This\Items())
        
         ; Draw
-        ClipOutput(0,0, Scroll::WidgetX(*This\scroll\v), Scroll::WidgetY(*This\scroll\h))
+        ClipOutput(0,0, Scroll::X(*This\scroll\v), Scroll::Y(*This\scroll\h))
        
         PushListPosition(*This\Items())
         ForEach *This\Items()
@@ -1999,8 +1999,8 @@ Module Editor
       \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
       \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
       \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-      Protected iHeight = \Height-Scroll::WidgetHeight(*This\scroll\h)
-      Protected iWidth = \Width-Scroll::WidgetWidth(*This\scroll\v)
+      Protected iHeight = \Height-Scroll::Height(*This\scroll\h)
+      Protected iWidth = \Width-Scroll::Width(*This\scroll\v)
      
       Select EventType()
         Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
@@ -2039,7 +2039,7 @@ Module Editor
       ;Debug *This\scroll\h\at
      
       If Not *This\scroll\v\from And Not *This\scroll\h\from
-        ;Or (\Canvas\Mouse\X<*This\Width[2]-Scroll::WidgetWidth(*This\scroll\v) And \Canvas\Mouse\Y<*This\Height[2]-Scroll::WidgetHeight(*This\scroll\h))
+        ;Or (\Canvas\Mouse\X<*This\Width[2]-Scroll::Width(*This\scroll\v) And \Canvas\Mouse\Y<*This\Height[2]-Scroll::Height(*This\scroll\h))
         *This\Repaint = EditableCallBack(*This, EventType())
         If *This\Repaint
           ReDraw(*This)
@@ -2288,8 +2288,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1929
-; FirstLine = 1921
+; CursorPosition = 1925
+; FirstLine = 1901
 ; Folding = -----------------------------------------------------
 ; Optimizer
 ; EnableXP

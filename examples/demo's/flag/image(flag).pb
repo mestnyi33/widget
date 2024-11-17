@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   UsePNGImageDecoder()
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *this._s_widget, gadget, Button_type
   Global f, f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8
   Global Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
@@ -51,14 +51,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case Button_type 
             If GetState(EventWidget())
-              HideWidget(*this, 1)
+              Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
               SetText(EventWidget(), "widget")
             Else
-              HideWidget(*this, 0)
+              Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(f_6, Flag(*this, #__flag_Textbottom))
     
     If Button_type
-       HideWidget(Button_type, 1)
+       Hide(Button_type, 1)
     EndIf
 
     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
@@ -148,7 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 131
-; FirstLine = 102
+; FirstLine = 106
 ; Folding = ---
 ; Optimizer
 ; EnableXP

@@ -52,17 +52,18 @@ CompilerIf #PB_Compiler_IsMainFile
     IPAddress(18+290,  100, 290, 40, #__flag_Textright)
     
     ;\\
-    SetState(WidgetID(0), MakeIPAddress(127, 0, 30, 1))   ; set a valid ip address
-    SetState(WidgetID(1), MakeIPAddress(127, 190, 0, 1))   ; set a valid ip address
-    SetState(WidgetID(2), MakeIPAddress(127, 0, 0, 1))   ; set a valid ip address
+    SetState(ID(0), MakeIPAddress(127, 0, 30, 1))   ; set a valid ip address
+    SetState(ID(1), MakeIPAddress(127, 190, 0, 1))   ; set a valid ip address
+    SetState(ID(2), MakeIPAddress(127, 0, 0, 1))   ; set a valid ip address
     
-    Debug GetState(WidgetID(0))
+    Debug GetState(ID(0))
     
      Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 58
+; FirstLine = 29
 ; Folding = 8
 ; EnableXP
 ; DPIAware

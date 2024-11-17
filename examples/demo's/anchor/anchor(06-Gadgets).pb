@@ -331,9 +331,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ; 2DDrawing 
    
-   Root( )\drawmode | 1<<2
+   root( )\drawmode | 1<<2
    ; VectorDrawing
-   Root( )\drawmode | 1<<1
+   root( )\drawmode | 1<<1
    
    ; Creates some customized buttons
    *Object_Button1 = Button_Add(50, 50, 200, 30, "Normal button")
@@ -345,8 +345,8 @@ CompilerIf #PB_Compiler_IsMainFile
    *Object_CheckBox2 = CheckBox_Add(300, 100, 200, 30, "Disabled Check Box")
    *Object_CheckBox3 = CheckBox_Add(300, 150, 200, 50, "Another Check Box with longer text")
    
-   DisableWidget(*Object_Button2, 1)
-   DisableWidget(*Object_CheckBox2, 1)
+   Disable(*Object_Button2, 1)
+   Disable(*Object_CheckBox2, 1)
    SetState(*Object_CheckBox2, 1)
    SetState(*Object_CheckBox3, 1)
    

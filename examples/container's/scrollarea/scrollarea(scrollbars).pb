@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Define *mdi = ScrollArea(x,y,width, height, 288,212,1)
   Define *mdi = ScrollArea(10, 10, 160,95, 288,212,1) ; reClip - Window 140 75 - 124 59
   ; 
-  Debug " * "+WidgetWidth(*mdi, #__c_inner)+" "+WidgetHeight(*mdi, #__c_inner)
+  Debug " * "+Width(*mdi, #__c_inner)+" "+Height(*mdi, #__c_inner)
   
   ; add childrens to mdi gadget
   Define *g0 = Button(20, 20, 288,212, "button", #__flag_Textleft|#__flag_Texttop)
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 25
+; CursorPosition = 26
+; FirstLine = 22
 ; Folding = -
 ; EnableXP

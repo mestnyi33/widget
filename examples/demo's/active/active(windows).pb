@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1, "item_2_tree_4_window_2_root_0" )
       
       ;\\
-      Openlist( Root( ) )
+      OpenList( root( ) )
       Window(300, 10, 250, 200, "window_5_root_0", #PB_Window_SystemMenu ) : SetClass(widget( ), "window_5_root_0" )
       Window(10, 10, 200, 150, "window_6_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetClass(widget( ), "window_6_root_0" )
       Window(10, 10, 150, 100, "window_7_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetClass(widget( ), "window_7_root_0" )
@@ -50,13 +50,13 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1, "item_2_tree_9_window_7_root_0" )
       
       ;\\
-      Openlist( Root( ) )
+      OpenList( root( ) )
       Button( 14, 250, 250,40, "button_10_root_0") : SetClass(widget( ), "button_10_root_0" )
       Button( 304, 250, 250,40, "button_11_root_0") : SetClass(widget( ), "button_11_root_0" )
       
       
       SetActive( widget( ) )
-      ;SetActive( WidgetID( 4 ) )
+      ;SetActive( ID( 4 ) )
       
       ;\\
       Bind( #PB_All, @active(), #__event_Focus)
@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1, "item_2_tree_4_window_2_root_1" )
       
       ;\\
-      Openlist( Root( ) )
+      OpenList( root( ) )
       Window(300, 10, 250, 200, "window_5_root_1", #PB_Window_SystemMenu ) : SetClass(widget( ), "window_5_root_1" )
       Window(10, 10, 200, 150, "window_6_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetClass(widget( ), "window_6_root_1" )
       Window(10, 10, 150, 100, "window_7_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetClass(widget( ), "window_7_root_1" )
@@ -100,13 +100,13 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1, "item_2_tree_9_window_7_root_1" )
       
       ;\\
-      Openlist( Root( ) )
+      OpenList( root( ) )
       Button( 14, 250, 250,40, "button_10_root_1") : SetClass(widget( ), "button_10_root_1" )
       Button( 304, 250, 250,40, "button_11_root_1") : SetClass(widget( ), "button_11_root_1" )
       
       
       SetActive( widget( ) )
-      ;SetActive( WidgetID( 4 ) )
+      ;SetActive( ID( 4 ) )
       
       ;\\
       Bind( #PB_All, @active(), #__event_Focus)
@@ -119,9 +119,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    End 
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 108
-; FirstLine = 72
+; FirstLine = 84
 ; Folding = -
 ; EnableXP
 ; DPIAware

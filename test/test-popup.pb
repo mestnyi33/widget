@@ -23,31 +23,31 @@ CompilerIf #PB_Compiler_IsMainFile
    Open(0, 50,50,400,250)
    
    ;\\
-   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
    BarSeparator( )
    
-   OpenBar("title-1-sub-item")
+   OpenSubBar("title-1-sub-item")
    BarItem(3, "title-1-item")
    BarSeparator( )
    ;
-   OpenBar("title-2-sub-item")   
+   OpenSubBar("title-2-sub-item")   
    BarItem(13, "title-2-item")
    BarSeparator( )
    ;
-   OpenBar("title-3-sub-item")   
+   OpenSubBar("title-3-sub-item")   
    BarItem(23, "title-3-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(14, "title-2-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(4, "title-1-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(2, "title-1-item-2")
@@ -82,12 +82,12 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem(widget(), -1, "ComboBox editable...2")
    AddItem(widget(), -1, "ComboBox editable...3")
    
-   SetState(WidgetID(0), 2)
-   SetState(WidgetID(1), 1)
-   SetState(WidgetID(2), 0)    ; set (beginning with 0) the third item as active one
+   SetState(ID(0), 2)
+   SetState(ID(1), 1)
+   SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
    
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
+   BindBarEvent(*menu, 7, @TestHandler())
+   BindBarEvent(*menu, 8, @QuitHandler())
    
    ;PostEvent(-1, -1, -1, -1, 8 )
    ;Debug EventGadget()
@@ -97,7 +97,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Repeat
       event = WaitWindowEvent()
       
-      EventHandler( event, EventGadget(), EventType(), EventData() )
+      If event = #PB_Event_Gadget
+         EventHandler(EventGadget(), EventType(), EventData() )
+      EndIf
       
       If Event = - 1; #PB_Event_Gadget
          If EventGadget() = -1;777
@@ -107,7 +109,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
-; Folding = -
+; CursorPosition = 86
+; FirstLine = 80
+; Folding = --
 ; EnableXP
 ; DPIAware

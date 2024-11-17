@@ -78,9 +78,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   If state
     ; set splitters dafault positions
     ;widget::SetState(Splitter_ide, -130)
-    widget::SetState(Splitter_ide, widget::WidgetWidth(Splitter_ide)-220)
-    widget::SetState(splitter_help, widget::WidgetHeight(splitter_help)-80)
-    widget::SetState(splitter_debug, widget::WidgetHeight(splitter_debug)-150)
+    widget::SetState(Splitter_ide, widget::Width(Splitter_ide)-220)
+    widget::SetState(splitter_help, widget::Height(splitter_help)-80)
+    widget::SetState(splitter_debug, widget::Height(splitter_debug)-150)
     widget::SetState(Splitter_inspector, 200)
     widget::SetState(Splitter_design, 30)
     widget::SetState(Splitter_5, 120)
@@ -90,12 +90,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   ;widget::Resize(Splitter_ide, 0,0,820,620)
   
-  SetText(s_tbar, "size: ("+Str(WidgetWidth(s_tbar))+"x"+Str(WidgetHeight(s_tbar))+") - " );+ Str(IDWidget( widget::GetParent( s_tbar ))) )
-  SetText(s_desi, "size: ("+Str(WidgetWidth(s_desi))+"x"+Str(WidgetHeight(s_desi))+") - " );+ Str(IDWidget( widget::GetParent( s_desi ))))
-  SetText(s_view, "size: ("+Str(WidgetWidth(s_view))+"x"+Str(WidgetHeight(s_view))+") - " );+ Str(IDWidget( widget::GetParent( s_view ))))
-  SetText(s_list, "size: ("+Str(WidgetWidth(s_list))+"x"+Str(WidgetHeight(s_list))+") - " );+ Str(IDWidget( widget::GetParent( s_list ))))
-  SetText(s_insp, "size: ("+Str(WidgetWidth(s_insp))+"x"+Str(WidgetHeight(s_insp))+") - " );+ Str(IDWidget( widget::GetParent( s_insp ))))
-  SetText(s_help, "size: ("+Str(WidgetWidth(s_help))+"x"+Str(WidgetHeight(s_help))+") - " );+ Str(IDWidget( widget::GetParent( s_help ))))
+  SetText(s_tbar, "size: ("+Str(Width(s_tbar))+"x"+Str(Height(s_tbar))+") - " );+ Str(IDWidget( widget::GetParent( s_tbar ))) )
+  SetText(s_desi, "size: ("+Str(Width(s_desi))+"x"+Str(Height(s_desi))+") - " );+ Str(IDWidget( widget::GetParent( s_desi ))))
+  SetText(s_view, "size: ("+Str(Width(s_view))+"x"+Str(Height(s_view))+") - " );+ Str(IDWidget( widget::GetParent( s_view ))))
+  SetText(s_list, "size: ("+Str(Width(s_list))+"x"+Str(Height(s_list))+") - " );+ Str(IDWidget( widget::GetParent( s_list ))))
+  SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(IDWidget( widget::GetParent( s_insp ))))
+  SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(IDWidget( widget::GetParent( s_help ))))
   
   ;WaitClose( )
   Define event
@@ -104,8 +104,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23
-; FirstLine = 3
+; CursorPosition = 96
+; FirstLine = 80
 ; Folding = -
 ; Optimizer
 ; EnableXP

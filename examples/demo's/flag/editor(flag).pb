@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   Global Button_6, Button_7, Button_8
   
@@ -42,14 +42,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case Button_type 
             If GetState(EventWidget( ))
-              HideWidget(*this, 1)
+              Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
               SetText(Button_type, "widget")
             Else
-              HideWidget(*this, 0)
+              Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
+    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
     ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_Textmultiline);|);|#__flag_Textleft) 
     Container(10, 10, width, height) : a_init( widget( ))
@@ -109,7 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Button_3, Flag(*this, #__flag_Textright))
     SetState(Button_6, Flag(*this, #__flag_Textbottom))
     If Button_type
-       HideWidget(Button_type, 1)
+       Hide(Button_type, 1)
     EndIf
 
 ;         Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
@@ -126,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 111
-; FirstLine = 82
+; FirstLine = 84
 ; Folding = ---
 ; EnableXP
 ; DPIAware

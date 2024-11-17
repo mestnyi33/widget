@@ -59,7 +59,7 @@ DeclareModule Scroll
     front.l[4]
     fore.l[4]
     back.l[4]
-    frame.l[4]
+    Frame.l[4]
   EndStructure
  
   ;- - _S_page
@@ -150,17 +150,17 @@ DeclareModule Scroll
 ;     area._S_page
 ;     thumb._S_page
     color._S_color[4]
-    button._S_button[4]
+    Button._S_button[4]
   EndStructure
  
   ;-
   ;- DECLAREs
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1)
   Declare.b Draw(*this._S_widget)
-  Declare.l WidgetY(*this._S_widget)
-  Declare.l WidgetX(*this._S_widget)
-  Declare.l WidgetWidth(*this._S_widget)
-  Declare.l WidgetHeight(*this._S_widget)
+  Declare.l Y(*this._S_widget)
+  Declare.l X(*this._S_widget)
+  Declare.l Width(*this._S_widget)
+  Declare.l Height(*this._S_widget)
  
   Declare.i GetState(*this._S_widget)
   Declare.i GetAttribute(*this._S_widget, Attribute.i)
@@ -414,19 +414,19 @@ Module Scroll
   EndProcedure
  
   ;-
-  Procedure.l WidgetX(*this._S_widget)
+  Procedure.l X(*this._S_widget)
     ProcedureReturn *this\x + Bool(*this\hide[1]) * *this\width
   EndProcedure
  
-  Procedure.l WidgetY(*this._S_widget)
+  Procedure.l Y(*this._S_widget)
     ProcedureReturn *this\y + Bool(*this\hide[1]) * *this\height
   EndProcedure
  
-  Procedure.l WidgetWidth(*this._S_widget)
+  Procedure.l Width(*this._S_widget)
     ProcedureReturn Bool(Not *this\hide[1]) * *this\width
   EndProcedure
  
-  Procedure.l WidgetHeight(*this._S_widget)
+  Procedure.l Height(*this._S_widget)
     ProcedureReturn Bool(Not *this\hide[1]) * *this\height
   EndProcedure
  
@@ -662,7 +662,7 @@ Module Scroll
  
   Procedure.b Updates(*this._S_widget, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     With *this\scroll
-      Protected iWidth = WidgetX(\v), iHeight = WidgetY(\h)
+      Protected iWidth = X(\v), iHeight = Y(\h)
       Static hPos, vPos : vPos = \v\bar\page\pos : hPos = \h\bar\page\pos
      
       ; Вправо работает как надо
@@ -989,7 +989,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
  
   Procedure _Draw (canvas.i)
-    Protected iWidth = WidgetX(*this\scroll\v), iHeight = WidgetY(*this\scroll\h)
+    Protected iWidth = X(*this\scroll\v), iHeight = Y(*this\scroll\h)
    
     If StartDrawing(CanvasOutput(canvas))
      
@@ -1081,7 +1081,7 @@ CompilerIf #PB_Compiler_IsMainFile
  
   Procedure ScrollUpdates(*this._S_widget, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     With *this\scroll
-      Protected iWidth = WidgetX(*this\scroll\v), iHeight = WidgetY(*this\scroll\h)
+      Protected iWidth = X(*this\scroll\v), iHeight = Y(*this\scroll\h)
       Static hPos, vPos : vPos = *this\scroll\v\bar\page\pos : hPos = *this\scroll\h\bar\page\pos
      
       ; Вправо работает как надо
@@ -1177,7 +1177,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Debug "----------Up---------"
           GetScrollCoordinate()
           ScrollUpdates(*this, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
-          ;           Protected iWidth = Width-Width(*this\scroll\v), iHeight = Height- WidgetHeight(*this\scroll\h)
+          ;           Protected iWidth = Width-Width(*this\scroll\v), iHeight = Height- Height(*this\scroll\h)
           ;   
           ;         Debug ""+*this\scroll\h\hide+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
           ;         Debug ""+*this\scroll\v\hide+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
@@ -1304,8 +1304,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1179
-; FirstLine = 972
+; CursorPosition = 1083
+; FirstLine = 852
 ; Folding = --n82+f--------0------------------
 ; Optimizer
 ; EnableXP

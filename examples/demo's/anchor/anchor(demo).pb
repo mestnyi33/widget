@@ -70,15 +70,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Container( 10,10,220,210 )
     a_init( widget( ),5 )
     
-    image( 5,5,60,60, -1 )
+    Image( 5,5,60,60, -1 )
     Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-    image( 150,110,60,60, -1 )
+    Image( 150,110,60,60, -1 )
     a_set( *a )
     CloseList( )
     
-    Bind( WidgetID(1), @events_widgets( ), #__event_StatusChange )
-    Bind( WidgetID(2), @events_widgets( ), #__event_StatusChange )
-    Bind( WidgetID(3), @events_widgets( ), #__event_StatusChange )
+    Bind( ID(1), @events_widgets( ), #__event_StatusChange )
+    Bind( ID(2), @events_widgets( ), #__event_StatusChange )
+    Bind( ID(3), @events_widgets( ), #__event_StatusChange )
     
     Define y = 0
     ;Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 49
+; CursorPosition = 80
+; FirstLine = 75
 ; Folding = ---
 ; EnableXP
 ; DPIAware

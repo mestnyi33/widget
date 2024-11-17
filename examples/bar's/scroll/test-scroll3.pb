@@ -10,7 +10,7 @@ UseWidgets( )
 ;   
 ;   Select EventType()
 ;     Case #PB_EventType_LeftClick
-;       ;SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+;       ;SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
 ;       Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
 ;   EndSelect
 ; EndProcedure
@@ -68,7 +68,8 @@ If Open(0, 500,0, 500);,140)
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = -
 ; EnableXP
 ; DPIAware

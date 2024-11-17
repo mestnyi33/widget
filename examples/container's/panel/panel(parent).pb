@@ -9,28 +9,28 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Global i, x = 220, panel, butt1, butt2
+   Global i, x = 220, Panel, butt1, butt2
    Global._s_WIDGET *root, *panel, *butt0, *butt1, *butt2
    
    If Open( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;\\
-      panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
+      Panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
       For i = 0 To 5 
-         AddGadgetItem( panel, i, Hex(i) ) 
+         AddGadgetItem( Panel, i, Hex(i) ) 
          If i
             ButtonGadget(#PB_Any, 10,5,80,35, "_"+Str(i) )
          EndIf
       Next 
       CloseGadgetList( )
       ;
-      OpenGadgetList( panel, 0 )
+      OpenGadgetList( Panel, 0 )
       ButtonGadget(#PB_Any, 20,25,80,35, "_0" ) 
       CloseGadgetList( )
       ;
       butt1 = ButtonGadget(#PB_Any, 10,5,80,25, "*butt1" ) 
       butt2 = ButtonGadget(#PB_Any, 10,35,80,25, "*butt2" ) 
       ;
-      SetGadgetState( panel, 2 )
+      SetGadgetState( Panel, 2 )
       
       ;\\
       *root = root()
@@ -74,16 +74,16 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEach widgets( )
          line = "  ";+ widgets( )\class +" "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
       
       
-      Debug ""+*panel\first\widget\class +" <<<< "+ *panel\class +" >>>> "+ *panel\last\widget\class
+      Debug ""+*panel\FirstWidget( )\class +" <<<< "+ *panel\class +" >>>> "+ *panel\lastWidget( )\class
       
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
          ClipGadgets( UseGadgetList(0) )
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 61
+; CursorPosition = 95
+; FirstLine = 75
 ; Folding = --
 ; EnableXP

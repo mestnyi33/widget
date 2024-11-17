@@ -10,8 +10,8 @@ Procedure events_widgets()
    EndIf
 EndProcedure
 
-Procedure AddButtons( item, x,y,text.s )
-   Button(x, y, 80, 24, text)
+Procedure AddButtons( item, x,y,Text.s )
+   Button(x, y, 80, 24, Text)
    SetData(widget( ), item )
    Bind(widget(), @events_widgets() )
 EndProcedure
@@ -23,7 +23,7 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
   Text( 10,10,100,20,"Page 0")
   ;
   AddItem( *container, -1, "Panel 1")
-  Define h = WidgetHeight( *container, #__c_inner )
+  Define h = Height( *container, #__c_inner )
   Text( 10,10,100,20,"Page 1")
   
   Button(10, h-34*2, 80, 24,"remove")
@@ -45,6 +45,6 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 25
-; FirstLine = 25
+; FirstLine = 19
 ; Folding = -
 ; EnableXP

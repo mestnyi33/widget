@@ -17,9 +17,9 @@
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
-;                                                    HideWidget( *address ) - HideMenu( #Menu, State )
+;                                                    Hide( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
-;                                                  WidgetHeight( *address ) - MenuHeight( )
+;                                                  Height( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
 ;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
@@ -100,31 +100,31 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 8, @QuitHandler())
    
    ;\\
-   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
    BarSeparator( )
    
-   OpenBar("title-1-sub-item")
+   OpenSubBar("title-1-sub-item")
    BarItem(3, "title-1-item")
    BarSeparator( )
    ;
-   OpenBar("title-2-sub-item")   
+   OpenSubBar("title-2-sub-item")   
    BarItem(13, "title-2-item")
    BarSeparator( )
    ;
-   OpenBar("title-3-sub-item")   
+   OpenSubBar("title-3-sub-item")   
    BarItem(23, "title-3-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(14, "title-2-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(4, "title-1-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(2, "title-1-item-2")
@@ -159,9 +159,9 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget(), -1, "ComboBox editable...2")
     AddItem(widget(), -1, "ComboBox editable...3")
     
-    SetState(WidgetID(0), 2)
-    SetState(WidgetID(1), 1)
-    SetState(WidgetID(2), 0)    ; set (beginning with 0) the third item as active one
+    SetState(ID(0), 2)
+    SetState(ID(1), 1)
+    SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
       
    Bind(*menu, @TestHandler(), -1, 7)
    Bind(*menu, @QuitHandler(), -1, 8)
@@ -178,7 +178,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 15
+; CursorPosition = 163
+; FirstLine = 154
 ; Folding = -
 ; EnableXP

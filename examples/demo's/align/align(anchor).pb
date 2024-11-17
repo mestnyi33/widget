@@ -375,7 +375,7 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   RB_Button = Button(x+pos+pos+butt_size+screen_size, y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                     ;:ToolTip(RB_Button, "Включить привязку (вправо вниз)")
   
   ;
-  S_Screen = Container(x+pos+butt_size, y+pos+butt_size, screen_size, screen_size) ;:DisableWidget(S_Screen,1)
+  S_Screen = Container(x+pos+butt_size, y+pos+butt_size, screen_size, screen_size) ;:Disable(S_Screen,1)
   Sha = Button(0, 0, butt_size+2, butt_size+2, "", #__flag_ButtonToggle) 
 ;   SetState(*this, 1)
 ;   SetAlign( *this, 1,1,0,0 )

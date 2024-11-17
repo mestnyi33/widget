@@ -74,16 +74,16 @@
 ;       ForEach widgets( )
 ;          line = "  ";+ widgets( )\class +" "
 ;          
-;          If widgets( )\before\widget
-;             line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+;          If widgets( )\BeforeWidget( )
+;             line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
 ;          Else
 ;             line + "-------- <<  " 
 ;          EndIf
 ;          
 ;          line + widgets( )\class ; widgets( )\text\string
 ;          
-;          If widgets( )\after\widget
-;             line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+;          If widgets( )\AfterWidget( )
+;             line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
 ;          Else
 ;             line + "  >> --------" 
 ;          EndIf
@@ -93,7 +93,7 @@
 ;       Debug "<<----"
 ;       
 ;       
-;       Debug ""+*panel\first\widget\class +" <<<< "+ *panel\class +" >>>> "+ *panel\last\widget\class
+;       Debug ""+*panel\FirstWidget( )\class +" <<<< "+ *panel\class +" >>>> "+ *panel\last\widget\class
 ;       
 ;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
 ;          ClipGadgets( UseGadgetList(0) )
@@ -153,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug "----all childrens-----"
       ForEach widgets( )
-         Debug  ""+widgets( )\class ;+" "+ widgets( )\first\widget +" "+ widgets( )\before\widget +" "+ widgets( )\after\widget +" "+ widgets( )\last\widget
+         Debug  ""+widgets( )\class ;+" "+ widgets( )\FirstWidget( ) +" "+ widgets( )\BeforeWidget( ) +" "+ widgets( )\AfterWidget( ) +" "+ widgets( )\last\widget
       Next
       
       ;\\ 
@@ -162,16 +162,16 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEach widgets( )
          line = "  ";+ widgets( )\class +" "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       Debug "<<----"
       
-      Debug ""+root()\first\widget\class +" <<<< "+ root()\class +" >>>> "+ root()\last\widget\class
+      Debug ""+root()\FirstWidget( )\class +" <<<< "+ root()\class +" >>>> "+ root()\lastWidget( )\class
       
       ;\\
       ;       result
@@ -189,7 +189,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 125
+; CursorPosition = 182
+; FirstLine = 164
 ; Folding = -
 ; EnableXP

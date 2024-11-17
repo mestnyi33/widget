@@ -95,7 +95,7 @@ Global group_select,
 ;   Container( 0,0,0,0 ) 
 ; EndMacro
 
-; Macro ToolBarButton( )
+; Macro BarButton( )
 ;    Button(( ( widget( )\x+widget( )\width ) ), 5,30,30,Str(MacroExpandedCount) )
 ; EndMacro
 
@@ -115,26 +115,26 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    
    
    toolbar_design = ToolBar( toolbar_design )
-;    ToolBarButton(1,-1,0,"open" )
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton(1,-1,0,"open" )
+;    BarButton( )
+;    BarButton( )
 ;    
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton( )
+;    BarButton( )
 ;    
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton( )
+;    BarButton( )
 ;    
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
 ;    
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
    CloseList( )
    
    ; gadgets
@@ -197,9 +197,9 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    ; widget::SetAttribute( Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff )
    
    ;\\ set splitters dafault positions
-   widget::SetState( Splitter_ide, widget::WidgetWidth( Splitter_ide )-220 )
-   widget::SetState( splitter_help, widget::WidgetHeight( splitter_help )-80 )
-   widget::SetState( splitter_debug, widget::WidgetHeight( splitter_debug )-200 )
+   widget::SetState( Splitter_ide, widget::Width( Splitter_ide )-220 )
+   widget::SetState( splitter_help, widget::Height( splitter_help )-80 )
+   widget::SetState( splitter_debug, widget::Height( splitter_debug )-200 )
    widget::SetState( Splitter_inspector, 230 )
    widget::SetState( Splitter_design, 42 )
    
@@ -236,8 +236,8 @@ DataSection
 EndDataSection
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 2
+; CursorPosition = 201
+; FirstLine = 197
 ; Folding = -
 ; Optimizer
 ; EnableXP

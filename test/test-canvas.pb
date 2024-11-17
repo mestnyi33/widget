@@ -37,32 +37,32 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\ Open Root0
    Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
    
-;    Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
+;    Global *menu = CreateBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
 ;    SetColor( *menu, #__color_back, $FFC8ECF0 )
 ;    
 ;    BarTitle("Title-1")
 ;    BarItem(1, "title-1-item-1")
 ;    BarSeparator( )   
 ;    ;
-;    OpenBar("title-1-sub-item")
+;    OpenSubBar("title-1-sub-item")
 ;    BarItem(3, "title-1-item")
 ;    BarSeparator( )
 ;    ;
-;    OpenBar("title-2-sub-item")   
+;    OpenSubBar("title-2-sub-item")   
 ;    BarItem(13, "title-2-item")
 ;    BarSeparator( )
 ;    ;
-;    OpenBar("title-3-sub-item")   
+;    OpenSubBar("title-3-sub-item")   
 ;    BarItem(23, "title-3-item")
-;    CloseBar( ) 
+;    CloseSubBar( ) 
 ;    ;
 ;    BarSeparator( )
 ;    BarItem(14, "title-2-item")
-;    CloseBar( ) 
+;    CloseSubBar( ) 
 ;    ;
 ;    BarSeparator( )
 ;    BarItem(4, "title-1-item")
-;    CloseBar( ) 
+;    CloseSubBar( ) 
 ;    ;
 ;    BarSeparator( )
 ;    BarItem(2, "title-1-item-2")
@@ -92,17 +92,17 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    Bind(*menu, @TestHandler(), -1, 7)
 ;    Bind(*menu, @QuitHandler(), -1, 8)
 ;    
-;    *menu = CreatePopupMenuBar( )
+;    *menu = CreatePopupBar( )
 ;    If *menu                  ; creation of the pop-up menu begins...
 ;       BarItem(1, "Open")     ; You can use all commands for creating a menu
 ;       BarItem(2, "Save")     ; just like in a normal menu...
 ;       BarItem(3, "Save as")
 ;       BarItem(4, "event-Quit")
 ;       BarSeparator( )
-;       OpenBar("Recent files")
+;       OpenSubBar("Recent files")
 ;       BarItem(5, "PureBasic.exe")
 ;       BarItem(6, "event-Test")
-;       CloseBar( )
+;       CloseSubBar( )
 ;    EndIf
 ;    
 ;    Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
    Next
    
-   ReDraw( Root( ) )
+   ReDraw( root( ) )
    
    ;\\Close( )
    ;Debug  *g\scroll\v\hide
@@ -129,8 +129,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 104
+; CursorPosition = 94
+; FirstLine = 90
 ; Folding = -
 ; EnableXP
 ; DPIAware

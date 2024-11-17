@@ -7,14 +7,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *this._s_widget, i, w_type, w_flag
   Define vert=100, horiz=100, width=400, height=400
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   
   
   Procedure GadgetTypeFromClass(Class.s) ;Returns gadget type from gadget name
     
     ;   ElseIf     FindString(Class.S, LCase("Desktop")       ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Desktop
     ;   ElseIf FindString(Class.S, LCase("PopupMenu")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_PopupMenu
-    ;   ElseIf FindString(Class.S, LCase("Toolbar")       ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Toolbar
+    ;   ElseIf FindString(Class.S, LCase("Toolbar")       ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Tool
     ;   ElseIf FindString(Class.S, LCase("Menu")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Menu
     ;   ElseIf FindString(Class.S, LCase("Status")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_StatusBar
     If FindString(Class.S, LCase("Window")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Window
@@ -31,10 +31,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ElseIf FindString(Class.S, LCase("Container")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Container
     ElseIf FindString(Class.S, LCase("ListIcon")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ListIcon
     ElseIf FindString(Class.S, LCase("IPAddress")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_IPAddress
-    ElseIf FindString(Class.S, LCase("ProgressBar")   ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ProgressBar
-    ElseIf FindString(Class.S, LCase("ScrollBar")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ScrollBar
+    ElseIf FindString(Class.S, LCase("ProgressBar")   ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Progress
+    ElseIf FindString(Class.S, LCase("ScrollBar")     ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Scroll
     ElseIf FindString(Class.S, LCase("ScrollArea")    ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ScrollArea
-    ElseIf FindString(Class.S, LCase("TrackBar")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_TrackBar
+    ElseIf FindString(Class.S, LCase("TrackBar")      ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Track
     ElseIf FindString(Class.S, LCase("Web")           ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Web
     ElseIf FindString(Class.S, LCase("Button")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Button
     ElseIf FindString(Class.S, LCase("Calendar")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Calendar
@@ -174,13 +174,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__Type_IPAddress      
         Flags.S = ""
         
-      Case #__Type_ProgressBar    
+      Case #__type_Progress    
         ;{- Ok
         Flags.S = "#PB_ProgressBar_Smooth|"+
                   "#PB_ProgressBar_Vertical"
         ;}
         
-      Case #__Type_ScrollBar      
+      Case #__type_Scroll      
         ;{- Ok
         Flags.S = "#PB_ScrollBar_Vertical"
         ;}
@@ -194,7 +194,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_ScrollArea_Center"
         ;}
         
-      Case #__Type_TrackBar       
+      Case #__type_Track       
         ;{- Ok
         Flags.S = "#PB_TrackBar_Ticks|"+
                   "#PB_TrackBar_Vertical"
@@ -335,16 +335,16 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Trim(flags, "|")
   EndProcedure
   
-  Procedure Add(text.s)
-    If text
-      Protected i, sublevel, string.s, count = CountString(text,"|")
+  Procedure Add(Text.s)
+    If Text
+      Protected i, sublevel, String.s, count = CountString(Text,"|")
       
       ClearItems(w_flag)
       
       For I = 0 To count
-        string = Trim(StringField(text,(I+1),"|"))
+        String = Trim(StringField(Text,(I+1),"|"))
         
-        Select LCase(Trim(StringField(string,(3),"_")))
+        Select LCase(Trim(StringField(String,(3),"_")))
           Case "left" : sublevel = 1
           Case "right" : sublevel = 1
           Case "center" : sublevel = 1
@@ -352,7 +352,7 @@ CompilerIf #PB_Compiler_IsMainFile
             sublevel = 0
         EndSelect
         
-        AddItem(w_flag, -1, string, -1, sublevel)
+        AddItem(w_flag, -1, String, -1, sublevel)
         
       Next
     EndIf 
@@ -618,8 +618,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 291
-; FirstLine = 257
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = f------70-
 ; EnableXP
 ; DPIAware

@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     Macro PB(Function)
   ;       Function
   ;     EndMacro
-  Global *tree, tree, img =- 1
+  Global *tree, Tree, img =- 1
   
   UsePNGImageDecoder()
   
@@ -73,26 +73,26 @@ CompilerIf #PB_Compiler_IsMainFile
         If EventGadget = 3
           click ! 1
           If click
-            SetGadgetItemState(tree, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
+            SetGadgetItemState(Tree, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
             SetItemState(*tree, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
           Else
-            SetGadgetItemState(tree, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
+            SetGadgetItemState(Tree, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
             SetItemState(*tree, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
           EndIf
         EndIf
         
         If EventGadget = 4
-          AddGadgetItem(tree, 1, "added item "+Str(CountGadgetItems(tree)))
+          AddGadgetItem(Tree, 1, "added item "+Str(CountGadgetItems(Tree)))
           AddItem(*tree, 1, "added item "+Str(CountItems(*tree)))
           ;             widget()\change = 1
           ;             Debug widget()\change
           ;             Repaints()
         EndIf
         If EventGadget = 5
-          If GetGadgetState(tree) =- 1
-            RemoveGadgetItem(tree, 1)
+          If GetGadgetState(Tree) =- 1
+            RemoveGadgetItem(Tree, 1)
           Else
-            RemoveGadgetItem(tree, GetGadgetState(tree))
+            RemoveGadgetItem(Tree, GetGadgetState(Tree))
           EndIf
           
           If GetState(*tree) =- 1
@@ -110,29 +110,29 @@ CompilerIf #PB_Compiler_IsMainFile
 ;           EndIf
           If GetItemImage(*tree, GetState(*tree) ) <> #PB_Default
             SetItemImage(*tree, GetState(*tree), #PB_Default)
-            SetGadgetItemImage(tree, GetGadgetState(tree), #NUL)
+            SetGadgetItemImage(Tree, GetGadgetState(Tree), #NUL)
           Else
             SetItemImage(*tree, GetState(*tree), 0)
-            SetGadgetItemImage(tree, GetGadgetState(tree), ImageID(0))
+            SetGadgetItemImage(Tree, GetGadgetState(Tree), ImageID(0))
           EndIf
         EndIf
         If EventGadget = 7 ; <<
                            ;         FreeGadget(tree)
                            ;         Free(*tree)
           
-          SetGadgetState(tree, 0)
+          SetGadgetState(Tree, 0)
           SetState(*tree, 0)
         EndIf
         If EventGadget = 8 ; 0
-          SetGadgetState(tree, -1)
+          SetGadgetState(Tree, -1)
           SetState(*tree, -1)
         EndIf
         If EventGadget = 9 ; >>
-          SetGadgetState(tree, CountGadgetItems(tree)-1)
+          SetGadgetState(Tree, CountGadgetItems(Tree)-1)
           SetState(*tree, CountItems(*tree)-1)
         EndIf
         If EventGadget = 10
-          ClearGadgetItems(tree)
+          ClearGadgetItems(Tree)
           ClearItems(*tree)
         EndIf
         
@@ -191,22 +191,22 @@ Define a
     
   If Open(0, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;ListViewGadget(0, 10, 10, 160, 160) 
-    tree = PB(TreeGadget_)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
+    Tree = PB(TreeGadget_)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
     *tree = Tree(190, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState );| #__flag_GridLines | #PB_Tree_Collapsed)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
     
     For a = 0 To 10
-      AddGadgetItem(tree, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
-      AddGadgetItem(tree, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
-      AddGadgetItem(tree, -1, Str(a)+" Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
-      AddGadgetItem(tree, -1, Str(a)+" Sub-Item 1_2", 0, 2)        ; These are on the 1st sublevel
-      AddGadgetItem(tree, -1, Str(a)+" Sub-Item 2", 0, 1)
-      AddGadgetItem(tree, -1, Str(a)+" Sub-Item 3", 0, 1)
-      AddGadgetItem(tree, -1, Str(a)+" Sub-Item 4", 0, 1)
-      AddGadgetItem(tree, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
+      AddGadgetItem(Tree, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
+      AddGadgetItem(Tree, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
+      AddGadgetItem(Tree, -1, Str(a)+" Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+      AddGadgetItem(Tree, -1, Str(a)+" Sub-Item 1_2", 0, 2)        ; These are on the 1st sublevel
+      AddGadgetItem(Tree, -1, Str(a)+" Sub-Item 2", 0, 1)
+      AddGadgetItem(Tree, -1, Str(a)+" Sub-Item 3", 0, 1)
+      AddGadgetItem(Tree, -1, Str(a)+" Sub-Item 4", 0, 1)
+      AddGadgetItem(Tree, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
     Next
     
-    Debug " gadget "+ tree +" count items "+ PB(CountGadgetItems)(tree) +" "+ PB(GadgetType)(tree)
-    PB(EnableGadgetDrop)(tree, #PB_Drop_Text, #PB_Drag_Copy)
+    Debug " gadget "+ Tree +" count items "+ PB(CountGadgetItems)(Tree) +" "+ PB(GadgetType)(Tree)
+    PB(EnableGadgetDrop)(Tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     For a = 0 To 10
       AddItem(*tree, -1, "Normal Item "+Str(a), img, 0) ; if you want to add an image, use
@@ -219,7 +219,7 @@ Define a
       AddItem(*tree, -1, "File "+Str(a), img, 0) ; sublevel 0 again
     Next
     
-    ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ WidgetType(*tree)
+    ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ Type(*tree)
     EnableDDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     ;\\
@@ -245,7 +245,7 @@ Define a
     PB(ButtonGadget)(10, 250, 210, 110, 24, "clears Items")
     BindGadgetEvent(10, @events_tree_gadget())
     
-    BindGadgetEvent(tree, @events_tree_gadget())
+    BindGadgetEvent(Tree, @events_tree_gadget())
     Bind(*tree, @events_tree_widget())
     
     ;\\
@@ -255,8 +255,8 @@ Define a
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 167
+; CursorPosition = 221
+; FirstLine = 166
 ; Folding = --yC--
 ; EnableXP
 ; DPIAware

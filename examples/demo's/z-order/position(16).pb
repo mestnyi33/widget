@@ -32,11 +32,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ;{ first container
     Container(x, y+56+s*9, 215, h)                     ; Gadget(9,   
     SetClass(widget(), "first_0")
-    SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
+    SetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     
     Container(4, 0, 215-6, h-4-2) 
     SetClass(widget(), "first_1")
-    SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
+    SetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     
     Button(4, 0, 215-12, h-8-4, "1", #__flag_TextRight|#__flag_Texttop) 
     SetClass(widget(), GetText(widget())) 
@@ -54,11 +54,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ current container
     *this = Container(10, y, 250, 80+h+s*9)              ; Gadget(10, 
-    SEtColor(widget(), #PB_Gadget_BackColor, $ffff00)
+    SetColor(widget(), #PB_Gadget_BackColor, $ffff00)
     SetClass(widget(), "this_0")
     
     Container(250-200-2, 4, 200, (80+h+s*9)-8-2)   
-    SEtColor(widget(), #PB_Gadget_BackColor, $ffff00)
+    SetColor(widget(), #PB_Gadget_BackColor, $ffff00)
     SetClass(widget(), "this_1")
     
     Button(4, 4, 200-4, (80+h+s*9)-16-4, "6 < 5 > 4", #__flag_TextRight|#__flag_Texttop) 
@@ -75,11 +75,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ;{ last container
     Container(x, y+23+s*1, 55, h)                     ; Gadget(1,
     SetClass(widget(), "last_0")
-    SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
+    SetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     
     Container(4, 0, 49, h-4-2)   
     SetClass(widget(), "last_1")
-    SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
+    SetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     
     Button(4, 0, 43, h-8-4, "9", #__flag_TextRight|#__flag_Texttop) 
     SetClass(widget(), GetText(widget())) 
@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Demo()
   
-  Define gEvent, gQuit, text.s, repaint 
+  Define gEvent, gQuit, Text.s, repaint 
   
   Repeat
     gEvent= WaitWindowEvent()
@@ -159,38 +159,38 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
             
             If repaint
-               ReDraw( Root( ) )
+               ReDraw( root( ) )
                
-               text = ""
+               Text = ""
               Debug ""+ *this +" "+ GetPosition(*this, #PB_List_After) +" "+ GetPosition(*this, #PB_List_Before)
               
               If GetPosition(*this, #PB_List_After)
-                If WidgetType(GetPosition(*this, #PB_List_After)) = #PB_GadgetType_Container
+                If Type(GetPosition(*this, #PB_List_After)) = #PB_GadgetType_Container
                   If GetPosition(*this, #PB_List_Before)
-                    text + "9"
+                    Text + "9"
                   Else
-                    text + "1"
+                    Text + "1"
                   EndIf
                 Else
-                  text + GetClass(GetPosition(*this, #PB_List_After))
+                  Text + GetClass(GetPosition(*this, #PB_List_After))
                 EndIf
               EndIf
               
-              text + " < 5 > "
+              Text + " < 5 > "
               
               If GetPosition(*this, #PB_List_Before)
-                If WidgetType(GetPosition(*this, #PB_List_Before)) = #PB_GadgetType_Container
+                If Type(GetPosition(*this, #PB_List_Before)) = #PB_GadgetType_Container
                   If GetPosition(*this, #PB_List_After)
-                    text + "1"
+                    Text + "1"
                   Else
-                    text + "9"
+                    Text + "9"
                   EndIf
                 Else
-                  text + GetClass(GetPosition(*this, #PB_List_Before))
+                  Text + GetClass(GetPosition(*this, #PB_List_Before))
                 EndIf
               EndIf
               
-              SetText(*current, text)
+              SetText(*current, Text)
               
               ;             ClearDebugOutput()
               ;             ForEach widget()
@@ -212,8 +212,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 80
+; CursorPosition = 181
+; FirstLine = 125
 ; Folding = -0--
 ; EnableXP
 ; DPIAware

@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Text
   EndProcedure
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
   Global *l,*t,*r,*b , *dl,*dt,*dr,*db , *lt,*rt,*rb,*lb, *ce
@@ -324,7 +324,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If Width = 100
            direction = 1
         EndIf
-        If Width = WidgetWidth(Root())-100
+        If Width = Width(root())-100
           direction =- 1
         EndIf
 ;         
@@ -339,13 +339,13 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            Width = WidgetWidth(*cont)
-            Height = WidgetHeight(*cont)
+            Width = Width(*cont)
+            Height = Height(*cont)
             
             If GetGadgetState(0)
-              AddWindowTimer(GetWindow(Root()), 1, 200)
+              AddWindowTimer(GetWindow(root()), 1, 200)
             Else
-              RemoveWindowTimer(GetWindow(Root()), 1)
+              RemoveWindowTimer(GetWindow(root()), 1)
             EndIf
         EndSelect
         
@@ -356,6 +356,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 342
-; FirstLine = 322
+; FirstLine = 307
 ; Folding = 8V-
 ; EnableXP

@@ -120,20 +120,20 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget(), -1, "ComboBox editable...2")
     AddItem(widget(), -1, "ComboBox editable...3")
     
-    SetState(WidgetID(0), 2)
-    SetState(WidgetID(1), 1)
-    SetState(WidgetID(2), 0)    ; set (beginning with 0) the third item as active one
+    SetState(ID(0), 2)
+    SetState(ID(1), 1)
+    SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
     
     For i = 0 To 2
-      Bind(WidgetID(i), @events_widgets())
+      Bind(ID(i), @events_widgets())
     Next
     
     WaitClose( ) 
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 127
+; FirstLine = 90
 ; Folding = 8--
 ; Optimizer
 ; EnableXP

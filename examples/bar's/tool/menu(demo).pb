@@ -1,36 +1,36 @@
 ﻿;                                                                     - PB 
 ;                                                                     - IsMenu( #Menu )
 ;                                                                     - MenuID( #Menu )
-;                                                    Free( *address ) - FreeMenu( #Menu )
-;                                                    HideWidget( *address ) - HideMenu( #Menu, State )
-;                                                  WidgetHeight( *address ) - MenuHeight( )
+;                                                 FreeBar( *address ) - FreeMenu( #Menu )
+;                                                 HideBar( *address ) - HideMenu( #Menu, State )
+;                                               BarHeight( *address ) - MenuHeight( )
 ; 
-;                                             PopupMenuBar( [flags] ) - CreatePopupMenu( #Menu )
+;                                           CreatePopupBar( [flags] ) - CreatePopupMenu( #Menu )
 ;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
 ;
-;                                        MenuBar( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
+;                                      CreateBar( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
 ;                                                                       CreateImageMenu( #Menu, WindowID [, Flags] )
 ; 
-;                 DisplayPopupMenuBar( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
+;                     DisplayPopupBar( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
 ;
-;                                                     BarSeparator( ) - MenuBar( )
+;                                                           BarBar( ) - MenuBar( )
 ;                                                  BarTitle( Title$ ) - MenuTitle( Title$ )
-;                                      BarItem( item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
-;                                         OpenBar( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
-;                                                         CloseBar( ) - CloseSubMenu( )
+;                                   BarItem( BarItem, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
+;                                      OpenSubBar( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
+;                                                      CloseSubBar( ) - CloseSubMenu( )
 ; 
 ; 
 ;                                 GetItemText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
 ;                         SetItemText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
 ;
-;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
-;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
-;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
-;                               SetItemText( *address, item, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
-;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
+;                          DisableBarItem( *address, BarItem, state ) - DisableMenuItem( #Menu, MenuItem, State )
+;                         SetBarItemState( *address, BarItem, state ) - SetMenuItemState( #Menu, MenuItem, State )
+;                                GetBarItemState( *address, BarItem ) - GetMenuItemState( #Menu, MenuItem )
+;                         SetBarItemText( *address, BarItem, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
+;                                 GetBarItemText( *address, BarItem ) - GetMenuItemText( #Menu, Item )
 ;
-;                              Bind( *address, @callback( ), 0, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
-;                            UnBind( *address, @callback( ), 0, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                      BindBarEvent( *address, BarItem, @callback( )) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                    UnbindBarEvent( *address, BarItem, @callback( )) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
 
 XIncludeFile "../../../widgets.pbi" 
 
@@ -130,34 +130,34 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(Button( 10, 220, 80, 35, "-777-" ), @HandlerEvents( ), #__event_LeftClick)  : SetClass(widget(), "-777-" )
    
    ;\\
-   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    SetColor( *menu, #__color_back, $FFF7FEE2 )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
-   BarSeparator( )
+   BarBar( )
    
-   OpenBar("title-1-sub-item")
+   OpenSubBar("title-1-sub-item")
    BarItem(3, "title-1-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-2-sub-item")   
+   OpenSubBar("title-2-sub-item")   
    BarItem(13, "title-2-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-3-sub-item")   
+   OpenSubBar("title-3-sub-item")   
    BarItem(23, "title-3-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(14, "title-2-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(4, "title-1-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(2, "title-1-item-2")
    
    BarTitle("Title-2")
@@ -166,7 +166,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    BarTitle("Title-event-test")
    BarItem(7, "test")
-   BarSeparator( )
+   BarBar( )
    BarItem(8, "quit")
    
    BarTitle("Title-4")
@@ -187,34 +187,34 @@ CompilerIf #PB_Compiler_IsMainFile
    String( 10, 100, 80, 35, "String1" )
    String( 10, 140, 80, 35, "String2" )
    
-   *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
+   *menu = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
    SetColor( *menu, #__color_back, $FFDFDFDF )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
-   BarSeparator( )   
+   BarBar( )   
    ;
-   OpenBar("title-1-sub-item")
+   OpenSubBar("title-1-sub-item")
    BarItem(3, "title-1-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-2-sub-item")   
+   OpenSubBar("title-2-sub-item")   
    BarItem(13, "title-2-item")
-   BarSeparator( )
+   BarBar( )
    ;
-   OpenBar("title-3-sub-item")   
+   OpenSubBar("title-3-sub-item")   
    BarItem(23, "title-3-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(14, "title-2-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(4, "title-1-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(2, "title-1-item-2")
    
    BarTitle("Title-2")
@@ -223,7 +223,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    BarTitle("Title-event-test")
    BarItem(7, "test")
-   BarSeparator( )
+   BarBar( )
    BarItem(8, "quit")
    
    BarTitle("Title-4")
@@ -246,8 +246,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 52
+; CursorPosition = 204
+; FirstLine = 201
 ; Folding = --
 ; EnableXP
 ; DPIAware

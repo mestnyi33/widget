@@ -11,7 +11,7 @@ Global window_ide,
        toolbar_design
 
 
-Macro ToolBarButton( )
+Macro BarButton( )
    Button(( Bool(widget( )\container = 0)*( widget( )\x+widget( )\width ) ), 5,30,30,Str(MacroExpandedCount) )
 EndMacro
 
@@ -23,26 +23,26 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    Define root = Open( 1, x,y,width,height, "ide", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget ) 
    
    toolbar_design = Container( 0,0,150,50 )
-;    ToolBarButton(  )
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton(  )
+;    BarButton( )
+;    BarButton( )
 ;    
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton( )
+;    BarButton( )
 ;    
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton( )
+;    BarButton( )
 ;    
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
 ;    
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
-;    ToolBarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
+;    BarButton( )
    Button( 5, 5, 500,30, "button test clip" )
    CloseList( )
    
@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 44
+; FirstLine = 3
 ; Folding = -
 ; EnableXP

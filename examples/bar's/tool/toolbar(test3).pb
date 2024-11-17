@@ -3,12 +3,12 @@
 ;                                                         ToolBarID( #ToolBar )
 ;                                                         IsToolBar( #ToolBar )
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
-;                  DisableItem( *address, item, state ) - DisableToolBarButton( #ToolBar, Button, State )
+;                  DisableItem( *address, item, state ) - DisableBarButton( #ToolBar, Button, State )
 ;                                      Free( *address ) - FreeToolBar( #ToolBar )
-;                        GetItemState( *address, item ) - GetToolBarButtonState( #ToolBar, Button )
-;                 SetItemState( *address, item, state ) - SetToolBarButtonState( #ToolBar, Button, State )
-;                 SetItemText( *address, item, text.s ) - ToolBarButtonText( #ToolBar, Button, Text$ )
-;                                    WidgetHeight( *address ) - ToolBarHeight( #ToolBar )
+;                        GetItemState( *address, item ) - GetBarButtonState( #ToolBar, Button )
+;                 SetItemState( *address, item, state ) - SetBarButtonState( #ToolBar, Button, State )
+;                 SetItemText( *address, item, text.s ) - BarButtonText( #ToolBar, Button, Text$ )
+;                                    Height( *address ) - ToolBarHeight( #ToolBar )
 ;      AddItem( *address, button, text.s, image, mode ) - ToolBarImageButton( #Button, ImageID [, Mode [, Text$]] )
 ;       AddItem( *address, button, text.s, icon, mode ) - ToolBarStandardButton( #Button, #ButtonIcon [, Mode [, Text$]] )
 ;                 ToolTipItem( *address, item, text.s ) - ToolBarToolTip( #ToolBar, Button, Text$ )
@@ -63,16 +63,16 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class +"_"+ widgets( )\TabIndex( ) ; TabAddIndex( ) ; TabState( )
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -85,10 +85,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure ToolBarEvents( )
       Protected *e_widget._s_WIDGET = EventWidget( )
-      Protected toolbarbutton = WidgetEventItem( ) ; GetData( *e_widget ) 
+      Protected BarButton = WidgetEventItem( ) ; GetData( *e_widget ) 
       
-      If *e_widget\EnteredTab( )
-         Debug "click " + toolbarbutton +" "+ *e_widget\EnteredTab( )\itemindex
+      If *e_widget\TabEntered( )
+         Debug "click " + BarButton +" "+ *e_widget\TabEntered( )\itemindex
       EndIf
    EndProcedure
    
@@ -107,13 +107,13 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Else;If flag & #PB_ToolBar_Normal 
 ;          *parent\ToolBarHeight = 35
 ;       EndIf
-;       Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_ToolBar, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+;       Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_Tool, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
 ;       *parent\TabBox( ) = *this
 ;       
 ;       ;ProcedureReturn ToolBar( *parent, flag )
 ;       
 ;       ;  Debug *this\TabAddIndex( ) ; TabState( ) ; TabIndex( )
-;       ;*this\type = #__type_ToolBar
+;       ;*this\type = #__type_Tool
 ;       ;SetFrame(*this, 10 )
 ;       ;SetAlign( *this, #__align_full|#__align_top )
 ;       
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       ;    widget( )\class = "^"
 ;    EndMacro
 ;    
-;    ;    Macro ToolBarButton( _button_, _image_, _mode_=0, _text_="" )
+;    ;    Macro BarButton( _button_, _image_, _mode_=0, _text_="" )
 ;    ;          If _image_
 ;    ;             ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
 ;    ;          Else
@@ -192,7 +192,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
       EndIf
       
-      ;DisableToolBarButton(0, 2, 1) ; Disable the button '2'
+      ;DisableBarButton(0, 2, 1) ; Disable the button '2'
       
       
       Define w_ide_toolbar, w_ide_toolbar_container                          ;= Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
@@ -204,34 +204,34 @@ CompilerIf #PB_Compiler_IsMainFile
       Button( 10,10, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
       
       w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Small)
-      ToolBarButton( #_tb_file_open, -1, 0, "Open" )
-      ToolBarButton( #_tb_file_save, -1, 0, "Save" )
+      BarButton( #_tb_file_open, -1, 0, "Open" )
+      BarButton( #_tb_file_save, -1, 0, "Save" )
       Separator( )
-      ToolBarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) ;: group_select = widget( )
+      BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) ;: group_select = widget( )
       
       ;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
       ;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
       Separator( )
-      ToolBarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
-      ToolBarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
+      BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
+      BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
       Separator( )
-      ToolBarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
-      ToolBarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
+      BarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
+      BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
       Separator( )
-      ToolBarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
-      ToolBarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
+      BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
+      BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
       
       Separator( )
-      ToolBarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
-      ToolBarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
-      ToolBarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
-      ToolBarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+      BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
+      BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
+      BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
+      BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
       Separator( )
-      ToolBarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-      ToolBarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-      ToolBarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-      ToolBarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-      ToolBarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+      BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+      BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+      BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+      BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+      BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
       
       Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_LeftClick )
       ;Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_Change )
@@ -287,7 +287,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 113
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = -0
 ; EnableXP

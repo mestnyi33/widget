@@ -12,8 +12,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected event = WidgetEvent()
       If event =  #__Event_MouseEnter
          Select IDWidget(EventWidget())
-            Case 2 : SetActive(WidgetID(0))   ; Activate StringGadget
-            Case 3 : SetActive(WidgetID(1))   ; Activate ComboBoxGadget
+            Case 2 : SetActive(ID(0))   ; Activate StringGadget
+            Case 3 : SetActive(ID(1))   ; Activate ComboBoxGadget
          EndSelect
       EndIf
       
@@ -30,8 +30,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure CanvasButton( gadget, x,y,width,height,text.s )
-      Button( x,y,width,height, text )
+   Procedure CanvasButton( gadget, x,y,width,height,Text.s )
+      Button( x,y,width,height, Text )
       SetClass(widget(), Str(gadget))
       Bind(widget(), @Events())
    EndProcedure
@@ -75,8 +75,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23
-; FirstLine = 9
+; CursorPosition = 15
+; FirstLine = 10
 ; Folding = ---
 ; EnableXP
 ; DPIAware

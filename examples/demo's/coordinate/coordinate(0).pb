@@ -32,8 +32,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Debug "Y ScrollArea-widget coordinate"
     Debug "  screen - "+ Str(GadgetY(GetGadget(*g), #PB_Gadget_ScreenCoordinate)+y(*g, #__c_screen))
-    Debug "  window - "+ WidgetY(*g, #__c_window)
-    Debug "  container - "+ WidgetY(*g, #__c_container)
+    Debug "  window - "+ Y(*g, #__c_window)
+    Debug "  container - "+ Y(*g, #__c_container)
     Debug "  area - "+ GetAttribute(*g, #PB_ScrollArea_Y)
     Debug ""
     
@@ -55,6 +55,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 35
-; FirstLine = 31
+; FirstLine = 30
 ; Folding = -
 ; EnableXP

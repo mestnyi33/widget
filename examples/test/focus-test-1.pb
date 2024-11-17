@@ -17,9 +17,9 @@
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
-;                                                    HideWidget( *address ) - HideMenu( #Menu, State )
+;                                                    Hide( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
-;                                                  WidgetHeight( *address ) - MenuHeight( )
+;                                                  Height( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
 ;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Define window = GetWindow(Open( 0, 100, 100, 500, 250, "main window_0", #__Window_SystemMenu))
-   Define container = ContainerGadget( #PB_Any, 10, 35, 80, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
+   Define Container = ContainerGadget( #PB_Any, 10, 35, 80, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
    
    CreateMenu(0, WindowID(window))
    
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Define *window._s_widget = root( )
    
-   *menu = CreateMenuBar( *window ) : SetClass(widget(), "root_MenuBar" )
+   *menu = CreateBar( *window ) : SetClass(widget(), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarTitle("Title-2")
@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *window._s_widget = Window(100, 50, 300, 100, "menu click test", #PB_Window_SystemMenu)
    Define *container._s_widget = Container( 10, 10, 80, 100-20, #PB_Container_Flat ) : CloseList( )
    
-   *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
+   *menu = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
    
    BarTitle("Title-1")
    BarTitle("Title-2")
@@ -115,8 +115,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    test( root() )
    
-   Bind( Root( ), @Handler(), #__event_Focus)
-   Bind( Root( ), @Handler(), #__event_LostFocus)
+   Bind( root( ), @Handler(), #__event_Focus)
+   Bind( root( ), @Handler(), #__event_LostFocus)
    
    Define Event
    Repeat
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 52
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = --
 ; EnableXP

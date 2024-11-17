@@ -593,7 +593,7 @@ CompilerIf #PB_Compiler_IsMainFile
      ;}
     
     
-    splitter(230, 10, 210, 210, *g6,*g5, #PB_Splitter_Vertical)                                         
+    Splitter(230, 10, 210, 210, *g6,*g5, #PB_Splitter_Vertical)                                         
     
     
        ;  2_example
@@ -694,7 +694,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     add(*g, 10, "Procedure Open()", -1, 0) 
     add(*g, 11, "If is_widget()", -1, 1) 
-    add(*g, 12, "If is_HideWidget()", -1, 2) 
+    add(*g, 12, "If is_Hide()", -1, 2) 
     add(*g, 13, " 1", -1, 3) 
     add(*g, 14, "EndIf ; is_hide", -1, 2) 
     add(*g, 15, "If is_visible()", -1, 2) 
@@ -774,8 +774,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 616
-; FirstLine = 612
+; CursorPosition = 696
+; FirstLine = 692
 ; Folding = ---------------
 ; Optimizer
 ; EnableXP

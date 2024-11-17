@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #PB_Event_Timer
             If Width = 480
                direction = 1
-            ElseIf Width = WidgetWidth(Root())-100
+            ElseIf Width = Width(root())-100
                direction =- 1
             EndIf
             ;         
@@ -55,8 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventType( )
                Case #PB_EventType_LeftButtonDown
                   Define *th._s_widget = Widgets(Str(0))
-                  Width = WidgetWidth(*th)
-                  Height = WidgetHeight(*th)
+                  Width = Width(*th)
+                  Height = Height(*th)
                   
                   If state
                      state = 0
@@ -73,6 +73,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 58
-; FirstLine = 58
+; FirstLine = 48
 ; Folding = --
 ; EnableXP

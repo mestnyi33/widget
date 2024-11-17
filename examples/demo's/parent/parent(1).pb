@@ -40,7 +40,7 @@ Procedure events_widgets()
         SetParent(*w, *p2)
       EndIf
       
-      Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  WidgetY(*ch) +" "+  WidgetY(*ch, 3)
+      Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
       
       Show_DEBUG( )
       i!1
@@ -82,8 +82,8 @@ EndProcedure
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 55
+; CursorPosition = 42
+; FirstLine = 38
 ; Folding = --
 ; EnableXP
 ; DPIAware

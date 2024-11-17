@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    OpenWindow(0, 0, 0, 300, 200, "popup menu test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    Open(0, 10, 10, 280, 180)
-   *menu = CreatePopupMenuBar( )
+   *menu = CreatePopupBar( )
    If *menu                  ; creation of the pop-up menu begins...
       ;SetColor(*menu, #__Color_Back, RGB(213, 213, 213))
       ;SetItemColor(*menu, -1, #__Color_Back, $FFBF33C3, 1)
@@ -26,10 +26,10 @@ CompilerIf #PB_Compiler_IsMainFile
       BarItem(4, "event-Quit")
       BarSeparator( )
       
-      OpenBar("Recent files")
+      OpenSubBar("Recent files")
       BarItem(5, "PureBasic.exe")
       BarItem(6, "event-Test")
-      CloseBar( )
+      CloseSubBar( )
    EndIf
    
    Procedure button_tab_events( )
@@ -38,14 +38,14 @@ CompilerIf #PB_Compiler_IsMainFile
           ;Protected mouse_x = DesktopUnscaledX(DesktopMouseX( )) - GadgetX( EventGadget(), #PB_Gadget_ScreenCoordinate )
          ; Protected mouse_x = DesktopUnscaledX(WindowMouseX( EventWindow())) - GadgetX( EventGadget(), #PB_Gadget_WindowCoordinate )
 ;           Protected mouse_x = DesktopUnscaledX(GetGadgetAttribute( EventGadget(), #PB_Canvas_MouseX ))
-;           DisplayPopupMenuBar( *menu, EventWidget( ), Mouse_x, GetMouseY( ) )
+;           DisplayPopupBar( *menu, EventWidget( ), Mouse_x, GetMouseY( ) )
           
-             ;DisplayPopupMenuBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
-             ;DisplayPopupMenuBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
-             ;DisplayPopupMenuBar( *menu, EventWidget( ), DesktopMouseX( ), DesktopMouseY( ) )
+             ;DisplayPopupBar( *menu, EventWidget( ), mouse( )\x, mouse( )\y )
+             ;DisplayPopupBar( *menu, EventWidget( ), GetMouseX( ), GetMouseY( ) )
+             ;DisplayPopupBar( *menu, EventWidget( ), DesktopMouseX( ), DesktopMouseY( ) )
             
            ; Debug "mouse_x = "+DesktopMouseX( ) +" gadget_x = "+ GadgetX(EventGadget(), #PB_Gadget_ScreenCoordinate) +" window_x = "+ WindowX(EventWindow(), #PB_Window_InnerCoordinate)
-            DisplayPopupMenuBar( *menu, EventWidget( ) )
+            DisplayPopupBar( *menu, EventWidget( ) )
             
             
       EndSelect
@@ -63,14 +63,14 @@ CompilerIf #PB_Compiler_IsMainFile
    Next
    SetState(*combobox, 0)
    
-   Redraw(Root( ))
+   ReDraw(root( ))
    
    
-   DisplayPopupMenuBar( *combobox\PopupBar( ), *button_menu, 10, 125+25 )
-   ;DisplayPopupMenuBar( *combobox\PopupBar( ), *combobox, 10, 150 )
+   DisplayPopupBar( *combobox\PopupBar( ), *button_menu, 10, 125+25 )
+   ;DisplayPopupBar( *combobox\PopupBar( ), *combobox, 10, 150 )
    
-   DisplayPopupMenuBar( *menu, *button_menu, 140, 20 )
-   ;DisplayPopupMenuBar( *menu, root(), 10, 32 )
+   DisplayPopupBar( *menu, *button_menu, 140, 20 )
+   ;DisplayPopupBar( *menu, root(), 10, 32 )
    
    ;     Debug ""+
    ;             *menu\text\string +" "+
@@ -103,8 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 39
+; CursorPosition = 72
+; FirstLine = 49
 ; Folding = -
 ; EnableXP
 ; DPIAware

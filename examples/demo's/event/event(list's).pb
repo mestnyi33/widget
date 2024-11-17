@@ -123,44 +123,44 @@ If Open(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   
   ListView(10, 190, 250, 120)
   For a = 0 To 12
-    AddItem (WidgetID(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
+    AddItem (ID(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(WidgetID(0), 7) ; set (beginning with 0) the tenth item as the active one
-  SetState(WidgetID(0), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(WidgetID(0), 9) ; set (beginning with 0) the tenth item as the active one
+  SetState(ID(0), 7) ; set (beginning with 0) the tenth item as the active one
+  SetState(ID(0), 8) ; set (beginning with 0) the tenth item as the active one
+  SetState(ID(0), 9) ; set (beginning with 0) the tenth item as the active one
   
   Tree(10+270, 190, 250, 120)
   For a = 0 To 12
-    AddItem (WidgetID(1), -1, "Item " + Str(a) + " of the Listview") ; define listview content
+    AddItem (ID(1), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(WidgetID(1), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(WidgetID(1), 7) ; set (beginning with 0) the tenth item as the active one
-  SetState(WidgetID(1), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(WidgetID(1), 9) ; set (beginning with 0) the tenth item as the active one
+  SetState(ID(1), 8) ; set (beginning with 0) the tenth item as the active one
+  SetState(ID(1), 7) ; set (beginning with 0) the tenth item as the active one
+  SetState(ID(1), 8) ; set (beginning with 0) the tenth item as the active one
+  SetState(ID(1), 9) ; set (beginning with 0) the tenth item as the active one
   
-  Editor(10+270+270, 190, 250, 120) ; ListIcon(10+270+270, 190, 250, 120, "column_0", 80) : AddColumn(WidgetID(2), 1, "column_1", 80)
+  Editor(10+270+270, 190, 250, 120) ; ListIcon(10+270+270, 190, 250, 120, "column_0", 80) : AddColumn(ID(2), 1, "column_1", 80)
   For a = 0 To 12
-    AddItem(WidgetID(2), -1, "Item " + Str(a) +Chr(10)+ " of the Listview") ; define listview content
+    AddItem(ID(2), -1, "Item " + Str(a) +Chr(10)+ " of the Listview") ; define listview content
   Next
-  ;   Resize(WidgetID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 121)
-  ;   Resize(WidgetID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 120)
-  ;   SetState(WidgetID(2), 7) ; set (beginning with 0) the tenth item as the active one
-  ;   SetState(WidgetID(2), 8) ; set (beginning with 0) the tenth item as the active one
-  ;   SetState(WidgetID(2), 9) ; set (beginning with 0) the tenth item as the active one
+  ;   Resize(ID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 121)
+  ;   Resize(ID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 120)
+  ;   SetState(ID(2), 7) ; set (beginning with 0) the tenth item as the active one
+  ;   SetState(ID(2), 8) ; set (beginning with 0) the tenth item as the active one
+  ;   SetState(ID(2), 9) ; set (beginning with 0) the tenth item as the active one
   
   Text(10,170, 250,20, "list")
   Text(10+270,170, 250,20, "tree")
   Text(10+270+270,170, 250,20, "editor")
   
   For i = 0 To 2
-    Bind(WidgetID(i), @events_widgets())
+    Bind(ID(i), @events_widgets())
   Next
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 71
+; CursorPosition = 144
+; FirstLine = 137
 ; Folding = --
 ; EnableXP
 ; DPIAware

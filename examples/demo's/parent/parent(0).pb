@@ -13,7 +13,7 @@ Procedure events_widgets( )
           SetParent(*w, *p1)
         EndIf
         
-        Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  WidgetY(*ch) +" "+  WidgetY(*ch, 3)
+        Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
         
         i!1
       EndIf
@@ -23,12 +23,12 @@ EndProcedure
 ; Shows possible flags of ButtonGadget in action...
 If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
-  SetData(Root( ), 1 )
+  SetData(root( ), 1 )
   *p2 = Container(10, 10, 200, 200) : SetData(*p2, 2 )
   CloseList()
   
   *p1 = Container(20, 180, 200, 200) : SetData(*p1, 3 )
-  *bb = button(-15, 10, 100, 50, "butt" ) : SetData(*bb, 4) 
+  *bb = Button(-15, 10, 100, 50, "butt" ) : SetData(*bb, 4) 
       *w = Container(10, 20, 100, 100) : SetData(*w, 5 )
         SetData(Container(10, 10, 100, 100), 6 )
            *ch = Button(-25, 10, 100, 20, "Button")  : SetData(*ch, 7 )
@@ -83,7 +83,7 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
       first = Str( widgets( )\first\widget\data )
     EndIf
     
-    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ root()\data +" - "+ parent
      Else
       Debug " "+widgets( )\data +" - "+ widgets( )\x +" "+ widgets( )\width
     EndIf
@@ -136,7 +136,7 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
       first = Str( widgets( )\first\widget\data )
     EndIf
     
-    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ Root()\data +" - "+ parent
+    Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ root()\data +" - "+ parent
      Else
       Debug " "+widgets( )\data +" - "+ widgets( )\x +" "+ widgets( )\width
     EndIf
@@ -149,8 +149,8 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
   ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 119
+; CursorPosition = 15
+; FirstLine = 11
 ; Folding = ----
 ; EnableXP
 ; DPIAware

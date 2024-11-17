@@ -8,15 +8,15 @@ Procedure events_gadgets()
   
   Select EventType()
     Case #PB_EventType_Change
-     SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+     SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
      Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
      
     Case #PB_EventType_Up
-     SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+     SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
      Debug  ""+ EventGadget() +" - gadget up " + GetGadgetState(EventGadget())
      
    Case #PB_EventType_Down
-     SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+     SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
      Debug  ""+ EventGadget() +" - gadget down " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
@@ -87,16 +87,16 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
        Spin(10, 30, 250, 18, 0, 30)
        Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_Textcenter)
        Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_Textright)
-       SetState(WidgetID(0), 0)
-       SetState(WidgetID(1), 15)
-       SetState(WidgetID(2), 30)
+       SetState(ID(0), 0)
+       SetState(ID(1), 15)
+       SetState(ID(2), 30)
        
        Spin(10, 120, 250, 25, 5, 30, #__spin_Plus)
        Spin(270, 10, 40, 180, 5, 30, #__spin_Plus|#__bar_vertical);|#__bar_invert)
        SetState(widget( ), 5000)
        
        ; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
-       ; ; ;   SetState(WidgetID(2), 8000)
+       ; ; ;   SetState(ID(2), 8000)
        
        Text(10,  10, 250, 20,"Spin Standard", #__flag_Textcenter)
        Text(10, 100, 250, 20, "Spin plus&minus", #__flag_Textcenter)
@@ -105,14 +105,15 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
        ;Bind(#PB_All, @events_widgets())
        
        For i = 0 To 1
-          Bind(WidgetID(i), @events_widgets())
+          Bind(ID(i), @events_widgets())
        Next
     EndIf
 
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 107
+; FirstLine = 82
 ; Folding = --
 ; EnableXP
 ; DPIAware

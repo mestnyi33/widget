@@ -12,7 +12,7 @@ Procedure events_progress_gadgets()
   
   Select EventType()
     Case #PB_EventType_LeftClick
-     ; SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+     ; SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
       ; Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
@@ -34,7 +34,7 @@ Procedure events_track_gadgets()
   
   Select EventType()
     Case #PB_EventType_LeftClick
-      SetState(WidgetID(EventGadget()), GetGadgetState(EventGadget()))
+      SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
       SetGadgetState(EventGadget()-3, GetGadgetState(EventGadget()))
       ; Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
@@ -47,7 +47,7 @@ Procedure events_track_widgets()
   Select WidgetEvent( )
     Case #__Event_Change
       SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-      SetState(WidgetID(IDWidget(EventWidget( ))-3), GetState(EventWidget( )))
+      SetState(ID(IDWidget(EventWidget( ))-3), GetState(EventWidget( )))
   EndSelect
 EndProcedure
 
@@ -124,17 +124,18 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   ;Bind(#PB_All, @events_widgets())
   
   For i = 0 To 2
-    Bind(WidgetID(i), @events_progress_widgets())
+    Bind(ID(i), @events_progress_widgets())
   Next
   For i = 3 To 5
-    Bind(WidgetID(i), @events_track_widgets())
+    Bind(ID(i), @events_track_widgets())
   Next
   
   WaitClose( )
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 129
+; FirstLine = 104
 ; Folding = --
 ; Optimizer
 ; EnableXP

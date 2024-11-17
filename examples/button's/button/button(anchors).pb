@@ -31,8 +31,8 @@ Module AnchorBox
         
         If *this = Button_10 
           Protected a = widget::GetData(*this)
-          widget::HideWidget(a, Bool( Not widget::GetState(*this)))
-          widget::Resize(a, widget::WidgetX(*this), widget::WidgetY(*this)+widget::WidgetHeight(*this), #PB_Ignore, #PB_Ignore )
+          widget::Hide(a, Bool( Not widget::GetState(*this)))
+          widget::Resize(a, widget::X(*this), widget::Y(*this)+widget::Height(*this), #PB_Ignore, #PB_Ignore )
           ; widget::Display(a, *this)
         Else
           ;\\
@@ -91,11 +91,11 @@ Module AnchorBox
           Protected Button_6_State = widget::GetState(Button_6)
           
           ;\\
-          Protected x = widget::WidgetX( Button_9, constants::#__c_container ) - size / 2
-          Protected width  = widget::WidgetX( Button_5, constants::#__c_container ) - size
+          Protected x = widget::X( Button_9, constants::#__c_container ) - size / 2
+          Protected width  = widget::X( Button_5, constants::#__c_container ) - size
           
-          Protected y = widget::WidgetY( Button_9, constants::#__c_container ) - size / 2
-          Protected height = widget::WidgetY( Button_7, constants::#__c_container ) - size
+          Protected y = widget::Y( Button_9, constants::#__c_container ) - size / 2
+          Protected height = widget::Y( Button_7, constants::#__c_container ) - size
           
           ;\\
           If Button_1_State And Button_3_State And Button_5_State And Button_7_State
@@ -211,7 +211,7 @@ Module AnchorBox
     widget::Bind(Button_7, @Events( ), constants::#__event_LeftClick )
     widget::Bind(Button_8, @Events( ), constants::#__event_LeftClick )
     
-    widget::HideWidget(*a,1)
+    widget::Hide(*a,1)
     widget::SetData(Button_10, *a)
     widget::Bind(Button_10, @Events( ), constants::#__event_LeftClick )
     
@@ -230,8 +230,8 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 213
-; FirstLine = 201
+; CursorPosition = 97
+; FirstLine = 70
 ; Folding = ---
 ; Optimizer
 ; EnableXP

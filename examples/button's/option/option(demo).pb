@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select event
          Case #PB_EventType_LeftClick
-            SetState(WidgetID(EventGadget( )), GetGadgetState(EventGadget( )))
+            SetState(ID(EventGadget( )), GetGadgetState(EventGadget( )))
       EndSelect
    EndProcedure
    
@@ -54,19 +54,19 @@ CompilerIf #PB_Compiler_IsMainFile
       Option(10+140, 120, 115, 20, "Option 4") : SetClass( widget( ), "Option 4" )
       Option(10+140, 145, 115, 20, "Option 5") : SetClass( widget( ), "Option 5" )
       
-      SetState(WidgetID(1), 1)   ; set second option as active one
-      SetState(WidgetID(3), #PB_Checkbox_Inbetween)  
-      SetState(WidgetID(4), 1)  
+      SetState(ID(1), 1)   ; set second option as active one
+      SetState(ID(3), #PB_Checkbox_Inbetween)  
+      SetState(ID(4), 1)  
       
       For i = 0 To 2
-         Bind(WidgetID(i), @events_widgets( ), #__Event_Change)
+         Bind(ID(i), @events_widgets( ), #__Event_Change)
       Next
       
       WaitClose( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 15
+; CursorPosition = 61
+; FirstLine = 37
 ; Folding = --
 ; EnableXP

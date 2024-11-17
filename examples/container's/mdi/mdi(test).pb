@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Define *mdi = MDI(x,y,width, height)
   Define *mdi = MDI(100, 300, 160,95) 
   ; 
-  Debug " * "+ Widgetwidth(*mdi, #__c_inner)+" "+ Widgetheight(*mdi, #__c_inner)
+  Debug " * "+ Width(*mdi, #__c_inner)+" "+ Height(*mdi, #__c_inner)
   
   ; 
   ; a_init( *mdi )

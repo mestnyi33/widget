@@ -107,8 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(gadget, state)
   EndProcedure
   
-  Procedure AddGadgetItem_(gadget, position, text.s, imageID=0, flags=0)
-    AddGadgetItem(gadget, position, text, imageID, flags)
+  Procedure AddGadgetItem_(gadget, position, Text.s, imageID=0, flags=0)
+    AddGadgetItem(gadget, position, Text, imageID, flags)
     
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
@@ -270,7 +270,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; create elements
       Select class
         Case "window"    
-          If WidgetType( *parent ) = #PB_GadgetType_MDI
+          If Type( *parent ) = #PB_GadgetType_MDI
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
           Else
@@ -830,7 +830,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ;     
     ; ;     ;id_design_form = Container( 0,0,0,0 ) : a_init( id_design_form ) : CloseList( )
     ; ;     id_design_form = MDI( 0,0,0,0 ) : a_init( id_design_form )
-    ; ;     ;id_design_form = MDI(10,10, WidgetWidth( widget( ), #__c_inner )-20, WidgetHeight( widget( ), #__c_inner )-20);, #__flag_autosize)
+    ; ;     ;id_design_form = MDI(10,10, Width( widget( ), #__c_inner )-20, Height( widget( ), #__c_inner )-20);, #__flag_autosize)
     ; ;     id_design_panel = id_design_form
     ; ;     ;id_design_code = listview_debug
     ; ;     
@@ -908,8 +908,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 827
-; FirstLine = 793
+; CursorPosition = 832
+; FirstLine = 828
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

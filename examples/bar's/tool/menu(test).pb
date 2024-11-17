@@ -17,9 +17,9 @@
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
-;                                                    HideWidget( *address ) - HideMenu( #Menu, State )
+;                                                    Hide( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
-;                                                  WidgetHeight( *address ) - MenuHeight( )
+;                                                  Height( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
 ;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
@@ -55,32 +55,32 @@ CompilerIf #PB_Compiler_IsMainFile
    Define WindowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    ;\\
    ; Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
-   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    
    ;\\
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
    BarSeparator( )
    
-   OpenBar("title-1-sub-item")
+   OpenSubBar("title-1-sub-item")
    BarItem(3, "title-1-item")
    BarSeparator( )
    ;
-   OpenBar("title-2-sub-item")   
+   OpenSubBar("title-2-sub-item")   
    BarItem(13, "title-2-item")
    BarSeparator( )
    ;
-   OpenBar("title-3-sub-item")   
+   OpenSubBar("title-3-sub-item")   
    BarItem(23, "test(EVENT)")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(14, "title-2-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(4, "title-1-item")
-   CloseBar( ) 
+   CloseSubBar( ) 
    ;
    BarSeparator( )
    BarItem(2, "title-1-item-2")
@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 93
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
 ; DPIAware

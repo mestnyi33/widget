@@ -120,8 +120,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
-  Macro EString(x,y,width,height, text, flag=0)
-    String(x,y,width,height, text, flag)
+  Macro EString(x,y,width,height, Text, flag=0)
+    String(x,y,width,height, Text, flag)
     ; Editor(x,y,width,height, flag) : setText(widget(), text)
   EndMacro
   
@@ -158,11 +158,11 @@ CompilerIf #PB_Compiler_IsMainFile
     EString(305+8, (height+5)*7+10, 290, height, "")
     EString(305+8, (height+5)*8+10, 290, 90, Text)
     
-    ;SetText(WidgetID(6+1), "pas")
-    Debug GetText(WidgetID(6+1))+"- get widget text"
+    ;SetText(ID(6+1), "pas")
+    Debug GetText(ID(6+1))+"- get widget text"
     
     For i=0 To 8
-      Bind(WidgetID(i), @events_widgets())
+      Bind(ID(i), @events_widgets())
     Next
     
     ;WaitClose( ) 
@@ -170,8 +170,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 83
+; CursorPosition = 164
+; FirstLine = 143
 ; Folding = ---
 ; EnableXP
 ; DPIAware

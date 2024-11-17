@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEvent() <> #__event_Draw And 
 		   WidgetEvent() <> #__event_StatusChange
 			
-			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
+			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
 				Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ ClassFromEvent( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
 			EndIf
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEvent() <> #__event_Draw And
 		   WidgetEvent() <> #__event_StatusChange
 			
-			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
+			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
 			EndIf
 			
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEvent() <> #__event_Draw And
 		   WidgetEvent() <> #__event_StatusChange
 			
-			If WidgetType( EventWidget( ) ) = #PB_GadgetType_Button
+			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
 			EndIf
 		EndIf
@@ -154,8 +154,8 @@ CompilerEndIf
 ; CompilerEndIf
 ; End  
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 62
+; CursorPosition = 53
+; FirstLine = 32
 ; Folding = ----
 ; EnableXP
 ; DPIAware

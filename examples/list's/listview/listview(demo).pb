@@ -159,28 +159,28 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   ;\\
   ListView(10, 190, 250, 120)
   For a = 0 To 12
-    AddItem (WidgetID(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
+    AddItem (ID(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(WidgetID(0), 5) 
-  SetState(WidgetID(0), 7) 
-  SetState(WidgetID(0), 9) 
-  ;SetItemState(WidgetID(0), 5, 1) 
+  SetState(ID(0), 5) 
+  SetState(ID(0), 7) 
+  SetState(ID(0), 9) 
+  ;SetItemState(ID(0), 5, 1) 
   
   ListView(10+270, 190, 250, 120, #__flag_RowClickSelect)
   For a = 0 To 12
-    AddItem (WidgetID(1), -1, "Item " + Str(a) + " of the Listview long long long long long") ; define listview content
+    AddItem (ID(1), -1, "Item " + Str(a) + " of the Listview long long long long long") ; define listview content
   Next
-  SetState(WidgetID(1), 5) 
-  SetState(WidgetID(1), 7) 
-  SetState(WidgetID(1), 9) 
+  SetState(ID(1), 5) 
+  SetState(ID(1), 7) 
+  SetState(ID(1), 9) 
   
   ListView(10+270+270, 190, 250, 120, #__flag_RowMultiSelect)
   For a = 0 To 12
-    AddItem (WidgetID(2), -1, "Item " + Str(a) + " of the Listview") ; define listview content
+    AddItem (ID(2), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(WidgetID(2), 5) 
-  SetState(WidgetID(2), 7) 
-  SetState(WidgetID(2), 9) 
+  SetState(ID(2), 5) 
+  SetState(ID(2), 7) 
+  SetState(ID(2), 9) 
   
   ;   Text(10,170, 250,20, "flag = no")
   ;   Text(10+270,170, 250,20, "flag = ClickSelect")
@@ -190,17 +190,17 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   ;   TextGadget(#PB_Any, 10+270+270,170, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-    Bind(WidgetID(i), @events_widgets())
+    Bind(ID(i), @events_widgets())
   Next
   
-  SetActive(WidgetID(1))
+  SetActive(ID(1))
   SetActiveGadget(1)
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 94
-; FirstLine = 90
+; CursorPosition = 195
+; FirstLine = 170
 ; Folding = --
 ; EnableXP
 ; DPIAware

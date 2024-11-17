@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   Global Button_4, Button_5, Button_6, Button_7, Button_8, Button_9
   Define vert=100, horiz=100, width=450, height=400
@@ -65,12 +65,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(0, 0, 0, width+180, height+55, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
+    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
     
     Define img = 0
     widget::Container(10,10,width, height)
-    *this = widget::tree(100, 100, 250, 200, #__flag_optionBoxes | #PB_Tree_NoLines | #PB_Tree_NoButtons )  ; |#__flag_GridLines
+    *this = widget::Tree(100, 100, 250, 200, #__flag_optionBoxes | #PB_Tree_NoLines | #PB_Tree_NoButtons )  ; |#__flag_GridLines
     CloseList()
     
     ;\\
@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     widget::SetState(Button_8, Flag(*this, #__tree_nolines))
     ;     widget::SetState(Button_9, Flag(*this, #__tree_nobuttons))
     If Button_type
-       widget::HideWidget(Button_type, 1)
+       widget::Hide(Button_type, 1)
     EndIf
 
     widget::Button(10, height+20, 60, 24,"remove")
@@ -150,14 +150,14 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState(Splitter_3, width-pos-#__splittersize)
     widget::SetState(Splitter_2, height-pos-#__splittersize)
     
-    widget::Bind(Root( ), @events_widgets())
+    widget::Bind(root( ), @events_widgets())
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 131
-; FirstLine = 123
+; FirstLine = 127
 ; Folding = --
 ; EnableXP
 ; DPIAware

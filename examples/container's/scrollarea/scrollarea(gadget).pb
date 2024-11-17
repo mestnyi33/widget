@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent( )
       Case #__event_Resize
 ;         ;oc = EventWidget( )\scroll\gadget[1]
-;         ResizeGadget(oc, WidgetX(EventWidget( ), #__c_inner), WidgetY(EventWidget( ), #__c_inner), WidgetWidth(EventWidget( ), #__c_inner), WidgetHeight(EventWidget( ), #__c_inner))
+;         ResizeGadget(oc, X(EventWidget( ), #__c_inner), Y(EventWidget( ), #__c_inner), Width(EventWidget( ), #__c_inner), Height(EventWidget( ), #__c_inner))
 ;         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
 ;           UpdateWindow_(GadgetID(oc))
 ;         CompilerEndIf
@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ;
       Case #__Event_ScrollChange
 ;         ; ResizeGadget(ic, -DesktopUnscaledX(*g\scroll\h\bar\page\pos), -DesktopUnscaledY(*g\scroll\v\bar\page\pos), #PB_Ignore, #PB_Ignore)
-;         ResizeGadget(ic, WidgetX(*g, #__c_required), WidgetY(*g, #__c_required), #PB_Ignore, #PB_Ignore)
+;         ResizeGadget(ic, X(*g, #__c_required), Y(*g, #__c_required), #PB_Ignore, #PB_Ignore)
 ;         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
 ;           UpdateWindow_(GadgetID(ic))
 ;         CompilerEndIf
@@ -142,7 +142,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 24
+; FirstLine = 16
 ; Folding = -6
 ; EnableXP
 ; DPIAware

@@ -45,12 +45,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
       Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
       
-      HideWidget(Button_0, 1 ) 
-      HideWidget(Button_1, 1 ) 
-      HideWidget(Button_2, 1 ) 
-      HideWidget(Button_3, 1 ) 
-      HideWidget(Button_4, 1 ) 
-      HideWidget(Button_5, 1 ) 
+      Hide(Button_0, 1 ) 
+      Hide(Button_1, 1 ) 
+      Hide(Button_2, 1 ) 
+      Hide(Button_3, 1 ) 
+      Hide(Button_4, 1 ) 
+      Hide(Button_5, 1 ) 
 
 ;       Button_0 = 0
 ;       Button_1 = 0
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
       Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, Button_5)
       Splitter_3 = Splitter(0, 0, 0, 0, Button_2, Splitter_2)
-      Splitter_4 = Splitter(430-GadgetX(GetGadget(Root())), 10-GadgetY(GetGadget(Root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+      Splitter_4 = Splitter(430-GadgetX(GetGadget(root())), 10-GadgetY(GetGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
       
       SetText(Splitter_0, "0")
       SetText(Splitter_1, "1")
@@ -85,6 +85,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 52
-; FirstLine = 47
+; FirstLine = 43
 ; Folding = -
 ; EnableXP

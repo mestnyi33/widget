@@ -111,11 +111,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;         EndIf
 ;         
 ;         If getclass(e_widget) = "ToolBar"
-;           Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
+;           Protected transform, move_x, move_y, BarButton = GetData(e_widget)
 ;           Static NewList *copy._s_group()
 ;           
 ;           
-;           Select toolbarbutton
+;           Select BarButton
 ;             Case 1
 ;               If Getstate(e_widget)  
 ;                 ; group
@@ -164,7 +164,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;               move_y = a_transform()\id[0]\y - a_transform()\widget\y[#__c_inner]
 ;               
 ;               ForEach a_transform()\group()
-;                 Select toolbarbutton
+;                 Select BarButton
 ;                   Case #_tb_group_left ; left
 ;                                        ;a_transform()\id[0]\x = 0
 ;                     a_transform()\id[0]\width = 0
@@ -202,12 +202,17 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;     EndSelect
   EndProcedure
   
-  Macro ToolBarButton_(_button_, _image_, _mode_=0, _text_="")
+  Global barbuttonsize = (24);26+10
+  Macro BarButton_(_button_, _image_, _mode_=0, _text_="")
     ; #PB_ToolBar_Normal: the button will act as standard button (Default)
     ; #PB_ToolBar_Toggle: the button will act as toggle button
     
-    ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
-    ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
+     ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,barbuttonsize,barbuttonsize,_image_)
+;      If IsImage(_image_)
+;        Debug IsImage( ResizeImage(_image_,barbuttonsize,barbuttonsize ))
+;      EndIf
+     
+    ButtonImage(2+((X(widget())+Width(widget())) * Bool(MacroExpandedCount - 1)), 2,barbuttonsize,barbuttonsize,_image_, _mode_)
     ;widget()\color = widget()\parent\color
     ;widget()\text\padding\x = 0
     widget()\class = "ToolBar"
@@ -217,54 +222,54 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndMacro
   
   Macro Separator_()
-    Text(2+widget()\x+widget()\width, 2,1,30,"")
-    Button(widget()\x+widget()\width, 2+4,1,24,"")
+    Text(2+(X(widget())+Width(widget())), 2,1,barbuttonsize,"")
+    Button((X(widget())+Width(widget())), 2+4,1,barbuttonsize-6,"")
     SetData(widget(), - MacroExpandedCount)
-    Text(widget()\x+widget()\width, 2,1,30,"")
+    Text((X(widget())+Width(widget())), 2,1,barbuttonsize,"")
   EndMacro
   
   
-  Open(0, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
-  toolbar_design = Container(0,0,600,40) 
+  Open(0, 150, 150, 600, 600+barbuttonsize+6, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
+  toolbar_design = Container(0,0,600,barbuttonsize+6) 
   ;SetAlignmentFlag(widget(), #__align_top)
   ;ToolBar(toolbar, window, flags)
   
-  group_select = ToolBarButton_(1, - 1, #__flag_ButtonToggle)
-  SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
-  SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
+;   group_select = BarButton_(1, - 1, #__flag_ButtonToggle)
+;   SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
+;   SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
+;   
+;   ;BarButton(2, CatchImage(#PB_Any,?group_un))
+   Separator_()
+  BarButton_(#_tb_group_left, CatchImage(#PB_Any,?image_16))
+  BarButton_(#_tb_group_right, CatchImage(#PB_Any,?image_24))
+  BarButton_(#_tb_group_top, CatchImage(#PB_Any,?image_32))
+  BarButton_(#_tb_group_top, CatchImage(#PB_Any,?image_40))
+  BarButton_(#_tb_group_bottom, CatchImage(#PB_Any,?image_48))
+  Separator_()
+  BarButton_(#_tb_group_width, CatchImage(#PB_Any,?group_width))
+  BarButton_(#_tb_group_height, CatchImage(#PB_Any,?group_height))
   
-  ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
   Separator_()
-  ToolBarButton_(#_tb_group_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton_(#_tb_group_right, CatchImage(#PB_Any,?group_right))
+  BarButton_(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
+  BarButton_(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
+  BarButton_(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
+  BarButton_(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
   Separator_()
-  ToolBarButton_(#_tb_group_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton_(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
-  Separator_()
-  ToolBarButton_(#_tb_group_width, CatchImage(#PB_Any,?group_width))
-  ToolBarButton_(#_tb_group_height, CatchImage(#PB_Any,?group_height))
-  
-  Separator_()
-  ToolBarButton_(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
-  ToolBarButton_(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
-  ToolBarButton_(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
-  ToolBarButton_(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
-  Separator_()
-  ToolBarButton_(#_tb_align_left, CatchImage(#PB_Any,?group_left))
-  ToolBarButton_(#_tb_align_top, CatchImage(#PB_Any,?group_top))
-  ToolBarButton_(#_tb_align_center, CatchImage(#PB_Any,?group_width))
-  ToolBarButton_(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
-  ToolBarButton_(#_tb_align_right, CatchImage(#PB_Any,?group_right))
+  BarButton_(#_tb_align_left, CatchImage(#PB_Any,?group_left))
+  BarButton_(#_tb_align_top, CatchImage(#PB_Any,?group_top))
+  BarButton_(#_tb_align_center, CatchImage(#PB_Any,?group_width))
+  BarButton_(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
+  BarButton_(#_tb_align_right, CatchImage(#PB_Any,?group_right))
   CloseList()
   
   
-  ;Container(0,40,600,600);, #__flag_autosize) 
+  ;Container(0,barbuttonsize+6,600,600);, #__flag_autosize) 
   ;SetAlignmentFlag(widget(), #__align_full) 
   
-  a_init(mdi(0,40,600,600)) 
+  a_init(MDI(0,barbuttonsize+6,600,600)) 
   
   
-  additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = widget()
+  AddItem(widget(), -1, "form_0") : Resize(widget(), 50, 30, 500, 500) : *new = widget()
   SetColor(widget(), #__color_back, $C0AED8F2)
   ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
   ; ; container(30,30,450-2,450-2)
@@ -285,9 +290,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Button(150,180,115,50,"butt2")
   Button(180,200,115,50,"butt3")
   Button(120,240,170,40,"butt4")
-  closelist()
+  CloseList()
   Spin(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
-  closelist()
+  CloseList()
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
@@ -307,11 +312,18 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     group_bottom:     : IncludeBinary "group/group_bottom.png"
     group_width:      : IncludeBinary "group/group_width.png"
     group_height:     : IncludeBinary "group/group_height.png"
+    
+    image_16:         : IncludeBinary "copy_16.png"
+    image_24:         : IncludeBinary "copy_24.png"
+    image_32:         : IncludeBinary "copy_32.png"
+    image_40:         : IncludeBinary "copy_40.png"
+    image_48:         : IncludeBinary "copy_48.png"
   EndDataSection
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 267
-; FirstLine = 252
+; CursorPosition = 227
+; FirstLine = 210
 ; Folding = --
 ; EnableXP
+; DPIAware

@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
   
-  Procedure StringGadget_( gadget,x,y,width,height,text.s, flag=0 )
+  Procedure StringGadget_( gadget,x,y,width,height,Text.s, flag=0 )
     Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
       Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
       Text.s = ReplaceString( Text.s, #CR$, #LF$ )
@@ -16,12 +16,12 @@ CompilerIf #PB_Compiler_IsMainFile
       gadget = g
     EndIf
     
-    SetGadgetText( gadget,text )
+    SetGadgetText( gadget,Text )
     ProcedureReturn g
   EndProcedure
   
-  Macro StringGadget( gadget,x,y,width,height,text, flag=0 )
-    StringGadget_( gadget,x,y,width,height, text, flag )
+  Macro StringGadget( gadget,x,y,width,height,Text, flag=0 )
+    StringGadget_( gadget,x,y,width,height, Text, flag )
   EndMacro
   
   UsePNGImageDecoder()
@@ -163,11 +163,11 @@ CompilerIf #PB_Compiler_IsMainFile
     String(305+8, (height+5)*7+10, 290, height, "")
     String(305+8, (height+5)*8+10, 290, 90, Text)
     
-    ;SetText(WidgetID(6+1), "pas")
-    Debug GetText(WidgetID(6+1))+"- get widget text"
+    ;SetText(ID(6+1), "pas")
+    Debug GetText(ID(6+1))+"- get widget text"
     
     For i=0 To 8
-      Bind(WidgetID(i), @events_widgets())
+      Bind(ID(i), @events_widgets())
     Next
     
     ;WaitClose( ) 
@@ -175,8 +175,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 156
-; FirstLine = 152
+; CursorPosition = 169
+; FirstLine = 148
 ; Folding = ---
 ; EnableXP
 ; DPIAware

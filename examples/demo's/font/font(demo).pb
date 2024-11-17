@@ -86,26 +86,26 @@ Procedure events_wbuttons()
 		Case #PB_EventType_LeftClick
 			Select IDWidget(EventWidget( ))
 				Case 2 
-					If CountItems(WidgetID(1)) > 1
-						RemoveItem(WidgetID(1), 1)
-						Debug ""+CountItems(WidgetID(1)) +" - count widget items"
+					If CountItems(ID(1)) > 1
+						RemoveItem(ID(1), 1)
+						Debug ""+CountItems(ID(1)) +" - count widget items"
 					EndIf
 					
-				Case 5 : ClearItems(WidgetID(1))
-					Debug ""+CountItems(WidgetID(1)) +" - count widget items"
+				Case 5 : ClearItems(ID(1))
+					Debug ""+CountItems(ID(1)) +" - count widget items"
 					
 				Case 3, 4
-					;OpenList(WidgetID(1))
-					AddItem(WidgetID(1), 1, "Sub 2 (add)")
-					Protected sub = Bool(CountItems(WidgetID(1)) > 1)
+					;OpenList(ID(1))
+					AddItem(ID(1), 1, "Sub 2 (add)")
+					Protected sub = Bool(CountItems(ID(1)) > 1)
 					
-					SetItemText(WidgetID(1), sub, "Sub "+Str(sub+1)+" (add&set)")
-					Debug GetItemText(WidgetID(1), sub) + " - get item text"
+					SetItemText(ID(1), sub, "Sub "+Str(sub+1)+" (add&set)")
+					Debug GetItemText(ID(1), sub) + " - get item text"
 					;CloseList()
 					
-					SetItemFont(WidgetID(1), sub, 5 + Bool(IDWidget(EventWidget( )) = 4))
-					SetItemState(WidgetID(1), sub, 1)
-					; SetState(WidgetID(1), 1)
+					SetItemFont(ID(1), sub, 5 + Bool(IDWidget(EventWidget( )) = 4))
+					SetItemState(ID(1), sub, 1)
+					; SetState(ID(1), 1)
 			EndSelect
 	EndSelect
 	
@@ -116,7 +116,7 @@ EndProcedure
 ; Shows using of several panels...
 OpenWindow(0, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 If Open(0, 322+50, 0, 322+50, 220)
-	Define text.s, *g
+	Define Text.s, *g
 	CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 		LoadFont(5, "Arial", 18)
 		LoadFont(6, "Arial", 25)
@@ -134,17 +134,17 @@ If Open(0, 322+50, 0, 322+50, 220)
 	TreeGadget (1, 10, 10, 334, 130)
 	
 	If GadgetType(1) = #PB_GadgetType_Panel
-		text = "Sub"
+		Text = "Sub"
 	ElseIf GadgetType(1) = #PB_GadgetType_Tree
-		text = "Tree"
+		Text = "Tree"
 	EndIf
 	
-	AddGadgetItem (1, 0, text+"_0", 0)                                    
+	AddGadgetItem (1, 0, Text+"_0", 0)                                    
 	For i=1 To 12
 		If i=5 
-			AddGadgetItem(1, -1, text+"_"+Str(i), 0, 0) 
+			AddGadgetItem(1, -1, Text+"_"+Str(i), 0, 0) 
 		Else
-			AddGadgetItem(1, -1, text+"_"+Str(i), 0, 0) 
+			AddGadgetItem(1, -1, Text+"_"+Str(i), 0, 0) 
 		EndIf
 	Next 
 	
@@ -154,10 +154,10 @@ If Open(0, 322+50, 0, 322+50, 220)
 	EndIf
 	
 	;SetGadgetItemFont(1, 2, 5)
-	SetGadgetItemText(1, 2, text+"_2 (18)")
+	SetGadgetItemText(1, 2, Text+"_2 (18)")
 	
 	;SetGadgetItemFont(1, 4, 6)
-	SetGadgetItemText(1, 4, text+"_4 (25)")
+	SetGadgetItemText(1, 4, Text+"_4 (25)")
 	
 	
 	ButtonGadget(2, 10, 145, 60, 24,"remove")
@@ -180,47 +180,47 @@ If Open(0, 322+50, 0, 322+50, 220)
 	Debug ""+CountGadgetItems(1) +" - count gadget items"
 	
 	Panel(8, 8, 356, 203)
-	AddItem (WidgetID(0), -1, "Panel 1")
+	AddItem (ID(0), -1, "Panel 1")
 	
 	;*g = Panel(10, 10, 334, 130)
 	*g = Tree(10, 10, 334, 130, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_OptionBoxes)                            
 	
-	If WidgetType(*g) = #PB_GadgetType_Panel
-		text = "Sub"
-	ElseIf WidgetType(*g) = #PB_GadgetType_Tree
-		text = "Tree"
+	If Type(*g) = #PB_GadgetType_Panel
+		Text = "Sub"
+	ElseIf Type(*g) = #PB_GadgetType_Tree
+		Text = "Tree"
 	EndIf
 	
-	AddItem (*g, 0, text+"_0", 0)                                    
+	AddItem (*g, 0, Text+"_0", 0)                                    
 	For i=1 To 12
 		If i=5 
-			AddItem(*g, -1, text+"_"+Str(i), -1, 0) 
+			AddItem(*g, -1, Text+"_"+Str(i), -1, 0) 
 		Else
-			AddItem(*g, -1, text+"_"+Str(i), 0, -1) 
+			AddItem(*g, -1, Text+"_"+Str(i), 0, -1) 
 		EndIf
 	Next 
 	
 	SetState(*g, 2)
-	If WidgetType(*g) = #PB_GadgetType_Panel
+	If Type(*g) = #PB_GadgetType_Panel
 		CloseList()
 	EndIf
 	
 	SetItemFont(*g, 2, 5)
-	SetItemText(*g, 2, text+"_2 (18)")
+	SetItemText(*g, 2, Text+"_2 (18)")
 	
 	SetItemFont(*g, 4, 6)
-	SetItemText(*g, 4, text+"_4 (25)")
+	SetItemText(*g, 4, Text+"_4 (25)")
 	
 	Button(10, 145, 60, 24,"remove")
 	SetFont(Button(75, 145, 100, 24,"add (18)"), 5)
 	SetFont(Button(180, 145, 100, 24,"add (25)"), 6)
 	SetFont(Button(285, 145, 60, 24,"clear"), #Font18R)
 	
-	AddItem (WidgetID(0), -1,"Panel 2")
+	AddItem (ID(0), -1,"Panel 2")
 	SetFont(Button(10, 15, 100, 24,"Button 2_1"), 5)
 	Button(115, 15, 100, 24,"Button 2_2")
 	
-	AddItem (WidgetID(0), -1,"Panel 3")
+	AddItem (ID(0), -1,"Panel 3")
 	Button(10, 15, 100, 24,"Button 3_1")
 	*b = Button(10+110, 15, 100, 24,"automatically resize button when changing font", #__flag_Textmultiline)
 	SetFont(*b, 5)
@@ -254,17 +254,17 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	CloseList()
 	
-	SetItemFont(WidgetID(0), 1, 6)
-	SetItemFont(WidgetID(0), 2, #Font18R)
+	SetItemFont(ID(0), 1, 6)
+	SetItemFont(ID(0), 2, #Font18R)
 	
 	For i = 0 To 1
-		Bind(WidgetID(i), @events_widgets())
+		Bind(ID(i), @events_widgets())
 	Next
 	For i = 2 To 5
-		Bind(WidgetID(i), @events_wbuttons())
+		Bind(ID(i), @events_wbuttons())
 	Next
 	
-	Debug ""+CountItems(WidgetID(1)) +" - count widget items"
+	Debug ""+CountItems(ID(1)) +" - count widget items"
 	
 	;   ; bug set font - FIXED Repaint() ; Root(()\text\fontID[1] =- 1 >> *this\root\text\fontID[1] =- 1 
 	;   Open(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
@@ -278,8 +278,8 @@ If Open(0, 322+50, 0, 322+50, 220)
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 229
+; CursorPosition = 266
+; FirstLine = 242
 ; Folding = ----
 ; EnableXP
 ; DPIAware

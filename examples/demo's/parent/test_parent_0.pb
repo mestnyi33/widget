@@ -19,16 +19,16 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -64,14 +64,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select GetText( EventWidget( ) )
                Case "hide_children"
-                  HideWidget(*p, 1)
-                  ; DisableWidget(*c, 1)
+                  Hide(*p, 1)
+                  ; Disable(*c, 1)
                   
                Case "show_children"
-                  HideWidget(*p, 0)
+                  Hide(*p, 0)
                   
                Case "hide_parent"
-                  HideWidget(*c, GetState( EventWidget( ) ))
+                  Hide(*c, GetState( EventWidget( ) ))
                   
             EndSelect
             
@@ -79,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;         ClearDebugOutput( )
             ; PushListPosition( panel_children( ))
             ;         If StartEnum(*panel);Root( ))
-            ;           If Not HideWidget(widget( )) ;And GetParent(widget( )) = *panel
+            ;           If Not Hide(widget( )) ;And GetParent(widget( )) = *panel
             ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
             ;           EndIf
             ;           StopEnum( )
@@ -149,16 +149,16 @@ CompilerIf #PB_Compiler_IsMainFile = 99
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -305,16 +305,16 @@ CompilerIf #PB_Compiler_IsMainFile = 99
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -353,7 +353,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 ;       Show_DEBUG()
 ;       
 ;       
-;       ;Debug "^"+root()\first\widget\class +" "+ root()\last\widget\class +" "+ root()\last\widget\last\widget\class
+;       ;Debug "^"+root()\FirstWidget( )\class +" "+ root()\last\widget\class +" "+ root()\last\widget\last\widget\class
 ;       OpenList( root( ), 0 )
 ;       *CHILD = Button(pos_x,10,160,70,"(CHILD4)") : SetClass(*CHILD, "CHILD4") 
 ;       CloseList( )
@@ -424,16 +424,16 @@ CompilerEndIf
 ;       ForEach widgets( )
 ;          line = "  ";+ widgets( )\class +" "
 ;          
-;          If widgets( )\before\widget
-;             line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+;          If widgets( )\BeforeWidget( )
+;             line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
 ;          Else
 ;             line + "-------- <<  " 
 ;          EndIf
 ;          
 ;          line + widgets( )\class ; widgets( )\text\string
 ;          
-;          If widgets( )\after\widget
-;             line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+;          If widgets( )\AfterWidget( )
+;             line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
 ;          Else
 ;             line + "  >> --------" 
 ;          EndIf
@@ -447,8 +447,9 @@ CompilerEndIf
 ;    EndIf   
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 412
-; FirstLine = 385
+; CursorPosition = 67
+; FirstLine = 63
 ; Folding = ------
 ; EnableXP
 ; DPIAware
+; DisableDebugger
