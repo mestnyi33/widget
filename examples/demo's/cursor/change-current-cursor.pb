@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
    widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
    ;Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-   Button_4   = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
+   Button_4   = ProgressBarWidget(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
    Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 84
+; CursorPosition = 64
+; FirstLine = 60
 ; Folding = --
 ; EnableXP

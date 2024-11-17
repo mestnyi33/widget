@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Open(0, 10, 10, 380, 80)
         g_Canvas = GetGadget(root())
-        *scrollbar = Scroll(5, 10, 370, 30, 20, 50, 8, 0, round)
+        *scrollbar = ScrollBarWidget(5, 10, 370, 30, 20, 50, 8, 0, round)
         SetState(widget(), 31)
         
         Splitter(5, 5, 370, 70, *scrollbar,-1)
@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

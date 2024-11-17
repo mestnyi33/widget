@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          If Open(0, 10, 10, 380, 80)
             g_Canvas = GetGadget(root())
-            *scrollbar = Scroll(5, 10, 370, 30, 20, 50, 8 )
+            *scrollbar = ScrollBarWidget(5, 10, 370, 30, 20, 50, 8 )
             SetAttribute(*scrollbar, #__Bar_ButtonSize, 30 )
             buttonsize = GetAttribute( *scrollbar, #__Bar_ButtonSize )
             Debug "button-size - "+buttonsize
@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

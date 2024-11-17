@@ -87,7 +87,7 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   Window_0 = Window( X,Y, Width, Height, "Редактор изображения", Flag|#PB_Window_Invisible)
   Sticky(Window_0, #True)
   
-  Image_View = Image(5, 5, 231, 166, 0);, #_Flag_Image_Center)
+  Image_View = ImageWidget(5, 5, 231, 166, 0);, #_Flag_Image_Center)
   ;
   Button_Load = Button(240, 5, 101, 21, "Загрузить")
   Button_Ok = Button(240, 125, 101, 21, "Применить")
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 73
+; CursorPosition = 89
+; FirstLine = 85
 ; Folding = ---
 ; Optimizer
 ; EnableXP

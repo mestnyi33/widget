@@ -196,14 +196,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *a1._s_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
   ;Define *a2._s_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
   Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
-  Define *a3._s_WIDGET = Image( 150, 110, 60, 60, -1 )
+  Define *a3._s_WIDGET = ImageWidget( 150, 110, 60, 60, -1 )
   
   a_set( *a3, -1, 10)
   
   CloseList( )
-  size_value  = Track(56, 262, 240, 26, 0, 30)
-  pos_value   = Track(56, 292, 240, 26, 0, 30)
-  grid_value  = Track(56, 320, 240, 26, 0, 30)
+  size_value  = TrackBarWidget(56, 262, 240, 26, 0, 30)
+  pos_value   = TrackBarWidget(56, 292, 240, 26, 0, 30)
+  grid_value  = TrackBarWidget(56, 320, 240, 26, 0, 30)
   back_color  = Button(304, 264, 112, 32, "BackColor")
   frame_color = Button(304, 304, 112, 32, "FrameColor")
   size_text   = Text(8, 256, 40, 24, "0")
@@ -709,8 +709,8 @@ CompilerIf #PB_Compiler_IsMainFile = 555
 CompilerEndIf
    
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 663
-; FirstLine = 477
+; CursorPosition = 198
+; FirstLine = 194
 ; Folding = -------
 ; EnableXP
 ; DPIAware

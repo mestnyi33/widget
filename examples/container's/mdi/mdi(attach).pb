@@ -31,9 +31,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;
   Resize(*g0, 50, 50, 400, 400)
-  Resize(*g1, X(*g0, #__c_container)+50, Y(*g0, #__c_container)+50, 200, 300)
-  Resize(*g2, X(*g0, #__c_container) + Width(*g0, #__c_Frame), Y(*g0, #__c_container), 200, 300)
-  Resize(*g3, X(*g2, #__c_container), Y(*g2, #__c_container) + Height(*g2, #__c_Frame), 200, 100)
+  Resize(*g1, WidgetX(*g0, #__c_container)+50, WidgetY(*g0, #__c_container)+50, 200, 300)
+  Resize(*g2, WidgetX(*g0, #__c_container) + Width(*g0, #__c_Frame), WidgetY(*g0, #__c_container), 200, 300)
+  Resize(*g3, WidgetX(*g2, #__c_container), WidgetY(*g2, #__c_container) + Height(*g2, #__c_Frame), 200, 100)
   
   
   SetState(*mdi\scroll\h, 120)
@@ -44,6 +44,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 35
-; FirstLine = 16
+; FirstLine = 11
 ; Folding = -
 ; EnableXP

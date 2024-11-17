@@ -46,11 +46,11 @@ If Open(0, 500,0, 500);,140)
 ; ;   Next
 ; 
 ; ;   ; disabled
-  Scroll(10, 42+30*0, 250,  20, 30, 100, 0) : SetState   (widget( ),  50)
-  Scroll(10, 42+30*1, 250,  20, 30, 100, 50) ;: SetState   (widget( ),  50)
-  Scroll(10, 42+30*2, 250,  20, 30, 100, 50) : SetState   (widget( ),  50)
-  Scroll(10, 42+30*3, 250,  20, 30, 100, 100) : SetState   (widget( ),  50)
-  Scroll(10, 42+30*4, 250,  20, 30, 100, 200) : SetState   (widget( ),  50)
+  ScrollBarWidget(10, 42+30*0, 250,  20, 30, 100, 0) : SetState   (widget( ),  50)
+  ScrollBarWidget(10, 42+30*1, 250,  20, 30, 100, 50) ;: SetState   (widget( ),  50)
+  ScrollBarWidget(10, 42+30*2, 250,  20, 30, 100, 50) : SetState   (widget( ),  50)
+  ScrollBarWidget(10, 42+30*3, 250,  20, 30, 100, 100) : SetState   (widget( ),  50)
+  ScrollBarWidget(10, 42+30*4, 250,  20, 30, 100, 200) : SetState   (widget( ),  50)
    
    ; ;   Debug " - "
   Debug widget( )\bar\page\pos
@@ -68,8 +68,8 @@ If Open(0, 500,0, 500);,140)
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; CursorPosition = 52
+; FirstLine = 37
 ; Folding = -
 ; EnableXP
 ; DPIAware

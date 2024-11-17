@@ -106,11 +106,11 @@ CompilerIf #PB_Compiler_IsMainFile
    CloseList() ; *panel
    
    Frame(30, 200, 300 - 60, 100, "Tab location")
-   Option(130, GadgetY(1) + 20, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
-   Option(50, GadgetY(1) + 45, 80, 20, "Left", #__flag_Transparent)
-   Option(130, GadgetY(1) + 45, 80, 20, "Hide", #__flag_Transparent)
-   Option(130, GadgetY(1) + 70, 80, 20, "Bottom", #__flag_Transparent)
-   Option(210, GadgetY(1) + 45, 80, 20, "Right", #__flag_Transparent)
+   OptionWidget(130, GadgetY(1) + 20, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
+   OptionWidget(50, GadgetY(1) + 45, 80, 20, "Left", #__flag_Transparent)
+   OptionWidget(130, GadgetY(1) + 45, 80, 20, "Hide", #__flag_Transparent)
+   OptionWidget(130, GadgetY(1) + 70, 80, 20, "Bottom", #__flag_Transparent)
+   OptionWidget(210, GadgetY(1) + 45, 80, 20, "Right", #__flag_Transparent)
    Bind( #PB_All, @events_widget( ), #__event_Change )
    
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 99
+; CursorPosition = 112
+; FirstLine = 94
 ; Folding = --
 ; EnableXP
 ; DPIAware

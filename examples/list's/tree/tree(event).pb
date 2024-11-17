@@ -151,37 +151,37 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   
   Tree(270, 30+150, 250, 120, #__tree_CheckBoxes|#__flag_RowClickSelect|#__Flag_GridLines)
   For a = 0 To 2
-    AddItem (ID(1), -1, "Item " + Str(a) + " of the Tree long long long long long", -1, 0) ; define Tree content
-    AddItem (ID(1), -1, "Subitem " + Str(a) + " of the Tree", -1, 1)                       ; define Tree content
+    AddItem ( WidgetID(1), -1, "Item " + Str(a) + " of the Tree long long long long long", -1, 0) ; define Tree content
+    AddItem ( WidgetID(1), -1, "Subitem " + Str(a) + " of the Tree", -1, 1)                       ; define Tree content
     
-    i = (CountItems( ID(1) )-1)
+    i = (CountItems( WidgetID(1) )-1)
     
     If i%2
-      SetItemState(ID(1), i, #PB_Tree_Selected) 
+      SetItemState( WidgetID(1), i, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState(ID(1), 5) 
-  SetState(ID(1), 7) 
-  SetState(ID(1), 9) 
+  SetState( WidgetID(1), 5) 
+  SetState( WidgetID(1), 7) 
+  SetState( WidgetID(1), 9) 
   
   
   Tree(270, 30+150+150, 250, 120, #__tree_CheckBoxes|#__flag_RowMultiSelect|#__Flag_GridLines)
   For a = 0 To 6
-    AddItem (ID(2), -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
-    AddItem (ID(2), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
+    AddItem ( WidgetID(2), -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
+    AddItem ( WidgetID(2), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
     
-    i = (CountItems( ID(2) )-1)
+    i = (CountItems( WidgetID(2) )-1)
     
     If i%2
-      SetItemState(ID(2), i, #PB_Tree_Selected) 
+      SetItemState( WidgetID(2), i, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState(ID(2), 5) 
-  SetState(ID(2), 7) 
-  SetState(ID(2), 9) 
+  SetState( WidgetID(2), 5) 
+  SetState( WidgetID(2), 7) 
+  SetState( WidgetID(2), 9) 
   
   For i = 0 To 2
-    Bind(ID(i), @events_widgets( ))
+    Bind( WidgetID(i), @events_widgets( ))
   Next
   ;Bind(*g, @events_widgets( ))
   
@@ -193,8 +193,8 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 163
-; FirstLine = 159
+; CursorPosition = 183
+; FirstLine = 137
 ; Folding = ---
 ; EnableXP
 ; DPIAware

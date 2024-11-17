@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_Drop            : AddItem(*view, -1, Space + " drop <<" + Trim(GetText(*eventWidget)) + ">>")
         
         If *eventWidget = *dropbutton And Not *eventWidget\press
-           Button( X(*eventWidget)+5, Y(*eventWidget)+5, 30, 30, "new" )
+           Button( WidgetX(*eventWidget)+5, WidgetY(*eventWidget)+5, 30, 30, "new" )
            Bind(widget( ), @events_widgets(), #__event_MouseEnter)
            Bind(widget( ), @events_widgets(), #__event_LeftDown)
            Bind(widget( ), @events_widgets(), #__event_MouseLeave)

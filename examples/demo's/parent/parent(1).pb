@@ -40,7 +40,7 @@ Procedure events_widgets()
         SetParent(*w, *p2)
       EndIf
       
-      Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
+      Debug ""+GetParent(*w) +" "+ *w +" "+ GetParent(*ch) +" "+  WidgetY(*ch) +" "+  WidgetY(*ch, 3)
       
       Show_DEBUG( )
       i!1

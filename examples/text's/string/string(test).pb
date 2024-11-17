@@ -21,9 +21,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure button_panel_events( )
       Select GetText( EventWidget( ) )
          Case "1"
-            Resize(*g, #PB_Ignore, Y(*g)-i, #PB_Ignore, Height(*g)+i)
+            Resize(*g, #PB_Ignore, WidgetY(*g)-i, #PB_Ignore, Height(*g)+i)
          Case "2"
-            Resize(*g, #PB_Ignore, Y(*g)+i, #PB_Ignore, Height(*g)-i)
+            Resize(*g, #PB_Ignore, WidgetY(*g)+i, #PB_Ignore, Height(*g)-i)
             
       EndSelect
    EndProcedure
@@ -34,6 +34,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 25
-; FirstLine = 6
+; FirstLine = 2
 ; Folding = -
 ; EnableXP

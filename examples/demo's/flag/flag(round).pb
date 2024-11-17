@@ -38,8 +38,8 @@ EndProcedure
 
 If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   If Open(0)
-    Button_0 = Progress(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
-    Button_1 = Progress(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
+    Button_0 = ProgressBarWidget(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
+    Button_1 = ProgressBarWidget(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
     
     w_type = ListView(10, 10, 150, 200) 
     Define i
@@ -73,8 +73,8 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 41
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
 ; DPIAware

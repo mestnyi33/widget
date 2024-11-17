@@ -9,9 +9,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *g1 = Scroll(    30, 30, 200, h, 0,max,139)
-    *g2 = Scroll(30+210, 30, 200, h, 0,max,139)
-    *g3 = Scroll(30+420, 30, 200, h, 0,max,139)
+    *g1 = ScrollBarWidget(    30, 30, 200, h, 0,max,139)
+    *g2 = ScrollBarWidget(30+210, 30, 200, h, 0,max,139)
+    *g3 = ScrollBarWidget(30+420, 30, 200, h, 0,max,139)
     
     SetState(*g2, *g2\bar\page\end/2)
     SetState(*g3, *g3\bar\page\end)
@@ -28,6 +28,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP

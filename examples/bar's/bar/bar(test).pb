@@ -35,10 +35,10 @@ CompilerIf #PB_Compiler_IsMainFile
          If Open(0, 10, 10, 380, 50 + h)
             g_Canvas  = GetGadget(root())
             Frame( 0,0,0,0, "demo bars", #__flag_autosize)
-            *track    = Track(15, 10, 350, 30, min, 50, flags)
+            *track    = TrackBarWidget(15, 10, 350, 30, min, 50, flags)
             *splitter = Splitter(15, 10 + 35 * 1, 350, 30, -1,  -1, flags | #__Bar_Vertical)
-            *progress = Progress(15, 10 + 35 * 2 , 350, 30, min, 50, flags)
-            *scroll   = Scroll(15, 10 + 35 * 3, 350, 30, min, 50, 8, flags)
+            *progress = ProgressBarWidget(15, 10 + 35 * 2 , 350, 30, min, 50, flags)
+            *scroll   = ScrollBarWidget(15, 10 + 35 * 3, 350, 30, min, 50, 8, flags)
             *spin     = Spin(15, 10 + 35 * 4, 350, 30, min, 50, 8, flags)
             
             
@@ -51,8 +51,8 @@ CompilerIf #PB_Compiler_IsMainFile
             SetGadgetState(0, GetAttribute(*scroll, #__Bar_Invert))
             SetWindowTitle(0, Str(GetState(*scroll)))
             
-            ;*bar = Scroll(15, 20+35*5, 350, 20, min, 50, 8)
-            *bar = Track(15, 20 + 35 * 5, 350, 20, min, 50)
+            ;*bar = ScrollBarWidget(15, 20+35*5, 350, 20, min, 50, 8)
+            *bar = TrackBarWidget(15, 20 + 35 * 5, 350, 20, min, 50)
             ;*bar = Splitter(15, 20+35*5, 350, 30, -1,-1, #__Bar_Vertical)
             SetState(*bar, min+2)
             
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 10
+; CursorPosition = 53
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

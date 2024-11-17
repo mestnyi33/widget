@@ -14,7 +14,7 @@ Procedure events_widgets()
         EndIf
         
         If *ch
-          Debug ""+GetParent(*w) +" "+ GetParent(*ch) +" "+  Y(*ch) +" "+  Y(*ch, 3)
+          Debug ""+GetParent(*w) +" "+ GetParent(*ch) +" "+  WidgetY(*ch) +" "+  WidgetY(*ch, 3)
         EndIf
         
         i!1

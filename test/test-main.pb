@@ -163,14 +163,14 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *a1._s_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
    ;Define *a2._s_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
    Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
-   Define *a3._s_WIDGET = Image( 150, 110, 60, 60, -1 )
+   Define *a3._s_WIDGET = ImageWidget( 150, 110, 60, 60, -1 )
    
    a_set( *a3, -1, 10)
    
    CloseList( )
-   size_value  = Track(56, 262, 240, 26, 0, 30)
-   pos_value   = Track(56, 292, 240, 26, 0, 30)
-   grid_value  = Track(56, 320, 240, 26, 0, 30)
+   size_value  = TrackBarWidget(56, 262, 240, 26, 0, 30)
+   pos_value   = TrackBarWidget(56, 292, 240, 26, 0, 30)
+   grid_value  = TrackBarWidget(56, 320, 240, 26, 0, 30)
    back_color  = Button(304, 264, 112, 32, "BackColor")
    frame_color = Button(304, 304, 112, 32, "FrameColor")
    size_text   = Text(8, 256, 40, 24, "0")
@@ -597,7 +597,7 @@ CompilerIf #PB_Compiler_IsMainFile
    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
    widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
    ;Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-   Button_4   = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
+   Button_4   = ProgressBarWidget(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
    Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
@@ -648,10 +648,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Define *window._s_WIDGET
-   Define i, y = 5
+   Define i, Y = 5
    OpenList( *root4 )
    For i = 1 To 4
-      Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
+      Window(5, Y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
       ;Container(5, y, 150, 95 + 2)
       If i = 2
          Disable( widget( ), 1)
@@ -661,7 +661,7 @@ CompilerIf #PB_Compiler_IsMainFile
          CheckBox(10, 10, 100, 30, "CheckBox_" + Trim(Str(i + 10)))
          SetState( widget( ), 1 )
       ElseIf i = 4
-         Option(10, 10, 100, 30, "Option_" + Trim(Str(i + 10)))
+         OptionWidget(10, 10, 100, 30, "Option_" + Trim(Str(i + 10)))
       Else
          Button(10, 10, 100, 30, "Button_" + Trim(Str(i + 10)))
       EndIf
@@ -669,7 +669,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Disable( widget( ), 1)
       EndIf
       If i = 4 Or i = 3
-         Option(10, 45, 100, 30, "Option_" + Trim(Str(i + 20)))
+         OptionWidget(10, 45, 100, 30, "Option_" + Trim(Str(i + 20)))
          SetState( widget( ), 1 )
       Else
          Button(10, 45, 100, 30, "Button_" + Trim(Str(i + 20)))
@@ -679,7 +679,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       CloseList( )
       ;CloseList( )
-      y + 130
+      Y + 130
    Next
    
    WaitClose( )
@@ -690,8 +690,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 677
-; FirstLine = 614
+; CursorPosition = 671
+; FirstLine = 619
 ; Folding = NA+----
 ; EnableXP
 ; DPIAware

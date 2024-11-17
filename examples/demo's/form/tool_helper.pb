@@ -90,8 +90,8 @@ Procedure Tool_Gadget( Window, Width, Height )
    ;SetColor( Tool_Line_Frame, #__color_back, GetColor(Tool_Line_Size_Info, #__color_back))
    CloseList( )
    
-   Tool_Align_To_Grid = Option(X(Tool_Grid_Container, 3)+6, Y(Tool_Grid_Container, 3)+2, 152-12, 16, "Выровнять по сетке")
-   Tool_Align_To_Line = Option(X(Tool_Line_Container, 3)+6, Y(Tool_Line_Container, 3)+2, 152-12, 16, "Выровнять по линии")
+   Tool_Align_To_Grid = OptionWidget(X(Tool_Grid_Container, 3)+6, WidgetY(Tool_Grid_Container, 3)+2, 152-12, 16, "Выровнять по сетке")
+   Tool_Align_To_Line = OptionWidget(X(Tool_Line_Container, 3)+6, WidgetY(Tool_Line_Container, 3)+2, 152-12, 16, "Выровнять по линии")
    CloseList( )
    CloseList( )
    
@@ -124,8 +124,8 @@ CompilerEndIf
 DisableExplicit
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 89
+; CursorPosition = 110
+; FirstLine = 88
 ; Folding = --
 ; Optimizer
 ; EnableXP

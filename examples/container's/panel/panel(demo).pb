@@ -62,23 +62,23 @@ Procedure events_wbuttons()
     Case #__event_LeftClick
       Select IDWidget( EventWidget( ) )
         Case 2 
-          If CountItems( ID(1)) > 1
-            RemoveItem( ID(1), 1)
-            Debug ""+CountItems( ID(1)) +" - count widget items"
+          If CountItems( WidgetID(1)) > 1
+            RemoveItem( WidgetID(1), 1)
+            Debug ""+CountItems( WidgetID(1)) +" - count widget items"
           EndIf
           
-        Case 4 : ClearItems( ID(1))
-          Debug ""+CountItems( ID(1)) +" - count widget items"
+        Case 4 : ClearItems( WidgetID(1))
+          Debug ""+CountItems( WidgetID(1)) +" - count widget items"
           
         Case 3 
-          ;OpenList( ID(1))
-          AddItem( ID(1), 1, "Sub 2 (add)")
-          If CountItems( ID(1)) > 1
-            SetItemText( ID(1), 1, "Sub 2 (add&set)")
-            Debug GetItemText( ID(1), 1) + " - get item text"
+          ;OpenList( WidgetID(1))
+          AddItem( WidgetID(1), 1, "Sub 2 (add)")
+          If CountItems( WidgetID(1)) > 1
+            SetItemText( WidgetID(1), 1, "Sub 2 (add&set)")
+            Debug GetItemText( WidgetID(1), 1) + " - get item text"
           Else
-            SetItemText( ID(1), 0, "Sub 1 (add&set)")
-            Debug GetItemText( ID(1), 0) + " - get item text"
+            SetItemText( WidgetID(1), 0, "Sub 1 (add&set)")
+            Debug GetItemText( WidgetID(1), 0) + " - get item text"
           EndIf
           ;CloseList()
       EndSelect
@@ -87,7 +87,7 @@ Procedure events_wbuttons()
 EndProcedure
 
 ; Shows using of several panels...
-If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322, 0, 322, 220)
+If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   PanelGadget (0, 8, 8, 300, 200)
   Define h = 200;GetGadgetAttribute(0, #PB_Panel_ItemHeight )
   Define w = 300;GetGadgetAttribute(0, #PB_Panel_ItemWidth )
@@ -124,50 +124,51 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   
   Debug ""+CountGadgetItems(1) +" - count gadget items"
   
+  Open(0, 322, 0, 322, 220)
   Panel(8, 8, 300, 200)
-  Define h = Height( ID(0), #__c_inner )
-  Define w = Width( ID(0), #__c_inner )
+  Define h = Height( WidgetID(0), #__c_inner )
+  Define w = Width( WidgetID(0), #__c_inner )
   
-  AddItem( ID(0), -1, "Panel 1")
+  AddItem( WidgetID(0), -1, "Panel 1")
   Panel(10, 10, w-20, h-20-34*3)
-  AddItem( ID(1), -1, "Sub 1")
-  AddItem( ID(1), -1, "Sub 2")
-  AddItem( ID(1), -1, "Sub 3")
-  AddItem( ID(1), -1, "Sub 4")
-  AddItem( ID(1), -1, "Sub 5")
-  AddItem( ID(1), -1, "Sub 6")
-  AddItem( ID(1), -1, "Sub 7")
-  AddItem( ID(1), -1, "Sub 8")
-  AddItem( ID(1), -1, "Sub 9")
-  SetState( ID(1), 5)
-  CloseList()
+  AddItem( WidgetID(1), -1, "Sub 1")
+  AddItem( WidgetID(1), -1, "Sub 2")
+  AddItem( WidgetID(1), -1, "Sub 3")
+  AddItem( WidgetID(1), -1, "Sub 4")
+  AddItem( WidgetID(1), -1, "Sub 5")
+  AddItem( WidgetID(1), -1, "Sub 6")
+  AddItem( WidgetID(1), -1, "Sub 7")
+  AddItem( WidgetID(1), -1, "Sub 8")
+  AddItem( WidgetID(1), -1, "Sub 9")
+  SetState( WidgetID(1), 5)
+  CloseList( )
   
   Button(10, h-34*2, 80, 24,"remove")
   Button(10, h-34*3, 80, 24,"add")
   Button(10, h-34*1, 80, 24,"clear")
   
-  AddItem ( ID(0), -1,"Panel 2")
+  AddItem ( WidgetID(0), -1,"Panel 2")
   Button(10, 10, 80, 24,"Button 3")
   Button(95, 10, 80, 24,"Button 4")
   CloseList()
   
   For i = 0 To 1
-    Bind( ID(i), @events_widgets())
+    Bind( WidgetID(i), @events_widgets())
   Next
   For i = 2 To 4
-    Bind( ID(i), @events_wbuttons())
+    Bind( WidgetID(i), @events_wbuttons())
   Next
   
   
-  ;SetState( ID(1), 6)
+  ;SetState( WidgetID(1), 6)
   
-  Debug ""+CountItems( ID(1)) +" - count widget items"
+  Debug ""+CountItems( WidgetID(1)) +" - count widget items"
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 163
-; FirstLine = 139
+; CursorPosition = 127
+; FirstLine = 108
 ; Folding = ---
 ; Optimizer
 ; EnableXP

@@ -84,8 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline, -1,4 )
     Button( 10+222,170+70, 200, 25, "Toggle button", #__flag_ButtonToggle )
     
-    SetState( ID( 5 ), 1 )
-    SetFont( ID( 5 ), FontID( 0 ) )
+    SetState( WidgetID( 5 ), 1 )
+    SetFont( WidgetID( 5 ), FontID( 0 ) )
     Bind( #PB_All, @events_widgets( ) )
     
   EndIf
@@ -144,7 +144,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 87
-; FirstLine = 83
+; FirstLine = 82
 ; Folding = ---
 ; Optimizer
 ; EnableXP

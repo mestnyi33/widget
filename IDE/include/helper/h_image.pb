@@ -41,7 +41,7 @@ Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCe
   ;W_IH = 
   Window(10, 10, 386, 201, "ImageHelper", Flag, ParentID)                                               
   ;G_IH_ScrollArea_0 = ScrollArea(5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
-  G_IH_View = Image(5, 5, 291, 191, -1)    
+  G_IH_View = ImageWidget(5, 5, 291, 191, -1)    
   ;CloseList()
   G_IH_Open = Button(300, 5, 81, 21, "Open")    
   G_IH_Save = Button(300, 30, 81, 21, "Save")    
@@ -108,7 +108,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 43
+; FirstLine = 39
 ; Folding = v--
 ; EnableXP
 ; DPIAware

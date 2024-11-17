@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ; 
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               ReDraw( Root( ) )
+               ReDraw( root( ) )
             CompilerEndIf
       EndSelect
    EndProcedure
@@ -65,25 +65,25 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ;\\
-      Define x = 350
-      w_0 = Track(10+x,  40, 250, 20, 0, 30)
-      SetState(Splitter(10+x,  40, 250, 20, w_0,  #PB_Default, #PB_Splitter_Vertical ), 250)
+      Define X = 350
+      w_0 = TrackBarWidget(10+X,  40, 250, 20, 0, 30)
+      SetState(Splitter(10+X,  40, 250, 20, w_0,  #PB_Default, #PB_Splitter_Vertical ), 250)
       SetState(w_0, 25)
       
-      w_1 = Track(10+x, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
-      SetState(Splitter(10+x,  120, 250, 20, w_1,  #PB_Default, #PB_Splitter_Vertical ), 250)
+      w_1 = TrackBarWidget(10+X, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
+      SetState(Splitter(10+X,  120, 250, 20, w_1,  #PB_Default, #PB_Splitter_Vertical ), 250)
       ;SetState(w_1, 30)
       
-      w_2 = Track(280+x, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
-      SetState(Splitter(280+x, 10, 20, 170, w_2,  #PB_Default ), 170)
+      w_2 = TrackBarWidget(280+X, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
+      SetState(Splitter(280+X, 10, 20, 170, w_2,  #PB_Default ), 170)
       SetState(w_2, 8000)
       
-      w_2 = Track(320+x, 10, 20, 170, 0, 10, #PB_TrackBar_Vertical|#PB_TrackBar_Ticks)
-      SetState(Splitter(320+x, 10, 20, 170, w_2,  #PB_Default ), 170)
+      w_2 = TrackBarWidget(320+X, 10, 20, 170, 0, 10, #PB_TrackBar_Vertical|#PB_TrackBar_Ticks)
+      SetState(Splitter(320+X, 10, 20, 170, w_2,  #PB_Default ), 170)
       
-      Text(10+x,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
-      Text(10+x, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-      Text(90+x, 190, 200, 20, "TrackBar Vertical", #PB_Text_Right)
+      Text(10+X,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
+      Text(10+X, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
+      Text(90+X, 190, 200, 20, "TrackBar Vertical", #PB_Text_Right)
       
       If event
          Bind(w_0, @events_widgets())
@@ -95,8 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 18
+; CursorPosition = 80
+; FirstLine = 63
 ; Folding = --
 ; EnableXP
 ; DPIAware

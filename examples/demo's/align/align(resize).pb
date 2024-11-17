@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   
   Global NewMap ID.i()
-  Global.i Canvas_0, gEvent, gQuit, x=10,y=10
+  Global.i Canvas_0, gEvent, gQuit, X=10,Y=10
   
   Procedure Window_0_Resize()
     ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
@@ -103,6 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Height + direction
         
         Resize(ID(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
+        ReDraw(root())
         
       Case #PB_Event_Gadget
         
@@ -124,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 100
+; CursorPosition = 106
+; FirstLine = 85
 ; Folding = --
 ; EnableXP

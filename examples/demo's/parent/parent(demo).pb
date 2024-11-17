@@ -55,14 +55,14 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  1: *CHILD = Button(30,20,150,30,"Button") 
                     Case  2: *CHILD = String(30,20,150,30,"String") 
                     Case  3: *CHILD = Text(30,20,150,30,"Text", #PB_Text_Border) 
-                    Case  4: *CHILD = Option(30,20,150,30,"Option") 
+                    Case  4: *CHILD = OptionWidget(30,20,150,30,"Option") 
                     Case  5: *CHILD = CheckBox(30,20,150,30,"CheckBox") 
                     Case  6: *CHILD = ListView(30,20,150,30) 
                     Case  7: *CHILD = Frame(30,20,150,30,"Frame") 
                     Case  8: *CHILD = ComboBox(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
                       ; Debug ""+*CHILD\root\class +" "+ *CHILD\PopupBox( )\root\class
                        
-                    Case  9: *CHILD = Image(30,20,150,30,0,#PB_Image_Border) 
+                    Case  9: *CHILD = ImageWidget(30,20,150,30,0,#PB_Image_Border) 
                     Case 10: *CHILD = HyperLink(30,20,150,30,"HyperLink",0) 
                     Case 11: *CHILD = Container(30,20,150,30,#PB_Container_Flat): Button(0,0,80,20,"Button"): CloseList() ; Container
                     Case 12: *CHILD = ListIcon(30,20,150,30,"",88) 
@@ -218,8 +218,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 28
-; Folding = -0
+; CursorPosition = 57
+; FirstLine = 53
+; Folding = --
 ; EnableXP
 ; DPIAware

@@ -70,39 +70,39 @@ CompilerIf #PB_Compiler_IsMainFile
     Container( 10,10,220,210 )
     a_init( widget( ),5 )
     
-    Image( 5,5,60,60, -1 )
+    ImageWidget( 5,5,60,60, -1 )
     Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-    Image( 150,110,60,60, -1 )
+    ImageWidget( 150,110,60,60, -1 )
     a_set( *a )
     CloseList( )
     
-    Bind( ID(1), @events_widgets( ), #__event_StatusChange )
-    Bind( ID(2), @events_widgets( ), #__event_StatusChange )
-    Bind( ID(3), @events_widgets( ), #__event_StatusChange )
+    Bind( WidgetID(1), @events_widgets( ), #__event_StatusChange )
+    Bind( WidgetID(2), @events_widgets( ), #__event_StatusChange )
+    Bind( WidgetID(3), @events_widgets( ), #__event_StatusChange )
     
-    Define y = 0
+    Define Y = 0
     ;Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
     Container( 235,10,230,210, #PB_Container_BorderLess )
     ;Frame( 0,0,230,210, " preferences " )
     
-    y = 20
-    Text( 10,10+y,100,18, "grid size", #PB_Text_Border )
-    *grid = Spin( 10,30+y,100,30, 0,100 )
+    Y = 20
+    Text( 10,10+Y,100,18, "grid size", #PB_Text_Border )
+    *grid = Spin( 10,30+Y,100,30, 0,100 )
     
-    Text( 10,70+y,100,18, "anchor size", #PB_Text_Border )
-    *size = Spin( 10,90+y,100,30, 0,30 )
+    Text( 10,70+Y,100,18, "anchor size", #PB_Text_Border )
+    *size = Spin( 10,90+Y,100,30, 0,30 )
     
-    Text( 10,130+y,100,18, "anchor position", #PB_Text_Border )
-    *position = Spin( 10,150+y,100,30, 0,59 )
+    Text( 10,130+Y,100,18, "anchor position", #PB_Text_Border )
+    *position = Spin( 10,150+Y,100,30, 0,59 )
     
     ;\\
-    *gridType = ComboBox( 120,30+y,100,30 )
+    *gridType = ComboBox( 120,30+Y,100,30 )
     AddItem(*gridType, -1, "grid [point]" )
    AddItem(*gridType, -1, "grid [line]" )
    SetState(*gridType, 1)
    
-    *FrameColor = Button( 120,90+y,100,30, "FrameColor" )
-    *BackColor = Button( 120,150+y,100,30, "BackColor" )
+    *FrameColor = Button( 120,90+Y,100,30, "FrameColor" )
+    *BackColor = Button( 120,150+Y,100,30, "BackColor" )
     
     ; 
     If a_focused( )
@@ -127,7 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 80
-; FirstLine = 75
+; FirstLine = 74
 ; Folding = ---
 ; EnableXP
 ; DPIAware

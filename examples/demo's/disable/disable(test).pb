@@ -47,15 +47,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
               Case  6: *CHILD = ListView(30,20,150,30) 
               Case  7: *CHILD = Frame(30,20,150,30,"Frame") 
               Case  8: *CHILD = ComboBox(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
-              Case  9: *CHILD = Image(30,20,150,30,0,#PB_Image_Border) 
+              Case  9: *CHILD = ImageWidget(30,20,150,30,0,#PB_Image_Border) 
               Case 10: *CHILD = HyperLink(30,20,150,30,"HyperLink",0) 
               Case 11: *CHILD = Container(30,20,150,30,#PB_Container_Flat): Button(0,0,80,20,"Button"): CloseList() ; Container
               Case 12: *CHILD = ListIcon(30,20,150,30,"",88) 
               ; Case 13: *CHILD = IPAddress(30,20,150,30) 
-              Case 14: *CHILD = Progress(30,20,150,30,0,5)
-              Case 15: *CHILD = Scroll(30,20,150,30,5,335,9)
+              Case 14: *CHILD = ProgressBarWidget(30,20,150,30,0,5)
+              Case 15: *CHILD = ScrollBarWidget(30,20,150,30,5,335,9)
               Case 16: *CHILD = ScrollArea(30,20,150,30,305,305,9,#PB_ScrollArea_Flat): Button(0,0,80,20,"Button"): CloseList()
-              Case 17: *CHILD = Track(30,20,150,30,0,5)
+              Case 17: *CHILD = TrackBarWidget(30,20,150,30,0,5)
                 ;Case 18: *CHILD = Web(30,20,150,30,"") ; bug 531 linux
               Case 19: *CHILD = ButtonImage(30,20,150,30,0)
                 ;Case 20: *CHILD = Calendar(30,20,150,30) 
@@ -148,8 +148,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 126
+; CursorPosition = 49
+; FirstLine = 45
 ; Folding = --
 ; EnableXP
 ; DPIAware

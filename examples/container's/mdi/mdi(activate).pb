@@ -64,8 +64,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Button(450,110,80,80,"button_1") : SetClass(widget(), GetText(widget())) 
 ;   CloseList()
   
-  Resize(*g1, X(*g0, #__c_container) + Width(*g0, #__c_frame) - 15, Y(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
-  Resize(*g2, X(*g0, #__c_container), Y(*g0, #__c_container) + Height(*g0, #__c_frame) - 15, #PB_Ignore, #PB_Ignore)
+  Resize(*g1, WidgetX(*g0, #__c_container) + Width(*g0, #__c_frame) - 15, WidgetY(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
+  Resize(*g2, WidgetX(*g0, #__c_container), WidgetY(*g0, #__c_container) + Height(*g0, #__c_frame) - 15, #PB_Ignore, #PB_Ignore)
   
   SetState(*mdi\scroll\h, 120)
   
@@ -75,6 +75,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 67
-; FirstLine = 47
+; FirstLine = 42
 ; Folding = -
 ; EnableXP

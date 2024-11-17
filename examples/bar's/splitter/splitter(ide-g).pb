@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Procedure events_widgets()
     Select WidgetEvent( )
       Case #__event_Change
-        Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
+        Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( WidgetID(0) ) +" "+ Height( WidgetID(1) )
     EndSelect
   EndProcedure
 

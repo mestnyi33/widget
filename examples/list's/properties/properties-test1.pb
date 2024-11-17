@@ -211,8 +211,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItemProperties(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value),                            #__type_String, 1)
       
       AddItemProperties(*Tree1, #_pi_group_1, "layout")
-      AddItemProperties(*Tree1, #_pi_x, "x:"+Chr(10)+Str( X(Value)),                             #__type_Spin, 1)
-      AddItemProperties(*Tree1, #_pi_y, "y:"+Chr(10)+Str( Y(Value)),                             #__type_Spin, 1)
+      AddItemProperties(*Tree1, #_pi_x, "x:"+Chr(10)+Str( WidgetX(Value)),                             #__type_Spin, 1)
+      AddItemProperties(*Tree1, #_pi_y, "y:"+Chr(10)+Str( WidgetY(Value)),                             #__type_Spin, 1)
       AddItemProperties(*Tree1, #_pi_width, "width:"+Chr(10)+Str( Width(Value)),                 #__type_Spin, 1)
       AddItemProperties(*Tree1, #_pi_height, "height:"+Chr(10)+Str( Height(Value)),              #__type_Spin, 1)
       
@@ -235,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 214
-; FirstLine = 197
+; FirstLine = 202
 ; Folding = ----
 ; Optimizer
 ; EnableXP

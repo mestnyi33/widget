@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     End
   EndIf
   
-  Global x,y,i,NewMap Widgets.i()
+  Global X,Y,i,NewMap Widgets.i()
   
   Procedure scrolled( )
     ; If EventGadget() = #PB_GadgetType_ScrollBar
@@ -55,24 +55,24 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)+" text clip clip clip clip text")                                 
     Widgets(Hex(#PB_GadgetType_Text)) = Text(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text)+#LF$+" text clip clip clip clip text", #PB_Text_Border)        
     Widgets(Hex(#PB_GadgetType_CheckBox)) = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox)+" text clip clip clip clip text", #PB_CheckBox_ThreeState) : SetState(Widgets(Hex(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween)
-    Widgets(Hex(#PB_GadgetType_Option)) = Option(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option)+" text clip clip clip clip text" ) : SetState(Widgets(Hex(#PB_GadgetType_Option)), 1)                                                       
+    Widgets(Hex(#PB_GadgetType_Option)) = OptionWidget(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option)+" text clip clip clip clip text" ) : SetState(Widgets(Hex(#PB_GadgetType_Option)), 1)                                                       
     Widgets(Hex(#PB_GadgetType_ListView)) = ListView(5, 505, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), -1, "ListView_"+Hex(#PB_GadgetType_ListView)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next
     
     Widgets(Hex(#PB_GadgetType_Frame)) = Frame(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame)+" text clip clip clip clip text" )
     Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBox(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
-    Widgets(Hex(#PB_GadgetType_Image)) = Image(170, 205, 160,95, img, #PB_Image_Border ) 
+    Widgets(Hex(#PB_GadgetType_Image)) = ImageWidget(170, 205, 160,95, img, #PB_Image_Border ) 
     Widgets(Hex(#PB_GadgetType_HyperLink)) = HyperLink(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink)+" text clip clip clip clip text", $00FF00, #PB_HyperLink_Underline ) 
     Widgets(Hex(#PB_GadgetType_Container)) = Container(170, 405, 160,95, #PB_Container_Flat )
-    Widgets(Hex(101)) = Option(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container)+" text clip clip clip clip text" )  : SetState(Widgets(Hex(101)), 1)  
-    Widgets(Hex(102)) = Option(10, 40, 110,20, "Option_widget"+" text clip clip clip clip text");, #__flag_flat)  
+    Widgets(Hex(101)) = OptionWidget(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container)+" text clip clip clip clip text" )  : SetState(Widgets(Hex(101)), 1)  
+    Widgets(Hex(102)) = OptionWidget(10, 40, 110,20, "Option_widget"+" text clip clip clip clip text");, #__flag_flat)  
     CloseList()
     Widgets(Hex(#PB_GadgetType_ListIcon)) = ListIcon(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon)+" text clip clip clip clip text",120 )                           
     
     ;Widgets(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(Widgets(Hex(#PB_GadgetType_IPAddress)), MakeIPAddress(1, 2, 3, 4))    
-    Widgets(Hex(#PB_GadgetType_ProgressBar)) = Progress(335, 105, 160,95,0,100, 0, 50) : SetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
-    Widgets(Hex(#PB_GadgetType_ScrollBar)) = Scroll(335, 205, 160,95,0,120,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
+    Widgets(Hex(#PB_GadgetType_ProgressBar)) = ProgressBarWidget(335, 105, 160,95,0,100, 0, 50) : SetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
+    Widgets(Hex(#PB_GadgetType_ScrollBar)) = ScrollBarWidget(335, 205, 160,95,0,120,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollArea(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = Button(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea)+" text clip clip clip clip text" ) : Widgets(Hex(202)) = Button(180-150, 90-20, 150,20, "Button_"+Hex(202)+" text clip clip clip clip text" ) : CloseList()
-    Widgets(Hex(#PB_GadgetType_TrackBar)) = Track(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
+    Widgets(Hex(#PB_GadgetType_TrackBar)) = TrackBarWidget(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
     ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
     
     Widgets(Hex(#PB_GadgetType_ButtonImage)) = ButtonImage(500, 5, 160,95, 1)
@@ -133,8 +133,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 126
-; FirstLine = 102
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 66
+; FirstLine = 53
 ; Folding = -
 ; EnableXP

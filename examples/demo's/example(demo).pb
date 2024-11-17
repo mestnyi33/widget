@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Text
   EndProcedure
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
   If Open(0, 0, 0, 605 + 30, 140 + 200 + 140 + 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -64,19 +64,19 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; example_2 track widget bar
     widget::Text(300 + 10,  140 + 10, 250, 20,"TrackBar Standard");, #__flag_Textcenter)
-    *w = widget::Track(300 + 10,  140 + 40, 250, 20, 0, 10000, 0)
+    *w = widget::TrackBarWidget(300 + 10,  140 + 40, 250, 20, 0, 10000, 0)
     widget::SetState(*w, 5000)
-    *w = widget::Track(300 + 10,  140 + 40 + 20, 250, 20, 0, 10000, #__bar_invert)
+    *w = widget::TrackBarWidget(300 + 10,  140 + 40 + 20, 250, 20, 0, 10000, #__bar_invert)
     widget::SetState(*w, 5000)
     widget::Text(300 + 10, 140 + 90, 250, 20, "TrackBar Ticks", #__flag_Textcenter)
-    ;     widget::Track(300 + 10, 140 + 120, 250, 20, 0, 30, #__bar_ticks)
-    *w = widget::Track(300 + 10, 140 + 120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
+    ;     widget::TrackBarWidget(300 + 10, 140 + 120, 250, 20, 0, 30, #__bar_ticks)
+    *w = widget::TrackBarWidget(300 + 10, 140 + 120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
     widget::SetState(*w, 60)
     widget::Text(300 + 60, 140 + 160, 200, 20, "TrackBar Vertical", #__flag_Textright)
-    *w = widget::Track(300 + 270, 140 + 10, 25, 170, 0, 10000, #PB_TrackBar_Vertical|#__bar_invert)
+    *w = widget::TrackBarWidget(300 + 270, 140 + 10, 25, 170, 0, 10000, #PB_TrackBar_Vertical|#__bar_invert)
     ;widget::SetAttribute(*w, #__bar_Inverted, 0)
     widget::SetState(*w, 8000)
-    *w = widget::Track(300 + 270 + 30, 140 + 10, 25, 170, 0, 10000, #__bar_vertical)
+    *w = widget::TrackBarWidget(300 + 270 + 30, 140 + 10, 25, 170, 0, 10000, #__bar_vertical)
     widget::SetState(*w, 8000)
     
     
@@ -171,7 +171,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *w2 = Panel (5, 5, 140, 166)
     AddItem(*w2, -1, "Под -  - Панель 1")
     SetState(Option(5, 10, 70, 20, "option_0"), 1)
-    Option(5, 32, 100, 20, "option_1")
+    OptionWidget(5, 32, 100, 20, "option_1")
     SetState(CheckBox(5, 54, 100, 20, "checkbox_0", #PB_CheckBox_ThreeState), #PB_Checkbox_Inbetween)
     Button(75, 10, 60, 20, "button")
     HyperLink(75, 32, 60, 20, "HyperLink", $ffff0000)
@@ -191,13 +191,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     AddItem(Button_1, -1, "Panel_1") 
     widget::Container(20,10,200,100)
-    widget::Button(20, 5, 100, 30, text)
+    widget::Button(20, 5, 100, 30, Text)
     
-    Define panel = widget::Panel(20,30,200,100)
-    AddItem(panel, -1, "Panel_0") 
-    widget::Button(10, 10, 100, 30, text)
-    AddItem(panel, -1, "Panel_1") 
-    widget::Button(20, 20, 100, 30, text)
+    Define Panel = widget::Panel(20,30,200,100)
+    AddItem(Panel, -1, "Panel_0") 
+    widget::Button(10, 10, 100, 30, Text)
+    AddItem(Panel, -1, "Panel_1") 
+    widget::Button(20, 20, 100, 30, Text)
     widget::CloseList()
     widget::CloseList()
     
@@ -279,7 +279,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     ;     ; ;     ;     Button_1 = widget::Splitter(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     
     Button_2 = widget::ScrollArea(0, 0, 0, 0, 150, 150, 1) : widget::CloseList()        ; as they will be sized automatically
-    Button_3 = widget::Progress(0, 0, 0, 0, 0, 100, 30)                                 ; as they will be sized automatically
+    Button_3 = widget::ProgressBarWidget(0, 0, 0, 0, 0, 100, 30)                                 ; as they will be sized automatically
     
     Button_4 = widget::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
     Button_5 = widget::Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
@@ -308,10 +308,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Button_4 = widget::ScrollArea( -1, -1, 50, 50, 100, 100, 1);, #__flag_nogadgets)
                                                                  ;       Define i
                                                                  ;       For i = 0 To 1000
-      widget::Progress(10, 10, 50, 30, 1, 100, 30)
+      widget::ProgressBarWidget(10, 10, 50, 30, 1, 100, 30)
       ;       Next
       widget::CloseList()
-      widget::Progress(100, 10, 50, 30, 2, 100, 30)
+      widget::ProgressBarWidget(100, 10, 50, 30, 2, 100, 30)
       widget::CloseList()
     EndIf
     
@@ -320,7 +320,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 66
+; CursorPosition = 173
+; FirstLine = 169
 ; Folding = --
 ; EnableXP

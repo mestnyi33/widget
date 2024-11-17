@@ -12,10 +12,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "   "+ EventWidget( )\class +"_"+ #PB_Compiler_Procedure 
    EndProcedure
    
-   Define width=570, height=300
+   Define Width=570, Height=300
    
    ;\\
-   If Open(0, 50, 50, width, height, "Root_0_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+   If Open(0, 50, 50, Width, Height, "Root_0_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
       SetClass(root( ), "root_0" )
       
       ;\\
@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       SetActive( widget( ) )
-      ;SetActive( ID( 4 ) )
+      ;SetActive( WidgetID( 4 ) )
       
       ;\\
       Bind( #PB_All, @active(), #__event_Focus)
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;\\
-   If Open(1, 50, 400, width, height, "Root_1_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+   If Open(1, 50, 400, Width, Height, "Root_1_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
       SetClass(root( ), "root_1" )
       
       ;\\
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       SetActive( widget( ) )
-      ;SetActive( ID( 4 ) )
+      ;SetActive( WidgetID( 4 ) )
       
       ;\\
       Bind( #PB_All, @active(), #__event_Focus)
@@ -121,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 108
-; FirstLine = 84
+; FirstLine = 89
 ; Folding = -
 ; EnableXP
 ; DPIAware

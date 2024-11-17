@@ -1,5 +1,5 @@
 ﻿; 1410 коммет каждое нажатие на стрелки горизонтального бара не перемещает скролл бар
-;\\ Scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
+;\\ ScrollBarWidget( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
 
 XIncludeFile "../../../widgets.pbi" 
 
@@ -60,8 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 30
+; CursorPosition = 1
 ; Folding = --
 ; Optimizer
 ; EnableXP

@@ -136,11 +136,11 @@ CompilerIf #PB_Compiler_IsMainFile
    ;SetState(*panel, -1)
    
    ;   Frame(300+30, 200, 300 - 60, 100, "Tab location")
-   ;   *option = Option(300+130, GadgetY(1) + 20, 80, 20, "Top")
-   ;   Option(300+50, GadgetY(1) + 45, 80, 20, "Left")
-   ;   Option(300+130, GadgetY(1) + 45, 80, 20, "Hide")
-   ;   Option(300+130, GadgetY(1) + 70, 80, 20, "Bottom")
-   ;   Option(300+210, GadgetY(1) + 45, 80, 20, "Right")
+   ;   *option = OptionWidget(300+130, GadgetY(1) + 20, 80, 20, "Top")
+   ;   OptionWidget(300+50, GadgetY(1) + 45, 80, 20, "Left")
+   ;   OptionWidget(300+130, GadgetY(1) + 45, 80, 20, "Hide")
+   ;   OptionWidget(300+130, GadgetY(1) + 70, 80, 20, "Bottom")
+   ;   OptionWidget(300+210, GadgetY(1) + 45, 80, 20, "Right")
    ;   SetState(*option, #True)
    ;   Bind( #PB_All, @events_widget( ), #PB_EventType_Change )
    
@@ -160,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 83
+; CursorPosition = 142
+; FirstLine = 128
 ; Folding = ---
 ; EnableXP

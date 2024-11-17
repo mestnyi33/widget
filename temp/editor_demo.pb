@@ -124,8 +124,8 @@ DeclareModule Scroll
   ;- DECLAREs
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1)
   Declare.b Draw(*this._S_widget)
-  Declare.l Y(*this._S_widget)
-  Declare.l X(*this._S_widget)
+  Declare.l WidgetY(*this._S_widget)
+  Declare.l WidgetX(*this._S_widget)
   Declare.l Width(*this._S_widget)
   Declare.l Height(*this._S_widget)
   
@@ -380,11 +380,11 @@ Module Scroll
   EndProcedure
   
   ;-
-  Procedure.l X(*this._S_widget)
+  Procedure.l WidgetX(*this._S_widget)
     ProcedureReturn *this\x + Bool(*this\hide[1]) * *this\width
   EndProcedure
   
-  Procedure.l Y(*this._S_widget)
+  Procedure.l WidgetY(*this._S_widget)
     ProcedureReturn *this\y + Bool(*this\hide[1]) * *this\height
   EndProcedure
   
@@ -628,7 +628,7 @@ Module Scroll
   
   Procedure.b Updates(*scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     With *scroll
-      Protected iWidth = X(\v), iHeight = Y(\h)
+      Protected iWidth = WidgetX(\v), iHeight = WidgetY(\h)
       Static hPos, vPos : vPos = \v\page\pos : hPos = \h\page\pos
       
       ; Вправо работает как надо
@@ -2440,8 +2440,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1930
-; FirstLine = 1906
+; CursorPosition = 630
+; FirstLine = 599
 ; Folding = -------------------------------------------------------
 ; Optimizer
 ; EnableXP

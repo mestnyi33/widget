@@ -87,12 +87,12 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   Next
   
   ;\\
-  Progress(0,0,0,0, 0, 100, 0, 40)
+  ProgressBarWidget(0,0,0,0, 0, 100, 0, 40)
   SetState(widget( ), 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
   Resize(widget( ), 10+330, 30, 250,  30)
   
   ;\\
-  Progress(10+330, 110, 250,  30, 0, 200, #PB_ProgressBar_Smooth, 17)
+  ProgressBarWidget(10+330, 110, 250,  30, 0, 200, #PB_ProgressBar_Smooth, 17)
   SetState(widget( ), 50)   ;  set 2nd progressbar (ID = 1) to 50 of 200
   
   SetColor(widget( ), #__color_back, $ff00ff00)
@@ -106,7 +106,7 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   
   
   ;\\
-  Progress(270+330, 10,  30, 140, 0, 300, #PB_ProgressBar_Vertical)
+  ProgressBarWidget(270+330, 10,  30, 140, 0, 300, #PB_ProgressBar_Vertical)
   SetState(widget( ), 100)   ; set 3rd progressbar (ID = 2) to 100 of 300
   
   ;\\
@@ -134,8 +134,8 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 104
+; CursorPosition = 108
+; FirstLine = 85
 ; Folding = --
 ; Optimizer
 ; EnableXP

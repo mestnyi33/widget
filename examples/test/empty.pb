@@ -2487,109 +2487,109 @@ Procedure ToolBar_Window_0()
 EndProcedure
 
 ;-
-    Procedure.i Spin_( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0, Increment.f = 1.0 )
-      ProcedureReturn SpinBar( x, y, width, height, Min, Max, flag )
+    Procedure.i Spin_( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, Increment.f = 1.0 )
+      ProcedureReturn SpinBar( X, Y, Width, Height, Min, Max, flag )
     EndProcedure
     
-    Procedure.i Scroll_( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
-      ProcedureReturn Scroll( x, y, width, height, Min, Max, PageLength, flag )
+    Procedure.i Scroll_( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
+      ProcedureReturn ScrollBarWidget( X, Y, Width, Height, Min, Max, PageLength, flag )
     EndProcedure
     
-    Procedure.i Track_( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 7 )
-      ProcedureReturn Track( x, y, width, height, Min, Max, flag )
+    Procedure.i Track_( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 7 )
+      ProcedureReturn TrackBarWidget( X, Y, Width, Height, Min, Max, flag )
     EndProcedure
     
-    Procedure.i Progress_( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Progress_( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Splitter_( x.l, y.l, width.l, height.l, First.i, Second.i, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
-    EndProcedure
-    
-    
-    ;-
-    Procedure.i Tree_( x.l, y.l, width.l, height.l, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
-    EndProcedure
-    
-    Procedure.i ListView_( x.l, y.l, width.l, height.l, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
-    EndProcedure
-    
-    Procedure.i ListIcon_( x.l, y.l, width.l, height.l, ColumnTitle.s, ColumnWidth.i, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
-    EndProcedure
-    
-    Procedure.i ExplorerList_( x.l, y.l, width.l, height.l, Directory.s, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
-    EndProcedure
-    
-    Procedure.i Tree_properties_( x.l, y.l, width.l, height.l, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Splitter_( X.l, Y.l, Width.l, Height.l, First.i, Second.i, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
     
     ;-
-    Procedure.i Editor_( x.l, Y.l, width.l, height.l, flag.q = 0, round.i = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Tree_( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i String_( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, round.l = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i ListView_( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Text_( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, round.l = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i ListIcon_( X.l, Y.l, Width.l, Height.l, ColumnTitle.s, ColumnWidth.i, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Button_( x.l, y.l, width.l, height.l, Text.s, flag.q = 0, Image.i = -1, round.l = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i ExplorerList_( X.l, Y.l, Width.l, Height.l, Directory.s, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Option_( x.l, y.l, width.l, height.l, Text.s, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Tree_properties_( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Checkbox_( x.l, y.l, width.l, height.l, Text.s, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    
+    ;-
+    Procedure.i Editor_( X.l, Y.l, Width.l, Height.l, flag.q = 0, round.i = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i HyperLink_( x.l, y.l, width.l, height.l, Text.s, Color.i, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i String_( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, round.l = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i ButtonImage_( x.l, y.l, width.l, height.l, Image.i =  -1 , flag.q = 0, round.l = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Text_( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, round.l = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i ComboBox_( x.l, y.l, width.l, height.l, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Button_( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, Image.i = -1, round.l = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
+    EndProcedure
+    
+    Procedure.i Option_( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
+    EndProcedure
+    
+    Procedure.i Checkbox_( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
+    EndProcedure
+    
+    Procedure.i HyperLink_( X.l, Y.l, Width.l, Height.l, Text.s, Color.i, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
+    EndProcedure
+    
+    Procedure.i ButtonImage_( X.l, Y.l, Width.l, Height.l, Image.i =  -1 , flag.q = 0, round.l = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
+    EndProcedure
+    
+    Procedure.i ComboBox_( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
     ;-
-    Procedure.i MDI_( x.l, y.l, width.l, height.l, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i MDI_( X.l, Y.l, Width.l, Height.l, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Panel_( x.l, y.l, width.l, height.l, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Panel_( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Container_( x.l, y.l, width.l, height.l, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Container_( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i ScrollArea_( x.l, y.l, width.l, height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i ScrollArea_( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Frame_( x.l, y.l, width.l, height.l, Text.s, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Frame_( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
-    Procedure.i Image_( x.l, y.l, width.l, height.l, image.i, flag.q = 0 )
-      ProcedureReturn Image( x, y, width, height, image, flag )
+    Procedure.i Image_( X.l, Y.l, Width.l, Height.l, Image.i, flag.q = 0 )
+      ProcedureReturn ImageWidget( X, Y, Width, Height, Image, flag )
     EndProcedure
     
     ;-
@@ -7590,8 +7590,8 @@ Repeat
 
   EndSelect
 ForEver
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 7591
-; FirstLine = 7553
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 2554
+; FirstLine = 2550
 ; Folding = ------
 ; EnableXP

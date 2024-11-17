@@ -46,13 +46,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       
       ;
-      Option(10+140, 20, 115, 20, "Option 1") : SetClass( widget( ), "Option 1" )
-      Option(10+140, 45, 115, 20, "Option 2") : SetClass( widget( ), "Option 2" )
-      Option(10+140, 70, 115, 20, "Option 3") : SetClass( widget( ), "Option 3" )
+      OptionWidget(10+140, 20, 115, 20, "Option 1") : SetClass( widget( ), "Option 1" )
+      OptionWidget(10+140, 45, 115, 20, "Option 2") : SetClass( widget( ), "Option 2" )
+      OptionWidget(10+140, 70, 115, 20, "Option 3") : SetClass( widget( ), "Option 3" )
       
       CheckBox(10+140, 95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState ) : SetClass( widget( ), "CheckBox" )
-      Option(10+140, 120, 115, 20, "Option 4") : SetClass( widget( ), "Option 4" )
-      Option(10+140, 145, 115, 20, "Option 5") : SetClass( widget( ), "Option 5" )
+      OptionWidget(10+140, 120, 115, 20, "Option 4") : SetClass( widget( ), "Option 4" )
+      OptionWidget(10+140, 145, 115, 20, "Option 5") : SetClass( widget( ), "Option 5" )
       
       SetState(ID(1), 1)   ; set second option as active one
       SetState(ID(3), #PB_Checkbox_Inbetween)  
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 37
+; CursorPosition = 54
+; FirstLine = 34
 ; Folding = --
 ; EnableXP
