@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   Define h = 185, bh = 26, *g1, *g2, *g3, *g4, *g5, *g6
-  If Open( #PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+  If OpenRootWidget( #PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     
     *g1 = StringWidget(     30, 30, 200, h, "left 00000000000000000000000000000000000" )
     *g2 = StringWidget( 30+210, 30, 200, h, "0000000000000000 center 0000000000000000", #__flag_Textcenter )

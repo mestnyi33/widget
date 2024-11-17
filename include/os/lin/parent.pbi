@@ -2,7 +2,7 @@
 
 DeclareModule Parent
   EnableExplicit
-  Declare Window( gadget.i )
+  Declare WindowWidget( gadget.i )
   Declare Gadget( gadget.i )
   Declare Get( handle.i )
   Declare Set( gadget.i, ParentID.i, Item.l = #PB_Default )
@@ -154,7 +154,7 @@ Module Parent
     ProcedureReturn gtk_widget_get_toplevel_( handle )
   EndProcedure
   
-  Procedure Window( gadget.i ) ; Return the handle of the parent window from the gadget ident
+  Procedure WindowWidget( gadget.i ) ; Return the handle of the parent window from the gadget ident
     ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget.i ) ) )
   EndProcedure
   

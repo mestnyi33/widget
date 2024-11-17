@@ -199,7 +199,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     
-    ;     Open(0, 0,0,0,0, "", #Null, #Null, #w_tree )
+    ;     OpenRootWidget(0, 0,0,0,0, "", #Null, #Null, #w_tree )
     ;     g = TreeWidget(0,0,0,0, #__flag_autosize)
     Gadget(#PB_WidgetType_Tree, #w_tree, 0, 0, 0, 0)
     g = GetGadgetData(#w_tree)

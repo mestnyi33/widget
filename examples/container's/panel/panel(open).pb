@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global i, x = 220, Panel, butt1, butt2
   Global._s_WIDGET *panel, *butt0, *butt1, *butt2
   
-  If Open( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+  If OpenRootWidget( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     
     Panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
     For i = 0 To 5 
@@ -42,11 +42,11 @@ CompilerIf #PB_Compiler_IsMainFile
         ButtonWidget( 10,5,80,35, "_"+Str(i) ) 
       EndIf
     Next 
-    CloseList( )
+    CloseWidgetList( )
     
-    OpenList( *panel, 0 )
+    OpenWidgetList( *panel, 0 )
     ButtonWidget( 20,25,80,35, "_0" ) 
-    CloseList( )
+    CloseWidgetList( )
     
     ;     *butt0 = ButtonWidget( 20,25,80,35, "_0" )
     ;     SetParent( *butt0, *panel, 0 )

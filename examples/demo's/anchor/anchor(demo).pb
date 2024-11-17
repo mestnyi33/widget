@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If Open(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ContainerWidget( 10,10,220,210 )
     a_init( widget( ),5 )
     
@@ -74,11 +74,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *a._s_widget = ContainerWidget( 50,45,135,95, #__flag_nogadgets )
     ImageWidget( 150,110,60,60, -1 )
     a_set( *a )
-    CloseList( )
+    CloseWidgetList( )
     
-    Bind( WidgetID(1), @events_widgets( ), #__event_StatusChange )
-    Bind( WidgetID(2), @events_widgets( ), #__event_StatusChange )
-    Bind( WidgetID(3), @events_widgets( ), #__event_StatusChange )
+    BindWidgetEvent( WidgetID(1), @events_widgets( ), #__event_StatusChange )
+    BindWidgetEvent( WidgetID(2), @events_widgets( ), #__event_StatusChange )
+    BindWidgetEvent( WidgetID(3), @events_widgets( ), #__event_StatusChange )
     
     Define Y = 0
     ;Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetWidgetFrame( widget( ), 1)
@@ -112,15 +112,15 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     ;\\
-    Bind( *grid, @events_widgets( ), #__event_Change )
-    Bind( *size, @events_widgets( ), #__event_Change )
-    Bind( *position, @events_widgets( ), #__event_Change )
+    BindWidgetEvent( *grid, @events_widgets( ), #__event_Change )
+    BindWidgetEvent( *size, @events_widgets( ), #__event_Change )
+    BindWidgetEvent( *position, @events_widgets( ), #__event_Change )
     ;
-    Bind( *gridType, @events_widgets( ), #__event_Change )
-    Bind( *BackColor, @events_widgets( ), #__event_LeftClick )
-    Bind( *FrameColor, @events_widgets( ), #__event_LeftClick )
+    BindWidgetEvent( *gridType, @events_widgets( ), #__event_Change )
+    BindWidgetEvent( *BackColor, @events_widgets( ), #__event_LeftClick )
+    BindWidgetEvent( *FrameColor, @events_widgets( ), #__event_LeftClick )
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
   
   

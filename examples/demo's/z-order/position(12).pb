@@ -13,30 +13,30 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  Define *g = window(10,10,200,200, "window", #PB_Window_SystemMenu|#__flag_autosize) : SetWidgetClass(widget(), "window")
+  Define *g = WindowWidget(10,10,200,200, "window", #PB_Window_SystemMenu|#__flag_autosize) : SetWidgetClass(widget(), "window")
   
   Define *g0 = ContainerWidget(10,10,200,200) : SetWidgetClass(widget(), "form_0")
-  CloseList()
+  CloseWidgetList()
   
   Define *g1 = ContainerWidget(30,30,200,200) : SetWidgetClass(widget(), "form_1")
   ButtonWidget(10,10,80,30,"button_1_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
   ButtonWidget(10,50,80,30,"button_1_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
   ButtonWidget(10,90,80,30,"button_1_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  CloseList()
+  CloseWidgetList()
   
   Define *g2 = ContainerWidget(50,50,200,200) : SetWidgetClass(widget(), "form_2")
   ButtonWidget(10,10,80,30,"button_2_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
   ButtonWidget(10,50,80,30,"button_2_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
   ButtonWidget(10,90,80,30,"button_2_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  CloseList()
+  CloseWidgetList()
   
-  OpenList(*g0)
+  OpenWidgetList(*g0)
   ButtonWidget(10,10,80,30,"button_0_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
   ButtonWidget(10,50,80,30,"button_0_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
   ButtonWidget(10,90,80,30,"button_0_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  CloseList()
+  CloseWidgetList()
   
   ;SortStructuredList(widget(), #PB_Sort_Ascending, OffsetOf(_s_count\index), TypeOf(_s_count\index))
             
@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Next
   Debug "<<----"
   
-  WaitClose( )
+  WaitCloseRootWidget( )
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow

@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ; Shows possible flags of ButtonGadget in action...
-   If Open(0, 0, 0, 350+350, 220, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 350+350, 220, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       TrackBarGadget(0, 10,  40, 250, 20, 0, 30)
       SplitterGadget(100, 10,  40, 250, 20, 0,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadgetState(100, 250)
       SetGadgetState(0, 25)
@@ -86,9 +86,9 @@ CompilerIf #PB_Compiler_IsMainFile
       TextWidget(90+X, 190, 200, 20, "TrackBar Vertical", #PB_Text_Right)
       
       If event
-         Bind(w_0, @events_widgets())
-         Bind(w_1, @events_widgets())
-         Bind(w_2, @events_widgets())
+         BindWidgetEvent(w_0, @events_widgets())
+         BindWidgetEvent(w_1, @events_widgets())
+         BindWidgetEvent(w_2, @events_widgets())
       EndIf
       
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow

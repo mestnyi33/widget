@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug Str(ElapsedMilliseconds()-time) + " - gadget set text time count - " + CountGadgetItems(0)
     
     
-    Open(0, 8, 250, 402, 230)
+    OpenRootWidget(0, 8, 250, 402, 230)
     *g = EditorWidget(0, 0, 402, 230, #__flag_autosize) : g = GetCanvasGadget(*g)
     Define time = ElapsedMilliseconds()
     SetTextWidget(*g, Text.s) 

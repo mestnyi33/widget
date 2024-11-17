@@ -9,11 +9,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug ""+EventWidget()+ " - widget event - " +WidgetEvent()
   EndProcedure
   
-  If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *g = ScrollAreaWidget(310, 10, 290, 300, Sw, Sh, 1, #PB_ScrollArea_Flat)
     SetWidgetColor(*g, #PB_Gadget_BackColor, $00FFFF)
-    Bind(*g, @events_widgets(), #__event_ScrollChange )
-    Bind(*g, @events_widgets(), #__event_Resize )
+    BindWidgetEvent(*g, @events_widgets(), #__event_ScrollChange )
+    BindWidgetEvent(*g, @events_widgets(), #__event_Resize )
     
     ButtonWidget(10,  10, 230, 30,"Button 1")
     ButtonWidget(50,  50, 230, 30,"Button 2") ;: SetAlign(widget(), #__align_right)
@@ -22,13 +22,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ; SetWidgetColor(widget(), #PB_Gadget_BackColor, -1)
     
     *b = ButtonWidget(Sw-130, Sh-30, 130, 30,"Button")
-    CloseList()
+    CloseWidgetList()
     
     ;
     SplitterWidget(10,10,590,480, 0, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical))
     
     If wcount
-      OpenList(*g)
+      OpenWidgetList(*g)
       time = ElapsedMilliseconds()
       For i=1 To wcount
         If Bool(i>wcount-110)
@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ButtonWidget(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
         EndIf
       Next
-      CloseList()
+      CloseWidgetList()
     EndIf
     
     

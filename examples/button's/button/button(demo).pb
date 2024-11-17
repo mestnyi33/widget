@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetGadgetFont( #PB_Any, FontID( #Font18R ) )
   Debug FontID(0)
   
-  If Open( 0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+  If OpenRootWidget( 0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     Global main = GetCanvasWindow( root( ) )
     ;BindEventCanvas( )
     
@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetState( WidgetID( 5 ), 1 )
     SetFont( WidgetID( 5 ), FontID( 0 ) )
-    Bind( #PB_All, @events_widgets( ) )
+    BindWidgetEvent( #PB_All, @events_widgets( ) )
     
   EndIf
   
@@ -107,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetWindowTitle( 11, Str( *Button_0\width ) +" - "+ Str( *Button_1\height ) )
   EndProcedure
   
-  If Open( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
+  If OpenRootWidget( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
     c2 = GetCanvasGadget( root( ) )
     
     *Button_0 = ButtonWidget( 15, 42, 250,  60, "Button (Horisontal)", #__flag_Textmultiline,-1 )

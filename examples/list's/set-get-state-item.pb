@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 *this\RowFocused( )\focus = #False
                 ; multi select mode
                 If *this\mode\multiselect
-                  Post( *this, #__event_Change, *this\RowFocused( )\_index, - 1 )
+                  PostWidgetEvent( *this, #__event_Change, *this\RowFocused( )\_index, - 1 )
                 EndIf
               EndIf
             EndIf
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 *this\RowFocused( )\focus = #False
                 ; multi select mode
                 If *this\row\multiselect
-                  Post( *this, #__event_Change, *this\RowFocused( )\index, - 1 )
+                  PostWidgetEvent( *this, #__event_Change, *this\RowFocused( )\index, - 1 )
                 EndIf
               EndIf
               
@@ -74,13 +74,13 @@ CompilerIf #PB_Compiler_IsMainFile
                 *this\RowFocused( )\color\state = #__S_3
               EndIf
               
-              Post( *this, #__event_Change, *this\RowFocused( )\index )
+              PostWidgetEvent( *this, #__event_Change, *this\RowFocused( )\index )
             Else
               If *this\RowFocused( )\focus = 0 ; ???
                 *this\RowFocused( )\focus = 1
                 ; multi select mode
                 If *this\row\multiselect
-                  Post( *this, #__event_Change, *this\RowFocused( )\index, 1 )
+                  PostWidgetEvent( *this, #__event_Change, *this\RowFocused( )\index, 1 )
                 EndIf
               EndIf
               
@@ -166,7 +166,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
+  If OpenRootWidget(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
     *this = widget::ListViewWidget(10, 10, 230, 310)
     
     For a = 0 To countitems
@@ -174,7 +174,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     Define h = 20, y = 20
-    widget::Bind(*this, @widget_events(), #__event_Change)
+    widget::BindWidgetEvent(*this, @widget_events(), #__event_Change)
     
     *item1 = widget::ButtonWidget( 250, y+(1+h)*1, 100, h, "1")
     *item2 = widget::ButtonWidget( 250, y+(1+h)*2, 100, h, "2")
@@ -182,10 +182,10 @@ CompilerIf #PB_Compiler_IsMainFile
     *item4 = widget::ButtonWidget( 250, y+(1+h)*4, 100, h, "90")
     
     
-    widget::Bind(*item1, @button_events(), #__event_Up)
-    widget::Bind(*item2, @button_events(), #__event_Up)
-    widget::Bind(*item3, @button_events(), #__event_Up)
-    widget::Bind(*item4, @button_events(), #__event_Up)
+    widget::BindWidgetEvent(*item1, @button_events(), #__event_Up)
+    widget::BindWidgetEvent(*item2, @button_events(), #__event_Up)
+    widget::BindWidgetEvent(*item3, @button_events(), #__event_Up)
+    widget::BindWidgetEvent(*item4, @button_events(), #__event_Up)
     
     
     widget::WaitClose()

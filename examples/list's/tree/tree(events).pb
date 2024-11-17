@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  If Open(0, 0, 0, 360, 460, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 360, 460, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define i,a
     ;\\
     *g = TreeWidget(10, 10, 165, 440, #__flag_gridLines)
@@ -79,8 +79,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     ;\\
-    Bind(*g, @events_widgets())
-    Bind(*g2, @events_widgets())
+    BindWidgetEvent(*g, @events_widgets())
+    BindWidgetEvent(*g2, @events_widgets())
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

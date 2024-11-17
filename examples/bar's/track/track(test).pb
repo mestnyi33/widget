@@ -9,7 +9,7 @@ Define *g, min = 25, vertical = 0
 
 If vertical
    ;\\ vertical
-   If Open(0, 0, 0, 230, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 230, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       *g = TrackBarWidget(45, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #__bar_invert | #PB_TrackBar_Ticks)
       SetState(*g, 5)
@@ -23,11 +23,11 @@ If vertical
       *g = TrackBarWidget(165, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #PB_TrackBar_Ticks)
       SetState(*g, 5)
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 Else
    ;\\ horizontal
-   If Open(0, 0, 0, 350, 230, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 350, 230, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       *g = TrackBarWidget(50, 45, 250, 20,  0, 30, #__bar_invert | #PB_TrackBar_Ticks)
       SetState(*g, 5)
@@ -42,7 +42,7 @@ Else
       SetState(*g, 5)
       
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

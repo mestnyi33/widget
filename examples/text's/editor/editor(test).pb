@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
  
   LoadFont(0, "Courier", 14)
-  If Open(0, 0, 0, 522, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 522, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     
     EditorGadget(0, 8, 8, 306, 133) 
     SetGadgetTextWidget(0, Text.s)

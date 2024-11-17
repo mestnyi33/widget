@@ -49,7 +49,7 @@ Module Cursor
   ;   ; -> An array of pointers of type Method describing
   ;   ;    the instance methods implemented by the class
   ;   ;    Any instance methods implemented by superclasses are Not included
-  ;   ;    You must free the array with free( )
+  ;   ;    You must free the array with FreeWidget( )
   ;   class_getName(*Class) ; -> UnsafePointer<Int8> -> *string
   ;   sel_getName(*Selector); -> const char *
   ;   method_getName(*Method) ; -> Selector
@@ -414,7 +414,7 @@ Module Cursor
     ProcedureReturn ImageID
   EndProcedure
   
-  Procedure   Free(*cursor) 
+  Procedure   FreeWidget(*cursor) 
     ; Debug "cursor-free "+*cursor
     
     If *cursor >= 0 And *cursor <= 255
@@ -533,7 +533,7 @@ Module Cursor
                    #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
                    #__cursor_Diagonal1, #__cursor_LeftUp, #__cursor_RightDown, 
                    #__cursor_Diagonal2, #__cursor_RightUp, #__cursor_LeftDown
-                cursor::Free( \hcursor )
+                cursor::FreeWidget( \hcursor )
             EndSelect
           EndIf
           \type = *cursor

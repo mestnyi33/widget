@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If OpenWindow(0, 0, 0, 685, 60+h, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       ;\\
-      *r1 = Open(0, 5, 5, 335, 60+h-10)
+      *r1 = OpenRootWidget(0, 5, 5, 335, 60+h-10)
       Define x = 50, y = 50
       *g11 = ContainerWidget( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g11,"*g11")
       *g12 = ContainerWidget( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g12,"*g12") 
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;\\
-      *r2 = Open(0, 345, 5, 335, 60+h-10, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      *r2 = OpenRootWidget(0, 345, 5, 335, 60+h-10, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Define x = 0, y = 0
       *g21 = ContainerWidget( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g21,"*g21")
       *g22 = ContainerWidget( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g22,"*g22") 
@@ -94,16 +94,16 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;\\
-      Bind(#PB_All, @events( ), #__event_down)
-      Bind(#PB_All, @events( ), #__event_dragstart)
-      Bind(#PB_All, @events( ), #__event_up)
+      BindWidgetEvent(#PB_All, @events( ), #__event_down)
+      BindWidgetEvent(#PB_All, @events( ), #__event_dragstart)
+      BindWidgetEvent(#PB_All, @events( ), #__event_up)
       
-      Bind(#PB_All, @events( ), #__event_mouseenter)
-      Bind(#PB_All, @events( ), #__event_mousemove)
-      Bind(#PB_All, @events( ), #__event_mouseleave)
+      BindWidgetEvent(#PB_All, @events( ), #__event_mouseenter)
+      BindWidgetEvent(#PB_All, @events( ), #__event_mousemove)
+      BindWidgetEvent(#PB_All, @events( ), #__event_mouseleave)
       
-      Bind(#PB_All, @events( ), #__event_keydown)
-      Bind(#PB_All, @events( ), #__event_keyup)
+      BindWidgetEvent(#PB_All, @events( ), #__event_keydown)
+      BindWidgetEvent(#PB_All, @events( ), #__event_keyup)
       
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf

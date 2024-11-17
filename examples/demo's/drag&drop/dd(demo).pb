@@ -413,7 +413,7 @@ Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
    ProcedureReturn TreeWidget(X,Y+20,Width,Height-20)
 EndProcedure
 
-If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
+If OpenRootWidget( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
   ; Create and fill the Gadget_Source s
   ;
   Gadget_SourceText = ListIconWidget( 10, 10, 140, 140, "Drag Text here", 130 )   
@@ -481,24 +481,24 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   EnableDDrop( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
   EnableDDrop( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
   
-  ; Bind( -1, @widget_events( ) )
+  ; BindWidgetEvent( -1, @widget_events( ) )
   ;
-  Bind( Gadget_SourceImage, @widget_events( ), #__event_DragStart )
-  Bind( Gadget_TargetImage, @widget_events( ), #__event_Drop )
+  BindWidgetEvent( Gadget_SourceImage, @widget_events( ), #__event_DragStart )
+  BindWidgetEvent( Gadget_TargetImage, @widget_events( ), #__event_Drop )
   
-  Bind( Gadget_SourceText, @widget_events( ), #__event_DragStart )
-  Bind( Gadget_TargetText, @widget_events( ), #__event_Drop )
+  BindWidgetEvent( Gadget_SourceText, @widget_events( ), #__event_DragStart )
+  BindWidgetEvent( Gadget_TargetText, @widget_events( ), #__event_Drop )
   
-  Bind( Gadget_SourceItem, @widget_events( ), #__event_DragStart )
-  Bind( Gadget_TargetItem, @widget_events( ), #__event_Drop )
+  BindWidgetEvent( Gadget_SourceItem, @widget_events( ), #__event_DragStart )
+  BindWidgetEvent( Gadget_TargetItem, @widget_events( ), #__event_Drop )
   
-  Bind( Gadget_SourcePrivate, @widget_events( ), #__event_DragStart )
-  Bind( Gadget_TargetPrivate1, @widget_events( ), #__event_Drop )
-  Bind( Gadget_TargetPrivate2, @widget_events( ), #__event_Drop )
+  BindWidgetEvent( Gadget_SourcePrivate, @widget_events( ), #__event_DragStart )
+  BindWidgetEvent( Gadget_TargetPrivate1, @widget_events( ), #__event_Drop )
+  BindWidgetEvent( Gadget_TargetPrivate2, @widget_events( ), #__event_Drop )
   
   ; main loop
   ;
-  WaitClose( )
+  WaitCloseRootWidget( )
   ;   
   ;   Repeat
   ;     Event = WaitWindowEvent( )

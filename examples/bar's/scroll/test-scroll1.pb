@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::Open(0);, 0, 0, 510, 340)
+  widget::OpenRootWidget(0);, 0, 0, 510, 340)
   Global fixed = 0
   
   ; first splitter
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; first splitter
   s_0 = widget::Scroll(0, 0, 0, 0, 0, -250, 0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*1
-  Bind(widget(), @events_widgets())
+  BindWidgetEvent(widget(), @events_widgets())
   s_1 = widget::Scroll(0, 0, 0, 0, 0, 250, 0, #__flag_nobuttons) : widget()\bar\fixed = Bool(fixed)*2
   s_2 = widget::SplitterWidget(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
   
@@ -85,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(s_3, (250)/2)
   SetState(s_4, 10)
   
-  WaitClose( )
+  WaitCloseRootWidget( )
   
 ;   Define event
 ;   Repeat

@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define i
   Define *w._S_widget, *g._S_widget, editable
-  Define *root._S_widget = Open(#window_0,0,0,424, 352): *root\class = "root": SetTextWidget(*root, "root")
+  Define *root._S_widget = OpenRootWidget(#window_0,0,0,424, 352): *root\class = "root": SetTextWidget(*root, "root")
   
   ;BindWidgetEvent( *root, @HandlerEvents( ) )
   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; a_init( *a, 15 )
   a_set( *a1 )
   
-  CloseList()
+  CloseWidgetList()
   size_value = TrackBarWidget(56, 262, 240, 26, 0, 30)
   pos_value = TrackBarWidget(56, 292, 240, 26, 0, 30)
   grid_value = TrackBarWidget(56, 320, 240, 26, 0, 30)
@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ;{ OpenRoot0
-  Define *root0._S_widget = Open(#window,10,10,300-20,300-20): *root0\class = "root0": SetTextWidget(*root0, "root0")
+  Define *root0._S_widget = OpenRootWidget(#window,10,10,300-20,300-20): *root0\class = "root0": SetTextWidget(*root0, "root0")
   ;BindWidgetEvent( *root2, @HandlerEvents( ) )
   
   Define Text.s, m.s=#LF$, a
@@ -101,11 +101,11 @@ CompilerIf #PB_Compiler_IsMainFile
   *g = StringWidget(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password|#__flag_Textright)
   
   
-  Define *root1._S_widget = Open(#window,300,10,300-20,300-20): *root1\class = "root1": SetTextWidget(*root1, "root1")
+  Define *root1._S_widget = OpenRootWidget(#window,300,10,300-20,300-20): *root1\class = "root1": SetTextWidget(*root1, "root1")
   ;BindWidgetEvent( *root1, @HandlerEvents( ) )
   
   
-  Define *root2._S_widget = Open(#window,10,300,300-20,300-20): *root2\class = "root2": SetTextWidget(*root2, "root2")
+  Define *root2._S_widget = OpenRootWidget(#window,10,300,300-20,300-20): *root2\class = "root2": SetTextWidget(*root2, "root2")
   ;BindWidgetEvent( *root2, @HandlerEvents( ) )
   
   *w = ComboBoxWidget( 20,20, 150,40)
@@ -114,10 +114,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Next
   
   
-  Define *root3._S_widget = Open(#window,300,300,300-20,300-20): *root3\class = "root3": SetTextWidget(*root3, "root3")
+  Define *root3._S_widget = OpenRootWidget(#window,300,300,300-20,300-20): *root3\class = "root3": SetTextWidget(*root3, "root3")
   ;BindWidgetEvent( *root3, @HandlerEvents( ) )
   
-  Define *root4._S_widget = Open(#window, 590, 10, 200, 600-20): *root4\class = "root4": SetTextWidget(*root4, "root4")
+  Define *root4._S_widget = OpenRootWidget(#window, 590, 10, 200, 600-20): *root4\class = "root4": SetTextWidget(*root4, "root4")
   ;BindWidgetEvent( *root4, @HandlerEvents( ) )
   
   
@@ -128,7 +128,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define time = ElapsedMilliseconds( )
   
-  OpenList( *root1 )
+  OpenWidgetList( *root1 )
   Define *panel._S_widget = PanelWidget(20, 20, 180+40, 180+60, editable) : SetTextWidget(*panel, "1")
   AddItem( *panel, -1, "item_1" )
   ButtonWidget( 20,20, 80,80, "item_1")
@@ -146,8 +146,8 @@ CompilerIf #PB_Compiler_IsMainFile
   SetTextWidget(ContainerWidget(5, 45, 180, 30, #__Flag_NoGadgets|editable), "     9") 
   SetTextWidget(ContainerWidget(5, 60, 180, 30, #__Flag_NoGadgets|editable), "     10") 
   
-  CloseList( ) ; 7
-  CloseList( ) ; 6
+  CloseWidgetList( ) ; 7
+  CloseWidgetList( ) ; 6
   SetTextWidget(ContainerWidget(10, 45, 70, 180, editable), "11") 
   SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), "12") 
   SetTextWidget(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets|editable), "13") 
@@ -157,32 +157,32 @@ CompilerIf #PB_Compiler_IsMainFile
   SetTextWidget(ContainerWidget(10, 5, 70, 180, editable), "16") 
   SetTextWidget(ContainerWidget(10, 5, 70, 180, editable), "17") 
   SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), "18") 
-  CloseList( ) ; 17
-  CloseList( ) ; 16
-  CloseList( ) ; 15
-  CloseList( ) ; 11
-  CloseList( ) ; 1
+  CloseWidgetList( ) ; 17
+  CloseWidgetList( ) ; 16
+  CloseWidgetList( ) ; 15
+  CloseWidgetList( ) ; 11
+  CloseWidgetList( ) ; 1
   
-   OpenList( seven )
+   OpenWidgetList( seven )
 ;   Define split_1 = ContainerWidget(0,0,0,0, #__Flag_NoGadgets|editable)
 ;   Define split_2 = ContainerWidget(0,0,0,0, #__Flag_NoGadgets|editable)
 ;   Define split_3 = SplitterWidget(5, 80, 180, 50,split_1,split_2,editable)
 ;   Define split_4 = ContainerWidget(0,0,0,0, #__Flag_NoGadgets|editable)
 ;   SetTextWidget(Splitter(5, 80, 180, 50,split_3,split_4,#PB_Splitter_Vertical|editable), "10-1") 
    SetTextWidget(ContainerWidget( 5, 80, 180, 50, #__Flag_NoGadgets|editable), "container-7")
-  CloseList( ) ; 7
+  CloseWidgetList( ) ; 7
   
-   OpenList( *panel )
+   OpenWidgetList( *panel )
 
   AddItem( *panel, -1, "item_4" )
   ButtonWidget( 30,30, 80,80, "item_4")
   AddItem( *panel, -1, "item_5" )
   ButtonWidget( 40,40, 80,80, "item_5")
-  CloseList( ) ; *panel
-  CloseList( ) ; *root1
+  CloseWidgetList( ) ; *panel
+  CloseWidgetList( ) ; *root1
   SetState( *panel, 2 )
   ;
-  OpenList( *root2 )
+  OpenWidgetList( *root2 )
   SetTextWidget(*root2, "*root2" )
   ;Define *p3._S_widget = ContainerWidget( 80,80, 150,150 )
   Define *p3._S_widget = ScrollAreaWidget( 80,80, 150+30,150+30, 300,300 )
@@ -192,22 +192,22 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *p2._S_widget = ContainerWidget( 40,40, 70,70 ) : SetTextWidget(*p2, "4" )
   SetTextWidget(ContainerWidget( 5,5, 70,70 ), "5" )
   SetTextWidget(ContainerWidget( -30,40, 50,50, #__Flag_NoGadgets ), "6")
-  CloseList( )
+  CloseWidgetList( )
   Define *c._S_widget = ContainerWidget( 40,-30, 50,50, #__Flag_NoGadgets ) : SetTextWidget(*c, "3" )
-  CloseList( )
+  CloseWidgetList( )
   
   SetTextWidget(ContainerWidget( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
   SetTextWidget(ContainerWidget( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
   SetTextWidget(ContainerWidget( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
-  CloseList( )
-  CloseList( )
+  CloseWidgetList( )
+  CloseWidgetList( )
   
-  OpenList( *root3 )
+  OpenWidgetList( *root3 )
   *w = TreeWidget( 10,20, 150,200, #__flag_RowMultiSelect)
   For i=1 To 100;0000
     AddItem(*w, i, "text-"+Str(i))
   Next
-  ContainerWidget( 70,180, 80,80): CloseList( )
+  ContainerWidget( 70,180, 80,80): CloseWidgetList( )
   
   *w = TreeWidget( 100,30, 100,260-20+300, #__flag_borderless)
   SetWidgetColor( *w, #__color_back, $FF07EAF6 )
@@ -226,18 +226,18 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   Define *window._S_widget
   Define i,y = 5
-  OpenList( *root4 )
+  OpenWidgetList( *root4 )
   For i = 1 To 4
-    Window(5, y, 150, 95+2, "Window_" + Trim(Str(i)));, #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
+    WindowWidget(5, y, 150, 95+2, "Window_" + Trim(Str(i)));, #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
     ContainerWidget(5, 5, 120+2,85+2)                      ;, #PB_Container_Flat)                                                                         ; Gadget(i, 
     ButtonWidget(10,10,100,30,"Button_" + Trim(Str(i+10))) ; Gadget(i+10,
     ButtonWidget(10,45,100,30,"Button_" + Trim(Str(i+20))) ; Gadget(i+20,
-    CloseList( )                                     ; Gadget
+    CloseWidgetList( )                                     ; Gadget
     y + 130
   Next
   
   ; 
-  WaitClose( )
+  WaitCloseRootWidget( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 54

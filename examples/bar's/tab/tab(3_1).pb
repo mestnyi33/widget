@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global i
   Global._s_widget *s_1, *s_2, *s_3, *s_4
   
-  widget::Open(OpenWindow(#PB_Any, 10, 10, 850, 250, "TAB-demos", #PB_Window_ScreenCentered | #PB_Window_SystemMenu))
+  widget::OpenRootWidget(OpenWindow(#PB_Any, 10, 10, 850, 250, "TAB-demos", #PB_Window_ScreenCentered | #PB_Window_SystemMenu))
   
  
   

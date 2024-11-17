@@ -4,7 +4,7 @@ XIncludeFile "ide(code).pb"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile 
   
-  ide_open()
+  ide_OpenRootWidget()
   
   Define *window = widget_add(ide_design_MDI, "window", 30, 30, 400, 250)
    

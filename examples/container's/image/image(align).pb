@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define Width = 200
   test_align = 1
   
-  If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     canvas_gadget = GetCanvasGadget(root())
     canvas_window = GetCanvasWindow(root())
     

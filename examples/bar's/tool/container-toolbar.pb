@@ -96,14 +96,14 @@ CompilerIf #PB_Compiler_IsMainFile
    BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
    
    
-   Open(0, 300, 0,300,310)
+   OpenRootWidget(0, 300, 0,300,310)
    ; *panel = PanelWidget(10, 10, 300 - 20, 180)
    *panel = ContainerWidget(10, 10, 300 - 20, 180)
    ToolBar( widget( ));, #PB_ToolBar_Small )
    BarButtonWidget(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
    BarButtonWidget(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
    BarButtonWidget(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
-   CloseList() ; *panel
+   CloseWidgetList() ; *panel
    
    FrameWidget(30, 200, 300 - 60, 100, "Tab location")
    OptionWidget(130, GadgetY(1) + 20, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
    OptionWidget(130, GadgetY(1) + 45, 80, 20, "Hide", #__flag_Transparent)
    OptionWidget(130, GadgetY(1) + 70, 80, 20, "Bottom", #__flag_Transparent)
    OptionWidget(210, GadgetY(1) + 45, 80, 20, "Right", #__flag_Transparent)
-   Bind( #PB_All, @events_widget( ), #__event_Change )
+   BindWidgetEvent( #PB_All, @events_widget( ), #__event_Change )
    
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       ClipGadgets( UseGadgetList(0) )

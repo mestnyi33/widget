@@ -89,7 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(0, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 ;     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget,1)
     *this = widget::Image(100, 100, 250, 250, get_image())
     
@@ -119,7 +119,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     f_8 = widget::ButtonWidget(width+20, y+30*7, 150, 26, "auto", #__flag_ButtonToggle) 
 ;     f_7 = widget::ButtonWidget(width+20, y+30*8, 150, 26, "invert", #__flag_ButtonToggle) 
-    Bind(#PB_All, @events_widgets())
+    BindWidgetEvent(#PB_All, @events_widgets())
     
     ; set button toggled state
     SetState(f_1, Flag(*this, #__flag_Textmultiline))

@@ -10,12 +10,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Global.i Canvas_0, gEvent, gQuit, x=10,y=10
    
    Procedure Window_0()
-      Define i,*w._S_widget = Open(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      Define i,*w._S_widget = OpenRootWidget(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       If *w
          Widgets(Hex(0)) = ContainerWidget(50, 50, 280, 200)
          Widgets(Hex(1)) = ButtonWidget(0, 0, 80, 40, "Button")    
          ; Widgets(Hex(1)) = TabBarWidget(0, 0, 80, 40) : For i=0 To 3 : AddItem(widget( ), -1, "tab_"+Str(i)) : Next  
-         CloseList()
+         CloseWidgetList()
          
          SetAlign(Widgets(Hex(1)), #__align_Full|#__align_Top)
          

@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndMacro
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
-      Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
+      OpenRootWidget( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
       BindGadgetEvent( GetCanvasGadget( root( ) ), _callback_ )
    EndMacro
    
@@ -56,12 +56,12 @@ CompilerIf #PB_Compiler_IsMainFile
       _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
    EndMacro                                                  
    
-   Macro Area_Bind( _parent_, _callback_)
+   Macro Area_BindWidgetEvent( _parent_, _callback_)
       If _callback_
-         Bind( _parent_\root, _callback_, #__event_ReDraw )
-         ;Bind( _parent_\root, _callback_, #__event_Draw )
-         Bind( _parent_\scroll\v, _callback_ )
-         Bind( _parent_\scroll\h, _callback_ )
+         BindWidgetEvent( _parent_\root, _callback_, #__event_ReDraw )
+         ;BindWidgetEvent( _parent_\root, _callback_, #__event_Draw )
+         BindWidgetEvent( _parent_\scroll\v, _callback_ )
+         BindWidgetEvent( _parent_\scroll\h, _callback_ )
       EndIf
    EndMacro                                                  
    
@@ -329,7 +329,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    Area_Create( *this, x,y,width,height, 2,20 )
-   Area_Bind( *this, @Area_Events( ) ) 
+   Area_BindWidgetEvent( *this, @Area_Events( ) ) 
    
    Define vButton = GetAttribute(*this\Scroll\v, #__bar_buttonsize)
    Define hButton = GetAttribute(*this\Scroll\h, #__bar_buttonsize)

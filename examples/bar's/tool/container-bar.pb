@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
-   If Open(0, 0, 0, 850, 430, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 850, 430, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetWidgetColor( widget( ), #__color_Back, $FFFFFFFF )
     
     ContainerWidget( 10,10,200,200, #PB_Container_Flat ) 
@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     BarSeparator( )
     BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
-    CloseList( )
+    CloseWidgetList( )
     
     ContainerWidget( 220,10,200,200, #PB_Container_Flat ) 
     SetWidgetColor( widget( ), #__color_Back, $FF95E3F6 )
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     BarSeparator( )
     BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
-    CloseList( )
+    CloseWidgetList( )
     
     ContainerWidget( 430,10,200,200, #PB_Container_Flat ) 
     SetWidgetColor( widget( ), #__color_Back, $FF95E3F6 )
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     BarSeparator( )
     BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
-    CloseList( )
+    CloseWidgetList( )
     
     ContainerWidget( 640,10,200,200, #PB_Container_Flat ) 
     SetWidgetColor( widget( ), #__color_Back, $FF95E3F6 )
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     BarSeparator( )
     BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
-    CloseList( )
+    CloseWidgetList( )
     
     ;\\
     ContainerWidget( 10,220,200,200, #PB_Container_Flat ) 
@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     BarSeparator( )
     BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
-    CloseList( )
+    CloseWidgetList( )
     
     ContainerWidget( 220,220,200,200, #PB_Container_Flat ) 
     SetWidgetColor( widget( ), #__color_Back, $FF95E3F6 )
@@ -98,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     BarSeparator( )
     BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
-    CloseList( )
+    CloseWidgetList( )
     
     ContainerWidget( 430,220,200,200, #PB_Container_Flat ) 
     SetWidgetColor( widget( ), #__color_Back, $FF95E3F6 )
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     BarSeparator( )
     BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
-    CloseList( )
+    CloseWidgetList( )
     
     ContainerWidget( 640,220,200,200, #PB_Container_Flat ) 
     SetWidgetColor( widget( ), #__color_Back, $FF95E3F6 )
@@ -126,9 +126,9 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"), #PB_ToolBar_Normal, "Paste")
     BarSeparator( )
     BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"), #PB_ToolBar_Normal, "Find")
-    CloseList( )
+    CloseWidgetList( )
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

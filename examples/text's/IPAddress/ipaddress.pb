@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *S_2
   
   
-  If Open(0, 0, 0, 615, 235, "IPAddressGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 615, 235, "IPAddressGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
     IPAddressGadget(0, 8,  10, 290, 40)
     IPAddressGadget(1, 8,  55, 290, 40)

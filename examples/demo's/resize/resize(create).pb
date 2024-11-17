@@ -76,12 +76,12 @@ CompilerIf #PB_Compiler_IsMainFile
          Case  8: result = ComboBoxWidget(X,Y,Width,Height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
          Case  9: result = ImageWidget(X,Y,Width,Height,0,#PB_Image_Border|flags) 
          Case 10: result = HyperLinkWidget(X,Y,Width,Height,"HyperLink",0, flags) 
-         Case 11: result = ContainerWidget(X,Y,Width,Height,#PB_Container_Flat|flags): ButtonWidget(0,0,80,Y,"Button1"):SetWidgetClass(widget(),GetTextWidget(widget())): ButtonWidget(10,50,80,Y,"Button2"):SetWidgetClass(widget(),GetTextWidget(widget())): CloseList() ; Container
+         Case 11: result = ContainerWidget(X,Y,Width,Height,#PB_Container_Flat|flags): ButtonWidget(0,0,80,Y,"Button1"):SetWidgetClass(widget(),GetTextWidget(widget())): ButtonWidget(10,50,80,Y,"Button2"):SetWidgetClass(widget(),GetTextWidget(widget())): CloseWidgetList() ; Container
          Case 12: result = ListIconWidget(X,Y,Width,Height,"",88, flags) 
             ;Case 13: result = IPAddress(x,y,width,height) 
             ;Case 14: result = ProgressBar(x,y,width,height,0,5)
             ;Case 15: result = ScrollBar(x,y,width,height,5,335,9)
-         Case 16: result = ScrollAreaWidget(X,Y,Width,Height,Width*2,Height*2,9,#PB_ScrollArea_Flat|flags): ButtonWidget(0,0,80,30,"Button"): CloseList()
+         Case 16: result = ScrollAreaWidget(X,Y,Width,Height,Width*2,Height*2,9,#PB_ScrollArea_Flat|flags): ButtonWidget(0,0,80,30,"Button"): CloseWidgetList()
             ;Case 17: result = TrackBar(x,y,width,height,0,5)
             ;Case 18: result = Web(x,y,width,height,"") ; bug 531 linux
          Case 19: result = ButtonImageWidget(X,Y,Width,Height,0, flags)
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Case 25: result = ExplorerCombo(x,y,width,height,"")
          Case 26: result = SpinWidget(X,Y,Width,Height,0,5,#PB_Spin_Numeric|flags)
          Case 27: result = TreeWidget(X,Y,Width,Height, flags) :  AddItem(result,-1,"Tree"):  AddItem(result,-1,"SubLavel",0,1)
-         Case 28: result = PanelWidget(X,Y,Width,Height, flags): AddItem(result,-1,"Panel"): CloseList()
+         Case 28: result = PanelWidget(X,Y,Width,Height, flags): AddItem(result,-1,"Panel"): CloseWidgetList()
          Case 29 
             result = SplitterWidget(X,Y,Width,Height,ButtonWidget(0,0,0,0,"1"),ButtonWidget(0,0,0,0,"2"), flags)
             
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
-   If Open(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetWidgetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
       SetWidgetClass(root( ), "[main-root]" )
       ;a_init( root())
@@ -153,8 +153,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       BarItem(9, "item-1(4)")
 ;       BarItem(10, "item-2(4)")
 ;       
-;       Bind(*menu, @TestHandler(), -1, 7)
-;       Bind(*menu, @QuitHandler(), -1, 8)
+;       BindWidgetEvent(*menu, @TestHandler(), -1, 7)
+;       BindWidgetEvent(*menu, @QuitHandler(), -1, 8)
 ;       ;
 ;       *menu = CreatePopupBar( )
 ;       If *menu                  ; creation of the pop-up menu begins...
@@ -180,10 +180,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;ResizeWidget(widget, 50,50,150,150)
       
-      ;Bind( widget, @Events())
-      Bind( #PB_All, @Events())
+      ;BindWidgetEvent( widget, @Events())
+      BindWidgetEvent( #PB_All, @Events())
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

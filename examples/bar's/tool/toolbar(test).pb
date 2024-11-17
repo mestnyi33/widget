@@ -4,7 +4,7 @@
 ;                                                         IsToolBar( #ToolBar )
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                  DisableItem( *address, item, state ) - DisableBarButtonWidget( #ToolBar, Button, State )
-;                                      Free( *address ) - FreeToolBar( #ToolBar )
+;                                      FreeWidget( *address ) - FreeToolBar( #ToolBar )
 ;                        GetItemState( *address, item ) - GetBarButtonState( #ToolBar, Button )
 ;                 SetItemState( *address, item, state ) - SetBarButtonState( #ToolBar, Button, State )
 ;                 SetItemTextWidget( *address, item, text.s ) - BarButtonTextWidget( #ToolBar, Button, Text$ )
@@ -76,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndMacro
   
   
-  If Open( 1, 300, 200, 300, 380, "ToolBar example", #PB_Window_SizeGadget )
+  If OpenRootWidget( 1, 300, 200, 300, 380, "ToolBar example", #PB_Window_SizeGadget )
      a_init(root( ))
     *toolbar = ToolBar( root( ) )
     
@@ -107,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ButtonWidget( 10,0, 50,50,"btn0" ) : SetWidgetClass(widget( ), "btn0" )
       
-    ;  Bind( root( ), #PB_Default )
+    ;  BindWidgetEvent( root( ), #PB_Default )
   EndIf
   
   

@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   "line_6" + #LF$ +
                   "line_7"
     
-  If Open(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     
     ;*g4 = SplitterWidget( 0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
      EditorWidget( 0,bh*3,0,bh, #__flag_Textright) : SetTextWidget( widget( ), text) ;: SetAlignmentFlag( widget( ), #__align_left|#__align_right)
     ;ButtonWidget( 0,bh*4,0,bh, text, #__flag_Textright) : SetAlign( widget( ), #__align_left|#__align_right)
     
-    CloseList( )
+    CloseWidgetList( )
     
     *g5 = SplitterWidget( 30,30,620,h, *g4,*g3, #PB_Splitter_Vertical)
     ;*g6 = SplitterWidget( 30,30,620,h, *g5,#Null)

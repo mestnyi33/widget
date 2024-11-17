@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
-    Open(0, 270, 10, 250, 680);, "", #__flag_borderless)
+    OpenRootWidget(0, 270, 10, 250, 680);, "", #__flag_borderless)
     *w=TreeWidget(0, 0, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#__Flag_GridLines|#PB_Flag_MultiSelect
     
     TreeGadget_(0, 10, 10, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)    ;, #PB_ListView_MultiSelect

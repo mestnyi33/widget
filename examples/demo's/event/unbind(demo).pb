@@ -30,28 +30,28 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 500, 500, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       Define Editable ; = 
       
-      If Open(0, 10,10, 480, 480)
-        ; Bind(#PB_All, @events_roots())
-        Window(80, 100, 300, 280, "Window_2", Editable)
-        ;;Bind(widget(), @events_windows())
+      If OpenRootWidget(0, 10,10, 480, 480)
+        ; BindWidgetEvent(#PB_All, @events_roots())
+        WindowWidget(80, 100, 300, 280, "Window_2", Editable)
+        ;;BindWidgetEvent(widget(), @events_windows())
         
         Define *id._s_widget = ButtonWidget(10,  10, 280, 260, "press", Editable)
         
         ; post this events
-        ;;Bind(*id, @events_roots())
-        Bind(*id, @events_widgets1(), #__event_LeftDown)
-        Bind(*id, @events_widgets1(), #__event_LeftUp)
+        ;;BindWidgetEvent(*id, @events_roots())
+        BindWidgetEvent(*id, @events_widgets1(), #__event_LeftDown)
+        BindWidgetEvent(*id, @events_widgets1(), #__event_LeftUp)
         
-        Bind(*id, @events_widgets2(), #__event_LeftDown)
-        Bind(*id, @events_widgets2(), #__event_LeftUp)
+        BindWidgetEvent(*id, @events_widgets2(), #__event_LeftDown)
+        BindWidgetEvent(*id, @events_widgets2(), #__event_LeftUp)
         
-        ;;Unbind(*id, @events_roots())
-        Unbind(*id, @events_widgets1(), #__event_LeftDown)
+        ;;UnBindWidgetEvent(*id, @events_roots())
+        UnBindWidgetEvent(*id, @events_widgets1(), #__event_LeftDown)
        
 ;         Debug @events_widgets()
 ;         
-;         ForEach *id\bind()
-;           Debug ""+ *id\bind() +" "+ *id\bind()\events();\call() ;+""
+;         ForEach *id\BindWidgetEvent()
+;           Debug ""+ *id\BindWidgetEvent() +" "+ *id\BindWidgetEvent()\events();\call() ;+""
 ;         Next
       EndIf
     EndIf
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Window_0()
   
-  WaitClose()
+  WaitCloseRootWidget()
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

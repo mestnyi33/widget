@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure ShowMessage(  )
       
       Debug "open - Title"
-      Define Result = Message( "Title", "Please make your input:", #__message_YesNoCancel|#__message_Info ) 
+      Define Result = MessageWidget( "Title", "Please make your input:", #__message_YesNoCancel|#__message_Info ) 
       Debug " close - Title " + Result
       
       Define flag, a$ = "Result of the previously requester was: "
@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       Debug "open - Information"
-      Result = Message("Information", a$, flag)
+      Result = MessageWidget("Information", a$, flag)
       Debug "close - Information "+Result
       
    EndProcedure
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   If Open( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
+   If OpenRootWidget( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
       tree=TreeWidget(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
       Define i
       For i = 0 To 10
@@ -51,11 +51,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       ButtonWidget( 600-100, 10, 90,30, "test" )
       Define *showButton = ButtonWidget( 600-100, 300-40, 90,30, "show" )
-      Bind( *showButton, @ButtonEvents( ) )
+      BindWidgetEvent( *showButton, @ButtonEvents( ) )
       
       ShowMessage( )
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

@@ -166,7 +166,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ComboBoxGadget(#PB_Any, 100, 100, 250, 200) : HideGadget(gadget, 1)
     *this  = widget::ComboBoxWidget(100, 100, 250, 200, #__flag_Textmultiline);|)
     AddItem( *this, -1, Text )
@@ -201,7 +201,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     AddItem(tree, #tree_item_vertical, "vertical")
 ;     AddItem(tree, #tree_item_invert, "invert")
     
-    Bind(#PB_All, @events_widgets())
+    BindWidgetEvent(#PB_All, @events_widgets())
     
     ;\\ set button toggled state
     SetState(button_multiline, Flag(*this, #__flag_Textmultiline))

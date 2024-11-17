@@ -13,7 +13,7 @@
 ;                                 GetItemTextWidget( *address, TitleIndex ) - GetMenuTitleTextWidget( #Menu, Title )
 ;                         SetItemTextWidget( *address, TitleIndex, text.s ) - SetMenuTitleTextWidget( #Menu, Title, Text$ )
 ; 
-;                                                    Free( *address ) - FreeMenu( #Menu )
+;                                                    FreeWidget( *address ) - FreeMenu( #Menu )
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemTextWidget( *address, item ) - GetMenuItemTextWidget( #Menu, Item )
@@ -29,8 +29,8 @@
 ;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
 ;                               SetItemTextWidget( *address, item, text.s ) - SetMenuItemTextWidget( #Menu, Item, Text$ )
 ;
-;                      Bind( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
-;                    UnBind( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                      BindWidgetEvent( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                    UnBindWidgetEvent( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
 
 XIncludeFile "../../../widgets.pbi" 
 
@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Define WindowID = OpenWindow( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    
-   Open(0, 50,50,400,250)
+   OpenRootWidget(0, 50,50,400,250)
    CreateMenu(0, WindowID(0))
    MenuTitle("Title-1")
    MenuItem(1, "title-1-item-1")
@@ -163,8 +163,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(ID(1), 1)
     SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
       
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
+   BindWidgetEvent(*menu, @TestHandler(), -1, 7)
+   BindWidgetEvent(*menu, @QuitHandler(), -1, 8)
    
    
    Define Event

@@ -242,7 +242,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndSelect    
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
     
     Define *cont = ContainerWidget(15,15,100,100)
@@ -269,7 +269,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *demo = ButtonWidget(o,o,s,s,"",0,0, r)
      *ce = ButtonWidget(o2,o2,s2,s2,"",0,0, r2)
-    CloseList()
+    CloseWidgetList()
     
 ;     SetWidgetClass(*t, "t_anchor")
 ;     SetWidgetClass(*l, "l_anchor")
@@ -295,20 +295,20 @@ CompilerIf #PB_Compiler_IsMainFile
     _SetAlignment(*ce, #__align_center)
     
     _SetAlignment(*c, #__align_Center|#__align_full)
-    CloseList()
+    CloseWidgetList()
     
-    Bind(*t, @events_widgets())
-    Bind(*l, @events_widgets())
-    Bind(*r, @events_widgets())
-    Bind(*b, @events_widgets())
+    BindWidgetEvent(*t, @events_widgets())
+    BindWidgetEvent(*l, @events_widgets())
+    BindWidgetEvent(*r, @events_widgets())
+    BindWidgetEvent(*b, @events_widgets())
     
-    Bind(*lt, @events_widgets())
-    Bind(*rt, @events_widgets())
-    Bind(*rb, @events_widgets())
-    Bind(*lb, @events_widgets())
-    Bind(*ce, @events_widgets())
+    BindWidgetEvent(*lt, @events_widgets())
+    BindWidgetEvent(*rt, @events_widgets())
+    BindWidgetEvent(*rb, @events_widgets())
+    BindWidgetEvent(*lb, @events_widgets())
+    BindWidgetEvent(*ce, @events_widgets())
     
-    ;Bind(-1,-1)
+    ;BindWidgetEvent(-1,-1)
     
     Define direction = 1
   Define Width, Height

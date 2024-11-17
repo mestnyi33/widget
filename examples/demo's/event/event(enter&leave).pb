@@ -12,7 +12,7 @@ Global colorback = colors::*this\blue\fore,
        colorframe1=$ff0000ff
 
 ;\\
-Open(0, 0, 0, 240, 240, "enter&leave demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+OpenRootWidget(0, 0, 0, 240, 240, "enter&leave demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
 If editable 
    a_init(root())
 EndIf
@@ -32,8 +32,8 @@ SetData(Splitter(5, 80, 180, 50,
                  ContainerWidget(0,0,0,0, #__Flag_NoGadgets|editable),
                  #PB_Splitter_Vertical|editable), 8) 
 
-CloseList()
-CloseList()
+CloseWidgetList()
+CloseWidgetList()
 SetData(ContainerWidget(10, 45, 70, 180, editable), 11) 
 SetData(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
 SetData(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
@@ -42,15 +42,15 @@ SetData(ContainerWidget(10, 45, 70, 180, editable), 11)
 SetData(ContainerWidget(10, 5, 70, 180, editable), 11) 
 SetData(ContainerWidget(10, 5, 70, 180, editable), 11) 
 SetData(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-CloseList()
-CloseList()
-CloseList()
-CloseList()
+CloseWidgetList()
+CloseWidgetList()
+CloseWidgetList()
+CloseWidgetList()
 
 ;\\
-Bind(#PB_All, @events_widgets(), #__event_MouseEnter)
-Bind(#PB_All, @events_widgets(), #__event_MouseMove)
-Bind(#PB_All, @events_widgets(), #__event_MouseLeave)
+BindWidgetEvent(#PB_All, @events_widgets(), #__event_MouseEnter)
+BindWidgetEvent(#PB_All, @events_widgets(), #__event_MouseMove)
+BindWidgetEvent(#PB_All, @events_widgets(), #__event_MouseLeave)
 
 ;\\
 WaitClose( )

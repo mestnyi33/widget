@@ -118,7 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         If EventGadget = 7 ; <<
                            ;         FreeGadget(tree)
-                           ;         Free(*tree)
+                           ;         FreeWidget(*tree)
           
           SetGadgetState(Tree, 0)
           SetState(*tree, 0)
@@ -189,7 +189,7 @@ EndProcedure
 
 Define a
     
-  If Open(0, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;ListViewGadget(0, 10, 10, 160, 160) 
     Tree = PB(TreeGadget_)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
     *tree = TreeWidget(190, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState );| #__flag_GridLines | #PB_Tree_Collapsed)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
@@ -246,10 +246,10 @@ Define a
     BindGadgetEvent(10, @events_tree_gadget())
     
     BindGadgetEvent(Tree, @events_tree_gadget())
-    Bind(*tree, @events_tree_widget())
+    BindWidgetEvent(*tree, @events_tree_widget())
     
     ;\\
-    WaitClose( )
+    WaitCloseRootWidget( )
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

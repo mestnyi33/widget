@@ -8,22 +8,22 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Global *w, *w1, *w2
   
-  If Open(0, 100, 0, 180, 130, "openlist1", #PB_Window_SystemMenu)
+  If OpenRootWidget(0, 100, 0, 180, 130, "openlist1", #PB_Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button1")
     *w = Root()
   EndIf
   
-  If Open(1, 300, 0, 180, 130, "openlist2", #PB_Window_SystemMenu)
+  If OpenRootWidget(1, 300, 0, 180, 130, "openlist2", #PB_Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button2")
   EndIf
   
-  OpenList(*w)
+  OpenWidgetList(*w)
   ButtonWidget(30, 15, 120, 24,"openlist1")
-  CloseList()
+  CloseWidgetList()
   
-  If Open(2, 500, 0, 180, 130, "openlist3", #PB_Window_SystemMenu)
+  If OpenRootWidget(2, 500, 0, 180, 130, "openlist3", #PB_Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button3")
-    CloseList()
+    CloseWidgetList()
   EndIf
   
   

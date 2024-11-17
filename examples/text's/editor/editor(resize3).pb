@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
        
-    Open(0, 270, 10, 250, 150)
+    OpenRootWidget(0, 270, 10, 250, 150)
     g_Canvas = GetCanvasGadget(Root())
     
     *g=EditorWidget(0, 0, 250, 150, #__Flag_autosize)

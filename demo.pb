@@ -59,8 +59,8 @@ Procedure scrolled( )
    SetState( ID(Hex(#PB_GadgetType_ProgressBar)), GetState( ID(Hex(#PB_GadgetType_ScrollBar))))
 EndProcedure
 
-If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   Bind(#PB_All, @events( ))
+If OpenRootWidget(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   BindWidgetEvent(#PB_All, @events( ))
    
    ;a_init(root( ), 0)
    ;
@@ -82,14 +82,14 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    ID(Hex(#PB_GadgetType_Container)) = ContainerWidget(170, 405, 160,95, #PB_Container_Flat )
    ID(Hex(101)) = OptionWidget(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container) )  : SetState(ID(), 1)  
    ID(Hex(102)) = OptionWidget(10, 40, 110,20, "Option_widget");, #__flag_flat)  
-   CloseList()
+   CloseWidgetList()
    ID(Hex(#PB_GadgetType_ListIcon)) = ListIconWidget(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon),120 )                           
    
    ;\\ 3
    ID(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(ID(), MakeIPAddress(1, 2, 3, 4))    
    ID(Hex(#PB_GadgetType_ProgressBar)) = ProgressBarWidget(335, 105, 160,95,0,100, 0, round) : SetState(ID(), 50)
    ID(Hex(#PB_GadgetType_ScrollBar)) = ScrollBarWidget(335, 205, 160,95,0,120,20) : SetState(ID(), 50)
-   ID(Hex(#PB_GadgetType_ScrollArea)) = ScrollAreaWidget(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : ID(Hex(201)) = ButtonWidget(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea) ) : ID(Hex(202)) = ButtonWidget(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseList()
+   ID(Hex(#PB_GadgetType_ScrollArea)) = ScrollAreaWidget(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : ID(Hex(201)) = ButtonWidget(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea) ) : ID(Hex(202)) = ButtonWidget(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseWidgetList()
    ID(Hex(#PB_GadgetType_TrackBar)) = TrackBarWidget(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(ID(), 11)
    ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
    
@@ -111,14 +111,14 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    AddItem(ID(Hex(#PB_GadgetType_Panel)), -1, "Panel_"+Hex(#PB_GadgetType_Panel)) 
    ID(Hex(255)) = ButtonWidget(0, 0, 90,20, "Button_255" ) 
    For i=1 To 5 : AddItem(ID(Hex(#PB_GadgetType_Panel)), i, "item_"+Hex(i)) : ButtonWidget(10,5,50,35, "butt_"+Str(i)) : Next 
-   CloseList()
-   OpenList(ID(Hex(#PB_GadgetType_Panel)), 1)
+   CloseWidgetList()
+   OpenWidgetList(ID(Hex(#PB_GadgetType_Panel)), 1)
    ContainerWidget(10,5,150,55, #PB_Container_Flat) 
    ContainerWidget(10,5,150,55, #PB_Container_Flat) 
    ButtonWidget(10,5,50,35, "butt_1") 
-   CloseList()
-   CloseList()
-   CloseList()
+   CloseWidgetList()
+   CloseWidgetList()
+   CloseWidgetList()
    SetState( ID(Hex(#PB_GadgetType_Panel)), 4)
    id(Hex(301)) = SpinWidget(0, 0, 100,20,0,10, #__spin_plus)
    id(Hex(302)) = SpinWidget(0, 0, 100,20,0,10) ; ButtonWidget(0, 0, 100,20,"splitt-button")                 
@@ -132,14 +132,14 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    ;     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
    ;     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
    
-   CloseList()
+   CloseWidgetList()
    
    ;\\
-   Bind(id(Hex(#PB_GadgetType_ScrollBar)), @scrolled(), #__event_change )
+   BindWidgetEvent(id(Hex(#PB_GadgetType_ScrollBar)), @scrolled(), #__event_change )
 EndIf   
 
 CompilerIf #PB_Compiler_IsMainFile
-   WaitClose( )
+   WaitCloseRootWidget( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 79

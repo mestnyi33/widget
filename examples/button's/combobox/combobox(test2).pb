@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndProcedure
   
   If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open(GetActiveWindow())
+    OpenRootWidget(GetActiveWindow())
 ;     ;
 ;     ;Widgets("Container") = ContainerWidget(0, 0, 995, 455);, #__flag_AutoSize) 
 ;     
@@ -66,13 +66,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ; ;     Widgets(Hex(#PB_GadgetType_Container)) = ContainerWidget(170, 405, 160,95, #PB_Container_Flat )
 ; ;     Widgets(Hex(101)) = OptionWidget(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container)+" text clip clip clip clip text" )  : SetState(Widgets(Hex(101)), 1)  
 ; ;     Widgets(Hex(102)) = OptionWidget(10, 40, 110,20, "Option_widget"+" text clip clip clip clip text");, #__flag_flat)  
-; ;     CloseList()
+; ;     CloseWidgetList()
 ;     Widgets(Hex(#PB_GadgetType_ListIcon)) = ListIconWidget(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon)+" text clip clip clip clip text",120 )                           
     
 ; ;     ;Widgets(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(Widgets(Hex(#PB_GadgetType_IPAddress)), MakeIPAddress(1, 2, 3, 4))    
 ; ;     Widgets(Hex(#PB_GadgetType_ProgressBar)) = ProgressBarWidget(335, 105, 160,95,0,100, 0, 50) : SetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
 ; ;     Widgets(Hex(#PB_GadgetType_ScrollBar)) = ScrollBarWidget(335, 205, 160,95,0,120,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
-; ;     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollAreaWidget(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = ButtonWidget(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea)+" text clip clip clip clip text" ) : Widgets(Hex(202)) = ButtonWidget(180-150, 90-20, 150,20, "Button_"+Hex(202)+" text clip clip clip clip text" ) : CloseList()
+; ;     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollAreaWidget(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = ButtonWidget(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea)+" text clip clip clip clip text" ) : Widgets(Hex(202)) = ButtonWidget(180-150, 90-20, 150,20, "Button_"+Hex(202)+" text clip clip clip clip text" ) : CloseWidgetList()
 ; ;     Widgets(Hex(#PB_GadgetType_TrackBar)) = TrackBarWidget(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
 ; ;     ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
 ; ;     
@@ -94,15 +94,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ; ;     AddItem(Widgets(Hex(#PB_GadgetType_Panel)), -1, "Panel_"+Hex(#PB_GadgetType_Panel)+" text clip clip clip clip text") 
 ; ;     Widgets(Hex(255)) = ButtonWidget(0, 0, 90,20, "Button_255"+" text clip clip clip clip text" ) 
 ; ;     For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_Panel)), i, "item_"+Hex(i)+" text clip clip clip clip text") : ButtonWidget(10,5,50,35, "butt_"+Str(i)+" text clip clip clip clip text") : Next 
-; ;     CloseList()
+; ;     CloseWidgetList()
 ; ;     
-; ;     OpenList(Widgets(Hex(#PB_GadgetType_Panel)), 1)
+; ;     OpenWidgetList(Widgets(Hex(#PB_GadgetType_Panel)), 1)
 ; ;     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
 ; ;     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
 ; ;     ButtonWidget(10,5,50,35, "butt_1"+" text clip clip clip clip text") 
-; ;     CloseList()
-; ;     CloseList()
-; ;     CloseList()
+; ;     CloseWidgetList()
+; ;     CloseWidgetList()
+; ;     CloseWidgetList()
 ; ;     SetState( Widgets(Hex(#PB_GadgetType_Panel)), 4)
     
 ;     Widgets(Hex(301)) = SpinWidget(0, 0, 100,20,0,1000000000000000000, #__spin_plus)
@@ -113,8 +113,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;     Define *g = AddItem(Widgets(Hex(#PB_GadgetType_MDI)), -1, "form_0"+" text clip clip clip clip text")
 ;     ResizeWidget(*g, 7, 40, 120, 60)
 ;     
-; ;     CloseList()
-; ; ;     OpenList(Root())
+; ;     CloseWidgetList()
+; ; ;     OpenWidgetList(Root())
 ; ;      ButtonWidget(10,5,50,35, "butt_1") 
 ;     
 ;     ;     CompilerEndIf
@@ -123,12 +123,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;     ;     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
 ;     ;     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
     
-    CloseList()
+    CloseWidgetList()
     
     
-    Bind(Widgets(Hex(#PB_GadgetType_ScrollBar)), @scrolled() )
+    BindWidgetEvent(Widgets(Hex(#PB_GadgetType_ScrollBar)), @scrolled() )
     
-    WaitClose( )
+    WaitCloseRootWidget( )
 ; ;     Repeat
 ; ;       Define  Event = WaitWindowEvent()
 ; ;     Until Event= #PB_Event_CloseWindow

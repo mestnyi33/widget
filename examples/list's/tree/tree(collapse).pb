@@ -507,7 +507,7 @@ CompilerIf #PB_Compiler_IsMainFile
   LoadFont(5, "Arial", 16)
   LoadFont(6, "Arial", 25)
   
-  Open(OpenWindow(-1, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  OpenRootWidget(OpenWindow(-1, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   
   
   
@@ -613,7 +613,7 @@ CompilerIf #PB_Compiler_IsMainFile
     add(*g, 12, "Tree_5", -1 )
     add(*g, 13, "Tree_6", -1 )
     add(*g, 14, "Tree_7", -1 )
-; ;     ;Bind(*g, @events_tree_widget())
+; ;     ;BindWidgetEvent(*g, @events_tree_widget())
 ; ;     DD::EnableDDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
     
@@ -668,11 +668,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemTextWidget(*g, 4, "25_font and text change")
     SetItemFont(*g, 14, 6)
     SetItemTextWidget(*g, 14, "25_font and text change")
-    ;Bind(*g, @events_tree_widget())
+    ;BindWidgetEvent(*g, @events_tree_widget())
     ;}
     
   
-; ; ; ;   Open(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+; ; ; ;   OpenRootWidget(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ; ; ; ;   
 ; ; ; ;   g = 11
     *g = TreeWidget(10, 230, 210, 400);|#__flag_collapsedd)                                         
@@ -692,7 +692,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     add(*g, 9, "", -1, 0) 
     
-    add(*g, 10, "Procedure Open()", -1, 0) 
+    add(*g, 10, "Procedure OpenRootWidget()", -1, 0) 
     add(*g, 11, "If is_widget()", -1, 1) 
     add(*g, 12, "If is_Hide()", -1, 2) 
     add(*g, 13, " 1", -1, 3) 

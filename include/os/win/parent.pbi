@@ -318,8 +318,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 63
-; FirstLine = 53
-; Folding = ------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 20
+; FirstLine = 3
+; Folding = -------
 ; EnableXP

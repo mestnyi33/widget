@@ -16,15 +16,15 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(10, 0, 0, 613, 346, "demo set  new parent", Flags )
   
   ; Create desktop for the widgets
-  Open(10)
-  *main = Window(200, 0, 413, 319+#__c_frame, "demo set  new parent", Flags )
+  OpenRootWidget(10)
+  *main = WindowWidget(200, 0, 413, 319+#__c_frame, "demo set  new parent", Flags )
   
   ;*w = ButtonWidget(-30,10,160,70,"Button") 
-  *w = Window(-30, 10,160,70,"Button", #PB_Window_NoGadgets) ;: closelist()
+  *w = WindowWidget(-30, 10,160,70,"Button", #PB_Window_NoGadgets) ;: CloseWidgetList()
   
   *scrollarea = ScrollAreaWidget(200,150,200,160,200,160,10,#PB_ScrollArea_Flat) 
   *button = ButtonWidget(31,90,160,30,"Button >>(ScrollArea)") 
-  CloseList()
+  CloseWidgetList()
   
   
   

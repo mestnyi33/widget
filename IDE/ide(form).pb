@@ -278,8 +278,8 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    
    If *this
       SetData(*this, item)
-      Bind(*this, @PropertiesEvents( ), #__event_Change)
-      Bind(*this, @PropertiesEvents( ), #__event_LostFocus)
+      BindWidgetEvent(*this, @PropertiesEvents( ), #__event_Change)
+      BindWidgetEvent(*this, @PropertiesEvents( ), #__event_LostFocus)
    EndIf
    
    ; SetItemData(*first, item, *this)
@@ -308,14 +308,14 @@ Procedure CreateProperties( X,Y,Width,Height, flag=0 )
    HideWidget( *first\scroll\h, 1 )
    ;HideWidget( *second\scroll\v, 1 )
    HideWidget( *second\scroll\h, 1 )
-   CloseList( )
+   CloseWidgetList( )
    
    
    SetData(*second, *first)
    SetData(*first, *second)
    
-   Bind(*first, @PropertiesEvents( ))
-   Bind(*second, @PropertiesEvents( ))
+   BindWidgetEvent(*first, @PropertiesEvents( ))
+   BindWidgetEvent(*second, @PropertiesEvents( ))
    ProcedureReturn *splitter
 EndProcedure
 
@@ -547,13 +547,13 @@ Macro widget_delete( )
    If a_focused( )\anchors
       RemoveItem( ide_inspector_view, GetData( a_focused( ) ) )
       
-      Free( a_focused( ) )
+      FreeWidget( a_focused( ) )
       
       a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
    Else
       ForEach a_group( )
          RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
-         Free( a_group( )\widget )
+         FreeWidget( a_group( )\widget )
          DeleteElement( a_group( ) )
       Next
       
@@ -592,7 +592,7 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
    Protected newClass.s
    
    If *parent 
-      OpenList( *parent, CountItems( *parent ) - 1 )
+      OpenWidgetList( *parent, CountItems( *parent ) - 1 )
       class.s = LCase( Trim( class ) )
       
       ; defaul width&height
@@ -631,7 +631,7 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
                ResizeWidget( *new, #PB_Ignore, #PB_Ignore, Width,Height )
             Else
                flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
-               *new = Window( X,Y,Width,Height, "", flag, *parent )
+               *new = WindowWidget( X,Y,Width,Height, "", flag, *parent )
             EndIf
             
             SetWidgetColor( *new, #__color_back, $FFECECEC )
@@ -640,22 +640,22 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
                ResizeImage(*imagelogo, DPIScaled(ImageWidget(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
             CompilerEndIf
             SetWidgetImage( *new, *imagelogo )
-            Bind( *new, @widget_events( ) )
+            BindWidgetEvent( *new, @widget_events( ) )
             
             ; на тот случай если изменили 
             ; формирование класса например "Window0;Window1"
             SetWidgetClass( *new, UlCase(class))
             
          Case "container"   
-            *new = ContainerWidget( X,Y,Width,Height, flag ) : CloseList( )
+            *new = ContainerWidget( X,Y,Width,Height, flag ) : CloseWidgetList( )
             SetWidgetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "panel"       
-            *new = PanelWidget( X,Y,Width,Height, flag ) : AddItem( *new, -1, class+"_item_0" ) : CloseList( )
+            *new = PanelWidget( X,Y,Width,Height, flag ) : AddItem( *new, -1, class+"_item_0" ) : CloseWidgetList( )
             SetWidgetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "scrollarea"  
-            *new = ScrollAreaWidget( X,Y,Width,Height, *param1, *param2, *param3, flag ) : CloseList( )
+            *new = ScrollAreaWidget( X,Y,Width,Height, *param1, *param2, *param3, flag ) : CloseWidgetList( )
             SetWidgetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "splitter"    : *new = SplitterWidget( X,Y,Width,Height, *param1, *param2, flag )
@@ -752,7 +752,7 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          
       EndIf
       
-      CloseList( ) 
+      CloseWidgetList( ) 
    EndIf
    
    ProcedureReturn *new
@@ -1147,7 +1147,7 @@ Procedure ide_events( )
       Case #__event_Close
          If *e_widget = ide_root
             ; bug при отмене выбора закрыть
-            If #PB_MessageRequester_Yes = Message( "Message", 
+            If #PB_MessageRequester_Yes = MessageWidget( "Message", 
                                                    "Are you sure you want to go out?",
                                                    #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                ProcedureReturn 0
@@ -1282,12 +1282,12 @@ Procedure ide_events( )
    EndSelect
 EndProcedure
 
-Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
+Procedure ide_OpenRootWidget( X=100,Y=100,Width=850,Height=600 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
    
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-   ide_root = Open( 1, X,Y,Width,Height, "ide", flag ) 
+   ide_root = OpenRootWidget( 1, X,Y,Width,Height, "ide", flag ) 
    ide_window = GetCanvasWindow( ide_root )
    ide_g_canvas = GetCanvasGadget( ide_root )
    
@@ -1340,12 +1340,12 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    BarButtonWidget( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
    BarButtonWidget( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
    BarButtonWidget( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
-   CloseList( )
+   CloseWidgetList( )
    
    ; gadgets
    
    ;\\\ 
-   ide_design_panel = PanelWidget( 0,0,0,0 ) : SetWidgetClass(ide_design_panel, "ide_design_panel" ) ; , #__bar_vertical ) : OpenList( ide_design_panel )
+   ide_design_panel = PanelWidget( 0,0,0,0 ) : SetWidgetClass(ide_design_panel, "ide_design_panel" ) ; , #__bar_vertical ) : OpenWidgetList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
    ide_design_MDI = MDIWidget( 0,0,0,0, #__flag_autosize ) : SetWidgetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetWidgetFrame(ide_design_MDI, 10)
    SetWidgetColor( ide_design_MDI, #__color_back, RGBA(195, 156, 191, 255) )
@@ -1353,7 +1353,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    
    ;AddItem( ide_design_panel, -1, "Code" )
    ;ide_design_code = EditorWidget( 0,0,0,0 ) : SetWidgetClass(ide_design_code, "ide_design_code" ) ; bug then move anchors window
-   CloseList( )
+   CloseWidgetList( )
    
    ;
    ide_debug_view = EditorWidget( 0,0,0,0 ) : SetWidgetClass(ide_debug_view, "ide_debug_view" ) ; ListViewWidget( 0,0,0,0 ) 
@@ -1406,7 +1406,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    EndIf
    
    ; ide_inspector_splitter_panel_close
-   CloseList( )
+   CloseWidgetList( )
    
    ; ide_inspector_ide_help_splitter_text
    ide_help_view  = TextWidget( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetWidgetClass(ide_help_view, "ide_help_view" )
@@ -1474,39 +1474,39 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;\\\ ide events binds
    ;
    If WidgetType( ide_toolbar ) = #PB_WidgetType_Tool
-      Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
+      BindWidgetEvent( ide_toolbar, @ide_events( ), #__event_LeftClick )
    EndIf
-   Bind( ide_inspector_view, @ide_events( ) )
+   BindWidgetEvent( ide_inspector_view, @ide_events( ) )
    ;
-   Bind( ide_design_code, @ide_events( ), #__event_Change )
-   Bind( ide_design_code, @ide_events( ), #__event_StatusChange )
+   BindWidgetEvent( ide_design_code, @ide_events( ), #__event_Change )
+   BindWidgetEvent( ide_design_code, @ide_events( ), #__event_StatusChange )
    ;
-   Bind( ide_inspector_events, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_events, @ide_events( ), #__event_StatusChange )
+   BindWidgetEvent( ide_inspector_events, @ide_events( ), #__event_Change )
+   BindWidgetEvent( ide_inspector_events, @ide_events( ), #__event_StatusChange )
    ;
-   Bind( ide_inspector_properties, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_properties, @ide_events( ), #__event_StatusChange )
+   BindWidgetEvent( ide_inspector_properties, @ide_events( ), #__event_Change )
+   BindWidgetEvent( ide_inspector_properties, @ide_events( ), #__event_StatusChange )
    ;
-   Bind( ide_inspector_elements, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_StatusChange )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_LeftClick )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_MouseEnter )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_MouseLeave )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_DragStart )
+   BindWidgetEvent( ide_inspector_elements, @ide_events( ), #__event_Change )
+   BindWidgetEvent( ide_inspector_elements, @ide_events( ), #__event_StatusChange )
+   BindWidgetEvent( ide_inspector_elements, @ide_events( ), #__event_LeftClick )
+   BindWidgetEvent( ide_inspector_elements, @ide_events( ), #__event_MouseEnter )
+   BindWidgetEvent( ide_inspector_elements, @ide_events( ), #__event_MouseLeave )
+   BindWidgetEvent( ide_inspector_elements, @ide_events( ), #__event_DragStart )
    ;
    ;
-   Bind( ide_root, @ide_events( ), #__event_Close )
+   BindWidgetEvent( ide_root, @ide_events( ), #__event_Close )
    ProcedureReturn ide_window
 EndProcedure
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile 
    Define event
-   ide_open( )
+   ide_OpenRootWidget( )
    
    SetState( ide_inspector_panel, 1 )
    
-   ;   ;OpenList(ide_design_MDI)
+   ;   ;OpenWidgetList(ide_design_MDI)
    Define result, example = 3
    
    
@@ -1553,12 +1553,12 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*panel, "text", 45, 65+40*2, 50, 30)
       
       AddItem( *panel, -1, "pane_item_1" )
-      ;OpenList( *panel, 1 )
+      ;OpenWidgetList( *panel, 1 )
       widget_add(*panel, "button", 115, 25, 30, 30)
       widget_add(*panel, "text", 125, 65, 50, 30)
       widget_add(*panel, "button", 135, 65+40, 80, 30)
       widget_add(*panel, "text", 145, 65+40*2, 50, 30)
-      ;CloseList( )
+      ;CloseWidgetList( )
       SetState( *panel, 1 )
       
    ElseIf example = 4
@@ -1616,7 +1616,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;\\ 
-   WaitClose( )
+   WaitCloseRootWidget( )
 CompilerEndIf
 
 

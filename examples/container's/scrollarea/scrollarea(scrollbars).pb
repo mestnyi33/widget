@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
    a_init( root() )
   
   ; Define *mdi = ScrollAreaWidget(0,0,0,0, 308,232,1,#__flag_autosize)
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; ResizeWidget(*g0,113,189,#PB_Ignore,#PB_Ignore )
   
    
-  Bind( *mdi, @ScrollBars_ChangeEvents( ), #__event_ScrollChange ) 
+  BindWidgetEvent( *mdi, @ScrollBars_ChangeEvents( ), #__event_ScrollChange ) 
   
   Repeat
     Event = WaitWindowEvent()

@@ -49,12 +49,12 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
   SetWidgetFrame(widget(), frameSize);, -1), -2) ; bug
   
   a_set( widget(), #__a_full )
-  Bind( widget( ), @CustomEvents(), #__event_Draw )
+  BindWidgetEvent( widget( ), @CustomEvents(), #__event_Draw )
   
   ProcedureReturn widget( )
 EndProcedure
 
-If Open(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   ; Define handles to all objects
   a_init(root(), 10)
@@ -74,7 +74,7 @@ If Open(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", 
   SetSizeBounds(*Object4, 150, #PB_Ignore, 250, #PB_Ignore)
   SetSizeBounds(*Object5, #PB_Ignore, 50, #PB_Ignore, 150)
   
-  WaitClose( )
+  WaitCloseRootWidget( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 7

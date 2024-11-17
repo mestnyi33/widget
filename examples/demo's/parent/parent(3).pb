@@ -72,21 +72,21 @@ Procedure events_widgets()
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-If Open(1, 150, 110, 222, 470, "ROOT1", #PB_Window_SystemMenu) : SetWidgetClass(widget( ), "ROOT1" )
+If OpenRootWidget(1, 150, 110, 222, 470, "ROOT1", #PB_Window_SystemMenu) : SetWidgetClass(widget( ), "ROOT1" )
    *root1 = root( )
    *CONT1 = ContainerWidget(20, 180, 200, 200) : SetWidgetClass(widget( ), "CONT2" ) 
    ButtonWidget(10,20, 200, 30, "CONT2_but1", #__flag_ButtonToggle) : SetWidgetClass(widget( ), "CONT2_but1" )
-   CloseList()
+   CloseWidgetList()
 EndIf
 
-If Open(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCentered) : SetWidgetClass(widget( ), "ROOT2" )
+If OpenRootWidget(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCentered) : SetWidgetClass(widget( ), "ROOT2" )
    *root2 = root( )
    *CONT2 = ContainerWidget(10, 10, 200, 200) : SetWidgetClass(widget( ), "CONT1" ) 
    ButtonWidget(10,20, 200, 30, "CONT1_but1", #__flag_ButtonToggle) : SetWidgetClass(widget( ), "CONT1_but1" )
    *CHILD = ContainerWidget(10, 10, 100, 100) : SetWidgetClass(widget( ), "CHILD" )
    ButtonWidget(-25, 10, 100, 40, "CHILD_but1") : SetWidgetClass(widget( ), "CHILD_but1" )
-   CloseList()
-   CloseList()
+   CloseWidgetList()
+   CloseWidgetList()
    
    ButtonWidget(10,430, 200, 30, "change parent", #__flag_ButtonToggle) : SetWidgetClass(widget( ), "change_parent" )
 ;    

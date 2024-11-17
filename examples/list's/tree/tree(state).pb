@@ -133,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(1, 100, 50, 525, 435+40, "demo tree state", #PB_Window_SystemMenu)
+  If OpenRootWidget(1, 100, 50, 525, 435+40, "demo tree state", #PB_Window_SystemMenu)
     ; demo gadget
     *g1 = TreeGadget_(#PB_Any, 10, 10, 250, 100, #PB_Tree_NoButtons|#PB_Tree_NoLines|#PB_Tree_AlwaysShowSelection)
     *g2 = TreeGadget_(#PB_Any, 10, 115, 250, 310, #PB_Tree_NoButtons|#PB_Tree_NoLines|#PB_Tree_AlwaysShowSelection)
@@ -158,8 +158,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget::SetState(*w1, a-1)
     widget::SetState(*w2, a-1) 
-    widget::Bind(*w2, @widget_events())
-    widget::Bind(*w2, @widget_events(), #__event_RightClick)
+    widget::BindWidgetEvent(*w2, @widget_events())
+    widget::BindWidgetEvent(*w2, @widget_events(), #__event_RightClick)
     
     *reset = widget::ButtonWidget( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
     *first = widget::ButtonWidget( 525 - (10+120)*3, 435, 120, 30, "first item state", #__flag_ButtonToggle)
@@ -169,10 +169,10 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState( *reset, 1)
     widget::SetState( *last, 1)
     
-    widget::Bind(*reset, @button_events(), #__event_Up)
-    widget::Bind(*first, @button_events(), #__event_Up)
-    widget::Bind(*last, @button_events(), #__event_Up)
-    widget::Bind(*added, @button_events(), #__event_Up)
+    widget::BindWidgetEvent(*reset, @button_events(), #__event_Up)
+    widget::BindWidgetEvent(*first, @button_events(), #__event_Up)
+    widget::BindWidgetEvent(*last, @button_events(), #__event_Up)
+    widget::BindWidgetEvent(*added, @button_events(), #__event_Up)
     
     widget::WaitClose()
   EndIf

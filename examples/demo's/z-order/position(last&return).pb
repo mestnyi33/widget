@@ -179,9 +179,9 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  Define *g0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "form_0")
+  Define *g0 = WindowWidget(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "form_0")
   ButtonWidget(10,10,100,90,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
   ButtonWidget(30,30,100,90,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
   ButtonWidget(50,50,100,90,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
@@ -190,8 +190,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ForEach widget()
     If Child(widget(), *g0)
-      Bind(widget(), @this_events(), #PB_EventType_LeftButtonDown)
-      Bind(widget(), @this_events(), #PB_EventType_LeftButtonUp)
+      BindWidgetEvent(widget(), @this_events(), #PB_EventType_LeftButtonDown)
+      BindWidgetEvent(widget(), @this_events(), #PB_EventType_LeftButtonUp)
     EndIf
   Next
 

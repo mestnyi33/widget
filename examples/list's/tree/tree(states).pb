@@ -148,7 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndSelect
 EndProcedure
 
-  If Open(1, 100, 50, 520, 755, "demo Tree state", #PB_Window_SystemMenu)
+  If OpenRootWidget(1, 100, 50, 520, 755, "demo Tree state", #PB_Window_SystemMenu)
     ;\\ demo gadget
     *g1 = TreeGadget_(#PB_Any, 10, 10, 120, 180 )
     *g2 = TreeGadget_(#PB_Any, 10+125, 10, 120, 180)
@@ -235,12 +235,12 @@ EndProcedure
     BindGadgetEvent(*g6, @events_gadgets())
     
     ;\\
-    Bind(*w1, @events_widgets())
-    Bind(*w2, @events_widgets())
-    Bind(*w3, @events_widgets())
-    Bind(*w4, @events_widgets())
-    Bind(*w5, @events_widgets())
-    Bind(*w6, @events_widgets())
+    BindWidgetEvent(*w1, @events_widgets())
+    BindWidgetEvent(*w2, @events_widgets())
+    BindWidgetEvent(*w3, @events_widgets())
+    BindWidgetEvent(*w4, @events_widgets())
+    BindWidgetEvent(*w5, @events_widgets())
+    BindWidgetEvent(*w6, @events_widgets())
     
     widget::WaitClose()
   EndIf

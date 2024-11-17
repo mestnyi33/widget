@@ -593,13 +593,13 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If flag
           Flag(*this, flag, GetState(EventWidget( )))
-          Post(#__event_repaint, #PB_All)
+          PostWidgetEvent(#__event_repaint, #PB_All)
         EndIf
     EndSelect
     
   EndProcedure
   
-  If Open(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *this = widget::ButtonWidget(100, 100, 250, 200, text, #__flag_ButtonToggle|#__flag_Textmultiline) 
     
     
@@ -610,7 +610,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     w_flag = widget::TreeWidget(width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_optionboxes) 
     
-    Bind(#PB_All, @events_widgets())
+    BindWidgetEvent(#PB_All, @events_widgets())
     
     
     

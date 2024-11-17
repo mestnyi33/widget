@@ -47,18 +47,18 @@ CompilerIf #PB_Compiler_IsMainFile
   Define imgw = ImageWidth(0)
   Define imgh = ImageHeight(0)
   
-  Open(0, 0, 0, 500, 430,"demonstration of how to sync two scroll area bars", #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
+  OpenRootWidget(0, 0, 0, 500, 430,"demonstration of how to sync two scroll area bars", #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   *scroll1 = ScrollAreaWidget(10, 10, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
   ButtonWidget(0,0,imgw,imgh, "", 0,0)
   ButtonWidget(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
   ButtonWidget(2000-imgw,2000-imgh,imgw,imgh, "", 0,0)
-  CloseList()
+  CloseWidgetList()
   
   *scroll2 = ScrollAreaWidget(10, 220, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
   ButtonWidget(0,0,imgw,imgh, "", 0,0)
   ButtonWidget(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
   ButtonWidget(2000-imgw,2000-imgh,imgw,imgh, "", 0,0)
-  CloseList()
+  CloseWidgetList()
   
   SplitterWidget( 10, 10, 480, 410, *scroll1,*scroll2 )
   
@@ -80,8 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Debug *g\bar\thumb\change; 0
 ;   Debug ""
       
-  Bind(*scroll1, @syncCB(), #__Event_ScrollChange)
-  Bind(*scroll2, @syncCB(), #__Event_ScrollChange)
+  BindWidgetEvent(*scroll1, @syncCB(), #__Event_ScrollChange)
+  BindWidgetEvent(*scroll2, @syncCB(), #__Event_ScrollChange)
   
   Repeat
     Select WaitWindowEvent(1)

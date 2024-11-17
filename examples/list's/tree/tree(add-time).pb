@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   test_redraw_items = 0
 
-  If Open(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
+  If OpenRootWidget(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
     *w = TreeWidget(270, 10, 250, 680, #__Tree_NoLines|#__Tree_NoButtons) 
     
     Define time = ElapsedMilliseconds()
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
     ; HideGadget(0, 0)
     
-    WaitClose()
+    WaitCloseRootWidget()
   EndIf
   
 CompilerEndIf

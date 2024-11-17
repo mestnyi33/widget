@@ -56,13 +56,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       ;  transform = a_transform()\widget\parent
       
       RemoveItem(id_inspector_tree, GetData(a_transform()\widget))
-      Free(a_transform()\widget)
+      FreeWidget(a_transform()\widget)
     Else
       ;  transform = a_transform()\widget
       
       ForEach a_transform()\group()
         RemoveItem(id_inspector_tree, GetData(a_transform()\group()\widget))
-        Free(a_transform()\group()\widget)
+        FreeWidget(a_transform()\group()\widget)
         DeleteElement(a_transform()\group())
       Next
       
@@ -218,7 +218,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     widget()\class = "ToolBar"
     widget()\data = _button_
     ;SetData(widget(), _button_)
-    Bind(widget(), @toolbar_events())
+    BindWidgetEvent(widget(), @toolbar_events())
   EndMacro
   
   Macro Separator_()
@@ -229,7 +229,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndMacro
   
   
-  Open(0, 150, 150, 600, 600+barbuttonsize+6, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
+  OpenRootWidget(0, 150, 150, 600, 600+barbuttonsize+6, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
   toolbar_design = ContainerWidget(0,0,600,barbuttonsize+6) 
   ;SetAlignmentFlag(widget(), #__align_top)
   ;ToolBar(toolbar, window, flags)
@@ -260,7 +260,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   BarButton_(#_tb_align_center, CatchImage(#PB_Any,?group_width))
   BarButton_(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
   BarButton_(#_tb_align_right, CatchImage(#PB_Any,?group_right))
-  CloseList()
+  CloseWidgetList()
   
   
   ;ContainerWidget(0,barbuttonsize+6,600,600);, #__flag_autosize) 
@@ -271,7 +271,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   AddItem(widget(), -1, "form_0") : ResizeWidget(widget(), 50, 30, 500, 500) : *new = widget()
   SetWidgetColor(widget(), #__color_back, $C0AED8F2)
-  ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
+  ; *new = WindowWidget(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
   ; ; ContainerWidget(30,30,450-2,450-2)
   ;;ScrollAreaWidget(30,30,450-2,450-2, 0,0)
   ScrollAreaWidget(30,30,450-2,450-2, 250,750, 1);a_transform()\grid\size)
@@ -290,9 +290,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ButtonWidget(150,180,115,50,"butt2")
   ButtonWidget(180,200,115,50,"butt3")
   ButtonWidget(120,240,170,40,"butt4")
-  CloseList()
+  CloseWidgetList()
   SpinWidget(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
-  CloseList()
+  CloseWidgetList()
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   

@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global s_desi, s_tbar, s_view, s_help, s_list,s_insp
   
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
-  widget::Open(0, 100,100,800,600, "ide", flag)
+  widget::OpenRootWidget(0, 100,100,800,600, "ide", flag)
   window_ide = widget::GetCanvasWindow(root())
   canvas_ide = widget::GetCanvasGadget(root())
   
@@ -98,7 +98,7 @@ CompilerEndIf
 ;   Global mdi_design, toolbar_design, listview_debug, text_help, tree_inspector,panel_inspector
 ;   
 ;   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
-;   window_ide = GetCanvasWindow(Open(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)))
+;   window_ide = GetCanvasWindow(OpenRootWidget(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)))
 ;   
 ;   toolbar_design = TextWidget(0,0,0,0,"", #__flag_TextBorder)
 ;   mdi_design = TextWidget(0,0,0,0,"", #__flag_TextBorder)
@@ -162,7 +162,7 @@ CompilerEndIf
 ;   SetTextWidget(panel_inspector, "size: ("+Str(WidgetWidth(panel_inspector))+"x"+Str(WidgetHeight(panel_inspector))+") - " + Str(IDWidget( GetParent( panel_inspector ))))
 ;   SetTextWidget(text_help, "size: ("+Str(WidgetWidth(text_help))+"x"+Str(WidgetHeight(text_help))+") - " + Str(IDWidget( GetParent( text_help ))))
 ;   
-;   Bind(-1,-1)
+;   BindWidgetEvent(-1,-1)
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

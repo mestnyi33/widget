@@ -32,15 +32,15 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   #Splitter2 = 2
   #Splitter4 = 4
   
-  Open(0, 230,0, 230,200)
+  OpenRootWidget(0, 230,0, 230,200)
   ButtonWidget(0, 0, 0, 0, "Button 0") ; No need to specify size or coordinates
   ButtonWidget(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
   SplitterWidget(5, 5, 220, 120, WidgetID(#Button0), WidgetID(#Button1));, #PB_Splitter_Separator)
-  Bind( WidgetID(#Splitter2), @events_widgets())
+  BindWidgetEvent( WidgetID(#Splitter2), @events_widgets())
   
   TextWidget(5, 135, 220, 60, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Border|#__flag_Textcenter|#__flag_Texttop )
   SplitterWidget(5, 5, 220, 190, WidgetID(#Splitter2), WidgetID(3), #PB_Splitter_Separator)
-  ;Bind( WidgetID(#Splitter4), @events_widgets())
+  ;BindWidgetEvent( WidgetID(#Splitter4), @events_widgets())
   
   
   ButtonGadget(#Button0, 0, 0, 0, 0, "Button 0") ; No need to specify size or coordinates
@@ -53,7 +53,7 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   ;BindGadgetEvent(#Splitter4, @events_gadgets())
   
   
-  WaitClose( )
+  WaitCloseRootWidget( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 42

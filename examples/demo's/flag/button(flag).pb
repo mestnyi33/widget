@@ -193,7 +193,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
       
-  If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
     *this  = widget::ButtonWidget(100, 100, 250, 200, Text, #PB_Button_MultiLine);|)
     
@@ -227,7 +227,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     AddItem(tree, #tree_item_vertical, "vertical")
 ;     AddItem(tree, #tree_item_invert, "invert")
     
-    Bind(#PB_All, @events_widgets())
+    BindWidgetEvent(#PB_All, @events_widgets())
     ;Flag(*this, #PB_Button_MultiLine)
     ;Debug _Flag(*this, #PB_Button_MultiLine)
     ;\\ set button toggled state

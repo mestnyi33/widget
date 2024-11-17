@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; PostEventRepaint( root())
    EndProcedure
    
-   Define Window_0 = GetCanvasWindow( Open( #PB_Any, 20, 20, 200, 200, "test", #PB_Window_SizeGadget))
+   Define Window_0 = GetCanvasWindow( OpenRootWidget( #PB_Any, 20, 20, 200, 200, "test", #PB_Window_SizeGadget))
    
    ;Define Button_0 = ButtonWidget( 200-50-5, 200-50-5, 50,  50, "right & bottom")
    Define Button_0 = ButtonWidget( 5, 5, 50,  50, "right & bottom")
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    PostEventRepaint( root())
    ;While WaitWindowEvent(2000) : Wend
-   WaitClose( )
+   WaitCloseRootWidget( )
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

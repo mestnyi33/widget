@@ -95,13 +95,13 @@ Procedure events_wbuttons()
 					Debug ""+CountItems(ID(1)) +" - count widget items"
 					
 				Case 3, 4
-					;OpenList(ID(1))
+					;OpenWidgetList(ID(1))
 					AddItem(ID(1), 1, "Sub 2 (add)")
 					Protected sub = Bool(CountItems(ID(1)) > 1)
 					
 					SetItemTextWidget(ID(1), sub, "Sub "+Str(sub+1)+" (add&set)")
 					Debug GetItemTextWidget(ID(1), sub) + " - get item text"
-					;CloseList()
+					;CloseWidgetList()
 					
 					SetItemFont(ID(1), sub, 5 + Bool(IDWidget(EventWidget( )) = 4))
 					SetItemState(ID(1), sub, 1)
@@ -115,7 +115,7 @@ EndProcedure
 
 ; Shows using of several panels...
 OpenWindow(0, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-If Open(0, 322+50, 0, 322+50, 220)
+If OpenRootWidget(0, 322+50, 0, 322+50, 220)
 	Define Text.s, *g
 	CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 		LoadFont(5, "Arial", 18)
@@ -202,7 +202,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	SetState(*g, 2)
 	If Type(*g) = #PB_GadgetType_Panel
-		CloseList()
+		CloseWidgetList()
 	EndIf
 	
 	SetItemFont(*g, 2, 5)
@@ -252,28 +252,28 @@ If Open(0, 322+50, 0, 322+50, 220)
 		StopDraw( )
 	EndIf
 	
-	CloseList()
+	CloseWidgetList()
 	
 	SetItemFont(ID(0), 1, 6)
 	SetItemFont(ID(0), 2, #Font18R)
 	
 	For i = 0 To 1
-		Bind(ID(i), @events_widgets())
+		BindWidgetEvent(ID(i), @events_widgets())
 	Next
 	For i = 2 To 5
-		Bind(ID(i), @events_wbuttons())
+		BindWidgetEvent(ID(i), @events_wbuttons())
 	Next
 	
 	Debug ""+CountItems(ID(1)) +" - count widget items"
 	
 	;   ; bug set font - FIXED Repaint() ; Root(()\text\fontID[1] =- 1 >> *this\root\text\fontID[1] =- 1 
-	;   Open(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
+	;   OpenRootWidget(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
 	;   Global *panel._S_widget = PanelWidget(10,150,200,160) 
 	;   AddItem(*panel,-1,"Panel") 
 	;   AddItem(*panel,-1,"Second") 
 	;   AddItem(*panel,-1,"Third") 
-	;   CloseList()
-	;   Open(OpenWindow(#PB_Any, 0, 0, 100, 100, "", 0, UseGadgetList(0)))
+	;   CloseWidgetList()
+	;   OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 100, 100, "", 0, UseGadgetList(0)))
 	
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

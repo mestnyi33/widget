@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected font = LoadFont(#PB_Any, "arial", 40)
     Protected   ParentID = OpenWindow(0, 0, 0, 270, 145+s*9, "Demo z-order gadget", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     
-    Open(0, 0, 0, 270, 271+s*9)
+    OpenRootWidget(0, 0, 0, 270, 271+s*9)
     
     ;    ButtonWidget(x, y+56+s*9, 215, h, "1",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget())) ; Gadget(8, 
     ;{ first container
@@ -40,8 +40,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ButtonWidget(4, 0, 215-12, h-8-4, "1", #__flag_TextRight|#__flag_Texttop) 
     SetWidgetClass(widget(), GetTextWidget(widget())) 
-    CloseList()
-    CloseList()
+    CloseWidgetList()
+    CloseWidgetList()
     ;}
     
     
@@ -63,8 +63,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ButtonWidget(4, 4, 200-4, (80+h+s*9)-16-4, "6 < 5 > 4", #__flag_TextRight|#__flag_Texttop) 
     SetWidgetClass(widget(), "this_2") 
-    CloseList()
-    CloseList()
+    CloseWidgetList()
+    CloseWidgetList()
     ;}
     
     ButtonWidget(x, y+35+s*4, 115, h, "6",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(4, 
@@ -83,8 +83,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ButtonWidget(4, 0, 43, h-8-4, "9", #__flag_TextRight|#__flag_Texttop) 
     SetWidgetClass(widget(), GetTextWidget(widget())) 
-    CloseList()
-    CloseList()
+    CloseWidgetList()
+    CloseWidgetList()
     ;}
     
     ResizeWindow(0,WindowX(0)-200,#PB_Ignore,#PB_Ignore,#PB_Ignore)

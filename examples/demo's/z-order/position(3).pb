@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #demo = #after
   Global *c0,*b1,*b2
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 240,205, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 240,205, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     
     ButtonWidget(5, 5, 200, 30,"btn0") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     If #demo = #before
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonWidget(105,  5, 50, 30,"301") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     ButtonWidget(115, 25, 50, 30,"302") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     ButtonWidget(125, 45, 50, 30,"303") : SetWidgetClass(widget(), GetTextWidget(widget()))  
-    CloseList()
+    CloseWidgetList()
     
     ButtonWidget(5, 145, 200, 30, "btn3") : SetWidgetClass(widget(), GetTextWidget(widget()))
     
@@ -52,12 +52,12 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If #demo = #open
-      OpenList(*c0, 0)
+      OpenWidgetList(*c0, 0)
       *b1 = ButtonWidget(5,5,80,50,"btn1") : SetWidgetClass(widget(), GetTextWidget(widget()))
-      CloseList()
-      OpenList(*c0, 1)
+      CloseWidgetList()
+      OpenWidgetList(*c0, 1)
       *b2 = ButtonWidget(25,25,80,50, "btn2") : SetWidgetClass(widget(), GetTextWidget(widget()))
-      CloseList()
+      CloseWidgetList()
     Else
       SetParent(*b1, *c0, 0)
       SetParent(*b2, *c0, 1)
@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     debug_position(root())
     
-    WaitClose()
+    WaitCloseRootWidget()
     
   EndIf   
 CompilerEndIf

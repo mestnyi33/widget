@@ -15,13 +15,13 @@ CompilerIf #PB_Compiler_IsMainFile
    Define Width=570, Height=300
    
    ;\\
-   If Open(0, 50, 50, Width, Height, "Root_0_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+   If OpenRootWidget(0, 50, 50, Width, Height, "Root_0_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
       SetWidgetClass(root( ), "root_0" )
       
       ;\\
-      Window(10, 10, 250, 200, "window_0_root_0", #PB_Window_SystemMenu ) : SetWidgetClass(widget( ), "window_0_root_0" )
-      Window(10, 10, 200, 150, "window_1_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_1_root_0" )
-      Window(10, 10, 150, 100, "window_2_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_2_root_0" )
+      WindowWidget(10, 10, 250, 200, "window_0_root_0", #PB_Window_SystemMenu ) : SetWidgetClass(widget( ), "window_0_root_0" )
+      WindowWidget(10, 10, 200, 150, "window_1_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_1_root_0" )
+      WindowWidget(10, 10, 150, 100, "window_2_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_2_root_0" )
       
       TreeWidget(5,5,70,90) : SetWidgetClass(widget( ), "tree_3_window_2_root_0" )
       AddItem(widget( ), -1, "item_0_tree_3_window_2_root_0" )
@@ -34,10 +34,10 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1, "item_2_tree_4_window_2_root_0" )
       
       ;\\
-      OpenList( root( ) )
-      Window(300, 10, 250, 200, "window_5_root_0", #PB_Window_SystemMenu ) : SetWidgetClass(widget( ), "window_5_root_0" )
-      Window(10, 10, 200, 150, "window_6_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_6_root_0" )
-      Window(10, 10, 150, 100, "window_7_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_7_root_0" )
+      OpenWidgetList( root( ) )
+      WindowWidget(300, 10, 250, 200, "window_5_root_0", #PB_Window_SystemMenu ) : SetWidgetClass(widget( ), "window_5_root_0" )
+      WindowWidget(10, 10, 200, 150, "window_6_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_6_root_0" )
+      WindowWidget(10, 10, 150, 100, "window_7_root_0", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_7_root_0" )
       
       TreeWidget(5,5,70,90) : SetWidgetClass(widget( ), "tree_8_window_7_root_0" )
       AddItem(widget( ), -1, "item_0_tree_8_window_7_root_0" )
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1, "item_2_tree_9_window_7_root_0" )
       
       ;\\
-      OpenList( root( ) )
+      OpenWidgetList( root( ) )
       ButtonWidget( 14, 250, 250,40, "button_10_root_0") : SetWidgetClass(widget( ), "button_10_root_0" )
       ButtonWidget( 304, 250, 250,40, "button_11_root_0") : SetWidgetClass(widget( ), "button_11_root_0" )
       
@@ -59,19 +59,19 @@ CompilerIf #PB_Compiler_IsMainFile
       ;SetActive( WidgetID( 4 ) )
       
       ;\\
-      Bind( #PB_All, @active(), #__event_Focus)
-      Bind( #PB_All, @deactive(), #__event_LostFocus)
+      BindWidgetEvent( #PB_All, @active(), #__event_Focus)
+      BindWidgetEvent( #PB_All, @deactive(), #__event_LostFocus)
       
    EndIf
    
    ;\\
-   If Open(1, 50, 400, Width, Height, "Root_1_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+   If OpenRootWidget(1, 50, 400, Width, Height, "Root_1_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
       SetWidgetClass(root( ), "root_1" )
       
       ;\\
-      Window(10, 10, 250, 200, "window_0_root_1", #PB_Window_SystemMenu ) : SetWidgetClass(widget( ), "window_0_root_1" )
-      Window(10, 10, 200, 150, "window_1_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_1_root_1" )
-      Window(10, 10, 150, 100, "window_2_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_2_root_1" )
+      WindowWidget(10, 10, 250, 200, "window_0_root_1", #PB_Window_SystemMenu ) : SetWidgetClass(widget( ), "window_0_root_1" )
+      WindowWidget(10, 10, 200, 150, "window_1_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_1_root_1" )
+      WindowWidget(10, 10, 150, 100, "window_2_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_2_root_1" )
       
       TreeWidget(5,5,70,90) : SetWidgetClass(widget( ), "tree_3_window_2_root_1" )
       AddItem(widget( ), -1, "item_0_tree_3_window_2_root_1" )
@@ -84,10 +84,10 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1, "item_2_tree_4_window_2_root_1" )
       
       ;\\
-      OpenList( root( ) )
-      Window(300, 10, 250, 200, "window_5_root_1", #PB_Window_SystemMenu ) : SetWidgetClass(widget( ), "window_5_root_1" )
-      Window(10, 10, 200, 150, "window_6_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_6_root_1" )
-      Window(10, 10, 150, 100, "window_7_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_7_root_1" )
+      OpenWidgetList( root( ) )
+      WindowWidget(300, 10, 250, 200, "window_5_root_1", #PB_Window_SystemMenu ) : SetWidgetClass(widget( ), "window_5_root_1" )
+      WindowWidget(10, 10, 200, 150, "window_6_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_6_root_1" )
+      WindowWidget(10, 10, 150, 100, "window_7_root_1", #PB_Window_SystemMenu|#__flag_child, widget()) : SetWidgetClass(widget( ), "window_7_root_1" )
       
       TreeWidget(5,5,70,90) : SetWidgetClass(widget( ), "tree_8_window_7_root_1" )
       AddItem(widget( ), -1, "item_0_tree_8_window_7_root_1" )
@@ -100,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1, "item_2_tree_9_window_7_root_1" )
       
       ;\\
-      OpenList( root( ) )
+      OpenWidgetList( root( ) )
       ButtonWidget( 14, 250, 250,40, "button_10_root_1") : SetWidgetClass(widget( ), "button_10_root_1" )
       ButtonWidget( 304, 250, 250,40, "button_11_root_1") : SetWidgetClass(widget( ), "button_11_root_1" )
       
@@ -109,13 +109,13 @@ CompilerIf #PB_Compiler_IsMainFile
       ;SetActive( WidgetID( 4 ) )
       
       ;\\
-      Bind( #PB_All, @active(), #__event_Focus)
-      Bind( #PB_All, @deactive(), #__event_LostFocus)
+      BindWidgetEvent( #PB_All, @active(), #__event_Focus)
+      BindWidgetEvent( #PB_All, @deactive(), #__event_LostFocus)
       
    EndIf
    
    ;\\
-   WaitClose( )
+   WaitCloseRootWidget( )
    
    End 
 CompilerEndIf

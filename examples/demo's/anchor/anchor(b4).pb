@@ -39,7 +39,7 @@ Procedure right_events()
   
 EndProcedure
 
-If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (context menu via right click)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (context menu via right click)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ; Creation of the context menu to change the layer position of the selected object.
   CreatePopupMenu(#Menu)
   MenuItem(#MenuItem_ZOrder_Top, "Push to top most layer")
@@ -59,7 +59,7 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
   
   BindEvent( #PB_Event_Gadget, @right_events(), GetCanvasWindow(root()), GetCanvasGadget(root()), #PB_EventType_RightButtonUp )
   BindEvent( #PB_Event_Menu, @menu_events())
-  WaitClose( )
+  WaitCloseRootWidget( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 31

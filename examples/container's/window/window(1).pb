@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;
-  Window(100, 100, 200, 200, "window_0", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
+  WindowWidget(100, 100, 200, 200, "window_0", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
   ButtonWidget(0,0,80,20,"button")
   ButtonWidget(200-80,200-20,80,20,"button")
   

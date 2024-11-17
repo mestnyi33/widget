@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Open(0, 270, 100, 600, 310, "Change tab location")
+   OpenRootWidget(0, 270, 100, 600, 310, "Change tab location")
    ;a_init(root(),0)
    SetWidgetColor(root(), #__color_back, $FFF2F2F2)
    
@@ -128,7 +128,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ButtonWidget( 0,0,50,50,"Button" )
    ButtonWidget( 0,180-79+1,50,50,"Button" )
    AddItem (*panel, -1, "Tab 3", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-   CloseList() ; *panel
+   CloseWidgetList() ; *panel
    
    SetWidgetColor(*panel, #__color_back, $FFAFF8FF)
    SetGadGetWidgetColor(0, #PB_Gadget_BackColor, $FFAFF8FF)
@@ -142,10 +142,10 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   OptionWidget(300+130, GadgetY(1) + 70, 80, 20, "Bottom")
    ;   OptionWidget(300+210, GadgetY(1) + 45, 80, 20, "Right")
    ;   SetState(*option, #True)
-   ;   Bind( #PB_All, @events_widget( ), #PB_EventType_Change )
+   ;   BindWidgetEvent( #PB_All, @events_widget( ), #PB_EventType_Change )
    
    
-    Bind( #PB_All, @events_widget( ) )
+    BindWidgetEvent( #PB_All, @events_widget( ) )
    
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       ClipGadgets( UseGadgetList(0) )

@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
-  If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
     SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; SetWidgetColor(widget(), #PB_Gadget_BackColor, -1)
     
     *b = ButtonWidget(Sw-130, Sh-30, 130, 30, "Button")
-    CloseList()
+    CloseWidgetList()
     
     ;
     SplitterWidget(10,10,590,480, 0, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical))
@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug  Str(ElapsedMilliseconds()-time) + " - time add gadget" 
       CloseGadgetList()
       
-      OpenList(*g)
+      OpenWidgetList(*g)
       time = ElapsedMilliseconds()
       For i=0 To count
         If Bool(i>count-110)
@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
-      CloseList()
+      CloseWidgetList()
     EndIf
     
     ; set&get demos
@@ -115,9 +115,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug ""
     
     BindGadgetEvent(g, @events_gadgets())
-    Bind(*g, @events_widgets())
+    BindWidgetEvent(*g, @events_widgets())
     
-    WaitClose()
+    WaitCloseRootWidget()
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf

@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
 ;   Define *mdi = MDIWidget(x,y,Width, height);, #__flag_autosize)
 ;   
@@ -25,10 +25,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Define *g2 = AddItem(*mdi, -1, "form_2")
 ;   ButtonWidget(10,10,80,80,"button_2")
 
-  Window(10,10,100,70,"window_1", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_1") : CloseList()
-  Window(120,10,100,70,"window_2", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_2") : CloseList()
+  WindowWidget(10,10,100,70,"window_1", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_1") : CloseWidgetList()
+  WindowWidget(120,10,100,70,"window_2", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_2") : CloseWidgetList()
   
-  Window(x,y,width, height,"window_3", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_3") 
+  WindowWidget(x,y,width, height,"window_3", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_3") 
   ;Define *mdi._s_widget = MDIWidget(x,y,Width, height);, #__flag_autosize)
   Define *mdi._s_widget = MDIWidget(10,10, WidgetWidth( widget( ), #__c_inner )-20, WidgetHeight( widget( ), #__c_inner )-20);, #__flag_autosize)
   
@@ -38,31 +38,31 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *g0._s_widget = AddItem(*mdi, -1, "form_0") : SetWidgetClass(widget(), "form_0") 
   ButtonWidget(10,10,80,80,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Window(100,10,100,70,"window_01", #PB_Window_SystemMenu, *g0) : SetWidgetClass(widget(), "window_01") : CloseList()
-  Window(150,50,100,70,"window_02", #PB_Window_SystemMenu, *g0) : SetWidgetClass(widget(), "window_02") : CloseList()
+  WindowWidget(100,10,100,70,"window_01", #PB_Window_SystemMenu, *g0) : SetWidgetClass(widget(), "window_01") : CloseWidgetList()
+  WindowWidget(150,50,100,70,"window_02", #PB_Window_SystemMenu, *g0) : SetWidgetClass(widget(), "window_02") : CloseWidgetList()
   
   Define *g1._s_widget = AddItem(*mdi, -1, "form_1") : SetWidgetClass(widget(), "form_1") 
   ButtonWidget(10,10,80,80,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Window(100,10,100,70,"window_11", #PB_Window_SystemMenu, *g1) : SetWidgetClass(widget(), "window_11") : CloseList()
-  Window(150,50,100,70,"window_12", #PB_Window_SystemMenu, *g1) : SetWidgetClass(widget(), "window_12") 
+  WindowWidget(100,10,100,70,"window_11", #PB_Window_SystemMenu, *g1) : SetWidgetClass(widget(), "window_11") : CloseWidgetList()
+  WindowWidget(150,50,100,70,"window_12", #PB_Window_SystemMenu, *g1) : SetWidgetClass(widget(), "window_12") 
   
   ContainerWidget(20,30,60,60)
   widget()\bs = 10 : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   ButtonWidget(10,10,80,40,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   widget()\bs = 10 : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  CloseList()
-  CloseList()
+  CloseWidgetList()
+  CloseWidgetList()
   
   Define *g2._s_widget = AddItem(*mdi, -1, "form_2") : SetWidgetClass(widget(), "form_2") 
   ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Window(100,10,100,70,"window_21", #PB_Window_SystemMenu, *g2) : SetWidgetClass(widget(), "window_21") : CloseList()
-  Window(150,50,100,70,"window_22", #PB_Window_SystemMenu, *g2) : SetWidgetClass(widget(), "window_22") : CloseList()
+  WindowWidget(100,10,100,70,"window_21", #PB_Window_SystemMenu, *g2) : SetWidgetClass(widget(), "window_21") : CloseWidgetList()
+  WindowWidget(150,50,100,70,"window_22", #PB_Window_SystemMenu, *g2) : SetWidgetClass(widget(), "window_22") : CloseWidgetList()
   
-;   OpenList(*mdi)
+;   OpenWidgetList(*mdi)
 ;   ButtonWidget(450,110,80,80,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget())) 
-;   CloseList()
+;   CloseWidgetList()
   
   ResizeWidget(*g1, WidgetX(*g0, #__c_container) + WidgetWidth(*g0, #__c_frame) - 15, WidgetY(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
   ResizeWidget(*g2, WidgetX(*g0, #__c_container), WidgetY(*g0, #__c_container) + WidgetHeight(*g0, #__c_frame) - 15, #PB_Ignore, #PB_Ignore)

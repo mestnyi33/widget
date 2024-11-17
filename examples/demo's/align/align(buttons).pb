@@ -224,33 +224,33 @@ Module AnchorBox
     ;widget::SetState( LBUTTON,1 )
     widget::SetState( LTBUTTON,1 )
     ;widget::SetState( TBUTTON,1 )
-    widget::CloseList( )
+    widget::CloseWidgetList( )
     
     ;widget::SetWidgetColor(a, constants::#__color_back, widget::GetWidgetColor( widget::GetParent( a ), constants::#__color_back) )
     
-    widget::Bind(LTBUTTON, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(LBUTTON, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(RTBUTTON, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(TBUTTON, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(CENTER, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(RBUTTON, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(RBBUTTON, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(BBUTTON, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(LBBUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(LTBUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(LBUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(RTBUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(TBUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(CENTER, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(RBUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(RBBUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(BBUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(LBBUTTON, @Events( ), constants::#__event_LeftClick )
     
-    widget::Bind(LTBUTTON, @Events( ), constants::#__event_Left2Click )
-    widget::Bind(LBUTTON, @Events( ), constants::#__event_Left2Click )
-    widget::Bind(RTBUTTON, @Events( ), constants::#__event_Left2Click )
-    widget::Bind(TBUTTON, @Events( ), constants::#__event_Left2Click )
-    widget::Bind(CENTER, @Events( ), constants::#__event_Left2Click )
-    widget::Bind(RBUTTON, @Events( ), constants::#__event_Left2Click )
-    widget::Bind(RBBUTTON, @Events( ), constants::#__event_Left2Click )
-    widget::Bind(BBUTTON, @Events( ), constants::#__event_Left2Click )
-    widget::Bind(LBBUTTON, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(LTBUTTON, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(LBUTTON, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(RTBUTTON, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(TBUTTON, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(CENTER, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(RBUTTON, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(RBBUTTON, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(BBUTTON, @Events( ), constants::#__event_Left2Click )
+    widget::BindWidgetEvent(LBBUTTON, @Events( ), constants::#__event_Left2Click )
     
     widget::Hide(*a,1)
     widget::SetData(Button, *a)
-    widget::Bind(BUTTON, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(BUTTON, @Events( ), constants::#__event_LeftClick )
     
     ProcedureReturn *a
   EndProcedure
@@ -258,7 +258,7 @@ EndModule
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  If widget::Open( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
+  If widget::OpenRootWidget( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
     
     AnchorBox::Create(30,30,250,30)
     

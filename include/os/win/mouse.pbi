@@ -4,7 +4,7 @@
 CompilerEndIf
 
 DeclareModule Mouse
-  Declare.i Window( )
+  Declare.i WindowWidget( )
   Declare.i Gadget( WindowID )
 EndDeclareModule
 
@@ -15,7 +15,7 @@ Module Mouse
     ProcedureReturn Class$
   EndProcedure
   
-  Procedure Window( )
+  Procedure WindowWidget( )
     Protected Cursorpos.q, handle
     GetCursorPos_( @Cursorpos )
     handle = WindowFromPoint_( Cursorpos )

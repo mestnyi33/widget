@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndEnumeration
   
-  If Open(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetWidgetColor( widget( ), #__color_Back, $FF95E3F6 )
     
     ContainerWidget( 100,100,200,100, #__flag_BorderFlat ) ; #__flag_BorderSingle ; #__flag_borderDouble
@@ -67,9 +67,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     ButtonWidget( 0,0,80,30,"button")
-    CloseList( )
+    CloseWidgetList( )
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
 CompilerEndIf
 

@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected Text.s = GetTextWidget(*Object)
       Protected Hue = DataValue
         Protected x, y
-       Draw_ButtonWidget( *Object )
+       Draw_Button( *Object )
      
    EndProcedure
    
@@ -113,13 +113,13 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeWidget(*Object, x, y, width, height)
       
       *Object = *Object\root\widget
-      Bind( *Object, @MDI_ObjectEvents(), #__event_LeftUp )
-      Bind( *Object, @MDI_ObjectEvents(), #__event_LeftDown )
-      Bind( *Object, @MDI_ObjectEvents(), #__event_MouseMove )
-      Bind( *Object, @MDI_ObjectEvents(), #__event_MouseEnter )
-      Bind( *Object, @MDI_ObjectEvents(), #__event_MouseLeave )
-      Bind( *Object, @MDI_ObjectEvents(), #__event_Draw )
-      Bind( #PB_All, @MDI_ObjectEvents(), #__event_Repaint )
+      BindWidgetEvent( *Object, @MDI_ObjectEvents(), #__event_LeftUp )
+      BindWidgetEvent( *Object, @MDI_ObjectEvents(), #__event_LeftDown )
+      BindWidgetEvent( *Object, @MDI_ObjectEvents(), #__event_MouseMove )
+      BindWidgetEvent( *Object, @MDI_ObjectEvents(), #__event_MouseEnter )
+      BindWidgetEvent( *Object, @MDI_ObjectEvents(), #__event_MouseLeave )
+      BindWidgetEvent( *Object, @MDI_ObjectEvents(), #__event_Draw )
+      BindWidgetEvent( #PB_All, @MDI_ObjectEvents(), #__event_Repaint )
    EndProcedure
    
    ;- \\
@@ -202,7 +202,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define round = 50
    
    ;
-   MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
+   MyCanvas = GetCanvasGadget(OpenRootWidget(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
    SetWidgetColor(root(), #__color_back, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_ResizeWidget(), #PB_EventType_Resize )
@@ -238,7 +238,7 @@ CompilerIf #PB_Compiler_IsMainFile
    MDI_AddObject( *mdi, #PB_GadgetType_Button, 90,30, 100,100, "1" , 100)
    
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
-   WaitClose( )
+   WaitCloseRootWidget( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 115

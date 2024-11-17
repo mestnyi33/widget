@@ -226,7 +226,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    UsePNGImageDecoder()
    
-   Open(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_Canvas)
+   OpenRootWidget(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_Canvas)
    
    ;ResizeWidget( Get( ), 10, 10, 650-20, 30)
    *g_tab1 = TabBarWidget(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)
@@ -269,7 +269,7 @@ CompilerIf #PB_Compiler_IsMainFile
          TextWidget(10, 345, 90, 20, "max tab length:")
          *g_MaxTabLength = SpinWidget(100, 340, 60, 20, 0, 1000, #PB_Spin_Numeric)
          SetState(*g_MaxTabLength, GetAttribute(*g_tab1, #__tab_MaxTabLength))
-         CloseList()
+         CloseWidgetList()
       EndIf
       
       If Border(180, 5, 375, 195, "Tabs")
@@ -285,12 +285,12 @@ CompilerIf #PB_Compiler_IsMainFile
          *g_ItemCloseButton = CheckBoxWidget(210, 100, 100, 20, "close button")
          *g_ItemCheckBox = CheckBoxWidget(210, 120, 100, 20, "check box")
          *g_ItemImage = ButtonWidget(10, 165, 100, 20, "image or icon", #__flag_ButtonToggle)
-         CloseList()
+         CloseWidgetList()
       EndIf
       
       If Border(180, 210, 225, 120, "Events")
          *g_Events = EditorWidget(10, 20, 200, 90, #PB_Editor_ReadOnly)
-         CloseList()
+         CloseWidgetList()
       EndIf
       
       UpdateItem(0)
@@ -661,7 +661,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    UsePNGImageDecoder()
    
-   Open(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_TabBar)
+   OpenRootWidget(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_TabBar)
    
    ;ResizeGadget( GetCanvasGadget( ), 10, 10, 650-20, 30)
    *tab1 = TabBarWidget(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)

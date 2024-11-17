@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UsePNGImageDecoder()
   LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/world.png")
   
-  If Open(0, 0, 0, 270+w_x, 180, "ComboBox", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 270+w_x, 180, "ComboBox", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable)
       AddGadgetItem(0, -1, "ComboBox editable...")
 

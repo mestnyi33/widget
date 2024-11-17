@@ -12,7 +12,7 @@
 ;    Global i, x = 220, panel, butt1, butt2
 ;    Global._s_WIDGET *root, *panel, *butt0, *butt1, *butt2
 ;    
-;    If Open( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+;    If OpenRootWidget( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
 ;       ;\\
 ;       panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
 ;       For i = 0 To 5 
@@ -34,7 +34,7 @@
 ;       
 ;       ;\\
 ;       *root = root()
-;       ;     ;*root = Window( x, 0, 160,170-10, "") :x = 0
+;       ;     ;*root = WindowWidget( x, 0, 160,170-10, "") :x = 0
 ;       ;     *root = ContainerWidget( x, 0, 160,170-10) :x = 0
 ;       
 ;       *panel = PanelWidget( x, 65, 160,95 ) 
@@ -44,11 +44,11 @@
 ;          i=3:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) ) 
 ;          i=4:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) ) 
 ;          i=5:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) ) 
-;       CloseList( )
+;       CloseWidgetList( )
 ;       
-; ;           OpenList( *panel, 0 )
+; ;           OpenWidgetList( *panel, 0 )
 ; ;           ButtonWidget( 20,25,80,35, "_0" ) : SetWidgetClass(widget( ), "btn"+Str(0) )  
-; ;           CloseList( )
+; ;           CloseWidgetList( )
 ;       
 ;        *butt0 = ButtonWidget( 20,25,80,35, "_0" ) : SetWidgetClass(widget( ), "btn"+Str(0) ) 
 ;        Debug " reparent "
@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global._s_WIDGET *CONT, *but0
    
-   If Open( 0, 0, 0, 220, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRootWidget( 0, 0, 0, 220, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
       *CONT = PanelWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
       AddItem(*CONT, -1, "item0" )
@@ -134,7 +134,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       ButtonWidget( 10,35,80,25, "*btn3_8" )  : SetWidgetClass(widget( ), "btn3_8" ) 
 ;       ButtonWidget( 10,65,80,25, "*btn3_9" )  : SetWidgetClass(widget( ), "btn3_9" ) 
       ;
-      CloseList()
+      CloseWidgetList()
       
       ;\\ test 
       *but0 = ButtonWidget( 100,35,80,25, "*btn0_added" ) : SetWidgetClass(widget( ), "btn0_added" ) 
@@ -185,7 +185,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       ;       result
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

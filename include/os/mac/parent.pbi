@@ -2,7 +2,7 @@
 
 DeclareModule Parent
   EnableExplicit
-  Declare Window( gadget.i )
+  Declare WindowWidget( gadget.i )
   Declare Gadget( gadget.i )
   Declare Get( handle.i )
   Declare Set( gadget.i, ParentID.i, Item.i = #PB_Default )
@@ -38,7 +38,7 @@ Module Parent
     EndIf
   EndProcedure
   
-  Procedure Window( gadget.i ) ; Return the id of the Parent window from the gadget id
+  Procedure WindowWidget( gadget.i ) ; Return the id of the Parent window from the gadget id
     If IsGadget( gadget )
       ProcedureReturn ID::Window( GetWindowID( GadgetID( gadget ) ) )
     EndIf

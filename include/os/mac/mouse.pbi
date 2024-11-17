@@ -3,7 +3,7 @@
 CompilerEndIf
 
 DeclareModule Mouse
-  Declare.i Window( )
+  Declare.i WindowWidget( )
   Declare.i Gadget( WindowID )
   Declare.i State( )
 EndDeclareModule
@@ -17,7 +17,7 @@ Module Mouse
     EndIf
   EndProcedure
   
-  Procedure Window( )
+  Procedure WindowWidget( )
     Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
     
     ; get-WindowNumber

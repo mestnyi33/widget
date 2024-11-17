@@ -79,7 +79,7 @@ DeclareModule Cursor
    
    ;Declare   isHiden( )
    ;Declare   Hide( state.b )
-   Declare   Free( *cursor )
+   Declare   FreeWidget( *cursor )
    ;Declare   Get( )
    ;Declare   Clip( x.l,y.l,width.l,height.l )
    Declare   Image( type.a = 0 )

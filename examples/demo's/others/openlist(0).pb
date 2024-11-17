@@ -7,21 +7,21 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Global *w, *w1, *w2
   
-  If Open(0, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu)
+  If OpenRootWidget(0, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu)
     
-    *w = Window(100, 100, 180, 130, "openlist1", #__Window_SystemMenu)
+    *w = WindowWidget(100, 100, 180, 130, "openlist1", #__Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button1")
     
-    Window(300, 100, 180, 130, "openlist2", #__Window_SystemMenu)
+    WindowWidget(300, 100, 180, 130, "openlist2", #__Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button2")
     
-    OpenList(*w)
+    OpenWidgetList(*w)
     ButtonWidget(30, 15, 120, 24,"openlist1")
-    CloseList()
+    CloseWidgetList()
     
-    Window(500, 100, 180, 130, "openlist3", #__Window_SystemMenu)
+    WindowWidget(500, 100, 180, 130, "openlist3", #__Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button3")
-    CloseList()
+    CloseWidgetList()
     
     
     ButtonWidget( 30, 55, 120,20,"openlist2")

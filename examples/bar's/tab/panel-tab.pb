@@ -21,10 +21,10 @@ CompilerIf #PB_Compiler_IsMainFile
 	CompilerEndIf
 	
 	
-	widget::Open(0, 10, 10, 850, 370, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+	widget::OpenRootWidget(0, 10, 10, 850, 370, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
 	
 	;
-	Procedure events_TabBarWidget( )
+	Procedure events_TabBar( )
 		Debug "events_tab"
 		SetState(*panel, GetState(*tab))
 	EndProcedure
@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		widget::AddItem(*tab, -1, "Tab "+Str(i))
 	Next
 	widget::SetState(*tab, 6)
-	widget::Bind(*tab, @events_TabBarWidget( ), #PB_EventType_Change)
+	widget::BindWidgetEvent(*tab, @events_TabBar( ), #PB_EventType_Change)
 	
 	;
 	Procedure events_PanelWidget( )
@@ -59,9 +59,9 @@ CompilerIf #PB_Compiler_IsMainFile
 	widget::AddItem(*panel, i, "+Sub "+Str(i))
 	ButtonWidget((i-4)*30+10,(i-4)*10+10,50,30,"+"+Str(i))
 	
-	widget::CloseList()
+	widget::CloseWidgetList()
 	widget::SetState(*panel, 6)
-	widget::Bind(*panel, @events_PanelWidget( ), #PB_EventType_Change)
+	widget::BindWidgetEvent(*panel, @events_PanelWidget( ), #PB_EventType_Change)
 	
 	
 	; first splitter

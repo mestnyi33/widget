@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
     SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
@@ -34,12 +34,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ; SetWidgetColor(widget(), #PB_Gadget_BackColor, -1)
     
     ;bug bug bugbugbugbugbugbugbugbugbugbug
-    *b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu, *g) :CloseList( )
-    ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
-    ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenList(*g)
-    ;*b = ButtonWidget(Sw-130, Sh-30, 130, 30,"Window") : OpenList(*g)
-    ;*b = ContainerWidget(Sw-130, Sh-30, 130, 30) : OpenList(*g)
-    CloseList()
+    *b = WindowWidget(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu, *g) :CloseWidgetList( )
+    ;*b = WindowWidget(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu, *g) : OpenWidgetList(*g)
+    ;*b = WindowWidget(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenWidgetList(*g)
+    ;*b = ButtonWidget(Sw-130, Sh-30, 130, 30,"Window") : OpenWidgetList(*g)
+    ;*b = ContainerWidget(Sw-130, Sh-30, 130, 30) : OpenWidgetList(*g)
+    CloseWidgetList()
     
     ;
     SplitterWidget(10,10,590,480, 0, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical))
@@ -57,17 +57,17 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug  Str(ElapsedMilliseconds()-time) + " - time add gadget" 
       CloseGadgetList()
       
-      OpenList(*g)
+      OpenWidgetList(*g)
       time = ElapsedMilliseconds()
       For i=0 To count
         If Bool(i>count-110)
-          Window((count-i)*2, (count-i)*2, 130, 30,"Window"+Str(i), *g)
+          WindowWidget((count-i)*2, (count-i)*2, 130, 30,"Window"+Str(i), *g)
         Else
-          Window(Sw-130, Sh-30, 130, 30,"Window"+Str(i), *g)
+          WindowWidget(Sw-130, Sh-30, 130, 30,"Window"+Str(i), *g)
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
-      CloseList()
+      CloseWidgetList()
     EndIf
     
     ; set&get demos
@@ -106,9 +106,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "step - "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
     
     BindGadgetEvent(g, @events_gadgets())
-    Bind(*g, @events_widgets())
+    BindWidgetEvent(*g, @events_widgets())
     
-    WaitClose()
+    WaitCloseRootWidget()
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile = 333
     Debug ""+Str(IDWidget(EventWidget()))+ " - widget event - " +WidgetEvent();+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
     SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
@@ -147,16 +147,16 @@ CompilerIf #PB_Compiler_IsMainFile = 333
     ; SetWidgetColor(widget(), #PB_Gadget_BackColor, -1)
     
     ;bug bug bugbugbugbugbugbugbugbugbugbug
-    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
-    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenList(*g)
-    ;*b = ButtonWidget(Sw-130, Sh-130, 130, 30,"Window") : OpenList(*g)
-    ;*b = ContainerWidget(Sw-130, Sh-130, 130, 31) : OpenList(*g)
+    ;*b = WindowWidget(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : OpenWidgetList(*g)
+    ;*b = WindowWidget(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenWidgetList(*g)
+    ;*b = ButtonWidget(Sw-130, Sh-130, 130, 30,"Window") : OpenWidgetList(*g)
+    ;*b = ContainerWidget(Sw-130, Sh-130, 130, 31) : OpenWidgetList(*g)
     
-    *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseList()
-    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : CloseList()
-    ;*b = ButtonWidget(Sw-130, Sh-130, 130, 30,"Window") : CloseList()
-    ;*b = ContainerWidget(Sw-130, Sh-130, 130, 31) : CloseList()
-    CloseList()
+    *b = WindowWidget(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseWidgetList()
+    ;*b = WindowWidget(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : CloseWidgetList()
+    ;*b = ButtonWidget(Sw-130, Sh-130, 130, 30,"Window") : CloseWidgetList()
+    ;*b = ContainerWidget(Sw-130, Sh-130, 130, 31) : CloseWidgetList()
+    CloseWidgetList()
     Debug " opened - "+openedWidget()\class+" "+openedWidget()\height
     ;
     SplitterWidget(10,10,590,480, 0, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical))
@@ -174,17 +174,17 @@ CompilerIf #PB_Compiler_IsMainFile = 333
       Debug  Str(ElapsedMilliseconds()-time) + " - time add gadget" 
       CloseGadgetList()
       
-      OpenList(*g)
+      OpenWidgetList(*g)
       time = ElapsedMilliseconds()
       For i=0 To count
         If Bool(i>count-110)
-          Window((count-i)*2, (count-i)*2, 130, 30,"Window"+Str(i), *g)
+          WindowWidget((count-i)*2, (count-i)*2, 130, 30,"Window"+Str(i), *g)
         Else
-          Window(Sw-130, Sh-30, 130, 30,"Window"+Str(i), *g)
+          WindowWidget(Sw-130, Sh-30, 130, 30,"Window"+Str(i), *g)
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
-      CloseList()
+      CloseWidgetList()
     EndIf
     
     ; set&get demos
@@ -225,7 +225,7 @@ CompilerIf #PB_Compiler_IsMainFile = 333
     Debug "step - "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
     
     BindGadgetEvent(g, @events_gadgets())
-    Bind(*g, @events_widgets())
+    BindWidgetEvent(*g, @events_widgets())
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

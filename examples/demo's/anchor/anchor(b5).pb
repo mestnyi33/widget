@@ -38,7 +38,7 @@ EndEnumeration
 LoadFont(#Font, "Arial", 12)
 
 ; Create a window
-Open(#Window, 0, 0, 1200, 450, "Example 5: Attachment and containers", #PB_Window_MinimizeGadget|#PB_Window_ScreenCentered)
+OpenRootWidget(#Window, 0, 0, 1200, 450, "Example 5: Attachment and containers", #PB_Window_MinimizeGadget|#PB_Window_ScreenCentered)
 
 ;SetCursorSelectionStyle(#Canvas, #SelectionStyle_Dashed|#SelectionStyle_Completely, $FFFF0000, 1, $20FF0000)
 
@@ -83,7 +83,7 @@ SetMoveBounds(*Object6)
 AddItem( *Object4, 2, "panel-item-2" )
 *Object7 = a_object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
 SetMoveBounds(*Object7)
-CloseList( )
+CloseWidgetList( )
 SetState(*Object4, 2)
 
 
@@ -99,12 +99,12 @@ SetWidgetColor(widget(), #__color_Frame, RGB(128, 192, 64))
 ; Attach some objects to #Object8
 SetChildrenBounds( *Object8 )
 ;;AddObjectFrameWidget(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
-OpenList( *Object8 )
+OpenWidgetList( *Object8 )
 a_object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 a_object( 200, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0) 
 a_object( 50, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 a_object( 200, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
-CloseList( )
+CloseWidgetList( )
 
 
 ; Контейнеры здесь немного похожи на PureBasic PanelGadgets.

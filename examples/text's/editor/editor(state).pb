@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(#PB_Any, 100, 50, 525, 435+40, "demo Editor state", #PB_Window_SystemMenu)
+  If OpenRootWidget(#PB_Any, 100, 50, 525, 435+40, "demo Editor state", #PB_Window_SystemMenu)
     ; demo gadget
     *g1 = EditorGadget(#PB_Any, 10, 10, 250, 150)
     *g2 = EditorGadget(#PB_Any, 10, 165, 250, 260)
@@ -119,15 +119,15 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget::SetState(*w1, a-1)
     widget::SetState(*w2, a-1) 
-    widget::Bind(*w2, @widget_events())
-    widget::Bind(*w2, @widget_events(), #__event_RightClick)
+    widget::BindWidgetEvent(*w2, @widget_events())
+    widget::BindWidgetEvent(*w2, @widget_events(), #__event_RightClick)
     
     *reset = widget::ButtonWidget( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
     widget::SetState( *reset, 1)
-    widget::Bind(*reset, @button_events())
+    widget::BindWidgetEvent(*reset, @button_events())
     
     *added = widget::ButtonWidget( 525 - 10-120, 435, 120, 30, "add new item")
-    widget::Bind(*added, @button_events())
+    widget::BindWidgetEvent(*added, @button_events())
     
     widget::WaitClose()
   EndIf
@@ -145,7 +145,7 @@ CompilerEndIf
 ; ; If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
 ; ;   EditorGadget(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
 ; ;   
-; ;   Open(0, 270, 10, 250, 150)
+; ;   OpenRootWidget(0, 270, 10, 250, 150)
 ; ;   *w=EditorWidget(0, 0, 250, 150, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
 ; ;   
 ; ;   a=0
@@ -183,7 +183,7 @@ CompilerEndIf
 ; ;   
 ; ;   EditorGadget(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
 ; ;   
-; ;   Open(0, 270, 170, 250, 520);, "", #__flag_borderless)
+; ;   OpenRootWidget(0, 270, 170, 250, 520);, "", #__flag_borderless)
 ; ;   *w=EditorWidget(0, 0, 250, 520, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
 ; ;   ;
 ; ;   ;-

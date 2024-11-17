@@ -28,7 +28,7 @@ UseWidgets( )
 
 OpenWindow(0, 0, 0, 500+500, 340, "disable - state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 
-If Open(0, 500,0, 500);,140)
+If OpenRootWidget(0, 500,0, 500);,140)
   ScrollBarGadget  (0,  10, 42+30*0, 250,  20, 30, 100, 0) : SetGadgetState   (0,  50)                                            ; set 1st scrollbar (ID = 0) to 50 of 100
   ScrollBarGadget  (1,  10, 42+30*1, 250,  20, 30, 100, 50) ;: SetGadgetState   (1,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
   ScrollBarGadget  (2,  10, 42+30*2, 250,  20, 30, 100, 50) : SetGadgetState   (2,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
@@ -65,7 +65,7 @@ If Open(0, 500,0, 500);,140)
   Debug widget( )\bar\thumb\change
   Debug ""
  
-  WaitClose( )
+  WaitCloseRootWidget( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 52

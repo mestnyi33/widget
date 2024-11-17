@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define Text.s = "Text"
   Define width = 200
   
-  If Open(0, 0, 0, width+20, 760, "test alignment text", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, width+20, 760, "test alignment text", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     canvas_gadget = GetCanvasGadget(Root())
     canvas_window = GetCanvasWindow(Root())
     

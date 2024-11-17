@@ -44,7 +44,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   ;ListViewGadget_(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
   
   
-  Open(0, 270, 10, 250, 150)
+  OpenRootWidget(0, 270, 10, 250, 150)
   *w=TreeWidget(0, 0, 250, 150, #__Flag_NoButtons|#__Flag_NoLines)  ; |#__Flag_GridLines|#PB_Flag_MultiSelect
   
   a=0
@@ -85,7 +85,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   ;ListViewGadget_(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
   TreeGadget_(10, 10, 170, 250, 520);, #PB_Tree_NoButtons|#PB_Tree_NoLines)
   
-  Open(0, 270, 170, 250, 520);, "", #__flag_borderless)
+  OpenRootWidget(0, 270, 170, 250, 520);, "", #__flag_borderless)
   *w=TreeWidget(0, 0, 250, 520, #__Flag_GridLines|#__flag_collapsed);|#__Tree_NoButtons|#__Tree_NoLines)  ; |#PB_Flag_MultiSelect
                                             ;
                                             ;-

@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   EndIf
   
   If OpenWindow(0, 0, 0, 800, 600, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    Open(0, 10,10)
+    OpenRootWidget(0, 10,10)
     
     g = EditorWidget( 0, 0, 0, 0 , #__flag_Textwordwrap) 
     *g = EditorWidget(0, 0, 0, 0) 

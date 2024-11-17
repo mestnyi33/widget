@@ -126,18 +126,18 @@ CompilerIf #PB_Compiler_IsMainFile
       Hide( *first\scroll\h, 1 )
       ;Hide( *second\scroll\v, 1 )
       Hide( *second\scroll\h, 1 )
-      CloseList( )
+      CloseWidgetList( )
       
       
       SetData(*second, *first)
       SetData(*first, *second)
       
-      Bind(*first, @Property_Events( ))
-      Bind(*second, @Property_Events( ))
+      BindWidgetEvent(*first, @Property_Events( ))
+      BindWidgetEvent(*second, @Property_Events( ))
       ProcedureReturn *this
    EndProcedure
    
-   If Open(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       Define *Tree = Properties_(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
       Define Value = *Tree

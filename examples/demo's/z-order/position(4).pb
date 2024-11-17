@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *s1, *s2, *p1, *b0,*b1,*b2,*b3, *b4, *b5
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     
     *p1 = Panel (5, 30, 340, 266)
     AddItem(*p1, -1, "Под-Панель 1")
@@ -39,14 +39,14 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     - 9 9 Panel кнопка_6 none
     ;     -
     
-    CloseList()
+    CloseWidgetList()
     ButtonWidget(5, 30+266+5, 55, 22,"кнопка_6") : SetWidgetClass(widget(), GetTextWidget(widget()))
     
     SetState(*p1,1)
     
     debug_position(root())
     
-    WaitClose()
+    WaitCloseRootWidget()
     
   EndIf   
 CompilerEndIf

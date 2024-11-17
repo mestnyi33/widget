@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
     #window
   EndEnumeration
   
-  Open(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  OpenRootWidget(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   Define Text.s, m.s   = #LF$, a
   
   Define *g = EditorWidget(50, 50, 200 + 60-Bool(#PB_Compiler_OS=#PB_OS_Windows)*17, 200);, #__flag_autosize)
@@ -37,10 +37,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     AddItem(*g, a, Str(a) + " Line " + Str(a))
 ;   Next
 ;   
-;   ;CloseList( ) ; close panel lists
+;   ;CloseWidgetList( ) ; close panel lists
   
   
-  WaitClose( ) ;;;
+  WaitCloseRootWidget( ) ;;;
 CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile = 99
   
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   ;\\ Open Root0
-  Define *root0._S_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetTextWidget(*root0, "root0")
+  Define *root0._S_WIDGET = OpenRootWidget(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetTextWidget(*root0, "root0")
   ;BindWidgetEvent( *root2, @HandlerEvents( ) )
   
   Global *button_panel = PanelWidget(10, 10, 200 + 60, 200)
@@ -117,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Next
   
   ;SetState(*button_panel, 2)
-  CloseList( ) ; close panel lists
+  CloseWidgetList( ) ; close panel lists
   
   *g = StringWidget(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #__string_password | #__string_right)
   
@@ -130,12 +130,12 @@ CompilerIf #PB_Compiler_IsMainFile = 99
         SetState(*button_panel, 1)
     EndSelect
   EndProcedure
-  Bind(ButtonWidget( 220, 220, 25, 50, "1"), @button_panel_events( ), #__event_LeftClick )
-  Bind(ButtonWidget( 220 + 25, 220, 25, 50, "2"), @button_panel_events( ), #__event_LeftClick )
+  BindWidgetEvent(ButtonWidget( 220, 220, 25, 50, "1"), @button_panel_events( ), #__event_LeftClick )
+  BindWidgetEvent(ButtonWidget( 220 + 25, 220, 25, 50, "2"), @button_panel_events( ), #__event_LeftClick )
   ;\\Close( )
   
   
-  WaitClose( ) ;;;
+  WaitCloseRootWidget( ) ;;;
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 110

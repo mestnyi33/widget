@@ -15,11 +15,11 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       EndSelect
    EndProcedure
    
-   If Open(0, 0, 0, 800, 600, " focus demo ", #PB_Window_SystemMenu |
+   If OpenRootWidget(0, 0, 0, 800, 600, " focus demo ", #PB_Window_SystemMenu |
                                               #PB_Window_ScreenCentered )
       
       ;\\
-      Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
+      WindowWidget( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
                                             #PB_Window_MaximizeGadget |
                                             #PB_Window_MinimizeGadget )
       
@@ -30,10 +30,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetWidgetClass(widget( ), "window_0_button_1" )
       ButtonWidget(10,65,200,50,"window_0_button_2")
       SetWidgetClass(widget( ), "window_0_button_2" )
-      CloseList( )
+      CloseWidgetList( )
       
       ;\\
-      Window( 230, 130, 300, 200, "window_1", #PB_Window_SystemMenu |
+      WindowWidget( 230, 130, 300, 200, "window_1", #PB_Window_SystemMenu |
                                               #PB_Window_MaximizeGadget |
                                               #PB_Window_MinimizeGadget )
       
@@ -44,10 +44,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetWidgetClass(widget( ), "window_1_button_1" )
       ButtonWidget(10,65,200,50,"window_1_button_2")
       SetWidgetClass(widget( ), "window_1_button_2" )
-      CloseList( )
+      CloseWidgetList( )
       
       ;\\
-      Window( 430, 230, 300, 200, "window_2", #PB_Window_SystemMenu |
+      WindowWidget( 430, 230, 300, 200, "window_2", #PB_Window_SystemMenu |
                                               #PB_Window_MaximizeGadget |
                                               #PB_Window_MinimizeGadget )
       
@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetWidgetClass(widget( ), "window_2_button_1" )
       ButtonWidget(10,65,200,50,"window_2_button_2")
       SetWidgetClass(widget( ), "window_2_button_2" )
-      CloseList( )
+      CloseWidgetList( )
       
       WaitEvent( @CallBack( ) )
    EndIf

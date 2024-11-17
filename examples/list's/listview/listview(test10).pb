@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define a
   LoadFont(0, "Helvetica", 13)
   
-If Open(0, 0, 0, 270*2, 140, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 270*2, 140, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ListViewWidget(10, 10, 250, 120)
   For a = 1 To 12
     AddItem (ID(0), -1, "Item yyy " + Str(a) + " of the Listview")   ; definieren des Listview-Inhalts

@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define a,i
   
-  If Open(0, 0, 0, 800, 450, "ListiconGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 800, 450, "ListiconGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetActiveWindow(0)
     
     Define Count = 500
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     Debug "Scroll_Height "+*This\Scroll\Height
     ;   EndWith
     
-    WaitClose( )
+    WaitCloseRootWidget( )
     
     Repeat
       Select WaitWindowEvent()   

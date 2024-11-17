@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug "close - event " + EventWidget( )\class +" --- "+ EventWidget( )\index
         
         If EventWidget( )\root\canvas\window = 2
-           If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+           If #PB_MessageRequester_Yes = MessageWidget( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
             ProcedureReturn #PB_All
           Else
             ProcedureReturn 1
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
+  OpenRootWidget(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
                                       #PB_Window_SizeGadget |
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetWidgetClass(widget( ), "Button_0" )
   
   ;\\
-  Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
+  OpenRootWidget(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetWidgetClass(widget( ), "Button_1" )
   
   ;\\
-  Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
+  OpenRootWidget(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
@@ -88,10 +88,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   
 ;   ; Close( #PB_All )
   
-  Bind( #PB_All, @CallBack( ) )
+  BindWidgetEvent( #PB_All, @CallBack( ) )
   
   ;\\
-  WaitClose( Root( ) )
+  WaitCloseRootWidget( Root( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 83

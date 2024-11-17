@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define h = 80
   Define._s_widget *g1, *g2, *g3, *g4, *g5, *g6
   
-  If Open(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *g1 = ButtonWidget(    30, 30, 200, h, "butt_left", #__flag_TextLeft)
     *g2 = ButtonWidget(30+210, 30, 200, h, "butt" + #LF$ + "center" + #LF$ + "multi", #__flag_Textmultiline)
@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(*g5, 200*2)
     SetState(*g6, h)
    
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
 CompilerEndIf
 

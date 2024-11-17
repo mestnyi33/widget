@@ -52,7 +52,7 @@ Procedure events_track_widgets()
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;\\
   ProgressBarGadget(0,  10, 30, 250,  30, 0, 100)
   SetGadgetState   (0, 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
@@ -121,16 +121,16 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   Text    (10+330, 90, 250,  20, "ProgressBar Smooth  (50/200)", #__flag_Textcenter)
   Text    (100+330,155, 200,  20, "ProgressBar Vertical  (100/300)", #__flag_Textright)
   
-  ;Bind(#PB_All, @events_widgets())
+  ;BindWidgetEvent(#PB_All, @events_widgets())
   
   For i = 0 To 2
-    Bind(ID(i), @events_progress_widgets())
+    BindWidgetEvent(ID(i), @events_progress_widgets())
   Next
   For i = 3 To 5
-    Bind(ID(i), @events_track_widgets())
+    BindWidgetEvent(ID(i), @events_track_widgets())
   Next
   
-  WaitClose( )
+  WaitCloseRootWidget( )
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

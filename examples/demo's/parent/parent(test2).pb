@@ -236,7 +236,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If *parent 
       class.s = LCase( Trim( class ) )
-      OpenList( *parent, GetState( *parent ) ) 
+      OpenWidgetList( *parent, GetState( *parent ) ) 
       
       If width < 5
         width = 100
@@ -277,13 +277,13 @@ CompilerIf #PB_Compiler_IsMainFile
             flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
             a_init(*parent)
             ;;a_set(*parent)
-            *new = Window( x,y,width,height, "", flag, *parent )
+            *new = WindowWidget( x,y,width,height, "", flag, *parent )
           EndIf
           
           SetWidgetColor( *new, #__color_back, $FFECECEC )
-          Bind( *new, @widget_events( ) )
+          BindWidgetEvent( *new, @widget_events( ) )
           
-        Case "container"   : *new = ContainerWidget( x,y,width,height, flag )                             : CloseList( )
+        Case "container"   : *new = ContainerWidget( x,y,width,height, flag )                             : CloseWidgetList( )
           SetWidgetColor( *new, #__color_back, $FFF1F1F1 )
           
         Case "button"      : *new = ButtonWidget( x,y,width,height, "", flag ) 
@@ -359,7 +359,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       EndIf
       
-      CloseList( ) 
+      CloseWidgetList( ) 
     EndIf
     
     ProcedureReturn *new
@@ -808,12 +808,12 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  Procedure ide_open( x=100,y=100,width=800,height=530 )
+  Procedure ide_OpenRootWidget( x=100,y=100,width=800,height=530 )
     ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
     ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
     
     Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-    Define root = widget::Open( 0, x,y,width,height, "ide", flag ) 
+    Define root = widget::OpenRootWidget( 0, x,y,width,height, "ide", flag ) 
     window_ide = widget::GetCanvasWindow( root )
     canvas_ide = widget::GetCanvasGadget( root )
     
@@ -828,7 +828,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ;     ;EnableDDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
     ; ;     
     ; ;     
-    ; ;     ;id_design_form = ContainerWidget( 0,0,0,0 ) : a_init( id_design_form ) : CloseList( )
+    ; ;     ;id_design_form = ContainerWidget( 0,0,0,0 ) : a_init( id_design_form ) : CloseWidgetList( )
     ; ;     id_design_form = MDIWidget( 0,0,0,0 ) : a_init( id_design_form )
     ; ;     ;id_design_form = MDIWidget(10,10, WidgetWidth( widget( ), #__c_inner )-20, WidgetHeight( widget( ), #__c_inner )-20);, #__flag_autosize)
     ; ;     id_design_panel = id_design_form
@@ -847,7 +847,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ; ;     AddItem( id_inspector_panel, -1, "events", 0, 0 )  
     ; ; ;     
     ; ; ;     ; id_inspector_panel closes
-    ; ; ;     CloseList( )
+    ; ; ;     CloseWidgetList( )
     ; ;     
     ; ;     
     ; ;     Splitter_inspector = widget::SplitterWidget( 0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed )
@@ -855,15 +855,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ;     splitter_debug = id_design_panel
     ; ;     Splitter_ide = widget::SplitterWidget( 0,0,0,0, splitter_debug,Splitter_inspector, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
     
-    Bind( id_inspector_tree, @ide_events( ) )
-    Bind( id_elements_tree, @ide_events( ), #__event_DragStart )
+    BindWidgetEvent( id_inspector_tree, @ide_events( ) )
+    BindWidgetEvent( id_elements_tree, @ide_events( ), #__event_DragStart )
     ProcedureReturn window_ide
   EndProcedure
   
   ;-
   CompilerIf #PB_Compiler_IsMainFile 
     Define event
-    ide_open( )
+    ide_OpenRootWidget( )
     
     If id_elements_tree
       widget_images( id_elements_tree, GetCurrentDirectory( )+"Themes/" )

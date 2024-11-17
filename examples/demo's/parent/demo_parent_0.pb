@@ -5,25 +5,25 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   If Open( 0, 0, 0, 370, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRootWidget( 0, 0, 0, 370, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
       ContainerWidget( 10, 10, 100, 100) : SetWidgetClass(widget( ), "CONT1" ) 
       ButtonWidget( 10,5,80,25, "*btn1_1" )  : SetWidgetClass(widget( ), "btn1_1" ) 
       ButtonWidget( 10,35,80,25, "*btn1_2" )  : SetWidgetClass(widget( ), "btn1_2" ) 
       ButtonWidget( 10,65,80,25, "*btn1_3" )  : SetWidgetClass(widget( ), "btn1_3" ) 
-      CloseList()
+      CloseWidgetList()
       ;
       ContainerWidget( 120, 10, 100, 100) : SetWidgetClass(widget( ), "CONT2" ) 
       ButtonWidget( 10,5,80,25, "*btn2_1" )  : SetWidgetClass(widget( ), "btn2_1" ) 
       ButtonWidget( 10,35,80,25, "*btn2_2" )  : SetWidgetClass(widget( ), "btn2_2" ) 
       ButtonWidget( 10,65,80,25, "*btn2_3" )  : SetWidgetClass(widget( ), "btn2_3" ) 
-      CloseList()
+      CloseWidgetList()
       ;
       ContainerWidget( 230, 10, 100, 100) : SetWidgetClass(widget( ), "CONT3" ) 
       ButtonWidget( 10,5,80,25, "*btn3_1" )  : SetWidgetClass(widget( ), "btn3_1" ) 
       ButtonWidget( 10,35,80,25, "btn3_2" )  : SetWidgetClass(widget( ), "btn3_2" ) 
       ButtonWidget( 10,65,80,25, "*btn3_3" )  : SetWidgetClass(widget( ), "btn3_3" ) 
-      CloseList()
+      CloseWidgetList()
       
       
       ;\\
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       btn3_2 <<  btn3_3  >> --------
       ;       <<----
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf   
 CompilerEndIf
 

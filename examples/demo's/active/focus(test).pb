@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CanvasButtonWidget( gadget, x,y,width,height,Text.s )
       ButtonWidget( x,y,width,height, Text )
       SetWidgetClass(widget(), Str(gadget))
-      Bind(widget(), @Events())
+      BindWidgetEvent(widget(), @Events())
    EndProcedure
    
    Procedure CanvasButtonGadget( gadget, x,y,width,height,text.s )
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasButtonGadget(11, 10, 40, 250, 21, "ComboBox")
    EndIf
    
-   If Open(1, 300, 300, 270, 140, "SetActiveGadget", #PB_Window_SystemMenu )
+   If OpenRootWidget(1, 300, 300, 270, 140, "SetActiveGadget", #PB_Window_SystemMenu )
       CanvasButtonWidget(0, 10, 10, 250, 20, "String")
       CanvasButtonWidget(1, 10, 40, 250, 21, "ComboBox")
       

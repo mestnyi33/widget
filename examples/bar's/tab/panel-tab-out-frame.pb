@@ -38,7 +38,7 @@ EndEnumeration
 LoadFont(#Font, "Arial", 12)
 
 ; Create a window
-Open(#Window, 0, 0, 1200, 450, "Example 5: Attachment and containers", #PB_Window_MinimizeGadget|#PB_Window_ScreenCentered)
+OpenRootWidget(#Window, 0, 0, 1200, 450, "Example 5: Attachment and containers", #PB_Window_MinimizeGadget|#PB_Window_ScreenCentered)
 
 ;SetCursorSelectionStyle(#Canvas, #SelectionStyle_Dashed|#SelectionStyle_Completely, $FFFF0000, 1, $20FF0000)
 
@@ -56,11 +56,11 @@ SetWidgetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
 
 *Object1 = Object(50, 50, 300, 100, "Simple attachment", RGBA(192, 64, 128, alpha1))
 
-;OpenList( *Object1 )
+;OpenWidgetList( *Object1 )
 *Object2 = Object(0, 120, 140, 100, "*Object2", RGBA(128, 0, 64, alpha1))
 ;widget()\child =- 1
 ;SetParent( *Object2, *Object1 )
-;CloseList( )
+;CloseWidgetList( )
 
 *Object3 = Object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
 ; ;widget()\x = 110
@@ -95,7 +95,7 @@ AddItem( *Object4, 1, "panel-item-1" )
 *Object6 = Object( 150, 150, 140, 100, "parent-item-1", RGBA(0, 64, 128, alpha1));, #Object4, 1) ; Attach object 6 directly to object 1 into the second frame
 AddItem( *Object4, 2, "panel-item-2" )
 *Object7 = Object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
-CloseList( )
+CloseWidgetList( )
 SetState(*Object4, 2)
 
 ; --- Scroll area ---
@@ -120,12 +120,12 @@ SetWidgetColor(widget()\scroll\h, #__color_Frame, RGB(128, 192, 64))
 
 ; Attach some objects to #Object8
 ;;AddObjectFrameWidget(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
-OpenList( *Object8 )
+OpenWidgetList( *Object8 )
 Object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 Object( 200, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0) 
 Object( 50, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 Object( 200, 250, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
-CloseList( )
+CloseWidgetList( )
 
 
 ; Containers here works a bit like the PureBasic PanelGadgets in a way

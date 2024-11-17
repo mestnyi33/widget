@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      Define *w._S_widget = Open(0)
+      Define *w._S_widget = OpenRootWidget(0)
       ;Canvas_0 = GetCanvasGadget(Root())
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ID(Hex(7)) = ButtonWidget(0, 0, 80, 40, "left&bottom")
       ID(Hex(5)) = ButtonWidget(0, 0, 80, 40, "right&bottom")
       
-      CloseList()
+      CloseWidgetList()
       
       SetAlign(ID(Hex(8)), #__align_left   |#__align_center)
       SetAlign(ID(Hex(2)), #__align_top    |#__align_center)

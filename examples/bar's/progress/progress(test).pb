@@ -31,7 +31,7 @@ Procedure events_widgets()
    EndSelect
 EndProcedure
 
-If Open(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    SetWidgetColor( root(), #__Color_Back, $ff00ffff)
    
    progress_0 = ProgressBarWidget(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
@@ -46,11 +46,11 @@ If Open(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_W
    track_2 = Track    (10, 260,  400, 20, 0, 100)
    track_3 = Track    (10, 280,  400, 20, 0, 100)
    
-   Bind(track_1, @events_widgets())
-   Bind(track_0, @events_widgets())
+   BindWidgetEvent(track_1, @events_widgets())
+   BindWidgetEvent(track_0, @events_widgets())
    
-   Bind(track_3, @events_widgets())
-   Bind(track_2, @events_widgets())
+   BindWidgetEvent(track_3, @events_widgets())
+   BindWidgetEvent(track_2, @events_widgets())
    
    SetState(track_0, 40)
    SetState(track_2, 40)
@@ -59,7 +59,7 @@ If Open(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_W
    SetState(track_3, 120)
    
    SetState(Splitter_0, 269)
-   WaitClose( )
+   WaitCloseRootWidget( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 37

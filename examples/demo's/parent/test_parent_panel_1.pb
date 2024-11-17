@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global._s_WIDGET *panel1, *but0
    
-   If Open( 0, 0, 0, 400, 170, "( setparent( ) ) add object in PANEL item", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRootWidget( 0, 0, 0, 400, 170, "( setparent( ) ) add object in PANEL item", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
       *panel1 = PanelWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
       ;
@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget( 10,35,80,25, "*btn3_8" )  : SetWidgetClass(widget( ), "btn3_8" ) 
       ButtonWidget( 10,65,80,25, "*btn3_9" )  : SetWidgetClass(widget( ), "btn3_9" ) 
       ;
-      CloseList()
+      CloseWidgetList()
    
       ;\\ test
       *but0 = ButtonWidget( 100,35,80,25, "*btn1_added" ) : SetWidgetClass(widget( ), "btn1_added" ) 
@@ -91,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       btn3_8 <<  btn3_9  >> --------
       ;       <<----
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

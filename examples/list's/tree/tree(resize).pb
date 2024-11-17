@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *this._s_widget, i, pos = 100, width=450, height=400
   Global Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
       
-  If Open(0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *this = widget::TreeWidget(100, 100, 250, 200, #PB_Tree_CheckBoxes )
     
     For i = 1 To 6

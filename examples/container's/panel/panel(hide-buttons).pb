@@ -13,11 +13,11 @@ EndProcedure
 Procedure AddButtons( item, x,y,Text.s )
    ButtonWidget(x, y, 80, 24, Text)
    SetData(widget( ), item )
-   Bind(widget(), @events_widgets() )
+   BindWidgetEvent(widget(), @events_widgets() )
 EndProcedure
 
 ;\\
-If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   *container = PanelWidget(8, 8, 284, 184-32, #__flag_nobuttons)
   AddItem( *container, -1, "Panel 0")
   TextWidget( 10,10,100,20,"Page 0")
@@ -35,7 +35,7 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
   ButtonWidget(10, 50, 80, 24,"Button 3")
   ButtonWidget(95, 50, 80, 24,"Button 4")
   ;
-  CloseList( )
+  CloseWidgetList( )
   
   ;\\ 
   AddButtons(1, 300-196, 200-32,"Page 1")

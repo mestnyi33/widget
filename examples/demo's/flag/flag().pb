@@ -109,7 +109,7 @@ Procedure Flag_TextWidget( *this._s_WIDGET, flag.q )
   EndIf
 EndProcedure
 
-Procedure Flag_ButtonWidget( *this._s_WIDGET, flag.q )
+Procedure Flag_Button( *this._s_WIDGET, flag.q )
   ;                                  windows ; macos ; linux
   ;   Debug  #PB_Button_Default      ; 1                      ; Makes the button look As If it is the Default button in the window
   ;   Debug  #PB_Button_Left         ; 256                    ; Aligns the button text at the left.

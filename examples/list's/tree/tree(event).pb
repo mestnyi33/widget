@@ -72,7 +72,7 @@ EndProcedure
 #PB_Tree_MultiSelect = 0;#PB_ListView_MultiSelect
 Define i,a
   
-If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;{
   ;
   g = TreeGadget(0, 10, 30, 250, 120, #PB_Tree_CheckBoxes) 
@@ -181,9 +181,9 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   SetState( WidgetID(2), 9) 
   
   For i = 0 To 2
-    Bind( WidgetID(i), @events_widgets( ))
+    BindWidgetEvent( WidgetID(i), @events_widgets( ))
   Next
-  ;Bind(*g, @events_widgets( ))
+  ;BindWidgetEvent(*g, @events_widgets( ))
   
   TextWidget(270,10, 250,20, "flag = no")
   TextWidget(270,10+150, 250,20, "flag = ClickSelect")

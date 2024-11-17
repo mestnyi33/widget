@@ -7,11 +7,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *window
   
-    Open(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
+    OpenRootWidget(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
   Define *root._S_root = root()
   Define *widget._S_WIDGET
   
-  *window = Window(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
+  *window = WindowWidget(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
   ;   AddElement(*root\_widgets( ))
   ;   *root\_widgets( ) = AllocateStructure(_S_WIDGET)
   ;   *root\_widgets( )\_root() = *root
@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   *root\_widgets( )\class="button1"
   ;   *root\haschildren + 1
   ;*window = ButtonWidget(10, 10, 90,30,"button")
-  Free(*window)
+  FreeWidget(*window)
 ;  *widget = AllocateStructure(_S_WIDGET)
 ;  *widget\class="button2"
 ; ;  AddElement(*root\_widgets( )) 
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
     
   
-  WaitClose()
+  WaitCloseRootWidget()
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 36

@@ -4,7 +4,7 @@
 ;                                                         IsToolBar( #ToolBar )
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                  DisableItem( *address, item, state ) - DisableBarButtonWidget( #ToolBar, Button, State )
-;                                      Free( *address ) - FreeToolBar( #ToolBar )
+;                                      FreeWidget( *address ) - FreeToolBar( #ToolBar )
 ;                        GetItemState( *address, item ) - GetBarButtonState( #ToolBar, Button )
 ;                 SetItemState( *address, item, state ) - SetBarButtonState( #ToolBar, Button, State )
 ;                 SetItemTextWidget( *address, item, text.s ) - BarButtonTextWidget( #ToolBar, Button, Text$ )
@@ -143,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    ;          widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
 ;    ;          widget( )\data = _button_
 ;    ;          
-;    ;          Bind( widget( ), @ide_events( ) )
+;    ;          BindWidgetEvent( widget( ), @ide_events( ) )
 ;    ;    EndMacro
 ;    ;    
 ;    ;    Macro Separator( )
@@ -158,7 +158,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If OpenWindow( 0, 30, 200, 800, 380, "ToolBar example")   
-      Open(0,10,70,780,300)
+      OpenRootWidget(0,10,70,780,300)
       a_init(root( ), 0)
       
       If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_InlineText)
@@ -195,10 +195,10 @@ CompilerIf #PB_Compiler_IsMainFile
       ;DisableBarButtonWidget(0, 2, 1) ; Disable the button '2'
       
       
-      Define w_ide_toolbar, w_ide_toolbar_container                          ;= Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+      Define w_ide_toolbar, w_ide_toolbar_container                          ;= WindowWidget( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
       w_ide_toolbar_container = ContainerWidget( 10,60,700,120 )
-      ;w_ide_toolbar_container = Window( 10,60,700,120, "", #PB_Window_SystemMenu )
+      ;w_ide_toolbar_container = WindowWidget( 10,60,700,120, "", #PB_Window_SystemMenu )
       ;w_ide_toolbar_container = PanelWidget( 10,60,700,120 )
       
       ButtonWidget( 10,10, 50,50,"btn0" ) : SetWidgetClass(widget( ), "btn0" )
@@ -233,11 +233,11 @@ CompilerIf #PB_Compiler_IsMainFile
       BarButtonWidget( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
       BarButtonWidget( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
       
-      Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_LeftClick )
-      ;Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_Change )
+      BindWidgetEvent( w_ide_toolbar, @ToolBarEvents( ), #__event_LeftClick )
+      ;BindWidgetEvent( w_ide_toolbar, @ToolBarEvents( ), #__event_Change )
       
       ButtonWidget( 110,10, 50,50,"btn1" ) : SetWidgetClass(widget( ), "btn1" )
-      CloseList( ) ;: ResizeWidget( w_ide_toolbar, 0, 0, 800,60)
+      CloseWidgetList( ) ;: ResizeWidget( w_ide_toolbar, 0, 0, 800,60)
       
       
       a_set( w_ide_toolbar_container )

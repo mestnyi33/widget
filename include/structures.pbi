@@ -633,7 +633,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
                                   ; dragged.b              ;
          autosize.b
          container.b              ; is container
-                                  ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDIWidget( 3 ); PanelWidget( 3 ); ContainerWidget( 3 ); ScrollAreaWidget( 3 ) )
+                                  ; container > 0          ; if the has children ( Root( 1 ); WindowWidget( 2 ); MDIWidget( 3 ); PanelWidget( 3 ); ContainerWidget( 3 ); ScrollAreaWidget( 3 ) )
                                   ; container =- 1         ; if the not has children ( SplitterWidget( ); FrameWidget( ))
                                   ;
          child.b                  ; is the widget composite?

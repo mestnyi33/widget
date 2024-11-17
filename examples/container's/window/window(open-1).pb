@@ -33,17 +33,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-  Open(OpenWindow(#PB_Any, 150, 150, 200, 200, "PB (main window_1)", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
+  OpenRootWidget(OpenWindow(#PB_Any, 150, 150, 200, 200, "PB (main window_1)", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
 ;   ButtonWidget(0,0,80,20,"button")
 ;   ButtonWidget(200-80,200-20,80,20,"button")
   ButtonGadget(#PB_Any, 0,0,80,20,"button")
   ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button")
   
-  Bind(Root(), @Events_widgets())
+  BindWidgetEvent(Root(), @Events_widgets())
   
   
   
-  Open(Window(200, 200, 200, 200, "main window_2", #__Window_SizeGadget | #__Window_SystemMenu))
+  OpenRootWidget(Window(200, 200, 200, 200, "main window_2", #__Window_SizeGadget | #__Window_SystemMenu))
   ButtonWidget(0,0,80,20,"button")
   ButtonWidget(200-80,200-20,80,20,"button")
 ;   ContainerGadget(#PB_Any, widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner], widget()\height[#__c_inner])
@@ -51,8 +51,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button")
 ;   CloseGadgetList()
   
-  Bind(Root(), @Events_widgets())
-  WaitClose()
+  BindWidgetEvent(Root(), @Events_widgets())
+  WaitCloseRootWidget()
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -

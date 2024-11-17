@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-    If Open(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    If OpenRootWidget(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
     
     Button_0 = widget::TabBarWidget(0, 0, 0, 0)                  ; No need to specify size or coordinates
@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*panel_2, -1, "Sub 3")
     AddItem(*panel_2, -1, "Sub 4")
     SetState(*panel_2, 2)
-    CloseList()
+    CloseWidgetList()
     
     ButtonWidget(10, 145, 80, 24,"remove")
     ButtonWidget(95, 145, 80, 24,"add")
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*panel_1, -1,"Panel 3")
     ButtonWidget(10, 35, 80, 24,"Button 5")
     ButtonWidget(95, 35, 80, 24,"Button 6")
-    CloseList()
+    CloseWidgetList()
     
     SetItemFont(*panel_1, 1, 6)
     SetItemFont(*panel_2, 1, 6)

@@ -76,7 +76,7 @@
       Debug Str(ElapsedMilliseconds()-time) + " - time gadget set text count - " + CountGadgetItems(0)
       
       
-      ;     Open(0, 8, 250, 402, 230)
+      ;     OpenRootWidget(0, 8, 250, 402, 230)
       ;     *g = EditorWidget(0, 0, 402, 230, #__flag_autosize) : g = GetCanvasGadget(*g)
       ;     Define time = ElapsedMilliseconds()
       ;     SetTextWidget(*g, Text.s) 

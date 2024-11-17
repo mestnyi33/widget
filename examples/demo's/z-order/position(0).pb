@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If Open(OpenWindow(#PB_Any, 0,0, 250,160, "Demo Z-Order", #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0,0, 250,160, "Demo Z-Order", #PB_Window_ScreenCentered))
     
     Panel = PanelWidget(30,30,190,100);, "0")                                                               ;
     AddItem(Panel, -1, "tab_1")
@@ -51,13 +51,13 @@ CompilerIf #PB_Compiler_IsMainFile
     prev3 = ButtonWidget(30,30,50,35, "prev3") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                                ;
     first3 = ButtonWidget(10,10,170,35, "first3") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                             ;
     
-    CloseList()
+    CloseWidgetList()
     
     ;debug_position(root())
     SetState(Panel, 1)
-    Bind(#PB_All, @_Event())
+    BindWidgetEvent(#PB_All, @_Event())
     
-    WaitClose()
+    WaitCloseRootWidget()
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

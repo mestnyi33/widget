@@ -22,11 +22,11 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 300, 300, "autosize", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     SetWindowColor( 0, $ff00ff)
   
-    Open(0, 20,20 )
+    OpenRootWidget(0, 20,20 )
     SetWidgetColor(root(), #PB_Gadget_BackColor, $ff00ff00)
    
     ;Window(0,0,0,0,"window", #__window_systemmenu|#__flag_autosize)
-    ;MDIWidget(0,0,0,0, #__flag_autosize) : OpenList(widget())
+    ;MDIWidget(0,0,0,0, #__flag_autosize) : OpenWidgetList(widget())
     ;ContainerWidget(0,0,0,0, #__flag_autosize)
     ; ScrollAreaWidget(0,0,0,0, 800,800,0, #__flag_autosize)
     ;PanelWidget(0,0,200, 200, #__flag_autosize) : AddItem(widget(), -1, "panel")

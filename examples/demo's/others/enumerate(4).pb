@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn *PARENT
    EndProcedure
    
-   If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRootWidget(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "(Window)")
       ButtonWidget(5,5,70,30,"Button1") : SetWidgetClass(widget(), "(w>0)")  
       ButtonWidget(15,15,70,30,"Button2") : SetWidgetClass(widget(), "(w>1)")  
@@ -87,11 +87,11 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget(5,5,70,30,"Button1") : SetWidgetClass(widget(), "(s>0)")  
       ButtonWidget(15,15,70,30,"Button2") : SetWidgetClass(widget(), "(s>1)")  
       ButtonWidget(25,25,70,30,"Button3") : SetWidgetClass(widget(), "(s>2)")  
-      CloseList( )
+      CloseWidgetList( )
       
-      CloseList( )
+      CloseWidgetList( )
       
-      CloseList()
+      CloseWidgetList()
       
       ButtonWidget(5,5,70,30,"Button1") : SetWidgetClass(widget(), "(r>0)")  
       ButtonWidget(15,15,70,30,"Button2") : SetWidgetClass(widget(), "(r>1)")  
@@ -115,7 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; Show_DEBUG()
       
-      WaitClose()
+      WaitCloseRootWidget()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

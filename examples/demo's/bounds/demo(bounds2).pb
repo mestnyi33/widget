@@ -10,21 +10,21 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare CustomEvents( )
   
   ;\\
-  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  OpenRootWidget(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
   Define fs = 20
   ;\\
-  ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
-  ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
+  ; parent = WindowWidget(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
+  ; parent = WindowWidget(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
   parent = ContainerWidget(50, 50, 500, 500)
   widget()\fs = fs : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
-  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-  ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-  ; object = ContainerWidget(100, 100, 250, 250) : CloseList()
-  object = ScrollAreaWidget(100, 100, 250, 250, 350,350, 1) : CloseList()
-  ;  object = ScrollAreaWidget(100, 100, 250, 250, 150,150, 1) : CloseList()
+  ; object = WindowWidget(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+  ; object = WindowWidget(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+  ; object = ContainerWidget(100, 100, 250, 250) : CloseWidgetList()
+  object = ScrollAreaWidget(100, 100, 250, 250, 350,350, 1) : CloseWidgetList()
+  ;  object = ScrollAreaWidget(100, 100, 250, 250, 150,150, 1) : CloseWidgetList()
   
   ;\\
   widget()\fs = fs : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -36,8 +36,8 @@ CompilerIf #PB_Compiler_IsMainFile
   SetMoveBounds(object, fs, fs, 501-fs*2-fs, 501-fs*2-fs)
   
   ;\\
-  Bind( widget( ), @CustomEvents(), #__event_Draw )
-  WaitClose( )
+  BindWidgetEvent( widget( ), @CustomEvents(), #__event_Draw )
+  WaitCloseRootWidget( )
   
   ;\\
   Procedure CustomEvents( )

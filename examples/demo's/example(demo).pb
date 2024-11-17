@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  If Open(0, 0, 0, 605 + 30, 140 + 200 + 140 + 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 605 + 30, 140 + 200 + 140 + 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ; example scroll gadget bar
     TextGadget       ( -1,  10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#PB_Text_Center)
     ScrollBarGadget  (101,  10, 42, 250,  20, 30, 100, 30)
@@ -186,7 +186,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*w2, 1, "Под -  - Панель  - 2 - ")
     ButtonWidget( 15, 5, 55, 22, "кнопка 15")
     ButtonWidget( 20, 30, 55, 22, "кнопка 20")
-    CloseList()
+    CloseWidgetList()
     ;SetState(*w2, 2)
     
     AddItem(Button_1, -1, "Panel_1") 
@@ -198,8 +198,8 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::ButtonWidget(10, 10, 100, 30, Text)
     AddItem(Panel, -1, "Panel_1") 
     widget::ButtonWidget(20, 20, 100, 30, Text)
-    widget::CloseList()
-    widget::CloseList()
+    widget::CloseWidgetList()
+    widget::CloseWidgetList()
     
     AddItem(Button_1, -1, "tab_2") 
     Define *Tab = widget::TabBarWidget(0,0,0,0, #__flag_autosize|#__bar_vertical); No need to specify size or coordinates
@@ -239,12 +239,12 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::ContainerWidget(10,10,100,100)
     widget::ContainerWidget(10,10,100,100)
     widget::ContainerWidget(10,10,100,100)
-    widget::CloseList()
-    widget::CloseList()
-    widget::CloseList()
-    widget::CloseList() ; *window
+    widget::CloseWidgetList()
+    widget::CloseWidgetList()
+    widget::CloseWidgetList()
+    widget::CloseWidgetList() ; *window
     
-    CloseList()
+    CloseWidgetList()
     SetState(Button_1, 4)
     
     ;     
@@ -278,7 +278,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     ;     ; ;     ;     Button_10 = widget::Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
     ;     ;     ; ;     ;     Button_1 = widget::SplitterWidget(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     
-    Button_2 = widget::ScrollAreaWidget(0, 0, 0, 0, 150, 150, 1) : widget::CloseList()        ; as they will be sized automatically
+    Button_2 = widget::ScrollAreaWidget(0, 0, 0, 0, 150, 150, 1) : widget::CloseWidgetList()        ; as they will be sized automatically
     Button_3 = widget::ProgressBarWidget(0, 0, 0, 0, 0, 100, 30)                                 ; as they will be sized automatically
     
     Button_4 = widget::SpinWidget(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
@@ -304,15 +304,15 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState(Splitter_3, 55)
     widget::SetState(Splitter_2, 15)
     
-    If Button_2 And widget::OpenList(Button_2)
+    If Button_2 And widget::OpenWidgetList(Button_2)
       Button_4 = widget::ScrollAreaWidget( -1, -1, 50, 50, 100, 100, 1);, #__flag_nogadgets)
                                                                  ;       Define i
                                                                  ;       For i = 0 To 1000
       widget::ProgressBarWidget(10, 10, 50, 30, 1, 100, 30)
       ;       Next
-      widget::CloseList()
+      widget::CloseWidgetList()
       widget::ProgressBarWidget(100, 10, 50, 30, 2, 100, 30)
-      widget::CloseList()
+      widget::CloseWidgetList()
     EndIf
     
     

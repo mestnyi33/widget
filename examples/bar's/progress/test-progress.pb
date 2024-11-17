@@ -12,7 +12,7 @@ Define min = 25
 
 If vertical
    ;\\ vertical
-   If Open(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       Define *spin1 = ProgressBarWidget(20, 50, 50, 250,  0, 30, #PB_ProgressBar_Vertical|#__bar_invert)
       SetState(*spin1, 5)
@@ -24,12 +24,12 @@ If vertical
       SetState(*spin3, 5)
       
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 Else
    
    ;\\ horizontal
-   If Open(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       Define *spin1 = ProgressBarWidget(50, 20, 250, 50,  0, 30, #__bar_invert)
       SetState(*spin1, 5)
@@ -41,7 +41,7 @@ Else
       SetState(*spin3, 5)
       
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 EndIf
 

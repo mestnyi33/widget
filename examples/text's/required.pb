@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define *widget._S_widget, *gadget, text_gadget_width = 300
    
-   If Open( #WINDOW, 0, 0, text_gadget_width*2 + 30, 100, "TextGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget( #WINDOW, 0, 0, text_gadget_width*2 + 30, 100, "TextGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;*gadget = TextGadget(-1, 10,  10, text_gadget_width, 80, text.s, #PB_Text_Border )
       *gadget = StringGadget(-1, 10,  10, text_gadget_width, 80, Text.s )
       

@@ -6,14 +6,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
    Define width=800, height=600
 
- ; If Open(1, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  ; If Open(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
-  If Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+ ; If OpenRootWidget(1, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  ; If OpenRootWidget(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+  If WindowWidget(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ;a_init(Root())
   SetWidgetColor( Root( ), #__color_back, $ff00ffff)
   
   ;\\
-  Window(10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  WindowWidget(10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ButtonWidget(10,10,170,30,"button_0")
   ButtonWidget(10,50,170,30,"button_1")
   
@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   ;\\
-  Window(270, 10, 190, 90, "Window_1_1", #PB_Window_BorderLess); | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  WindowWidget(270, 10, 190, 90, "Window_1_1", #PB_Window_BorderLess); | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ButtonWidget(10,10,170,30,"button_2")
   ButtonWidget(10,50,170,30,"button_3")
   
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   ;\\
-  Window(570, 10, 190, 90, "Window_0_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  WindowWidget(570, 10, 190, 90, "Window_0_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ButtonWidget(10,10,170,30,"button_2")
   ButtonWidget(10,50,170,30,"button_3")
   
@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   ;\\
-  Window(570, 350, 190, 90, "Window_0_2", #PB_Window_BorderLess)
+  WindowWidget(570, 350, 190, 90, "Window_0_2", #PB_Window_BorderLess)
   ButtonWidget(10,10,170,30,"button_2")
   ButtonWidget(10,50,170,30,"button_3")
   
@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   ;\\
-  Window(150, 150, 190, 90, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  WindowWidget(150, 150, 190, 90, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ButtonWidget(10,10,170,30,"button_2")
   ButtonWidget(10,50,170,30,"button_3")
   
@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   ;\\
-  Window(360, 150, 190, 90, "Window_1_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  WindowWidget(360, 150, 190, 90, "Window_1_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ButtonWidget(10,10,170,30,"button_2")
   ButtonWidget(10,50,170,30,"button_3")
   
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   ;\\
-  Window(570, 180, 190, 90, "Window_1_1", #PB_Window_BorderLess); | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  WindowWidget(570, 180, 190, 90, "Window_1_1", #PB_Window_BorderLess); | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ButtonWidget(10,10,170,30,"button_2")
   ButtonWidget(10,50,170,30,"button_3")
   
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   ;\\
-  Window(250, 350, 190, 90, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  WindowWidget(250, 350, 190, 90, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ButtonWidget(10,10,170,30,"button_4")
   ButtonWidget(10,50,170,30,"button_5")
   
@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   
-  WaitClose()
+  WaitCloseRootWidget()
 EndIf
 
 End  

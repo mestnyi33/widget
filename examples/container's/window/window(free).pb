@@ -38,15 +38,15 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventGadget()
           Case *buttonOpen
             If Not *window
-              *window = Window(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
+              *window = WindowWidget(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
               ButtonWidget(10, 10, 90,30,"button")
               ButtonWidget(10, 50, 90,30,"button")
               ;*window = ButtonWidget(Random(100,10), 10, 90,30,"button")
-              Bind( *window, @events_() )
+              BindWidgetEvent( *window, @events_() )
             EndIf
             
           Case *buttonClose
-            Free( *window )
+            FreeWidget( *window )
             *window = 0
             
           Case *buttonTest
@@ -57,22 +57,22 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  Open(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
+  OpenRootWidget(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
   *buttonTest = ButtonGadget(#PB_Any, 500-100, 400-120, 90,30,"test")
   *buttonClose = ButtonGadget(#PB_Any, 500-100, 400-80, 90,30,"close")
   *buttonOpen = ButtonGadget(#PB_Any, 500-100, 400-40, 90,30,"open")
   
-  *window = Window(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
+  *window = WindowWidget(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
   ButtonWidget(10, 10, 90,30,"button")
   ButtonWidget(10, 50, 90,30,"button")
   ;*window = ButtonWidget(10, 10, 90,30,"button")
 
-  Bind( *window, @events_() )
+  BindWidgetEvent( *window, @events_() )
   BindGadgetEvent( *buttonTest, @events_gadgets() )
   BindGadgetEvent( *buttonOpen, @events_gadgets() )
   BindGadgetEvent( *buttonClose, @events_gadgets() )
   
-  WaitClose()
+  WaitCloseRootWidget()
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 53

@@ -87,7 +87,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(10, 0, 0, 220, 620, "demo set  new parent", Flags )
   
   ; Create desktop for the widgets
-  If Open(10)
+  If OpenRootWidget(10)
     *WINDOW = Root()
     *WINDOW = ContainerWidget(0,0,0,0,#__flag_autosize) : SetWidgetClass(*WINDOW, "WINDOW") 
     SetWidgetColor(*WINDOW, #PB_Gadget_BackColor, $ff00ff00)
@@ -101,11 +101,11 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*PANEL, -1, "item (0)") : *PANEL_0 = ButtonWidget(pos_x,90,160,30,"(PanelWidget(0))") : SetWidgetClass(*PANEL_0, GetTextWidget(*PANEL_0))
     AddItem(*PANEL, -1, "item (1)") : *PANEL_1 = ButtonWidget(pos_x+5,90,160,30,"(PanelWidget(1))") : SetWidgetClass(*PANEL_1, GetTextWidget(*PANEL_1)) 
     AddItem(*PANEL, -1, "item (2)") : *PANEL_2 = ButtonWidget(pos_x+10,90,160,30,"(PanelWidget(2))") : SetWidgetClass(*PANEL_2, GetTextWidget(*PANEL_2)) 
-    CloseList()
+    CloseWidgetList()
     
     *CONTAINER = ContainerWidget(10,310,200,130,#PB_Container_Flat) : SetWidgetClass(*CONTAINER, "CONTAINER") 
     *CONTAINER_0 = ButtonWidget(pos_x,90,160,30,"(Container)") : SetWidgetClass(*CONTAINER_0, GetTextWidget(*CONTAINER_0)) 
-    CloseList()
+    CloseWidgetList()
     
     *SCROLLAREA = ScrollAreaWidget(10,445,200,160,200,160,10,#PB_ScrollArea_Flat) : SetWidgetClass(*SCROLLAREA, "SCROLLAREA") 
     *SCROLLAREA_0 = ButtonWidget(pos_x,90,160,30,"(ScrollArea)") : SetWidgetClass(*SCROLLAREA_0, GetTextWidget(*SCROLLAREA_0)) 
@@ -115,9 +115,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonWidget(5,5,70,30,"Button1") 
     ButtonWidget(15,15,70,30,"Button2") 
     ButtonWidget(25,25,70,30,"Button3") 
-    CloseList( )
+    CloseWidgetList( )
     ;
-    CloseList()
+    CloseWidgetList()
     
     Show_DEBUG()
     
@@ -126,11 +126,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Show_DEBUG()
     
     ;
-    Bind(Root(), @Widgets_CallBack())
+    BindWidgetEvent(Root(), @Widgets_CallBack())
   EndIf
   
   
-  WaitClose()
+  WaitCloseRootWidget()
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

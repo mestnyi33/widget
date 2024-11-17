@@ -296,7 +296,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Define i
-   Open(0, 0,0, 530,460, "Demo ListIcon") 
+   OpenRootWidget(0, 0,0, 530,460, "Demo ListIcon") 
    Define g = ListIconGadget(#PB_Any,10,10,508,200, "Column_0",160, #PB_ListIcon_CheckBoxes|#PB_ListIcon_AlwaysShowSelection);|#PB_ListIcon_HeaderDragDrop)           
     AddGadgetItem(g, -1, "ListIcon_1", ImageID(GetButtonIcon(#PB_ToolBarIcon_Copy)) )
     AddGadgetItem(g, -1, "ListIcon_2") 
@@ -330,8 +330,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Debug "["+ListSize(*g\columns()\items())+"] second column items count"
    
-   Bind(*g, @Events(), #__Event_Change|#__Event_LeftClick)
-   WaitClose( )
+   BindWidgetEvent(*g, @Events(), #__Event_Change|#__Event_LeftClick)
+   WaitCloseRootWidget( )
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)

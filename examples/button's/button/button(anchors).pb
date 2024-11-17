@@ -197,23 +197,23 @@ Module AnchorBox
     widget::SetState( Button_1,1 )
     widget::SetState( Button_2,1 )
     widget::SetState( Button_3,1 )
-    widget::CloseList( )
+    widget::CloseWidgetList( )
     
     ;widget::SetWidgetColor(a, constants::#__color_back, widget::GetWidgetColor( widget::GetParent( a ), constants::#__color_back) )
     
-    widget::Bind(Button_2, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(Button_1, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(Button_4, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(Button_3, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(Button_9, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(Button_5, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(Button_6, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(Button_7, @Events( ), constants::#__event_LeftClick )
-    widget::Bind(Button_8, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_2, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_1, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_4, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_3, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_9, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_5, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_6, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_7, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_8, @Events( ), constants::#__event_LeftClick )
     
     widget::Hide(*a,1)
     widget::SetData(Button_10, *a)
-    widget::Bind(Button_10, @Events( ), constants::#__event_LeftClick )
+    widget::BindWidgetEvent(Button_10, @Events( ), constants::#__event_LeftClick )
     
     ProcedureReturn *a
   EndProcedure
@@ -221,7 +221,7 @@ EndModule
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  If widget::Open( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
+  If widget::OpenRootWidget( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
     
     AnchorBox::Create(30,30,250,30)
     

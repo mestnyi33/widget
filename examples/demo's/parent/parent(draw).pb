@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If Open( OpenWindow( #PB_Any, 300, 150, 380, 200, "form1", #PB_Window_SystemMenu ) )
+  If OpenRootWidget( OpenWindow( #PB_Any, 300, 150, 380, 200, "form1", #PB_Window_SystemMenu ) )
     canvas_1 = GetCanvasGadget( Root( ) )
     canvas_1_win = GetCanvasWindow( Root( ) )
     ;BindEventCanvas( )
@@ -61,12 +61,12 @@ CompilerIf #PB_Compiler_IsMainFile
     *root_1 = Root( )
     
     StringWidget( 100, 20, 250,  60, "String ( root - 1 )" )
-    Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
+    BindWidgetEvent( widget( ), @resize_event( ), #PB_EventType_Resize )
     ButtonWidget( 100, 100, 250,  60, "Button ( root - 1 )", #__flag_Textmultiline,-1 )
-    Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
+    BindWidgetEvent( widget( ), @resize_event( ), #PB_EventType_Resize )
   EndIf
   
-  If Open( OpenWindow( #PB_Any, 300, 400, 380, 200, "form2", #PB_Window_SystemMenu | #PB_Window_SizeGadget ) )
+  If OpenRootWidget( OpenWindow( #PB_Any, 300, 400, 380, 200, "form2", #PB_Window_SystemMenu | #PB_Window_SizeGadget ) )
     canvas_2 = GetCanvasGadget( Root( ) )
     canvas_2_win = GetCanvasWindow( Root( ) )
     ;BindEventCanvas( ) 
@@ -74,9 +74,9 @@ CompilerIf #PB_Compiler_IsMainFile
     *root_2 = Root( )
     
     ButtonWidget( 20, 20, 250,  60, "Button ( root - 2 )", #__flag_Textmultiline,-1 )
-    Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
+    BindWidgetEvent( widget( ), @resize_event( ), #PB_EventType_Resize )
     StringWidget( 20, 100, 250,  60, "String ( root - 2 )" )
-    Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
+    BindWidgetEvent( widget( ), @resize_event( ), #PB_EventType_Resize )
   EndIf
   
   Debug "canvas_1 - "+canvas_1 +" - "+ *root_1

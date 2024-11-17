@@ -48,17 +48,17 @@ Procedure events_widgets()
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-  If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
+  If OpenRootWidget(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
     *p2 = ContainerWidget(20, 180, 200, 200) : SetWidgetClass( widget( ), "CONT2" )
-    CloseList()
+    CloseWidgetList()
   EndIf
   
-  If Open(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *p1 = ContainerWidget(10, 10, 200, 200) : SetWidgetClass( widget( ), "CONT1" )
     *w = ContainerWidget(10, 10, 100, 100) : SetWidgetClass( widget( ), "CHILD" )
     *ch = ButtonWidget(-25, 10, 100, 20, "Button")
-    CloseList()
-    CloseList()
+    CloseWidgetList()
+    CloseWidgetList()
     
     Define change = ButtonWidget(10,430, 200, 30, "change parent") : SetWidgetClass( widget( ), "change parent" );, #__flag_ButtonToggle)
     
@@ -76,9 +76,9 @@ EndProcedure
 ;       Debug  ""+widgets( )\root +" "+ *p2\root +" - "+ widgets( )\text\string
 ;     Next
             
-    Bind(change, @events_widgets())
+    BindWidgetEvent(change, @events_widgets())
     
-    WaitClose( )
+    WaitCloseRootWidget( )
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

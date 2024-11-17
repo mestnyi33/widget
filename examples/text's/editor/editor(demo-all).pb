@@ -118,7 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 615, (height+5)*7+20+90+160, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open( 0);, 0, 0, 615, (height+5)*7+20+90+160)
+    OpenRootWidget( 0);, 0, 0, 615, (height+5)*7+20+90+160)
     ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     ;       height = 20
     ;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -320,7 +320,7 @@ CompilerEndIf
 ;     SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
 ;   EndProcedure
 ;   
-;   If Open(OpenWindow(#PB_Any, 0, 0, 615, 270, "Editor on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+;   If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 615, 270, "Editor on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ;     EditorGadget(21, 0,0,0,0)
 ;     EditorGadget(22, 0,0,0,0, #PB_Editor_WordWrap)
 ;     
@@ -357,7 +357,7 @@ CompilerEndIf
 ;     ;SetState(*s_3, 82)
 ;     ;SetState(*s_3, 99)
 ;     ;SetState(*s_3, 126)
-;     Bind(*s_3, @resize_splitter())
+;     BindWidgetEvent(*s_3, @resize_splitter())
 ;     
 ;     ;     BindEvent(#PB_Event_Widget, @Events())
 ;     ;     PostEvent(#PB_Event_Gadget, 0,10, #__Event_Resize)

@@ -71,7 +71,7 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   Protected X,Y,Width=346,Height=176, View
   Flag.q | #PB_Window_SystemMenu|#PB_Window_SizeGadget
   
-  ; = Open(#PB_Any, #PB_Ignore,#PB_Ignore,200,300, "Image editor",Flag, Parent) 
+  ; = OpenRootWidget(#PB_Any, #PB_Ignore,#PB_Ignore,200,300, "Image editor",Flag, Parent) 
   
   If ((Flag & #PB_Window_ScreenCentered) = #PB_Window_ScreenCentered)
 ;     X = (WidgetWidth(0)-Width)/2 
@@ -84,7 +84,7 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
     EndIf
   EndIf
   
-  Window_0 = Window( X,Y, Width, Height, "Редактор изображения", Flag|#PB_Window_Invisible)
+  Window_0 = WindowWidget( X,Y, Width, Height, "Редактор изображения", Flag|#PB_Window_Invisible)
   Sticky(Window_0, #True)
   
   Image_View = ImageWidget(5, 5, 231, 166, 0);, #_Flag_Image_Center)
@@ -93,10 +93,10 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   Button_Ok = ButtonWidget(240, 125, 101, 21, "Применить")
   Button_Cancel = ButtonWidget(240, 150, 101, 21, "Отмена")
   ;
-  Bind(Window_0, @CFE_Helper_Buttons_Events())
+  BindWidgetEvent(Window_0, @CFE_Helper_Buttons_Events())
   ; BindGadgetEvent(e, @ButtonEvent(), #_Event_LeftClick)
   Hide(Window_0, #False)
-  CloseList()
+  CloseWidgetList()
   
   ; WaitQuit( )
   
@@ -113,7 +113,7 @@ EndProcedure
 ;-
 ; Window  example
 CompilerIf #PB_Compiler_IsMainFile
-  Open(#PB_Any, 0,0, 432,284+4*65, "Demo ()") 
+  OpenRootWidget(#PB_Any, 0,0, 432,284+4*65, "Demo ()") 
   
   Define Window = root( )
   ;a_init(Window)
@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CFE_Helper_Image(Window)
   Debug gImage
   
-  WaitClose(Window)
+  WaitCloseRootWidget(Window)
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

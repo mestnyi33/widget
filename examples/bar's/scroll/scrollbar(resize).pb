@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define h = 60, max = 301
   Define._s_widget *g1, *g2, *g3, *g4, *g5, *g6
   
-  If Open(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *g1 = ScrollBarWidget(    30, 30, 200, h, 0,max,139)
     *g2 = ScrollBarWidget(30+210, 30, 200, h, 0,max,139)
@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(*g5, 200*2+8)
     SetState(*g6, h)
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected i
     
     If OpenWindow(0, 0, 0, 600, 600, "Demo docking widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-     Open(0)
+     OpenRootWidget(0)
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
        
       
@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Widgets(Str(4)) = ButtonWidget(0, 0, 80, 30, Str(4)+"_Bottom")
       Widgets(Str(6)) = ButtonWidget(0, 0, 80, 21, Str(6)+"_Bottom")
       
-      CloseList()
+      CloseWidgetList()
       
 ;       _SetAlignment(Widgets(Str(1)), #__flag_Flag_AutoSize|#__align_left|#__align_right)
 ;       _SetAlignment(Widgets(Str(2)), #__flag_Flag_AutoSize|#__align_top|#__align_bottom)

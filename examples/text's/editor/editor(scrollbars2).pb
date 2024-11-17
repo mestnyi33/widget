@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
     #window
   EndEnumeration
   
-  Open(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  OpenRootWidget(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   Define Text.s, m.s   = #LF$, a
   
   Define *g = EditorWidget(50, 50, 200 + 60-Bool(#PB_Compiler_OS=#PB_OS_Windows)*17, 200);, #__flag_autosize)
@@ -37,10 +37,10 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, a, Str(a) + " Line " + Str(a))
   Next
   
-  ;CloseList( ) ; close panel lists
+  ;CloseWidgetList( ) ; close panel lists
   
   
-  WaitClose( ) ;;;
+  WaitCloseRootWidget( ) ;;;
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)

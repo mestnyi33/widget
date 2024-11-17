@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Down
             Debug "down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
             
-            Send(EventWidget( ), #__event_close)
+            SendWidgetEvent(EventWidget( ), #__event_close)
    ;             ;\\ to send not down
             ;                      ProcedureReturn 1
             ProcedureReturn #PB_Ignore
@@ -60,13 +60,13 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Open(0, 400, 200, 300, 200, "window_0", #PB_Window_SystemMenu |
+   OpenRootWidget(0, 400, 200, 300, 200, "window_0", #PB_Window_SystemMenu |
                                            #PB_Window_SizeGadget |
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
    
    SetWidgetClass(Root( ), "root_0" )
-   Define window = Window(10,10,300-20-8,200-20-32,"window_0", #PB_Window_SystemMenu |
+   Define window = WindowWidget(10,10,300-20-8,200-20-32,"window_0", #PB_Window_SystemMenu |
                                            #PB_Window_SizeGadget |
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
@@ -85,14 +85,14 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    
-   Bind(#PB_All, @root_CallBack())
-   Bind(window, @window_CallBack())
-   Bind(gadget, @gadget_CallBack())
+   BindWidgetEvent(#PB_All, @root_CallBack())
+   BindWidgetEvent(window, @window_CallBack())
+   BindWidgetEvent(gadget, @gadget_CallBack())
    
-   ;post(gadget, #__event_close)
+   ;PostWidgetEvent(gadget, #__event_close)
    
    ;\\
-   WaitClose( )
+   WaitCloseRootWidget( )
    
    
 CompilerEndIf

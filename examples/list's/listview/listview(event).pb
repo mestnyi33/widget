@@ -94,7 +94,7 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;{
   Define i,a
   ;
@@ -172,7 +172,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   TextWidget(270,10+150+150, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-    Bind(ID(i), @events_widgets())
+    BindWidgetEvent(ID(i), @events_widgets())
   Next
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow

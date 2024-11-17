@@ -494,7 +494,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure Open( id, flag=0 )
+   Procedure OpenRootWidget( id, flag=0 )
       Static x,y
       OpenWindow( id, x,y,200,200,"window_"+Str(id), #PB_Window_SystemMenu|flag)
       CanvasGadget( id, 40,40,200-80,55, #PB_Canvas_Keyboard );| #PB_Canvas_Container) : CloseGadgetList()
@@ -506,9 +506,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    events::setCallBack( @events())
    
-   Open(1, #PB_Window_NoActivate)
-   Open(2, #PB_Window_NoActivate)
-   Open(3, #PB_Window_NoActivate)
+   OpenRootWidget(1, #PB_Window_NoActivate)
+   OpenRootWidget(2, #PB_Window_NoActivate)
+   OpenRootWidget(3, #PB_Window_NoActivate)
    
    Define event
    Repeat

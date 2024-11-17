@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     ;\\ Shows possible flags of ListIcon in action...
-    If Open(0, 0, 300, 800, 300, "ListIcons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    If OpenRootWidget(0, 0, 300, 800, 300, "ListIcons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;\\ left column
       ListIconWidget(10,  25, 380, 70, "Column 1", 100)
       ListIconWidget(10, 120, 380, 70, "Column 1", 100, #PB_ListIcon_CheckBoxes)  ; ListIcon with checkbox

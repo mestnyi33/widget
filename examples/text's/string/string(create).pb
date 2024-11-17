@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; EditorWidget(x,y,width,height, flag) : setTextWidget(widget(), text)
   EndMacro
   
- If Open(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+ If OpenRootWidget(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define x=300
     Define height, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
     

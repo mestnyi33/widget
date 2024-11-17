@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global i = 0
    Global._s_widget *PANEL_1, *PANEL_2
      
-      If Open( 3, 0, 0, 750, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+      If OpenRootWidget( 3, 0, 0, 750, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       SetWidgetColor(root(), #__color_back, $FFF2F2F2)
    
       *PANEL_1 = PanelWidget( 30, 30, 340, 240 )
@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget( 0,0,80,80,"Button" )
       
       ;\\
-      CloseList( ) ; close *PANEL_1 list
+      CloseWidgetList( ) ; close *PANEL_1 list
       
       ;\\
       SetState( *PANEL_1, 1 )
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget( 200,80,80,30,"Button6" )
       
       ;\\
-      CloseList( ) ; close *PANEL_1 list
+      CloseWidgetList( ) ; close *PANEL_1 list
       
       Debug "items count "+CountItems( *PANEL_1 )
       
@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget( 0,0,80,80,"Button" )
       
       ;\\
-      CloseList( ) ; close *PANEL_1 list
+      CloseWidgetList( ) ; close *PANEL_1 list
       
       ;\\
       SetState( *PANEL_1, 1 )
@@ -72,14 +72,14 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget( 200,80,80,30,"Button6" )
       
       ;\\
-      CloseList( ) ; close *PANEL_1 list
+      CloseWidgetList( ) ; close *PANEL_1 list
       
       Debug "items count "+CountItems( *PANEL_1 )
       
       ; reset selected items
       SetState( *PANEL_1, - 1 )
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf   
 CompilerEndIf
 
@@ -91,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Global i = 0
    Global._s_widget *PANEL_1, *PANEL_2
    
-   If Open( 3, 0, 0, 400, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRootWidget( 3, 0, 0, 400, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
       *PANEL_1 = PanelWidget( 30, 30, 340, 240 )
       
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
       Debug "items count "+CountItems( *PANEL_1 )
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

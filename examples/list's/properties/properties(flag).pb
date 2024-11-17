@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-  If Open(0, 0, 0, 605+30, 560, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 605+30, 560, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define Value 
     Value = ButtonWidget(30,30, 100, 30, "button_0")
     StringWidget(30,30*2, 100, 30, "string_0")

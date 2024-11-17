@@ -121,7 +121,7 @@ Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
   ProcedureReturn gadget
 EndProcedure
 
-If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ListViewGadget_(0, 10, 30, 250, 120)
   For a = 0 To 12
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Listview") ; define listview content
@@ -190,7 +190,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   ;   TextGadget(#PB_Any, 10+270+270,170, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
-    Bind(ID(i), @events_widgets())
+    BindWidgetEvent(ID(i), @events_widgets())
   Next
   
   SetActive(ID(1))

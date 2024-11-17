@@ -49,8 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
-  Open(10) : SetTextWidget(Root(), "*root1" )
-  ;*window_10 = Window(0, 0, 425, 350,"demo set gadget new parent", Flags)
+  OpenRootWidget(10) : SetTextWidget(Root(), "*root1" )
+  ;*window_10 = WindowWidget(0, 0, 425, 350,"demo set gadget new parent", Flags)
   *window_10 = ContainerWidget(0, 0, 425, 350) : SetTextWidget(*window_10, "*window_10" )
   
   *CHILD = ButtonWidget(-30,10,160,70,"child") 
@@ -67,21 +67,21 @@ CompilerIf #PB_Compiler_IsMainFile
   *_61 = ButtonWidget(35,90,160,30,">>(Panel (1))") 
   AddItem(*PANEL,-1,"Second") 
   *_62 = ButtonWidget(40,90,160,30,">>(Panel (2))") 
-  CloseList()
+  CloseWidgetList()
   
   *CONTAINER = ContainerWidget(215,10,200,160,#PB_Container_Flat)  : SetTextWidget(*CONTAINER, "*CONTAINER" )
   *_7 = ButtonWidget(30,90,160,30,">>(Container)") 
-  CloseList()
+  CloseWidgetList()
   
   *SCROLLAREA = ScrollAreaWidget(215,180,200,160,200,160,10,#PB_ScrollArea_Flat)  : SetTextWidget(*SCROLLAREA, "*SCROLLAREA" )
   *_8 = ButtonWidget(30,90,160,30,">>(ScrollArea)") 
-  CloseList()
+  CloseWidgetList()
   
   
   HideWindow(GetCanvasWindow(GetRoot(*window_10)),0)
  
-  Bind(GetRoot(*window_10), @Widgets_CallBack())
-;   Bind(GetRoot(*window_20), @Widgets_CallBack())
+  BindWidgetEvent(GetRoot(*window_10), @Widgets_CallBack())
+;   BindWidgetEvent(GetRoot(*window_20), @Widgets_CallBack())
   
   Define Event
   Repeat

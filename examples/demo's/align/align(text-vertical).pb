@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define text_v.s = "Standard"+ m.s +"Button Button"+ m.s +"(Vertical)"
    Define y,x = (width+space)*3 + 5
    
-   If Open(0, 0, 0, x+(width+space)*3 + 15, y+(height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, x+(width+space)*3 + 15, y+(height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetWidgetColor( widget( ), #__color_Back, $FFffffff )
       
       ; vertical

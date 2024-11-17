@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       ;\\
       ;
-      Open(0, 10, 10, 240, 240 ) : SetWidgetFrame(root(), 1 ) : SetTextWidget(root()," root_1")
+      OpenRootWidget(0, 10, 10, 240, 240 ) : SetWidgetFrame(root(), 1 ) : SetTextWidget(root()," root_1")
       If editable
          a_init(root(),0)
       EndIf
@@ -92,8 +92,8 @@ CompilerIf #PB_Compiler_IsMainFile
       SetTextWidget(widget( )\FirstWidget( ), "     9")
       SetTextWidget(widget( )\LastWidget( ), "10")
       
-      CloseList()
-      CloseList()
+      CloseWidgetList()
+      CloseWidgetList()
       SetTextWidget(ContainerWidget(10, 45, 70, 180), "11" ) 
       SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets), "12" ) 
       SetTextWidget(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets), "13" ) 
@@ -102,15 +102,15 @@ CompilerIf #PB_Compiler_IsMainFile
       SetTextWidget(ContainerWidget(10, 5, 70, 180), "16" ) 
       SetTextWidget(ContainerWidget(10, 5, 70, 180), "17" ) 
       SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets), "18" ) 
-      CloseList()
-      CloseList()
-      CloseList()
-      CloseList()
+      CloseWidgetList()
+      CloseWidgetList()
+      CloseWidgetList()
+      CloseWidgetList()
       
       ;
       ;\\
       ;
-      Open(0, 260, 10, 240, 240) : SetWidgetFrame(root(), 1 ) : SetTextWidget(root()," root_2")
+      OpenRootWidget(0, 260, 10, 240, 240) : SetWidgetFrame(root(), 1 ) : SetTextWidget(root()," root_2")
       If editable
          a_init(root(),0)
       EndIf
@@ -131,8 +131,8 @@ CompilerIf #PB_Compiler_IsMainFile
       SetTextWidget(widget( )\FirstWidget( ), "     9")
       SetTextWidget(widget( )\LastWidget( ), "10")
       
-      CloseList()
-      CloseList()
+      CloseWidgetList()
+      CloseWidgetList()
       SetTextWidget(ContainerWidget(10, 45, 70, 180), "11" ) 
       SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets), "12" ) 
       SetTextWidget(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets), "13" ) 
@@ -141,15 +141,15 @@ CompilerIf #PB_Compiler_IsMainFile
       SetTextWidget(ContainerWidget(10, 5, 70, 180), "16" ) 
       SetTextWidget(ContainerWidget(10, 5, 70, 180), "17" ) 
       SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets), "18" ) 
-      CloseList()
-      CloseList()
-      CloseList()
-      CloseList()
+      CloseWidgetList()
+      CloseWidgetList()
+      CloseWidgetList()
+      CloseWidgetList()
       
       ;
       ;\\
       ;
-      Open(0, 10, 260, 240, 240) : SetWidgetFrame(root(), 1 ) : SetTextWidget(root()," root_3")
+      OpenRootWidget(0, 10, 260, 240, 240) : SetWidgetFrame(root(), 1 ) : SetTextWidget(root()," root_3")
       If editable
          a_init(root(),0)
       EndIf
@@ -170,8 +170,8 @@ CompilerIf #PB_Compiler_IsMainFile
       SetTextWidget(widget( )\FirstWidget( ), "     9")
       SetTextWidget(widget( )\LastWidget( ), "10")
       
-      CloseList()
-      CloseList()
+      CloseWidgetList()
+      CloseWidgetList()
       SetTextWidget(ContainerWidget(10, 45, 70, 180), "11" ) 
       SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets), "12" ) 
       SetTextWidget(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets), "13" ) 
@@ -180,15 +180,15 @@ CompilerIf #PB_Compiler_IsMainFile
       SetTextWidget(ContainerWidget(10, 5, 70, 180), "16" ) 
       SetTextWidget(ContainerWidget(10, 5, 70, 180), "17" ) 
       SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets), "18" ) 
-      CloseList()
-      CloseList()
-      CloseList()
-      CloseList()
+      CloseWidgetList()
+      CloseWidgetList()
+      CloseWidgetList()
+      CloseWidgetList()
       
       ;
       ;\\
       ;
-      Open(0, 260, 260, 240, 240) : SetWidgetFrame(root(), 1 ) : SetTextWidget(root()," root_4")
+      OpenRootWidget(0, 260, 260, 240, 240) : SetWidgetFrame(root(), 1 ) : SetTextWidget(root()," root_4")
       If editable
          a_init(root(),0)
       EndIf
@@ -210,8 +210,8 @@ CompilerIf #PB_Compiler_IsMainFile
       SetTextWidget(widget( )\FirstWidget( ), "     9")
       SetTextWidget(widget( )\LastWidget( ), "10")
       
-      CloseList()
-      CloseList()
+      CloseWidgetList()
+      CloseWidgetList()
       SetTextWidget(ContainerWidget(10, 45, 70, 180), "11" ) 
       SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets), "12" ) 
       SetTextWidget(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets), "13" ) 
@@ -220,18 +220,18 @@ CompilerIf #PB_Compiler_IsMainFile
       SetTextWidget(ContainerWidget(10, 5, 70, 180), "16" ) 
       SetTextWidget(ContainerWidget(10, 5, 70, 180), "17" ) 
       SetTextWidget(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets), "18" ) 
-      CloseList()
-      CloseList()
-      CloseList()
-      CloseList()
+      CloseWidgetList()
+      CloseWidgetList()
+      CloseWidgetList()
+      CloseWidgetList()
       
       ;\\
-      Bind(#PB_All, @events_widgets(), #__event_MouseEnter)
-      Bind(#PB_All, @events_widgets(), #__event_MouseMove)
-      Bind(#PB_All, @events_widgets(), #__event_MouseLeave)
+      BindWidgetEvent(#PB_All, @events_widgets(), #__event_MouseEnter)
+      BindWidgetEvent(#PB_All, @events_widgets(), #__event_MouseMove)
+      BindWidgetEvent(#PB_All, @events_widgets(), #__event_MouseLeave)
       
       ;\\
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

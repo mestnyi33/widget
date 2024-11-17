@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Case #__event_LeftDown : 
            Debug "leftdown"
            result = 1 : AddItem(w_flag, -1, " leftdown")
-           Message( "message", "demo click", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
+           MessageWidget( "message", "demo click", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
            
         Case #__event_LeftUp   : result = 1 : AddItem(w_flag, -1, "  leftup")
            Debug "leftup"
@@ -38,21 +38,21 @@ CompilerIf #PB_Compiler_IsMainFile
      EndIf
   EndProcedure
   
-  If Open(1, 0, 0, 170, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(1, 0, 0, 170, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     w_flag = widget::TreeWidget(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
     w_this = widget::ButtonWidget(10, 220, 150, 70, "Click me", #__flag_Textmultiline );| #__flag_ButtonToggle) 
     
-    ; widget::Bind(w_this, @events_widgets( ), #PB_All )
-    ; widget::Bind(w_this, @events_widgets( ), #__Event_Draw)
-    widget::Bind(w_this, @events_widgets( ), #__Event_DragStart)
-    widget::Bind(w_this, @events_widgets( ), #__Event_Drop)
-    ; widget::Bind(w_this, @events_widgets( ), #__Event_Down)
-    ; widget::Bind(w_this, @events_widgets( ), #__Event_Up)
-    widget::Bind(w_this, @events_widgets( ), #__event_LeftDown)
-    widget::Bind(w_this, @events_widgets( ), #__event_LeftUp)
-    widget::Bind(w_this, @events_widgets( ), #__Event_LeftClick)
-    widget::Bind(w_this, @events_widgets( ), #__Event_Left2Click)
-    widget::Bind(w_this, @events_widgets( ), #__Event_Left3Click)
+    ; widget::BindWidgetEvent(w_this, @events_widgets( ), #PB_All )
+    ; widget::BindWidgetEvent(w_this, @events_widgets( ), #__Event_Draw)
+    widget::BindWidgetEvent(w_this, @events_widgets( ), #__Event_DragStart)
+    widget::BindWidgetEvent(w_this, @events_widgets( ), #__Event_Drop)
+    ; widget::BindWidgetEvent(w_this, @events_widgets( ), #__Event_Down)
+    ; widget::BindWidgetEvent(w_this, @events_widgets( ), #__Event_Up)
+    widget::BindWidgetEvent(w_this, @events_widgets( ), #__event_LeftDown)
+    widget::BindWidgetEvent(w_this, @events_widgets( ), #__event_LeftUp)
+    widget::BindWidgetEvent(w_this, @events_widgets( ), #__Event_LeftClick)
+    widget::BindWidgetEvent(w_this, @events_widgets( ), #__Event_Left2Click)
+    widget::BindWidgetEvent(w_this, @events_widgets( ), #__Event_Left3Click)
     
     widget::WaitClose()
   EndIf

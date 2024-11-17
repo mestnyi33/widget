@@ -213,7 +213,7 @@ Procedure events( )
   
 EndProcedure
 
-If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
+If OpenRootWidget(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
   *Panel = PanelWidget( 10, 10, 280, 480)
   
   ; Add some items. We will be able to move items into the
@@ -235,7 +235,7 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   ; это позволяет переместить наш частный тип с помощью операции перемещения
   EnableDDrop(*Panel, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
   
-  Bind( *Panel, @events( ) )
+  BindWidgetEvent( *Panel, @events( ) )
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow

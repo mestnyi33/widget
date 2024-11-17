@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 30, #PB_ScrollArea_Flat)
     SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    ; Bind(-1, @events_widgets())
+    ; BindWidgetEvent(-1, @events_widgets())
     
     *g = ScrollAreaWidget(0, 0, 100, 100, Sw, Sh, 30, #PB_ScrollArea_Flat)
     oc = ContainerGadget(#PB_Any, 0,0,0,0)
@@ -68,13 +68,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CloseGadgetList() ; ic
     CloseGadgetList() ; oc
-    CloseList()
+    CloseWidgetList()
     
     ;
     SplitterWidget(10,10,590,480, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
      
 ;     BindGadgetEvent(g, @events_gadgets())
-;     Bind(*g, @events_widgets())
+;     BindWidgetEvent(*g, @events_widgets())
     
     ; set&get demos
     If count
@@ -136,9 +136,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "step - "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
     
     BindGadgetEvent(g, @events_gadgets())
-    Bind(*g, @events_widgets())
+    BindWidgetEvent(*g, @events_widgets())
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
   Define auto = 1
-  widget::Open(0);, 0, 0, 510, 340)
+  widget::OpenRootWidget(0);, 0, 0, 510, 340)
   
   ; first splitter
   ButtonGadget(1, 0, 0, 0, 0, "BTN1")

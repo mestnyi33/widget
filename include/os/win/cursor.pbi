@@ -248,7 +248,7 @@ Module Cursor
     ProcedureReturn ImageID
   EndProcedure
   
-  Procedure   Free( *cursor ) 
+  Procedure   FreeWidget( *cursor ) 
     ;Debug "cursor-free "+*cursor
     
     If *cursor >= 0 And *cursor <= 255
@@ -359,7 +359,7 @@ Module Cursor
               Case #__cursor_Drag, #__cursor_Drop,
                    #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
                    #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
-                cursor::Free( \hcursor )
+                cursor::FreeWidget( \hcursor )
             EndSelect
           EndIf
           \type = *cursor

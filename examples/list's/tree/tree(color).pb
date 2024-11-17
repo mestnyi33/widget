@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TreeGadget(0, 10, 10, 180, 230)
     
-    Open(0, 200, 10, 180, 230);, "", #__flag_borderless)
+    OpenRootWidget(0, 200, 10, 180, 230);, "", #__flag_borderless)
     *w = TreeWidget(0, 0, 180, 230)
     
     For i = 1 To 10
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; vertical and horizontal line back-color
     SetWidgetItemColor(*w, #PB_All, #__Color_Line,  $C03AD55A)
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)

@@ -442,7 +442,7 @@ Procedure events( )
   
 EndProcedure
 
-If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
+If OpenRootWidget(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
   *tree = TreeWidget( 10, 10, 280, 480, #PB_Tree_NoLines|#PB_Tree_NoButtons|#__flag_GridLines)
   
   ; Add some items. We will be able to move items into the
@@ -516,12 +516,12 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   ; это позволяет переместить наш частный тип с помощью операции перемещения
   EnableDDrop(*tree, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
   
-  ;Bind( *tree, @events( ) )
+  ;BindWidgetEvent( *tree, @events( ) )
   
-  Bind( *tree, @DrawBarEvents( ), #__event_Draw )
-  Bind( *tree, @DrawBarEvents( ), #__event_LeftDown )
-  Bind( *tree, @DrawBarEvents( ), #__event_LeftUp )
-  Bind( *tree, @DrawBarEvents( ), #__event_MouseMove )
+  BindWidgetEvent( *tree, @DrawBarEvents( ), #__event_Draw )
+  BindWidgetEvent( *tree, @DrawBarEvents( ), #__event_LeftDown )
+  BindWidgetEvent( *tree, @DrawBarEvents( ), #__event_LeftUp )
+  BindWidgetEvent( *tree, @DrawBarEvents( ), #__event_MouseMove )
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow

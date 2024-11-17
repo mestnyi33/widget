@@ -72,43 +72,43 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn *PARENT
    EndProcedure
    
-   If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRootWidget(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       *PARENT = PanelWidget(10,145,200,160)  : SetWidgetClass(*PARENT, "PANEL") 
       AddItem(*PARENT, -1, "item (0)")
       ;              ;
       ;              OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "(PanelWidget(0))")
       ;              OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((0>))")
-      ;              OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((0>>))") : CloseList( )
-      ;              CloseList( )
-      ;              CloseList( )
+      ;              OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((0>>))") : CloseWidgetList( )
+      ;              CloseWidgetList( )
+      ;              CloseWidgetList( )
       ;              ;
       AddItem(*PARENT, -1, "item (1)")
       ;
       OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "(PanelWidget(1))")
       OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((1>))")
-      OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((1>>))") : CloseList( )
-      CloseList( )
-      CloseList( )
+      OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((1>>))") : CloseWidgetList( )
+      CloseWidgetList( )
+      CloseWidgetList( )
       ;
       AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = ButtonWidget(20,90,160,30,"(PanelWidget(2))") : SetWidgetClass(*PARENT_2, GetTextWidget(*PARENT_2)) 
                                       ;
       OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "(PanelWidget(2))")
       OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((2>))")
-      OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((2>>))") : CloseList( )
-      CloseList( )
-      CloseList( )
+      OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((2>>))") : CloseWidgetList( )
+      CloseWidgetList( )
+      CloseWidgetList( )
       
-      CloseList()
+      CloseWidgetList()
       
       ;
       Debug ">"
-      OpenList( *PARENT, 0 )
+      OpenWidgetList( *PARENT, 0 )
       OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "(PanelWidget(0))")
       OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((0>))")
-      OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((0>>))") : CloseList( )
-      CloseList( )
-      CloseList( )
-      CloseList( )
+      OpenGadget(10,90,160,30) : SetWidgetClass(widget(), "((0>>))") : CloseWidgetList( )
+      CloseWidgetList( )
+      CloseWidgetList( )
+      CloseWidgetList( )
       Debug "<"
       
       *CHILD = OpenGadget(10,10,160,70) : SetWidgetClass(*CHILD, "CHILD") 
@@ -117,9 +117,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget(5,5,70,30,"Button1") : SetWidgetClass(widget(), "(CH>>>0)")  
       ;       ButtonWidget(15,15,70,30,"Button2") : SetWidgetClass(widget(), "(CH>>>1)")  
       ;       ButtonWidget(25,25,70,30,"Button3") : SetWidgetClass(widget(), "(CH>>>2)")  
-      CloseList( )
-      CloseList( )
-      CloseList( )
+      CloseWidgetList( )
+      CloseWidgetList( )
+      CloseWidgetList( )
       ;  
       
       
@@ -155,7 +155,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       SetParent(*CHILD, *PARENT, 2) : Show_DEBUG()
 ;       SetParent(*CHILD, root( )) : Show_DEBUG()
       
-      WaitClose()
+      WaitCloseRootWidget()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

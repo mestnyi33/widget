@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    OpenWindow( 1, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu)
-   Bind(Open( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
+   BindWidgetEvent(OpenRootWidget( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
    
    ;\\
    menu = CreatePopupMenu( #PB_Any )
@@ -125,8 +125,8 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseSubBar( )
    EndIf
    
-   Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
-   Bind(*menu, @QuitHandler(), #__event_LeftClick, 4)
+   BindWidgetEvent(*menu, @TestHandler(), #__event_LeftClick, 6)
+   BindWidgetEvent(*menu, @QuitHandler(), #__event_LeftClick, 4)
    
    
    Define Event

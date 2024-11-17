@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
     BindEvent( #PB_Event_Repaint, @event_repaint() )
     
-    Open(0, 270, 10, 250, 680)
+    OpenRootWidget(0, 270, 10, 250, 680)
     Define *w = EditorWidget(0, 0, 250, 680) 
     
     Define time = ElapsedMilliseconds()

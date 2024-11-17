@@ -22,21 +22,21 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
+If OpenRootWidget(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   *p1 = ContainerWidget(10, 10, 200, 200)            ; 0
   *w = ContainerWidget(10, 10, 100, 100)             ; 1
   ;ContainerWidget(10, 10, 100, 100)                  ; 2
   ButtonWidget(-25, 20, 120, 40, "Button_2_3") ; 3
- ; CloseList()
-  CloseList()
-  CloseList()
+ ; CloseWidgetList()
+  CloseWidgetList()
+  CloseWidgetList()
   EndIf
   
-  If Open(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   *p2 = ContainerWidget(20, 180, 200, 200)           ; 4
   ButtonWidget(-25, 10, 100, 30, "Button_4_5")       ; 5
-  CloseList()
+  CloseWidgetList()
   
   *b=ButtonWidget(10,430, 200, 30, "change parent", #__flag_ButtonToggle)
   
@@ -52,7 +52,7 @@ If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   Next
   
   
-  Bind(#PB_All, @events_widgets())
+  BindWidgetEvent(#PB_All, @events_widgets())
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

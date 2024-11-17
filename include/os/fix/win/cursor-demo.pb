@@ -13,7 +13,7 @@ Module Get
 EndModule
 ;///
 DeclareModule ID
-  Declare.i Window( WindowID.i )
+  Declare.i WindowWidget( WindowID.i )
   Declare.i Gadget( GadgetID.i )
   Declare.i IsWindowID( handle.i )
   Declare.i GetWindowID( handle.i )
@@ -35,7 +35,7 @@ Module ID
     EndIf
   EndProcedure
   
-  Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
+  Procedure.i WindowWidget( WindowID.i ) ; Return the id of the window from the window handle
     Protected Window = GetProp_( WindowID, "PB_WindowID" ) - 1
     If IsWindow( Window ) And WindowID( Window ) = WindowID
       ProcedureReturn Window
@@ -53,11 +53,11 @@ Module ID
 EndModule
 ;///
 DeclareModule Mouse
-  Declare.i Window( )
+  Declare.i WindowWidget( )
   Declare.i Gadget( WindowID )
 EndDeclareModule
 Module Mouse
-  Procedure Window( )
+  Procedure WindowWidget( )
     Protected Cursorpos.q, handle
     GetCursorPos_( @Cursorpos )
     handle = WindowFromPoint_( Cursorpos )

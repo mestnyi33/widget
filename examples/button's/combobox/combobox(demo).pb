@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If Open(0, 0, 0, 615, 120, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 615, 120, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
     ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable)
     For a = 1 To 31 ; xp=31 ;linux-qt=11 ; mac = 5
@@ -125,10 +125,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
     
     For i = 0 To 2
-      Bind(ID(i), @events_widgets())
+      BindWidgetEvent(ID(i), @events_widgets())
     Next
     
-    WaitClose( ) 
+    WaitCloseRootWidget( ) 
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

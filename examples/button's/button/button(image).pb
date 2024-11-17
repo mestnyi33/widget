@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 200, 110, "Image Button Gadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 200, 110, "Image Button Gadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ButtonImageGadget(0, 10, 10, 180, 40, ImageID(0))
     
     ; SetGadgetAttribute(0, #PB_Button_Image, ImageID(#PB_Button_Image))

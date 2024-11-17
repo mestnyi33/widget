@@ -14,7 +14,7 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     EditorGadget(0, 10, 10, 180, 230)
     SetGadgetFont(0, FontID(font))
     
-    Open(0, 200, 10, 180, 230);, "", #__flag_borderless)
+    OpenRootWidget(0, 200, 10, 180, 230);, "", #__flag_borderless)
     *w = EditorWidget(0, 0, 180, 230)
     
     For i = 1 To 10
@@ -57,7 +57,7 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     ; vertical and horizontal line back-color
     SetWidgetItemColor(*w, #PB_All, #__Color_Line,  $C03AD55A)
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
   CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)

@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340+140, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::Open(0);, 0, 0, 510, 340)
+  widget::OpenRootWidget(0);, 0, 0, 510, 340)
   Define fixed = 1
   
   ; first splitter

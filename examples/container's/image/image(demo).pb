@@ -6,14 +6,14 @@ UseWidgets( )
 ; ; LN=1000; количесвто итемов 
 ; ; Global *w._S_widget
 ; ; 
-; ; If Open(OpenWindow(#PB_Any, 100, 50, 400, 500, "ListViewGadget", #PB_Window_SystemMenu))
+; ; If OpenRootWidget(OpenWindow(#PB_Any, 100, 50, 400, 500, "ListViewGadget", #PB_Window_SystemMenu))
 ; ;   If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
 ; ;   EndIf
 ; ;   
 ; ;   Image(10, 10, 380, 380, (0)) 
 ; ;   
 ; ;   ButtonWidget(10,390, 95, 25, "")
-; ;   WaitClose()
+; ;   WaitCloseRootWidget()
 ; ; EndIf
 
 ; ImageSize.NSSize
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Window_0( )
-      If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+      If OpenRootWidget(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
          *Image = Image(10, 10, 230,  225, 10)
          
          *Button = ButtonWidget( 5,   245, 240,  25, "change image", #__flag_ButtonToggle)
@@ -80,8 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*ComboBox, -1, "Proportionally")
          SetState(*ComboBox, 0)
          
-         Bind( *Button, @Window_0_widget_events( ), #__event_LeftClick )
-         Bind( *ComboBox, @Window_0_widget_events( ), #__event_Change )
+         BindWidgetEvent( *Button, @Window_0_widget_events( ), #__event_LeftClick )
+         BindWidgetEvent( *ComboBox, @Window_0_widget_events( ), #__event_Change )
          
          SetAlign(*Image, 0, 1,1,1,1 )
          SetAlign(*Button, 0, 1,0,1,1 )

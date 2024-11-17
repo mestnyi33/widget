@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Define windowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
+   Define windowID = OpenRootWidget( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    ContainerGadget( #PB_Any, 10, 35, 80, 80, #PB_Container_Flat ) 
    StringGadget( #PB_Any, 10, 10, 80, 35, "String1" )
    StringGadget( #PB_Any, 10, 50, 80, 35, "String2" )
@@ -127,7 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 8, @QuitHandler())
    
    ButtonGadget(777, 10, 220, 80, 35, "-777-" )
-   Bind(ButtonWidget( 10, 220, 80, 35, "-777-" ), @HandlerEvents( ), #__event_LeftClick)  : SetWidgetClass(widget(), "-777-" )
+   BindWidgetEvent(ButtonWidget( 10, 220, 80, 35, "-777-" ), @HandlerEvents( ), #__event_LeftClick)  : SetWidgetClass(widget(), "-777-" )
    
    ;\\
    *menu = CreateBar( root( ) ) : SetWidgetClass(widget( ), "root_MenuBar" )
@@ -173,17 +173,17 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(9, "title-4-item-1")
    BarItem(10, "title-4-item-2")
    
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
+   BindWidgetEvent(*menu, @TestHandler(), -1, 7)
+   BindWidgetEvent(*menu, @QuitHandler(), -1, 8)
    
    ;\\
    ButtonWidget( 415, 180, 80, 35, "Button1" ) : SetWidgetClass(widget(), "Button1" )
-   Bind(ButtonWidget( 415, 220, 80, 35, "Button2" ), @HandlerEvents( ), #__event_MouseEnter)  : SetWidgetClass(widget(), "Button2" )
-   Define *window._s_widget = Window(100, 50, 300, 200, "menu click test", #PB_Window_SystemMenu)
+   BindWidgetEvent(ButtonWidget( 415, 220, 80, 35, "Button2" ), @HandlerEvents( ), #__event_MouseEnter)  : SetWidgetClass(widget(), "Button2" )
+   Define *window._s_widget = WindowWidget(100, 50, 300, 200, "menu click test", #PB_Window_SystemMenu)
    ContainerWidget( 10, 10, 80, 80, #PB_Container_Flat )
    StringWidget( 10, 10, 80, 35, "String1" )
    StringWidget( 10, 50, 80, 35, "String2" )
-   CloseList( )
+   CloseWidgetList( )
    StringWidget( 10, 100, 80, 35, "String1" )
    StringWidget( 10, 140, 80, 35, "String2" )
    
@@ -230,8 +230,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(9, "title-4-item-1")
    BarItem(10, "title-4-item-2")
    
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
+   BindWidgetEvent(*menu, @TestHandler(), -1, 7)
+   BindWidgetEvent(*menu, @QuitHandler(), -1, 8)
    
    
    

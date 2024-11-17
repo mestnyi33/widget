@@ -13,7 +13,7 @@
 ;                                 GetItemTextWidget( *address, TitleIndex ) - GetMenuTitleTextWidget( #Menu, Title )
 ;                         SetItemTextWidget( *address, TitleIndex, text.s ) - SetMenuTitleTextWidget( #Menu, Title, Text$ )
 ; 
-;                                                    Free( *address ) - FreeMenu( #Menu )
+;                                                    FreeWidget( *address ) - FreeMenu( #Menu )
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemTextWidget( *address, item ) - GetMenuItemTextWidget( #Menu, Item )
@@ -29,8 +29,8 @@
 ;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
 ;                               SetItemTextWidget( *address, item, text.s ) - SetMenuItemTextWidget( #Menu, Item, Text$ )
 ;
-;                      Bind( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
-;                    UnBind( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                      BindWidgetEvent( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
+;                    UnBindWidgetEvent( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
 
 XIncludeFile "../../../widgets.pbi" 
 
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Define WindowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
+   Define WindowID = OpenRootWidget( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    ;\\
    ; ButtonWidget( 415, 180, 80, 35, "Button1" ) : SetWidgetClass(widget(), "Button1" )
    *menu = CreateBar( root( ) ) : SetWidgetClass(widget( ), "root_MenuBar" )
@@ -101,9 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(9, "title-4-item-1")
    BarItem(10, "title-4-item-2")
    
-   ;Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
-   Bind(*menu, @TestHandler(), -1, 23)
+   ;BindWidgetEvent(*menu, @TestHandler(), -1, 7)
+   BindWidgetEvent(*menu, @QuitHandler(), -1, 8)
+   BindWidgetEvent(*menu, @TestHandler(), -1, 23)
    
    
    

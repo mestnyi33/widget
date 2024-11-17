@@ -379,7 +379,7 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   Sha = ButtonWidget(0, 0, butt_size+2, butt_size+2, "", #__flag_ButtonToggle) 
 ;   SetState(*this, 1)
 ;   SetAlign( *this, 1,1,0,0 )
-  CloseList()
+  CloseWidgetList()
   
   C_Button  = ButtonWidget(x+pos+(screen_size+butt_size)/2, y+pos+(screen_size+butt_size)/2, butt_size, butt_size, "", 0, -1, 7)                                     ;:WidgetToolTip(C_Button,  "Включить привязку (вцентре)")
   
@@ -388,7 +388,7 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   SetState(LT_Button, 1)
   
   ;SetState(LT_Button, 1)
-  ; Post(#__event_LeftClick, LT_Button)
+  ; PostWidgetEvent(#__event_LeftClick, LT_Button)
   
   C_Add = ButtonWidget(x, y+pos+pos+pos+butt_size+butt_size+screen_size, pos+pos+butt_size+butt_size+screen_size, butt_size, ">", #__flag_ButtonToggle, -1, 7)
   ; WidgetToolTip(C_Add, "Дополнительные параметры")
@@ -401,9 +401,9 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   
   
   ; BindGadgetEvent(C_Add,@Additinal())
-  Bind(#PB_All, @AliginsEvent());, Window_3)
-  ;bind(-1,-1)
-  CloseList()
+  BindWidgetEvent(#PB_All, @AliginsEvent());, Window_3)
+  ;BindWidgetEvent(-1,-1)
+  CloseWidgetList()
   ProcedureReturn widget
 EndProcedure
 
@@ -415,14 +415,14 @@ Procedure ShowAlignWindow()
 EndProcedure
 
 Window_3  = OpenWindow(#PB_Any, 0, 0, 400, 300, "Привязка выбраных гаджетов", #PB_Window_SystemMenu | #PB_Window_Tool | #PB_Window_Invisible)
-Open(Window_3)
+OpenRootWidget(Window_3)
 ContainerWidget(0,0,0,0)
 SetWidgetColor(widget(), #PB_Gadget_BackColor, $4737D53F)
 ;SetAlignment(widget(), #__align_full,#__align_full,#__align_full,#__align_full)
 SetAlignment(widget(), #__align_auto,#__align_auto,#__align_auto,#__align_auto)
 
 demo = ButtonWidget(120, 130, 60, 20, "demo")  
-CloseList()
+CloseWidgetList()
 
 SetAlignment(AlignWidget( ), 0,0,#__align_auto,0)
 
@@ -440,7 +440,7 @@ Procedure Sha_Events()
   SetAlign( demo, left, right, top, bottom )
 EndProcedure
 
-Bind(Sha, @Sha_Events( ), #__event_resize)
+BindWidgetEvent(Sha, @Sha_Events( ), #__event_resize)
 ;SetAlignment(AlignWidget( ), 0,0,#__align_auto,0)
 
 ShowAlignWindow()

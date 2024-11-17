@@ -42,7 +42,7 @@ Procedure event_widget()
 EndProcedure
 
 Define wFlags = #PB_Window_SystemMenu | #PB_Window_ScreenCentered
-Open( 0, #PB_Ignore, #PB_Ignore, 600, 400, "Drag & Drop Text Matching", wFlags )
+OpenRootWidget( 0, #PB_Ignore, #PB_Ignore, 600, 400, "Drag & Drop Text Matching", wFlags )
 
 TextWidget(20, 10, 150, 30, "Personal Records")
 TextWidget(220, 10, 150, 30, "Bank Statement")
@@ -75,14 +75,14 @@ EnableDDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
 EnableDDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
 ;EnableDDrop(*list3, #PB_Drop_Text, #PB_Drag_Copy)
 
-Bind(*list1, @event_widget( ), #__event_DragStart)
-Bind(*list1, @event_widget( ), #__event_Drop)
+BindWidgetEvent(*list1, @event_widget( ), #__event_DragStart)
+BindWidgetEvent(*list1, @event_widget( ), #__event_Drop)
 
-Bind(*list2, @event_widget( ), #__event_DragStart)
-Bind(*list2, @event_widget( ), #__event_Drop)
+BindWidgetEvent(*list2, @event_widget( ), #__event_DragStart)
+BindWidgetEvent(*list2, @event_widget( ), #__event_Drop)
 
-Bind(*list3, @event_widget( ), #__event_DragStart)
-Bind(*list3, @event_widget( ), #__event_Drop)
+BindWidgetEvent(*list3, @event_widget( ), #__event_DragStart)
+BindWidgetEvent(*list3, @event_widget( ), #__event_Drop)
 
 WaitClose( )
 ; Repeat

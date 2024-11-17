@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 400, 130, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ButtonGadget   (0,    5,   95, 390,  30, "", #PB_Button_Toggle)
       
-      If Open(0, 10, 10, 380, 80)
+      If OpenRootWidget(0, 10, 10, 380, 80)
         g_Canvas = GetCanvasGadget(root())
         *scrollbar = ScrollBarWidget(5, 10, 370, 30, 20, 50, 8, 0, round)
         SetState(widget(), 31)

@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         Select WidgetEvent( )
           Case #__Event_Change
             If *CHILD
-              Free(*CHILD)
+              FreeWidget(*CHILD)
             EndIf
             
             Select GetState(*LIST)
@@ -49,12 +49,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
               Case  8: *CHILD = ComboBoxWidget(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
               Case  9: *CHILD = ImageWidget(30,20,150,30,0,#PB_Image_Border) 
               Case 10: *CHILD = HyperLinkWidget(30,20,150,30,"HyperLink",0) 
-              Case 11: *CHILD = ContainerWidget(30,20,150,30,#PB_Container_Flat): ButtonWidget(0,0,80,20,"Button"): CloseList() ; Container
+              Case 11: *CHILD = ContainerWidget(30,20,150,30,#PB_Container_Flat): ButtonWidget(0,0,80,20,"Button"): CloseWidgetList() ; Container
               Case 12: *CHILD = ListIconWidget(30,20,150,30,"",88) 
               ; Case 13: *CHILD = IPAddress(30,20,150,30) 
               Case 14: *CHILD = ProgressBarWidget(30,20,150,30,0,5)
               Case 15: *CHILD = ScrollBarWidget(30,20,150,30,5,335,9)
-              Case 16: *CHILD = ScrollAreaWidget(30,20,150,30,305,305,9,#PB_ScrollArea_Flat): ButtonWidget(0,0,80,20,"Button"): CloseList()
+              Case 16: *CHILD = ScrollAreaWidget(30,20,150,30,305,305,9,#PB_ScrollArea_Flat): ButtonWidget(0,0,80,20,"Button"): CloseWidgetList()
               Case 17: *CHILD = TrackBarWidget(30,20,150,30,0,5)
                 ;Case 18: *CHILD = Web(30,20,150,30,"") ; bug 531 linux
               Case 19: *CHILD = ButtonImageWidget(30,20,150,30,0)
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
                 ;Case 25: *CHILD = ExplorerCombo(30,20,150,30,"")
               Case 26: *CHILD = SpinWidget(30,20,150,30,0,5,#PB_Spin_Numeric)
               Case 27: *CHILD = TreeWidget(30,20,150,30):  AddItem(*CHILD,-1,"Tree"):  AddItem(*CHILD,-1,"SubLavel",0,1)
-              Case 28: *CHILD = PanelWidget(30,20,150,30): AddItem(*CHILD,-1,"Panel"): CloseList()
+              Case 28: *CHILD = PanelWidget(30,20,150,30): AddItem(*CHILD,-1,"Panel"): CloseWidgetList()
               Case 29 
                 *CHILD = SplitterWidget(30,20,150,30,ButtonWidget(0,0,30,30,"1"),ButtonWidget(0,0,30,30,"2"))
                 
@@ -88,22 +88,22 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndSelect
  EndProcedure
   
-  If Open(#PB_Any, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(#PB_Any, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *item1 = ButtonWidget( 10, 10, 50, 25, "item-1") : SetWidgetClass( *item1, "button-item-1" )
     *item2 = ButtonWidget( 60, 10, 50, 25, "item-2") : SetWidgetClass( *item2, "button-item-2" )
     *item3 = ButtonWidget( 110, 10, 50, 25, "item-3") : SetWidgetClass( *item3, "button-item-3" )
-    Bind( *item1, @events( ), #__event_LeftDown )
-    Bind( *item2, @events( ), #__event_LeftDown )
-    Bind( *item3, @events( ), #__event_LeftDown )
+    BindWidgetEvent( *item1, @events( ), #__event_LeftDown )
+    BindWidgetEvent( *item2, @events( ), #__event_LeftDown )
+    BindWidgetEvent( *item3, @events( ), #__event_LeftDown )
     
     *disable = ButtonWidget( 180, 10, 50, 25, "disable") : SetWidgetClass( *disable, "button-disable" )
     *enable = ButtonWidget( 240, 10, 50, 25, "enable") : SetWidgetClass( *enable, "button-enable" )
-    Bind( *enable, @events( ), #__event_LeftDown )
-    Bind( *disable, @events( ), #__event_LeftDown )
+    BindWidgetEvent( *enable, @events( ), #__event_LeftDown )
+    BindWidgetEvent( *disable, @events( ), #__event_LeftDown )
     
     ;*LIST = ComboBoxWidget(400-110,40,100,150) 
     *LIST = ListViewWidget(300,10,150,180) 
-    Bind( *LIST, @events( ), #__event_Change )
+    BindWidgetEvent( *LIST, @events( ), #__event_Change )
     AddItem(*LIST, -1, "Selected  to move")
     AddItem(*LIST, -1, "Button")
     AddItem(*LIST, -1, "String")
@@ -144,7 +144,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Disable( *CHILD, 1 )
     Disable( *disable, 1 )
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

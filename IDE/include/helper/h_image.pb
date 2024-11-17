@@ -31,18 +31,18 @@ Procedure W_IH_CallBack()
   W_IH_Events(Event())
 EndProcedure
 
-Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCentered)
+Procedure W_IH_OpenRootWidget(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCentered)
 ;   If IsWindow(W_IH)
 ;     SetActiveWindow(W_IH)
 ;     ProcedureReturn W_IH
 ;   EndIf
   
-  ;W_IH = GetCanvasWindow(Open(OpenWindow(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID)))                                                
+  ;W_IH = GetCanvasWindow(OpenRootWidget(OpenWindow(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID)))                                                
   ;W_IH = 
-  Window(10, 10, 386, 201, "ImageHelper", Flag, ParentID)                                               
+  WindowWidget(10, 10, 386, 201, "ImageHelper", Flag, ParentID)                                               
   ;G_IH_ScrollArea_0 = ScrollAreaWidget(5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
   G_IH_View = ImageWidget(5, 5, 291, 191, -1)    
-  ;CloseList()
+  ;CloseWidgetList()
   G_IH_Open = ButtonWidget(300, 5, 81, 21, "Open")    
   G_IH_Save = ButtonWidget(300, 30, 81, 21, "Save")    
   G_IH_Copy = ButtonWidget(300, 65, 81, 21, "Copy")    
@@ -91,8 +91,8 @@ EndProcedure
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  W_IH = GetCanvasWindow(Open(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
-  W_IH_Open()
+  W_IH = GetCanvasWindow(OpenRootWidget(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
+  W_IH_OpenRootWidget()
   
   While IsWindow(W_IH)
     Define Event = WaitWindowEvent()

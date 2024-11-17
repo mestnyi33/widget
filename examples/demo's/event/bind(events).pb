@@ -18,40 +18,40 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    
-   Procedure events_Bind()
+   Procedure events_BindWidgetEvent()
       If binded = 0
          binded = 1
          ClearDebugOutput()
          Debug "binded"
          ; post this events
-         Bind(*test, @events_1(), #__event_MouseEnter)
-         Bind(*test, @events_2(), #__event_MouseLeave)
+         BindWidgetEvent(*test, @events_1(), #__event_MouseEnter)
+         BindWidgetEvent(*test, @events_2(), #__event_MouseLeave)
          ;
-         Bind(*test, @events_1(), #__event_LeftDown)
-         Bind(*test, @events_2(), #__event_LeftDown)
+         BindWidgetEvent(*test, @events_1(), #__event_LeftDown)
+         BindWidgetEvent(*test, @events_2(), #__event_LeftDown)
          
-         Bind(*test, @events_1(), #__event_LeftUp, 1)
-         Bind(*test, @events_2(), #__event_LeftUp, 2)
+         BindWidgetEvent(*test, @events_1(), #__event_LeftUp, 1)
+         BindWidgetEvent(*test, @events_2(), #__event_LeftUp, 2)
          
          Disable( *unbind, 0 )
          Disable( *bind, 1 )
       EndIf
    EndProcedure
    
-   Procedure events_Unbind()
+   Procedure events_UnBindWidgetEvent()
       If binded = 1
          binded = 0
          ClearDebugOutput()
          Debug "unbinded" 
          ; post this events
-         Unbind(*test, @events_1(), #__event_MouseEnter)
-         Unbind(*test, @events_2(), #__event_MouseLeave)
+         UnBindWidgetEvent(*test, @events_1(), #__event_MouseEnter)
+         UnBindWidgetEvent(*test, @events_2(), #__event_MouseLeave)
          ;
-         Unbind(*test, @events_1(), #__event_LeftDown)
-         Unbind(*test, @events_2(), #__event_LeftDown)
+         UnBindWidgetEvent(*test, @events_1(), #__event_LeftDown)
+         UnBindWidgetEvent(*test, @events_2(), #__event_LeftDown)
          
-         Unbind(*test, @events_1(), #__event_LeftUp, 1)
-         Unbind(*test, @events_2(), #__event_LeftUp, 2)
+         UnBindWidgetEvent(*test, @events_1(), #__event_LeftUp, 1)
+         UnBindWidgetEvent(*test, @events_2(), #__event_LeftUp, 2)
          
          
          Disable( *bind, 0 )
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If Open(0, 100, 100, 300, 280)
+      If OpenRootWidget(0, 100, 100, 300, 280)
          *test = TreeWidget(10,  10, 280, 170)
          Define i
          For i = 0 To 12
@@ -73,11 +73,11 @@ CompilerIf #PB_Compiler_IsMainFile
          *unbind = ButtonWidget(155, 190, 135, 80, "Unbind (events)")
          Disable( *unbind, 1 )
          
-         Bind(*unbind, @events_Unbind(), #__event_LeftClick)
-         Bind(*bind, @events_Bind(), #__event_LeftClick)
+         BindWidgetEvent(*unbind, @events_UnBindWidgetEvent(), #__event_LeftClick)
+         BindWidgetEvent(*bind, @events_BindWidgetEvent(), #__event_LeftClick)
       EndIf
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

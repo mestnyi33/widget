@@ -2,7 +2,7 @@
 ;                                                       - ToolBarID( #ToolBar )
 ;                                                       - IsToolBar( #ToolBar )
 ;
-;                                      Free( *address ) - FreeToolBar( #ToolBar )
+;                                      FreeWidget( *address ) - FreeToolBar( #ToolBar )
 ;                                 BarWidgetHeight( *address ) - ToolBarWidgetHeight( #ToolBar )
 ;
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
@@ -66,9 +66,9 @@ CompilerIf #PB_Compiler_IsMainFile
       BindEvent( #PB_Event_Menu, @PB_ToolBarEvents( ))
    EndIf
    
-   If Open( 0, 0, ToolBarWidgetHeight( 0 ), 520, 380 )
-   ;If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
-      Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+   If OpenRootWidget( 0, 0, ToolBarWidgetHeight( 0 ), 520, 380 )
+   ;If OpenRootWidget( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
+      WindowWidget( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
       ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
       ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
@@ -134,11 +134,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       DisableBarButtonWidget(*toolbar, 2, 1) ; Disable the button '2'
-      Bind( *toolbar, @ToolBarEvents( ) )
+      BindWidgetEvent( *toolbar, @ToolBarEvents( ) )
       
           ;SetState(*toolbar, 12 )
             ButtonWidget( 10,10, 50,150,"" )
-           ;  Bind( root( ), #PB_Default )
+           ;  BindWidgetEvent( root( ), #PB_Default )
    EndIf
    
    

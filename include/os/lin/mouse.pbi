@@ -3,7 +3,7 @@
 CompilerEndIf
 
 DeclareModule Mouse
-  Declare.i Window( )
+  Declare.i WindowWidget( )
   Declare.i Gadget( WindowID )
   Declare.i State( )
 EndDeclareModule
@@ -32,7 +32,7 @@ Module Mouse
     EndIf
   EndProcedure
   
-  Procedure Window( )
+  Procedure WindowWidget( )
     Protected desktop_x, desktop_y, handle, *GdkWindow.GdkWindowObject = gdk_window_at_pointer_( @desktop_x, @desktop_y )
     
     If *GdkWindow

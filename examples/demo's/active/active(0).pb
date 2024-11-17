@@ -38,7 +38,7 @@ Procedure events_buttons()
 EndProcedure
 
 
-If Open(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   StringGadget  (0, 10, 10, 250, 20, "bla bla...")
   
   ComboBoxGadget(1, 10, 40, 250, 21)
@@ -69,10 +69,10 @@ If Open(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Wi
   ButtonWidget(10+270, 115, 250, 20, "Activate ComboBox")
   
   For i = 0 To 2
-    Bind(ID(i), @events_widgets())
+    BindWidgetEvent(ID(i), @events_widgets())
   Next
   For i = 3 To 4
-    Bind(ID(i), @events_buttons())
+    BindWidgetEvent(ID(i), @events_buttons())
   Next
   
   Repeat

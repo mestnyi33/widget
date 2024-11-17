@@ -144,7 +144,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
   OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)
-  ;   widget::Open()
+  ;   widget::OpenRootWidget()
   ;   window_ide = widget::GetCanvasWindow(root())
   ;   canvas_ide = widget::GetCanvasGadget(root())
   

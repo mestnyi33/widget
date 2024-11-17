@@ -11,13 +11,13 @@ CompilerIf #PB_Compiler_IsMainFile
          #PB_Window_MinimizeGadget |
          #PB_Window_MaximizeGadget
   
-  ; Open(0, 100, 100, 200, 200, "window_0", flag )
-  Window(100, 100, 200, 200, "window_0", flag )
+  ; OpenRootWidget(0, 100, 100, 200, 200, "window_0", flag )
+  WindowWidget(100, 100, 200, 200, "window_0", flag )
   
   ButtonWidget(0,0,80,20,"button_0")
   ButtonWidget(200-80,200-20,80,20,"button_1")
   
-  WaitClose( )
+  WaitCloseRootWidget( )
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; Folding = -

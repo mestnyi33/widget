@@ -71,18 +71,18 @@ CompilerIf #PB_Compiler_IsMainFile
         If flag
           Flag(*this, flag, GetState(EventWidget( )))
         EndIf
-        ; Post(#__event_repaint, #PB_All)
+        ; PostWidgetEvent(#__event_repaint, #PB_All)
     EndSelect
     
   EndProcedure
   
-  If Open(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
     ;*this = widget::ButtonWidget(100, 100, 250, 250, get_TextWidget(), #__flag_Textmultiline);|);|#__flag_Textleft) 
     ContainerWidget(10, 10, width, height) : a_init( widget( ))
     *this = widget::EditorWidget(10, 10, 250, 250);, #__flag_Textwordwrap) 
-    CloseList( )
+    CloseWidgetList( )
     SetTextWidget(*this, get_TextWidget())
     
     Define y = 10
@@ -99,7 +99,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Button_8 = widget::ButtonWidget(width+45, y+30*7, 100, 26, "vertical", #__flag_ButtonToggle) 
     Button_7 = widget::ButtonWidget(width+45, y+30*8, 100, 26, "invert", #__flag_ButtonToggle) 
-    Bind(#PB_All, @events_widgets())
+    BindWidgetEvent(#PB_All, @events_widgets())
     
     ; set button toggled state
     SetState(Button_1, Flag(*this, #__flag_Textmultiline))

@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
      
   EndProcedure
   
-  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   *mdi = MDIWidget(x,y,width, height);, #__flag_autosize)
   ; a_init( *mdi,1 )
@@ -66,10 +66,10 @@ CompilerIf #PB_Compiler_IsMainFile
   ButtonWidget(10,10,80,80,"button_2")
   
   Define *g3 = AddItem(*mdi, -1, "form_3")
-  BinD(ButtonWidget(10,10,80,80,"test"), @button_3_events(), #__event_LeftDown)
+  BindWidgetEvent(ButtonWidget(10,10,80,80,"test"), @button_3_events(), #__event_LeftDown)
   
   ; use root list
-  OpenList(Root())
+  OpenWidgetList(Root())
   
   *spl1 = SplitterWidget(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
   *spl2 = SplitterWidget(x,y,width,height, *spl1, #Null);, #__flag_autosize)
@@ -80,8 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
   ResizeWidget(*g3, 10, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
-  Bind(#PB_All, @events(), #__event_down)
-  Bind(#PB_All, @events(), #__event_dragstart)
+  BindWidgetEvent(#PB_All, @events(), #__event_down)
+  BindWidgetEvent(#PB_All, @events(), #__event_dragstart)
   
   Repeat
     Event = WaitWindowEvent()

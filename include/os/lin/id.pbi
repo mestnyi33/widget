@@ -1,5 +1,5 @@
 ﻿DeclareModule ID
-  Declare.i Window( WindowID.i )
+  Declare.i WindowWidget( WindowID.i )
   Declare.i Gadget( GadgetID.i )
   Declare.i IsWindowID( handle.i )
   Declare.i GetWindowID( handle.i )
@@ -26,7 +26,7 @@ Module ID
     EndIf
   EndProcedure
   
-  Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
+  Procedure.i WindowWidget( WindowID.i ) ; Return the id of the window from the window handle
     If WindowID 
       Protected Window = g_object_get_data_( WindowID, "pb_id" )
       If IsWindow( Window ) And WindowID( Window ) = WindowID

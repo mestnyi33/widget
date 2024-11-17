@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   
-  If Open(0, 0, 225, #PB_Ignore, 230)
+  If OpenRootWidget(0, 0, 225, #PB_Ignore, 230)
     
     *g = TreeWidget(10, 10, 210, 210, #__tree_CheckBoxes)                                         
     *g1 = TreeWidget(230, 10, 210, 210, #__tree_CheckBoxes)                                         

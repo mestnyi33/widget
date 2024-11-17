@@ -64,14 +64,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(0, 0, 0, width+180, height+55, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, width+180, height+55, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
     
     Define img = 0
     widget::ContainerWidget(10,10,width, height)
     *this = widget::TreeWidget(100, 100, 250, 200, #__flag_optionBoxes | #PB_Tree_NoLines | #PB_Tree_NoButtons )  ; |#__flag_GridLines
-    CloseList()
+    CloseWidgetList()
     
     ;\\
     ; optionbox
@@ -150,7 +150,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState(Splitter_3, width-pos-#__splittersize)
     widget::SetState(Splitter_2, height-pos-#__splittersize)
     
-    widget::Bind(root( ), @events_widgets())
+    widget::BindWidgetEvent(root( ), @events_widgets())
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

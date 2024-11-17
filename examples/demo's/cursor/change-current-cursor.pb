@@ -10,11 +10,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Declare CustomEvents( )
    
    ;\\
-   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   OpenRootWidget(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
    a_init(root(), 4)
    
    ;\\
-   parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+   parent = WindowWidget(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
    SetWidgetColor(parent, #__color_back, $FFE9E9E9)
    SetWidgetFrame(parent, 20 )
    ;a_init(parent, 4)
@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 ;    ;\\
 ;    ;     parent = Root( )
-;    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu)
+;    parent = WindowWidget(50, 50, 450, 450, "parent", #PB_Window_SystemMenu)
 ;    SetWidgetColor(parent, #__color_back, $FFE9E9E9)
 ;    SetWidgetFrame(parent, 20 )
 ;    
@@ -80,17 +80,17 @@ CompilerIf #PB_Compiler_IsMainFile
    SetWidgetClass( Splitter_5, "Splitter_5")
    
    ;\\
-   Bind( parent, @CustomEvents(), #__event_cursor )
-;    Bind( object, @CustomEvents(), #__event_cursor )
-;    Bind( object1, @CustomEvents(), #__event_cursor )
-;    Bind( object2, @CustomEvents(), #__event_cursor )
+   BindWidgetEvent( parent, @CustomEvents(), #__event_cursor )
+;    BindWidgetEvent( object, @CustomEvents(), #__event_cursor )
+;    BindWidgetEvent( object1, @CustomEvents(), #__event_cursor )
+;    BindWidgetEvent( object2, @CustomEvents(), #__event_cursor )
    
-   Bind( root(), @CustomEvents(), #__event_MouseEnter )
-  Bind( root(), @CustomEvents(), #__event_MouseLeave )
-;   Bind( root(), @CustomEvents(), #__event_Draw )
+   BindWidgetEvent( root(), @CustomEvents(), #__event_MouseEnter )
+  BindWidgetEvent( root(), @CustomEvents(), #__event_MouseLeave )
+;   BindWidgetEvent( root(), @CustomEvents(), #__event_Draw )
   
    ;\\
-   WaitClose( )
+   WaitCloseRootWidget( )
    
    ;\\
    Procedure CustomEvents( )

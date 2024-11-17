@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global i, *w0, *w1, *w2, *w3, *w4, *w5, *w6, *w7, *w8, *w9
   
-  widget::Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+  widget::OpenRootWidget(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
   *w0 = widget::TabBarWidget(310, 10, 200, 30)
   For i=0 To 3

@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
 
   Global  *combo1, *combo2, *combo3, a,x,h = 50
   
-  If Open(0, 0, 0, 530, 350, "ComboBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 530, 350, "ComboBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ComboBoxGadget(0, 10, 10, 250, h, #PB_ComboBox_Editable)
     AddGadgetItem(0, -1, "ComboBox editable...")
     For a = 1 To 15

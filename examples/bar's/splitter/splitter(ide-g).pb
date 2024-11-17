@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 
 
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
-  widget::Open(0, 100,100,800,600, "ide", flag)
+  widget::OpenRootWidget(0, 100,100,800,600, "ide", flag)
   window_ide = widget::GetCanvasWindow(root())
   canvas_ide = widget::GetCanvasGadget(root())
   
@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   SetGadgetTextWidget(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(IDWidget( widget::GetParent( s_insp ))))
   SetGadgetTextWidget(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(IDWidget( widget::GetParent( s_help ))))
   
-  Bind(#PB_All, @events_widgets(), #__event_Change)
+  BindWidgetEvent(#PB_All, @events_widgets(), #__event_Change)
     
   ;WaitClose( )
   Define event

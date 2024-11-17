@@ -195,7 +195,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;}
     
-    Open(0, 0, 225+90, 1110, 425-90)
+    OpenRootWidget(0, 0, 225+90, 1110, 425-90)
     g_Canvas = GetCanvasGadget(root())
     g = 10
     
@@ -270,7 +270,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 13, "Tree_13", -1 )
     AddItem(*g, 14, "Tree_14", -1 )
     AddItem(*g, 15, "Tree_15", -1 )
-; ;     ;Bind(*g, @events_tree_widget())
+; ;     ;BindWidgetEvent(*g, @events_tree_widget())
 ; ;     DD::EnableDDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
     
@@ -325,10 +325,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemTextWidget(*g, 4, "25_font and text change")
     SetItemFont(*g, 14, 6)
     SetItemTextWidget(*g, 14, "25_font and text change")
-    ;Bind(*g, @events_tree_widget())
+    ;BindWidgetEvent(*g, @events_tree_widget())
     ;}
     
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

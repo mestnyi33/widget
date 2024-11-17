@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global Button_1, Button_2, Button_3, Splitter_1, Splitter_2
   
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 380, 400, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 380, 400, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ; gadgets
     Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "button_1")
     Button_2 = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, 150, 150, 1) : CloseGadgetList() 
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; widgets
     Button_1 = ButtonWidget(0, 0, 0, 0, "button_1")
-    Button_2 = ScrollAreaWidget(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
+    Button_2 = ScrollAreaWidget(0, 0, 0, 0, 150, 150, 1) : CloseWidgetList()        ; as they will be sized automatically
     Button_3 = ButtonWidget(0, 0, 0, 0, "button_3")
     
     Splitter_1 = SplitterWidget(0, 0, 0, 0, Button_1, Button_2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
@@ -52,23 +52,23 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Splitter_1, 40)
     SetState(Splitter_2, 245)
     
-    If OpenList(Button_2)
+    If OpenWidgetList(Button_2)
       ScrollAreaWidget(-1, -1, 90, 90, 150, 150, 1)
       Define i, time
       time = ElapsedMilliseconds()
       For i=0 To count
         ButtonWidget(10+i*2, 10+i*2, 50, 30, Str(i)+"_button")
       Next
-      CloseList()
+      CloseWidgetList()
       For i=0 To count
         ButtonWidget(100-i*2, 10+i*2, 50, 30, Str(i)+"_button")
       Next
       
       Debug Str(ElapsedMilliseconds()-time)+ " - time " +count+ " create widget"; 75 - macos
-      CloseList()
+      CloseWidgetList()
     EndIf
     
-    WaitClose()
+    WaitCloseRootWidget()
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

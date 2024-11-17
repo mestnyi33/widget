@@ -9,17 +9,17 @@ CompilerIf #PB_Compiler_IsMainFile
   Define object
   Declare CustomEvents( )
   
-  Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  OpenRootWidget(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
   
-  ; object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-  object = ContainerWidget(150, 150, 300, 300) : CloseList()
+  ; object = WindowWidget(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  object = ContainerWidget(150, 150, 300, 300) : CloseWidgetList()
   
   SetSizeBounds(object, 200, 200, 401, 401)
   SetMoveBounds(object, 100, 100, 501, 501)
   
-  Bind( widget( ), @CustomEvents(), #__event_Draw )
-  WaitClose( )
+  BindWidgetEvent( widget( ), @CustomEvents(), #__event_Draw )
+  WaitCloseRootWidget( )
   
   Procedure CustomEvents( )
     Select WidgetEvent( )

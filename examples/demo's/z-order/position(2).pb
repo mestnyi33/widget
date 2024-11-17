@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #demo = #after
   Global *c0,*b1,*b2
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 240, 205, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 240, 205, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     
     ButtonWidget(5, 5, 200, 30,"btn0") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     
@@ -36,10 +36,10 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If #demo = #open
-      OpenList(*c0)
+      OpenWidgetList(*c0)
       *b1 = ButtonWidget(10,10,80,50,"btn1") : SetWidgetClass(widget(), GetTextWidget(widget()))
       *b2 = ButtonWidget(30,40,80,50,"btn2") : SetWidgetClass(widget(), GetTextWidget(widget()))
-      CloseList()
+      CloseWidgetList()
     Else
       ;     SetAttribute(*c0, #PB_Splitter_FirstGadget, *b1)
       ;     SetAttribute(*c0, #PB_Splitter_SecondGadget, *b2)
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     debug_position(root())
     
-    WaitClose()
+    WaitCloseRootWidget()
     
   EndIf   
 CompilerEndIf

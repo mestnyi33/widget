@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
-   If Open(0, 0, 0, 430, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 430, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
      ; a_init( root( ),0 )
       ;       Button_0 = ButtonWidget(0,0,0,0, "Button 0") 
       Button_1 = ButtonWidget(0,0,0,0, "Button 1")
@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
    
 CompilerEndIf

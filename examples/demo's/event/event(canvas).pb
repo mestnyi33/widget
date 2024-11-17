@@ -57,8 +57,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   If Open(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      Bind(#PB_All, @HandlerEvents( ))
+   If OpenRootWidget(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      BindWidgetEvent(#PB_All, @HandlerEvents( ))
       
       ButtonGadget(-1, 0,0,500,20,"")
       ButtonWidget( 0,30,500,20,"")
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug WindowWidth( Root()\canvas\window, #PB_Window_InnerCoordinate ) ; 500
       Debug GadgetWidth( Root()\canvas\gadget ) ; 500
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

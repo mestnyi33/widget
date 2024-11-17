@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If OpenWindow(0, 0, 0, 400, 100 + h, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
          ButtonGadget (0, 5, 65 + h, 390, 30, "set standart scrollbar", #PB_Button_Toggle)
          
-         If Open(0, 10, 10, 380, 50 + h)
+         If OpenRootWidget(0, 10, 10, 380, 50 + h)
             g_Canvas  = GetCanvasGadget(root())
             FrameWidget( 0,0,0,0, "demo bars", #__flag_autosize)
             *track    = TrackBarWidget(15, 10, 350, 30, min, 50, flags)
@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;*bar = SplitterWidget(15, 20+35*5, 350, 30, -1,-1, #__Bar_Vertical)
             SetState(*bar, min+2)
             
-            Bind( *bar, @events_widgets( ), #__event_Change )
+            BindWidgetEvent( *bar, @events_widgets( ), #__event_Change )
          EndIf
       EndIf
    EndProcedure

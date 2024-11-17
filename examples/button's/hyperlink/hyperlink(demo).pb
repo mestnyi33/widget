@@ -42,17 +42,17 @@ If OpenWindow(0, 0, 0, 270+270, 100, "HyperLinkGadget", #PB_Window_SystemMenu | 
 EndIf 
 
 ;
-If Open(0, 270,0,270,100)
+If OpenRootWidget(0, 270,0,270,100)
    HyperLinkWidget(10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline)
    HyperLinkWidget(10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline)
    SetFont(ID(1), FontID(5))
    SetWidgetColor(ID(1), #PB_Gadget_FrontColor, $ffff0000)
    SetWidgetColor(ID(1), #PB_Gadget_BackColor, $ff0000ff)
    
-   ;Bind(#PB_All, @events_widgets())
+   ;BindWidgetEvent(#PB_All, @events_widgets())
    
    For i = 0 To 1
-      Bind(ID(i), @events_widgets(), #PB_EventType_LeftClick)
+      BindWidgetEvent(ID(i), @events_widgets(), #PB_EventType_LeftClick)
    Next
 EndIf
 

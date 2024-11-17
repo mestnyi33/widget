@@ -29,10 +29,10 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If Open(0, 10,10, 480, 480)
+      If OpenRootWidget(0, 10,10, 480, 480)
          a_init( root( ) )
-         Bind(#PB_All, @HandlerEvents( ))
-         Window(80, 100, 300, 280, "Window_2")
+         BindWidgetEvent(#PB_All, @HandlerEvents( ))
+         WindowWidget(80, 100, 300, 280, "Window_2")
          
          ;\\
          *test = TreeWidget(10, 10, 280, 80)
@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
       EndIf
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

@@ -403,7 +403,7 @@ EndProcedure
     
     ;}
     
-    Open(0, 0, 225, 1110, 425)
+    OpenRootWidget(0, 0, 225, 1110, 425)
     g_Canvas = GetCanvasGadget(root())
     g = 10
     
@@ -511,7 +511,7 @@ EndProcedure
     AddItem(*g, 12, "Tree_5", -1 )
     AddItem(*g, 13, "Tree_6", -1 )
     AddItem(*g, 14, "Tree_7", -1 )
-; ;     ;Bind(*g, @events_tree_widget())
+; ;     ;BindWidgetEvent(*g, @events_tree_widget())
 ; ;     DD::EnableDDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
   ;  For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Collapsed) : Next
@@ -568,13 +568,13 @@ EndProcedure
     SetItemTextWidget(*g, 4, "25_font and text change")
     SetItemFont(*g, 14, 6)
     SetItemTextWidget(*g, 14, "25_font and text change")
-    ;Bind(*g, @events_tree_widget())
+    ;BindWidgetEvent(*g, @events_tree_widget())
     ;}
     
-    WaitClose( )
+    WaitCloseRootWidget( )
     
     ;Define *g5,*g6
-    ; Free(*g)
+    ; FreeWidget(*g)
     ;ClipGadgets( UseGadgetList(0) )
     Repeat
       Select WaitWindowEvent()   

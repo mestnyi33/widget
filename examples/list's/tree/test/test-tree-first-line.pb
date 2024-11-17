@@ -399,7 +399,7 @@ EndProcedure
     
     ;}
     
-    Open(0, 0, 225, 1110, 425)
+    OpenRootWidget(0, 0, 225, 1110, 425)
     g_Canvas = GetCanvasGadget(root())
     g = 10
     
@@ -482,10 +482,10 @@ EndProcedure
 ;     AddItem(*g, 14, "Tree_7", -1 )
 
     
-    WaitClose( )
+    WaitCloseRootWidget( )
     
     ;Define *g5,*g6
-    ; Free(*g)
+    ; FreeWidget(*g)
     ;ClipGadgets( UseGadgetList(0) )
     Repeat
       Select WaitWindowEvent()   

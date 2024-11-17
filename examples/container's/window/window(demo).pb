@@ -46,11 +46,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4-Bool(#PB_Compiler_OS=#PB_OS_Linux)*4)
   
-  If Open(0, 0, 0, 720+45, 405, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If OpenRootWidget(0, 0, 0, 720+45, 405, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Define._s_widget *f_0, *f_1, *f_2, *f_3, *f_4, *f_5, *f_6, *f_7, *f_8, *f_9, *f_10, *f_11, *sp_0, *sp_1, *sc_0
     ;a_init( root( ) )
     
-    *f_0 = window(10, 10, 180,  90, "form_0", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
+    *f_0 = WindowWidget(10, 10, 180,  90, "form_0", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
     ButtonWidget(10, -10, 80, 40, "Butt_0")
     ;*f_0\fs = 10
     
@@ -59,37 +59,37 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWidget(*f_0, 0, 0, #PB_Ignore, #PB_Ignore)
     
     ButtonWidget(10, 40, 80, 40, "Butt_0")
-    closelist()
+    CloseWidgetList()
     
-    *f_1 = window(10, 10, 180,  90, "form_1", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
+    *f_1 = WindowWidget(10, 10, 180,  90, "form_1", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
     ButtonWidget(10, -10, 80, 40, "Butt_1")
-    closelist()
+    CloseWidgetList()
     
-    *f_2 = window(10, 10, 180,  90, "form_2", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
+    *f_2 = WindowWidget(10, 10, 180,  90, "form_2", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
     *f_3 = ScrollAreaWidget(10, 10, 180,  90, 250, 250, 1)
-    ;*f_3 = window(10, 10, 180,  90, "form_3", *f_2)
+    ;*f_3 = WindowWidget(10, 10, 180,  90, "form_3", *f_2)
     ButtonWidget(10, 0, 80, 40, "Butt_3")
-    closelist()
-    closelist()
+    CloseWidgetList()
+    CloseWidgetList()
     
     *sp_0 = SplitterWidget(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
     *sp_1 = SplitterWidget(10, 10, 360, 360+25, *f_2, *sp_0)
     
-    *f_4 = window(370+10, 10, 180,  70, "form_4 BorderLess", #__flag_BorderLess)
+    *f_4 = WindowWidget(370+10, 10, 180,  70, "form_4 BorderLess", #__flag_BorderLess)
     ButtonWidget(5, 5, 80, 20, "Butt_4_0")
-    *f_5 = window(370+10, 130+10, 180,  70, "form_6 SizeGadget", #PB_Window_SizeGadget)
+    *f_5 = WindowWidget(370+10, 130+10, 180,  70, "form_6 SizeGadget", #PB_Window_SizeGadget)
     ButtonWidget(5, 5, 80, 20, "Butt_6_0")
     
-    *f_6 = window(370+10, 130+10+130, 180,  70, "form_8 TitleBar", #PB_Window_TitleBar)
+    *f_6 = WindowWidget(370+10, 130+10+130, 180,  70, "form_8 TitleBar", #PB_Window_TitleBar)
     ButtonWidget(5, 5, 80, 20, "Butt_8_0")
     
-    *f_7 = window(370+10+190, 10, 180,  70, "form_5 SystemMenu", #PB_Window_SystemMenu)
+    *f_7 = WindowWidget(370+10+190, 10, 180,  70, "form_5 SystemMenu", #PB_Window_SystemMenu)
     ButtonWidget(5, 5, 80, 20, "Butt_5_0")
     
-    *f_8 = window(370+10+190, 130+10, 180,  70, "form_7 Minimize", #PB_Window_MinimizeGadget)
+    *f_8 = WindowWidget(370+10+190, 130+10, 180,  70, "form_7 Minimize", #PB_Window_MinimizeGadget)
     ButtonWidget(5, 5, 80, 20, "Butt_7_0")
     
-    *f_9 = window(370+10+190, 130+10+130, 180,  70, "form_9 Maximize", #PB_Window_MaximizeGadget)
+    *f_9 = WindowWidget(370+10+190, 130+10+130, 180,  70, "form_9 Maximize", #PB_Window_MaximizeGadget)
     ButtonWidget(5, 5, 80, 20, "Butt_9_0")
     
   

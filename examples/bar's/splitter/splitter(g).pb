@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       SetState(Splitter_0, WidgetWidth(Splitter_0)/2-5)
 ;       SetState(Splitter_1, WidgetWidth(Splitter_1)/2-5)
      
-    WaitClose( )
+    WaitCloseRootWidget( )
   EndIf
   
 CompilerEndIf

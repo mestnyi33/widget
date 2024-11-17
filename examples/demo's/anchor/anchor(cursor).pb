@@ -9,12 +9,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Declare CustomEvents( )
    
    ;\\
-   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   OpenRootWidget(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
    a_init(root(), 4)
    Define fs = 10
    ;\\
-   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
-   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
+   ; parent = WindowWidget(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
+   ; parent = WindowWidget(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
    parent = ContainerWidget(50, 50, 500, 500)
    widget()\fs = fs : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
    SetWidgetColor(parent, #__color_back, $FFE9E9E9)
@@ -53,29 +53,29 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;\\
-   Bind( parent, @CustomEvents(), #__event_statuschange )
-   Bind( parent, @CustomEvents(), #__event_resize )
+   BindWidgetEvent( parent, @CustomEvents(), #__event_statuschange )
+   BindWidgetEvent( parent, @CustomEvents(), #__event_resize )
    
    ;\\
    If object
-      Bind( object, @CustomEvents(), #__event_statuschange )
-      Bind( object, @CustomEvents(), #__event_resize )
+      BindWidgetEvent( object, @CustomEvents(), #__event_statuschange )
+      BindWidgetEvent( object, @CustomEvents(), #__event_resize )
    EndIf
    
    ;\\
    If object1
-      Bind( object1, @CustomEvents(), #__event_statuschange )
-      Bind( object1, @CustomEvents(), #__event_resize )
+      BindWidgetEvent( object1, @CustomEvents(), #__event_statuschange )
+      BindWidgetEvent( object1, @CustomEvents(), #__event_resize )
    EndIf
    
    ;\\
    If object2
-      Bind( object2, @CustomEvents(), #__event_statuschange )
-      Bind( object2, @CustomEvents(), #__event_resize )
+      BindWidgetEvent( object2, @CustomEvents(), #__event_statuschange )
+      BindWidgetEvent( object2, @CustomEvents(), #__event_resize )
    EndIf
    
    ;\\
-   WaitClose( )
+   WaitCloseRootWidget( )
    
    ;\\
    Procedure CustomEvents( )

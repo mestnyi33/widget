@@ -88,12 +88,12 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ResizeWidget(*this, x, y, width, height )
       
-      Bind( *this, @MDI_ImageEvents(), #__event_LeftUp )
-      Bind( *this, @MDI_ImageEvents(), #__event_LeftDown )
-      Bind( *this, @MDI_ImageEvents(), #__event_MouseMove )
-      Bind( *this, @MDI_ImageEvents(), #__event_MouseEnter )
-      Bind( *this, @MDI_ImageEvents(), #__event_MouseLeave )
-      Bind( *this, @MDI_ImageEvents(), #__Event_Draw )
+      BindWidgetEvent( *this, @MDI_ImageEvents(), #__event_LeftUp )
+      BindWidgetEvent( *this, @MDI_ImageEvents(), #__event_LeftDown )
+      BindWidgetEvent( *this, @MDI_ImageEvents(), #__event_MouseMove )
+      BindWidgetEvent( *this, @MDI_ImageEvents(), #__event_MouseEnter )
+      BindWidgetEvent( *this, @MDI_ImageEvents(), #__event_MouseLeave )
+      BindWidgetEvent( *this, @MDI_ImageEvents(), #__Event_Draw )
       
       ProcedureReturn *this
    EndProcedure
@@ -208,7 +208,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;
-   MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
+   MyCanvas = GetCanvasGadget(OpenRootWidget(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
    SetWidgetColor(root(), #__color_back, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_ResizeWidget(), #PB_EventType_Resize )
@@ -244,7 +244,7 @@ CompilerIf #PB_Compiler_IsMainFile
    MDI_AddImage( *mdi,90,30,hole2, 100 )
    
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
-   WaitClose( )
+   WaitCloseRootWidget( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 90

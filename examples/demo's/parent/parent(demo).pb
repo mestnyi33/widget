@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
               Select EventType
                 Case #__event_Change
                   ParentID = GetParent(*CHILD)
-                  Free( *CHILD )
+                  FreeWidget( *CHILD )
                   
                   Select GetState(*COMBO)
                     Case  1: *CHILD = ButtonWidget(30,20,150,30,"Button") 
@@ -64,12 +64,12 @@ CompilerIf #PB_Compiler_IsMainFile
                        
                     Case  9: *CHILD = ImageWidget(30,20,150,30,0,#PB_Image_Border) 
                     Case 10: *CHILD = HyperLinkWidget(30,20,150,30,"HyperLink",0) 
-                    Case 11: *CHILD = ContainerWidget(30,20,150,30,#PB_Container_Flat): ButtonWidget(0,0,80,20,"Button"): CloseList() ; Container
+                    Case 11: *CHILD = ContainerWidget(30,20,150,30,#PB_Container_Flat): ButtonWidget(0,0,80,20,"Button"): CloseWidgetList() ; Container
                     Case 12: *CHILD = ListIconWidget(30,20,150,30,"",88) 
                     ;Case 13: *CHILD = IPAddress(30,20,150,30) 
                     ;Case 14: *CHILD = ProgressBar(30,20,150,30,0,5)
                     ;Case 15: *CHILD = ScrollBar(30,20,150,30,5,335,9)
-                    Case 16: *CHILD = ScrollAreaWidget(30,20,150,30,305,305,9,#PB_ScrollArea_Flat): ButtonWidget(0,0,80,20,"Button"): CloseList()
+                    Case 16: *CHILD = ScrollAreaWidget(30,20,150,30,305,305,9,#PB_ScrollArea_Flat): ButtonWidget(0,0,80,20,"Button"): CloseWidgetList()
                     ;Case 17: *CHILD = TrackBar(30,20,150,30,0,5)
                     ;Case 18: *CHILD = Web(30,20,150,30,"") ; bug 531 linux
                     Case 19: *CHILD = ButtonImageWidget(30,20,150,30,0)
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     ;Case 25: *CHILD = ExplorerCombo(30,20,150,30,"")
                     Case 26: *CHILD = SpinWidget(30,20,150,30,0,5,#PB_Spin_Numeric)
                     Case 27: *CHILD = TreeWidget(30,20,150,30):  AddItem(*CHILD,-1,"Tree"):  AddItem(*CHILD,-1,"SubLavel",0,1)
-                    Case 28: *CHILD = PanelWidget(30,20,150,30): AddItem(*CHILD,-1,"Panel"): CloseList()
+                    Case 28: *CHILD = PanelWidget(30,20,150,30): AddItem(*CHILD,-1,"Panel"): CloseWidgetList()
                     Case 29 
                       ButtonWidget(0,0,30,30,"1")
                       ButtonWidget(0,0,30,30,"2")
@@ -115,9 +115,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
-  Open(10)
+  OpenRootWidget(10)
   Root( )\class = "new"
-  ;*window_10 = Window(0, 0, 425, 350,"demo set gadget new parent", Flags)
+  ;*window_10 = WindowWidget(0, 0, 425, 350,"demo set gadget new parent", Flags)
   *window_10 = ContainerWidget(0, 0, 425, 350)
   
   *_6 = ButtonWidget(30,90,160,25,"Button >>(Window)")
@@ -133,30 +133,30 @@ CompilerIf #PB_Compiler_IsMainFile
   *_61 = ButtonWidget(35,90,160,30,"Button >>(Panel (1))") 
   AddItem(*PANEL,-1,"Second") 
   *_62 = ButtonWidget(40,90,160,30,"Button >>(Panel (2))") 
-  CloseList()
+  CloseWidgetList()
   
   *CONTAINER = ContainerWidget(215,10,200,160,#PB_Container_Flat) 
   *_7 = ButtonWidget(30,90,160,30,"Button >>(Container)") 
-  CloseList()
+  CloseWidgetList()
   
   *SCROLLAREA = ScrollAreaWidget(215,180,200,160,200,160,10,#PB_ScrollArea_Flat) 
   *_8 = ButtonWidget(30,90,160,30,"Button >>(ScrollArea)") 
-  CloseList()
+  CloseWidgetList()
   
   
   ;
   Flags = #PB_Window_Invisible | #PB_Window_TitleBar
   OpenWindow(20, WindowX(10)-210-35, WindowY(10), 240, 350, "old parent", Flags, WindowID(10))
-  Open(20)
+  OpenRootWidget(20)
   Root( )\class = "last"
-  ;*window_20 = Window(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
+  ;*window_20 = WindowWidget(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
   *window_20 = ContainerWidget(0,0, 425, 350)
   
   *CHILD = ContainerWidget(30,10,160,70)
   ButtonWidget(5,5,70,30,"Button1") 
   ButtonWidget(15,15,70,30,"Button2") 
   ButtonWidget(25,25,70,30,"Button3") 
-  CloseList( )
+  CloseWidgetList( )
   ;*CHILD = ButtonWidget(30,10,160,70,"Button") 
   *RETURN = ButtonWidget(30,90,160,25,"Button <<(Return)") 
   
@@ -203,13 +203,13 @@ CompilerIf #PB_Compiler_IsMainFile
   *DESKTOP = ButtonWidget(30,150,160,20,"Button >>(Desktop)") 
   *CANVASCONTAINER = ContainerWidget(30,180,200,160) : SetWidgetColor(*CANVASCONTAINER, #__color_back, $ffffffff) ;Canvas(30,180,200,160,#PB_Canvas_Container) 
   *_11 = ButtonWidget(30,90,160,30,"Button >>(Canvas)") 
-  CloseList()
+  CloseWidgetList()
   
   HideWindow(GetCanvasWindow(GetRoot(*window_10)),0)
   HideWindow(GetCanvasWindow(GetRoot(*window_20)),0)
   
-  Bind(GetRoot(*window_10), @Widgets_CallBack())
-  Bind(GetRoot(*window_20), @Widgets_CallBack())
+  BindWidgetEvent(GetRoot(*window_10), @Widgets_CallBack())
+  BindWidgetEvent(GetRoot(*window_20), @Widgets_CallBack())
   
   Define Event
   Repeat

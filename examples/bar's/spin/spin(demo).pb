@@ -83,7 +83,7 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
     CompilerEndIf
     
     
-    If Open(0, 320,0,320,200)
+    If OpenRootWidget(0, 320,0,320,200)
        SpinWidget(10, 30, 250, 18, 0, 30)
        SpinWidget(10, 30+18+1, 250, 21, 0, 30, #__flag_Textcenter)
        SpinWidget(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_Textright)
@@ -102,14 +102,14 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
        TextWidget(10, 100, 250, 20, "Spin plus&minus", #__flag_Textcenter)
        ;   TextWidget(90, 180, 200, 20, "Spin Vertical", #__flag_Textright)
        
-       ;Bind(#PB_All, @events_widgets())
+       ;BindWidgetEvent(#PB_All, @events_widgets())
        
        For i = 0 To 1
-          Bind(ID(i), @events_widgets())
+          BindWidgetEvent(ID(i), @events_widgets())
        Next
     EndIf
 
-  WaitClose( )
+  WaitCloseRootWidget( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 107

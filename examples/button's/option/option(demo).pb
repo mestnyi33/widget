@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;
-   If Open(0, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;
       OptionGadget(0, 10, 20, 115, 20, "Option 1") 
       OptionGadget(1, 10, 45, 115, 20, "Option 2")
@@ -59,10 +59,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(ID(4), 1)  
       
       For i = 0 To 2
-         Bind(ID(i), @events_widgets( ), #__Event_Change)
+         BindWidgetEvent(ID(i), @events_widgets( ), #__Event_Change)
       Next
       
-      WaitClose( )
+      WaitCloseRootWidget( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

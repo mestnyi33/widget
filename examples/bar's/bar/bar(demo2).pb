@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  ;   If Open(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_BorderLess)
+  ;   If OpenRootWidget(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_BorderLess)
   ;     SetData(ContainerWidget(20, 20, 180, 180), 1)
   ;     SetData(ContainerWidget(70, 10, 70, 180, #__flag_NoGadget), 9) 
   ;     SetData(ContainerWidget(20, 20, 180, 180), 2)
@@ -65,15 +65,15 @@ CompilerIf #PB_Compiler_IsMainFile
   ;     SetData(ContainerWidget(0, 50, 180, 30, #__flag_NoGadget), 6) 
   ;     SetData(Splitter(20, 70, 180, 50, ContainerWidget(0,0,0,0, #__flag_NoGadget), ContainerWidget(0,0,0,0, #__flag_NoGadget), #PB_Splitter_Vertical), 7) 
   ;     
-  ;     CloseList()
-  ;     CloseList()
+  ;     CloseWidgetList()
+  ;     CloseWidgetList()
   ;     SetData(ContainerWidget(10, 70, 70, 180), 8) 
   ;     SetData(ContainerWidget(10, 10, 70, 30, #__flag_NoGadget), 10) 
   ;     SetData(ContainerWidget(10, 20, 70, 30, #__flag_NoGadget), 11) 
   ;     SetData(ContainerWidget(10, 30, 70, 30, #__flag_NoGadget), 12) 
-  ;     CloseList()
+  ;     CloseWidgetList()
   ;     
-  ;     Bind(@Events(), root())
+  ;     BindWidgetEvent(@Events(), root())
   ;   EndIf
   ;   
   
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 475, 525, "Root", #PB_Window_ScreenCentered));|#__flag_AutoSize)
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 475, 525, "Root", #PB_Window_ScreenCentered));|#__flag_AutoSize)
     Define i, *w,*w1,*w2
     
     ImageWidget(5, 5, 150, 100, 0, #__flag_Checkboxes)
@@ -109,7 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To 10
       AddItem (widget(), -1, "item_"+Str(i))
     Next
-    CloseList()
+    CloseWidgetList()
     SetState(widget(), 5)
     
     ; demo editor
@@ -141,25 +141,25 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetState(Widget(), 0)
     
     ButtonWidget(95, 15, 80, 24,"Кнопка 2")
-    CloseList()
+    CloseWidgetList()
     
     ContainerWidget(160,215,150,150, #PB_Container_Flat) 
     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
     ButtonWidget(10,5,50,35, "butt") 
-    CloseList()
-    CloseList()
-    CloseList()
+    CloseWidgetList()
+    CloseWidgetList()
+    CloseWidgetList()
     
     ContainerWidget(10,75,150,55, #PB_Container_Flat) 
     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
     ButtonWidget(10,5,50,35, "butt1") 
-    CloseList()
-    CloseList()
-    CloseList()
-    CloseList()
+    CloseWidgetList()
+    CloseWidgetList()
+    CloseWidgetList()
+    CloseWidgetList()
     
     ; demo bar type
     SplitterWidget(320, 215, 150, 150, SplitterWidget(0, 0, 0, 0, HyperLinkWidget(0, 0, 0, 0,"кнопка 3", $FF00FF00), ButtonWidget(0, 0, 0, 0,"кнопка 1")), ButtonWidget(0, 0, 0, 0,"кнопка 2", #__bar_Vertical), #PB_Splitter_Vertical) 
@@ -220,7 +220,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;         SetState(Widget(), 5)
   EndIf
   
-  WaitClose( )
+  WaitCloseRootWidget( )
   
   Repeat
     Define Event = WaitWindowEvent()

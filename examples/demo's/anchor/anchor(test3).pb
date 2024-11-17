@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global s_desi, s_tbar, s_view, s_help, s_list,s_insp
   
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
-  widget::Open(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag))
+  widget::OpenRootWidget(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag))
   window_ide = widget::GetCanvasWindow(root())
   canvas_ide = widget::GetCanvasGadget(root())
   a_init(root())
@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;Button_1 = ButtonWidget(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
   Button_1 = ContainerWidget(0, 0, 0, 0) ; as they will be sized automatically
   ButtonWidget(10, 10, 50, 50, "Button 1")
-  CloseList( )
+  CloseWidgetList( )
   
   Button_2 = ButtonWidget(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
   Button_3 = ButtonWidget(0, 0, 0, 0, "Button 3") ; as they will be sized automatically

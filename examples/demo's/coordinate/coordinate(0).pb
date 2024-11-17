@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   Global p,*p, g,*g, b,*b, i, time, Sw = 130, Sh = 300, count;=1000
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 340, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 305+305, 340, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     p = PanelGadget(#PB_Any, 10, 10, 290, 200)
     AddGadgetItem(p, -1, "panel_0")
     g = ScrollAreaGadget(#PB_Any, 10, 10, 250, 100, Sw, Sh, 15, #PB_ScrollArea_Flat)
@@ -16,8 +16,8 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*p, -1, "panel_0")
     *g = ScrollAreaWidget(10, 10, 250, 100, Sw, Sh, 15, #PB_ScrollArea_Flat)
     *b = ButtonWidget(Sw-130, Sh-30, 130, 30,"Button")
-    CloseList()
-    CloseList()
+    CloseWidgetList()
+    CloseWidgetList()
     
     ; set&get demos
     SetGadgetAttribute(g, #PB_ScrollArea_Y, sh)

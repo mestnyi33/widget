@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global._s_widget *PANEL_1, *PANEL_2
   
-  If Open(3, 0, 0, 400, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRootWidget(3, 0, 0, 400, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *PANEL_1 = Panel (30, 30, 340, 240)
     AddItem(*PANEL_1, -1, "*PANEL_1 - 1")
@@ -20,12 +20,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
     ButtonWidget(10,5,50,25, "butt1") 
-    CloseList()
-    CloseList()
+    CloseWidgetList()
+    CloseWidgetList()
     
     AddItem(*PANEL_2, -1, "*PANEL_2 - 2")
-    CloseList() ; close *PANEL_2 list
-    CloseList() ; close *PANEL_1 list
+    CloseWidgetList() ; close *PANEL_2 list
+    CloseWidgetList() ; close *PANEL_1 list
     
     Repeat
       Define Event = WaitWindowEvent()

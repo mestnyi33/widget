@@ -82,7 +82,7 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If Open(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRootWidget(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ListViewGadget(0, 10, 30, 250, 120)
   For a = 0 To 12
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Listview") ; define listview content
@@ -153,7 +153,7 @@ If Open(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   TextWidget(10+270+270,170, 250,20, "editor")
   
   For i = 0 To 2
-    Bind(ID(i), @events_widgets())
+    BindWidgetEvent(ID(i), @events_widgets())
   Next
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow

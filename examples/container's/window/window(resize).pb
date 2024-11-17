@@ -42,23 +42,23 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
+   If OpenRootWidget(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
                                                                                                  #PB_Window_SizeGadget |
                                                                                                  #PB_Window_MinimizeGadget |
                                                                                                  #PB_Window_MaximizeGadget | 
                                                                                                  #PB_Window_ScreenCentered )
    
-; ;    If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess |
+; ;    If OpenRootWidget(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess |
 ; ;                                                                                                  #PB_Window_SizeGadget |
 ; ;                                                                                                  #PB_Window_ScreenCentered )
 ; ;       
 ;      ; \\
-;     If Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
+;     If WindowWidget( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
 ;                                             #PB_Window_SizeGadget |
 ;                                             #PB_Window_MinimizeGadget |
 ;                                             #PB_Window_MaximizeGadget )
       
-      Window( 0, 0, 0, 0, "window_0", #__flag_autosize |
+      WindowWidget( 0, 0, 0, 0, "window_0", #__flag_autosize |
                                             #PB_Window_SystemMenu |
                                             #PB_Window_SizeGadget |
                                             #PB_Window_MinimizeGadget |

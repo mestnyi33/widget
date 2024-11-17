@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;\\
-   Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetTextWidget(*root1, "root1")
+   Define *root1._s_WIDGET = OpenRootWidget(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetTextWidget(*root1, "root1")
    ;BindWidgetEvent( *root1, @HandlerEvents( ) )
    
   
@@ -90,7 +90,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   OpenList( *root1 )
+   OpenWidgetList( *root1 )
    *panel = PanelWidget(20, 20, 180 + 40, 180 + 60, editable) : SetTextWidget(*panel, "1")
    AddItem( *panel, -1, "item_1" )
    
@@ -104,29 +104,29 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;    ContainerWidget(10, 5, 150, 55, #PB_Container_Flat)
 ; ; ;    ContainerWidget(10, 5, 150, 55, #PB_Container_Flat)
    ButtonWidget(10, 5, 50, 25, "butt1")
-; ; ;    CloseList( )
-; ;    CloseList( )
+; ; ;    CloseWidgetList( )
+; ;    CloseWidgetList( )
 ; ; ;    AddItem(*p, -1, "item-2")
 ; ; ;    ContainerWidget(10, 5, 150, 55, #PB_Container_Flat)
 ; ; ;    ContainerWidget(10, 5, 150, 55, #PB_Container_Flat)
 ; ; ;    ButtonWidget(10, 5, 50, 25, "butt2")
-; ; ;    CloseList( )
-; ; ;    CloseList( )
+; ; ;    CloseWidgetList( )
+; ; ;    CloseWidgetList( )
 ; ; ;    AddItem(*c, -1, "1")
-;    CloseList( )
+;    CloseWidgetList( )
    
 ;    ContainerWidget(10, 75, 150, 55, #PB_Container_Flat)
 ;    ContainerWidget(10, 5, 150, 55, #PB_Container_Flat)
 ;    ContainerWidget(10, 5, 150, 55, #PB_Container_Flat)
 ;    ButtonWidget(10, 5, 50, 45, "butt1")
-;    CloseList( )
-;    CloseList( )
-;    CloseList( )
-   CloseList( )
+;    CloseWidgetList( )
+;    CloseWidgetList( )
+;    CloseWidgetList( )
+   CloseWidgetList( )
    
    Show_DEBUG( )
 
-   WaitClose( )
+   WaitCloseRootWidget( )
    
 CompilerEndIf
 
@@ -173,7 +173,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Define i,a
    Define *w._s_WIDGET, *g._s_WIDGET
    
-   Open(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   OpenRootWidget(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    
    ;\\
    Define *root1._s_WIDGET = root( ): *root1\class = "root1": SetTextWidget(*root1, "root1")
@@ -238,34 +238,34 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndProcedure
    
    
-   ;OpenList( *root1 )
+   ;OpenWidgetList( *root1 )
    *panel = PanelWidget(20, 20, 180 + 40, 180 + 60) : SetTextWidget(*panel, "1")
    AddItem( *panel, -1, "(enter&leave)-test" )
    
    ContainerWidget(40, 20, 180, 180)                   : SetTextWidget(widget(), "      (PanelWidget(0))") : SetWidgetClass(widget(), "(PanelWidget(0))")
    ContainerWidget(20, 20, 180, 180)                   : SetTextWidget(widget(), "      7") : SetWidgetClass(widget(), "7")
    ContainerWidget(5, 60, 180, 30, #__Flag_NoGadgets)  : SetTextWidget(widget(), "     10") : SetWidgetClass(widget(), "10")
-   CloseList( ) ; 7
-   CloseList( ) ; (PanelWidget(0))
+   CloseWidgetList( ) ; 7
+   CloseWidgetList( ) ; (PanelWidget(0))
    Debug "-------------"
    ;
    ContainerWidget(10, 45, 70, 180)                    : SetTextWidget(widget(), "     (PanelWidget(1))") : SetWidgetClass(widget(), "(PanelWidget(1))")
-   CloseList( ) ; (PanelWidget(1))
-   CloseList( ) ; 1
+   CloseWidgetList( ) ; (PanelWidget(1))
+   CloseWidgetList( ) ; 1
    
    Show_DEBUG()
 ;    ;\\
-;    OpenList( seven )
+;    OpenWidgetList( seven )
 ;    SetTextWidget(ContainerWidget( - 5, 80, 180, 50, #__Flag_NoGadgets | editable), "container-7")
-;    CloseList( ) ; 7
+;    CloseWidgetList( ) ; 7
 ;    
    ;\\
    If *panel\root
       ;PushListPosition( *panel\root\children( ))
       If StartEnum( *panel)
-         Bind(widget( ), @events_containers( ), #__event_MouseEnter)
-         Bind(widget( ), @events_containers( ), #__event_MouseMove)
-         Bind(widget( ), @events_containers( ), #__event_MouseLeave)
+         BindWidgetEvent(widget( ), @events_containers( ), #__event_MouseEnter)
+         BindWidgetEvent(widget( ), @events_containers( ), #__event_MouseMove)
+         BindWidgetEvent(widget( ), @events_containers( ), #__event_MouseLeave)
          StopEnum( )
       EndIf
       ;PopListPosition( *panel\root\children( ))
@@ -273,7 +273,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    
   
-   WaitClose( )
+   WaitCloseRootWidget( )
    
 CompilerEndIf
 
@@ -324,43 +324,43 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       Debug "<<----"
    EndProcedure
    
-   If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRootWidget(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       *PANEL = PanelWidget(10,145,200,160)  : SetWidgetClass(*PANEL, "PANEL") 
       AddItem(*PANEL, -1, "item (0)") : *PANEL_0 = ButtonWidget(pos_x,90,160,30,"(PanelWidget(0))") : SetWidgetClass(*PANEL_0, GetTextWidget(*PANEL_0))
       AddItem(*PANEL, -1, "item (1)") : *PANEL_1 = ButtonWidget(pos_x+5,90,160,30,"(PanelWidget(1))") : SetWidgetClass(*PANEL_1, GetTextWidget(*PANEL_1)) 
       AddItem(*PANEL, -1, "item (2)") : *PANEL_2 = ButtonWidget(pos_x+10,90,160,30,"(PanelWidget(2))") : SetWidgetClass(*PANEL_2, GetTextWidget(*PANEL_2)) 
-      CloseList()
+      CloseWidgetList()
       
       
 ;       Show_DEBUG()
       
-      OpenList( *PANEL, 2 )
+      OpenWidgetList( *PANEL, 2 )
       *CHILD = ButtonWidget(pos_x,10,160,70,"(CHILD1)") : SetWidgetClass(*CHILD, "CHILD1") 
-      CloseList( )
+      CloseWidgetList( )
       
        Show_DEBUG()
 ;       
-;       OpenList( *PANEL, 1 )
+;       OpenWidgetList( *PANEL, 1 )
 ;       *CHILD = ButtonWidget(pos_x,10,160,70,"(CHILD2)") : SetWidgetClass(*CHILD, "CHILD2") 
-;       CloseList( )
+;       CloseWidgetList( )
 ;       
 ;       Show_DEBUG()
 ;       
-;       OpenList( *PANEL, 2 )
+;       OpenWidgetList( *PANEL, 2 )
 ;       *CHILD = ButtonWidget(pos_x,10,160,70,"(CHILD3)") : SetWidgetClass(*CHILD, "CHILD3") 
-;       CloseList( )
+;       CloseWidgetList( )
 ;       
 ;       Show_DEBUG()
 ;       
 ;       
 ;       ;Debug "^"+root()\FirstWidget( )\class +" "+ root()\last\widget\class +" "+ root()\last\widget\last\widget\class
-;       OpenList( root( ), 0 )
+;       OpenWidgetList( root( ), 0 )
 ;       *CHILD = ButtonWidget(pos_x,10,160,70,"(CHILD4)") : SetWidgetClass(*CHILD, "CHILD4") 
-;       CloseList( )
+;       CloseWidgetList( )
 ;       
 ;       Show_DEBUG()
 ;       
-      WaitClose()
+      WaitCloseRootWidget()
    EndIf
 CompilerEndIf
 
@@ -370,25 +370,25 @@ CompilerEndIf
 ;    
 ;    Global._s_WIDGET *CONT, *but
 ;    
-;    If Open( 0, 0, 0, 600, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+;    If OpenRootWidget( 0, 0, 0, 600, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
 ;       ;
 ;       *CONT = ContainerWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
 ;       ButtonWidget( 10,5,80,25, "*btn1_1" )  : SetWidgetClass(widget( ), "btn1_1" ) 
 ; ;       ButtonWidget( 10,35,80,25, "*btn1_2" )  : SetWidgetClass(widget( ), "btn1_2" ) 
 ; ;       ButtonWidget( 10,65,80,25, "*btn1_3" )  : SetWidgetClass(widget( ), "btn1_3" ) 
-;       CloseList()
+;       CloseWidgetList()
 ; ;       ;
 ; ;       ContainerWidget( 220, 10, 200, 150) : SetWidgetClass(widget( ), "CONT2" ) 
 ; ; ;       ButtonWidget( 10,5,80,25, "*btn2_1" )  : SetWidgetClass(widget( ), "btn2_1" ) 
 ; ; ;       ButtonWidget( 10,35,80,25, "*btn2_2" )  : SetWidgetClass(widget( ), "btn2_2" ) 
 ; ; ;       ButtonWidget( 10,65,80,25, "*btn2_3" )  : SetWidgetClass(widget( ), "btn2_3" ) 
-; ;       CloseList()
+; ;       CloseWidgetList()
 ; ;       ;
 ; ;       ContainerWidget( 430, 10, 200, 150) : SetWidgetClass(widget( ), "CONT3" ) 
 ; ; ;       ButtonWidget( 10,5,80,25, "*btn3_1" )  : SetWidgetClass(widget( ), "btn3_1" ) 
 ; ; ;       ButtonWidget( 10,35,80,25, "btn3_2" )  : SetWidgetClass(widget( ), "btn3_2" ) 
 ; ; ;       ButtonWidget( 10,65,80,25, "*btn3_3" )  : SetWidgetClass(widget( ), "btn3_3" ) 
-; ;       CloseList()
+; ;       CloseWidgetList()
 ;       
 ;       
 ;       ; *but = ButtonWidget( 100,35,80,25, "*btn1_added" ) : SetWidgetClass(widget( ), "btn1_added" ) 
@@ -396,9 +396,9 @@ CompilerEndIf
 ;       
 ;       ;\\
 ;       ;SetParent( *but, *CONT, 0 )
-;       OpenList( *CONT )
+;       OpenWidgetList( *CONT )
 ;       *but = ButtonWidget(100,35,80,25,"*btn1_added") : SetWidgetClass(*but, "btn1_added") 
-;       CloseList( )
+;       CloseWidgetList( )
 ;       
 ;       ;       ;\\
 ; ;       SetPosition( *but0, #PB_List_Before )
@@ -443,7 +443,7 @@ CompilerEndIf
 ;       Debug "<<----"
 ;       
 ;      
-;       WaitClose( )
+;       WaitCloseRootWidget( )
 ;    EndIf   
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

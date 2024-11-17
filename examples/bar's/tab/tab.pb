@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global i, tab_1, tab_2, tab_3, tab_4
    
-   If Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRootWidget(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;
       tab_1 = TabBarWidget(310, 10, 200, 30)
       For i=0 To 3
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug ""+widget( )\bar\thumb\change +" - thumb\change"
       Debug " - "
       
-      WaitClose( )
+      WaitCloseRootWidget( )
       End
    EndIf
 CompilerEndIf

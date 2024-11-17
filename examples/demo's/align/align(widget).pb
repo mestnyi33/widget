@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #__flag_TextRight = #__flag_Textright
   
   Procedure example_1( )
-    *root = Open( #PB_Any, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
+    *root = OpenRootWidget( #PB_Any, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     SetWidgetColor(*root, #__color_back, $FFACE3FF )
@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
     wlist(Hex(3)) = ButtonWidget(55, 25, 80, 20, "right")   ; right         #right
     wlist(Hex(4)) = ContainerWidget(55, 45, 80, 20)         ; stretch       #stretch 
     wlist(Hex(44)) = ButtonWidget(0, 5, 80, 20, "parent stretch")
-    CloseList()
+    CloseWidgetList()
     
     wlist(Hex(5)) = ButtonWidget(55, 65, 80, 20, ">>|<<")    ; proportional  #proportion
     
@@ -108,12 +108,12 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlign(wlist(Hex(11)), 0, 0,0,1,1 )
     SetAlign(wlist(Hex(12)), 0, 0,0,1,1 )
     
-    bind(root(), @events())
+    BindWidgetEvent(root(), @events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
   EndProcedure
   
   Procedure example_2( )
-    *root = Open( #PB_Any, 310, 30, 190, 200, #PB_Compiler_Procedure+"(alignment-auto-indent)", #PB_Window_SizeGadget)
+    *root = OpenRootWidget( #PB_Any, 310, 30, 190, 200, #PB_Compiler_Procedure+"(alignment-auto-indent)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -150,12 +150,12 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlign( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
     
     
-    bind(root(), @events())
+    BindWidgetEvent(root(), @events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,260)
   EndProcedure
   
   Procedure example_3( )
-    *root = Open( #PB_Any, 250, 330, 390, 200, #PB_Compiler_Procedure+"(gadget-auto-dock)", #PB_Window_SizeGadget)
+    *root = OpenRootWidget( #PB_Any, 250, 330, 390, 200, #PB_Compiler_Procedure+"(gadget-auto-dock)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -169,7 +169,7 @@ CompilerIf #PB_Compiler_IsMainFile
     wlist(Hex(22)) = ButtonWidget(0, 0, 80, 20, "top2")   
     wlist(Hex(44)) = ButtonWidget(0, 0, 80, 40, "bottom2")   
     
-    ;wlist(Hex(5)) = Window(0, 0, 80, 20, "")   
+    ;wlist(Hex(5)) = WindowWidget(0, 0, 80, 20, "")   
     ;wlist(Hex(5)) = ContainerWidget(0, 0, 80, 20)   
     wlist(Hex(5)) = ScrollAreaWidget(0, 0, 80, 20, 500,500,1)   
     ;SetWidgetFrame(wlist(Hex(5)), 1 )
@@ -181,7 +181,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     wlist(Hex(55)) = ButtonWidget(0, 0, 80, 20, "center")   
     
-    CloseList()
+    CloseWidgetList()
     
     
     SetAlign(wlist(Hex(1)), #__align_full|#__align_left ) 
@@ -207,37 +207,37 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetAlign(wlist(Hex(55)), #__align_full )
     
-    bind(root(), @events())
+    BindWidgetEvent(root(), @events())
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
   
   Procedure example_4( )
     ;ProcedureReturn 
-    *root = Open( #PB_Any, 450, 460, 390, 200, #PB_Compiler_Procedure+"(window-auto-dock)", #PB_Window_SizeGadget)
+    *root = OpenRootWidget( #PB_Any, 450, 460, 390, 200, #PB_Compiler_Procedure+"(window-auto-dock)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
-    wlist(Hex(1)) = Window(0, 0, 60, 20, "left1", #__flag_nogadgets)  
-    wlist(Hex(2)) = Window(0, 0, 80, 40, "top1", #__flag_nogadgets)   
-    wlist(Hex(3)) = Window(0, 0, 40, 20, "right1", #__flag_nogadgets)    
-    wlist(Hex(4)) = Window(0, 0, 80, 20, "bottom1", #__flag_nogadgets)   
+    wlist(Hex(1)) = WindowWidget(0, 0, 60, 20, "left1", #__flag_nogadgets)  
+    wlist(Hex(2)) = WindowWidget(0, 0, 80, 40, "top1", #__flag_nogadgets)   
+    wlist(Hex(3)) = WindowWidget(0, 0, 40, 20, "right1", #__flag_nogadgets)    
+    wlist(Hex(4)) = WindowWidget(0, 0, 80, 20, "bottom1", #__flag_nogadgets)   
     
-    wlist(Hex(11)) = Window(0, 0, 40, 20, "left2", #__flag_nogadgets)   
-    wlist(Hex(33)) = Window(0, 0, 60, 40, "right2", #__flag_nogadgets)   
-    wlist(Hex(22)) = Window(0, 0, 80, 20, "top2", #__flag_nogadgets)   
-    wlist(Hex(44)) = Window(0, 0, 80, 40, "bottom2", #__flag_nogadgets)   
+    wlist(Hex(11)) = WindowWidget(0, 0, 40, 20, "left2", #__flag_nogadgets)   
+    wlist(Hex(33)) = WindowWidget(0, 0, 60, 40, "right2", #__flag_nogadgets)   
+    wlist(Hex(22)) = WindowWidget(0, 0, 80, 20, "top2", #__flag_nogadgets)   
+    wlist(Hex(44)) = WindowWidget(0, 0, 80, 40, "bottom2", #__flag_nogadgets)   
     
-    wlist(Hex(5)) = Window(0, 0, 80, 20, "")   
+    wlist(Hex(5)) = WindowWidget(0, 0, 80, 20, "")   
     ;wlist(Hex(5)) = ContainerWidget(0, 0, 80, 20)   
-    wlist(Hex(51)) = Window(0, 0, 60, 20, "left3", #__flag_nogadgets, wlist(Hex(5)))  
-    wlist(Hex(52)) = Window(0, 0, 80, 40, "top3", #__flag_nogadgets, wlist(Hex(5)))   
-    wlist(Hex(53)) = Window(0, 0, 60, 20, "right3", #__flag_nogadgets, wlist(Hex(5)))    
-    wlist(Hex(54)) = Window(0, 0, 80, 20, "bottom3", #__flag_nogadgets, wlist(Hex(5)))   
+    wlist(Hex(51)) = WindowWidget(0, 0, 60, 20, "left3", #__flag_nogadgets, wlist(Hex(5)))  
+    wlist(Hex(52)) = WindowWidget(0, 0, 80, 40, "top3", #__flag_nogadgets, wlist(Hex(5)))   
+    wlist(Hex(53)) = WindowWidget(0, 0, 60, 20, "right3", #__flag_nogadgets, wlist(Hex(5)))    
+    wlist(Hex(54)) = WindowWidget(0, 0, 80, 20, "bottom3", #__flag_nogadgets, wlist(Hex(5)))   
     
-    wlist(Hex(55)) = Window(0, 0, 80, 20, "center", #__flag_nogadgets, wlist(Hex(5)))   
+    wlist(Hex(55)) = WindowWidget(0, 0, 80, 20, "center", #__flag_nogadgets, wlist(Hex(5)))   
     
-    CloseList()
+    CloseWidgetList()
     ;     SetWidgetFrame(wlist(Hex(5)), 10 )
     ;     SetWidgetFrame(wlist(Hex(1)), 10 )
     ;     SetWidgetFrame(wlist(Hex(55)), 1 )
@@ -265,13 +265,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetAlign(wlist(Hex(55)), #__align_full )
     
-    bind(root(), @events())
+    BindWidgetEvent(root(), @events())
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
   
   Procedure example_5( )
-    *root = Open( #PB_Any, 850, 460, 390, 200, #PB_Compiler_Procedure+"(auto-alignment)", #PB_Window_SizeGadget)
+    *root = OpenRootWidget( #PB_Any, 850, 460, 390, 200, #PB_Compiler_Procedure+"(auto-alignment)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -285,7 +285,7 @@ CompilerIf #PB_Compiler_IsMainFile
     wlist(Hex(22)) = ButtonWidget(0, 0, 80, 20, "top2")   
     wlist(Hex(44)) = ButtonWidget(0, 0, 80, 40, "bottom2")   
     
-    wlist(Hex(5)) = Window(0, 0, 80, 20, "")   
+    wlist(Hex(5)) = WindowWidget(0, 0, 80, 20, "")   
     ;wlist(Hex(5)) = ContainerWidget(0, 0, 80, 20)   
     wlist(Hex(51)) = ButtonWidget(0, 0, 60, 20, "left3")  
     wlist(Hex(52)) = ButtonWidget(0, 0, 80, 40, "top3")   
@@ -294,7 +294,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     wlist(Hex(55)) = ButtonWidget(0, 0, 80, 20, "center")   
     
-    CloseList()
+    CloseWidgetList()
     
     SetAlign(wlist(Hex(1)), #__align_auto|#__align_left ) 
     SetAlign(wlist(Hex(2)), #__align_auto|#__align_top ) 
@@ -320,7 +320,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     
     SetAlign(wlist(Hex(55)), #__align_auto )
     
-    bind(root(), @events())
+    BindWidgetEvent(root(), @events())
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
@@ -329,7 +329,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected width = 460
     Protected height = 200
     
-    *root = Open( #PB_Any, 620, 30, width, height, #PB_Compiler_Procedure+"(Proportional)", #PB_Window_SizeGadget)
+    *root = OpenRootWidget( #PB_Any, 620, 30, width, height, #PB_Compiler_Procedure+"(Proportional)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -398,7 +398,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetAlign( wlist(Hex(4)), #__align_proportional, 0,0,0,-5 )
     ;     SetAlign( wlist(Hex(9)), #__align_proportional, 0,0,-5,-5 )
     
-    bind(root(), @events())
+    BindWidgetEvent(root(), @events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 490,390)
   EndProcedure
   
@@ -406,7 +406,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected width = 384
     Protected height = 144
     
-    *root = Open( #PB_Any, 320, 130, width, height, #PB_Compiler_Procedure+"(indent-auto-alignment (example_2))", #PB_Window_SizeGadget)
+    *root = OpenRootWidget( #PB_Any, 320, 130, width, height, #PB_Compiler_Procedure+"(indent-auto-alignment (example_2))", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -448,7 +448,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;
   Procedure example_demo()
-    *root = Open( #PB_Any, 20, 540, 250, 410, "test", #PB_Window_SizeGadget)
+    *root = OpenRootWidget( #PB_Any, 20, 540, 250, 410, "test", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -458,8 +458,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\
     Define tree_button1 = ButtonWidget( 5,   345, 240,  25, "")
     Define tree_button2 = ButtonWidget( 5,   345+30, 240, 30,"")
-    Define tree_container = Window( 10, 10, 230-#__window_FrameSize*2,  325-#__window_FrameSize*2-#__window_CaptionHeight, "", #PB_Window_SystemMenu)
-    tree_view = TreeWidget(10, 10, 230-20-#__window_FrameSize*2,  325-20-#__window_FrameSize*2-#__window_CaptionHeight)  : CloseList( )
+    Define tree_container = WindowWidget( 10, 10, 230-#__window_FrameSize*2,  325-#__window_FrameSize*2-#__window_CaptionHeight, "", #PB_Window_SystemMenu)
+    tree_view = TreeWidget(10, 10, 230-20-#__window_FrameSize*2,  325-20-#__window_FrameSize*2-#__window_CaptionHeight)  : CloseWidgetList( )
     
     SetAlign(tree_container, 0, 1,1,1,1 )
     SetAlign(tree_view, 0, 1,1,1,1 )
@@ -467,7 +467,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlign(tree_button1, 0, 1,0,1,1 )
     SetAlign(tree_button2, 0, 1,0,1,1 )
     
-    bind(root(), @events())
+    BindWidgetEvent(root(), @events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,400)
   EndProcedure
   
@@ -481,7 +481,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   example_demo( )
   
-  WaitClose( )
+  WaitCloseRootWidget( )
   ;   Repeat
   ;     gEvent= WaitWindowEvent()
   ;     

@@ -152,8 +152,8 @@ CompilerIf #PB_Compiler_IsMainFile
       *Object\container = 0
       *Object\data = HighlightColorHue
       ;SetTextWidget(*Object, Text)                                 ; Set the button text as a dictionary entry
-      Bind(*Object, @Button_Events( ), #__event_Draw )  ; Set the drawing callback with the specified highlighting color
-      Bind(*Object, @Button_Events( ), #__event_LeftClick ) 
+      BindWidgetEvent(*Object, @Button_Events( ), #__event_Draw )  ; Set the drawing callback with the specified highlighting color
+      BindWidgetEvent(*Object, @Button_Events( ), #__event_LeftClick ) 
       ;a_set(*Object, #__a_size|#__a_position)        ; Add handles if you want to edit the buttons.
       
       ProcedureReturn *Object
@@ -294,10 +294,10 @@ CompilerIf #PB_Compiler_IsMainFile
       *Object\class = "CheckBox"
       *Object\container = 0
       ;SetTextWidget(*Object, Text)                                ; Set the button text as a dictionary entry
-      Bind(*Object, @CheckBox_Events( ), #__event_Draw)       ; Set the drawing callback with the specified highlighting color
-      Bind(*Object, @CheckBox_Events( ), #__event_LeftClick)  ; Set the drawing callback with the specified highlighting color
-      Bind(*Object, @CheckBox_Events( ), #__event_Left2Click) ; Set the drawing callback with the specified highlighting color
-      Bind(*Object, @CheckBox_Events( ), #__event_Left3Click) ; Set the drawing callback with the specified highlighting color
+      BindWidgetEvent(*Object, @CheckBox_Events( ), #__event_Draw)       ; Set the drawing callback with the specified highlighting color
+      BindWidgetEvent(*Object, @CheckBox_Events( ), #__event_LeftClick)  ; Set the drawing callback with the specified highlighting color
+      BindWidgetEvent(*Object, @CheckBox_Events( ), #__event_Left2Click) ; Set the drawing callback with the specified highlighting color
+      BindWidgetEvent(*Object, @CheckBox_Events( ), #__event_Left3Click) ; Set the drawing callback with the specified highlighting color
                                                               ;a_set(*Object, #__a_size|#__a_position)               ; Add handles if you want to edit the buttons.
       
       ProcedureReturn *Object
@@ -323,7 +323,7 @@ CompilerIf #PB_Compiler_IsMainFile
    OpenWindow(#Window, 0, 0, 800, 450, "Example 1: Creation of a basic objects.", #PB_Window_MinimizeGadget|#PB_Window_ScreenCentered)
    
    ; Create a canvas gadget and initializes the object management for the canvas gadget
-   If Not Open( #Window );, #Canvas )
+   If Not OpenRootWidget( #Window );, #Canvas )
       Debug "Unable to initialize the object manager !"    
    EndIf
    SetWidgetColor(root( ), #__color_back, $FFF0F0F0 )

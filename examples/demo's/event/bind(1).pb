@@ -62,14 +62,14 @@ CompilerIf #PB_Compiler_IsMainFile
 		If OpenWindow(0, 0, 0, 500, 500, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
 			Define Editable ; = 
 			
-			If Open(0, 10,10, 480, 480)
-				Bind(#PB_All, @events_roots())
-				Bind(Window(80, 100, 300, 280, "Window_2", Editable|#__Window_SystemMenu), @events_windows())
+			If OpenRootWidget(0, 10,10, 480, 480)
+				BindWidgetEvent(#PB_All, @events_roots())
+				BindWidgetEvent(Window(80, 100, 300, 280, "Window_2", Editable|#__Window_SystemMenu), @events_windows())
 				;SetWidgetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
 				
-				Bind(ButtonWidget(10,  10, 240, 80, "post event for one procedure", Editable), @events_widgets())
-				Bind(ButtonWidget(10, 100, 260, 80, "post event for to two procedure", Editable), @events_widgets())
-				Bind(ButtonWidget(10, 190, 280, 80, "post event for all procedures", Editable), @events_widgets())
+				BindWidgetEvent(ButtonWidget(10,  10, 240, 80, "post event for one procedure", Editable), @events_widgets())
+				BindWidgetEvent(ButtonWidget(10, 100, 260, 80, "post event for to two procedure", Editable), @events_widgets())
+				BindWidgetEvent(ButtonWidget(10, 190, 280, 80, "post event for all procedures", Editable), @events_widgets())
 				
 			EndIf
 		EndIf
@@ -118,9 +118,9 @@ CompilerEndIf
 ;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEvent()+" "+*ew\index
 ;   EndProcedure
 ;   
-;   If Open(OpenWindow(#PB_Any, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
-;     ; If Open(Window(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
-;     ; If Window(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+;   If OpenRootWidget(OpenWindow(#PB_Any, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+;     ; If OpenRootWidget(Window(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+;     ; If WindowWidget(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
 ;     
 ;     ;a_add(root())
 ;     
@@ -131,15 +131,15 @@ CompilerEndIf
 ;     SetActive(widget())
 ;     
 ;     Debug ""
-;     Bind( #PB_All, @click(), #__event_LeftClick)
-;     Bind( #PB_All, @deactive(), #__event_LostFocus)
-;     Bind( #PB_All, @active(), #__event_Focus)
+;     BindWidgetEvent( #PB_All, @click(), #__event_LeftClick)
+;     BindWidgetEvent( #PB_All, @deactive(), #__event_LostFocus)
+;     BindWidgetEvent( #PB_All, @active(), #__event_Focus)
 ;     
 ;     Debug ""
-; ;     Bind( #PB_All, @events(), #__event_LeftClick)
-; ;     Bind( #PB_All, @events(), #__event_LostFocus)
-; ;     Bind( #PB_All, @events(), #__event_Focus)
-;     Bind( #PB_All, @events())
+; ;     BindWidgetEvent( #PB_All, @events(), #__event_LeftClick)
+; ;     BindWidgetEvent( #PB_All, @events(), #__event_LostFocus)
+; ;     BindWidgetEvent( #PB_All, @events(), #__event_Focus)
+;     BindWidgetEvent( #PB_All, @events())
 ;     
 ;     Repeat
 ;       Event = WaitWindowEvent()

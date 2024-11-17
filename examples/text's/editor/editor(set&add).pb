@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetFont(0, FontID(0))
     
     
-    Open(0, 270, 10, 250, 680)
+    OpenRootWidget(0, 270, 10, 250, 680)
     ;Define *w = EditorWidget(0, 0, 0, 0, #__flag_autosize) 
     *g = EditorWidget(0, 0, 250, 680, #__flag_autosize) 
     g=GetCanvasGadget(root())

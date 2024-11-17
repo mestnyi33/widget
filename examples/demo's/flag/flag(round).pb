@@ -37,7 +37,7 @@ Procedure events_widgets()
 EndProcedure
 
 If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  If Open(0)
+  If OpenRootWidget(0)
     Button_0 = ProgressBarWidget(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
     Button_1 = ProgressBarWidget(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
     
@@ -57,11 +57,11 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   Button_5 = Track    (10, 260,  400, 20, 0, 100)
   Button_4 = Track    (10, 280,  400, 20, 0, 100)
   
-  Bind(Button_2, @events_widgets())
-  Bind(Button_3, @events_widgets())
+  BindWidgetEvent(Button_2, @events_widgets())
+  BindWidgetEvent(Button_3, @events_widgets())
   
-  Bind(Button_4, @events_widgets())
-  Bind(Button_5, @events_widgets())
+  BindWidgetEvent(Button_4, @events_widgets())
+  BindWidgetEvent(Button_5, @events_widgets())
   
   SetState(Button_2, 120)
   SetState(Button_3, 100)
@@ -70,7 +70,7 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   SetState(Button_5, 100)
   
   SetState(Splitter_0, 189)
-  WaitClose( )
+  WaitCloseRootWidget( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 41

@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(GetCanvasGadget( Root( ) ), #PB_Ignore, #PB_Ignore, Width, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
   EndProcedure
   
-  If Open(11, 0, 0, 150, 235, "ImageButton", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  If OpenRootWidget(11, 0, 0, 150, 235, "ImageButton", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
     WindowBounds(11,150,235,#PB_Ignore,235)
     
     ButtonWidget( 10,10,60,25,"text_right", #PB_Text_InLine,0)

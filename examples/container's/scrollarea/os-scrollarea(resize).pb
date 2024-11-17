@@ -28,7 +28,7 @@ If OpenWindow(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Wi
 	SetGadgetAttribute(g2, #PB_ScrollArea_X, 100/2 )
 	SetGadgetAttribute(g3, #PB_ScrollArea_X, 100 )
 	
-	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow ; WaitClose( )
+	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow ; WaitCloseRootWidget( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 27

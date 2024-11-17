@@ -13,7 +13,7 @@
 ;
 Define CaptionHeight = 30, x=100,y=100, width = 200, height = 100, v = 2, h = 4
 
-Procedure Window( x, y, width, height, title.s, flag)
+Procedure WindowWidget( x, y, width, height, title.s, flag)
   Protected window = OpenWindow(#PB_Any, x+10, y+10, width, height, title, flag|#PB_Window_NoActivate, WindowID(0))
   SetWindowColor(window , $ff00ff )
   ProcedureReturn window
@@ -23,18 +23,18 @@ If OpenWindow(0, x,y, (width+10)*h+10, (height+40)*v+10, "PureBasic Window", #PB
   
   y + CaptionHeight
   ;\\
-  Window(x, y, width, height, "", #PB_Window_BorderLess)
-  Window(x+(width+10)*1, y, width, height, "Tool", #PB_Window_Tool)
-  Window(x+(width+10)*2, y, width, height, "SystemMenu", #PB_Window_SystemMenu)
-  Window(x+(width+10)*3, y, width, height, "TitleBar", #PB_Window_TitleBar)
+  WindowWidget(x, y, width, height, "", #PB_Window_BorderLess)
+  WindowWidget(x+(width+10)*1, y, width, height, "Tool", #PB_Window_Tool)
+  WindowWidget(x+(width+10)*2, y, width, height, "SystemMenu", #PB_Window_SystemMenu)
+  WindowWidget(x+(width+10)*3, y, width, height, "TitleBar", #PB_Window_TitleBar)
   
   y + CaptionHeight
   ;\\
-  Define window = Window(x, y+(height+10)*1, width, height, "", #PB_Window_SystemMenu)
+  Define window = WindowWidget(x, y+(height+10)*1, width, height, "", #PB_Window_SystemMenu)
   
-  Window(x+(width+10)*1, y+(height+10)*1, width, height, "SizeGadget", #PB_Window_SizeGadget)
-  Window(x+(width+10)*2, y+(height+10)*1, width, height, "Size&SystemMenu", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-  Window(x+(width+10)*3, y+(height+10)*1, width, height, "Size&TitleBar", #PB_Window_TitleBar|#PB_Window_SizeGadget)
+  WindowWidget(x+(width+10)*1, y+(height+10)*1, width, height, "SizeGadget", #PB_Window_SizeGadget)
+  WindowWidget(x+(width+10)*2, y+(height+10)*1, width, height, "Size&SystemMenu", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+  WindowWidget(x+(width+10)*3, y+(height+10)*1, width, height, "Size&TitleBar", #PB_Window_TitleBar|#PB_Window_SizeGadget)
 
   
   

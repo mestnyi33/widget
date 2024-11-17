@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   OpenWindow(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open(3)
+    OpenRootWidget(3)
     
     ;ButtonWidget(10,5,50,35, "butt")
     
@@ -43,21 +43,21 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*w, -1,"Панель 2")
     *butt1 = ButtonWidget(10, 15, 80, 24,"hide item3")
     *butt2 = ButtonWidget(95, 15, 80, 24,"show item3")
-    Bind(*butt1, @events_butt(), #PB_EventType_LeftClick)
-    Bind(*butt2, @events_butt(), #PB_EventType_LeftClick)
+    BindWidgetEvent(*butt1, @events_butt(), #PB_EventType_LeftClick)
+    BindWidgetEvent(*butt2, @events_butt(), #PB_EventType_LeftClick)
     
     AddItem (*w, -1,"Панель 3")
     ButtonWidget(10, 15, 80, 24,"Кнопка 4")
     ButtonWidget(95, 15, 80, 24,"Кнопка 5")
     ButtonWidget(180, 15, 80, 24,"Кнопка 6")
     AddItem (*w, -1,"Панель 4")
-    CloseList()
+    CloseWidgetList()
     
     SetState(*w,1)
     HideItem(*w, 2, 1)
     ; HideItem(*w, 1, 0)
     
-    WaitClose( )
+    WaitCloseRootWidget( )
     
      
 CompilerEndIf

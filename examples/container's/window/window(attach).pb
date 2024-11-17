@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent( )
       Case #__event_LeftClick
         Debug "open - Title"
-        Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
+        Define Result = MessageWidget("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
         Debug " close - Title " + Result
         
         Define flag, a$ = "Result of the previously requester was: "
@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         Debug "open - Information"
-        Result = Message("Information", a$, flag)
+        Result = MessageWidget("Information", a$, flag)
         Debug "close - Information "+Result
         
       Case #__event_Draw
@@ -48,41 +48,41 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   ;Define *mdi._s_widget = ContainerWidget(x,y,Width, height)
   Define *mdi._s_widget = MDIWidget(x,y,Width, height)
-  ;Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetWidgetClass(widget(), "container") 
+  ;Define *mdi._s_widget = WindowWidget(x,y,Width, height, "container",0,*mdi) : SetWidgetClass(widget(), "container") 
   a_init( *mdi, 0 )
-  OpenList(*mdi)
+  OpenWidgetList(*mdi)
   ButtonWidget(10,50,80,80,"mdi-top")
   ButtonWidget(10,400+50,80,80,"mdi-bottom")
-  CloseList()
+  CloseWidgetList()
   
   Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child ;|#__flag_borderless
   Define vfs ;= #__window_CaptionHeight+#__window_FrameSize*2
   
-  Define *g0._s_widget = Window(50, 50, 400, 400-vfs, "main",flag|#__window_child, *mdi) : SetWidgetClass(widget(), "main") 
+  Define *g0._s_widget = WindowWidget(50, 50, 400, 400-vfs, "main",flag|#__window_child, *mdi) : SetWidgetClass(widget(), "main") 
   ButtonWidget(10,10,80,80,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Define *g1._s_widget =  Window(X(*g0, #__c_container)+50, WidgetY(*g0, #__c_container)+50, 200, 300, "Child 1 (Position Attach)",flag,*g0) : SetWidgetClass(widget(), "form_1") 
+  Define *g1._s_widget =  WindowWidget(X(*g0, #__c_container)+50, WidgetY(*g0, #__c_container)+50, 200, 300, "Child 1 (Position Attach)",flag,*g0) : SetWidgetClass(widget(), "form_1") 
   Define *g1b = ButtonWidget(10,10,80,80,"message") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   ; Sticky(*g1, 1)
   
-  Define *g2._s_widget = Window(X(*g0, #__c_container)+WidgetWidth(*g0, #__c_Frame), WidgetY(*g0, #__c_container), 200, 300-vfs, "Child 2 (Frame Magnetic)",flag,*g0) : SetWidgetClass(widget(), "form_2") 
+  Define *g2._s_widget = WindowWidget(X(*g0, #__c_container)+WidgetWidth(*g0, #__c_Frame), WidgetY(*g0, #__c_container), 200, 300-vfs, "Child 2 (Frame Magnetic)",flag,*g0) : SetWidgetClass(widget(), "form_2") 
   ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Define *g3._s_widget = Window(X(*g2, #__c_container), WidgetY(*g2, #__c_container)+WidgetHeight(*g2, #__c_Frame), 200, 100-vfs, "SubChild",flag,*g2) : SetWidgetClass(widget(), "SubChild") 
+  Define *g3._s_widget = WindowWidget(X(*g2, #__c_container), WidgetY(*g2, #__c_container)+WidgetHeight(*g2, #__c_Frame), 200, 100-vfs, "SubChild",flag,*g2) : SetWidgetClass(widget(), "SubChild") 
   ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Bind(*g1b, @CustomEvents(), #__event_LeftClick )
+  BindWidgetEvent(*g1b, @CustomEvents(), #__event_LeftClick )
   
-;   Bind(*g0, @CustomEvents(), #__event_Draw)
-;   Bind(*g1, @CustomEvents(), #__event_Draw)
-;   Bind(*g2, @CustomEvents(), #__event_Draw)
-;   Bind(*g3, @CustomEvents(), #__event_Draw)
+;   BindWidgetEvent(*g0, @CustomEvents(), #__event_Draw)
+;   BindWidgetEvent(*g1, @CustomEvents(), #__event_Draw)
+;   BindWidgetEvent(*g2, @CustomEvents(), #__event_Draw)
+;   BindWidgetEvent(*g3, @CustomEvents(), #__event_Draw)
   
-  WaitClose( )
+  WaitCloseRootWidget( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 74

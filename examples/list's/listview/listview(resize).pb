@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define i, img = 0
   Define pos = 100
       
-  If Open( 0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+  If OpenRootWidget( 0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     a_init(root( ))
     
     *this = ListViewWidget( 50,50,200,200, #__flag_gridlines | #__flag_borderless )
@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*this, -1, "tree_add_item_"+Str(i), -1, -1) 
     Next 
     
-    Bind(*this, @events_widgets( ))
+    BindWidgetEvent(*this, @events_widgets( ))
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

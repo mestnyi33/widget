@@ -71,7 +71,7 @@ Procedure events_wbuttons()
           Debug ""+CountItems( WidgetID(1)) +" - count widget items"
           
         Case 3 
-          ;OpenList( WidgetID(1))
+          ;OpenWidgetList( WidgetID(1))
           AddItem( WidgetID(1), 1, "Sub 2 (add)")
           If CountItems( WidgetID(1)) > 1
             SetItemTextWidget( WidgetID(1), 1, "Sub 2 (add&set)")
@@ -80,7 +80,7 @@ Procedure events_wbuttons()
             SetItemTextWidget( WidgetID(1), 0, "Sub 1 (add&set)")
             Debug GetItemTextWidget( WidgetID(1), 0) + " - get item text"
           EndIf
-          ;CloseList()
+          ;CloseWidgetList()
       EndSelect
       
   EndSelect
@@ -124,7 +124,7 @@ If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #P
   
   Debug ""+CountGadgetItems(1) +" - count gadget items"
   
-  Open(0, 322, 0, 322, 220)
+  OpenRootWidget(0, 322, 0, 322, 220)
   PanelWidget(8, 8, 300, 200)
   Define h = WidgetHeight( WidgetID(0), #__c_inner )
   Define w = WidgetWidth( WidgetID(0), #__c_inner )
@@ -141,7 +141,7 @@ If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #P
   AddItem( WidgetID(1), -1, "Sub 8")
   AddItem( WidgetID(1), -1, "Sub 9")
   SetState( WidgetID(1), 5)
-  CloseList( )
+  CloseWidgetList( )
   
   ButtonWidget(10, h-34*2, 80, 24,"remove")
   ButtonWidget(10, h-34*3, 80, 24,"add")
@@ -150,13 +150,13 @@ If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #P
   AddItem ( WidgetID(0), -1,"Panel 2")
   ButtonWidget(10, 10, 80, 24,"Button 3")
   ButtonWidget(95, 10, 80, 24,"Button 4")
-  CloseList()
+  CloseWidgetList()
   
   For i = 0 To 1
-    Bind( WidgetID(i), @events_widgets())
+    BindWidgetEvent( WidgetID(i), @events_widgets())
   Next
   For i = 2 To 4
-    Bind( WidgetID(i), @events_wbuttons())
+    BindWidgetEvent( WidgetID(i), @events_wbuttons())
   Next
   
   

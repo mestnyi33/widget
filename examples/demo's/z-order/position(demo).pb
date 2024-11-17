@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Demo()
     Protected   ParentID = OpenWindow(0, 0, 0, 250, 180, "Demo z-order gadget", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     
-    Open(0, 0, 0, 250, 180) 
+    OpenRootWidget(0, 0, 0, 250, 180) 
     
     ;{ first container
     ContainerWidget(55, 95, 30, 45)                     ; Gadget(9,   
@@ -71,11 +71,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     ContainerWidget(3, 4, 17-8, 25+6)   
     ;     SetWidgetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     ;     SetWidgetClass(widget(), "first_2")
-    ;     CloseList()
+    ;     CloseWidgetList()
     ButtonWidget(3, 4, 17, 25+6, "1", #__flag_TextLeft) : SetWidgetClass(widget(), GetTextWidget(widget())) 
-    CloseList()
+    CloseWidgetList()
     
-    CloseList()
+    CloseWidgetList()
     ;}
     
     ButtonWidget(55, 86, 170, 25, "2",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(8, 
@@ -92,11 +92,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ContainerWidget(10, 4, 60, 74-4)   
     SetWidgetColor(widget(), #PB_Gadget_BackColor, $ffff00)
     ButtonWidget(10, 4, 60, 68-8, "5", #__flag_TextLeft) : SetWidgetClass(widget(), GetTextWidget(widget())) 
-    CloseList()
+    CloseWidgetList()
     
-    CloseList()
-    Bind(*this, @this_events(), #PB_EventType_LeftButtonDown)
-    Bind(*this, @this_events(), #PB_EventType_LeftButtonUp)
+    CloseWidgetList()
+    BindWidgetEvent(*this, @this_events(), #PB_EventType_LeftButtonDown)
+    BindWidgetEvent(*this, @this_events(), #PB_EventType_LeftButtonUp)
     ;}
     
     ButtonWidget(55, 70, 90, 25, "6",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(4, 
@@ -115,11 +115,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     ContainerWidget(3, -3, 17-8, 25+6)   
     ;     SetWidgetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     ;     SetWidgetClass(widget(), "last_2")
-    ;     CloseList()
+    ;     CloseWidgetList()
     ButtonWidget(3, -3, 17, 25+6, "9", #__flag_TextLeft) : SetWidgetClass(widget(), GetTextWidget(widget())) 
-    CloseList()
+    CloseWidgetList()
     
-    CloseList()
+    CloseWidgetList()
     ;}
     
     ForEach widgets()

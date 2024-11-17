@@ -1,7 +1,7 @@
 ﻿DeclareModule Window
-   Declare Open( window, x, y, width, height, title.s, flags.q = 0, parentID = 0 )
+   Declare OpenRootWidget( window, x, y, width, height, title.s, flags.q = 0, parentID = 0 )
    Declare Close( WindowID.i )
-   Declare WaitClose( )
+   Declare WaitCloseRootWidget( )
 EndDeclareModule
 
 Module Window
@@ -83,7 +83,7 @@ Module Window
       ; CocoaMessage(0, app, "terminate:", app)
    CompilerEndIf
    
-   Procedure Open( window, x, y, width, height, title.s, flags.q = 0, parentID = 0 )
+   Procedure OpenRootWidget( window, x, y, width, height, title.s, flags.q = 0, parentID = 0 )
       Protected.i win, myWindowDelegateClass, myWindowDelegate
       
       CocoaMessage(@win, 0, "NSWindow alloc")
@@ -203,7 +203,7 @@ Module Window
       CocoaMessage(0, WindowID, "close")
    EndProcedure
    
-   Procedure WaitClose( )
+   Procedure WaitCloseRootWidget( )
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
          CocoaMessage(0, app, "run")
          
@@ -241,16 +241,16 @@ CompilerIf #PB_Compiler_IsMainFile
    UseModule Window
    Global win1, win2, win3
    
-   win1 = Open( 1, 0,0,400,100, "window1", #PB_Window_SystemMenu )
+   win1 = OpenRootWidget( 1, 0,0,400,100, "window1", #PB_Window_SystemMenu )
    ButtonGadget(1,0,0,400,100,"window1")
    
-   win2 = Open( 2, 100,100,400,100, "window2", #PB_Window_ScreenCentered|#PB_Window_SizeGadget )
+   win2 = OpenRootWidget( 2, 100,100,400,100, "window2", #PB_Window_ScreenCentered|#PB_Window_SizeGadget )
    ButtonGadget(2,0,0,400,100,"window2")
    
-   win3 = Open( 3, 100,100,400,100, "window3", #PB_Window_WindowCentered|#PB_Window_SystemMenu, win2 )
+   win3 = OpenRootWidget( 3, 100,100,400,100, "window3", #PB_Window_WindowCentered|#PB_Window_SystemMenu, win2 )
    ButtonGadget(3,0,0,400,100,"window3")
    
-   WaitClose( )
+   WaitCloseRootWidget( )
    Debug "END"
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

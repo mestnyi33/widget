@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare CallBack( )
   
   ;\\
-  Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
+  OpenRootWidget(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
                                       #PB_Window_SizeGadget |
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetWidgetClass(widget( ), "Button_0_close" )
   
   ;\\
-  Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
+  OpenRootWidget(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetWidgetClass(widget( ), "Button_1_close" )
   
   ;\\
-  Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
+  OpenRootWidget(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_leftclick
         Select GetTextWidget( EventWidget())
           Case "Button_0_close"
-            If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+            If #PB_MessageRequester_Yes = MessageWidget( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               Close( EventWindow( ) )
             EndIf
             
@@ -64,12 +64,12 @@ CompilerIf #PB_Compiler_IsMainFile
             ; Close( EventWindow( ) )
             ;Close( EventWidget( )\window )
             
-            ;  Post( EventWidget( )\window, #__event_Close )
-            Send( EventWidget( )\window, #__event_Close )
+            ;  PostWidgetEvent( EventWidget( )\window, #__event_Close )
+            SendWidgetEvent( EventWidget( )\window, #__event_Close )
             ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
             
           Case "Button_2_close"
-            If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
+            If #PB_MessageRequester_Yes = MessageWidget( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
               Close( #PB_All )
             EndIf
             
@@ -80,14 +80,14 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ;\\ demo main window
         If EventWindow( ) = 2
-          If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+          If #PB_MessageRequester_Yes = MessageWidget( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
             ProcedureReturn #PB_All
           Else
             ProcedureReturn 1
           EndIf
           
         ElseIf EventWindow( ) = 0
-          If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+          If #PB_MessageRequester_Yes = MessageWidget( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
             ProcedureReturn 0
           Else
             ProcedureReturn 1
