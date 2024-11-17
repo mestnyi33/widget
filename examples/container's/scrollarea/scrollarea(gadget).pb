@@ -9,12 +9,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
+    ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +GetWidgetClass(this()\item)+ " direction - " +this()\data 
     
     Select WidgetEvent( )
       Case #__event_Resize
 ;         ;oc = EventWidget( )\scroll\gadget[1]
-;         ResizeGadget(oc, WidgetX(EventWidget( ), #__c_inner), WidgetY(EventWidget( ), #__c_inner), Width(EventWidget( ), #__c_inner), Height(EventWidget( ), #__c_inner))
+;         ResizeGadget(oc, WidgetX(EventWidget( ), #__c_inner), WidgetY(EventWidget( ), #__c_inner), WidgetWidth(EventWidget( ), #__c_inner), WidgetHeight(EventWidget( ), #__c_inner))
 ;         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
 ;           UpdateWindow_(GadgetID(oc))
 ;         CompilerEndIf
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 30, #PB_ScrollArea_Flat)
-    SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
+    SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
     ButtonGadget  (#PB_Any,  10,  10, 230, 30,"Button 1")
     ButtonGadget  (#PB_Any,  50,  50, 230, 30,"Button 2")
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; Bind(-1, @events_widgets())
     
-    *g = ScrollArea(0, 0, 100, 100, Sw, Sh, 30, #PB_ScrollArea_Flat)
+    *g = ScrollAreaWidget(0, 0, 100, 100, Sw, Sh, 30, #PB_ScrollArea_Flat)
     oc = ContainerGadget(#PB_Any, 0,0,0,0)
     ic = ContainerGadget(#PB_Any, 0, 0, (Sw), (Sh))
     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -54,10 +54,10 @@ CompilerIf #PB_Compiler_IsMainFile
     *g\scroll\gadget[2] = ic
     
     
-    SetGadgetColor(oc, #PB_Gadget_BackColor, $00FFFF)
-    SetGadgetColor(ic, #PB_Gadget_BackColor, $00FFFF)
-    ;SetColor(*g, #PB_Gadget_BackColor, $FFFF00)
-    ;SetColor(*g\root, #PB_Gadget_BackColor, $FFFF00)
+    SetGadGetWidgetColor(oc, #PB_Gadget_BackColor, $00FFFF)
+    SetGadGetWidgetColor(ic, #PB_Gadget_BackColor, $00FFFF)
+    ;SetWidgetColor(*g, #PB_Gadget_BackColor, $FFFF00)
+    ;SetWidgetColor(*g\root, #PB_Gadget_BackColor, $FFFF00)
     
     ButtonGadget  (#PB_Any,  10,  10, 230, 30,"Button 1")
     ButtonGadget  (#PB_Any,  50,  50, 230, 30,"Button 2")
@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     
     ;
-    Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
+    SplitterWidget(10,10,590,480, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
      
 ;     BindGadgetEvent(g, @events_gadgets())
 ;     Bind(*g, @events_widgets())

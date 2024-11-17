@@ -13,20 +13,20 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonGadget   (0,    5,   95, 390,  30, "", #PB_Button_Toggle)
       
       If Open(0, 10, 10, 380, 80)
-        g_Canvas = GetGadget(root())
+        g_Canvas = GetCanvasGadget(root())
         *scrollbar = ScrollBarWidget(5, 10, 370, 30, 20, 50, 8, 0, round)
         SetState(widget(), 31)
         
-        Splitter(5, 5, 370, 70, *scrollbar,-1)
+        SplitterWidget(5, 5, 370, 70, *scrollbar,-1)
         SetState(widget(), 70)
         
         SetGadgetState(0, GetAttribute(*scrollbar, #__bar_buttonsize))
         SetWindowTitle(0, Str(GetState(*scrollbar)))
         
         If GetGadgetState(0)
-          SetGadgetText(0, "box scrollbar buttons")
+          SetGadgetTextWidget(0, "box scrollbar buttons")
         Else
-          SetGadgetText(0, "round scrollbar buttons")
+          SetGadgetTextWidget(0, "round scrollbar buttons")
         EndIf
       EndIf
     EndIf
@@ -51,15 +51,15 @@ CompilerIf #PB_Compiler_IsMainFile
             *scrollbar\bar\button[1]\round = *scrollbar\round
             *scrollbar\bar\button[2]\round = *scrollbar\round
             
-             ; Resize(*scrollbar, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+             ; ResizeWidget(*scrollbar, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                       
             
             SetWindowTitle(0, Str(GetState(*scrollbar)))
             
             If GetGadgetState(0)
-              SetGadgetText(0, "box scrollbar buttons")
+              SetGadgetTextWidget(0, "box scrollbar buttons")
             Else
-              SetGadgetText(0, "round scrollbar buttons")
+              SetGadgetTextWidget(0, "round scrollbar buttons")
             EndIf
             
             PostEventRepaint( root( ) )

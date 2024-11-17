@@ -36,7 +36,7 @@ Global i, Event, font = LoadFont( 0, "Aria", (13) )
 CompilerIf #PB_Compiler_DPIAware And #PB_Compiler_OS = #PB_OS_Windows
   Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
     Protected result = PB(LoadImage)( _image_, _filename_, _flags_ )
-    ResizeImage(_image_, DPIScaled(ImageWidth(_image_)), DPIScaled(ImageHeight(_image_)))
+    ResizeImage(_image_, DPIScaled(ImageWidget(_image_)), DPIScaled(ImageHeight(_image_)))
     ProcedureReturn result
   EndProcedure
   Macro LoadImage( _image_, _filename_, _flags_=-1 )
@@ -75,7 +75,7 @@ If StartDrawing( ImageOutput( #ImageGadget_Source ) )
   
   StopDrawing( )
 EndIf  
-;ResizeImage(#ImageGadget_Source, DPIScaled(ImageWidth(#ImageGadget_Source)), DPIScaled(ImageHeight(#ImageGadget_Source)))
+;ResizeImage(#ImageGadget_Source, DPIScaled(ImageWidget(#ImageGadget_Source)), DPIScaled(ImageHeight(#ImageGadget_Source)))
 ; CopyImage( #ImageGadget_Source, #ImageGadget_Target )
 ; If StartDrawing( ImageOutput( #ImageGadget_Target ) )
 ;               DrawingFont( font )
@@ -142,8 +142,8 @@ Procedure widget_events( )
           EndIf
           
         Case Gadget_SourceText
-          Text$ = GetItemText( Gadget_SourceText, GetState( Gadget_SourceText ) )
-          DDragText( Text$ )
+          Text$ = GetItemTextWidget( Gadget_SourceText, GetState( Gadget_SourceText ) )
+          DDragTextWidget( Text$ )
           
         Case Gadget_SourceImage
           DDragImage( #ImageGadget_Source )
@@ -153,7 +153,7 @@ Procedure widget_events( )
           For i = 0 To CountItems( Gadget_SourceFiles )-1
             If GetItemState( Gadget_SourceFiles, i ) & #PB_Explorer_Selected
               ;; i = GetState( Gadget_SourceFiles )
-              Files$ + GetText( Gadget_SourceFiles ) + GetItemText( Gadget_SourceFiles, i ) ; + Chr( 10 )
+              Files$ + GetTextWidget( Gadget_SourceFiles ) + GetItemTextWidget( Gadget_SourceFiles, i ) ; + Chr( 10 )
             EndIf
           Next i 
           
@@ -192,7 +192,7 @@ Procedure widget_events( )
           ;
           If DDropType( ) = #PB_Drop_Private And
              DDropPrivate( ) = #PrivateType_0
-            Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
+            Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetTextWidget(Gadget_TargetItem) +" "+ GetItemTextWidget(Gadget_TargetItem, GetState(Gadget_TargetItem))
             
             TargetItem = GetState(Gadget_TargetItem)        
             ;Debug "               - "+TargetItem
@@ -213,7 +213,7 @@ Procedure widget_events( )
                 TargetItem  = CountItems + 1
                 TargetLevel = 0
                 
-              ElseIf Left( GetItemText(Gadget_TargetItem, TargetItem), 4 ) = "Item"      
+              ElseIf Left( GetItemTextWidget(Gadget_TargetItem, TargetItem), 4 ) = "Item"      
                 ; if dropped on an "Item", move right after this item
                 ;
                 ; если упал на «предмет», переместиться сразу после этого предмета
@@ -285,7 +285,7 @@ Procedure widget_events( )
                   ; copy everything here (also colors and GetItemData() etc if you use that)                
                   ;
                   ; скопируйте все сюда (также цвета и GetItemData() и т. д., если вы используете это)
-                  Text$ = GetItemText(Gadget_TargetItem, SourceItem+i)              
+                  Text$ = GetItemTextWidget(Gadget_TargetItem, SourceItem+i)              
                   Level = GetItemAttribute(Gadget_TargetItem, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
                   AddItem(Gadget_TargetItem, TargetItem+i, Text$, 0, Level)              
                 Next i
@@ -324,7 +324,7 @@ Procedure widget_events( )
                 ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
                 ;
                 For i = 0 To ChildCount
-                  Text$ = GetItemText(Gadget_TargetItem, SourceItem+i*2)
+                  Text$ = GetItemTextWidget(Gadget_TargetItem, SourceItem+i*2)
                   Level = GetItemAttribute(Gadget_TargetItem, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
                   AddItem(Gadget_TargetItem, TargetItem+i, Text$, 0, Level)
                 Next i
@@ -348,7 +348,7 @@ Procedure widget_events( )
               EndIf
               
             EndIf      
-            Debug "stop drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
+            Debug "stop drop - "+ GetState(Gadget_TargetItem) +" "+ GetTextWidget(Gadget_TargetItem) +" "+ GetItemTextWidget(Gadget_TargetItem, GetState(Gadget_TargetItem))
             
             Debug ""
             ;ClearDebugOutput()
@@ -359,11 +359,11 @@ Procedure widget_events( )
           EndIf
           
         Case Gadget_TargetText
-          ;;Debug "EventDropText - "+ DDropText( )
+          ;;Debug "EventDropText - "+ DDropTextWidget( )
           ;           If EnteredItem( )
-          ;             AddItem( Gadget_TargetText, EnteredItem( )\index, DDropText( ) )
+          ;             AddItem( Gadget_TargetText, EnteredItem( )\index, DDropTextWidget( ) )
           ;           Else
-          AddItem( Gadget_TargetText, - 1, DDropText( ) )
+          AddItem( Gadget_TargetText, - 1, DDropTextWidget( ) )
           ;           EndIf
           
         Case Gadget_TargetImage
@@ -406,11 +406,11 @@ EndProcedure
 
 
 Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
-  ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
+  ; ProcedureReturn ListIconWidget(x,y,width,height, title.s, titleWidth)
   
    ;\\
-   Text(X,Y,Width,20,title) : SetColor( widget( ), #__color_back, $FFC2C2C2)
-   ProcedureReturn Tree(X,Y+20,Width,Height-20)
+   TextWidget(X,Y,Width,20,title) : SetWidgetColor( widget( ), #__color_back, $FFC2C2C2)
+   ProcedureReturn TreeWidget(X,Y+20,Width,Height-20)
 EndProcedure
 
 If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
@@ -418,15 +418,15 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   ;
   Gadget_SourceText = ListIconWidget( 10, 10, 140, 140, "Drag Text here", 130 )   
   Gadget_SourceImage = ImageWidget( 160, 10, 140, 140, ( #ImageGadget_Source ), #PB_Image_Border ) 
-  Gadget_SourceFiles = ExplorerList( 310, 10, 290, 140, GetHomeDirectory( ), #PB_Explorer_MultiSelect )
+  Gadget_SourceFiles = ExplorerListWidget( 310, 10, 290, 140, GetHomeDirectory( ), #PB_Explorer_MultiSelect )
   Gadget_SourcePrivate = ListIconWidget( 610, 10, 140, 140, "Drag private stuff here", 260 )
   Gadget_SourceItem = ListIconWidget( 760, 10, 140, 290, "Drag item here", 130 )   
   
-  SetFrame( Gadget_SourceText, 1 )
-  SetFrame( Gadget_SourceImage, 1 )
-  SetFrame( Gadget_SourceFiles, 1 )
-  SetFrame( Gadget_SourcePrivate, 1 )
-  SetFrame( Gadget_SourceItem, 1 )
+  SetWidgetFrame( Gadget_SourceText, 1 )
+  SetWidgetFrame( Gadget_SourceImage, 1 )
+  SetWidgetFrame( Gadget_SourceFiles, 1 )
+  SetWidgetFrame( Gadget_SourcePrivate, 1 )
+  SetWidgetFrame( Gadget_SourceItem, 1 )
   
     
   ;\\   
@@ -466,11 +466,11 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   Gadget_TargetItem = Gadget_SourceItem
   
   
-  SetFrame( Gadget_TargetText, 1 )
-  SetFrame( Gadget_TargetImage, 1 )
-  SetFrame( Gadget_TargetFiles, 1 )
-  ;SetFrame( Gadget_TargetPrivate1, 1 )
-  SetFrame( Gadget_TargetPrivate2, 1 )
+  SetWidgetFrame( Gadget_TargetText, 1 )
+  SetWidgetFrame( Gadget_TargetImage, 1 )
+  SetWidgetFrame( Gadget_TargetFiles, 1 )
+  ;SetWidgetFrame( Gadget_TargetPrivate1, 1 )
+  SetWidgetFrame( Gadget_TargetPrivate2, 1 )
   
   ; Now enable the dropping on the Gadget_Target s
   ;

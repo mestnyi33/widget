@@ -35,8 +35,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Window(80, 100, 300, 280, "Window_2")
          
          ;\\
-         *test = Tree(10, 10, 280, 80)
-         setframe(*test, 0)
+         *test = TreeWidget(10, 10, 280, 80)
+         SetWidgetFrame(*test, 0)
          ;a_set( *test, #__a_full, 12 )
          For i = 0 To 6
             AddItem( *test, -1, "item-"+Str(i) )
@@ -46,12 +46,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;          Next i
          
          ;\\
-         ; *test = Splitter( 10, 100, 280, 80, Button( 0,0,0,0,"1"),Button( 0,0,0,0,"2") )
-         *test = ScrollArea(10, 100, 280, 80, 200,200,1, #__flag_Borderflat|#__flag_noGadgets)
-         setframe(*test, 10)
+         ; *test = SplitterWidget( 10, 100, 280, 80, ButtonWidget( 0,0,0,0,"1"),ButtonWidget( 0,0,0,0,"2") )
+         *test = ScrollAreaWidget(10, 100, 280, 80, 200,200,1, #__flag_Borderflat|#__flag_noGadgets)
+         SetWidgetFrame(*test, 10)
          
          ;\\
-         *test = Panel( 10, 190, 280, 80)
+         *test = PanelWidget( 10, 190, 280, 80)
          For i = 0 To 6
             AddItem( *test, -1, "tab-"+Str(i) )
          Next i

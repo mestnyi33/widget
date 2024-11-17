@@ -24,24 +24,24 @@ CompilerIf #PB_Compiler_IsMainFile
 	widget::Open(0, 10, 10, 850, 370, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
 	
 	;
-	Procedure events_tab( )
+	Procedure events_TabBarWidget( )
 		Debug "events_tab"
 		SetState(*panel, GetState(*tab))
 	EndProcedure
 	
-	*tab = widget::Tab(10, 30, 830, 30)
+	*tab = widget::TabBarWidget(10, 30, 830, 30)
 	For i=0 To 10
 		widget::AddItem(*tab, -1, "Tab "+Str(i))
 	Next
 	widget::SetState(*tab, 6)
-	widget::Bind(*tab, @events_tab( ), #PB_EventType_Change)
+	widget::Bind(*tab, @events_TabBarWidget( ), #PB_EventType_Change)
 	
 	;
-	Procedure events_panel( )
+	Procedure events_PanelWidget( )
 		Debug "events_panel"
 		SetState(*tab, GetState(*panel))
 	EndProcedure
-	*panel = widget::Panel(300, 70, 250, 110)
+	*panel = widget::PanelWidget(300, 70, 250, 110)
 	For i=0 To 10
 		If i = 6
 	    	Continue
@@ -49,50 +49,50 @@ CompilerIf #PB_Compiler_IsMainFile
 		
 		widget::AddItem(*panel, -1, "Sub "+Str(i))
 		If (i > 4 And i < 9) 
-			Button((i-4)*30,(i-4)*10,50,30,Str(i))
+			ButtonWidget((i-4)*30,(i-4)*10,50,30,Str(i))
 		EndIf
 		If i=0
-			Button(30,10,50,30,Str(i))
+			ButtonWidget(30,10,50,30,Str(i))
 		EndIf
 	Next
 	i = 6
 	widget::AddItem(*panel, i, "+Sub "+Str(i))
-	Button((i-4)*30+10,(i-4)*10+10,50,30,"+"+Str(i))
+	ButtonWidget((i-4)*30+10,(i-4)*10+10,50,30,"+"+Str(i))
 	
 	widget::CloseList()
 	widget::SetState(*panel, 6)
-	widget::Bind(*panel, @events_panel( ), #PB_EventType_Change)
+	widget::Bind(*panel, @events_PanelWidget( ), #PB_EventType_Change)
 	
 	
 	; first splitter
-	*w0 = widget::Tab(0, 0, 0, 0)
+	*w0 = widget::TabBarWidget(0, 0, 0, 0)
 	For i=0 To 3
 		widget::AddItem(*w0, -1, "tab_"+Str(i))
 	Next
 	
-	*w1 = widget::Tab(0, 0, 0, 0)
+	*w1 = widget::TabBarWidget(0, 0, 0, 0)
 	For i=0 To 10
 		widget::AddItem(*w1, -1, "tab_"+Str(i))
 	Next
 	
-	*w2 = widget::Splitter(30, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator)
+	*w2 = widget::SplitterWidget(30, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator)
 	
 	; second splitter
-	*w3 = widget::Tab(0, 0, 0, 0)
+	*w3 = widget::TabBarWidget(0, 0, 0, 0)
 	For i=0 To 10
 		widget::AddItem(*w3, -1, "tab_rrrrrrrr"+Str(i))
 	Next
 	
-	*w4 = widget::Tab(0, 0, 0, 0)
+	*w4 = widget::TabBarWidget(0, 0, 0, 0)
 	For i=0 To 10
 		widget::AddItem(*w4, -1, "tab_"+Str(i))
 	Next
 	
-	*w5 = widget::Splitter(30, 110, 250, 70, *w3, *w4, #PB_Splitter_Separator)
+	*w5 = widget::SplitterWidget(30, 110, 250, 70, *w3, *w4, #PB_Splitter_Separator)
 	
 	
-	*w6 = widget::Splitter(300, 180+30, 250, 70, *w2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
-	*w7 = widget::Splitter(300, 180+110, 250, 70, *w5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+	*w6 = widget::SplitterWidget(300, 180+30, 250, 70, *w2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+	*w7 = widget::SplitterWidget(300, 180+110, 250, 70, *w5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
 	widget::SetState(*w6, 250)
 	widget::SetState(*w7, 250)
 	

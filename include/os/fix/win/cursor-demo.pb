@@ -451,7 +451,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Windows
               
               ;             ; Из-за бага когда устанавливаешь фоновый рисунок (например точки на кантейнер)
               ;             Case #PB_GadgetType_Container 
-              ;               SetGadgetColor( Gadget, #PB_Gadget_BackColor, GetSysColor_( #COLOR_BTNFACE ))
+              ;               SetGadGetWidgetColor( Gadget, #PB_Gadget_BackColor, GetSysColor_( #COLOR_BTNFACE ))
               ;               
               ;             ; Для панел гаджета темный фон убирать
               ;             Case #PB_GadgetType_Panel 

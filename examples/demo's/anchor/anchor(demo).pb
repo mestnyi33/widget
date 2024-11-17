@@ -52,14 +52,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ; 
             If StartEnum( a_transform( )\grid_widget )
-              Resize(widget(), 
+              ResizeWidget(widget(), 
                      DPIUnScaled(widget()\container_x()),
                      DPIUnScaled(widget()\container_y()),
                      DPIUnScaled(widget()\container_width()),
                      DPIUnScaled(widget()\container_height()))
               StopEnum( )
             EndIf
-            ;Resize(a_transform( )\grid_widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            ;ResizeWidget(a_transform( )\grid_widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             
         EndSelect
     EndSelect
@@ -67,11 +67,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If Open(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Container( 10,10,220,210 )
+    ContainerWidget( 10,10,220,210 )
     a_init( widget( ),5 )
     
     ImageWidget( 5,5,60,60, -1 )
-    Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
+    Define *a._s_widget = ContainerWidget( 50,45,135,95, #__flag_nogadgets )
     ImageWidget( 150,110,60,60, -1 )
     a_set( *a )
     CloseList( )
@@ -81,28 +81,28 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind( WidgetID(3), @events_widgets( ), #__event_StatusChange )
     
     Define Y = 0
-    ;Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
-    Container( 235,10,230,210, #PB_Container_BorderLess )
-    ;Frame( 0,0,230,210, " preferences " )
+    ;Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetWidgetFrame( widget( ), 1)
+    ContainerWidget( 235,10,230,210, #PB_Container_BorderLess )
+    ;FrameWidget( 0,0,230,210, " preferences " )
     
     Y = 20
-    Text( 10,10+Y,100,18, "grid size", #PB_Text_Border )
-    *grid = Spin( 10,30+Y,100,30, 0,100 )
+    TextWidget( 10,10+Y,100,18, "grid size", #PB_Text_Border )
+    *grid = SpinWidget( 10,30+Y,100,30, 0,100 )
     
-    Text( 10,70+Y,100,18, "anchor size", #PB_Text_Border )
-    *size = Spin( 10,90+Y,100,30, 0,30 )
+    TextWidget( 10,70+Y,100,18, "anchor size", #PB_Text_Border )
+    *size = SpinWidget( 10,90+Y,100,30, 0,30 )
     
-    Text( 10,130+Y,100,18, "anchor position", #PB_Text_Border )
-    *position = Spin( 10,150+Y,100,30, 0,59 )
+    TextWidget( 10,130+Y,100,18, "anchor position", #PB_Text_Border )
+    *position = SpinWidget( 10,150+Y,100,30, 0,59 )
     
     ;\\
-    *gridType = ComboBox( 120,30+Y,100,30 )
+    *gridType = ComboBoxWidget( 120,30+Y,100,30 )
     AddItem(*gridType, -1, "grid [point]" )
    AddItem(*gridType, -1, "grid [line]" )
    SetState(*gridType, 1)
    
-    *FrameColor = Button( 120,90+Y,100,30, "FrameColor" )
-    *BackColor = Button( 120,150+Y,100,30, "BackColor" )
+    *FrameColor = ButtonWidget( 120,90+Y,100,30, "FrameColor" )
+    *BackColor = ButtonWidget( 120,150+Y,100,30, "BackColor" )
     
     ; 
     If a_focused( )

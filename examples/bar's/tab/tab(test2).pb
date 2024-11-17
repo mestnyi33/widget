@@ -16,19 +16,19 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
   ; first splitter
-  *w0 = widget::Tab(0, 0, 0, 0)
+  *w0 = widget::TabBarWidget(0, 0, 0, 0)
   For i=0 To 3
    widget::AddItem(*w0, -1, "tab_"+Str(i))
   Next
 ;   
-   widget::Splitter(300, 30, 300, 70, *w0, -1, #PB_Splitter_Vertical)
+   widget::SplitterWidget(300, 30, 300, 70, *w0, -1, #PB_Splitter_Vertical)
    
-;    *w1 = widget::Tab(0, 0, 0, 0)
+;    *w1 = widget::TabBarWidget(0, 0, 0, 0)
 ;   For i=0 To 10
 ;     widget::AddItem(*w1, -1, "tab_"+Str(i))
 ;   Next
 ;   
-;   widget::Splitter(300, 110, 300, 70, *w1, -1, #PB_Splitter_Vertical)
+;   widget::SplitterWidget(300, 110, 300, 70, *w1, -1, #PB_Splitter_Vertical)
    
   ;  widget::bar_Tab_SetState(*w0, -1)
 ;    Debug "max "+*w0\bar\max

@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 3
     ListIconGadget(g, 350, 10, 430, 210,"Column_1",90, #PB_ListIcon_FullRowSelect|#PB_ListIcon_GridLines|#PB_ListIcon_CheckBoxes)                                         
     
-    ;HideListIcon(g,1)
+    ;HideListIconWidget(g,1)
     For i=1 To 2
       AddGadgetColumn(g, i,"Column_"+Str(i+1),90)
     Next
@@ -76,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=1 To 15
       AddGadgetItem(g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", ImageID(0))                                           
     Next
-    ;HideListIcon(g,0)
+    ;HideListIconWidget(g,0)
     
     Debug " time create gadget (listicon) - "+Str(ElapsedMilliseconds()-t)
     ;}
@@ -85,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;{ - widget
     t=ElapsedMilliseconds()
     g = 11
-    *g = ListIcon(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadgetData(g)                                        
+    *g = ListIconWidget(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadgetData(g)                                        
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To 7
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 12
-    *g = ListIcon(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
+    *g = ListIconWidget(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
@@ -101,9 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 13
-    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes) ;#__flag_RowFullSelect|: *g = GetGadgetData(g)                                          
+    *g = ListIconWidget(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes) ;#__flag_RowFullSelect|: *g = GetGadgetData(g)                                          
     
-    ;HideListIcon(g,1)
+    ;HideListIconWidget(g,1)
     For i=1 To 2
       AddColumn(*g, i,"Column_"+Str(i+1),90)
     Next
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=1 To 15
       AddItem(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                         
     Next
-    ;HideListIcon(g,0)
+    ;HideListIconWidget(g,0)
     
     Debug " time create canvas (listicon) - "+Str(ElapsedMilliseconds()-t)
     ;}

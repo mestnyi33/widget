@@ -56,17 +56,17 @@ If Open(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Wi
   Next
   
   ;-----
-  String(10+270, 10, 250, 20, "bla bla...")
-  ;String(10+270, 40, 250, 21, "...blabla")
-  *g = ComboBox(10+270, 40, 250, 21)
+  StringWidget(10+270, 10, 250, 20, "bla bla...")
+  ;StringWidget(10+270, 40, 250, 21, "...blabla")
+  *g = ComboBoxWidget(10+270, 40, 250, 21)
   For a = 1 To 5 
      AddItem(*g, -1, "ComboBox item " + Str(a)) 
   Next
   SetState(*g, 2)                ; set (beginning with 0) the third item as active one
   
-  Button(200+270, 65, 60, 20, "button")
-  Button(10+270,  90, 250, 20, "Activate String")
-  Button(10+270, 115, 250, 20, "Activate ComboBox")
+  ButtonWidget(200+270, 65, 60, 20, "button")
+  ButtonWidget(10+270,  90, 250, 20, "Activate String")
+  ButtonWidget(10+270, 115, 250, 20, "Activate ComboBox")
   
   For i = 0 To 2
     Bind(ID(i), @events_widgets())

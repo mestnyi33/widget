@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    g_Canvas = GetGadget(Open(0))
+    g_Canvas = GetCanvasGadget(Open(0))
     
     g = TreeGadget_(#PB_Any, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         
     ; 3_example
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     
-    *g=Tree(0,0,0,0);|#__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
+    *g=TreeWidget(0,0,0,0);|#__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
     
     ;  3_example
     AddItem(*g, 0, "Tree_0", -1 )
@@ -70,9 +70,9 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 13, "Tree_6", -1 )
     
     
-    Define *splitter1 = Splitter(0,0,0,0, 0, Splitter(0,0,0,0, g,*g), #__flag_borderless|#__flag_autosize | #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    Define *splitter1 = SplitterWidget(0,0,0,0, 0, SplitterWidget(0,0,0,0, g,*g), #__flag_borderless|#__flag_autosize | #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     SetState(*splitter1, 0)
-    ;SetGadgetData(g_Canvas, Splitter(8, 8, 306, 491-16, g,*g, #__flag_autosize))
+    ;SetGadgetData(g_Canvas, SplitterWidget(8, 8, 306, 491-16, g,*g, #__flag_autosize))
     
     Repeat
       Select WaitWindowEvent()   

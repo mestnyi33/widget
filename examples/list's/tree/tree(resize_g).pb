@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
               Select PackEntryType(ZipFile)
                 Case #PB_Packer_File
                   If Image
-                    If FindString(Left(PackEntryName.S, 3), "vd_")
+                    If FindStringWidget(Left(PackEntryName.S, 3), "vd_")
                       PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
                       PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
                       
@@ -66,13 +66,13 @@ CompilerIf #PB_Compiler_IsMainFile
                       PackEntryName.S = " "+Left.S+Right.S
                       
                       If IsGadget(Widget)
-                        If FindString(LCase(PackEntryName.S), "cursor")
+                        If FindStringWidget(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
                           AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
                           SetGadgetItemData(Widget, 0, ImageID(Image))
                           
-                        ElseIf FindString(LCase(PackEntryName.S), "window")
+                        ElseIf FindStringWidget(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
                           AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
@@ -84,13 +84,13 @@ CompilerIf #PB_Compiler_IsMainFile
                         EndIf
                         
                       Else
-                        If FindString(LCase(PackEntryName.S), "cursor")
+                        If FindStringWidget(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
                           AddItem(Widget, 0, PackEntryName.S, Image)
                           ;SetItemData(Widget, 0, Image)
                           
-                        ElseIf FindString(LCase(PackEntryName.S), "window")
+                        ElseIf FindStringWidget(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
                           AddItem(Widget, 1, PackEntryName.S, Image)
@@ -200,8 +200,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     ;     Open(0, 0,0,0,0, "", #Null, #Null, #w_tree )
-    ;     g = Tree(0,0,0,0, #__flag_autosize)
-    Gadget(#__type_Tree, #w_tree, 0, 0, 0, 0)
+    ;     g = TreeWidget(0,0,0,0, #__flag_autosize)
+    Gadget(#PB_WidgetType_Tree, #w_tree, 0, 0, 0, 0)
     g = GetGadgetData(#w_tree)
     If Not g : g = Root( ) : EndIf
     

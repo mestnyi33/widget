@@ -62,8 +62,8 @@ Debug  #PB_ListIcon_ThreeState ; 8                 ; 64
 ; 
 ; The following functions can be used To control the gadget: 
 ; 
-; - SetGadgetText(): Changes the text of the ButtonGadget. 
-; - GetGadgetText(): Returns the text of the ButtonGadget. 
+; - SetGadgetTextWidget(): Changes the text of the ButtonGadget. 
+; - GetGadgetTextWidget(): Returns the text of the ButtonGadget. 
 ; - SetGadgetState() 
 ;      #PB_Button_Toggle : Used with buttons to set the actual state (1 = toggled, 0 = normal).
 ; - GetGadgetState() 
@@ -81,8 +81,8 @@ Debug  #PB_ListIcon_ThreeState ; 8                 ; 64
 ; 
 ; The following functions can be used To control the gadget: 
 ; 
-; - SetGadgetImage(): Changes the image of the ButtonImageGadget. 
-; - GetGadgetImage(): Returns the image of the ButtonImageGadget. 
+; - SetGadGetWidgetImage(): Changes the image of the ButtonImageGadget. 
+; - GetGadGetWidgetImage(): Returns the image of the ButtonImageGadget. 
 ; - GetGadgetState()  
 ;      #PB_Button_Toggle : can be used to get the toggle state of the gadget. 
 ; - SetGadgetState() 

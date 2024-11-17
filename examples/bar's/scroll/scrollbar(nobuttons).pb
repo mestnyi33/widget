@@ -13,22 +13,22 @@ CompilerIf #PB_Compiler_IsMainFile
          ButtonGadget   (0,    5,   95, 390,  30, "", #PB_Button_Toggle)
          
          If Open(0, 10, 10, 380, 80)
-            g_Canvas = GetGadget(root())
+            g_Canvas = GetCanvasGadget(root())
             *scrollbar = ScrollBarWidget(5, 10, 370, 30, 20, 50, 8 )
             SetAttribute(*scrollbar, #__Bar_ButtonSize, 30 )
             buttonsize = GetAttribute( *scrollbar, #__Bar_ButtonSize )
             Debug "button-size - "+buttonsize
             
-            Splitter(5, 5, 370, 70, *scrollbar,-1)
+            SplitterWidget(5, 5, 370, 70, *scrollbar,-1)
             SetState(widget(), 70)
             
             SetGadgetState(0, buttonsize)
             SetWindowTitle(0, Str(GetState(*scrollbar)))
             
             If GetGadgetState(0)
-               SetGadgetText(0, "hide scrollbar buttons")
+               SetGadgetTextWidget(0, "hide scrollbar buttons")
             Else
-               SetGadgetText(0, "show scrollbar buttons")
+               SetGadgetTextWidget(0, "show scrollbar buttons")
             EndIf
             
          EndIf
@@ -51,10 +51,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   SetWindowTitle(0, Str(GetState(*scrollbar)))
                   
                   If GetGadgetState(0)
-                     SetGadgetText(0, "hide scrollbar buttons")
+                     SetGadgetTextWidget(0, "hide scrollbar buttons")
                      SetAttribute(*scrollbar, #__Bar_ButtonSize, buttonsize)
                   Else
-                     SetGadgetText(0, "show scrollbar buttons")
+                     SetGadgetTextWidget(0, "show scrollbar buttons")
                      SetAttribute(*scrollbar, #__Bar_ButtonSize, 0)
                   EndIf
                   

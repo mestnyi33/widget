@@ -38,15 +38,15 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
   If Not Alpha(Color)
     Color = Color&$FFFFFF | 255<<24
   EndIf
-  Container(x,y,width,height, #__flag_nogadgets) 
+  ContainerWidget(x,y,width,height, #__flag_nogadgets) 
   If text
-    SetText(widget(), text)
+    SetTextWidget(widget(), text)
   EndIf
-  SetColor(widget(), #__color_back, Color)
-  SetColor(widget(), #__color_frame, Color&$FFFFFF | 255<<24)
-  SetColor(widget(), #__color_front, Color&$FFFFFF | 255<<24)
+  SetWidgetColor(widget(), #__color_back, Color)
+  SetWidgetColor(widget(), #__color_frame, Color&$FFFFFF | 255<<24)
+  SetWidgetColor(widget(), #__color_front, Color&$FFFFFF | 255<<24)
   widget()\round = 20
-  SetFrame(widget(), frameSize);, -1), -2) ; bug
+  SetWidgetFrame(widget(), frameSize);, -1), -2) ; bug
   
   a_set( widget(), #__a_full )
   Bind( widget( ), @CustomEvents(), #__event_Draw )
@@ -58,7 +58,7 @@ If Open(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", 
   
   ; Define handles to all objects
   a_init(root(), 10)
-  SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
+  SetWidgetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
   
   ; Create five different objects
   *Object1 = _a_object(50, 50, 200, 100, "Canvas boundaries", 3, RGBA(64, 128, 192, alpha))

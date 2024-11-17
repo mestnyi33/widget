@@ -69,8 +69,8 @@ Procedure events_gbuttons()
 					AddGadgetItem(1, 1, "Sub 2 (add)")
 					Protected sub = Bool(CountGadgetItems(1) > 1)
 					
-					SetGadgetItemText(1, sub, "Sub "+Str(sub+1)+" (add&set)")
-					Debug GetGadgetItemText(1, sub) + " - get item text"
+					SetGadgetItemTextWidget(1, sub, "Sub "+Str(sub+1)+" (add&set)")
+					Debug GetGadgetItemTextWidget(1, sub) + " - get item text"
 					CloseGadgetList()
 					
 					; SetGadgetItemFont(1, sub, 5 + Bool(IDWidget(EventWidget( )) = 4))
@@ -99,8 +99,8 @@ Procedure events_wbuttons()
 					AddItem(ID(1), 1, "Sub 2 (add)")
 					Protected sub = Bool(CountItems(ID(1)) > 1)
 					
-					SetItemText(ID(1), sub, "Sub "+Str(sub+1)+" (add&set)")
-					Debug GetItemText(ID(1), sub) + " - get item text"
+					SetItemTextWidget(ID(1), sub, "Sub "+Str(sub+1)+" (add&set)")
+					Debug GetItemTextWidget(ID(1), sub) + " - get item text"
 					;CloseList()
 					
 					SetItemFont(ID(1), sub, 5 + Bool(IDWidget(EventWidget( )) = 4))
@@ -154,10 +154,10 @@ If Open(0, 322+50, 0, 322+50, 220)
 	EndIf
 	
 	;SetGadgetItemFont(1, 2, 5)
-	SetGadgetItemText(1, 2, Text+"_2 (18)")
+	SetGadgetItemTextWidget(1, 2, Text+"_2 (18)")
 	
 	;SetGadgetItemFont(1, 4, 6)
-	SetGadgetItemText(1, 4, Text+"_4 (25)")
+	SetGadgetItemTextWidget(1, 4, Text+"_4 (25)")
 	
 	
 	ButtonGadget(2, 10, 145, 60, 24,"remove")
@@ -179,11 +179,11 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	Debug ""+CountGadgetItems(1) +" - count gadget items"
 	
-	Panel(8, 8, 356, 203)
+	PanelWidget(8, 8, 356, 203)
 	AddItem (ID(0), -1, "Panel 1")
 	
-	;*g = Panel(10, 10, 334, 130)
-	*g = Tree(10, 10, 334, 130, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_OptionBoxes)                            
+	;*g = PanelWidget(10, 10, 334, 130)
+	*g = TreeWidget(10, 10, 334, 130, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_OptionBoxes)                            
 	
 	If Type(*g) = #PB_GadgetType_Panel
 		Text = "Sub"
@@ -206,23 +206,23 @@ If Open(0, 322+50, 0, 322+50, 220)
 	EndIf
 	
 	SetItemFont(*g, 2, 5)
-	SetItemText(*g, 2, Text+"_2 (18)")
+	SetItemTextWidget(*g, 2, Text+"_2 (18)")
 	
 	SetItemFont(*g, 4, 6)
-	SetItemText(*g, 4, Text+"_4 (25)")
+	SetItemTextWidget(*g, 4, Text+"_4 (25)")
 	
-	Button(10, 145, 60, 24,"remove")
-	SetFont(Button(75, 145, 100, 24,"add (18)"), 5)
-	SetFont(Button(180, 145, 100, 24,"add (25)"), 6)
-	SetFont(Button(285, 145, 60, 24,"clear"), #Font18R)
+	ButtonWidget(10, 145, 60, 24,"remove")
+	SetFont(ButtonWidget(75, 145, 100, 24,"add (18)"), 5)
+	SetFont(ButtonWidget(180, 145, 100, 24,"add (25)"), 6)
+	SetFont(ButtonWidget(285, 145, 60, 24,"clear"), #Font18R)
 	
 	AddItem (ID(0), -1,"Panel 2")
-	SetFont(Button(10, 15, 100, 24,"Button 2_1"), 5)
-	Button(115, 15, 100, 24,"Button 2_2")
+	SetFont(ButtonWidget(10, 15, 100, 24,"Button 2_1"), 5)
+	ButtonWidget(115, 15, 100, 24,"Button 2_2")
 	
 	AddItem (ID(0), -1,"Panel 3")
-	Button(10, 15, 100, 24,"Button 3_1")
-	*b = Button(10+110, 15, 100, 24,"automatically resize button when changing font", #__flag_Textmultiline)
+	ButtonWidget(10, 15, 100, 24,"Button 3_1")
+	*b = ButtonWidget(10+110, 15, 100, 24,"automatically resize button when changing font", #__flag_Textmultiline)
 	SetFont(*b, 5)
 	
 	;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
@@ -236,19 +236,19 @@ If Open(0, 322+50, 0, 322+50, 220)
 	If StartDraw( root( ) )
 		Repaint()
 		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+		ResizeWidget(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
 		Repaint()
 		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+		ResizeWidget(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
 		Repaint()
 		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+		ResizeWidget(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
 		Repaint()
 		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+		ResizeWidget(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
 		Repaint()
 		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+		ResizeWidget(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
 		StopDraw( )
 	EndIf
 	
@@ -268,7 +268,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	;   ; bug set font - FIXED Repaint() ; Root(()\text\fontID[1] =- 1 >> *this\root\text\fontID[1] =- 1 
 	;   Open(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
-	;   Global *panel._S_widget = Panel(10,150,200,160) 
+	;   Global *panel._S_widget = PanelWidget(10,150,200,160) 
 	;   AddItem(*panel,-1,"Panel") 
 	;   AddItem(*panel,-1,"Second") 
 	;   AddItem(*panel,-1,"Third") 

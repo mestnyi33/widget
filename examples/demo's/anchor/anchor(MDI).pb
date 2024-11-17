@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare CustomEvents( )
   
   Procedure GetBar( *this._s_WIDGET, type.w, index.b = 0 )
-         If type = #__type_Scroll
+         If type = #PB_WidgetType_Scroll
             If *this\scroll
                If index = 1
                   ProcedureReturn *this\scroll\v
@@ -28,26 +28,26 @@ CompilerIf #PB_Compiler_IsMainFile
   a_init(root(), 4)
   Define fs = 20
   ;\\
-  parent = MDI(50, 50, 500, 500)
-  SetFrame(parent, fs*2)
+  parent = MDIWidget(50, 50, 500, 500)
+  SetWidgetFrame(parent, fs*2)
   
   ;\\
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-  object = AddItem(parent, -1, "Resize me !", -1, #PB_Window_BorderLess) : Resize(object, 100, 100, 250, 250) 
-  ;;object = AddItem(parent, -1, "Resize me !", -1, #__flag_BorderLess) : Resize(object, 100, 100, 250, 250) 
+  object = AddItem(parent, -1, "Resize me !", -1, #PB_Window_BorderLess) : ResizeWidget(object, 100, 100, 250, 250) 
+  ;;object = AddItem(parent, -1, "Resize me !", -1, #__flag_BorderLess) : ResizeWidget(object, 100, 100, 250, 250) 
    
   ;\\
-  SetFrame(object, fs)
+  SetWidgetFrame(object, fs)
   a_set(object, #__a_full, 8)
 ; ;   SetSizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
 ; ;   SetMoveBounds(object, fs, fs, 501-fs, 501-fs)
   
-  object1 = ScrollArea(10, 10, 250, 250, 350,350, 1) : SetState( GetBar( object1, #__type_Scroll, 1 ), 80 )
-   ;  object = ScrollArea(100, 100, 250, 250, 150,150, 1) 
-   Button( 50,50,100,100, GetClass(object1))
-   ; Container( 50,50,100,100) : CloseList()
-   ; Window(50,50,100,100, GetClass(object), #PB_Window_BorderLess | #PB_Window_SizeGadget, object) : CloseList()
+  object1 = ScrollAreaWidget(10, 10, 250, 250, 350,350, 1) : SetState( GetBar( object1, #PB_WidgetType_Scroll, 1 ), 80 )
+   ;  object = ScrollAreaWidget(100, 100, 250, 250, 150,150, 1) 
+   ButtonWidget( 50,50,100,100, GetWidgetClass(object1))
+   ; ContainerWidget( 50,50,100,100) : CloseList()
+   ; Window(50,50,100,100, GetWidgetClass(object), #PB_Window_BorderLess | #PB_Window_SizeGadget, object) : CloseList()
    CloseList()
    
   ;\\

@@ -12,28 +12,28 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  Define *mdi._s_widget = MDI(x,y, width,height)
+  Define *mdi._s_widget = MDIWidget(x,y, width,height)
   a_init( *mdi )
   
-  Define *g0._s_widget = AddItem(*mdi, -1, "main") : SetClass(widget(), "main") 
-  Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
+  Define *g0._s_widget = AddItem(*mdi, -1, "main") : SetWidgetClass(widget(), "main") 
+  ButtonWidget(10,10,80,80,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Define *g1._s_widget = AddItem(*mdi, -1, "Child 1 (Position Attach)") : SetClass(widget(), "form_1") 
-  Button(10,10,80,80,"button_1") : SetClass(widget(), GetText(widget())) 
+  Define *g1._s_widget = AddItem(*mdi, -1, "Child 1 (Position Attach)") : SetWidgetClass(widget(), "form_1") 
+  ButtonWidget(10,10,80,80,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Define *g2._s_widget = AddItem(*mdi, -1, "Child 2 (Frame Magnetic)") : SetClass(widget(), "form_2") 
-  Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
+  Define *g2._s_widget = AddItem(*mdi, -1, "Child 2 (Frame Magnetic)") : SetWidgetClass(widget(), "form_2") 
+  ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Define *g3._s_widget = AddItem(*mdi, -1, "SubChild") : SetClass(widget(), "SubChild") 
-  Button(10,10,80,80,"button_3") : SetClass(widget(), GetText(widget())) 
+  Define *g3._s_widget = AddItem(*mdi, -1, "SubChild") : SetWidgetClass(widget(), "SubChild") 
+  ButtonWidget(10,10,80,80,"button_3") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
   ;
-  Resize(*g0, 50, 50, 400, 400)
-  Resize(*g1, WidgetX(*g0, #__c_container)+50, WidgetY(*g0, #__c_container)+50, 200, 300)
-  Resize(*g2, WidgetX(*g0, #__c_container) + Width(*g0, #__c_Frame), WidgetY(*g0, #__c_container), 200, 300)
-  Resize(*g3, WidgetX(*g2, #__c_container), WidgetY(*g2, #__c_container) + Height(*g2, #__c_Frame), 200, 100)
+  ResizeWidget(*g0, 50, 50, 400, 400)
+  ResizeWidget(*g1, WidgetX(*g0, #__c_container)+50, WidgetY(*g0, #__c_container)+50, 200, 300)
+  ResizeWidget(*g2, WidgetX(*g0, #__c_container) + WidgetWidth(*g0, #__c_Frame), WidgetY(*g0, #__c_container), 200, 300)
+  ResizeWidget(*g3, WidgetX(*g2, #__c_container), WidgetY(*g2, #__c_container) + WidgetHeight(*g2, #__c_Frame), 200, 100)
   
   
   SetState(*mdi\scroll\h, 120)

@@ -42,26 +42,26 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     ; widgets
-    Button_1 = Button(0, 0, 0, 0, "button_1")
-    Button_2 = ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
-    Button_3 = Button(0, 0, 0, 0, "button_3")
+    Button_1 = ButtonWidget(0, 0, 0, 0, "button_1")
+    Button_2 = ScrollAreaWidget(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
+    Button_3 = ButtonWidget(0, 0, 0, 0, "button_3")
     
-    Splitter_1 = Splitter(0, 0, 0, 0, Button_1, Button_2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-    Splitter_2 = Splitter(10, 160, 285+30, 140, Splitter_1, Button_3, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+    Splitter_1 = SplitterWidget(0, 0, 0, 0, Button_1, Button_2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    Splitter_2 = SplitterWidget(10, 160, 285+30, 140, Splitter_1, Button_3, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
     SetState(Splitter_1, 40)
     SetState(Splitter_2, 245)
     
     If OpenList(Button_2)
-      ScrollArea(-1, -1, 90, 90, 150, 150, 1)
+      ScrollAreaWidget(-1, -1, 90, 90, 150, 150, 1)
       Define i, time
       time = ElapsedMilliseconds()
       For i=0 To count
-        Button(10+i*2, 10+i*2, 50, 30, Str(i)+"_button")
+        ButtonWidget(10+i*2, 10+i*2, 50, 30, Str(i)+"_button")
       Next
       CloseList()
       For i=0 To count
-        Button(100-i*2, 10+i*2, 50, 30, Str(i)+"_button")
+        ButtonWidget(100-i*2, 10+i*2, 50, 30, Str(i)+"_button")
       Next
       
       Debug Str(ElapsedMilliseconds()-time)+ " - time " +count+ " create widget"; 75 - macos

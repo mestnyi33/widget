@@ -31,36 +31,36 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(1, 100, 300, 270, 140, "Root_0_Window", #PB_Window_SystemMenu )
        Window( 30, 30, 200, 200, "Form", #PB_Window_SystemMenu )
       ;Root( )\text\align\right = 0
-      SetClass(Root( ), "Root_0")
-      SetText(Root( ), "Root_0")
-      SetWindowTitle( 1, "Root_0_canvas_"+Str(GetGadget(Root())))
+      SetWidgetClass(Root( ), "Root_0")
+      SetTextWidget(Root( ), "Root_0")
+      SetWindowTitle( 1, "Root_0_canvas_"+Str(GetCanvasGadget(Root())))
    EndIf
    
    If OpenWindow(2, 0, 0, 500, 500, " focus demo ", #PB_Window_SystemMenu |
                                               #PB_Window_ScreenCentered )
       SetWindowColor( 2, $ACC0DB)
       Open( 2, 10,10,235, 190 )
-      SetClass(Root( ), "Root_2")
-      SetText(Root( ), "Root_2")
+      SetWidgetClass(Root( ), "Root_2")
+      SetTextWidget(Root( ), "Root_2")
    
       CanvasButtonGadget(20, 255, 10, 235, 190, "CanvasGadget")
       
       Open( 2, 10,210,480, 280 )
-      Resize( Root( ), 10,10,460,260 )
-      SetClass(root( ), "RootWindow" )
+      ResizeWidget( Root( ), 10,10,460,260 )
+      SetWidgetClass(root( ), "RootWindow" )
       
       ;\\
       Window( 30, 30, 200, 200, "Form", #PB_Window_SystemMenu |
                                             #PB_Window_MaximizeGadget |
                                             #PB_Window_MinimizeGadget )
       
-      SetClass(widget( ), "Form" )
-      ScrollArea( 30,30,140,140, 300,300,1 ) 
-      SetClass(widget( ), "ScrollArea" )
-      Spin(10,10,100,50, 0,100)
-      SetClass(widget( ), "Spin" )
-      String(10,65,100,50,"String")
-      SetClass(widget( ), "String" )
+      SetWidgetClass(widget( ), "Form" )
+      ScrollAreaWidget( 30,30,140,140, 300,300,1 ) 
+      SetWidgetClass(widget( ), "ScrollArea" )
+      SpinWidget(10,10,100,50, 0,100)
+      SetWidgetClass(widget( ), "Spin" )
+      StringWidget(10,65,100,50,"String")
+      SetWidgetClass(widget( ), "String" )
       SetActive( widget( ) )
       CloseList( )
       
@@ -69,13 +69,13 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MaximizeGadget |
                                             #PB_Window_MinimizeGadget )
       
-      SetClass(widget( ), "Form2" )
-      ScrollArea( 30,30,140,140, 300,300,1 ) 
-      SetClass(widget( ), "ScrollArea2" )
-      Spin(10,10,100,50, 0,100)
-      SetClass(widget( ), "Spin2" )
-      String(10,65,100,50,"String2")
-      SetClass(widget( ), "String2" )
+      SetWidgetClass(widget( ), "Form2" )
+      ScrollAreaWidget( 30,30,140,140, 300,300,1 ) 
+      SetWidgetClass(widget( ), "ScrollArea2" )
+      SpinWidget(10,10,100,50, 0,100)
+      SetWidgetClass(widget( ), "Spin2" )
+      StringWidget(10,65,100,50,"String2")
+      SetWidgetClass(widget( ), "String2" )
       SetActive( widget( ) )
       CloseList( )
       

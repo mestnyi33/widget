@@ -12,14 +12,14 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Window_0()
       Define i,*w._S_widget = Open(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       If *w
-         Widgets(Hex(0)) = Container(50, 50, 280, 200)
-         Widgets(Hex(1)) = Button(0, 0, 80, 40, "Button")    
-         ; Widgets(Hex(1)) = Tab(0, 0, 80, 40) : For i=0 To 3 : AddItem(widget( ), -1, "tab_"+Str(i)) : Next  
+         Widgets(Hex(0)) = ContainerWidget(50, 50, 280, 200)
+         Widgets(Hex(1)) = ButtonWidget(0, 0, 80, 40, "Button")    
+         ; Widgets(Hex(1)) = TabBarWidget(0, 0, 80, 40) : For i=0 To 3 : AddItem(widget( ), -1, "tab_"+Str(i)) : Next  
          CloseList()
          
          SetAlign(Widgets(Hex(1)), #__align_Full|#__align_Top)
          
-         ;Resize(Widgets(Hex(0)), 51, #PB_Ignore, #PB_Ignore,#PB_Ignore)
+         ;ResizeWidget(Widgets(Hex(0)), 51, #PB_Ignore, #PB_Ignore,#PB_Ignore)
       EndIf
    EndProcedure
    
@@ -40,14 +40,14 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #PB_Event_Timer
             If Width = 480
                direction = 1
-            ElseIf Width = Width(root())-100
+            ElseIf Width = WidgetWidth(root())-100
                direction =- 1
             EndIf
             ;         
             Width + direction
             Height + direction
             
-            Resize(Widgets(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
+            ResizeWidget(Widgets(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
             
             
          Case #PB_Event_Gadget
@@ -55,8 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventType( )
                Case #PB_EventType_LeftButtonDown
                   Define *th._s_widget = Widgets(Str(0))
-                  Width = Width(*th)
-                  Height = Height(*th)
+                  Width = WidgetWidth(*th)
+                  Height = WidgetHeight(*th)
                   
                   If state
                      state = 0

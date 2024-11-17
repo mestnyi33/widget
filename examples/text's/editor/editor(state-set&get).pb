@@ -10,7 +10,7 @@ If OpenWindow(0, 100, 50, 530, 170, "editor set&get item state", #PB_Window_Syst
   EditorGadget(0, 10, 10, 250, 150)  
   
   Open(0, 270, 10, 250, 150)
-  *w=Editor(0, 0, 250, 150, #__Flag_GridLines)  
+  *w=EditorWidget(0, 0, 250, 150, #__Flag_GridLines)  
   
   a=0
   For a = 0 To LN

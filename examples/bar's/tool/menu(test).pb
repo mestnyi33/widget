@@ -10,16 +10,16 @@
 ;                                                                     - MenuID( #Menu )
 ; 
 ;                                                     Title( Title$ ) - MenuTitle( Title$ )
-;                                 GetItemText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
-;                         SetItemText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
+;                                 GetItemTextWidget( *address, TitleIndex ) - GetMenuTitleTextWidget( #Menu, Title )
+;                         SetItemTextWidget( *address, TitleIndex, text.s ) - SetMenuTitleTextWidget( #Menu, Title, Text$ )
 ; 
 ;                                                    Free( *address ) - FreeMenu( #Menu )
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
-;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
+;                                       GetItemTextWidget( *address, item ) - GetMenuItemTextWidget( #Menu, Item )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
-;                                                  Height( *address ) - MenuHeight( )
+;                                                  WidgetHeight( *address ) - MenuWidgetHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
 ;                                        OpenItem( text.s [, image] ) = AddItem( *address, item, text.s, image, mode )
@@ -27,7 +27,7 @@
 ;                                                        CloseItem( ) - CloseSubMenu( )
 ; 
 ;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
-;                               SetItemText( *address, item, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
+;                               SetItemTextWidget( *address, item, text.s ) - SetMenuItemTextWidget( #Menu, Item, Text$ )
 ;
 ;                      Bind( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
 ;                    UnBind( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
@@ -54,8 +54,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Define WindowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    ;\\
-   ; Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
-   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   ; ButtonWidget( 415, 180, 80, 35, "Button1" ) : SetWidgetClass(widget(), "Button1" )
+   *menu = CreateBar( root( ) ) : SetWidgetClass(widget( ), "root_MenuBar" )
    
    ;\\
    BarTitle("Title-1")

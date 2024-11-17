@@ -63,19 +63,19 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      ;Button(10,10,80,20,"((0>>))") : SetClass(widget(), "((0>>))") 
-      *CHILD1 = Button(10,10,80,20,"((1>>))") : SetClass(widget(), "((1>>))") 
-      *CHILD2 = Button(10,30,80,20,"((2>>))") : SetClass(widget(), "((2>>))") 
+      ;ButtonWidget(10,10,80,20,"((0>>))") : SetWidgetClass(widget(), "((0>>))") 
+      *CHILD1 = ButtonWidget(10,10,80,20,"((1>>))") : SetWidgetClass(widget(), "((1>>))") 
+      *CHILD2 = ButtonWidget(10,30,80,20,"((2>>))") : SetWidgetClass(widget(), "((2>>))") 
       
       Show_DEBUG()
       
 ;       ;\\ test 1 ok
-;       *PARENT = Container( 10, 60, 150, 150)
+;       *PARENT = ContainerWidget( 10, 60, 150, 150)
 ;       SetParent( *CHILD1, *PARENT )
 ;       SetParent( *CHILD2, *PARENT )
       
       ;\\ test 2
-     *PARENT = Splitter( 10, 60, 150, 150, *CHILD1, *CHILD2 )
+     *PARENT = SplitterWidget( 10, 60, 150, 150, *CHILD1, *CHILD2 )
       
       Debug ""+*PARENT\first\widget\class
       Debug ""+*PARENT\last\widget\class

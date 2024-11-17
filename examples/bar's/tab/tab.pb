@@ -10,22 +10,22 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;
-      tab_1 = Tab(310, 10, 200, 30)
+      tab_1 = TabBarWidget(310, 10, 200, 30)
       For i=0 To 3
          AddItem(tab_1, -1, "tab_"+Str(i))
       Next
       ;
-      tab_2 = Tab(320, 50, 200, 30)
+      tab_2 = TabBarWidget(320, 50, 200, 30)
       For i=0 To 10
          AddItem(tab_2, -1, "tab_"+Str(i))
       Next
       ;
-      tab_3 = Tab(330, 90, 200, 30)
+      tab_3 = TabBarWidget(330, 90, 200, 30)
       For i=0 To 10
          AddItem(tab_3, -1, Space(5)+"tab_"+Str(i)+Space(5))
       Next
       ;
-      tab_4 = Tab(340, 130, 200, 30)
+      tab_4 = TabBarWidget(340, 130, 200, 30)
       For i=0 To 10
          AddItem(tab_4, -1, "tab_"+Str(i))
       Next

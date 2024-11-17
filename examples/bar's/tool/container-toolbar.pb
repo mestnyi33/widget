@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_widget( )
       
-      Select GetText( EventWidget( ) )
+      Select GetTextWidget( EventWidget( ) )
          Case "Top"
             TabViewType( *panel, 2 )
          Case "Left"
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_gadget( )
       
-      Select GetGadgetText( EventGadget( ) )
+      Select GetGadgetTextWidget( EventGadget( ) )
          Case "Top"
             GadgetTabViewType( 0, 0 )
             TabViewType( *panel, 2 )
@@ -97,15 +97,15 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Open(0, 300, 0,300,310)
-   ; *panel = Panel(10, 10, 300 - 20, 180)
-   *panel = Container(10, 10, 300 - 20, 180)
+   ; *panel = PanelWidget(10, 10, 300 - 20, 180)
+   *panel = ContainerWidget(10, 10, 300 - 20, 180)
    ToolBar( widget( ));, #PB_ToolBar_Small )
-   BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-   BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-   BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
+   BarButtonWidget(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+   BarButtonWidget(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
+   BarButtonWidget(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
    CloseList() ; *panel
    
-   Frame(30, 200, 300 - 60, 100, "Tab location")
+   FrameWidget(30, 200, 300 - 60, 100, "Tab location")
    OptionWidget(130, GadgetY(1) + 20, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
    OptionWidget(50, GadgetY(1) + 45, 80, 20, "Left", #__flag_Transparent)
    OptionWidget(130, GadgetY(1) + 45, 80, 20, "Hide", #__flag_Transparent)

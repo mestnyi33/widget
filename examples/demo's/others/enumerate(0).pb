@@ -7,24 +7,24 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    
    For i = 1 To 3
       Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
-      Container(5, 5, 120+2,85+2, #PB_Container_Flat)                                                    
-      Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                    
-      Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                   
+      ContainerWidget(5, 5, 120+2,85+2, #PB_Container_Flat)                                                    
+      ButtonWidget(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                    
+      ButtonWidget(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                   
       CloseList()                                                                                         
    Next
    
    i = 4
    Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
-   *parent = Panel(5, 5, 120+2,85+2) 
+   *parent = PanelWidget(5, 5, 120+2,85+2) 
    AddItem(*parent, -1, "item-1")
-   Button(10,10,100,30,"Button14")                                                    
-   Button(10,45,100,30,"Button15")                                                    
+   ButtonWidget(10,10,100,30,"Button14")                                                    
+   ButtonWidget(10,45,100,30,"Button15")                                                    
    AddItem(*parent, -1, "item-2")
-   Button(10,10,100,30,"Button16")                                                    
-   Button(10,45,100,30,"Button17")                                                    
+   ButtonWidget(10,10,100,30,"Button16")                                                    
+   ButtonWidget(10,45,100,30,"Button17")                                                    
    AddItem(*parent, -1, "item-3")
-   Button(10,10,100,30,"Button18")                                                    
-   Button(10,45,100,30,"Button19")                                                    
+   ButtonWidget(10,10,100,30,"Button18")                                                    
+   ButtonWidget(10,45,100,30,"Button19")                                                    
    CloseList()                                                                                         
    SetState(*parent, 1)
    

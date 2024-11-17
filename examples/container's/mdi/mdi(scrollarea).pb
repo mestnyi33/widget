@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
-    SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
+    SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
     ButtonGadget  (1,  10,  10, 230, 30,"Button 1")
     ButtonGadget  (2,  50,  50, 230, 30,"Button 2")
@@ -24,23 +24,23 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    *g = MDI(310, 10, 290, 300)
+    *g = MDIWidget(310, 10, 290, 300)
     SetAttribute(*g, #PB_ScrollArea_ScrollStep, 15)
     SetAttribute(*g, #PB_ScrollArea_InnerWidth, sw)
     SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh)
-    SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
+    SetWidgetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
-    Define *g1 = AddItem(*g, -1, "form_1") : Resize(*g1, 10,  10, 230, 30)
-    Define *g2 = AddItem(*g, -1, "form_2") : Resize(*g2, 50,  50, 230, 30)
-    Define *g3 = AddItem(*g, -1, "form_3") : Resize(*g3, 90,  90, 230, 30)
+    Define *g1 = AddItem(*g, -1, "form_1") : ResizeWidget(*g1, 10,  10, 230, 30)
+    Define *g2 = AddItem(*g, -1, "form_2") : ResizeWidget(*g2, 50,  50, 230, 30)
+    Define *g3 = AddItem(*g, -1, "form_3") : ResizeWidget(*g3, 90,  90, 230, 30)
     
-    *b = AddItem(*g, -1, "form") : Resize(*b, Sw-130, Sh-30, 130, 30)
+    *b = AddItem(*g, -1, "form") : ResizeWidget(*b, Sw-130, Sh-30, 130, 30)
     ;  *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseList()
     ; *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : CloseList()
     CloseList()
    
     ;
-    Splitter(10,10,590,480, -1, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical))
+    SplitterWidget(10,10,590,480, -1, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical))
     
     If count
       OpenGadgetList(g)
@@ -59,9 +59,9 @@ CompilerIf #PB_Compiler_IsMainFile
       time = ElapsedMilliseconds()
       For i=0 To count
         If Bool(i>count-110)
-          Button((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
+          ButtonWidget((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
         Else
-          Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+          ButtonWidget(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If *b
         ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b), #PB_Ignore, #PB_Ignore)
-        Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)- Height(*b), #PB_Ignore, #PB_Ignore)
+        ResizeWidget(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)- WidgetHeight(*b), #PB_Ignore, #PB_Ignore)
       EndIf
 
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)

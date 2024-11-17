@@ -16,19 +16,19 @@ CompilerIf #PB_Compiler_IsMainFile
       ;*gadget = TextGadget(-1, 10,  10, text_gadget_width, 80, text.s, #PB_Text_Border )
       *gadget = StringGadget(-1, 10,  10, text_gadget_width, 80, Text.s )
       
-      ;*widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
-      *widget = String( text_gadget_width+20,  10, text_gadget_width, 80, Text.s )
+      ;*widget = TextWidget( text_gadget_width+20,  10, text_gadget_width, 80, text.s )
+      *widget = StringWidget( text_gadget_width+20,  10, text_gadget_width, 80, Text.s )
       
       ReDraw(root())
       
-      Define widget_required_size = Height( *widget, #__c_Required )
+      Define widget_required_size = WidgetHeight( *widget, #__c_Required )
       Define gadget_required_size = GadgetHeight( *gadget, #PB_Gadget_RequiredSize )
       
       Debug ""+ gadget_required_size +" - gadget required size "+ #LF$+
             ""+ widget_required_size +" - widget required size "
       
       ResizeGadget( *gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, gadget_required_size )
-      Resize( *widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, widget_required_size )
+      ResizeWidget( *widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, widget_required_size )
       
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    EndIf

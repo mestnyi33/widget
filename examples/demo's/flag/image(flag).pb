@@ -56,14 +56,14 @@ CompilerIf #PB_Compiler_IsMainFile
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
-              SetText(EventWidget(), "widget")
+              SetTextWidget(EventWidget(), "widget")
             Else
               Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
               EndIf
-              SetText(EventWidget(), "gadget")
+              SetTextWidget(EventWidget(), "gadget")
             EndIf
             
           Case f_0 : flag = #__flag_ButtonDefault
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *this = widget::Image(100, 100, 250, 250, get_image())
     
     ; flag
-    f = widget::Tree(width+20, 10, 150, y+10, #__Tree_NoLines|#__Tree_NoButtons|#__flag_OptionBoxes|#__tree_CheckBoxes|#__Tree_threestate)
+    f = widget::TreeWidget(width+20, 10, 150, y+10, #__Tree_NoLines|#__Tree_NoButtons|#__flag_OptionBoxes|#__tree_CheckBoxes|#__Tree_threestate)
     ; AddItem(f, -1, "align", -1,0)
     AddItem(f, -1, "top", -1,1)
     AddItem(f, -1, "left", -1,1)
@@ -107,18 +107,18 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(f, -1, "vertical")
     AddItem(f, -1, "invert")
     
-    Button_type = widget::Button(width+20,   y, 150, 26, "gadget", #__flag_ButtonToggle) 
-    f_5 = widget::Button(width+20, y+30*1, 150, 26, "top", #__flag_ButtonToggle) 
-    f_2 = widget::Button(width+20, y+30*2, 73, 26, "left", #__flag_ButtonToggle) 
-    f_3 = widget::Button(width+20 + 21 + 55, y+30*2, 73, 26, "right", #__flag_ButtonToggle) 
-    f_6 = widget::Button(width+20, y+30*3, 150, 26, "bottom", #__flag_ButtonToggle) 
+    Button_type = widget::ButtonWidget(width+20,   y, 150, 26, "gadget", #__flag_ButtonToggle) 
+    f_5 = widget::ButtonWidget(width+20, y+30*1, 150, 26, "top", #__flag_ButtonToggle) 
+    f_2 = widget::ButtonWidget(width+20, y+30*2, 73, 26, "left", #__flag_ButtonToggle) 
+    f_3 = widget::ButtonWidget(width+20 + 21 + 55, y+30*2, 73, 26, "right", #__flag_ButtonToggle) 
+    f_6 = widget::ButtonWidget(width+20, y+30*3, 150, 26, "bottom", #__flag_ButtonToggle) 
     
-    f_0 = widget::Button(width+20, y+30*4, 150, 26, "center", #__flag_ButtonToggle) 
-    f_1 = widget::Button(width+20, y+30*5, 150, 26, "strech", #__flag_ButtonToggle) 
-    f_4 = widget::Button(width+20, y+30*6, 150, 26, "proportional", #__flag_ButtonToggle) 
+    f_0 = widget::ButtonWidget(width+20, y+30*4, 150, 26, "center", #__flag_ButtonToggle) 
+    f_1 = widget::ButtonWidget(width+20, y+30*5, 150, 26, "strech", #__flag_ButtonToggle) 
+    f_4 = widget::ButtonWidget(width+20, y+30*6, 150, 26, "proportional", #__flag_ButtonToggle) 
     
-    f_8 = widget::Button(width+20, y+30*7, 150, 26, "auto", #__flag_ButtonToggle) 
-;     f_7 = widget::Button(width+20, y+30*8, 150, 26, "invert", #__flag_ButtonToggle) 
+    f_8 = widget::ButtonWidget(width+20, y+30*7, 150, 26, "auto", #__flag_ButtonToggle) 
+;     f_7 = widget::ButtonWidget(width+20, y+30*8, 150, 26, "invert", #__flag_ButtonToggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
@@ -132,10 +132,10 @@ CompilerIf #PB_Compiler_IsMainFile
        Hide(Button_type, 1)
     EndIf
 
-    Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-    Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
-    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-    Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+    Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+    Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
+    Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+    Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
     Define pos = 80
     SetState(Splitter_0, pos)
@@ -147,8 +147,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 106
+; CursorPosition = 33
+; FirstLine = 30
 ; Folding = ---
 ; Optimizer
 ; EnableXP

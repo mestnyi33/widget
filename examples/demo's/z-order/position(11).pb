@@ -13,31 +13,31 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  Define *g0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetClass(widget(), "form_0")
+  Define *g0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "form_0")
   
-  Define *g1 = window(30,30,200,200, "form_1", #PB_Window_SystemMenu) : SetClass(widget(), "form_1")
-  Button(10,10,80,30,"button_1_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,80,30,"button_1_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,80,30,"button_1_2") : SetClass(widget(), GetText(widget()))
+  Define *g1 = window(30,30,200,200, "form_1", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "form_1")
+  ButtonWidget(10,10,80,30,"button_1_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,50,80,30,"button_1_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,90,80,30,"button_1_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
 
-  Define *g2 = window(50,50,200,200, "form_2", #PB_Window_SystemMenu) : SetClass(widget(), "form_2")
-  Button(10,10,80,30,"button_2_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,80,30,"button_2_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,80,30,"button_2_2") : SetClass(widget(), GetText(widget()))
+  Define *g2 = window(50,50,200,200, "form_2", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "form_2")
+  ButtonWidget(10,10,80,30,"button_2_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,50,80,30,"button_2_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,90,80,30,"button_2_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
   
   OpenList(*g0)
-  Button(10,10,80,30,"button_0_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,80,30,"button_0_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,80,30,"button_0_2") : SetClass(widget(), GetText(widget()))
+  ButtonWidget(10,10,80,30,"button_0_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,50,80,30,"button_0_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,90,80,30,"button_0_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
   CloseList()
   
   ;SortStructuredList(widget(), #PB_Sort_Ascending, OffsetOf(_s_count\index), TypeOf(_s_count\index))
             
            
-;   Resize(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
-;   Resize(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;   ResizeWidget(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
+;   ResizeWidget(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   Debug "---->>"
   ForEach widget()
     Debug "  "+ widget()\class

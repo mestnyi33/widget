@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             
          Case #__event_LeftClick
-            Select GetText( EventWidget( ))
+            Select GetTextWidget( EventWidget( ))
                Case "window_0_minimize", "window_1_minimize", "window_2_minimize"
                   If GetState( EventWidget( )\window ) = #PB_Window_Minimize
                      SetState( EventWidget( )\window, #PB_Window_Normal )
@@ -50,33 +50,33 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MinimizeGadget |
                                             #PB_Window_MaximizeGadget )
       
-      SetClass(widget( ), "window_0" )
-      Button(10,10,200,50,"window_0_maximize")
-      SetClass(widget( ), "window_0_maximize" )
-      Button(10,65,200,50,"window_0_minimize")
-      SetClass(widget( ), "window_0_minimize" )
+      SetWidgetClass(widget( ), "window_0" )
+      ButtonWidget(10,10,200,50,"window_0_maximize")
+      SetWidgetClass(widget( ), "window_0_maximize" )
+      ButtonWidget(10,65,200,50,"window_0_minimize")
+      SetWidgetClass(widget( ), "window_0_minimize" )
       
       ;\\
       Window( 230, 130, 300, 200, "window_1", #PB_Window_SystemMenu |
                                               #PB_Window_MinimizeGadget |
                                               #PB_Window_MaximizeGadget )
       
-      SetClass(widget( ), "window_1" )
-      Button(10,10,200,50,"window_1_maximize")
-      SetClass(widget( ), "window_1_maximize" )
-      Button(10,65,200,50,"window_1_minimize")
-      SetClass(widget( ), "window_1_minimize" )
+      SetWidgetClass(widget( ), "window_1" )
+      ButtonWidget(10,10,200,50,"window_1_maximize")
+      SetWidgetClass(widget( ), "window_1_maximize" )
+      ButtonWidget(10,65,200,50,"window_1_minimize")
+      SetWidgetClass(widget( ), "window_1_minimize" )
       
       ;\\
       Window( 430, 230, 300, 200, "window_2", #PB_Window_SystemMenu |
                                               #PB_Window_MinimizeGadget |
                                               #PB_Window_MaximizeGadget )
       
-      SetClass(widget( ), "window_2" )
-      Button(10,10,200,50,"window_2_maximize")
-      SetClass(widget( ), "window_2_maximize" )
-      Button(10,65,200,50,"window_2_minimize")
-      SetClass(widget( ), "window_2_minimize" )
+      SetWidgetClass(widget( ), "window_2" )
+      ButtonWidget(10,10,200,50,"window_2_maximize")
+      SetWidgetClass(widget( ), "window_2_maximize" )
+      ButtonWidget(10,65,200,50,"window_2_minimize")
+      SetWidgetClass(widget( ), "window_2_minimize" )
       
       WaitEvent( @CallBack( ) )
    EndIf

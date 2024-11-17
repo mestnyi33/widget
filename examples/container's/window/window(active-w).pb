@@ -3,25 +3,25 @@
 test_focus_show = 1
 
 Procedure active()
-  If EventWidget( )\type = #__type_Window
+  If EventWidget( )\type = #PB_WidgetType_Window
     Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " - window_"+EventWidget( )\index
   EndIf
 EndProcedure
 
 Procedure deactive()
-  If EventWidget( )\type = #__type_Window
+  If EventWidget( )\type = #PB_WidgetType_Window
     Debug ""+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " - window_"+EventWidget( )\index
   EndIf
 EndProcedure
 
 Procedure active_0()
-  If EventWidget( )\type = #__type_Window
+  If EventWidget( )\type = #PB_WidgetType_Window
     Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " - window_"+EventWidget( )\index
   EndIf
 EndProcedure
 
 Procedure deactive_0()
-  If EventWidget( )\type = #__type_Window
+  If EventWidget( )\type = #PB_WidgetType_Window
     Debug " - "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " - window_"+EventWidget( )\index
   EndIf
 EndProcedure

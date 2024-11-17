@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EditorGadget(0, 10, 10, 250, 680)
     
     Open(0, 270, 10, 250, 680)
-    Define *w = Editor(0, 0, 250, 680) 
+    Define *w = EditorWidget(0, 0, 250, 680) 
     
     Define time = ElapsedMilliseconds()
     For a = 0 To LN

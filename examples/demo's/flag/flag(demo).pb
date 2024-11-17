@@ -12,45 +12,45 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure GadgetTypeFromClass(Class.s) ;Returns gadget type from gadget name
     
-    ;   ElseIf     FindString(Class.S, LCase("Desktop")       ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Desktop
-    ;   ElseIf FindString(Class.S, LCase("PopupMenu")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_PopupMenu
-    ;   ElseIf FindString(Class.S, LCase("Toolbar")       ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Tool
-    ;   ElseIf FindString(Class.S, LCase("Menu")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Menu
-    ;   ElseIf FindString(Class.S, LCase("Status")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_StatusBar
-    If FindString(Class.S, LCase("Window")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Window
-    ElseIf FindString(Class.S, LCase("ButtonImage")   ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ButtonImage
-    ElseIf FindString(Class.S, LCase("String")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_String
-    ElseIf FindString(Class.S, LCase("Text")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Text
-    ElseIf FindString(Class.S, LCase("CheckBox")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_CheckBox
-    ElseIf FindString(Class.S, LCase("Option")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Option
-    ElseIf FindString(Class.S, LCase("ListView")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ListView
-    ElseIf FindString(Class.S, LCase("Frame")         ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Frame  
-    ElseIf FindString(Class.S, LCase("ComboBox")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ComboBox
-    ElseIf FindString(Class.S, LCase("Image")         ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Image
-    ElseIf FindString(Class.S, LCase("HyperLink")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_HyperLink
-    ElseIf FindString(Class.S, LCase("Container")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Container
-    ElseIf FindString(Class.S, LCase("ListIcon")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ListIcon
-    ElseIf FindString(Class.S, LCase("IPAddress")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_IPAddress
-    ElseIf FindString(Class.S, LCase("ProgressBar")   ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Progress
-    ElseIf FindString(Class.S, LCase("ScrollBar")     ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Scroll
-    ElseIf FindString(Class.S, LCase("ScrollArea")    ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ScrollArea
-    ElseIf FindString(Class.S, LCase("TrackBar")      ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Track
-    ElseIf FindString(Class.S, LCase("Web")           ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Web
-    ElseIf FindString(Class.S, LCase("Button")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Button
-    ElseIf FindString(Class.S, LCase("Calendar")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Calendar
-    ElseIf FindString(Class.S, LCase("Date")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Date
-    ElseIf FindString(Class.S, LCase("Editor")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Editor
-    ElseIf FindString(Class.S, LCase("ExplorerList")  ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ExplorerList
-    ElseIf FindString(Class.S, LCase("ExplorerTree")  ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ExplorerTree
-    ElseIf FindString(Class.S, LCase("ExplorerCombo") ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ExplorerCombo
-    ElseIf FindString(Class.S, LCase("Spin")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Spin
-    ElseIf FindString(Class.S, LCase("Tree")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Tree
-    ElseIf FindString(Class.S, LCase("Panel")         ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Panel
-    ElseIf FindString(Class.S, LCase("Splitter")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Splitter
-    ElseIf FindString(Class.S, LCase("MDI")           ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_MDI
-    ElseIf FindString(Class.S, LCase("Scintilla")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Scintilla
-    ;ElseIf FindString(Class.S, LCase("Shortcut")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Shortcut
-    ;ElseIf FindString(Class.S, LCase("Canvas")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Canvas
+    ;   ElseIf     FindStringWidget(Class.S, LCase("Desktop")       ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Desktop
+    ;   ElseIf FindStringWidget(Class.S, LCase("PopupMenu")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_PopupMenu
+    ;   ElseIf FindStringWidget(Class.S, LCase("Toolbar")       ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Tool
+    ;   ElseIf FindStringWidget(Class.S, LCase("Menu")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Menu
+    ;   ElseIf FindStringWidget(Class.S, LCase("Status")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_StatusBar
+    If FindStringWidget(Class.S, LCase("Window")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Window
+    ElseIf FindStringWidget(Class.S, LCase("ButtonImage")   ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_ButtonImage
+    ElseIf FindStringWidget(Class.S, LCase("String")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_String
+    ElseIf FindStringWidget(Class.S, LCase("Text")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Text
+    ElseIf FindStringWidget(Class.S, LCase("CheckBox")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_CheckBox
+    ElseIf FindStringWidget(Class.S, LCase("Option")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Option
+    ElseIf FindStringWidget(Class.S, LCase("ListView")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_ListView
+    ElseIf FindStringWidget(Class.S, LCase("Frame")         ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Frame  
+    ElseIf FindStringWidget(Class.S, LCase("ComboBox")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_ComboBox
+    ElseIf FindStringWidget(Class.S, LCase("Image")         ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Image
+    ElseIf FindStringWidget(Class.S, LCase("HyperLink")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_HyperLink
+    ElseIf FindStringWidget(Class.S, LCase("Container")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Container
+    ElseIf FindStringWidget(Class.S, LCase("ListIcon")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_ListIcon
+    ElseIf FindStringWidget(Class.S, LCase("IPAddress")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_IPAddress
+    ElseIf FindStringWidget(Class.S, LCase("ProgressBar")   ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Progress
+    ElseIf FindStringWidget(Class.S, LCase("ScrollBar")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Scroll
+    ElseIf FindStringWidget(Class.S, LCase("ScrollArea")    ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_ScrollArea
+    ElseIf FindStringWidget(Class.S, LCase("TrackBar")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Track
+    ElseIf FindStringWidget(Class.S, LCase("Web")           ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Web
+    ElseIf FindStringWidget(Class.S, LCase("Button")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Button
+    ElseIf FindStringWidget(Class.S, LCase("Calendar")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Calendar
+    ElseIf FindStringWidget(Class.S, LCase("Date")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Date
+    ElseIf FindStringWidget(Class.S, LCase("Editor")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Editor
+    ElseIf FindStringWidget(Class.S, LCase("ExplorerList")  ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_ExplorerList
+    ElseIf FindStringWidget(Class.S, LCase("ExplorerTree")  ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_ExplorerTree
+    ElseIf FindStringWidget(Class.S, LCase("ExplorerCombo") ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_ExplorerCombo
+    ElseIf FindStringWidget(Class.S, LCase("Spin")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Spin
+    ElseIf FindStringWidget(Class.S, LCase("Tree")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Tree
+    ElseIf FindStringWidget(Class.S, LCase("Panel")         ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Panel
+    ElseIf FindStringWidget(Class.S, LCase("Splitter")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Splitter
+    ElseIf FindStringWidget(Class.S, LCase("MDI")           ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_MDI
+    ElseIf FindStringWidget(Class.S, LCase("Scintilla")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Scintilla
+    ;ElseIf FindStringWidget(Class.S, LCase("Shortcut")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Shortcut
+    ;ElseIf FindStringWidget(Class.S, LCase("Canvas")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_WidgetType_Canvas
     EndIf
     
     ProcedureReturn #False
@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Flags.S
     
     Select Type
-      Case #__Type_Window        
+      Case #PB_WidgetType_Window        
         ;{- Ok
         Flags.S = "#PB_Window_TitleBar|"+
                   "#PB_Window_BorderLess|"+
@@ -79,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_Window_NoGadgets|"
         ;}
         
-      Case #__Type_Button         
+      Case #PB_WidgetType_Button         
         ;{- Ok
         Flags.S = "#PB_Button_Default|"+
                   "#__flag_ButtonToggle|"+
@@ -90,7 +90,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ;}
         
-      Case #__Type_String         
+      Case #PB_WidgetType_String         
         ;{- Ok
         Flags.S = "#PB_String_BorderLess|"+
                   "#PB_String_Numeric|"+
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ;}
         
-      Case #__Type_Text           
+      Case #PB_WidgetType_Text           
         ;{- Ok
         Flags.S = "#PB_Text_Left|"+
                   "#PB_Text_Center|"+
@@ -109,30 +109,30 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_Text_Border"
         ;}
         
-      Case #__Type_CheckBox       
+      Case #PB_WidgetType_CheckBox       
         ;{- Ok
         Flags.S = "#PB_CheckBox_Right|"+
                   "#PB_CheckBox_Center|"+
                   "#PB_CheckBox_ThreeState"
         ;}
         
-      Case #__Type_Option         
+      Case #PB_WidgetType_Option         
         Flags.S = ""
         
-      Case #__Type_ListView       
+      Case #PB_WidgetType_ListView       
         ;{- Ok
         Flags.S = "#PB_ListView_Multiselect|"+
                   "#PB_ListView_ClickSelect"
         ;}
         
-      Case #__Type_Frame          
+      Case #PB_WidgetType_Frame          
         ;{- Ok
         Flags.S = "#PB_Frame_Single|"+
                   "#PB_Frame_Double|"+
                   "#PB_Frame_Flat"
         ;}
         
-      Case #__Type_ComboBox       
+      Case #PB_WidgetType_ComboBox       
         ;{- Ok
         Flags.S = "#PB_ComboBox_Editable|"+
                   "#PB_ComboBox_LowerCase|"+
@@ -140,18 +140,18 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_ComboBox_Image"
         ;}
         
-      Case #__Type_Image          
+      Case #PB_WidgetType_Image          
         ;{- Ok
         Flags.S = "#PB_Image_Border|"+
                   "#PB_Image_Raised"
         ;}
         
-      Case #__Type_HyperLink      
+      Case #PB_WidgetType_HyperLink      
         ;{- Ok
         Flags.S = "#PB_Hyperlink_Underline"
         ;}
         
-      Case #__Type_Container      
+      Case #PB_WidgetType_Container      
         ;{- Ok
         Flags.S = "#PB_Container_BorderLess|"+
                   "#PB_Container_Flat|"+
@@ -160,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_Container_Double"
         ;}
         
-      Case #__Type_ListIcon       
+      Case #PB_WidgetType_ListIcon       
         ;{- Ok
         Flags.S = "#PB_ListIcon_CheckBoxes|"+
                   "#PB_ListIcon_ThreeState|"+
@@ -171,21 +171,21 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_ListIcon_AlwaysShowSelection"
         ;}
         
-      Case #__Type_IPAddress      
+      Case #PB_WidgetType_IPAddress      
         Flags.S = ""
         
-      Case #__type_Progress    
+      Case #PB_WidgetType_Progress    
         ;{- Ok
         Flags.S = "#PB_ProgressBar_Smooth|"+
                   "#PB_ProgressBar_Vertical"
         ;}
         
-      Case #__type_Scroll      
+      Case #PB_WidgetType_Scroll      
         ;{- Ok
         Flags.S = "#PB_ScrollBar_Vertical"
         ;}
         
-      Case #__Type_ScrollArea     
+      Case #PB_WidgetType_ScrollArea     
         ;{- Ok
         Flags.S = "#PB_ScrollArea_Flat|"+
                   "#PB_ScrollArea_Raised|"+
@@ -194,37 +194,37 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_ScrollArea_Center"
         ;}
         
-      Case #__type_Track       
+      Case #PB_WidgetType_Track       
         ;{- Ok
         Flags.S = "#PB_TrackBar_Ticks|"+
                   "#PB_TrackBar_Vertical"
         ;}
         
-      Case #__Type_Web            
+      Case #PB_WidgetType_Web            
         Flags.S = ""
         
-      Case #__Type_ButtonImage    
+      Case #PB_WidgetType_ButtonImage    
         ;{- Ok
         Flags.S = "#__flag_ButtonToggle"
         ;}
         
-      Case #__Type_Calendar       
+      Case #PB_WidgetType_Calendar       
         ;{- Ok
         Flags.S = "#PB_Calendar_Borderless"
         ;}
         
-      Case #__Type_Date           
+      Case #PB_WidgetType_Date           
         ;{- Ok
         Flags.S = "#PB_Date_UpDown"
         ;}
         
-      Case #__Type_Editor         
+      Case #PB_WidgetType_Editor         
         ;{- Ok
         Flags.S = "#PB_Editor_ReadOnly|"+
                   "#PB_Editor_WordWrap"
         ;}
         
-      Case #__Type_ExplorerList   
+      Case #PB_WidgetType_ExplorerList   
         ;{- Ok
         Flags.S = "#PB_Explorer_BorderLess|"+
                   "#PB_Explorer_AlwaysShowSelection|"+
@@ -243,16 +243,16 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_Explorer_HiddenFiles"
         ;}
         
-      Case #__Type_ExplorerTree   
+      Case #PB_WidgetType_ExplorerTree   
         Flags.S = ""
         
-      Case #__Type_ExplorerCombo  
+      Case #PB_WidgetType_ExplorerCombo  
         Flags.S = ""
         
-      Case #__Type_Spin           
+      Case #PB_WidgetType_Spin           
         Flags.S = ""
         
-      Case #__Type_Tree           
+      Case #PB_WidgetType_Tree           
         ;{- Ok
         Flags.S = "#PB_Tree_AlwaysShowSelection|"+
                   "#PB_Tree_NoLines|"+
@@ -261,10 +261,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_Tree_ThreeState"
         ;}
         
-      Case #__Type_Panel          
+      Case #PB_WidgetType_Panel          
         Flags.S = ""
         
-      Case #__Type_Splitter       
+      Case #PB_WidgetType_Splitter       
         ;{- Ok
         Flags.S = "#PB_Splitter_Vertical|"+
                   "#PB_Splitter_Separator|"+
@@ -273,17 +273,17 @@ CompilerIf #PB_Compiler_IsMainFile
         ;}
         
         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        Case #__Type_MDI           
+        Case #PB_WidgetType_MDI           
           Flags.S = ""
         CompilerEndIf
         
-      Case #__Type_Scintilla      
+      Case #PB_WidgetType_Scintilla      
         Flags.S = ""
         
-;       Case #__Type_Shortcut       
+;       Case #PB_WidgetType_Shortcut       
 ;         Flags.S = ""
 ;         
-;       Case #__Type_Canvas 
+;       Case #PB_WidgetType_Canvas 
 ;         ;{- Ok
 ;         Flags.S = "#PB_Canvas_Border|"+
 ;                   "#PB_Canvas_Container|"+
@@ -358,26 +358,26 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf 
   EndProcedure
   
-  Procedure$ GetCheckedText(Gadget)
+  Procedure$ GetCheckedTextWidget(Gadget)
     Protected i, Result$, CountItems = CountItems(Gadget)
     
     For i = 0 To CountItems - 1
       If GetItemState(Gadget, i) & #PB_Tree_Checked  
-        Result$ + GetItemText(Gadget, i)+"|"
+        Result$ + GetItemTextWidget(Gadget, i)+"|"
       EndIf
     Next
     
     ProcedureReturn Trim(Result$, "|")
   EndProcedure
   
-  Procedure SetCheckedText(Gadget, Text$)
+  Procedure SetCheckedTextWidget(Gadget, Text$)
     Protected i,ii
     Protected CountItems = CountItems(Gadget)
     Protected CountString = CountString(Text$, "|")
     
     For i = 0 To CountString
       For ii = 0 To CountItems - 1
-        If GetItemText(Gadget, ii) = Trim( StringField( Text$, (i + (1)), "|"))
+        If GetItemTextWidget(Gadget, ii) = Trim( StringField( Text$, (i + (1)), "|"))
           SetItemState(Gadget, ii, #PB_Tree_Checked) 
         EndIf
       Next
@@ -562,7 +562,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure SetFlag(Gadget, Object)
     Protected i, Flag
     i = GetState(Gadget)
-    Flag = GetFlag(GetItemText(Gadget, i))
+    Flag = GetFlag(GetItemTextWidget(Gadget, i))
     
     Flag(Object, Flag, Bool(GetItemState(Gadget, i) & #PB_Tree_Checked))
   EndProcedure
@@ -578,10 +578,10 @@ CompilerIf #PB_Compiler_IsMainFile
             flag = Flag(*this)
             Add(FlagFromType(GetState(w_type)))
             ;Debug FlagFromFlag(GetType(*this), flag)
-            SetCheckedText(w_flag, FlagFromFlag(GetTypeCount(*this), flag))
+            SetCheckedTextWidget(w_flag, FlagFromFlag(GetTypeCount(*this), flag))
             
           Case w_flag
-            ;  Debug GetCheckedText(w_flag)
+            ;  Debug GetCheckedTextWidget(w_flag)
         EndSelect
         
       Case #__event_LeftClick
@@ -600,15 +600,15 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *this = widget::Button(100, 100, 250, 200, text, #__flag_ButtonToggle|#__flag_Textmultiline) 
+    *this = widget::ButtonWidget(100, 100, 250, 200, text, #__flag_ButtonToggle|#__flag_Textmultiline) 
     
     
-    w_type = widget::ListView(width+45, 10, 150, 200) 
+    w_type = widget::ListViewWidget(width+45, 10, 150, 200) 
     For i=0 To 33
       AddItem(w_type, -1, ClassFromType(i))
     Next
     
-    w_flag = widget::Tree(width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_optionboxes) 
+    w_flag = widget::TreeWidget(width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_optionboxes) 
     
     Bind(#PB_All, @events_widgets())
     

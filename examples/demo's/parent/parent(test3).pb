@@ -49,36 +49,36 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
-  Open(10) : SetText(Root(), "*root1" )
+  Open(10) : SetTextWidget(Root(), "*root1" )
   ;*window_10 = Window(0, 0, 425, 350,"demo set gadget new parent", Flags)
-  *window_10 = Container(0, 0, 425, 350) : SetText(*window_10, "*window_10" )
+  *window_10 = ContainerWidget(0, 0, 425, 350) : SetTextWidget(*window_10, "*window_10" )
   
-  *CHILD = Button(-30,10,160,70,"child") 
-  *_6 = Button(30,90,160,25,"Button >>(Window)")
+  *CHILD = ButtonWidget(-30,10,160,70,"child") 
+  *_6 = ButtonWidget(30,90,160,25,"Button >>(Window)")
   
-  *PANEL0 = Button(30,120,160,20,"Button >>(Panel (0))") 
-  *PANEL1 = Button(30,140,160,20,"Button >>(Panel (1))") 
-  *PANEL2 = Button(30,160,160,20,"Button >>(Panel (2))") 
+  *PANEL0 = ButtonWidget(30,120,160,20,"Button >>(Panel (0))") 
+  *PANEL1 = ButtonWidget(30,140,160,20,"Button >>(Panel (1))") 
+  *PANEL2 = ButtonWidget(30,160,160,20,"Button >>(Panel (2))") 
   
-  *PANEL = Panel(10,180,200,160) : SetText(*PANEL, "*PANEL" )
+  *PANEL = PanelWidget(10,180,200,160) : SetTextWidget(*PANEL, "*PANEL" )
   AddItem(*PANEL,-1,"Panel") 
-  *_60 = Button(30,90,160,30,">>(Panel (0))") 
+  *_60 = ButtonWidget(30,90,160,30,">>(Panel (0))") 
   AddItem(*PANEL,-1,"First") 
-  *_61 = Button(35,90,160,30,">>(Panel (1))") 
+  *_61 = ButtonWidget(35,90,160,30,">>(Panel (1))") 
   AddItem(*PANEL,-1,"Second") 
-  *_62 = Button(40,90,160,30,">>(Panel (2))") 
+  *_62 = ButtonWidget(40,90,160,30,">>(Panel (2))") 
   CloseList()
   
-  *CONTAINER = Container(215,10,200,160,#PB_Container_Flat)  : SetText(*CONTAINER, "*CONTAINER" )
-  *_7 = Button(30,90,160,30,">>(Container)") 
+  *CONTAINER = ContainerWidget(215,10,200,160,#PB_Container_Flat)  : SetTextWidget(*CONTAINER, "*CONTAINER" )
+  *_7 = ButtonWidget(30,90,160,30,">>(Container)") 
   CloseList()
   
-  *SCROLLAREA = ScrollArea(215,180,200,160,200,160,10,#PB_ScrollArea_Flat)  : SetText(*SCROLLAREA, "*SCROLLAREA" )
-  *_8 = Button(30,90,160,30,">>(ScrollArea)") 
+  *SCROLLAREA = ScrollAreaWidget(215,180,200,160,200,160,10,#PB_ScrollArea_Flat)  : SetTextWidget(*SCROLLAREA, "*SCROLLAREA" )
+  *_8 = ButtonWidget(30,90,160,30,">>(ScrollArea)") 
   CloseList()
   
   
-  HideWindow(GetWindow(GetRoot(*window_10)),0)
+  HideWindow(GetCanvasWindow(GetRoot(*window_10)),0)
  
   Bind(GetRoot(*window_10), @Widgets_CallBack())
 ;   Bind(GetRoot(*window_20), @Widgets_CallBack())

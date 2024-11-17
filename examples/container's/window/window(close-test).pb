@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   *root\_widgets( )\_parent() = *root
   ;   *root\_widgets( )\class="button1"
   ;   *root\haschildren + 1
-  ;*window = Button(10, 10, 90,30,"button")
+  ;*window = ButtonWidget(10, 10, 90,30,"button")
   Free(*window)
 ;  *widget = AllocateStructure(_S_WIDGET)
 ;  *widget\class="button2"
@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   SetParent2(*widget, *root)
   
   ;Debug Root()\last\widget
-  *window = Button(10, 10, 90,30,"button")
+  *window = ButtonWidget(10, 10, 90,30,"button")
   
   Debug " >> "
   ForEach widgets()

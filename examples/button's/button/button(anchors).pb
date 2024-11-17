@@ -32,7 +32,7 @@ Module AnchorBox
         If *this = Button_10 
           Protected a = widget::GetData(*this)
           widget::Hide(a, Bool( Not widget::GetState(*this)))
-          widget::Resize(a, widget::X(*this), widget::Y(*this)+widget::Height(*this), #PB_Ignore, #PB_Ignore )
+          widget::ResizeWidget(a, widget::X(*this), widget::Y(*this)+widget::WidgetHeight(*this), #PB_Ignore, #PB_Ignore )
           ; widget::Display(a, *this)
         Else
           ;\\
@@ -99,66 +99,66 @@ Module AnchorBox
           
           ;\\
           If Button_1_State And Button_3_State And Button_5_State And Button_7_State
-            widget::Resize(Button_0, size, size, width, height)
-            widget::SetText(Button_10, "FULL")
+            widget::ResizeWidget(Button_0, size, size, width, height)
+            widget::SetTextWidget(Button_10, "FULL")
             
           ElseIf Button_2_State Or (Button_1_State And Button_3_State And Button_5_State=0 And Button_7_State=0)
-            widget::Resize(Button_0, size, size, size*2, size*2)
-            widget::SetText(Button_10, "LEFT&TOP")
+            widget::ResizeWidget(Button_0, size, size, size*2, size*2)
+            widget::SetTextWidget(Button_10, "LEFT&TOP")
           ElseIf Button_4_State Or (Button_1_State=0 And Button_3_State And Button_5_State And Button_7_State=0)
-            widget::Resize(Button_0, width - size, size, size*2, size*2)
-            widget::SetText(Button_10, "TOP&RIGHT")
+            widget::ResizeWidget(Button_0, width - size, size, size*2, size*2)
+            widget::SetTextWidget(Button_10, "TOP&RIGHT")
           ElseIf Button_6_State Or (Button_1_State=0 And Button_3_State=0 And Button_5_State And Button_7_State)
-            widget::Resize(Button_0, width - size, height - size, size*2, size*2)
-            widget::SetText(Button_10, "RIGHT&BOTTOM")
+            widget::ResizeWidget(Button_0, width - size, height - size, size*2, size*2)
+            widget::SetTextWidget(Button_10, "RIGHT&BOTTOM")
           ElseIf Button_8_State Or (Button_1_State And Button_3_State=0 And Button_5_State=0 And Button_7_State)
-            widget::Resize(Button_0, size, height - size, size*2, size*2)
-            widget::SetText(Button_10, "BOTTOM&LEFT")
+            widget::ResizeWidget(Button_0, size, height - size, size*2, size*2)
+            widget::SetTextWidget(Button_10, "BOTTOM&LEFT")
             
           ElseIf Button_1_State And Button_3_State And Button_7_State
-            widget::Resize(Button_0, size, size, size*2, height)
-            widget::SetText(Button_10, "FULLLEFT")
+            widget::ResizeWidget(Button_0, size, size, size*2, height)
+            widget::SetTextWidget(Button_10, "FULLLEFT")
           ElseIf Button_1_State And Button_3_State And Button_5_State
-            widget::Resize(Button_0, size, size, width, size*2)
-            widget::SetText(Button_10, "FULLTOP")
+            widget::ResizeWidget(Button_0, size, size, width, size*2)
+            widget::SetTextWidget(Button_10, "FULLTOP")
           ElseIf Button_3_State And Button_5_State And Button_7_State
-            widget::Resize(Button_0, width - size, size, size*2, height)
-            widget::SetText(Button_10, "FULLRIGHT")
+            widget::ResizeWidget(Button_0, width - size, size, size*2, height)
+            widget::SetTextWidget(Button_10, "FULLRIGHT")
           ElseIf Button_1_State And Button_5_State And Button_7_State
-            widget::Resize(Button_0, size, height - size, width, size*2)
-            widget::SetText(Button_10, "FULLBOTTOM")
+            widget::ResizeWidget(Button_0, size, height - size, width, size*2)
+            widget::SetTextWidget(Button_10, "FULLBOTTOM")
             
           ElseIf Button_1_State And Button_5_State
-            widget::Resize(Button_0, size, y, width, size*2)
-            widget::SetText(Button_10, "LEFT&RIGHT")
+            widget::ResizeWidget(Button_0, size, y, width, size*2)
+            widget::SetTextWidget(Button_10, "LEFT&RIGHT")
           ElseIf Button_3_State And Button_7_State
-            widget::Resize(Button_0, x, size, size*2, height)
-            widget::SetText(Button_10, "TOP&BOTTOM")
+            widget::ResizeWidget(Button_0, x, size, size*2, height)
+            widget::SetTextWidget(Button_10, "TOP&BOTTOM")
             
           ElseIf Button_1_State
-            widget::Resize(Button_0, size, y, size*2, size*2)
-            widget::SetText(Button_10, "LEFT")
+            widget::ResizeWidget(Button_0, size, y, size*2, size*2)
+            widget::SetTextWidget(Button_10, "LEFT")
           ElseIf Button_3_State
-            widget::Resize(Button_0, x, size, size*2, size*2)
-            widget::SetText(Button_10, "TOP")
+            widget::ResizeWidget(Button_0, x, size, size*2, size*2)
+            widget::SetTextWidget(Button_10, "TOP")
           ElseIf Button_5_State
-            widget::Resize(Button_0, width - size, y, size*2, size*2)
-            widget::SetText(Button_10, "RIGHT")
+            widget::ResizeWidget(Button_0, width - size, y, size*2, size*2)
+            widget::SetTextWidget(Button_10, "RIGHT")
           ElseIf Button_7_State
-            widget::Resize(Button_0, x, height - size, size*2, size*2)
-            widget::SetText(Button_10, "BOTTOM")
+            widget::ResizeWidget(Button_0, x, height - size, size*2, size*2)
+            widget::SetTextWidget(Button_10, "BOTTOM")
             
           Else
             If Not Button_9_State And *this = Button_9 
-              widget::Resize(Button_0, size, size, width, height)
-              widget::SetText(Button_10, "FULL")
+              widget::ResizeWidget(Button_0, size, size, width, height)
+              widget::SetTextWidget(Button_10, "FULL")
               widget::SetState(Button_1, 1) ; left
               widget::SetState(Button_3, 1) ; top
               widget::SetState(Button_5, 1) ; right
               widget::SetState(Button_7, 1) ; bottom
             Else
-              widget::Resize(Button_0, x, y, size*2, size*2)
-              widget::SetText(Button_10, "CENTER")
+              widget::ResizeWidget(Button_0, x, y, size*2, size*2)
+              widget::SetTextWidget(Button_10, "CENTER")
             EndIf
           EndIf
         EndIf
@@ -172,34 +172,34 @@ Module AnchorBox
     Protected box_height = width/2
     Protected height1 = box_height-size*2 ; -2
     
-    Button_10 = widget::Button(x,y,width, height, "LEFT&TOP",constants::#__flag_ButtonToggle);,-1,radius)
-    Protected *a.Structures::_s_widget = widget::Container(0,0,width,box_height)         ;, constants::#__flag_child)
+    Button_10 = widget::ButtonWidget(x,y,width, height, "LEFT&TOP",constants::#__flag_ButtonToggle);,-1,radius)
+    Protected *a.Structures::_s_widget = widget::ContainerWidget(0,0,width,box_height)         ;, constants::#__flag_child)
     Protected fs = 1
-    ;widget::SetFrame(a,fs)
+    ;widget::SetWidgetFrame(a,fs)
     height1 - fs*2
     width1 - fs*2
     Protected x1 = size + width1
     Protected y1 = size + height1
-    Button_0 = widget::Button(size, size, size*2, size*2, "",0,-1,radius)
+    Button_0 = widget::ButtonWidget(size, size, size*2, size*2, "",0,-1,radius)
     
-    Button_1 = widget::Button(0, size, size, height1, "",constants::#__flag_ButtonToggle,-1,radius)
-    Button_2 = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    Button_3 = widget::Button(size, 0, width1, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_1 = widget::ButtonWidget(0, size, size, height1, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_2 = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_3 = widget::ButtonWidget(size, 0, width1, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
-    Button_4 = widget::Button(x1, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    Button_5 = widget::Button(x1, size, size, height1, "",constants::#__flag_ButtonToggle,-1,radius)
-    Button_6 = widget::Button(x1, y1, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_4 = widget::ButtonWidget(x1, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_5 = widget::ButtonWidget(x1, size, size, height1, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_6 = widget::ButtonWidget(x1, y1, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
-    Button_7 = widget::Button(size, y1, width1, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    Button_8 = widget::Button(0, y1, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    Button_9 = widget::Button((width1+size)/2, (height1+size)/2, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_7 = widget::ButtonWidget(size, y1, width1, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_8 = widget::ButtonWidget(0, y1, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    Button_9 = widget::ButtonWidget((width1+size)/2, (height1+size)/2, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
     widget::SetState( Button_1,1 )
     widget::SetState( Button_2,1 )
     widget::SetState( Button_3,1 )
     widget::CloseList( )
     
-    ;widget::setColor(a, constants::#__color_back, widget::GetColor( widget::GetParent( a ), constants::#__color_back) )
+    ;widget::SetWidgetColor(a, constants::#__color_back, widget::GetWidgetColor( widget::GetParent( a ), constants::#__color_back) )
     
     widget::Bind(Button_2, @Events( ), constants::#__event_LeftClick )
     widget::Bind(Button_1, @Events( ), constants::#__event_LeftClick )

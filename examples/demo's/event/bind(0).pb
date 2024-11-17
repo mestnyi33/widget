@@ -19,10 +19,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_0( )
     If Open(OpenWindow(#PB_Any, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
       
-      Define *butt0 = Button(50, 50, 280, 35, "test-button-events") 
+      Define *butt0 = ButtonWidget(50, 50, 280, 35, "test-button-events") 
       Bind( *butt0, @events_roots( ) )
       
-      Define *butt = Button(50, 50+45, 280, 35, "test-button-events") 
+      Define *butt = ButtonWidget(50, 50+45, 280, 35, "test-button-events") 
       Bind( *butt, @events_roots( ), #__event_Change )
       ;Bind( *butt, @events_roots( ), #__event_CloseItem )
       Bind( *butt, @events_roots( ), #__event_Down )
@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;Bind( *butt, @events_roots( ), #__event_TitleChange )
       Bind( *butt, @events_roots( ), #__event_Up )
       
-      Define *butt1 = Button(350, 50, 80, 80, "Deactivate")
+      Define *butt1 = ButtonWidget(350, 50, 80, 80, "Deactivate")
       
     EndIf
   EndProcedure
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
         gQuit = #True
         
         ;       Case #PB_Event_Gadget;Widget
-        ;         Debug ""+gettext(EventWidget( )) +" "+ WidgetEvent( ) ;+" "+ *Value\This +" "+ *Value\event
+        ;         Debug ""+getTextWidget(EventWidget( )) +" "+ WidgetEvent( ) ;+" "+ *Value\This +" "+ *Value\event
         ;         
         ;         Select EventWidget( )
         ;           Case *but

@@ -12,14 +12,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure resize_window_0()
     Protected width = WindowWidth(EventWindow())
-    ; ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
+    ; ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
 ;     ResizeGadget(3, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
 ;     ResizeGadget(6, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
     ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
     
-;     Resize(s_0, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
-;     Resize(s_1, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
-    Resize(s_2, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
+;     ResizeWidget(s_0, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
+;     ResizeWidget(s_1, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
+    ResizeWidget(s_2, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
   EndProcedure
   
   OpenWindow(0, 10, 10, 510, 340+140, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
@@ -78,38 +78,38 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ; first splitter
-  b_0 = widget::Button(0, 0, 0, 0, "BTN1")
-  b_1 = widget::Button(0, 0, 0, 0, "BTN2")
-  s_0 = widget::Splitter(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_FirstFixed))
+  b_0 = widget::ButtonWidget(0, 0, 0, 0, "BTN1")
+  b_1 = widget::ButtonWidget(0, 0, 0, 0, "BTN2")
+  s_0 = widget::SplitterWidget(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_FirstFixed))
   
-  b_2 = widget::Button(0, 0, 0, 0, "BTN3")
-  b_3 = widget::Button(0, 0, 0, 0, "BTN4")
-  s_1 = widget::Splitter(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_SecondFixed))
-  s_2 = widget::Splitter(125, 240, len, 70, s_0, s_1, #PB_Splitter_Separator)
-  
-  ; first splitter
-  b_0 = widget::Button(0, 0, 0, 0, "BTN1")
-  b_1 = widget::Button(0, 0, 0, 0, "BTN2")
-  s_3 = widget::Splitter(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_FirstFixed))
-  
-  b_2 = widget::Button(0, 0, 0, 0, "BTN3")
-  b_3 = widget::Button(0, 0, 0, 0, "BTN4")
-  s_4 = widget::Splitter(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_SecondFixed))
-  s_5 = widget::Splitter(125, 320, len, 70, s_3, s_4, #PB_Splitter_Separator)
+  b_2 = widget::ButtonWidget(0, 0, 0, 0, "BTN3")
+  b_3 = widget::ButtonWidget(0, 0, 0, 0, "BTN4")
+  s_1 = widget::SplitterWidget(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_SecondFixed))
+  s_2 = widget::SplitterWidget(125, 240, len, 70, s_0, s_1, #PB_Splitter_Separator)
   
   ; first splitter
-  b_0 = widget::Button(0, 0, 0, 0, "BTN1")
-  b_1 = widget::Button(0, 0, 0, 0, "BTN2")
-  s_6 = widget::Splitter(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_FirstFixed))
+  b_0 = widget::ButtonWidget(0, 0, 0, 0, "BTN1")
+  b_1 = widget::ButtonWidget(0, 0, 0, 0, "BTN2")
+  s_3 = widget::SplitterWidget(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_FirstFixed))
   
-  b_2 = widget::Button(0, 0, 0, 0, "BTN3")
-  b_3 = widget::Button(0, 0, 0, 0, "BTN4")
-  s_7 = widget::Splitter(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_SecondFixed))
-  s_8 = widget::Splitter(125, 400, len, 70, s_6, s_7, #PB_Splitter_Separator)
+  b_2 = widget::ButtonWidget(0, 0, 0, 0, "BTN3")
+  b_3 = widget::ButtonWidget(0, 0, 0, 0, "BTN4")
+  s_4 = widget::SplitterWidget(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_SecondFixed))
+  s_5 = widget::SplitterWidget(125, 320, len, 70, s_3, s_4, #PB_Splitter_Separator)
   
-  s_9 = widget::Splitter(125, 240, len, 70, s_2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
-  s_10 = widget::Splitter(125, 320, len, 70, s_5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
-  s_11 = widget::Splitter(125, 400, len, 70, s_8, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  ; first splitter
+  b_0 = widget::ButtonWidget(0, 0, 0, 0, "BTN1")
+  b_1 = widget::ButtonWidget(0, 0, 0, 0, "BTN2")
+  s_6 = widget::SplitterWidget(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_FirstFixed))
+  
+  b_2 = widget::ButtonWidget(0, 0, 0, 0, "BTN3")
+  b_3 = widget::ButtonWidget(0, 0, 0, 0, "BTN4")
+  s_7 = widget::SplitterWidget(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | (Bool(fixed)*#PB_Splitter_SecondFixed))
+  s_8 = widget::SplitterWidget(125, 400, len, 70, s_6, s_7, #PB_Splitter_Separator)
+  
+  s_9 = widget::SplitterWidget(125, 240, len, 70, s_2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  s_10 = widget::SplitterWidget(125, 320, len, 70, s_5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  s_11 = widget::SplitterWidget(125, 400, len, 70, s_8, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   
   widget::SetAttribute( s_3, #PB_Splitter_FirstMinimumSize, len/2 )
   widget::SetAttribute( s_4, #PB_Splitter_SecondMinimumSize, len/2 )

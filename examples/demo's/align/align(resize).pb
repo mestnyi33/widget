@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global NewMap ID.i()
   Global.i Canvas_0, gEvent, gQuit, X=10,Y=10
   
-  Procedure Window_0_Resize()
+  Procedure Window_0_ResizeWidget()
     ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
     ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       Define *w._S_widget = Open(0)
-      ;Canvas_0 = GetGadget(Root())
+      ;Canvas_0 = GetCanvasGadget(Root())
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
       
@@ -26,24 +26,24 @@ CompilerIf #PB_Compiler_IsMainFile
       ;a_init(root())
       
       ;ID(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, )
-      ID(Hex(0)) = Container(50, 50, 280, 200);, );#__flag_AutoSize)
+      ID(Hex(0)) = ContainerWidget(50, 50, 280, 200);, );#__flag_AutoSize)
       
-      ;ID(Hex(0)) = Panel(50, 50, 280, 200) : AddItem(ID(Hex(0)), -1, "panel")
-      ;ID(Hex(0)) = ScrollArea(50, 50, 280, 200, iw,300)
+      ;ID(Hex(0)) = PanelWidget(50, 50, 280, 200) : AddItem(ID(Hex(0)), -1, "panel")
+      ;ID(Hex(0)) = ScrollAreaWidget(50, 50, 280, 200, iw,300)
       ;a_set(widget())
       
       
-      ID(Hex(8)) = Button(0, 0, 80, 40, "left")   
-      ID(Hex(2)) = Button(0, 0, 80, 40, "top")     
-      ID(Hex(4)) = Button(0, 0, 80, 40, "right")   
-      ID(Hex(6)) = Button(0, 0, 80, 40, "bottom")   
+      ID(Hex(8)) = ButtonWidget(0, 0, 80, 40, "left")   
+      ID(Hex(2)) = ButtonWidget(0, 0, 80, 40, "top")     
+      ID(Hex(4)) = ButtonWidget(0, 0, 80, 40, "right")   
+      ID(Hex(6)) = ButtonWidget(0, 0, 80, 40, "bottom")   
       
-      ID(Hex(9)) = Button(0, 0, 80, 40, "center")    
+      ID(Hex(9)) = ButtonWidget(0, 0, 80, 40, "center")    
       
-      ID(Hex(1)) = Button(0, 0, 80, 40, "left&top") 
-      ID(Hex(3)) = Button(0, 0, 80, 40, "right&top") 
-      ID(Hex(7)) = Button(0, 0, 80, 40, "left&bottom")
-      ID(Hex(5)) = Button(0, 0, 80, 40, "right&bottom")
+      ID(Hex(1)) = ButtonWidget(0, 0, 80, 40, "left&top") 
+      ID(Hex(3)) = ButtonWidget(0, 0, 80, 40, "right&top") 
+      ID(Hex(7)) = ButtonWidget(0, 0, 80, 40, "left&bottom")
+      ID(Hex(5)) = ButtonWidget(0, 0, 80, 40, "right&bottom")
       
       CloseList()
       
@@ -74,9 +74,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       
-      Resize(ID(Hex(0)), #PB_Ignore, #PB_Ignore, 360,260)
+      ResizeWidget(ID(Hex(0)), #PB_Ignore, #PB_Ignore, 360,260)
       
-      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+      BindEvent(#PB_Event_SizeWindow, @Window_0_ResizeWidget(), 0)
     EndIf
   EndProcedure
   
@@ -95,14 +95,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_Event_Timer
         If Width = 480
           direction = 1
-        ElseIf Width = Width(root())-100
+        ElseIf Width = WidgetWidth(root())-100
           direction =- 1
         EndIf
         ;         
         Width + direction
         Height + direction
         
-        Resize(ID(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
+        ResizeWidget(ID(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
         ReDraw(root())
         
       Case #PB_Event_Gadget
@@ -110,8 +110,8 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventGadget()
           Case 0
             Define *th._s_widget = ID(Str(0))
-            Width = Width(*th)
-            Height = Height(*th)
+            Width = WidgetWidth(*th)
+            Height = WidgetHeight(*th)
             
             If GetGadgetState(0)
               AddWindowTimer(0, 1, 200)

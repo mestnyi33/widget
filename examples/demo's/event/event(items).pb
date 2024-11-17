@@ -21,18 +21,18 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     Select WidgetEvent( )
-      Case #__event_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getText(EventWidget( ))) + ">>")
-      Case #__event_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getText(EventWidget( ))) + ">>")
+      Case #__event_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getTextWidget(EventWidget( ))) + ">>")
+      Case #__event_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getTextWidget(EventWidget( ))) + ">>")
         
-        If GetText( EventWidget( ) ) = "new"
+        If GetTextWidget( EventWidget( ) ) = "new"
           Free( EventWidget( ) )
         EndIf
         
       Case #__event_DragStart       : AddItem(w_flag, -1, Space + " drag")
-        DragText( "drag" )
+        DragTextWidget( "drag" )
         
       Case #__event_Drop            : AddItem(w_flag, -1, Space + " drop")
-        widget::Button( 145, 240, 30, 30, "new" )
+        widget::ButtonWidget( 145, 240, 30, 30, "new" )
         widget::Bind(widget( ), @events_widgets(), #__event_MouseEnter)
         widget::Bind(widget( ), @events_widgets(), #__event_MouseLeave)
     
@@ -53,8 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(OpenWindow(#PB_Any, 0, 0, 200, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     
-    w_flag = widget::Tree( 10, 10, 180, 200, #__tree_nobuttons | #__tree_nolines ) 
-    w_this = widget::Tree( 10, 220, 180, 70, #__tree_nobuttons | #__tree_nolines )
+    w_flag = widget::TreeWidget( 10, 10, 180, 200, #__tree_nobuttons | #__tree_nolines ) 
+    w_this = widget::TreeWidget( 10, 220, 180, 70, #__tree_nobuttons | #__tree_nolines )
     
     widget::Bind(w_this, @events_widgets(), #__event_LeftDown)
     widget::Bind(w_this, @events_widgets(), #__event_LeftUp)
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(w_this, @events_widgets(), #__event_DragStart)
     widget::Bind(w_this, @events_widgets(), constants::#__event_Drop)
       
-    w_this1 = widget::Tree( 140, 235, 40, 40, #__tree_nobuttons | #__tree_nolines) 
+    w_this1 = widget::TreeWidget( 140, 235, 40, 40, #__tree_nobuttons | #__tree_nolines) 
     EnableDDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
   
     widget::Bind(w_this1, @events_widgets(), #__event_LeftDown)

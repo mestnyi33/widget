@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
    ImageWidget(_x_,_y_,_width_,_height_,0,_flag_)
-   ;ButtonImage(_x_,_y_,_width_,_height_,0,_flag_)
+   ;ButtonImageWidget(_x_,_y_,_width_,_height_,0,_flag_)
   EndMacro
   
   Define m.s = #LF$

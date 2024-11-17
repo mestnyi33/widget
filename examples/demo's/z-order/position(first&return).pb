@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(widgets(), #PB_List_Before, *after\address)
           
           While NextElement(widgets()) 
-            If IsChild(widgets(), *this)
+            If IsWidgetChild(widgets(), *this)
               MoveElement(widgets(), #PB_List_Before, *after\address)
             EndIf
           Wend
@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(widgets(), #PB_List_After, *last\address)
           
           While PreviousElement(widgets()) 
-            If IsChild(widgets(), *this)
+            If IsWidgetChild(widgets(), *this)
               MoveElement(widgets(), #PB_List_After, *this\address)
             EndIf
           Wend
@@ -149,11 +149,11 @@ CompilerIf #PB_Compiler_IsMainFile
         after = GetPosition(EventWidget( ), #PB_List_After)
         
         If before
-          Debug "Before - "+GetClass(before)
+          Debug "Before - "+GetWidgetClass(before)
          _SetPosition(EventWidget( ), #PB_List_First)
         EndIf
         If after
-          Debug "After - "+GetClass(after)
+          Debug "After - "+GetWidgetClass(after)
         EndIf
         
         
@@ -166,10 +166,10 @@ CompilerIf #PB_Compiler_IsMainFile
           after = GetPosition(EventWidget( ), #PB_List_After)
           
           If before
-            Debug "Before - "+GetClass(before)
+            Debug "Before - "+GetWidgetClass(before)
           EndIf
           If after
-            Debug "After - "+GetClass(after)
+            Debug "After - "+GetWidgetClass(after)
           EndIf
         EndIf
     EndSelect
@@ -180,17 +180,17 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget( Open(0, 10, 10) );, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget( Open(0, 10, 10) );, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  Define *g0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetClass(widget(), "form_0")
-  Button(10,10,100,90,"button_0") : SetClass(widget(), GetText(widget()))
-  Button(30,30,100,90,"button_1") : SetClass(widget(), GetText(widget()))
-  Button(50,50,100,90,"button_2") : SetClass(widget(), GetText(widget()))
-  Button(70,70,100,90,"button_3") : SetClass(widget(), GetText(widget()))
-  Button(90,90,100,90,"button_4") : SetClass(widget(), GetText(widget()))
+  Define *g0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "form_0")
+  ButtonWidget(10,10,100,90,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(30,30,100,90,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(50,50,100,90,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(70,70,100,90,"button_3") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(90,90,100,90,"button_4") : SetWidgetClass(widget(), GetTextWidget(widget()))
   
   ForEach widgets()
-    If IsChild(widgets(), *g0)
+    If IsWidgetChild(widgets(), *g0)
       Bind(widgets(), @this_events(), #PB_EventType_LeftButtonDown)
       Bind(widgets(), @this_events(), #PB_EventType_LeftButtonUp)
     EndIf

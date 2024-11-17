@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
     #tree_item_invert
   EndEnumeration
   
-  Procedure.s get_text(m.s = #LF$)
+  Procedure.s get_TextWidget(m.s = #LF$)
     Protected Text.s = "This is a long line." + m.s +
                        "Who should show." +
                        m.s +
@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   ; cr = "" : text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Text.s = get_text( )
+  Text.s = get_TextWidget( )
   Global *this._s_widget,
          Tree,
          gadget,
@@ -80,14 +80,14 @@ CompilerIf #PB_Compiler_IsMainFile
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
-              SetText(Button_type, "widget")
+              SetTextWidget(Button_type, "widget")
             Else
               Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
               EndIf
-              SetText(Button_type, "gadget")
+              SetTextWidget(Button_type, "gadget")
             EndIf
             
             ;
@@ -191,26 +191,26 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = HyperLinkGadget(#PB_Any, 100, 100, 250, 200, Text, $FF00FFFF) : HideGadget(gadget, 1)
-    *this  = widget::HyperLink(100, 100, 250, 200, Text, $FF00FFFF, #__flag_Textmultiline);|)
+    *this  = widget::HyperLinkWidget(100, 100, 250, 200, Text, $FF00FFFF, #__flag_Textmultiline);|)
     
     Define y  = 10
     Define bh = 24
     Define p = bh+5
     ; flag
-    Button_type      = widget::Button(width + 45, y, 100, p, "gadget", #__flag_ButtonToggle)
-    button_default   = widget::Button(width + 45, y + p * 1, 100, bh, "default", #__flag_ButtonToggle)
-    button_multiline = widget::Button(width + 45, y + p * 2, 100, bh, "multiline", #__flag_ButtonToggle)
-    button_top       = widget::Button(width + 45, y + p * 3, 100, bh, "top", #__flag_ButtonToggle)
-    button_left      = widget::Button(width + 45, y + p * 4, 100, bh, "left", #__flag_ButtonToggle)
-    button_center    = widget::Button(width + 45, y + p * 5, 100, bh, "center", #__flag_ButtonToggle)
-    button_right     = widget::Button(width + 45, y + p * 6, 100, bh, "right", #__flag_ButtonToggle)
-    button_bottom    = widget::Button(width + 45, y + p * 7, 100, bh, "bottom", #__flag_ButtonToggle)
-    button_toggle    = widget::Button(width + 45, y + p * 8, 100, bh, "toggle", #__flag_ButtonToggle)
-    button_vertical  = widget::Button(width + 45, y + p * 9, 100, bh, "vertical", #__flag_ButtonToggle)
-    button_invert    = widget::Button(width + 45, y + p * 10, 100, bh, "invert", #__flag_ButtonToggle)
+    Button_type      = widget::ButtonWidget(width + 45, y, 100, p, "gadget", #__flag_ButtonToggle)
+    button_default   = widget::ButtonWidget(width + 45, y + p * 1, 100, bh, "default", #__flag_ButtonToggle)
+    button_multiline = widget::ButtonWidget(width + 45, y + p * 2, 100, bh, "multiline", #__flag_ButtonToggle)
+    button_top       = widget::ButtonWidget(width + 45, y + p * 3, 100, bh, "top", #__flag_ButtonToggle)
+    button_left      = widget::ButtonWidget(width + 45, y + p * 4, 100, bh, "left", #__flag_ButtonToggle)
+    button_center    = widget::ButtonWidget(width + 45, y + p * 5, 100, bh, "center", #__flag_ButtonToggle)
+    button_right     = widget::ButtonWidget(width + 45, y + p * 6, 100, bh, "right", #__flag_ButtonToggle)
+    button_bottom    = widget::ButtonWidget(width + 45, y + p * 7, 100, bh, "bottom", #__flag_ButtonToggle)
+    button_toggle    = widget::ButtonWidget(width + 45, y + p * 8, 100, bh, "toggle", #__flag_ButtonToggle)
+    button_vertical  = widget::ButtonWidget(width + 45, y + p * 9, 100, bh, "vertical", #__flag_ButtonToggle)
+    button_invert    = widget::ButtonWidget(width + 45, y + p * 10, 100, bh, "invert", #__flag_ButtonToggle)
     
 ;     ; flag
-;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_HyperlinkBoxes | #__tree_Hyperlinkes | #__Tree_threestate)
+;     tree = widget::TreeWidget(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_HyperlinkBoxes | #__tree_Hyperlinkes | #__Tree_threestate)
 ;     AddItem(tree, #tree_item_default, "default")
 ;     AddItem(tree, #tree_item_multiline, "multiline")
 ;     AddItem(tree, #tree_item_text, "text alignment", -1, 0)
@@ -234,10 +234,10 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
 
     ;\\
-    Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-    Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
-    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-    Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+    Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+    Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
+    Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+    Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
     
     ;\\
     SetState(Splitter_0, pos)

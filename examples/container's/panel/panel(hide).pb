@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent( )
       Case #PB_EventType_LeftClick
         
-        Select GetText( EventWidget( ) )
+        Select GetTextWidget( EventWidget( ) )
           Case "hide_2"
             Hide(*c, 1)
             ; Disable(*c, 1)
@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Open(3)
      
-     ;Button(10,5,50,35, "butt")
+     ;ButtonWidget(10,5,50,35, "butt")
      
       *w=Panel     (8, 8, 356, 203)
       AddItem (*w, -1, "Панель 1")
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *w1=Panel (5, 30, 340, 166)
       AddItem(*w1, -1, "Под-Панель 1")
       
-      Define *tree = Tree(5, 5, 180, 100, #__flag_Checkboxes|#PB_Tree_ThreeState)
+      Define *tree = TreeWidget(5, 5, 180, 100, #__flag_Checkboxes|#PB_Tree_ThreeState)
       
       Define i
       For i=0 To 20
@@ -69,53 +69,53 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       
       AddItem(*w1, -1, "Под-Панель 2")
-      Bind(Button( 5, 5, 55, 22, "hide_2"), @Events())
-      Bind(Button( 5, 30, 55, 22, "show_2"), @Events())
+      Bind(ButtonWidget( 5, 5, 55, 22, "hide_2"), @Events())
+      Bind(ButtonWidget( 5, 30, 55, 22, "show_2"), @Events())
       
-      *c=Container(110,5,150,155, #PB_Container_Flat) 
-      Define *p = Panel(10,5,150,65) 
+      *c=ContainerWidget(110,5,150,155, #PB_Container_Flat) 
+      Define *p = PanelWidget(10,5,150,65) 
       AddItem(*p, -1, "item-1")
-      Container(10,5,150,55, #PB_Container_Flat) 
-      Container(10,5,150,55, #PB_Container_Flat) 
-      Button(10,5,50,25, "butt1") 
+      ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+      ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+      ButtonWidget(10,5,50,25, "butt1") 
       CloseList()
       CloseList()
       AddItem(*p, -1, "item-2")
-      Container(10,5,150,55, #PB_Container_Flat) 
-      Container(10,5,150,55, #PB_Container_Flat) 
-      Button(10,5,50,25, "butt2") 
+      ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+      ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+      ButtonWidget(10,5,50,25, "butt2") 
       CloseList()
       CloseList()
       CloseList()
   
-      Container(10,75,150,55, #PB_Container_Flat) 
-      Container(10,5,150,55, #PB_Container_Flat) 
-      Container(10,5,150,55, #PB_Container_Flat) 
-      Button(10,5,50,45, "butt1") 
+      ContainerWidget(10,75,150,55, #PB_Container_Flat) 
+      ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+      ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+      ButtonWidget(10,5,50,45, "butt1") 
       CloseList()
       CloseList()
       CloseList()
       CloseList()
       
       AddItem(*w1, -1, "Под-Панель 3")
-      ;       Bind(@Events(), Button( 5, 5, 55, 22,"hide_3"))
-      ;       Bind(@Events(), Button( 5, 30, 55, 22,"show_3"))
+      ;       Bind(@Events(), ButtonWidget( 5, 5, 55, 22,"hide_3"))
+      ;       Bind(@Events(), ButtonWidget( 5, 30, 55, 22,"show_3"))
       
-      *s=Splitter(110, 5, 300, 152, Splitter(5, 5, 300, 152, Button(0,0,0,0, "кнопка 12"), 
-      Button(0,0,0,0, "кнопка 13")), Button(0,0,0,0, "кнопка 14"), #PB_Splitter_Vertical) 
+      *s=Splitter(110, 5, 300, 152, SplitterWidget(5, 5, 300, 152, ButtonWidget(0,0,0,0, "кнопка 12"), 
+      ButtonWidget(0,0,0,0, "кнопка 13")), ButtonWidget(0,0,0,0, "кнопка 14"), #PB_Splitter_Vertical) 
       
       AddItem(*w1, -1, "Под-Панель 4")
       
       *w2=Panel (5, 30, 340, 166)
       AddItem(*w2, -1, "Под--Панель 1")
       AddItem(*w2, -1, "Под--Панель 2")
-      Button( 5, 5, 80, 22, "кнопка 25")
-      Button( 5, 30, 80, 22, "кнопка 30")
+      ButtonWidget( 5, 5, 80, 22, "кнопка 25")
+      ButtonWidget( 5, 30, 80, 22, "кнопка 30")
       AddItem(*w2, -1, "Под--Панель 3")
       AddItem(*w2, -1, "Под--Панель 4")
       AddItem(*w2, 1, "Под--Панель -2-")
-      Button( 15, 5, 80, 22, "кнопка 15")
-      Button( 20, 30, 80, 22, "кнопка 20")
+      ButtonWidget( 15, 5, 80, 22, "кнопка 15")
+      ButtonWidget( 20, 30, 80, 22, "кнопка 20")
       CloseList()
       SetState(*w2, 4)
       
@@ -123,11 +123,11 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-      Button(5, 5, 80, 22,"кнопка 5")
+      ButtonWidget(5, 5, 80, 22,"кнопка 5")
       
       AddItem (*w, -1,"Панель 2")
-      Button(10, 15, 80, 24,"Кнопка 1")
-      Button(95, 15, 80, 24,"Кнопка 2")
+      ButtonWidget(10, 15, 80, 24,"Кнопка 1")
+      ButtonWidget(95, 15, 80, 24,"Кнопка 2")
       CloseList()
       
       ;       Bind(@Events(), *w)

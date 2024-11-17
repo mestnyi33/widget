@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, 1, #PB_ScrollArea_Flat)
-    SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
+    SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     BindGadgetEvent(g, @events_gadgets(), #PB_EventType_LeftClick)
     BindGadgetEvent(g, @events_gadgets(), #PB_EventType_Resize)
     

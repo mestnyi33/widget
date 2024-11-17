@@ -67,9 +67,9 @@
             ;             SetWindowTitle(0, Str(GetState(*scroll)))
             ;
             ;             If GetGadgetState(0)
-            ;               SetGadgetText(0, "set standart scrollbar")
+            ;               SetGadgetTextWidget(0, "set standart scrollbar")
             ;             Else
-            ;               SetGadgetText(0, "set inverted scrollbar")
+            ;               SetGadgetTextWidget(0, "set inverted scrollbar")
             ;             EndIf
             ;
             ;

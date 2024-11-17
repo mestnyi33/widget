@@ -47,9 +47,9 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
   MenuItem(#MenuItem_ZOrder_Down, "Push one layer down")
   MenuItem(#MenuItem_ZOrder_Bottom, "Push to the deepest layer")
   
-  Container(0, 0, 800, 450) 
+  ContainerWidget(0, 0, 800, 450) 
   a_init(widget() , 8)
-  SetColor(widget(), #__color_back, RGBA(255, 255, 255, alpha))
+  SetWidgetColor(widget(), #__color_back, RGBA(255, 255, 255, alpha))
   
   a_object(20, 20, 200, 100, "Layer = 1", RGBA(64, 128, 192, alpha))
   a_object(50, 50, 200, 100, "Layer = 2", RGBA(192, 64, 128, alpha))
@@ -57,7 +57,7 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
   a_object(110, 110, 200, 100, "Layer = 4", RGBA(192, 128, 64, alpha))
   a_object(140, 140, 200, 100, "Layer = 5", RGBA(128, 64, 192, alpha))
   
-  BindEvent( #PB_Event_Gadget, @right_events(), getwindow(root()), getgadget(root()), #PB_EventType_RightButtonUp )
+  BindEvent( #PB_Event_Gadget, @right_events(), GetCanvasWindow(root()), GetCanvasGadget(root()), #PB_EventType_RightButtonUp )
   BindEvent( #PB_Event_Menu, @menu_events())
   WaitClose( )
 EndIf

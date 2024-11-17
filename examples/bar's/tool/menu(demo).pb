@@ -3,7 +3,7 @@
 ;                                                                     - MenuID( #Menu )
 ;                                                 FreeBar( *address ) - FreeMenu( #Menu )
 ;                                                 HideBar( *address ) - HideMenu( #Menu, State )
-;                                               BarHeight( *address ) - MenuHeight( )
+;                                               BarWidgetHeight( *address ) - MenuWidgetHeight( )
 ; 
 ;                                           CreatePopupBar( [flags] ) - CreatePopupMenu( #Menu )
 ;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
@@ -20,14 +20,14 @@
 ;                                                      CloseSubBar( ) - CloseSubMenu( )
 ; 
 ; 
-;                                 GetItemText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
-;                         SetItemText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
+;                                 GetItemTextWidget( *address, TitleIndex ) - GetMenuTitleTextWidget( #Menu, Title )
+;                         SetItemTextWidget( *address, TitleIndex, text.s ) - SetMenuTitleTextWidget( #Menu, Title, Text$ )
 ;
 ;                          DisableBarItem( *address, BarItem, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                         SetBarItemState( *address, BarItem, state ) - SetMenuItemState( #Menu, MenuItem, State )
 ;                                GetBarItemState( *address, BarItem ) - GetMenuItemState( #Menu, MenuItem )
-;                         SetBarItemText( *address, BarItem, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
-;                                 GetBarItemText( *address, BarItem ) - GetMenuItemText( #Menu, Item )
+;                         SetBarItemTextWidget( *address, BarItem, text.s ) - SetMenuItemTextWidget( #Menu, Item, Text$ )
+;                                 GetBarItemTextWidget( *address, BarItem ) - GetMenuItemTextWidget( #Menu, Item )
 ;
 ;                      BindBarEvent( *address, BarItem, @callback( )) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
 ;                    UnbindBarEvent( *address, BarItem, @callback( )) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
@@ -127,11 +127,11 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(0, 8, @QuitHandler())
    
    ButtonGadget(777, 10, 220, 80, 35, "-777-" )
-   Bind(Button( 10, 220, 80, 35, "-777-" ), @HandlerEvents( ), #__event_LeftClick)  : SetClass(widget(), "-777-" )
+   Bind(ButtonWidget( 10, 220, 80, 35, "-777-" ), @HandlerEvents( ), #__event_LeftClick)  : SetWidgetClass(widget(), "-777-" )
    
    ;\\
-   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
-   SetColor( *menu, #__color_back, $FFF7FEE2 )
+   *menu = CreateBar( root( ) ) : SetWidgetClass(widget( ), "root_MenuBar" )
+   SetWidgetColor( *menu, #__color_back, $FFF7FEE2 )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -177,18 +177,18 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(*menu, @QuitHandler(), -1, 8)
    
    ;\\
-   Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
-   Bind(Button( 415, 220, 80, 35, "Button2" ), @HandlerEvents( ), #__event_MouseEnter)  : SetClass(widget(), "Button2" )
+   ButtonWidget( 415, 180, 80, 35, "Button1" ) : SetWidgetClass(widget(), "Button1" )
+   Bind(ButtonWidget( 415, 220, 80, 35, "Button2" ), @HandlerEvents( ), #__event_MouseEnter)  : SetWidgetClass(widget(), "Button2" )
    Define *window._s_widget = Window(100, 50, 300, 200, "menu click test", #PB_Window_SystemMenu)
-   Container( 10, 10, 80, 80, #PB_Container_Flat )
-   String( 10, 10, 80, 35, "String1" )
-   String( 10, 50, 80, 35, "String2" )
+   ContainerWidget( 10, 10, 80, 80, #PB_Container_Flat )
+   StringWidget( 10, 10, 80, 35, "String1" )
+   StringWidget( 10, 50, 80, 35, "String2" )
    CloseList( )
-   String( 10, 100, 80, 35, "String1" )
-   String( 10, 140, 80, 35, "String2" )
+   StringWidget( 10, 100, 80, 35, "String1" )
+   StringWidget( 10, 140, 80, 35, "String2" )
    
-   *menu = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
-   SetColor( *menu, #__color_back, $FFDFDFDF )
+   *menu = CreateBar( *window ) : SetWidgetClass(widget(), "window_MenuBar" )
+   SetWidgetColor( *menu, #__color_back, $FFDFDFDF )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")

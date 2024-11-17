@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open( 0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     a_init(root( ))
     
-    *this = ListView( 50,50,200,200, #__flag_gridlines | #__flag_borderless )
+    *this = ListViewWidget( 50,50,200,200, #__flag_gridlines | #__flag_borderless )
     
     For i = 1 To 6
       AddItem(*this, -1, "tree_add_item_"+Str(i), -1, -1) 

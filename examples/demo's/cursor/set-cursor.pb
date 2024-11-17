@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #__event_MouseMove
         If DragWidget = EventWidget( )
-          Resize( EventWidget( ), mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
+          ResizeWidget( EventWidget( ), mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
         EndIf
         
       Case #__event_Draw
@@ -145,7 +145,7 @@ CompilerIf #PB_Compiler_IsMainFile
     count + 1
     *this\fs = 10
     ;SetCursor( *this, #PB_Cursor_Hand )
-    Resize(*this, x, y, ImageWidth( img ), ImageHeight( img ))
+    ResizeWidget(*this, x, y, ImageWidget( img ), ImageHeight( img ))
     
     Bind( *this, @CustomEvents(), #__event_LeftUp )
     Bind( *this, @CustomEvents(), #__event_LeftDown )
@@ -156,11 +156,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind( #PB_All, @CustomEvents(), #__event_Repaint )
   EndProcedure
   
-  Procedure Canvas_resize( )
+  Procedure Canvas_ResizeWidget( )
     ;Protected width = GadgetWidth( EventGadget() )
     Protected width = WindowWidth( EventWindow() )
-    Resize( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
-    Resize( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
+    ResizeWidget( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
+    ResizeWidget( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
   EndProcedure
   
   Define yy = 90
@@ -170,7 +170,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  ;BindEvent(#PB_Event_SizeWindow, @Window_Resize(), 0)
+  ;BindEvent(#PB_Event_SizeWindow, @Window_ResizeWidget(), 0)
   ;
   CheckBoxGadget(2, 10, 10, 80,20, "vertical") : SetGadgetState(2, 1)
   CheckBoxGadget(3, 10, 30, 80,20, "invert")
@@ -225,16 +225,16 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   ;
-  MyCanvas = GetGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
-  SetColor(root(), #__color_back, $ffffffff)
+  MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
+  SetWidgetColor(root(), #__color_back, $ffffffff)
   
-  ;   ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
-  ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetWindow(Root()), MyCanvas, #PB_EventType_Resize )
+  ;   ;BindGadgetEvent(MyCanvas, @Canvas_ResizeWidget(), #PB_EventType_Resize )
+  ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_ResizeWidget());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
   
-  *mdi = MDI(x,y,width,height);, #__flag_autosize)
+  *mdi = MDIWidget(x,y,width,height);, #__flag_autosize)
                               ;a_init( *mdi )
-  SetColor(*mdi, #__color_back, $ffffffff)
-  ;SetColor(*mdi, #__color_frame, $ffffffff)
+  SetWidgetColor(*mdi, #__color_back, $ffffffff)
+  ;SetWidgetColor(*mdi, #__color_frame, $ffffffff)
   
   Define b=19;20        
   *mdi\scroll\v\round = 11

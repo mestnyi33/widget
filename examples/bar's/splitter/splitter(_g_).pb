@@ -145,8 +145,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
   OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)
   ;   widget::Open()
-  ;   window_ide = widget::GetWindow(root())
-  ;   canvas_ide = widget::GetGadget(root())
+  ;   window_ide = widget::GetCanvasWindow(root())
+  ;   canvas_ide = widget::GetCanvasGadget(root())
   
   s_tbar = TextGadget(#PB_Any, 0,0,0,0,"", #__flag_TextBorder)
   s_desi = TextGadget(#PB_Any, 0,0,0,0,"", #__flag_TextBorder)
@@ -164,7 +164,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
   Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
   
-  ;Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+  ;Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
   Splitter_0 = SplitterGadget(-1, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
   Splitter_1 = SplitterGadget(-1, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
   SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
@@ -175,7 +175,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Splitter_5 = SplitterGadget(-1, 0, 0, 0, 0, s_desi, Splitter_4, #PB_Splitter_Vertical)
   
   Splitter_design = SplitterGadget(-1, 0,0,0,0, s_tbar,Splitter_5, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-  ;Splitter_inspector = widget::Splitter(0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
+  ;Splitter_inspector = widget::SplitterWidget(0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
   Splitter_inspector = SplitterGadget(-1, 0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
   splitter_debug = SplitterGadget(-1, 0,0,0,0, Splitter_design,s_view, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
   splitter_help = SplitterGadget(-1, 0,0,0,0, Splitter_inspector,s_help, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
@@ -219,14 +219,14 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     SetGadgetState(Splitter_1, 20)
   EndIf
   
-  ;widget::Resize(Splitter_ide, 0,0,820,620)
+  ;widget::ResizeWidget(Splitter_ide, 0,0,820,620)
   
-  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(IDWidget( widget::GetParent( s_tbar ))) )
-  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(IDWidget( widget::GetParent( s_desi ))))
-  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(IDWidget( widget::GetParent( s_view ))))
-  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(IDWidget( widget::GetParent( s_list ))))
-  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(IDWidget( widget::GetParent( s_insp ))))
-  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(IDWidget( widget::GetParent( s_help ))))
+  SetGadgetTextWidget(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(IDWidget( widget::GetParent( s_tbar ))) )
+  SetGadgetTextWidget(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(IDWidget( widget::GetParent( s_desi ))))
+  SetGadgetTextWidget(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(IDWidget( widget::GetParent( s_view ))))
+  SetGadgetTextWidget(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(IDWidget( widget::GetParent( s_list ))))
+  SetGadgetTextWidget(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(IDWidget( widget::GetParent( s_insp ))))
+  SetGadgetTextWidget(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(IDWidget( widget::GetParent( s_help ))))
   
   Repeat 
     Until WaitWindowEvent() = #PB_Event_CloseWindow

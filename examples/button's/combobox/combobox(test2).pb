@@ -49,73 +49,73 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Open(GetActiveWindow())
 ;     ;
-;     ;Widgets("Container") = Container(0, 0, 995, 455);, #__flag_AutoSize) 
+;     ;Widgets("Container") = ContainerWidget(0, 0, 995, 455);, #__flag_AutoSize) 
 ;     
-; ;     Widgets(Hex(#PB_GadgetType_Button)) = Button(5, 5, 160,95, "Button_"+Hex(#PB_GadgetType_Button)+" text clip clip clip clip text" ) 
-  ;  Widgets(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)+" text clip clip clip clip text")                                 
-; ;     Widgets(Hex(#PB_GadgetType_Text)) = Text(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text)+#LF$+" text clip clip clip clip text", #PB_Text_Border)        
-; ;     Widgets(Hex(#PB_GadgetType_CheckBox)) = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox)+" text clip clip clip clip text", #PB_CheckBox_ThreeState) : SetState(Widgets(Hex(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween)
+; ;     Widgets(Hex(#PB_GadgetType_Button)) = ButtonWidget(5, 5, 160,95, "Button_"+Hex(#PB_GadgetType_Button)+" text clip clip clip clip text" ) 
+  ;  Widgets(Hex(#PB_GadgetType_String)) = StringWidget(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)+" text clip clip clip clip text")                                 
+; ;     Widgets(Hex(#PB_GadgetType_Text)) = TextWidget(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text)+#LF$+" text clip clip clip clip text", #PB_Text_Border)        
+; ;     Widgets(Hex(#PB_GadgetType_CheckBox)) = CheckBoxWidget(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox)+" text clip clip clip clip text", #PB_CheckBox_ThreeState) : SetState(Widgets(Hex(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween)
 ; ;     Widgets(Hex(#PB_GadgetType_Option)) = OptionWidget(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option)+" text clip clip clip clip text" ) : SetState(Widgets(Hex(#PB_GadgetType_Option)), 1)                                                       
-;     Widgets(Hex(#PB_GadgetType_ListView)) = ListView(5, 505, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), -1, "ListView_"+Hex(#PB_GadgetType_ListView)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next
+;     Widgets(Hex(#PB_GadgetType_ListView)) = ListViewWidget(5, 505, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), -1, "ListView_"+Hex(#PB_GadgetType_ListView)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next
     
-; ;     Widgets(Hex(#PB_GadgetType_Frame)) = Frame(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame)+" text clip clip clip clip text" )
-     Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBox(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
-     Widgets(Hex(#PB_GadgetType_Image)) = ComboBox(370, 205, 160,95, #PB_ComboBox_Editable) : AddItem(Widgets(Hex(#PB_GadgetType_Image)), -1, "ComboBox_"+Hex(#PB_GadgetType_Image)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_Image)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next : SetState(Widgets(Hex(#PB_GadgetType_Image)), 0) 
+; ;     Widgets(Hex(#PB_GadgetType_Frame)) = FrameWidget(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame)+" text clip clip clip clip text" )
+     Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBoxWidget(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
+     Widgets(Hex(#PB_GadgetType_Image)) = ComboBoxWidget(370, 205, 160,95, #PB_ComboBox_Editable) : AddItem(Widgets(Hex(#PB_GadgetType_Image)), -1, "ComboBox_"+Hex(#PB_GadgetType_Image)+" text clip clip clip clip text") : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_Image)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next : SetState(Widgets(Hex(#PB_GadgetType_Image)), 0) 
 ; ;     Widgets(Hex(#PB_GadgetType_Image)) = ImageWidget(170, 205, 160,95, img, #PB_Image_Border ) 
-; ;     Widgets(Hex(#PB_GadgetType_HyperLink)) = HyperLink(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink)+" text clip clip clip clip text", $00FF00, #PB_HyperLink_Underline ) 
-; ;     Widgets(Hex(#PB_GadgetType_Container)) = Container(170, 405, 160,95, #PB_Container_Flat )
+; ;     Widgets(Hex(#PB_GadgetType_HyperLink)) = HyperLinkWidget(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink)+" text clip clip clip clip text", $00FF00, #PB_HyperLink_Underline ) 
+; ;     Widgets(Hex(#PB_GadgetType_Container)) = ContainerWidget(170, 405, 160,95, #PB_Container_Flat )
 ; ;     Widgets(Hex(101)) = OptionWidget(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container)+" text clip clip clip clip text" )  : SetState(Widgets(Hex(101)), 1)  
 ; ;     Widgets(Hex(102)) = OptionWidget(10, 40, 110,20, "Option_widget"+" text clip clip clip clip text");, #__flag_flat)  
 ; ;     CloseList()
-;     Widgets(Hex(#PB_GadgetType_ListIcon)) = ListIcon(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon)+" text clip clip clip clip text",120 )                           
+;     Widgets(Hex(#PB_GadgetType_ListIcon)) = ListIconWidget(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon)+" text clip clip clip clip text",120 )                           
     
 ; ;     ;Widgets(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(Widgets(Hex(#PB_GadgetType_IPAddress)), MakeIPAddress(1, 2, 3, 4))    
 ; ;     Widgets(Hex(#PB_GadgetType_ProgressBar)) = ProgressBarWidget(335, 105, 160,95,0,100, 0, 50) : SetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
 ; ;     Widgets(Hex(#PB_GadgetType_ScrollBar)) = ScrollBarWidget(335, 205, 160,95,0,120,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
-; ;     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollArea(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = Button(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea)+" text clip clip clip clip text" ) : Widgets(Hex(202)) = Button(180-150, 90-20, 150,20, "Button_"+Hex(202)+" text clip clip clip clip text" ) : CloseList()
+; ;     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollAreaWidget(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = ButtonWidget(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea)+" text clip clip clip clip text" ) : Widgets(Hex(202)) = ButtonWidget(180-150, 90-20, 150,20, "Button_"+Hex(202)+" text clip clip clip clip text" ) : CloseList()
 ; ;     Widgets(Hex(#PB_GadgetType_TrackBar)) = TrackBarWidget(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
 ; ;     ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
 ; ;     
-; ;     Widgets(Hex(#PB_GadgetType_ButtonImage)) = ButtonImage(500, 5, 160,95, 1)
+; ;     Widgets(Hex(#PB_GadgetType_ButtonImage)) = ButtonImageWidget(500, 5, 160,95, 1)
 ; ;     ;     CalendarGadget(#PB_GadgetType_Calendar, 500, 105, 160,95 )
 ; ;     ;     DateGadget(#PB_GadgetType_Date, 500, 205, 160,95 )
- ;   Widgets(Hex(#PB_GadgetType_Editor)) = Editor(500, 305, 160,95 ) : AddItem(Widgets(Hex(#PB_GadgetType_Editor)), -1, "editor_"+Hex(#PB_GadgetType_Editor)+" text clip clip clip clip text")  
-;     ;     Widgets(Hex(#PB_GadgetType_ExplorerList)) = ExplorerList(500, 405, 160,95,"" )
+ ;   Widgets(Hex(#PB_GadgetType_Editor)) = EditorWidget(500, 305, 160,95 ) : AddItem(Widgets(Hex(#PB_GadgetType_Editor)), -1, "editor_"+Hex(#PB_GadgetType_Editor)+" text clip clip clip clip text")  
+;     ;     Widgets(Hex(#PB_GadgetType_ExplorerList)) = ExplorerListWidget(500, 405, 160,95,"" )
 ;     ;     ExplorerTreeGadget(#PB_GadgetType_ExplorerTree, 500, 505, 160,95,"" )
 ;     ;     
 ;     ;     ExplorerComboGadget(#PB_GadgetType_ExplorerCombo, 665, 5, 160,95,"" )
-;     Widgets(Hex(#PB_GadgetType_Spin)) = Spin(665, 105, 160,95,20,1000000000)
+;     Widgets(Hex(#PB_GadgetType_Spin)) = SpinWidget(665, 105, 160,95,20,1000000000)
     
-;     Widgets(Hex(#PB_GadgetType_Tree)) = Tree( 665, 205, 160, 95 ) 
+;     Widgets(Hex(#PB_GadgetType_Tree)) = TreeWidget( 665, 205, 160, 95 ) 
 ;     AddItem(Widgets(Hex(#PB_GadgetType_Tree)), -1, "Tree_"+Hex(#PB_GadgetType_Tree)+" text clip clip clip clip text") 
 ;     For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_Tree)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Next
 ;     
-; ;     Widgets(Hex(#PB_GadgetType_Panel)) = Panel(665, 305, 160,95) 
+; ;     Widgets(Hex(#PB_GadgetType_Panel)) = PanelWidget(665, 305, 160,95) 
 ; ;     AddItem(Widgets(Hex(#PB_GadgetType_Panel)), -1, "Panel_"+Hex(#PB_GadgetType_Panel)+" text clip clip clip clip text") 
-; ;     Widgets(Hex(255)) = Button(0, 0, 90,20, "Button_255"+" text clip clip clip clip text" ) 
-; ;     For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_Panel)), i, "item_"+Hex(i)+" text clip clip clip clip text") : Button(10,5,50,35, "butt_"+Str(i)+" text clip clip clip clip text") : Next 
+; ;     Widgets(Hex(255)) = ButtonWidget(0, 0, 90,20, "Button_255"+" text clip clip clip clip text" ) 
+; ;     For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_Panel)), i, "item_"+Hex(i)+" text clip clip clip clip text") : ButtonWidget(10,5,50,35, "butt_"+Str(i)+" text clip clip clip clip text") : Next 
 ; ;     CloseList()
 ; ;     
 ; ;     OpenList(Widgets(Hex(#PB_GadgetType_Panel)), 1)
-; ;     Container(10,5,150,55, #PB_Container_Flat) 
-; ;     Container(10,5,150,55, #PB_Container_Flat) 
-; ;     Button(10,5,50,35, "butt_1"+" text clip clip clip clip text") 
+; ;     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+; ;     ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+; ;     ButtonWidget(10,5,50,35, "butt_1"+" text clip clip clip clip text") 
 ; ;     CloseList()
 ; ;     CloseList()
 ; ;     CloseList()
 ; ;     SetState( Widgets(Hex(#PB_GadgetType_Panel)), 4)
     
-;     Widgets(Hex(301)) = Spin(0, 0, 100,20,0,1000000000000000000, #__spin_plus)
-;     Widgets(Hex(302)) = Spin(0, 0, 100,20,0,1000000000000000000) : SetState(Widgets(Hex(302)), 100000000000 )               
-;     Widgets(Hex(#PB_GadgetType_Splitter)) = Splitter(665, 405, 160,95,Widgets(Hex(301)), Widgets(Hex(302)))
+;     Widgets(Hex(301)) = SpinWidget(0, 0, 100,20,0,1000000000000000000, #__spin_plus)
+;     Widgets(Hex(302)) = SpinWidget(0, 0, 100,20,0,1000000000000000000) : SetState(Widgets(Hex(302)), 100000000000 )               
+;     Widgets(Hex(#PB_GadgetType_Splitter)) = SplitterWidget(665, 405, 160,95,Widgets(Hex(301)), Widgets(Hex(302)))
 ;     
-;     Widgets(Hex(#PB_GadgetType_MDI)) = MDI(665, 505, 160,95); ,#__flag_AutoSize)
+;     Widgets(Hex(#PB_GadgetType_MDI)) = MDIWidget(665, 505, 160,95); ,#__flag_AutoSize)
 ;     Define *g = AddItem(Widgets(Hex(#PB_GadgetType_MDI)), -1, "form_0"+" text clip clip clip clip text")
-;     Resize(*g, 7, 40, 120, 60)
+;     ResizeWidget(*g, 7, 40, 120, 60)
 ;     
 ; ;     CloseList()
 ; ; ;     OpenList(Root())
-; ;      Button(10,5,50,35, "butt_1") 
+; ;      ButtonWidget(10,5,50,35, "butt_1") 
 ;     
 ;     ;     CompilerEndIf
 ;     ;     InitScintilla()

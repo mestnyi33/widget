@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   If ReadFile(0, "/Users/as/Documents/GitHub/widget/widgets.pbi")   ; if the file could be read, we continue...
 ; ;     Text = ""
 ; ;     ;While Eof(0) = 0              ; loop as long the 'end of file' isn't reached
-; ;     Text + ReadString(0, #PB_File_IgnoreEOL) ;; + m.s      ; display line by line in the debug window
+; ;     Text + ReadStringWidget(0, #PB_File_IgnoreEOL) ;; + m.s      ; display line by line in the debug window
 ; ;                                              ;Wend
 ; ;     CloseFile(0)                             ; close the previously opened file
 ; ;                                              ;Debug Text
@@ -54,12 +54,12 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 800, 600, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Open(0, 10,10)
     
-    g = Editor( 0, 0, 0, 0 , #__flag_Textwordwrap) 
-    *g = Editor(0, 0, 0, 0) 
+    g = EditorWidget( 0, 0, 0, 0 , #__flag_Textwordwrap) 
+    *g = EditorWidget(0, 0, 0, 0) 
     
     If g
       If set
-        SetText(g, Text.s) 
+        SetTextWidget(g, Text.s) 
       EndIf
       If add
         For a = 0 To 2
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If *g
       If set
-        SetText(*g, Text.s) 
+        SetTextWidget(*g, Text.s) 
       EndIf
       If add
         For a = 0 To 2
@@ -89,7 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;SetFont(*g, FontID(0))
     EndIf
     
-    Splitter(8, 35, 800-16, 600-16-35,g,*g, #PB_Splitter_Vertical|#__flag_autosize)
+    SplitterWidget(8, 35, 800-16, 600-16-35,g,*g, #PB_Splitter_Vertical|#__flag_autosize)
     
     If Not g
       SetState(widget(), 0)

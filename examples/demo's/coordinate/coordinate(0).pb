@@ -12,10 +12,10 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList()
     CloseGadgetList()
     
-    *p = Panel(10+300, 10, 290, 200)
+    *p = PanelWidget(10+300, 10, 290, 200)
     AddItem(*p, -1, "panel_0")
-    *g = ScrollArea(10, 10, 250, 100, Sw, Sh, 15, #PB_ScrollArea_Flat)
-    *b = Button(Sw-130, Sh-30, 130, 30,"Button")
+    *g = ScrollAreaWidget(10, 10, 250, 100, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    *b = ButtonWidget(Sw-130, Sh-30, 130, 30,"Button")
     CloseList()
     CloseList()
     
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug ""
     
     Debug "Y ScrollArea-widget coordinate"
-    Debug "  screen - "+ Str(GadgetY(GetGadget(*g), #PB_Gadget_ScreenCoordinate)+y(*g, #__c_screen))
+    Debug "  screen - "+ Str(GadgetY(GetCanvasGadget(*g), #PB_Gadget_ScreenCoordinate)+y(*g, #__c_screen))
     Debug "  window - "+ WidgetY(*g, #__c_window)
     Debug "  container - "+ WidgetY(*g, #__c_container)
     Debug "  area - "+ GetAttribute(*g, #PB_ScrollArea_Y)

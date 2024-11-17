@@ -14,12 +14,12 @@ CompilerIf #PB_Compiler_IsMainFile
                                        #PB_Window_MinimizeGadget |
                                        #PB_Window_MaximizeGadget )
    
-   SetClass(Root( ), "window_0_root" )
-   Container( 10,10,240,140 ) : SetClass(widget( ), "window_0_root_container" )
-   Button(10,10,200,50,"window_0_root_butt_1")
-   SetClass(widget( ), "window_0_root_butt_1" )
-   Button(10,65,200,50,"window_0_root_butt_2")
-   SetClass(widget( ), "window_0_root_butt_2" )
+   SetWidgetClass(Root( ), "window_0_root" )
+   ContainerWidget( 10,10,240,140 ) : SetWidgetClass(widget( ), "window_0_root_container" )
+   ButtonWidget(10,10,200,50,"window_0_root_butt_1")
+   SetWidgetClass(widget( ), "window_0_root_butt_1" )
+   ButtonWidget(10,65,200,50,"window_0_root_butt_2")
+   SetWidgetClass(widget( ), "window_0_root_butt_2" )
    
    ;\\
    Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu | ;#PB_Window_NoActivate |
@@ -27,12 +27,12 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
    
-   SetClass(Root( ), "window_1_root" )
-   Container( 10,10,240,140 ) : SetClass(widget( ), "window_1_root_container" )
-   Button(10,10,200,50,"window_1_root_butt_1")
-   SetClass(widget( ), "window_1_root_butt_1" )
-   Button(10,65,200,50,"window_1_root_butt_2")
-   SetClass(widget( ), "window_1_root_butt_2" )
+   SetWidgetClass(Root( ), "window_1_root" )
+   ContainerWidget( 10,10,240,140 ) : SetWidgetClass(widget( ), "window_1_root_container" )
+   ButtonWidget(10,10,200,50,"window_1_root_butt_1")
+   SetWidgetClass(widget( ), "window_1_root_butt_1" )
+   ButtonWidget(10,65,200,50,"window_1_root_butt_2")
+   SetWidgetClass(widget( ), "window_1_root_butt_2" )
    
    ;\\
    Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu | ;#PB_Window_NoActivate |
@@ -40,12 +40,12 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
    
-   SetClass(Root( ), "window_2_root" )
-   Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
-   Button(10,10,200,50,"window_2_root_butt_1")
-   SetClass(widget( ), "window_2_root_butt_1" )
-   Button(10,65,200,50,"window_2_root_butt_2")
-   SetClass(widget( ), "window_2_root_butt_2" )
+   SetWidgetClass(Root( ), "window_2_root" )
+   ContainerWidget( 10,10,240,140 ) : SetWidgetClass(widget( ), "window_2_root_container" )
+   ButtonWidget(10,10,200,50,"window_2_root_butt_1")
+   SetWidgetClass(widget( ), "window_2_root_butt_1" )
+   ButtonWidget(10,65,200,50,"window_2_root_butt_2")
+   SetWidgetClass(widget( ), "window_2_root_butt_2" )
    
    
 ;    ;Message( "message", "test", #__message_ScreenCentered )
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;        If WidgetEvent( ) = #__event_repaint
 ;          ProcedureReturn 
 ;        EndIf
-       Debug ""+RemoveString(ClassFromEvent(WidgetEvent( )), "#__event_") +" - " + EventWidget( )\class +" - ("+ Bool(Root( ) = EventWidget( )\root) +")";+" "+ WidgetEvent( )
+       Debug ""+RemoveStringWidget(ClassFromEvent(WidgetEvent( )), "#__event_") +" - " + EventWidget( )\class +" - ("+ Bool(Root( ) = EventWidget( )\root) +")";+" "+ WidgetEvent( )
      EndIf
    EndProcedure
  CompilerEndIf

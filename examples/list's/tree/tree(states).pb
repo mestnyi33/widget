@@ -137,12 +137,12 @@ CompilerIf #PB_Compiler_IsMainFile
       	If GetData( eventWidget()) = Bool(itext)
       		SetData( eventWidget(), Bool(itext)!1)
       		For a = 0 To CountItems(eventWidget()) - 1
-      			SetItemText(eventWidget(), a, "Item "+Str(a) +" long & long line")
+      			SetItemTextWidget(eventWidget(), a, "Item "+Str(a) +" long & long line")
       		Next
       	Else
       		SetData( eventWidget(), Bool(itext))
       		For a = 0 To CountItems(eventWidget()) - 1
-      			SetItemText(eventWidget(), a, "Item "+Str(a))
+      			SetItemTextWidget(eventWidget(), a, "Item "+Str(a))
       		Next
       	EndIf
    EndSelect
@@ -186,20 +186,20 @@ EndProcedure
     SetGadgetState_(*g7, countitems-1) 
     
     ;\\ demo widget
-    *w1 = widget::Tree(265, 10, 120, 180 )
-    *w2 = widget::Tree(265+125, 10, 120, 180 )
+    *w1 = widget::TreeWidget(265, 10, 120, 180 )
+    *w2 = widget::TreeWidget(265+125, 10, 120, 180 )
     
     ;\\
-    *w3 = widget::Tree(265, 195, 120, 180, #PB_Tree_ClickSelect )
-    *w4 = widget::Tree(265+125, 195, 120, 180, #PB_Tree_ClickSelect )
+    *w3 = widget::TreeWidget(265, 195, 120, 180, #PB_Tree_ClickSelect )
+    *w4 = widget::TreeWidget(265+125, 195, 120, 180, #PB_Tree_ClickSelect )
     
     ;\\
-    *w5 = widget::Tree(265, 380, 120, 180, #PB_Tree_MultiSelect )
-    *w6 = widget::Tree(265+125, 380, 120, 180, #PB_Tree_MultiSelect )
+    *w5 = widget::TreeWidget(265, 380, 120, 180, #PB_Tree_MultiSelect )
+    *w6 = widget::TreeWidget(265+125, 380, 120, 180, #PB_Tree_MultiSelect )
     
     ;\\
-    *w7 = widget::Tree(265, 565, 120, 180, #PB_Tree_MultiSelect|#PB_Tree_ClickSelect )
-    *w8 = widget::Tree(265+125, 565, 120, 180, #PB_Tree_MultiSelect|#PB_Tree_ClickSelect )
+    *w7 = widget::TreeWidget(265, 565, 120, 180, #PB_Tree_MultiSelect|#PB_Tree_ClickSelect )
+    *w8 = widget::TreeWidget(265+125, 565, 120, 180, #PB_Tree_MultiSelect|#PB_Tree_ClickSelect )
     
     ;\\
     For a = 0 To countitems

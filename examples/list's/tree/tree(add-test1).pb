@@ -37,8 +37,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 225, #PB_Ignore, 230)
     
-    *g = Tree(10, 10, 210, 210, #__tree_CheckBoxes)                                         
-    *g1 = Tree(230, 10, 210, 210, #__tree_CheckBoxes)                                         
+    *g = TreeWidget(10, 10, 210, 210, #__tree_CheckBoxes)                                         
+    *g1 = TreeWidget(230, 10, 210, 210, #__tree_CheckBoxes)                                         
     
     ; 1_example
     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
@@ -78,11 +78,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
 ; ;   
 ; ;   item = 4
-; ;   Debug "g - "+ GetGadgetItemData(g, item) +" "+ GetGadgetItemText(g, item)
-; ;   Debug "w - "+ GetItemData(*g, item) +" "+ GetItemText(*g, item)
+; ;   Debug "g - "+ GetGadgetItemData(g, item) +" "+ GetGadgetItemTextWidget(g, item)
+; ;   Debug "w - "+ GetItemData(*g, item) +" "+ GetItemTextWidget(*g, item)
 ; ;   
-; ;   Debug "g1 - "+ GetGadgetItemData(g1, item) +" "+ GetGadgetItemText(g1, item)
-; ;   Debug "w1 - "+ GetItemData(*g1, item) +" "+ GetItemText(*g1, item)
+; ;   Debug "g1 - "+ GetGadgetItemData(g1, item) +" "+ GetGadgetItemTextWidget(g1, item)
+; ;   Debug "w1 - "+ GetItemData(*g1, item) +" "+ GetItemTextWidget(*g1, item)
   
   For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
   For i=0 To CountGadgetItems(g1) : SetGadgetItemState(g1, i, #PB_Tree_Expanded) : Next

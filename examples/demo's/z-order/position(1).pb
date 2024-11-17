@@ -20,29 +20,29 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    Button(5, 5, 200, 30,"btn0") : SetClass(widget(), GetText(widget()))  
+    ButtonWidget(5, 5, 200, 30,"btn0") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     
     If #demo = #before
-      *b1 = Button(10,10,80,50,"btn1") : SetClass(widget(), GetText(widget()))
-      *b2 = Button(30,40,80,50,"btn2") : SetClass(widget(), GetText(widget()))
+      *b1 = ButtonWidget(10,10,80,50,"btn1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+      *b2 = ButtonWidget(30,40,80,50,"btn2") : SetWidgetClass(widget(), GetTextWidget(widget()))
     EndIf
     
-    *c0 = Container(5, 40, 200, 100) : SetClass(widget(), "con0") 
-    SetColor(widget(), #PB_Gadget_BackColor, $ffff00ff)
-    Button(80, 20, 80, 50,"ctn1") : SetClass(widget(), GetText(widget()))  
+    *c0 = ContainerWidget(5, 40, 200, 100) : SetWidgetClass(widget(), "con0") 
+    SetWidgetColor(widget(), #PB_Gadget_BackColor, $ffff00ff)
+    ButtonWidget(80, 20, 80, 50,"ctn1") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     CloseList()
     
-    Button(5, 145, 200, 30,"btn3") : SetClass(widget(), GetText(widget()))
+    ButtonWidget(5, 145, 200, 30,"btn3") : SetWidgetClass(widget(), GetTextWidget(widget()))
     
     If #demo = #after
-      *b1 = Button(10,10,80,50,"btn1") : SetClass(widget(), GetText(widget()))
-      *b2 = Button(30,40,80,50,"btn2") : SetClass(widget(), GetText(widget()))
+      *b1 = ButtonWidget(10,10,80,50,"btn1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+      *b2 = ButtonWidget(30,40,80,50,"btn2") : SetWidgetClass(widget(), GetTextWidget(widget()))
     EndIf
   
     If #demo = #open
       OpenList(*c0)
-      *b1 = Button(10,10,80,50,"btn1") : SetClass(widget(), GetText(widget()))
-      *b2 = Button(30,40,80,50,"btn2") : SetClass(widget(), GetText(widget()))
+      *b1 = ButtonWidget(10,10,80,50,"btn1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+      *b2 = ButtonWidget(30,40,80,50,"btn2") : SetWidgetClass(widget(), GetTextWidget(widget()))
       CloseList()
     Else
       SetParent(*b1, *c0)

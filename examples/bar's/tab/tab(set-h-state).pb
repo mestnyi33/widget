@@ -16,48 +16,48 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
   ; first splitter
-  *w0 = widget::Tab(0, 0, 0, 0)
+  *w0 = widget::TabBarWidget(0, 0, 0, 0)
   For i=0 To 3
     widget::AddItem(*w0, -1, "tab_"+Str(i))
   Next
   
-  *w1 = widget::Tab(0, 0, 0, 0)
+  *w1 = widget::TabBarWidget(0, 0, 0, 0)
   For i=0 To 10
     widget::AddItem(*w1, -1, "tab_"+Str(i))
   Next
   
-  *w2 = widget::Splitter(300, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator)
+  *w2 = widget::SplitterWidget(300, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator)
   
   ; first splitter
-  *w3 = widget::Tab(0, 0, 0, 0)
+  *w3 = widget::TabBarWidget(0, 0, 0, 0)
   For i=0 To 10
     widget::AddItem(*w3, -1, "tab_rrrrrrrr"+Str(i))
   Next
   
-  *w4 = widget::Tab(0, 0, 0, 0)
+  *w4 = widget::TabBarWidget(0, 0, 0, 0)
   For i=0 To 10
     widget::AddItem(*w4, -1, "tab_"+Str(i))
   Next
   
-  *w5 = widget::Splitter(30, 110, 250, 70, *w3, *w4, #PB_Splitter_Separator)
+  *w5 = widget::SplitterWidget(30, 110, 250, 70, *w3, *w4, #PB_Splitter_Separator)
   
   
-  *w6 = widget::Splitter(30, 30, 250, 70, *w2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
-  *w7 = widget::Splitter(30, 110, 250, 70, *w5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  *w6 = widget::SplitterWidget(30, 30, 250, 70, *w2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  *w7 = widget::SplitterWidget(30, 110, 250, 70, *w5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   widget::SetState(*w6, 250)
   widget::SetState(*w7, 250)
   
    
-  *w8 = widget::Tab(300, 30, 250, 30)
+  *w8 = widget::TabBarWidget(300, 30, 250, 30)
   For i=0 To 10
     widget::AddItem(*w8, -1, "Tab "+Str(i))
   Next
   widget::bar_Tab_SetState(*w8, 6)
   
-  *w9 = widget::Panel(300, 70, 250, 110)
+  *w9 = widget::PanelWidget(300, 70, 250, 110)
   For i=0 To 10
     widget::AddItem(*w9, -1, "Sub "+Str(i))
-    widget::Button(110-3, 5, 30, 30, Str(i))
+    widget::ButtonWidget(110-3, 5, 30, 30, Str(i))
   Next
   widget::CloseList()
   widget::SetState(*w9, 6)

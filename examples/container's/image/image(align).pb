@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    If DesktopResolutionX() > 1
-   ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+   ResizeImage(1, DesktopScaledX(ImageWidget(1)),DesktopScaledY(ImageHeight(1)))
    EndIf
   
    Image = 1
@@ -19,8 +19,8 @@ CompilerIf #PB_Compiler_IsMainFile
   test_align = 1
   
   If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    canvas_gadget = GetGadget(root())
-    canvas_window = GetWindow(root())
+    canvas_gadget = GetCanvasGadget(root())
+    canvas_window = GetCanvasWindow(root())
     
     *B_1 = ImageWidget(10,  10, Width, 65, Image);, #__Image_left)
     *B_2 = ImageWidget(10,  10+65+10, Width, 65, Image, #__Image_top)

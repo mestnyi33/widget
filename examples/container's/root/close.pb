@@ -14,9 +14,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_0_root" )
-  Button(10,10,200,50,"Button_0_close")
-  SetClass(widget( ), "Button_0_close" )
+  SetWidgetClass(Root( ), "window_0_root" )
+  ButtonWidget(10,10,200,50,"Button_0_close")
+  SetWidgetClass(widget( ), "Button_0_close" )
   
   ;\\
   Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
@@ -24,9 +24,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_1_root" )
-  Button(10,10,200,50,"Button_1_close")
-  SetClass(widget( ), "Button_1_close" )
+  SetWidgetClass(Root( ), "window_1_root" )
+  ButtonWidget(10,10,200,50,"Button_1_close")
+  SetWidgetClass(widget( ), "Button_1_close" )
   
   ;\\
   Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
@@ -34,9 +34,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_2_root" )
-  Button(10,10,200,50,"Button_2_close")
-  SetClass(widget( ), "Button_2_close" )
+  SetWidgetClass(Root( ), "window_2_root" )
+  ButtonWidget(10,10,200,50,"Button_2_close")
+  SetWidgetClass(widget( ), "Button_2_close" )
   
   
   Procedure buttonEvent( )
@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure CallBack( )
     Select WidgetEvent( )
       Case #__event_leftclick
-        Select GetText( EventWidget())
+        Select GetTextWidget( EventWidget())
           Case "Button_0_close"
             If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               Close( EventWindow( ) )

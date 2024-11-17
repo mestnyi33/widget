@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       For j=0 To CountItems(EventWidget)-1
          If GetItemState(EventWidget, j)
-            Buffer$ +"|"+ GetItemText(EventWidget,j)
+            Buffer$ +"|"+ GetItemTextWidget(EventWidget,j)
          EndIf
       Next
       ;Debug GetItemState(EventWidget, 0)
@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     ;Buffer$=Gadgets(GetGadgetData(IDGadget))\Flag$
       ;     For i=1 To CountString(Buffer$,"|")+1
       ;       For j=0 To CountGadgetItems(pElement)-1
-      ;         If GetGadgetItemText(pElement,j)=StringField(Buffer$,i,"|")
+      ;         If GetGadgetItemTextWidget(pElement,j)=StringField(Buffer$,i,"|")
       ;           SetGadgetItemState(pElement, j, #PB_ListIcon_Checked)
       ;         EndIf
       ;       Next
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
                            Case #PB_ToolBarIcon_Delete
                               ButtonID = CatchImage(#PB_Any, ?deleteicon_png_start, 801)
                               
-                              ;                   If FindString(LCase(PackEntryName.S), "cross") And FindString(LCase(PackEntryName.S), "_") = 0
+                              ;                   If FindStringWidget(LCase(PackEntryName.S), "cross") And FindStringWidget(LCase(PackEntryName.S), "_") = 0
                               ;                     ImageSize = PackEntrySize(ZipFile)
                               ;                     *Image = AllocateMemory(ImageSize)
                               ;                     UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               ;                   EndIf
                               
                            Case #PB_ToolBarIcon_Help
-                              If FindString(LCase(PackEntryName.S), "help")
+                              If FindStringWidget(LCase(PackEntryName.S), "help")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Print
-                              If FindString(LCase(PackEntryName.S), "script")
+                              If FindStringWidget(LCase(PackEntryName.S), "script")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_PrintPreview
-                              If FindString(LCase(PackEntryName.S), "folder_explore")
+                              If FindStringWidget(LCase(PackEntryName.S), "folder_explore")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Replace
-                              If FindString(LCase(PackEntryName.S), "refresh") And FindString(LCase(PackEntryName.S), "_") = 0
+                              If FindStringWidget(LCase(PackEntryName.S), "refresh") And FindStringWidget(LCase(PackEntryName.S), "_") = 0
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Properties
-                              If FindString(LCase(PackEntryName.S), "edit") And FindString(LCase(PackEntryName.S), "_") = 0
+                              If FindStringWidget(LCase(PackEntryName.S), "edit") And FindStringWidget(LCase(PackEntryName.S), "_") = 0
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -142,7 +142,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Cut
-                              If FindString(LCase(PackEntryName.S), "cut")
+                              If FindStringWidget(LCase(PackEntryName.S), "cut")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -152,7 +152,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Copy
-                              If FindString(LCase(PackEntryName.S), "copy")
+                              If FindStringWidget(LCase(PackEntryName.S), "copy")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Paste
-                              If FindString(LCase(PackEntryName.S), "paste")
+                              If FindStringWidget(LCase(PackEntryName.S), "paste")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -172,7 +172,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Undo
-                              If FindString(LCase(PackEntryName.S), "arrow_undo")
+                              If FindStringWidget(LCase(PackEntryName.S), "arrow_undo")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -182,7 +182,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Redo
-                              If FindString(LCase(PackEntryName.S), "arrow_redo")
+                              If FindStringWidget(LCase(PackEntryName.S), "arrow_redo")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -192,7 +192,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Find
-                              If FindString(LCase(PackEntryName.S), "zoom")
+                              If FindStringWidget(LCase(PackEntryName.S), "zoom")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -202,7 +202,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Open
-                              If FindString(LCase(PackEntryName.S), "folder_page")
+                              If FindStringWidget(LCase(PackEntryName.S), "folder_page")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -212,7 +212,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_New
-                              If FindString(LCase(PackEntryName.S), "page") And FindString(LCase(PackEntryName.S), "_") = 0
+                              If FindStringWidget(LCase(PackEntryName.S), "page") And FindStringWidget(LCase(PackEntryName.S), "_") = 0
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -222,7 +222,7 @@ CompilerIf #PB_Compiler_IsMainFile
                               EndIf
                               
                            Case #PB_ToolBarIcon_Save
-                              If FindString(LCase(PackEntryName.S), "disk")
+                              If FindStringWidget(LCase(PackEntryName.S), "disk")
                                  ImageSize = PackEntrySize(ZipFile)
                                  *Image = AllocateMemory(ImageSize)
                                  UncompressPackMemory(ZipFile, *Image, ImageSize)
@@ -311,7 +311,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Next
    
    Debug "------------------------------------"
-   Define *g._s_WIDGET = ListIcon(10-3,220-3,508+6,200+6+20, "Column_0",160,#__Flag_CheckBoxes|#__Flag_ThreeState);|#__Flag_SizeGadget) 
+   Define *g._s_WIDGET = ListIconWidget(10-3,220-3,508+6,200+6+20, "Column_0",160,#__Flag_CheckBoxes|#__Flag_ThreeState);|#__Flag_SizeGadget) 
    
    ; AddColumn(*g, 1,"Column_2",100) ; good
    

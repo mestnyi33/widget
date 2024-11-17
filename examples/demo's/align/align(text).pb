@@ -13,15 +13,15 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
    Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
-      ;Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_Textmultiline, 0) ; image & text
-      Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
+      ;ButtonWidget(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_Textmultiline, 0) ; image & text
+      ButtonWidget(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;
       ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
-      ;CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
+      ;CheckBoxWidget(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;
-      ;Text(_x_,_y_,_width_,_height_,_text_,_flag_)
-      ;Editor(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : settext(widget(), _text_)
-      ;String(_x_,_y_,_width_,_height_,_text_,_flag_)
+      ;TextWidget(_x_,_y_,_width_,_height_,_text_,_flag_)
+      ;EditorWidget(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : setTextWidget(widget(), _text_)
+      ;StringWidget(_x_,_y_,_width_,_height_,_text_,_flag_)
    EndProcedure
    
    Define m.s = #LF$
@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If Open(0, 0, 0, x+(width+space)*3 + 15, y+(height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor( widget( ), #__color_Back, $FFffffff )
+      SetWidgetColor( widget( ), #__color_Back, $FFffffff )
       
       ; horizontal
       GadgeCreate(0, 10, 10,                      width, height, text_h,                      #__flag_Textleft|#__flag_Texttop);

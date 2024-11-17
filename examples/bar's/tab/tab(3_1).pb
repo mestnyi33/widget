@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
  
   
   ; first splitter
-  *s_1 = widget::Tab(300, 30, 250, 40);, 0,250,0)
+  *s_1 = widget::TabBarWidget(300, 30, 250, 40);, 0,250,0)
   AddItem(widget( ), 1, "tab_"+Str(1))
   AddItem(widget( ), 2, "tab_"+Str(2))
   AddItem(widget( ), 3, "tab_"+Str(3))
@@ -34,18 +34,18 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Debug widget( )\bar\thumb\len
 ;   Debug ""
 ;   
-  *s_2 = widget::Tab(300, 30+50, 250, 40);, 0,250,0)
+  *s_2 = widget::TabBarWidget(300, 30+50, 250, 40);, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
   
   ; first splitter
-  *s_3 = widget::Tab(300, 30+100, 250, 40);, 0,250,0)
+  *s_3 = widget::TabBarWidget(300, 30+100, 250, 40);, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
   
-  *s_4 = widget::Tab(300, 30+150, 250, 40);, 0,250,0)
+  *s_4 = widget::TabBarWidget(300, 30+150, 250, 40);, 0,250,0)
   For i=0 To 10
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
@@ -56,10 +56,10 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*s_4, 1);10)
   
   Debug "-"
-  Debug ""+*s_1\FocusedTab( )+" "+*s_1\FocusedTab( )\index+" "+*s_1\FocusedTab( )\text\string
-  Debug ""+*s_2\FocusedTab( )+" "+*s_2\FocusedTab( )\index
-  Debug ""+*s_3\FocusedTab( )+" "+*s_3\FocusedTab( )\index
-  Debug ""+*s_4\FocusedTab( )+" "+*s_4\FocusedTab( )\index
+  Debug ""+*s_1\FocusedTabBarWidget( )+" "+*s_1\FocusedTabBarWidget( )\index+" "+*s_1\FocusedTabBarWidget( )\text\string
+  Debug ""+*s_2\FocusedTabBarWidget( )+" "+*s_2\FocusedTabBarWidget( )\index
+  Debug ""+*s_3\FocusedTabBarWidget( )+" "+*s_3\FocusedTabBarWidget( )\index
+  Debug ""+*s_4\FocusedTabBarWidget( )+" "+*s_4\FocusedTabBarWidget( )\index
   Debug "-"
   
   Define event

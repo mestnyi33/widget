@@ -60,14 +60,14 @@ Debug constants::BinaryFlag( flags, #__flag_Textbottom )
 
 ; FromPBFlag( Type, Flag.q )
 
-Procedure Flag_Text( *this._s_WIDGET, flag.q )
+Procedure Flag_TextWidget( *this._s_WIDGET, flag.q )
   ;                           windows ; macos ; linux
   ;   Debug  #PB_Text_Center ; 1      ;               ; The text is centered in the gadget.
   ;   Debug  #PB_Text_Right  ; 2      ;               ; The text is right aligned.
   ;   Debug  #PB_Text_Border ; 131072 ;               ; A sunken border is drawn around the gadget.
   ;   
   
-  If *this\type = #__type_Text
+  If *this\type = #PB_WidgetType_Text
     If constants::BinaryFlag( Flag, #__flag_Textinvert )
       *this\text\invert = #True
     EndIf
@@ -109,7 +109,7 @@ Procedure Flag_Text( *this._s_WIDGET, flag.q )
   EndIf
 EndProcedure
 
-Procedure Flag_Button( *this._s_WIDGET, flag.q )
+Procedure Flag_ButtonWidget( *this._s_WIDGET, flag.q )
   ;                                  windows ; macos ; linux
   ;   Debug  #PB_Button_Default      ; 1                      ; Makes the button look As If it is the Default button in the window
   ;   Debug  #PB_Button_Left         ; 256                    ; Aligns the button text at the left.
@@ -118,7 +118,7 @@ Procedure Flag_Button( *this._s_WIDGET, flag.q )
   ;   Debug  #PB_Button_MultiLine    ; 8192                   ; If the text is too long, it will be displayed on several lines. 
   ;   
   
-  If *this\type = #__type_Button 
+  If *this\type = #PB_WidgetType_Button 
     If constants::BinaryFlag( flag, #__flag_ButtonToggle )
       flag &~ #__flag_ButtonToggle
       If Not *this\togglebox

@@ -9,14 +9,14 @@ CompilerIf #PB_Compiler_IsMainFile
     Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
       Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
       Text.s = ReplaceString( Text.s, #CR$, #LF$ )
-       Text.s = RemoveString( Text.s, #LF$ )
+       Text.s = RemoveStringWidget( Text.s, #LF$ )
        
     Protected g = EditorGadget( gadget,x,y,width,height);, flag )
     If gadget =- 1
       gadget = g
     EndIf
     
-    SetGadgetText( gadget,Text )
+    SetGadgetTextWidget( gadget,Text )
     ProcedureReturn g
   EndProcedure
   
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If EventType() = #PB_EventType_Focus
-      Debug String.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
+      Debug String.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
     Else
       Debug String.s +" - gadget"
     EndIf
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If eventtype = #__event_Focus
-      Debug String.s +" - widget" +" get text - "+ GetText(EventWidget( ))
+      Debug String.s +" - widget" +" get text - "+ GetTextWidget(EventWidget( ))
     Else
      ; Debug String.s +" - widget"
     EndIf
@@ -150,21 +150,21 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     SetTextAlignment( )
-    ;SetGadgetText(6, "pas")
-    Debug GetGadgetText(6)+" - get gadget text"
+    ;SetGadgetTextWidget(6, "pas")
+    Debug GetGadgetTextWidget(6)+" - get gadget text"
     
-    String(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
-    String(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_Textcenter)
-    String(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_Textright)
-    String(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
-    String(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
-    String(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
-    String(305+8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
-    String(305+8, (height+5)*7+10, 290, height, "")
-    String(305+8, (height+5)*8+10, 290, 90, Text)
+    StringWidget(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
+    StringWidget(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_Textcenter)
+    StringWidget(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_Textright)
+    StringWidget(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
+    StringWidget(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
+    StringWidget(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
+    StringWidget(305+8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
+    StringWidget(305+8, (height+5)*7+10, 290, height, "")
+    StringWidget(305+8, (height+5)*8+10, 290, 90, Text)
     
-    ;SetText(ID(6+1), "pas")
-    Debug GetText(ID(6+1))+"- get widget text"
+    ;SetTextWidget(ID(6+1), "pas")
+    Debug GetTextWidget(ID(6+1))+"- get widget text"
     
     For i=0 To 8
       Bind(ID(i), @events_widgets())

@@ -16,15 +16,15 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*p1, -1, "Под-Панель 1")
     
     AddItem(*p1, -1, "Под-Панель 3") 
-    *b0 = Button(5, 5, 80, 20,"кнопка_0") : SetClass(widget(), GetText(widget()))  
-    *b1 = Button(0,0,0,0,"кнопка_1") : SetClass(widget(), GetText(widget()))
-    *b2 = Button(0,0,0,0,"кнопка_2") : SetClass(widget(), GetText(widget()))
-    *b3 = Button(5, 30, 80, 20,"кнопка_3") : SetClass(widget(), GetText(widget()))  
+    *b0 = ButtonWidget(5, 5, 80, 20,"кнопка_0") : SetWidgetClass(widget(), GetTextWidget(widget()))  
+    *b1 = ButtonWidget(0,0,0,0,"кнопка_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+    *b2 = ButtonWidget(0,0,0,0,"кнопка_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
+    *b3 = ButtonWidget(5, 30, 80, 20,"кнопка_3") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     
-    *s1 = Splitter(0,0,0,0, *b1, *b2) : SetClass(widget(), "split_1")
-    *b4 = Button(0,0,0,0,"кнопка_4") : SetClass(widget(), GetText(widget()))
-    *s2 = Splitter(5, 55, 300, 150, *s1,*b4,  #PB_Splitter_Vertical) : SetClass(widget(), "split_2") 
-    *b5 = Button(5, 55+155, 80, 20,"кнопка_5") : SetClass(widget(), GetText(widget()))
+    *s1 = SplitterWidget(0,0,0,0, *b1, *b2) : SetWidgetClass(widget(), "split_1")
+    *b4 = ButtonWidget(0,0,0,0,"кнопка_4") : SetWidgetClass(widget(), GetTextWidget(widget()))
+    *s2 = SplitterWidget(5, 55, 300, 150, *s1,*b4,  #PB_Splitter_Vertical) : SetWidgetClass(widget(), "split_2") 
+    *b5 = ButtonWidget(5, 55+155, 80, 20,"кнопка_5") : SetWidgetClass(widget(), GetTextWidget(widget()))
     
     ;     - 
     ;     - 0 0 none Panel кнопка_6
@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     -
     
     CloseList()
-    Button(5, 30+266+5, 55, 22,"кнопка_6") : SetClass(widget(), GetText(widget()))
+    ButtonWidget(5, 30+266+5, 55, 22,"кнопка_6") : SetWidgetClass(widget(), GetTextWidget(widget()))
     
     SetState(*p1,1)
     

@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             
          Case #__event_LeftClick
-            Select GetText( EventWidget( ))
+            Select GetTextWidget( EventWidget( ))
                Case "window_0_minimize", "window_1_minimize", "window_2_minimize"
                   If GetState( EventWidget( )\window ) = #PB_Window_Minimize
                      SetState( EventWidget( )\window, #PB_Window_Normal )
@@ -64,11 +64,11 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MinimizeGadget |
                                             #PB_Window_MaximizeGadget )
       
-      SetClass(widget( ), "window_0" )
-      Button(10,-10,200,50,"window_0_maximize")
-      SetClass(widget( ), "window_0_maximize" )
-      Button(10,65,200,50,"window_0_minimize")
-      SetClass(widget( ), "window_0_minimize" )
+      SetWidgetClass(widget( ), "window_0" )
+      ButtonWidget(10,-10,200,50,"window_0_maximize")
+      SetWidgetClass(widget( ), "window_0_maximize" )
+      ButtonWidget(10,65,200,50,"window_0_minimize")
+      SetWidgetClass(widget( ), "window_0_minimize" )
       
       
       WaitEvent( #PB_All, @CallBack( ) )

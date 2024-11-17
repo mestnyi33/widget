@@ -33,8 +33,8 @@ If OpenWindow(0, 0, 0, 270+270, 100, "HyperLinkGadget", #PB_Window_SystemMenu | 
    HyperLinkGadget(0, 10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline)
    HyperLinkGadget(1, 10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline)
    SetGadgetFont(1, FontID(5))
-   SetGadgetColor(1, #PB_Gadget_FrontColor, $ff0000)
-   SetGadgetColor(1, #PB_Gadget_BackColor, $0000ff)
+   SetGadGetWidgetColor(1, #PB_Gadget_FrontColor, $ff0000)
+   SetGadGetWidgetColor(1, #PB_Gadget_BackColor, $0000ff)
    
    For i = 0 To 1
       BindGadgetEvent(i, @events_gadgets())
@@ -43,11 +43,11 @@ EndIf
 
 ;
 If Open(0, 270,0,270,100)
-   HyperLink(10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline)
-   HyperLink(10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline)
+   HyperLinkWidget(10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline)
+   HyperLinkWidget(10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline)
    SetFont(ID(1), FontID(5))
-   SetColor(ID(1), #PB_Gadget_FrontColor, $ffff0000)
-   SetColor(ID(1), #PB_Gadget_BackColor, $ff0000ff)
+   SetWidgetColor(ID(1), #PB_Gadget_FrontColor, $ffff0000)
+   SetWidgetColor(ID(1), #PB_Gadget_BackColor, $ff0000ff)
    
    ;Bind(#PB_All, @events_widgets())
    

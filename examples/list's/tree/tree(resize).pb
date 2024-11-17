@@ -9,16 +9,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Global Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
       
   If Open(0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *this = widget::tree(100, 100, 250, 200, #PB_Tree_CheckBoxes )
+    *this = widget::TreeWidget(100, 100, 250, 200, #PB_Tree_CheckBoxes )
     
     For i = 1 To 6
       AddItem(*this, -1, "tree_add_item_"+Str(i), -1, -1) 
     Next 
     
-    Splitter_0 = widget::Splitter(0, 0, 0, 0, #PB_Default, *this, #PB_Splitter_FirstFixed)
-    Splitter_1 = widget::Splitter(0, 0, 0, 0, #PB_Default, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
-    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #PB_Default, #PB_Splitter_SecondFixed)
-    Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #PB_Default, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+    Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, #PB_Default, *this, #PB_Splitter_FirstFixed)
+    Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, #PB_Default, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
+    Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, #PB_Default, #PB_Splitter_SecondFixed)
+    Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #PB_Default, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
     SetState(Splitter_0, pos)
     SetState(Splitter_1, pos)

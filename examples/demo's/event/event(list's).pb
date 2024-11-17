@@ -21,7 +21,7 @@ Procedure events_gadgets()
   ;  Debug  ""+EventType()+" "+ EventGadget() +" - gadget "+ GetGadgetState(EventGadget())
   Select Event()
     Case #PB_Event_GadgetDrop
-      Debug ""+ EventGadget() +" - gadget Drop "+GetGadgetState(EventGadget()) ; "drop - "+EventDropText()
+      Debug ""+ EventGadget() +" - gadget Drop "+GetGadgetState(EventGadget()) ; "drop - "+EventDropTextWidget()
       
     Case #PB_Event_Gadget
       Select EventType()
@@ -29,7 +29,7 @@ Procedure events_gadgets()
           Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
           
           ; 
-          DragText(GetGadgetItemText(EventGadget(), GetGadgetState(EventGadget())))
+          DragTextWidget(GetGadgetItemTextWidget(EventGadget(), GetGadgetState(EventGadget())))
           
         Case #PB_EventType_Change
           Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
@@ -121,7 +121,7 @@ If Open(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   
   ;--------------
   
-  ListView(10, 190, 250, 120)
+  ListViewWidget(10, 190, 250, 120)
   For a = 0 To 12
     AddItem (ID(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
@@ -129,7 +129,7 @@ If Open(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(ID(0), 8) ; set (beginning with 0) the tenth item as the active one
   SetState(ID(0), 9) ; set (beginning with 0) the tenth item as the active one
   
-  Tree(10+270, 190, 250, 120)
+  TreeWidget(10+270, 190, 250, 120)
   For a = 0 To 12
     AddItem (ID(1), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
@@ -138,19 +138,19 @@ If Open(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(ID(1), 8) ; set (beginning with 0) the tenth item as the active one
   SetState(ID(1), 9) ; set (beginning with 0) the tenth item as the active one
   
-  Editor(10+270+270, 190, 250, 120) ; ListIcon(10+270+270, 190, 250, 120, "column_0", 80) : AddColumn(ID(2), 1, "column_1", 80)
+  EditorWidget(10+270+270, 190, 250, 120) ; ListIconWidget(10+270+270, 190, 250, 120, "column_0", 80) : AddColumn(ID(2), 1, "column_1", 80)
   For a = 0 To 12
     AddItem(ID(2), -1, "Item " + Str(a) +Chr(10)+ " of the Listview") ; define listview content
   Next
-  ;   Resize(ID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 121)
-  ;   Resize(ID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 120)
+  ;   ResizeWidget(ID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 121)
+  ;   ResizeWidget(ID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 120)
   ;   SetState(ID(2), 7) ; set (beginning with 0) the tenth item as the active one
   ;   SetState(ID(2), 8) ; set (beginning with 0) the tenth item as the active one
   ;   SetState(ID(2), 9) ; set (beginning with 0) the tenth item as the active one
   
-  Text(10,170, 250,20, "list")
-  Text(10+270,170, 250,20, "tree")
-  Text(10+270+270,170, 250,20, "editor")
+  TextWidget(10,170, 250,20, "list")
+  TextWidget(10+270,170, 250,20, "tree")
+  TextWidget(10+270+270,170, 250,20, "editor")
   
   For i = 0 To 2
     Bind(ID(i), @events_widgets())

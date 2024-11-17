@@ -110,7 +110,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;           ; SetCursor(EventWidget( ), ImageID(GetItemData(id_elements_tree, a_transform()\type)))
 ;         EndIf
 ;         
-;         If getclass(e_widget) = "ToolBar"
+;         If GetWidgetClass(e_widget) = "ToolBar"
 ;           Protected transform, move_x, move_y, BarButton = GetData(e_widget)
 ;           Static NewList *copy._s_group()
 ;           
@@ -168,28 +168,28 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;                   Case #_tb_group_left ; left
 ;                                        ;a_transform()\id[0]\x = 0
 ;                     a_transform()\id[0]\width = 0
-;                     Resize(a_transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;                     ResizeWidget(a_transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
 ;                     
 ;                   Case #_tb_group_right ; right
 ;                     a_transform()\id[0]\x = 0
 ;                     a_transform()\id[0]\width = 0
-;                     Resize(a_transform()\group()\widget, move_x + a_transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;                     ResizeWidget(a_transform()\group()\widget, move_x + a_transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
 ;                     
 ;                   Case #_tb_group_top ; top
 ;                                       ;a_transform()\id[0]\y = 0
 ;                     a_transform()\id[0]\height = 0
-;                     Resize(a_transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
+;                     ResizeWidget(a_transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
 ;                     
 ;                   Case #_tb_group_bottom ; bottom
 ;                     a_transform()\id[0]\y = 0
 ;                     a_transform()\id[0]\height = 0
-;                     Resize(a_transform()\group()\widget, #PB_Ignore, move_y + a_transform()\group()\height, #PB_Ignore, #PB_Ignore)
+;                     ResizeWidget(a_transform()\group()\widget, #PB_Ignore, move_y + a_transform()\group()\height, #PB_Ignore, #PB_Ignore)
 ;                     
 ;                   Case #_tb_group_width ; stretch horizontal
-;                     Resize(a_transform()\group()\widget, #PB_Ignore, #PB_Ignore, a_transform()\id[0]\width, #PB_Ignore)
+;                     ResizeWidget(a_transform()\group()\widget, #PB_Ignore, #PB_Ignore, a_transform()\id[0]\width, #PB_Ignore)
 ;                     
 ;                   Case #_tb_group_height ; stretch vertical
-;                     Resize(a_transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_transform()\id[0]\height)
+;                     ResizeWidget(a_transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, a_transform()\id[0]\height)
 ;                     
 ;                 EndSelect
 ;               Next
@@ -207,12 +207,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ; #PB_ToolBar_Normal: the button will act as standard button (Default)
     ; #PB_ToolBar_Toggle: the button will act as toggle button
     
-     ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,barbuttonsize,barbuttonsize,_image_)
+     ;ButtonImageWidget(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,barbuttonsize,barbuttonsize,_image_)
 ;      If IsImage(_image_)
 ;        Debug IsImage( ResizeImage(_image_,barbuttonsize,barbuttonsize ))
 ;      EndIf
      
-    ButtonImage(2+((X(widget())+Width(widget())) * Bool(MacroExpandedCount - 1)), 2,barbuttonsize,barbuttonsize,_image_, _mode_)
+    ButtonImageWidget(2+((X(widget())+WidgetWidth(widget())) * Bool(MacroExpandedCount - 1)), 2,barbuttonsize,barbuttonsize,_image_, _mode_)
     ;widget()\color = widget()\parent\color
     ;widget()\text\padding\x = 0
     widget()\class = "ToolBar"
@@ -222,15 +222,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndMacro
   
   Macro Separator_()
-    Text(2+(X(widget())+Width(widget())), 2,1,barbuttonsize,"")
-    Button((X(widget())+Width(widget())), 2+4,1,barbuttonsize-6,"")
+    TextWidget(2+(X(widget())+WidgetWidth(widget())), 2,1,barbuttonsize,"")
+    ButtonWidget((X(widget())+WidgetWidth(widget())), 2+4,1,barbuttonsize-6,"")
     SetData(widget(), - MacroExpandedCount)
-    Text((X(widget())+Width(widget())), 2,1,barbuttonsize,"")
+    TextWidget((X(widget())+WidgetWidth(widget())), 2,1,barbuttonsize,"")
   EndMacro
   
   
   Open(0, 150, 150, 600, 600+barbuttonsize+6, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
-  toolbar_design = Container(0,0,600,barbuttonsize+6) 
+  toolbar_design = ContainerWidget(0,0,600,barbuttonsize+6) 
   ;SetAlignmentFlag(widget(), #__align_top)
   ;ToolBar(toolbar, window, flags)
   
@@ -238,7 +238,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;   SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
 ;   SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
 ;   
-;   ;BarButton(2, CatchImage(#PB_Any,?group_un))
+;   ;BarButtonWidget(2, CatchImage(#PB_Any,?group_un))
    Separator_()
   BarButton_(#_tb_group_left, CatchImage(#PB_Any,?image_16))
   BarButton_(#_tb_group_right, CatchImage(#PB_Any,?image_24))
@@ -263,35 +263,35 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   CloseList()
   
   
-  ;Container(0,barbuttonsize+6,600,600);, #__flag_autosize) 
+  ;ContainerWidget(0,barbuttonsize+6,600,600);, #__flag_autosize) 
   ;SetAlignmentFlag(widget(), #__align_full) 
   
-  a_init(MDI(0,barbuttonsize+6,600,600)) 
+  a_init(MDIWidget(0,barbuttonsize+6,600,600)) 
   
   
-  AddItem(widget(), -1, "form_0") : Resize(widget(), 50, 30, 500, 500) : *new = widget()
-  SetColor(widget(), #__color_back, $C0AED8F2)
+  AddItem(widget(), -1, "form_0") : ResizeWidget(widget(), 50, 30, 500, 500) : *new = widget()
+  SetWidgetColor(widget(), #__color_back, $C0AED8F2)
   ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
-  ; ; container(30,30,450-2,450-2)
-  ;;ScrollArea(30,30,450-2,450-2, 0,0)
-  ScrollArea(30,30,450-2,450-2, 250,750, 1);a_transform()\grid\size)
-  SetColor(widget(), #__color_back, $C0F2AEDA)
+  ; ; ContainerWidget(30,30,450-2,450-2)
+  ;;ScrollAreaWidget(30,30,450-2,450-2, 0,0)
+  ScrollAreaWidget(30,30,450-2,450-2, 250,750, 1);a_transform()\grid\size)
+  SetWidgetColor(widget(), #__color_back, $C0F2AEDA)
   
-  Panel(30,30,400,400)
-  SetColor(widget(), #__color_back, $C0AEF2D5)
+  PanelWidget(30,30,400,400)
+  SetWidgetColor(widget(), #__color_back, $C0AEF2D5)
   AddItem(widget(), -1, "item-1")
-  ;container(30,30,400,400)
-  ComboBox(120,160,115,50)
+  ;ContainerWidget(30,30,400,400)
+  ComboBoxWidget(120,160,115,50)
   AddItem(widget(), -1, "combo1")
   SetState(widget(), 0)
   
-  ;Button(120,160,115,50,"butt1")
+  ;ButtonWidget(120,160,115,50,"butt1")
   AddItem(widget()\parent, -1, "item-2")
-  Button(150,180,115,50,"butt2")
-  Button(180,200,115,50,"butt3")
-  Button(120,240,170,40,"butt4")
+  ButtonWidget(150,180,115,50,"butt2")
+  ButtonWidget(180,200,115,50,"butt3")
+  ButtonWidget(120,240,170,40,"butt4")
   CloseList()
-  Spin(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
+  SpinWidget(120,120,170,40, 0,10);, #__spin_miror | #__spin_text_right )
   CloseList()
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow

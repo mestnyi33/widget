@@ -12,60 +12,60 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-;   Define *mdi = MDI(x,y,Width, height);, #__flag_autosize)
+;   Define *mdi = MDIWidget(x,y,Width, height);, #__flag_autosize)
 ;   
 ;   Define *g0 = AddItem(*mdi, -1, "form_0")
-;   Button(10,10,80,80,"button_0")
+;   ButtonWidget(10,10,80,80,"button_0")
 ;   
 ;   Define *g1 = AddItem(*mdi, -1, "form_1")
-;   Button(10,10,80,80,"button_1")
+;   ButtonWidget(10,10,80,80,"button_1")
 ;   
 ;   Define *g2 = AddItem(*mdi, -1, "form_2")
-;   Button(10,10,80,80,"button_2")
+;   ButtonWidget(10,10,80,80,"button_2")
 
-  Window(10,10,100,70,"window_1", #PB_Window_SystemMenu) : SetClass(widget(), "window_1") : CloseList()
-  Window(120,10,100,70,"window_2", #PB_Window_SystemMenu) : SetClass(widget(), "window_2") : CloseList()
+  Window(10,10,100,70,"window_1", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_1") : CloseList()
+  Window(120,10,100,70,"window_2", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_2") : CloseList()
   
-  Window(x,y,width, height,"window_3", #PB_Window_SystemMenu) : SetClass(widget(), "window_3") 
-  ;Define *mdi._s_widget = MDI(x,y,Width, height);, #__flag_autosize)
-  Define *mdi._s_widget = MDI(10,10, Width( widget( ), #__c_inner )-20, Height( widget( ), #__c_inner )-20);, #__flag_autosize)
+  Window(x,y,width, height,"window_3", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "window_3") 
+  ;Define *mdi._s_widget = MDIWidget(x,y,Width, height);, #__flag_autosize)
+  Define *mdi._s_widget = MDIWidget(10,10, WidgetWidth( widget( ), #__c_inner )-20, WidgetHeight( widget( ), #__c_inner )-20);, #__flag_autosize)
   
-  ;Define *mdi._s_widget = MDI(0,0,0,0, #__flag_autosize)
+  ;Define *mdi._s_widget = MDIWidget(0,0,0,0, #__flag_autosize)
   ;;a_init( *mdi )
   
-  Define *g0._s_widget = AddItem(*mdi, -1, "form_0") : SetClass(widget(), "form_0") 
-  Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
+  Define *g0._s_widget = AddItem(*mdi, -1, "form_0") : SetWidgetClass(widget(), "form_0") 
+  ButtonWidget(10,10,80,80,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Window(100,10,100,70,"window_01", #PB_Window_SystemMenu, *g0) : SetClass(widget(), "window_01") : CloseList()
-  Window(150,50,100,70,"window_02", #PB_Window_SystemMenu, *g0) : SetClass(widget(), "window_02") : CloseList()
+  Window(100,10,100,70,"window_01", #PB_Window_SystemMenu, *g0) : SetWidgetClass(widget(), "window_01") : CloseList()
+  Window(150,50,100,70,"window_02", #PB_Window_SystemMenu, *g0) : SetWidgetClass(widget(), "window_02") : CloseList()
   
-  Define *g1._s_widget = AddItem(*mdi, -1, "form_1") : SetClass(widget(), "form_1") 
-  Button(10,10,80,80,"button_1") : SetClass(widget(), GetText(widget())) 
+  Define *g1._s_widget = AddItem(*mdi, -1, "form_1") : SetWidgetClass(widget(), "form_1") 
+  ButtonWidget(10,10,80,80,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Window(100,10,100,70,"window_11", #PB_Window_SystemMenu, *g1) : SetClass(widget(), "window_11") : CloseList()
-  Window(150,50,100,70,"window_12", #PB_Window_SystemMenu, *g1) : SetClass(widget(), "window_12") 
+  Window(100,10,100,70,"window_11", #PB_Window_SystemMenu, *g1) : SetWidgetClass(widget(), "window_11") : CloseList()
+  Window(150,50,100,70,"window_12", #PB_Window_SystemMenu, *g1) : SetWidgetClass(widget(), "window_12") 
   
-  Container(20,30,60,60)
-  widget()\bs = 10 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  Button(10,10,80,40,"button_0") : SetClass(widget(), GetText(widget())) 
-  widget()\bs = 10 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  ContainerWidget(20,30,60,60)
+  widget()\bs = 10 : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  ButtonWidget(10,10,80,40,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  widget()\bs = 10 : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   CloseList()
   CloseList()
   
-  Define *g2._s_widget = AddItem(*mdi, -1, "form_2") : SetClass(widget(), "form_2") 
-  Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
+  Define *g2._s_widget = AddItem(*mdi, -1, "form_2") : SetWidgetClass(widget(), "form_2") 
+  ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget())) 
   
-  Window(100,10,100,70,"window_21", #PB_Window_SystemMenu, *g2) : SetClass(widget(), "window_21") : CloseList()
-  Window(150,50,100,70,"window_22", #PB_Window_SystemMenu, *g2) : SetClass(widget(), "window_22") : CloseList()
+  Window(100,10,100,70,"window_21", #PB_Window_SystemMenu, *g2) : SetWidgetClass(widget(), "window_21") : CloseList()
+  Window(150,50,100,70,"window_22", #PB_Window_SystemMenu, *g2) : SetWidgetClass(widget(), "window_22") : CloseList()
   
 ;   OpenList(*mdi)
-;   Button(450,110,80,80,"button_1") : SetClass(widget(), GetText(widget())) 
+;   ButtonWidget(450,110,80,80,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget())) 
 ;   CloseList()
   
-  Resize(*g1, WidgetX(*g0, #__c_container) + Width(*g0, #__c_frame) - 15, WidgetY(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
-  Resize(*g2, WidgetX(*g0, #__c_container), WidgetY(*g0, #__c_container) + Height(*g0, #__c_frame) - 15, #PB_Ignore, #PB_Ignore)
+  ResizeWidget(*g1, WidgetX(*g0, #__c_container) + WidgetWidth(*g0, #__c_frame) - 15, WidgetY(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
+  ResizeWidget(*g2, WidgetX(*g0, #__c_container), WidgetY(*g0, #__c_container) + WidgetHeight(*g0, #__c_frame) - 15, #PB_Ignore, #PB_Ignore)
   
   SetState(*mdi\scroll\h, 120)
   

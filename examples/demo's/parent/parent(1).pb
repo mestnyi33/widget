@@ -49,18 +49,18 @@ EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
   If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
-    *p2 = Container(20, 180, 200, 200) : SetClass( widget( ), "CONT2" )
+    *p2 = ContainerWidget(20, 180, 200, 200) : SetWidgetClass( widget( ), "CONT2" )
     CloseList()
   EndIf
   
   If Open(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *p1 = Container(10, 10, 200, 200) : SetClass( widget( ), "CONT1" )
-    *w = Container(10, 10, 100, 100) : SetClass( widget( ), "CHILD" )
-    *ch = Button(-25, 10, 100, 20, "Button")
+    *p1 = ContainerWidget(10, 10, 200, 200) : SetWidgetClass( widget( ), "CONT1" )
+    *w = ContainerWidget(10, 10, 100, 100) : SetWidgetClass( widget( ), "CHILD" )
+    *ch = ButtonWidget(-25, 10, 100, 20, "Button")
     CloseList()
     CloseList()
     
-    Define change = Button(10,430, 200, 30, "change parent") : SetClass( widget( ), "change parent" );, #__flag_ButtonToggle)
+    Define change = ButtonWidget(10,430, 200, 30, "change parent") : SetWidgetClass( widget( ), "change parent" );, #__flag_ButtonToggle)
     
     Show_DEBUG( )
     i = 1

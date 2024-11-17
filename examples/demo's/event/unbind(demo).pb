@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Window(80, 100, 300, 280, "Window_2", Editable)
         ;;Bind(widget(), @events_windows())
         
-        Define *id._s_widget = Button(10,  10, 280, 260, "press", Editable)
+        Define *id._s_widget = ButtonWidget(10,  10, 280, 260, "press", Editable)
         
         ; post this events
         ;;Bind(*id, @events_roots())

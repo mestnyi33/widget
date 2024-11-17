@@ -23,13 +23,13 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MaximizeGadget |
                                             #PB_Window_MinimizeGadget )
       
-      SetClass(widget( ), "window_0" )
-      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_0" )
+      SetWidgetClass(widget( ), "window_0" )
+      PanelWidget( 30,30,240,140 ) : SetWidgetClass(widget( ), "panel_1_window_0" )
       AddItem(widget(), -1, "item_0" )
-      Button(10,10,200,50,"window_0_button_1")
-      SetClass(widget( ), "window_0_button_1" )
-      Button(10,65,200,50,"window_0_button_2")
-      SetClass(widget( ), "window_0_button_2" )
+      ButtonWidget(10,10,200,50,"window_0_button_1")
+      SetWidgetClass(widget( ), "window_0_button_1" )
+      ButtonWidget(10,65,200,50,"window_0_button_2")
+      SetWidgetClass(widget( ), "window_0_button_2" )
       CloseList( )
       
       ;\\
@@ -37,13 +37,13 @@ CompilerIf #PB_Compiler_IsMainFile
                                               #PB_Window_MaximizeGadget |
                                               #PB_Window_MinimizeGadget )
       
-      SetClass(widget( ), "window_1" )
-      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_1" )
+      SetWidgetClass(widget( ), "window_1" )
+      PanelWidget( 30,30,240,140 ) : SetWidgetClass(widget( ), "panel_1_window_1" )
       AddItem(widget(), -1, "item_0" )
-      Button(10,10,200,50,"window_1_button_1")
-      SetClass(widget( ), "window_1_button_1" )
-      Button(10,65,200,50,"window_1_button_2")
-      SetClass(widget( ), "window_1_button_2" )
+      ButtonWidget(10,10,200,50,"window_1_button_1")
+      SetWidgetClass(widget( ), "window_1_button_1" )
+      ButtonWidget(10,65,200,50,"window_1_button_2")
+      SetWidgetClass(widget( ), "window_1_button_2" )
       CloseList( )
       
       ;\\
@@ -51,13 +51,13 @@ CompilerIf #PB_Compiler_IsMainFile
                                               #PB_Window_MaximizeGadget |
                                               #PB_Window_MinimizeGadget )
       
-      SetClass(widget( ), "window_2" )
-      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_2" )
+      SetWidgetClass(widget( ), "window_2" )
+      PanelWidget( 30,30,240,140 ) : SetWidgetClass(widget( ), "panel_1_window_2" )
       AddItem(widget(), -1, "item_0" )
-      Button(10,10,200,50,"window_2_button_1")
-      SetClass(widget( ), "window_2_button_1" )
-      Button(10,65,200,50,"window_2_button_2")
-      SetClass(widget( ), "window_2_button_2" )
+      ButtonWidget(10,10,200,50,"window_2_button_1")
+      SetWidgetClass(widget( ), "window_2_button_1" )
+      ButtonWidget(10,65,200,50,"window_2_button_2")
+      SetWidgetClass(widget( ), "window_2_button_2" )
       CloseList( )
       
       WaitEvent( @CallBack( ) )

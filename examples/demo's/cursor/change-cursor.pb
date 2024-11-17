@@ -7,16 +7,16 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(0, 0, 0, 430, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
      ; a_init( root( ),0 )
-      ;       Button_0 = Button(0,0,0,0, "Button 0") 
-      Button_1 = Button(0,0,0,0, "Button 1")
+      ;       Button_0 = ButtonWidget(0,0,0,0, "Button 0") 
+      Button_1 = ButtonWidget(0,0,0,0, "Button 1")
       
-      Button_2 = Button(0,0,0,0, "Button 2") 
-      ;       Button_3 = Button(0,0,0,0, "Button 3") 
+      Button_2 = ButtonWidget(0,0,0,0, "Button 2") 
+      ;       Button_3 = ButtonWidget(0,0,0,0, "Button 3") 
       
-      Splitter_0 = Splitter(0,0,0,0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-      Splitter_1 = Splitter(0,0,0,0, Button_2, Button_3, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+      Splitter_0 = SplitterWidget(0,0,0,0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+      Splitter_1 = SplitterWidget(0,0,0,0, Button_2, Button_3, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
       
-      Splitter_4 = Splitter(10, 10, 410, 210, Splitter_0, Splitter_1, #PB_Splitter_Vertical)
+      Splitter_4 = SplitterWidget(10, 10, 410, 210, Splitter_0, Splitter_1, #PB_Splitter_Vertical)
       
       SetCursor(Splitter_4, #PB_Cursor_Hand)
       

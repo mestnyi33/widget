@@ -15,48 +15,48 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::Open(0, 10, 10, 390, 390, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
   ; first splitter
-  *w0 = widget::Tab(0, 0, 0, 0, #__bar_vertical )
+  *w0 = widget::TabBarWidget(0, 0, 0, 0, #__bar_vertical )
   For i=0 To 3
     widget::AddItem(*w0, -1, "tab_0_"+Str(i))
   Next
   
-  *w1 = widget::Tab(0, 0, 0, 0, #__bar_vertical )
+  *w1 = widget::TabBarWidget(0, 0, 0, 0, #__bar_vertical )
   For i=0 To 10
     widget::AddItem(*w1, -1, "tab_1_"+Str(i))
   Next
   
-  *w2 = widget::Splitter(300, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  *w2 = widget::SplitterWidget(300, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   
   ; first splitter
-  *w3 = widget::Tab(0, 0, 0, 0, #__bar_vertical)
+  *w3 = widget::TabBarWidget(0, 0, 0, 0, #__bar_vertical)
   For i=0 To 10
     widget::AddItem(*w3, -1, "tab_2_"+Str(i))
   Next
   
-  *w4 = widget::Tab(0, 0, 0, 0, #__bar_vertical)
+  *w4 = widget::TabBarWidget(0, 0, 0, 0, #__bar_vertical)
   For i=0 To 10
     widget::AddItem(*w4, -1, "tab_3_"+Str(i))
   Next
   
-  *w5 = widget::Splitter(30, 110, 250, 70, *w3, *w4, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  *w5 = widget::SplitterWidget(30, 110, 250, 70, *w3, *w4, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   
   
-  *w6 = widget::Splitter(30, 30, 160, 150, *w2, 0, #PB_Splitter_Separator)
-  *w7 = widget::Splitter(200, 30, 160, 150, *w5, 0, #PB_Splitter_Separator)
+  *w6 = widget::SplitterWidget(30, 30, 160, 150, *w2, 0, #PB_Splitter_Separator)
+  *w7 = widget::SplitterWidget(200, 30, 160, 150, *w5, 0, #PB_Splitter_Separator)
   widget::SetState(*w6, 250)
   widget::SetState(*w7, 250)
   
    
-  *w8 = widget::Tab(30, 210, 50, 150, #__bar_vertical)
+  *w8 = widget::TabBarWidget(30, 210, 50, 150, #__bar_vertical)
   For i=0 To 10
     widget::AddItem(*w8, -1, "Tab "+Str(i))
   Next
   widget::bar_Tab_SetState(*w8, 6)
   
-  *w9 = widget::Panel(110, 210, 250, 150, #__bar_vertical)
+  *w9 = widget::PanelWidget(110, 210, 250, 150, #__bar_vertical)
   For i=0 To 10
     widget::AddItem(*w9, -1, "Sub "+Str(i))
-    widget::Button(20, 60-3, 30, 30, Str(i))
+    widget::ButtonWidget(20, 60-3, 30, 30, Str(i))
   Next
   widget::CloseList()
   widget::SetState(*w9, 6)

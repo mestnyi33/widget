@@ -15,23 +15,23 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
    ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
-   parent = Container(50, 50, 500, 500)
-   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-   SetColor(parent, #__color_back, $FFE9E9E9)
+   parent = ContainerWidget(50, 50, 500, 500)
+   widget()\fs = fs : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+   SetWidgetColor(parent, #__color_back, $FFE9E9E9)
    
    ;\\
-   object = Button(50, 50, 150, 150, "button")
-   object1 = String(150, 150, 150, 150, "string")
-   object2 = Splitter(250, 250, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
+   object = ButtonWidget(50, 50, 150, 150, "button")
+   object1 = StringWidget(150, 150, 150, 150, "string")
+   object2 = SplitterWidget(250, 250, 150, 150, ButtonWidget(10, 10, 80, 50,"01"), ButtonWidget(50, 50, 80, 50,"02") )
    
 ;    ;\\
-;    object = Splitter(50, 50, 150, 150, #PB_Default, Button(50, 50, 80, 50,"02") )
-;    object1 = Splitter(150, 150, 150, 150, Button(10, 10, 80, 50,"01"), #PB_Default )
-;    object2 = Splitter(250, 250, 150, 150, #PB_Default, #PB_Default )
+;    object = SplitterWidget(50, 50, 150, 150, #PB_Default, ButtonWidget(50, 50, 80, 50,"02") )
+;    object1 = SplitterWidget(150, 150, 150, 150, ButtonWidget(10, 10, 80, 50,"01"), #PB_Default )
+;    object2 = SplitterWidget(250, 250, 150, 150, #PB_Default, #PB_Default )
 ;    
    
    ;   ;\\
-   ;   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+   ;   widget()\fs = fs : ResizeWidget(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
    
    ;\\
    Define anchor_size = 30

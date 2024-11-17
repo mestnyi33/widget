@@ -9,7 +9,7 @@ DeclareModule Parent
   Declare GetWindowID( handle.i )
   Declare GetParentID( handle.i )
   
-  Declare GetWindow( gadget.i )
+  Declare GetCanvasWindow( gadget.i )
   Declare GetParent( gadget.i )
   Declare SetParent( gadget.i, ParentID.i, Item.l = #PB_Default )
 EndDeclareModule
@@ -29,9 +29,9 @@ Module Parent
   Macro gtk_children( _handle_, _children_ = 0 ) : g_list_nth_data_( gtk_container_get_children_( _handle_ ), _children_ ) : EndMacro
   Macro gtk_bin( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_bin_get_type_ ( ) ) : EndMacro
   Macro gtk_box( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_box_get_type_ ( ) ) : EndMacro
-  Macro gtk_frame( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_frame_get_type_ ( ) ) : EndMacro
+  Macro gtk_FrameWidget( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_frame_get_type_ ( ) ) : EndMacro
   Macro gtk_fixed( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_fixed_get_type_ ( ) ) : EndMacro
-  Macro gtk_container( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_container_get_type_ ( ) ) : EndMacro
+  Macro gtk_ContainerWidget( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_container_get_type_ ( ) ) : EndMacro
   Macro gtk_widget( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_widget_get_type_ ( ) ) : EndMacro
   Macro gtk_window( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_window_get_type_ ( ) ) : EndMacro
   Macro gtk_table( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_table_get_type_ ( ) ) : EndMacro
@@ -87,7 +87,7 @@ Module Parent
 ;     GtkImage
     
     If handle 
-      If gtk_fixed( handle ) = gtk_container( handle )
+      If gtk_fixed( handle ) = gtk_ContainerWidget( handle )
         ProcedureReturn gtk_widget( handle )
       Else
         ProcedureReturn gtk_container ( handle )
@@ -100,8 +100,8 @@ Module Parent
         
     Select GetClassName( handle )
       Case "GtkImage"
-        If gtk_container( handle ) = gtk_frame( handle ) ; gtk_widget_get_parent_( handle ) = gtk_frame( handle )
-          handle = gtk_widget_get_parent_( gtk_frame( handle ) ) ; GtkEventBox
+        If gtk_ContainerWidget( handle ) = gtk_FrameWidget( handle ) ; gtk_widget_get_parent_( handle ) = gtk_FrameWidget( handle )
+          handle = gtk_widget_get_parent_( gtk_FrameWidget( handle ) ) ; GtkEventBox
         Else
           handle = gtk_widget_get_parent_( handle ) ; GtkEventBox
         EndIf
@@ -113,10 +113,10 @@ Module Parent
         handle = gtk_bin( handle ) ; "GtkScrolledWindow"
        
       Case "GtkVPaned"
-        handle = gtk_container( handle ) ; GtkContainer
+        handle = gtk_ContainerWidget( handle ) ; GtkContainer
         
       Case "GtkLayout"
-        handle = gtk_frame( handle ) ; "GtkFrame"
+        handle = gtk_FrameWidget( handle ) ; "GtkFrame"
         
       Case "GtkEntry"
         If GetClassName( gtk_widget_get_parent_( handle ) ) <> "GtkLayout"
@@ -124,7 +124,7 @@ Module Parent
         EndIf
         
       Case "GtkLabel", "GtkBox"
-        If gtk_box( handle ) = gtk_container( handle ) Or
+        If gtk_box( handle ) = gtk_ContainerWidget( handle ) Or
            gtk_box( handle ) = gtk_vbox( handle )
           handle = gtk_box( handle ) ; Spin ; Text ; "GtkBox"
         Else
@@ -183,7 +183,7 @@ Module Parent
     Wend
   EndProcedure
   
-  Procedure GetWindow( gadget.i ) ; Return the handle of the parent window from the gadget ident
+  Procedure GetCanvasWindow( gadget.i ) ; Return the handle of the parent window from the gadget ident
     ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget.i ) ) )
   EndProcedure
   
@@ -331,7 +331,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CloseGadgetList( )
   
   ContainerGadget( #CONTAINER, 215,10,200,160,#PB_Container_Flat ) 
-  SetGadgetColor( #CONTAINER, #PB_Gadget_BackColor, $ffa0a0a0)
+  SetGadGetWidgetColor( #CONTAINER, #PB_Gadget_BackColor, $ffa0a0a0)
   ButtonGadget( 7, 30,90,160,30,"Button >>( Container )" ) 
   CloseGadgetList( )
   
@@ -476,7 +476,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   CompilerEndIf
                   
                   ResizeGadget( #CHILD,30,10,150,70 )
-                  SetGadgetColor( #CHILD, #PB_Gadget_BackColor, $ffa0a0a0)
+                  SetGadGetWidgetColor( #CHILD, #PB_Gadget_BackColor, $ffa0a0a0)
                   SetParent( #CHILD, ParentID ) 
                   
               EndSelect
@@ -488,7 +488,7 @@ CompilerIf #PB_Compiler_IsMainFile
             If IsGadget( Parent )
               Debug "parent - gadget ( " + Parent + " )"
             Else
-              Debug "parent - window ( " + GetWindow( #CHILD ) + " )"
+              Debug "parent - window ( " + GetCanvasWindow( #CHILD ) + " )"
             EndIf
           EndIf
       EndSelect

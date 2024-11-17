@@ -44,18 +44,18 @@ CompilerIf #PB_Compiler_IsMainFile
             DraggedGadget = 0
             
          Case #__event_ResizeBegin
-            Debug ""+GetClass(eventobject) + " event( RESIZEBEGIN )" 
+            Debug ""+GetWidgetClass(eventobject) + " event( RESIZEBEGIN )" 
             
          Case #__event_Resize
-            Debug ""+GetClass(eventobject) + " event( RESIZE )" 
+            Debug ""+GetWidgetClass(eventobject) + " event( RESIZE )" 
             
          Case #__event_ResizeEnd
-            Debug ""+GetClass(eventobject) + " event( RESIZEEND )" 
+            Debug ""+GetWidgetClass(eventobject) + " event( RESIZEEND )" 
             
          Case #__event_MouseMove
             If DraggedGadget 
-               ;Debug Root()\canvas\resizebeginwidget ;GetClass(DraggedGadget)
-               Resize(DraggedGadget, MouseMoveX( ), MouseMoveY( ), #PB_Ignore, #PB_Ignore)
+               ;Debug Root()\canvas\resizebeginwidget ;GetWidgetClass(DraggedGadget)
+               ResizeWidget(DraggedGadget, MouseMoveX( ), MouseMoveY( ), #PB_Ignore, #PB_Ignore)
                ;Debug Root()\canvas\resizebeginwidget
             EndIf
             
@@ -66,38 +66,38 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected result, X=50, Y=50, Width = 400, Height = 300, flags ;= #__flag_autosize
       
       Select *type
-         Case  1: result = Button(X,Y,Width,Height,"Button", flags) 
-         Case  2: result = String(X,Y,Width,Height,"String", flags) 
-         Case  3: result = Text(X,Y,Width,Height,"Text", #PB_Text_Border|flags) 
+         Case  1: result = ButtonWidget(X,Y,Width,Height,"Button", flags) 
+         Case  2: result = StringWidget(X,Y,Width,Height,"String", flags) 
+         Case  3: result = TextWidget(X,Y,Width,Height,"Text", #PB_Text_Border|flags) 
          Case  4: result = OptionWidget(X,Y,Width,Height,"Option", flags) 
-         Case  5: result = CheckBox(X,Y,Width,Height,"CheckBox", flags) 
-         Case  6: result = ListView(X,Y,Width,Height, flags) 
-         Case  7: result = Frame(X,Y,Width,Height,"Frame", flags) 
-         Case  8: result = ComboBox(X,Y,Width,Height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
+         Case  5: result = CheckBoxWidget(X,Y,Width,Height,"CheckBox", flags) 
+         Case  6: result = ListViewWidget(X,Y,Width,Height, flags) 
+         Case  7: result = FrameWidget(X,Y,Width,Height,"Frame", flags) 
+         Case  8: result = ComboBoxWidget(X,Y,Width,Height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
          Case  9: result = ImageWidget(X,Y,Width,Height,0,#PB_Image_Border|flags) 
-         Case 10: result = HyperLink(X,Y,Width,Height,"HyperLink",0, flags) 
-         Case 11: result = Container(X,Y,Width,Height,#PB_Container_Flat|flags): Button(0,0,80,Y,"Button1"):SetClass(widget(),GetText(widget())): Button(10,50,80,Y,"Button2"):SetClass(widget(),GetText(widget())): CloseList() ; Container
-         Case 12: result = ListIcon(X,Y,Width,Height,"",88, flags) 
+         Case 10: result = HyperLinkWidget(X,Y,Width,Height,"HyperLink",0, flags) 
+         Case 11: result = ContainerWidget(X,Y,Width,Height,#PB_Container_Flat|flags): ButtonWidget(0,0,80,Y,"Button1"):SetWidgetClass(widget(),GetTextWidget(widget())): ButtonWidget(10,50,80,Y,"Button2"):SetWidgetClass(widget(),GetTextWidget(widget())): CloseList() ; Container
+         Case 12: result = ListIconWidget(X,Y,Width,Height,"",88, flags) 
             ;Case 13: result = IPAddress(x,y,width,height) 
             ;Case 14: result = ProgressBar(x,y,width,height,0,5)
             ;Case 15: result = ScrollBar(x,y,width,height,5,335,9)
-         Case 16: result = ScrollArea(X,Y,Width,Height,Width*2,Height*2,9,#PB_ScrollArea_Flat|flags): Button(0,0,80,30,"Button"): CloseList()
+         Case 16: result = ScrollAreaWidget(X,Y,Width,Height,Width*2,Height*2,9,#PB_ScrollArea_Flat|flags): ButtonWidget(0,0,80,30,"Button"): CloseList()
             ;Case 17: result = TrackBar(x,y,width,height,0,5)
             ;Case 18: result = Web(x,y,width,height,"") ; bug 531 linux
-         Case 19: result = ButtonImage(X,Y,Width,Height,0, flags)
+         Case 19: result = ButtonImageWidget(X,Y,Width,Height,0, flags)
             ;Case 20: result = Calendar(x,y,width,height) 
             ;Case 21: result = Date(x,y,width,height)
-         Case 22: result = Editor(X,Y,Width,Height, flags):  AddItem(result,-1,"Editor")
-            ;Case 23: result = ExplorerList(x,y,width,height,"")
-            ;Case 24: result = ExplorerTree(x,y,width,height,"")
+         Case 22: result = EditorWidget(X,Y,Width,Height, flags):  AddItem(result,-1,"Editor")
+            ;Case 23: result = ExplorerListWidget(x,y,width,height,"")
+            ;Case 24: result = ExplorerTreeWidget(x,y,width,height,"")
             ;Case 25: result = ExplorerCombo(x,y,width,height,"")
-         Case 26: result = Spin(X,Y,Width,Height,0,5,#PB_Spin_Numeric|flags)
-         Case 27: result = Tree(X,Y,Width,Height, flags) :  AddItem(result,-1,"Tree"):  AddItem(result,-1,"SubLavel",0,1)
-         Case 28: result = Panel(X,Y,Width,Height, flags): AddItem(result,-1,"Panel"): CloseList()
+         Case 26: result = SpinWidget(X,Y,Width,Height,0,5,#PB_Spin_Numeric|flags)
+         Case 27: result = TreeWidget(X,Y,Width,Height, flags) :  AddItem(result,-1,"Tree"):  AddItem(result,-1,"SubLavel",0,1)
+         Case 28: result = PanelWidget(X,Y,Width,Height, flags): AddItem(result,-1,"Panel"): CloseList()
          Case 29 
-            result = Splitter(X,Y,Width,Height,Button(0,0,0,0,"1"),Button(0,0,0,0,"2"), flags)
+            result = SplitterWidget(X,Y,Width,Height,ButtonWidget(0,0,0,0,"1"),ButtonWidget(0,0,0,0,"2"), flags)
             
-         Case Height: result = MDI(X,Y,Width,Height, flags)
+         Case Height: result = MDIWidget(X,Y,Width,Height, flags)
             ; Case 31: result = Scintilla(x,y,width,height,0, flags)
             ; Case 32: result = Shortcut(x,y,width,height,0, flags)
             ; Case 33: result = Canvas(x,y,width,height, flags) 
@@ -107,13 +107,13 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
-      SetClass(root( ), "[main-root]" )
+      SetWidgetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+      SetWidgetClass(root( ), "[main-root]" )
       ;a_init( root())
       
 ; ;       ;\\
-;       *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
-;       SetColor( *menu, #__color_back, $FFF7FEE2 )
+;       *menu = CreateBar( root( ) ) : SetWidgetClass(widget( ), "root_MenuBar" )
+;       SetWidgetColor( *menu, #__color_back, $FFF7FEE2 )
 ;       
 ;       BarTitle("Title-1")
 ;       BarItem(1, "title-1-item-1")
@@ -171,14 +171,14 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       
       Define widget = CreateWidget( #PB_GadgetType_Container )
       ;     ; CreateWidget( #PB_GadgetType_Editor )
-      ;     Resize(Root(), 50,50,50,50)
-      ;     Resize(Root(), 60,50,50,50)
-      ;     Resize(Root(), 70,50,50,50)
-      ;     Resize(Root(), 80,50,50,50)
-      ;     Resize(Root(), 90,50,50,50)
+      ;     ResizeWidget(Root(), 50,50,50,50)
+      ;     ResizeWidget(Root(), 60,50,50,50)
+      ;     ResizeWidget(Root(), 70,50,50,50)
+      ;     ResizeWidget(Root(), 80,50,50,50)
+      ;     ResizeWidget(Root(), 90,50,50,50)
       
       
-      ;Resize(widget, 50,50,150,150)
+      ;ResizeWidget(widget, 50,50,150,150)
       
       ;Bind( widget, @Events())
       Bind( #PB_All, @Events())

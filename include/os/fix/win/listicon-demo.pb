@@ -165,7 +165,7 @@ End
 
 Procedure KillFocus()
   If hEdit
-    SetGadgetItemText(1, CurItem, GetGadgetText(2), CurSubItem)
+    SetGadgetItemTextWidget(1, CurItem, GetGadgetTextWidget(2), CurSubItem)
     FreeGadget(2)
     hEdit = 0
   EndIf
@@ -232,11 +232,11 @@ Procedure LViewProc(hWnd, uMsg, wParam, lParam)
             Select CurSelSubItem
               Case 0
                 For i=1 To LastSubItem
-                  Text$+GetGadgetItemText(1, CurSelItem, i)+"  "
+                  Text$+GetGadgetItemTextWidget(1, CurSelItem, i)+"  "
                 Next i
-                SetClipboardText(Text$)
+                SetClipboardTextWidget(Text$)
               Default
-                SetClipboardText(GetGadgetItemText(1, CurSelItem, CurSelSubItem))
+                SetClipboardTextWidget(GetGadgetItemTextWidget(1, CurSelItem, CurSelSubItem))
             EndSelect
           EndIf
         Case #VK_X
@@ -244,35 +244,35 @@ Procedure LViewProc(hWnd, uMsg, wParam, lParam)
             Select CurSelSubItem
               Case 0
                 For i=1 To LastSubItem
-                  Text$+GetGadgetItemText(1, CurSelItem, i)+"  "
-                  SetGadgetItemText(1, CurSelItem, "", i)
+                  Text$+GetGadgetItemTextWidget(1, CurSelItem, i)+"  "
+                  SetGadgetItemTextWidget(1, CurSelItem, "", i)
                 Next i
-                SetClipboardText(Text$)
+                SetClipboardTextWidget(Text$)
               Default
-                SetClipboardText(GetGadgetItemText(1, CurSelItem, CurSelSubItem))
-                SetGadgetItemText(1, CurSelItem, "", CurSelSubItem)
+                SetClipboardTextWidget(GetGadgetItemTextWidget(1, CurSelItem, CurSelSubItem))
+                SetGadgetItemTextWidget(1, CurSelItem, "", CurSelSubItem)
             EndSelect
           EndIf
         Case #VK_V
           If CellSelectOn And GetAsyncKeyState_(#VK_CONTROL)
             Select CurSelSubItem
               Case 0
-                Text$ = GetClipboardText()
+                Text$ = GetClipboardTextWidget()
                 Text$ = ReplaceString(Text$, Chr(7), "  ")
                 StartPos = 0
                 For i=1 To LastSubItem
                   LastPos = StartPos
-                  StartPos = FindString(Text$, "  ", StartPos)
-                  SetGadgetItemText(1, CurSelItem, Mid(Text$, LastPos+1, StartPos-LastPos-1), i)
+                  StartPos = FindStringWidget(Text$, "  ", StartPos)
+                  SetGadgetItemTextWidget(1, CurSelItem, Mid(Text$, LastPos+1, StartPos-LastPos-1), i)
                   StartPos+1
                 Next i
               Default
-                SetGadgetItemText(1, CurSelItem, GetClipboardText(), CurSelSubItem)
+                SetGadgetItemTextWidget(1, CurSelItem, GetClipboardTextWidget(), CurSelSubItem)
             EndSelect
           EndIf
         Case #VK_DELETE
           If CellSelectOn
-            SetGadgetItemText(1, CurSelItem, "", CurSelSubItem)
+            SetGadgetItemTextWidget(1, CurSelItem, "", CurSelSubItem)
           EndIf
         Case #VK_UP
           If CellSelectOn And CurSelItem
@@ -438,7 +438,7 @@ Procedure LViewProc(hWnd, uMsg, wParam, lParam)
           UseGadgetList(hWnd)
           CurItem = pInfo\iItem
           CurSubItem = pInfo\iSubItem
-          Text$ = GetGadgetItemText(1, CurItem, CurSubItem)
+          Text$ = GetGadgetItemTextWidget(1, CurItem, CurSubItem)
           If CurSubItem=0
             rc\right = rc\left+SendMessage_(hWnd, #LVM_GETCOLUMNWIDTH, 0, 0)
           EndIf

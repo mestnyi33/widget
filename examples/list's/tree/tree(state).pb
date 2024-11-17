@@ -84,10 +84,10 @@ CompilerIf #PB_Compiler_IsMainFile
           Case *reset
             If widget::GetState(*reset)
               count = widget::CountItems( *w1 )
-              SetText(*reset, "reset state")
+              SetTextWidget(*reset, "reset state")
               widget::SetState(*last, 1)
             Else
-              SetText(*reset, "set state")
+              SetTextWidget(*reset, "set state")
               widget::SetState(*first, 0)
               widget::SetState(*last, 0)
             EndIf
@@ -148,8 +148,8 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(*g2, @gadget_events())
     
     ; demo widget
-    *w1 = widget::Tree(265, 10, 250, 100, #PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#__Flag_GridLines
-    *w2 = widget::Tree(265, 115, 250, 310, #PB_Tree_NoButtons|#PB_Tree_NoLines) ; |#__Flag_GridLines
+    *w1 = widget::TreeWidget(265, 10, 250, 100, #PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#__Flag_GridLines
+    *w2 = widget::TreeWidget(265, 115, 250, 310, #PB_Tree_NoButtons|#PB_Tree_NoLines) ; |#__Flag_GridLines
     
     For a = 0 To countitems
       widget::AddItem(*w1, -1, "Item "+Str(a), 0)
@@ -161,10 +161,10 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(*w2, @widget_events())
     widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
-    *reset = widget::Button( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
-    *first = widget::Button( 525 - (10+120)*3, 435, 120, 30, "first item state", #__flag_ButtonToggle)
-    *last = widget::Button( 525 - (10+120)*2, 435, 120, 30, "last item state", #__flag_ButtonToggle)
-    *added = widget::Button( 525 - (10+120)*1, 435, 120, 30, "add new item")
+    *reset = widget::ButtonWidget( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
+    *first = widget::ButtonWidget( 525 - (10+120)*3, 435, 120, 30, "first item state", #__flag_ButtonToggle)
+    *last = widget::ButtonWidget( 525 - (10+120)*2, 435, 120, 30, "last item state", #__flag_ButtonToggle)
+    *added = widget::ButtonWidget( 525 - (10+120)*1, 435, 120, 30, "add new item")
     
     widget::SetState( *reset, 1)
     widget::SetState( *last, 1)

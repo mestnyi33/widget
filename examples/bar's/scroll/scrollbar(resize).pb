@@ -16,9 +16,9 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(*g2, *g2\bar\page\end/2)
     SetState(*g3, *g3\bar\page\end)
     
-    *g4 = Splitter(0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-    *g5 = Splitter(0,0,0,0, *g4,*g3, #PB_Splitter_Vertical)
-    *g6 = Splitter(30,30,620,h, *g5,#PB_Default)
+    *g4 = SplitterWidget(0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    *g5 = SplitterWidget(0,0,0,0, *g4,*g3, #PB_Splitter_Vertical)
+    *g6 = SplitterWidget(30,30,620,h, *g5,#PB_Default)
     
     SetState(*g4, 200)
     SetState(*g5, 200*2+8)

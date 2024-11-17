@@ -12,14 +12,14 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
    a_init( root(), 0 )
   
-  ;Define *Tree = Tree(0,0,0,0,#__flag_autosize)
-  ;Define *Tree = Tree(x,y,width, height)
-  Define *Tree = Tree(10, 10, 160,95) 
+  ;Define *Tree = TreeWidget(0,0,0,0,#__flag_autosize)
+  ;Define *Tree = TreeWidget(x,y,width, height)
+  Define *Tree = TreeWidget(10, 10, 160,95) 
   ; 
-  Debug " * "+width(*Tree, #__c_inner)+" "+height(*Tree, #__c_inner)
+  Debug " * "+WidgetWidth(*Tree, #__c_inner)+" "+WidgetHeight(*Tree, #__c_inner)
   
   ; 
   ; a_init( *Tree )
@@ -31,26 +31,26 @@ CompilerIf #PB_Compiler_IsMainFile
   Next
   
 ;   Debug ""
-;   Resize(*Tree,15,15,#PB_Ignore,#PB_Ignore )
-;   Resize(*Tree,25,#PB_Ignore,#PB_Ignore,#PB_Ignore )
-;   Resize(*Tree,#PB_Ignore,35,#PB_Ignore,#PB_Ignore )
+;   ResizeWidget(*Tree,15,15,#PB_Ignore,#PB_Ignore )
+;   ResizeWidget(*Tree,25,#PB_Ignore,#PB_Ignore,#PB_Ignore )
+;   ResizeWidget(*Tree,#PB_Ignore,35,#PB_Ignore,#PB_Ignore )
 ;   Debug ""
-;   Resize(*Tree,#PB_Ignore,#PB_Ignore,150,150 )
-;   Resize(*Tree,#PB_Ignore,#PB_Ignore,250,#PB_Ignore )
-  Resize(*Tree,#PB_Ignore,#PB_Ignore,350,#PB_Ignore )
+;   ResizeWidget(*Tree,#PB_Ignore,#PB_Ignore,150,150 )
+;   ResizeWidget(*Tree,#PB_Ignore,#PB_Ignore,250,#PB_Ignore )
+  ResizeWidget(*Tree,#PB_Ignore,#PB_Ignore,350,#PB_Ignore )
   
 ;   
 ;   ; Debug " - test parent - Tree show and size scroll bars - "
-;   ; Resize(*Tree,#PB_Ignore,#PB_Ignore,308,232 )
-;   ; Resize(*Tree,#PB_Ignore,#PB_Ignore,307,#PB_Ignore )
-;   ; Resize(*Tree,#PB_Ignore,#PB_Ignore,#PB_Ignore,231 )
-;   ; Resize(*Tree,#PB_Ignore,#PB_Ignore,307,231 )
+;   ; ResizeWidget(*Tree,#PB_Ignore,#PB_Ignore,308,232 )
+;   ; ResizeWidget(*Tree,#PB_Ignore,#PB_Ignore,307,#PB_Ignore )
+;   ; ResizeWidget(*Tree,#PB_Ignore,#PB_Ignore,#PB_Ignore,231 )
+;   ; ResizeWidget(*Tree,#PB_Ignore,#PB_Ignore,307,231 )
 ;   
 ;   ; Debug " - test child - Tree show and size scroll bars - "
-;   ; Resize(*g0,#PB_Ignore,#PB_Ignore,392,368 )
-;   ; Resize(*g0,113,#PB_Ignore,#PB_Ignore,#PB_Ignore )
-;   ; Resize(*g0,#PB_Ignore,189,#PB_Ignore,#PB_Ignore )
-;   ; Resize(*g0,113,189,#PB_Ignore,#PB_Ignore )
+;   ; ResizeWidget(*g0,#PB_Ignore,#PB_Ignore,392,368 )
+;   ; ResizeWidget(*g0,113,#PB_Ignore,#PB_Ignore,#PB_Ignore )
+;   ; ResizeWidget(*g0,#PB_Ignore,189,#PB_Ignore,#PB_Ignore )
+;   ; ResizeWidget(*g0,113,189,#PB_Ignore,#PB_Ignore )
 
   Repeat
     Event = WaitWindowEvent()

@@ -51,51 +51,51 @@ CompilerIf #PB_Compiler_IsMainFile
     ;a_init( root( ) )
     
     *f_0 = window(10, 10, 180,  90, "form_0", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(10, -10, 80, 40, "Butt_0")
+    ButtonWidget(10, -10, 80, 40, "Butt_0")
     ;*f_0\fs = 10
     
     ; set_border_size()
     *f_0\bs = 10
-    Resize(*f_0, 0, 0, #PB_Ignore, #PB_Ignore)
+    ResizeWidget(*f_0, 0, 0, #PB_Ignore, #PB_Ignore)
     
-    button(10, 40, 80, 40, "Butt_0")
+    ButtonWidget(10, 40, 80, 40, "Butt_0")
     closelist()
     
     *f_1 = window(10, 10, 180,  90, "form_1", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(10, -10, 80, 40, "Butt_1")
+    ButtonWidget(10, -10, 80, 40, "Butt_1")
     closelist()
     
     *f_2 = window(10, 10, 180,  90, "form_2", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    *f_3 = ScrollArea(10, 10, 180,  90, 250, 250, 1)
+    *f_3 = ScrollAreaWidget(10, 10, 180,  90, 250, 250, 1)
     ;*f_3 = window(10, 10, 180,  90, "form_3", *f_2)
-    button(10, 0, 80, 40, "Butt_3")
+    ButtonWidget(10, 0, 80, 40, "Butt_3")
     closelist()
     closelist()
     
-    *sp_0 = splitter(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
-    *sp_1 = splitter(10, 10, 360, 360+25, *f_2, *sp_0)
+    *sp_0 = SplitterWidget(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
+    *sp_1 = SplitterWidget(10, 10, 360, 360+25, *f_2, *sp_0)
     
     *f_4 = window(370+10, 10, 180,  70, "form_4 BorderLess", #__flag_BorderLess)
-    button(5, 5, 80, 20, "Butt_4_0")
+    ButtonWidget(5, 5, 80, 20, "Butt_4_0")
     *f_5 = window(370+10, 130+10, 180,  70, "form_6 SizeGadget", #PB_Window_SizeGadget)
-    button(5, 5, 80, 20, "Butt_6_0")
+    ButtonWidget(5, 5, 80, 20, "Butt_6_0")
     
     *f_6 = window(370+10, 130+10+130, 180,  70, "form_8 TitleBar", #PB_Window_TitleBar)
-    button(5, 5, 80, 20, "Butt_8_0")
+    ButtonWidget(5, 5, 80, 20, "Butt_8_0")
     
     *f_7 = window(370+10+190, 10, 180,  70, "form_5 SystemMenu", #PB_Window_SystemMenu)
-    button(5, 5, 80, 20, "Butt_5_0")
+    ButtonWidget(5, 5, 80, 20, "Butt_5_0")
     
     *f_8 = window(370+10+190, 130+10, 180,  70, "form_7 Minimize", #PB_Window_MinimizeGadget)
-    button(5, 5, 80, 20, "Butt_7_0")
+    ButtonWidget(5, 5, 80, 20, "Butt_7_0")
     
     *f_9 = window(370+10+190, 130+10+130, 180,  70, "form_9 Maximize", #PB_Window_MaximizeGadget)
-    button(5, 5, 80, 20, "Butt_9_0")
+    ButtonWidget(5, 5, 80, 20, "Butt_9_0")
     
   
-    SetColor(*f_4, #__color_back, $CA00D7FF)
-    SetColor(*f_5, #__color_back, $CA00D7FF)
-    SetColor(*f_6, #__color_back, $CA00D7FF)
+    SetWidgetColor(*f_4, #__color_back, $CA00D7FF)
+    SetWidgetColor(*f_5, #__color_back, $CA00D7FF)
+    SetWidgetColor(*f_6, #__color_back, $CA00D7FF)
 
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

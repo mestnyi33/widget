@@ -442,8 +442,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If PB(OpenWindow)(2, 200, 100, 460, 220, "bug clip and set origin then drawing", #PB_Window_SystemMenu)
     PB(CanvasGadget)(2, 10, 10, 440, 200)
-    StringGadget(12, 400, 10, 40, 25, "●●●●")
-    StringGadget(13, 400, 40, 40, 25, "●●●●", #PB_String_Password)
+    StringGadget(12, 400, 10, 40, 25, "????")
+    StringGadget(13, 400, 40, 40, 25, "????", #PB_String_Password)
     Define FontID = PB(GetGadgetFont)( #PB_Default )
     
     If PB(StartDrawing)( PB(CanvasOutput)( 2 ) )
@@ -463,7 +463,7 @@ CompilerIf #PB_Compiler_IsMainFile
       PB(Circle)(x+100, y+100, 50, $FF00FFFF)  
       
       PB(DrawingMode)(#PB_2DDrawing_Transparent)
-      PB(DrawText)(x-10,y+(100-PB(TextHeight)("A"))/2,"error clip text ●●●● in mac os", $FF000000)  
+      PB(DrawText)(x-10,y+(100-PB(TextHeight)("A"))/2,"error clip text ???? in mac os", $FF000000)  
       
       PB(DrawingMode)(#PB_2DDrawing_Outlined)
       PB(Box)(x, y, 100, 100, $FF000000)
@@ -509,7 +509,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Circle(x+100, y+100, 50, $FF00FFFF)  
       
       DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText(x-10,y+(100-TextHeight("A"))/2,"error clip text ●●●● in mac os", $FF000000)  
+      DrawText(x-10,y+(100-TextHeight("A"))/2,"error clip text ???? in mac os", $FF000000)  
       
       DrawingMode(#PB_2DDrawing_Outlined)
       Box(x, y, 100, 100, $FF000000)

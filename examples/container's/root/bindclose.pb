@@ -65,15 +65,15 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
    
-   SetClass(Root( ), "root_0" )
+   SetWidgetClass(Root( ), "root_0" )
    Define window = Window(10,10,300-20-8,200-20-32,"window_0", #PB_Window_SystemMenu |
                                            #PB_Window_SizeGadget |
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
-   SetClass(widget( ), "window_0" )
+   SetWidgetClass(widget( ), "window_0" )
    
-   Define gadget = Button(10,10,200,50,"Button_0_close")
-   SetClass(widget( ), "Button_0_close" )
+   Define gadget = ButtonWidget(10,10,200,50,"Button_0_close")
+   SetWidgetClass(widget( ), "Button_0_close" )
    
    Procedure buttonEvent( )
       If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )

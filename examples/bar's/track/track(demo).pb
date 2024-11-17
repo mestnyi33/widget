@@ -81,9 +81,9 @@ CompilerIf #PB_Compiler_IsMainFile
       w_2 = TrackBarWidget(320+X, 10, 20, 170, 0, 10, #PB_TrackBar_Vertical|#PB_TrackBar_Ticks)
       SetState(Splitter(320+X, 10, 20, 170, w_2,  #PB_Default ), 170)
       
-      Text(10+X,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
-      Text(10+X, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-      Text(90+X, 190, 200, 20, "TrackBar Vertical", #PB_Text_Right)
+      TextWidget(10+X,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
+      TextWidget(10+X, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
+      TextWidget(90+X, 190, 200, 20, "TrackBar Vertical", #PB_Text_Right)
       
       If event
          Bind(w_0, @events_widgets())

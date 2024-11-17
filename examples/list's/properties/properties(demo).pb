@@ -33,39 +33,39 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *prop = widget::Properties(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *prop
     widget::AddItem(*prop, #_pi_group_0, "common")
-    widget::AddItem(*prop, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-    widget::AddItem(*prop, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
-    widget::AddItem(*prop, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
+    widget::AddItem(*prop, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
+    widget::AddItem(*prop, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
+    widget::AddItem(*prop, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
     
     widget::AddItem(*prop, #_pi_group_1, "layout")
-    widget::AddItem(*prop, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)
+    widget::AddItem(*prop, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_WidgetType_Spin, 1)
+    widget::AddItem(*prop, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #PB_WidgetType_Spin, 1)
+    widget::AddItem(*prop, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #PB_WidgetType_Spin, 1)
     
     widget::AddItem(*prop, #_pi_group_2, "state")
-    widget::AddItem(*prop, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-    widget::AddItem(*prop, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+    widget::AddItem(*prop, #_pi_disable, "disable:"+Chr(10)+"", #PB_WidgetType_ComboBox, 1);Str(Disable(Value)))
+    widget::AddItem(*prop, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_WidgetType_ComboBox, 1)
     
     Define *prop1 = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *prop1
     widget::AddItem(*prop1, #_pi_group_0, "common")
-    widget::AddItem(*prop1, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-    widget::AddItem(*prop1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
-    widget::AddItem(*prop1, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
+    widget::AddItem(*prop1, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
+    widget::AddItem(*prop1, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
+    widget::AddItem(*prop1, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
     
     widget::AddItem(*prop1, #_pi_group_1, "layout")
-    widget::AddItem(*prop1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop1, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
-    widget::AddItem(*prop1, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
+    widget::AddItem(*prop1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)
+    widget::AddItem(*prop1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_WidgetType_Spin, 1)
+    widget::AddItem(*prop1, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #PB_WidgetType_Spin, 1)
+    widget::AddItem(*prop1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #PB_WidgetType_Spin, 1)
     
     widget::AddItem(*prop1, #_pi_group_2, "state")
-    widget::AddItem(*prop1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-    widget::AddItem(*prop1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+    widget::AddItem(*prop1, #_pi_disable, "disable:"+Chr(10)+"", #PB_WidgetType_ComboBox, 1);Str(Disable(Value)))
+    widget::AddItem(*prop1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_WidgetType_ComboBox, 1)
     
-    Splitter_0 = widget::Splitter(0, 0, 300, 300, Button_1, *prop)
-    Splitter_1 = widget::Splitter(30, 30, 300, 300, Splitter_0, *prop1, #PB_Splitter_Vertical)
+    Splitter_0 = widget::SplitterWidget(0, 0, 300, 300, Button_1, *prop)
+    Splitter_1 = widget::SplitterWidget(30, 30, 300, 300, Splitter_0, *prop1, #PB_Splitter_Vertical)
     
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow

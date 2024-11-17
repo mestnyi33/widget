@@ -10,18 +10,18 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_widget *PANEL_1, *PANEL_2
      
       If Open( 3, 0, 0, 750, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      SetColor(root(), #__color_back, $FFF2F2F2)
+      SetWidgetColor(root(), #__color_back, $FFF2F2F2)
    
-      *PANEL_1 = Panel( 30, 30, 340, 240 )
+      *PANEL_1 = PanelWidget( 30, 30, 340, 240 )
       ;\\
       AddItem( *PANEL_1, 1, "*PANEL_1 - 1" )
-      Button( 10,10,80,30,"Button1" )
-      Button( 10,45,80,30,"Button2" )
-      Button( 10,80,80,30,"Button3" )
+      ButtonWidget( 10,10,80,30,"Button1" )
+      ButtonWidget( 10,45,80,30,"Button2" )
+      ButtonWidget( 10,80,80,30,"Button3" )
       
       ;\\
       AddItem( *PANEL_1, i, "*PANEL_1 - 2" )
-      Button( 0,0,80,80,"Button" )
+      ButtonWidget( 0,0,80,80,"Button" )
       
       ;\\
       CloseList( ) ; close *PANEL_1 list
@@ -31,9 +31,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\
       AddItem( *PANEL_1, i, "*PANEL_1 - 3" )
-      Button( 200,10,80,30,"Button4" )
-      Button( 200,45,80,30,"Button5" )
-      Button( 200,80,80,30,"Button6" )
+      ButtonWidget( 200,10,80,30,"Button4" )
+      ButtonWidget( 200,45,80,30,"Button5" )
+      ButtonWidget( 200,80,80,30,"Button6" )
       
       ;\\
       CloseList( ) ; close *PANEL_1 list
@@ -45,19 +45,19 @@ CompilerIf #PB_Compiler_IsMainFile
       
       BarPosition( *PANEL_1\TabBox( ), 1, 100 )
 ;       *PANEL_1\TabBox( )\bar\vertical = 1
-;       Resize( *PANEL_1, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+;       ResizeWidget( *PANEL_1, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
       
       
-      *PANEL_1 = Panel( 30+340+10, 30, 340, 240 )
+      *PANEL_1 = PanelWidget( 30+340+10, 30, 340, 240 )
       ;\\
       AddItem( *PANEL_1, 1, "*PANEL_1 - 1" )
-      Button( 10,10,80,30,"Button1" )
-      Button( 10,45,80,30,"Button2" )
-      Button( 10,80,80,30,"Button3" )
+      ButtonWidget( 10,10,80,30,"Button1" )
+      ButtonWidget( 10,45,80,30,"Button2" )
+      ButtonWidget( 10,80,80,30,"Button3" )
       
       ;\\
       AddItem( *PANEL_1, i, "*PANEL_1 - 2" )
-      Button( 0,0,80,80,"Button" )
+      ButtonWidget( 0,0,80,80,"Button" )
       
       ;\\
       CloseList( ) ; close *PANEL_1 list
@@ -67,9 +67,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\
       AddItem( *PANEL_1, i, "*PANEL_1 - 3" )
-      Button( 200,10,80,30,"Button4" )
-      Button( 200,45,80,30,"Button5" )
-      Button( 200,80,80,30,"Button6" )
+      ButtonWidget( 200,10,80,30,"Button4" )
+      ButtonWidget( 200,45,80,30,"Button5" )
+      ButtonWidget( 200,80,80,30,"Button6" )
       
       ;\\
       CloseList( ) ; close *PANEL_1 list
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    If Open( 3, 0, 0, 400, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
-      *PANEL_1 = Panel( 30, 30, 340, 240 )
+      *PANEL_1 = PanelWidget( 30, 30, 340, 240 )
       
       For i=0 To 100
          AddItem( *PANEL_1, i, "item_"+Str(i) )

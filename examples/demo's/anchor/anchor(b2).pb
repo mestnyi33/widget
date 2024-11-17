@@ -11,17 +11,17 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
 
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   ;;*this\_a_\mode = mode  
-  SetFrame(*this, size)
+  SetWidgetFrame(*this, size)
   If color <> #SelectionStyle_None
-    SetColor(*this, #__color_frame, Color&$FFFFFF | 255<<24)
+    SetWidgetColor(*this, #__color_frame, Color&$FFFFFF | 255<<24)
   EndIf    
 EndProcedure
 
 If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;
   a_init(root( ), 0)
-  ;SetColor(root( ), #__color_back, RGBA(128, 192, 64, alpha))
-  ;SetColor(root( ), #__color_back, RGBA(255, 255, 255, 255))
+  ;SetWidgetColor(root( ), #__color_back, RGBA(128, 192, 64, alpha))
+  ;SetWidgetColor(root( ), #__color_back, RGBA(255, 255, 255, 255))
   
   ;\\ Create five different objects
   *Object1 = a_object(20, 20, 200, 100, " left & right", RGBA(64, 128, 192, alpha) );, 0, 1*5) 
@@ -32,11 +32,11 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   
 ;   ;\\
 ;   Define size = 1
-;   SetFrame(*Object1, size)
-;   SetFrame(*Object2, size)
-;   SetFrame(*Object3, size)
-;   SetFrame(*Object4, size)
-;   SetFrame(*Object5, size)
+;   SetWidgetFrame(*Object1, size)
+;   SetWidgetFrame(*Object2, size)
+;   SetWidgetFrame(*Object3, size)
+;   SetWidgetFrame(*Object4, size)
+;   SetWidgetFrame(*Object5, size)
   
   ;\\ Define different handles to the objects
   a_set(*Object1, #__a_width | #__a_position, 8)

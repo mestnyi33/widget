@@ -18,7 +18,7 @@ EnableExplicit
     Text         .s
   EndStructure
 
-  Global NewList Tabs.TAB()
+  Global NewList Tabs.TabBarWidget()
   Global *TabSwap    .TAB
   Define *Tab        .TAB
   Define Event       .i
@@ -110,7 +110,7 @@ EnableExplicit
 
      ;_________
      ;Left down
-     ;¯¯¯¯¯¯¯¯¯
+     ;?????????
 
       If EventType() = #PB_EventType_LeftButtonDown
 
@@ -154,7 +154,7 @@ EnableExplicit
 
      ;__________
      ;Mouse move
-     ;¯¯¯¯¯¯¯¯¯¯
+     ;??????????
 
       If EventType() = #PB_EventType_MouseMove
         If *TabSwap
@@ -187,7 +187,7 @@ EnableExplicit
       
       ;_______
      ;Left up
-     ;¯¯¯¯¯¯¯
+     ;???????
 
       If EventType() = #PB_EventType_LeftButtonUp
 

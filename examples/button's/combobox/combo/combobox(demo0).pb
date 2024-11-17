@@ -25,13 +25,13 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(1, 0)
     SetGadgetState(2, 2)    ; set (beginning with 0) the third item as active one
     
-    *w0 = ComboBox(w_x+10, 10, 250, 21, #PB_ComboBox_Editable)
+    *w0 = ComboBoxWidget(w_x+10, 10, 250, 21, #PB_ComboBox_Editable)
     AddItem(widget( ), -1, "ComboBox editable...")
     
-    *w1 = ComboBox(w_x+10, 40, 250, 21, #PB_ComboBox_Image)
+    *w1 = ComboBoxWidget(w_x+10, 40, 250, 21, #PB_ComboBox_Image)
     AddItem(widget( ), -1, "ComboBox item with image", (0))
     
-    *w2 = ComboBox(w_x+10, 70, 250, 21)
+    *w2 = ComboBoxWidget(w_x+10, 70, 250, 21)
     For a = 1 To 5
       AddItem(widget( ), -1,"ComboBox item " + Str(a))
     Next

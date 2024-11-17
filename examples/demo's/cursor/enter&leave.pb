@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                deltay = mouse()\y-eventwidget()\y
                deltax = DesktopMouseX()-eventwidget()\x
                deltay = DesktopMouseY()-eventwidget()\y
-               setcolor(eventwidget(), #__color_frame, $ffff0000)
+               SetWidgetColor(eventwidget(), #__color_frame, $ffff0000)
                
             Case #__event_dragstart
                drag = eventwidget()
@@ -26,27 +26,27 @@ CompilerIf #PB_Compiler_IsMainFile
             Case #__event_up : Debug "up "+eventwidget()\class ;+" "+ enteredwidget()\class+" "+pressedwidget()\class
                drag = 0
                If eventwidget()\enter
-                  setcolor(eventwidget(), #__color_frame, $ff0000ff)
+                  SetWidgetColor(eventwidget(), #__color_frame, $ff0000ff)
                Else
-                  setcolor(eventwidget(), #__color_frame, $ff00ff00)
+                  SetWidgetColor(eventwidget(), #__color_frame, $ff00ff00)
                EndIf
                
             Case #__event_mouseenter : Debug "enter "+eventwidget()\class 
                If Not eventwidget()\press
-                  setcolor(eventwidget(), #__color_frame, $ff0000ff)
+                  SetWidgetColor(eventwidget(), #__color_frame, $ff0000ff)
                EndIf
                
             Case #__event_mouseleave : Debug "leave "+eventwidget()\class 
                If Not eventwidget()\press
-                  setcolor(eventwidget(), #__color_frame, $ff00ff00)
+                  SetWidgetColor(eventwidget(), #__color_frame, $ff00ff00)
                EndIf
                
                
             Case #__event_mousemove
                If drag
                   ;Debug " "+eventwidget() +" "+ enteredwidget()+" "+pressedwidget()
-               ;   resize(drag,mouse()\x-deltax, mouse()\y-deltay, #PB_Ignore, #PB_Ignore)
-                  resize(drag,DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
+               ;   ResizeWidget(drag,mouse()\x-deltax, mouse()\y-deltay, #PB_Ignore, #PB_Ignore)
+                  ResizeWidget(drag,DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
                EndIf
                
             Case #__event_keyup
@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
                drag = enteredwidget()
                
                If drag
-                  resize(drag,x(drag)+1, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                  ResizeWidget(drag,x(drag)+1, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                EndIf
                
          EndSelect
@@ -69,12 +69,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       *r1 = Open(0, 5, 5, 335, 60+h-10)
       Define x = 50, y = 50
-      *g11 = Container( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g11,"*g11")
-      *g12 = Container( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g12,"*g12") 
-      *g13 = Container( x+50,y+50,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g13,"*g13") 
-      *g14 = Container( x+70,y+70,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g14,"*g14") 
-      ;*g15 = Container( x+90,y+90,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g15,"*g15") 
-      *g15 = tree( x+90,y+90,size,size ) : setclass(*g15,"*g15") 
+      *g11 = ContainerWidget( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g11,"*g11")
+      *g12 = ContainerWidget( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g12,"*g12") 
+      *g13 = ContainerWidget( x+50,y+50,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g13,"*g13") 
+      *g14 = ContainerWidget( x+70,y+70,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g14,"*g14") 
+      ;*g15 = ContainerWidget( x+90,y+90,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g15,"*g15") 
+      *g15 = TreeWidget( x+90,y+90,size,size ) : SetWidgetClass(*g15,"*g15") 
       Define i
       For i=0 To 10
          AddItem(*g15, -1, "item-"+Str(i)) 
@@ -85,12 +85,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       *r2 = Open(0, 345, 5, 335, 60+h-10, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Define x = 0, y = 0
-      *g21 = Container( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g21,"*g21")
-      *g22 = Container( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g22,"*g22") 
-      *g23 = Container( x+50,y+50,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g23,"*g23") 
-      *g24 = Container( x+70,y+70,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g24,"*g24") 
-      ;*g25 = Container( x+90,y+90,size,size, #__flag_borderflat|#__flag_noGadgets ) : setclass(*g25,"*g25") 
-      *g25 = tree( x+90,y+90,size,size ) : setclass(*g25,"*g25") : AddItem(*g25, -1, "item-1") : AddItem(*g25, -1, "item-2") : AddItem(*g25, -1, "item-3")
+      *g21 = ContainerWidget( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g21,"*g21")
+      *g22 = ContainerWidget( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g22,"*g22") 
+      *g23 = ContainerWidget( x+50,y+50,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g23,"*g23") 
+      *g24 = ContainerWidget( x+70,y+70,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g24,"*g24") 
+      ;*g25 = ContainerWidget( x+90,y+90,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g25,"*g25") 
+      *g25 = TreeWidget( x+90,y+90,size,size ) : SetWidgetClass(*g25,"*g25") : AddItem(*g25, -1, "item-1") : AddItem(*g25, -1, "item-2") : AddItem(*g25, -1, "item-3")
       
       
       ;\\

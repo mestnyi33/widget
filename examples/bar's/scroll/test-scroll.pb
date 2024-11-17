@@ -6,10 +6,10 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   If Open(0, 0, 0, 250,240, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+    SetWidgetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
     
     
-    Define *g._S_WIDGET = Editor(20,20,200,100);, #__flag_autosize);|#__flag_transparent)
+    Define *g._S_WIDGET = EditorWidget(20,20,200,100);, #__flag_autosize);|#__flag_transparent)
     AddItem(*g, -1, ~"define W_0 = Window( 282, \"Window_0\" )")
     
     

@@ -8,9 +8,9 @@ CompilerIf #PB_Compiler_IsMainFile
     a_init( root( ) )
     Define scrollstep = a_transform()\grid_size
     
-    SetColor(ScrollArea(30,30,450-2,250-2, 440,750, scrollstep), #__color_back, $C0F2AEDA)
+    SetWidgetColor(ScrollAreaWidget(30,30,450-2,250-2, 440,750, scrollstep), #__color_back, $C0F2AEDA)
     
-    Button(60,60,450,250,"button")
+    ButtonWidget(60,60,450,250,"button")
     
     WaitClose( )
   EndIf

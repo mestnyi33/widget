@@ -32,13 +32,13 @@ Procedure events_widgets()
 EndProcedure
 
 If Open(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   SetColor( root(), #__Color_Back, $ff00ffff)
+   SetWidgetColor( root(), #__Color_Back, $ff00ffff)
    
    progress_0 = ProgressBarWidget(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
    progress_1 = ProgressBarWidget(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
    
-   Splitter_0 = Splitter(0, 0, 0, 0, progress_0, progress_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-   Splitter_1 = Splitter(10, 10, 400, 250, 0, Splitter_0, #PB_Splitter_FirstFixed)
+   Splitter_0 = SplitterWidget(0, 0, 0, 0, progress_0, progress_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+   Splitter_1 = SplitterWidget(10, 10, 400, 250, 0, Splitter_0, #PB_Splitter_FirstFixed)
    
    track_0 = Track    (400+20, 10, 20,  250, 0,100, #PB_TrackBar_Vertical) 
    track_1 = Track    (400+20+20, 10, 20,  250, 0, 100, #PB_TrackBar_Vertical)

@@ -21,10 +21,10 @@ CompilerIf #PB_Compiler_IsMainFile
 			
 			If IDWidget(EventWidget()) = 1
 				If WidgetEvent() = #__event_MouseEnter
-					Resize( EventWidget(), #PB_Ignore, #PB_Ignore, 280, #PB_Ignore)
+					ResizeWidget( EventWidget(), #PB_Ignore, #PB_Ignore, 280, #PB_Ignore)
 				EndIf
 				If WidgetEvent() = #__event_MouseLeave
-					Resize( EventWidget(), #PB_Ignore, #PB_Ignore, 240, #PB_Ignore)
+					ResizeWidget( EventWidget(), #PB_Ignore, #PB_Ignore, 240, #PB_Ignore)
 				EndIf
 				ProcedureReturn #PB_Ignore ; no send to (window & root) - event
 			EndIf
@@ -65,11 +65,11 @@ CompilerIf #PB_Compiler_IsMainFile
 			If Open(0, 10,10, 480, 480)
 				Bind(#PB_All, @events_roots())
 				Bind(Window(80, 100, 300, 280, "Window_2", Editable|#__Window_SystemMenu), @events_windows())
-				;SetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
+				;SetWidgetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
 				
-				Bind(Button(10,  10, 240, 80, "post event for one procedure", Editable), @events_widgets())
-				Bind(Button(10, 100, 260, 80, "post event for to two procedure", Editable), @events_widgets())
-				Bind(Button(10, 190, 280, 80, "post event for all procedures", Editable), @events_widgets())
+				Bind(ButtonWidget(10,  10, 240, 80, "post event for one procedure", Editable), @events_widgets())
+				Bind(ButtonWidget(10, 100, 260, 80, "post event for to two procedure", Editable), @events_widgets())
+				Bind(ButtonWidget(10, 190, 280, 80, "post event for all procedures", Editable), @events_widgets())
 				
 			EndIf
 		EndIf
@@ -124,10 +124,10 @@ CompilerEndIf
 ;     
 ;     ;a_add(root())
 ;     
-;     String(10,10,180,30,"string_0")
+;     StringWidget(10,10,180,30,"string_0")
 ;     SetActive(widget())
 ;     
-;     String(10,50,180,30,"string_1")
+;     StringWidget(10,50,180,30,"string_1")
 ;     SetActive(widget())
 ;     
 ;     Debug ""

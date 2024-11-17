@@ -386,7 +386,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          checkbox._s_BOX  ;  checkbox\
          
          
-         ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
+         ; если их убрать то при клике в примере TreeWidget(demo) в чек бокс происходит збой
          *first._s_rows           ;TEMP first elemnt in the list
          *after._s_rows           ;TEMP first elemnt in the list
          *before._s_rows          ;TEMP first elemnt in the list
@@ -468,8 +468,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget bar
          ; \gadget[0] - window active child gadget
-         ; \gadget[1] - splitter( ) first gadget
-         ; \gadget[2] - splitter( ) second gadget
+         ; \gadget[1] - SplitterWidget( ) first gadget
+         ; \gadget[2] - SplitterWidget( ) second gadget
          
          max.l
          min.l[3]   ; fixed min[1&2] bar size
@@ -633,8 +633,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
                                   ; dragged.b              ;
          autosize.b
          container.b              ; is container
-                                  ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
-                                  ; container =- 1         ; if the not has children ( Splitter( ); Frame( ))
+                                  ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDIWidget( 3 ); PanelWidget( 3 ); ContainerWidget( 3 ); ScrollAreaWidget( 3 ) )
+                                  ; container =- 1         ; if the not has children ( SplitterWidget( ); FrameWidget( ))
                                   ;
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
@@ -663,7 +663,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          StructureUnion
             *popupBar._s_WIDGET       ; = PopupBar( ) List view box
-            *comboBar._s_WIDGET       ; = ComboBox( ) List view box
+            *comboBar._s_WIDGET       ; = ComboBoxWidget( ) List view box
          EndStructureUnion
          popup.b
          ;
@@ -698,8 +698,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *gadget._s_WIDGET;[3]
                           ; \root\gadget[0] - active gadget
                           ; \gadget[0] - window active child gadget
-                          ; \gadget[1] - splitter( ) first gadget
-                          ; \gadget[2] - splitter( ) second gadget
+                          ; \gadget[1] - SplitterWidget( ) first gadget
+                          ; \gadget[2] - SplitterWidget( ) second gadget
          
          image._s_image[4]
          ; \image[0] - draw image

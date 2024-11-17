@@ -25,7 +25,7 @@
    ;  ;//
    ;  If ReadFile(0, file$)   ; if the file could be read, we continue...
    ;       While Eof(0) = 0           ; loop as long the 'end of file' isn't reached
-   ;         text + ReadString(0) + #LF$      ; display line by line in the debug window
+   ;         text + ReadStringWidget(0) + #LF$      ; display line by line in the debug window
    ;       Wend
    ;       CloseFile(0)               ; close the previously opened file
    ;     Else
@@ -72,21 +72,21 @@
    If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
       EditorGadget(0, 8, 8, 402, 230, #PB_Editor_WordWrap) 
       Define time = ElapsedMilliseconds()
-      SetGadgetText(0, Text.s) 
+      SetGadgetTextWidget(0, Text.s) 
       Debug Str(ElapsedMilliseconds()-time) + " - time gadget set text count - " + CountGadgetItems(0)
       
       
       ;     Open(0, 8, 250, 402, 230)
-      ;     *g = Editor(0, 0, 402, 230, #__flag_autosize) : g = getgadget(*g)
+      ;     *g = EditorWidget(0, 0, 402, 230, #__flag_autosize) : g = GetCanvasGadget(*g)
       ;     Define time = ElapsedMilliseconds()
-      ;     SetText(*g, Text.s) 
+      ;     SetTextWidget(*g, Text.s) 
       ;     Debug Str(ElapsedMilliseconds()-time) + " - widget set text time count - " + CountItems(*g)
       ;     
       ;     
       Define item = 2395
       
       Define time = ElapsedMilliseconds()
-      Define String.s = GetGadgetItemText( 0, item)
+      Define String.s = GetGadgetItemTextWidget( 0, item)
       Debug Str(ElapsedMilliseconds()-time) + " - time GetGadgetItemText " + item +" "+ String
       Debug ""
       Define time = ElapsedMilliseconds()

@@ -103,17 +103,17 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If EventGadget = 6
-;           If GetGadgetItemImage(tree, GetGadgetState(tree))
-;             SetGadgetItemImage(tree, GetGadgetState(tree), 0)
+;           If GetGadGetWidgetItemImage(tree, GetGadgetState(tree))
+;             SetGadGetWidgetItemImage(tree, GetGadgetState(tree), 0)
 ;           Else
-;             SetGadgetItemImage(tree, GetGadgetState(tree), ImageID(0))
+;             SetGadGetWidgetItemImage(tree, GetGadgetState(tree), ImageID(0))
 ;           EndIf
-          If GetItemImage(*tree, GetState(*tree) ) <> #PB_Default
-            SetItemImage(*tree, GetState(*tree), #PB_Default)
-            SetGadgetItemImage(Tree, GetGadgetState(Tree), #NUL)
+          If GetWidgetItemImage(*tree, GetState(*tree) ) <> #PB_Default
+            SetWidgetItemImage(*tree, GetState(*tree), #PB_Default)
+            SetGadGetWidgetItemImage(Tree, GetGadgetState(Tree), #NUL)
           Else
-            SetItemImage(*tree, GetState(*tree), 0)
-            SetGadgetItemImage(Tree, GetGadgetState(Tree), ImageID(0))
+            SetWidgetItemImage(*tree, GetState(*tree), 0)
+            SetGadGetWidgetItemImage(Tree, GetGadgetState(Tree), ImageID(0))
           EndIf
         EndIf
         If EventGadget = 7 ; <<
@@ -143,11 +143,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_RightDoubleClick : Debug "gadget " +EventGadget+ " rdclick item = " + EventItem +" data "+ EventData +" State "+ State
         
       Case #PB_EventType_DragStart : Debug "gadget " +EventGadget+ " sdrag item = " + EventItem +" Data "+ EventData +" State "+ State
-        Text$ = GetGadgetItemText(EventGadget, GetGadgetState(EventGadget))
-        DragText(Text$)
+        Text$ = GetGadgetItemTextWidget(EventGadget, GetGadgetState(EventGadget))
+        DragTextWidget(Text$)
         
       Case #__event_Drop
-        AddGadgetItem(EventGadget, -1, EventDropText())
+        AddGadgetItem(EventGadget, -1, EventDropTextWidget())
         
         
     EndSelect 
@@ -192,7 +192,7 @@ Define a
   If Open(0, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;ListViewGadget(0, 10, 10, 160, 160) 
     Tree = PB(TreeGadget_)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-    *tree = Tree(190, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState );| #__flag_GridLines | #PB_Tree_Collapsed)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
+    *tree = TreeWidget(190, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState );| #__flag_GridLines | #PB_Tree_Collapsed)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
     
     For a = 0 To 10
       AddGadgetItem(Tree, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use

@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define vert=100, horiz=100, width=400, height=440
   
-  Procedure.s get_text(m.s=#LF$)
+  Procedure.s get_TextWidget(m.s=#LF$)
     Protected Text.s = "This is a long line." + m.s +
                        "Who should show." + 
                        m.s +
@@ -47,14 +47,14 @@ CompilerIf #PB_Compiler_IsMainFile
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
-              SetText(Button_type, "widget")
+              SetTextWidget(Button_type, "widget")
             Else
               Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
               EndIf
-              SetText(Button_type, "gadget")
+              SetTextWidget(Button_type, "gadget")
             EndIf
             
           Case Button_0 : flag = #__flag_ButtonDefault
@@ -79,26 +79,26 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_Textmultiline);|);|#__flag_Textleft) 
-    Container(10, 10, width, height) : a_init( widget( ))
-    *this = widget::Editor(10, 10, 250, 250);, #__flag_Textwordwrap) 
+    ;*this = widget::ButtonWidget(100, 100, 250, 250, get_TextWidget(), #__flag_Textmultiline);|);|#__flag_Textleft) 
+    ContainerWidget(10, 10, width, height) : a_init( widget( ))
+    *this = widget::EditorWidget(10, 10, 250, 250);, #__flag_Textwordwrap) 
     CloseList( )
-    SetText(*this, get_text())
+    SetTextWidget(*this, get_TextWidget())
     
     Define y = 10
     ; flag
-    Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__flag_ButtonToggle) 
-    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "default", #__flag_ButtonToggle) 
-    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__flag_ButtonToggle) 
-    Button_4 = widget::Button(width+45, y+30*3, 100, 26, "wordwrap", #__flag_ButtonToggle) 
+    Button_type = widget::ButtonWidget(width+45,   y, 100, 26, "gadget", #__flag_ButtonToggle) 
+    Button_0 = widget::ButtonWidget(width+45, y+30*1, 100, 26, "default", #__flag_ButtonToggle) 
+    Button_1 = widget::ButtonWidget(width+45, y+30*2, 100, 26, "multiline", #__flag_ButtonToggle) 
+    Button_4 = widget::ButtonWidget(width+45, y+30*3, 100, 26, "wordwrap", #__flag_ButtonToggle) 
     
-    Button_5 = widget::Button(width+45, y+30*4, 100, 26, "top", #__flag_ButtonToggle) 
-    Button_2 = widget::Button(width+45, y+30*5, 45, 26, "left", #__flag_ButtonToggle) 
-    Button_3 = widget::Button(width+45 + 55, y+30*5, 45, 26, "right", #__flag_ButtonToggle) 
-    Button_6 = widget::Button(width+45, y+30*6, 100, 26, "bottom", #__flag_ButtonToggle) 
+    Button_5 = widget::ButtonWidget(width+45, y+30*4, 100, 26, "top", #__flag_ButtonToggle) 
+    Button_2 = widget::ButtonWidget(width+45, y+30*5, 45, 26, "left", #__flag_ButtonToggle) 
+    Button_3 = widget::ButtonWidget(width+45 + 55, y+30*5, 45, 26, "right", #__flag_ButtonToggle) 
+    Button_6 = widget::ButtonWidget(width+45, y+30*6, 100, 26, "bottom", #__flag_ButtonToggle) 
     
-    Button_8 = widget::Button(width+45, y+30*7, 100, 26, "vertical", #__flag_ButtonToggle) 
-    Button_7 = widget::Button(width+45, y+30*8, 100, 26, "invert", #__flag_ButtonToggle) 
+    Button_8 = widget::ButtonWidget(width+45, y+30*7, 100, 26, "vertical", #__flag_ButtonToggle) 
+    Button_7 = widget::ButtonWidget(width+45, y+30*8, 100, 26, "invert", #__flag_ButtonToggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
@@ -112,10 +112,10 @@ CompilerIf #PB_Compiler_IsMainFile
        Hide(Button_type, 1)
     EndIf
 
-;         Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-;         Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
-;         Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-;         Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+;         Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+;         Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
+;         Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+;         Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
 ; ;         SetState(Splitter_0, vert)
 ; ;         SetState(Splitter_1, horiz)
 ;          SetState(Splitter_3, width-horiz)

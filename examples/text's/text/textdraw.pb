@@ -100,7 +100,7 @@ FontID = FontID(0)
 
 Debug ""+FontSize(FontID)+" - "+FontName(FontID)
 
-Procedure draw_text(x, y, text.s, align=0, rotate=0)
+Procedure draw_TextWidget(x, y, text.s, align=0, rotate=0)
   Static width,height
   Protected i, count = CountString(text, #LF$)
     
@@ -136,9 +136,9 @@ If OpenWindow(0, 0, 0, 450, 300, "2DDrawing Example", #PB_Window_SystemMenu | #P
       DrawingMode(#PB_2DDrawing_Transparent)
       Box(0, 0, 450, 300, RGB(230, 230, 230))
       
-      draw_text(30,30,text,0,0)
-      draw_text(100,30,text, 1,0)
-      draw_text(170,30,text, 2,0)
+      draw_TextWidget(30,30,text,0,0)
+      draw_TextWidget(100,30,text, 1,0)
+      draw_TextWidget(170,30,text, 2,0)
       
       StopDrawing() 
       ImageGadget(0, 0, 0, 200, 200, ImageID(0))

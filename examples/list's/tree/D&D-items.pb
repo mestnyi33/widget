@@ -45,7 +45,7 @@ Structure TAB
   Text         .s
 EndStructure
 
-;Global NewList Tabs.TAB()
+;Global NewList Tabs.TabBarWidget()
 Global *TabSwap    ._s_ROWS
 Global *Tab        ._s_ROWS
 Global BarWi       .i
@@ -113,7 +113,7 @@ Procedure DrawBarEvents( )
     
   ;_________
   ;Left down
-  ;¯¯¯¯¯¯¯¯¯
+  ;?????????
   
   If EventType = #__event_LeftDown
     ;\\ Store MouseDown
@@ -159,7 +159,7 @@ Procedure DrawBarEvents( )
   
   ;__________
   ;Mouse move
-  ;¯¯¯¯¯¯¯¯¯¯
+  ;??????????
   
   If EventType = #__event_MouseMove
     If *TabSwap
@@ -193,7 +193,7 @@ Procedure DrawBarEvents( )
   
   ;_______
   ;Left up
-  ;¯¯¯¯¯¯¯
+  ;???????
   
   If EventType = #__event_LeftUp
     
@@ -233,7 +233,7 @@ Procedure events( )
   If EventWidget( ) = *tree                     
     Select WidgetEvent( ) 
       Case #__event_Change
-        Debug "change - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
+        Debug "change - "+ GetState(*tree) +" "+ GetTextWidget(*tree) +" "+ GetItemTextWidget(*tree, GetState(*tree))
         
       Case #__event_DragStart 
         ; 
@@ -269,7 +269,7 @@ Procedure events( )
         ;
         If EventDropType( ) = #PB_Drop_Private And
            EventDropPrivate( ) = #PrivateType
-          Debug "start drop - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
+          Debug "start drop - "+ GetState(*tree) +" "+ GetTextWidget(*tree) +" "+ GetItemTextWidget(*tree, GetState(*tree))
           
           TargetItem = GetState(*tree)        
           
@@ -290,7 +290,7 @@ Procedure events( )
               TargetItem  = CountItems + 1
               TargetLevel = 0
               
-            ElseIf Left( GetItemText(*tree, TargetItem), 4 ) = "Item"      
+            ElseIf Left( GetItemTextWidget(*tree, TargetItem), 4 ) = "Item"      
               ; if dropped on an "Item", move right after this item
               ;
               ; если упал на «предмет», переместиться сразу после этого предмета
@@ -362,7 +362,7 @@ Procedure events( )
                 ; copy everything here (also colors and GetItemData() etc if you use that)                
                 ;
                 ; скопируйте все сюда (также цвета и GetItemData() и т. д., если вы используете это)
-                Text$ = GetItemText(*tree, SourceItem+i)              
+                Text$ = GetItemTextWidget(*tree, SourceItem+i)              
                 Level = GetItemAttribute(*tree, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
                 AddItem(*tree, TargetItem+i, Text$, 0, Level)              
               Next i
@@ -400,7 +400,7 @@ Procedure events( )
               ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
               ;
               For i = 0 To ChildCount
-                Text$ = GetItemText(*tree, SourceItem+i*2)
+                Text$ = GetItemTextWidget(*tree, SourceItem+i*2)
                 Level = GetItemAttribute(*tree, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
                 AddItem(*tree, TargetItem+i, Text$, 0, Level)
               Next i
@@ -424,7 +424,7 @@ Procedure events( )
             EndIf
             
           EndIf      
-          Debug "stop drop - "+ GetState(*tree) +" "+ GetText(*tree) +" "+ GetItemText(*tree, GetState(*tree))
+          Debug "stop drop - "+ GetState(*tree) +" "+ GetTextWidget(*tree) +" "+ GetItemTextWidget(*tree, GetState(*tree))
           
           Debug ""
           ;ClearDebugOutput()
@@ -443,7 +443,7 @@ Procedure events( )
 EndProcedure
 
 If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
-  *tree = Tree( 10, 10, 280, 480, #PB_Tree_NoLines|#PB_Tree_NoButtons|#__flag_GridLines)
+  *tree = TreeWidget( 10, 10, 280, 480, #PB_Tree_NoLines|#PB_Tree_NoButtons|#__flag_GridLines)
   
   ; Add some items. We will be able to move items into the
   ; "Directory" ones.
@@ -510,7 +510,7 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   AddItem(*tree, -1, "2 - 20", 0, 0)
   AddItem(*tree, -1, "3 - 20", 0, 0)
   AddItem(*tree, -1, "4 - 20", 0, 0)
-  SetFrame(*tree, 0)
+  SetWidgetFrame(*tree, 0)
   
   ; this enables dropping our private type with a move operation
   ; это позволяет переместить наш частный тип с помощью операции перемещения

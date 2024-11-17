@@ -48,19 +48,19 @@ CompilerIf #PB_Compiler_IsMainFile
   Define imgh = ImageHeight(0)
   
   Open(0, 0, 0, 500, 430,"demonstration of how to sync two scroll area bars", #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-  *scroll1 = ScrollArea(10, 10, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
-  Button(0,0,imgw,imgh, "", 0,0)
-  Button(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
-  Button(2000-imgw,2000-imgh,imgw,imgh, "", 0,0)
+  *scroll1 = ScrollAreaWidget(10, 10, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
+  ButtonWidget(0,0,imgw,imgh, "", 0,0)
+  ButtonWidget(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
+  ButtonWidget(2000-imgw,2000-imgh,imgw,imgh, "", 0,0)
   CloseList()
   
-  *scroll2 = ScrollArea(10, 220, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
-  Button(0,0,imgw,imgh, "", 0,0)
-  Button(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
-  Button(2000-imgw,2000-imgh,imgw,imgh, "", 0,0)
+  *scroll2 = ScrollAreaWidget(10, 220, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
+  ButtonWidget(0,0,imgw,imgh, "", 0,0)
+  ButtonWidget(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
+  ButtonWidget(2000-imgw,2000-imgh,imgw,imgh, "", 0,0)
   CloseList()
   
-  Splitter( 10, 10, 480, 410, *scroll1,*scroll2 )
+  SplitterWidget( 10, 10, 480, 410, *scroll1,*scroll2 )
   
 ;    SetState( *scroll1\scroll\v, *scroll1\scroll\v\bar\max )
 ;    SetState( *scroll1\scroll\h, *scroll1\scroll\h\bar\max )
@@ -92,9 +92,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Quit = 1
   End
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 65
-; FirstLine = 52
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 46
+; FirstLine = 43
 ; Folding = -
 ; EnableXP
 ; DPIAware

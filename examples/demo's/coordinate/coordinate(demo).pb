@@ -19,11 +19,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Open(10)
   *main = Window(200, 0, 413, 319+#__c_frame, "demo set  new parent", Flags )
   
-  ;*w = Button(-30,10,160,70,"Button") 
+  ;*w = ButtonWidget(-30,10,160,70,"Button") 
   *w = Window(-30, 10,160,70,"Button", #PB_Window_NoGadgets) ;: closelist()
   
-  *scrollarea = ScrollArea(200,150,200,160,200,160,10,#PB_ScrollArea_Flat) 
-  *button = Button(31,90,160,30,"Button >>(ScrollArea)") 
+  *scrollarea = ScrollAreaWidget(200,150,200,160,200,160,10,#PB_ScrollArea_Flat) 
+  *button = ButtonWidget(31,90,160,30,"Button >>(ScrollArea)") 
   CloseList()
   
   
@@ -70,25 +70,25 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Debug "SIZE (width&height)"
   Debug "window "
-  Debug "  frame - "+ Width(*w, #__c_frame)
-  Debug "  inner - "+ Width(*w, #__c_inner)
-  Debug "  container - "+ Width(*w, #__c_container)
-  Debug "  required - "+ Width(*w, #__c_required)
-  Debug "  draw - "+ Width(*w, #__c_draw)
+  Debug "  frame - "+ WidgetWidth(*w, #__c_frame)
+  Debug "  inner - "+ WidgetWidth(*w, #__c_inner)
+  Debug "  container - "+ WidgetWidth(*w, #__c_container)
+  Debug "  required - "+ WidgetWidth(*w, #__c_required)
+  Debug "  draw - "+ WidgetWidth(*w, #__c_draw)
   Debug ""
   Debug "button "
-  Debug "  frame - "+ Width(*button, #__c_frame)
-  Debug "  inner - "+ Width(*button, #__c_inner)
-  Debug "  container - "+ Width(*button, #__c_container)
-  Debug "  required - "+ Width(*button, #__c_required)
-  Debug "  draw - "+ Width(*button, #__c_draw)
+  Debug "  frame - "+ WidgetWidth(*button, #__c_frame)
+  Debug "  inner - "+ WidgetWidth(*button, #__c_inner)
+  Debug "  container - "+ WidgetWidth(*button, #__c_container)
+  Debug "  required - "+ WidgetWidth(*button, #__c_required)
+  Debug "  draw - "+ WidgetWidth(*button, #__c_draw)
   Debug ""
   Debug "scrollarea "
-  Debug "  frame - "+ Width(*scrollarea, #__c_frame)
-  Debug "  inner - "+ Width(*scrollarea, #__c_inner)
-  Debug "  container - "+ Width(*scrollarea, #__c_container)
-  Debug "  required - "+ Width(*scrollarea, #__c_required)
-  Debug "  draw - "+ Width(*scrollarea, #__c_draw)
+  Debug "  frame - "+ WidgetWidth(*scrollarea, #__c_frame)
+  Debug "  inner - "+ WidgetWidth(*scrollarea, #__c_inner)
+  Debug "  container - "+ WidgetWidth(*scrollarea, #__c_container)
+  Debug "  required - "+ WidgetWidth(*scrollarea, #__c_required)
+  Debug "  draw - "+ WidgetWidth(*scrollarea, #__c_draw)
   Debug ""
   
   Debug "----------"

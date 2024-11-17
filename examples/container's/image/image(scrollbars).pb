@@ -11,10 +11,10 @@ If Open(0, 100, 50, 400, 500, "ListViewGadget", #PB_Window_SystemMenu)
   *w = Image(10, 10, 380, 380, (0)) 
   
   ; Debug " - test show and size scroll bars - "
-  ; Resize(*w,#PB_Ignore,#PB_Ignore,256,256 )
-  ; Resize(*w,#PB_Ignore,#PB_Ignore,#PB_Ignore,255 )
-  ; Resize(*w,#PB_Ignore,#PB_Ignore,255,#PB_Ignore )
-  ; Resize(*w,#PB_Ignore,#PB_Ignore,255,255 )
+  ; ResizeWidget(*w,#PB_Ignore,#PB_Ignore,256,256 )
+  ; ResizeWidget(*w,#PB_Ignore,#PB_Ignore,#PB_Ignore,255 )
+  ; ResizeWidget(*w,#PB_Ignore,#PB_Ignore,255,#PB_Ignore )
+  ; ResizeWidget(*w,#PB_Ignore,#PB_Ignore,255,255 )
   
   WaitClose()
 EndIf

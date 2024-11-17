@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
   a_init(root(), 4)
   
   ; object = Window(150, 150, 300, 300, "Resize me !", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-  object = Container(150, 150, 300, 300) : CloseList()
+  object = ContainerWidget(150, 150, 300, 300) : CloseList()
   
   SetSizeBounds(object, 200, 200, 401, 401)
   SetMoveBounds(object, 100, 100, 501, 501)

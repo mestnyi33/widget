@@ -3,17 +3,17 @@
 ;                                                       - IsToolBar( #ToolBar )
 ;
 ;                                      Free( *address ) - FreeToolBar( #ToolBar )
-;                                 BarHeight( *address ) - ToolBarHeight( #ToolBar )
+;                                 BarWidgetHeight( *address ) - ToolBarWidgetHeight( #ToolBar )
 ;
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                            BarSeparator( [*address] ) - ToolBarSeparator( )
-;             DisableBarButton( *address, item, state ) - DisableBarButton( #ToolBar, Button, State )
+;             DisableBarButtonWidget( *address, item, state ) - DisableBarButtonWidget( #ToolBar, Button, State )
 ;                   GetBarButtonState( *address, item ) - GetBarButtonState( #ToolBar, Button )
 ;            SetBarButtonState( *address, item, state ) - SetBarButtonState( #ToolBar, Button, State )
-;               BarButtonText( *address, item, text.s ) - BarButtonText( #ToolBar, Button, Text$ )
-;              BarButton( button, image, mode, text.s ) - ToolBarImageButton( #Button, ImageID [, Mode [, Text$]] )
-;               BarButton( button, icon, mode, text.s ) - ToolBarStandardButton( #Button, #ButtonIcon [, Mode [, Text$]] )
-;                BarToolTip( *address, button, text.s ) - ToolBarToolTip( #ToolBar, Button, Text$ )
+;               BarButtonTextWidget( *address, item, text.s ) - BarButtonTextWidget( #ToolBar, Button, Text$ )
+;              BarButtonWidget( button, image, mode, text.s ) - ToolBarImageButtonWidget( #Button, ImageID [, Mode [, Text$]] )
+;               BarButtonWidget( button, icon, mode, text.s ) - ToolBarStandardButtonWidget( #Button, #ButtonIcon [, Mode [, Text$]] )
+;                BarWidgetToolTip( *address, button, text.s ) - ToolBarWidgetToolTip( #ToolBar, Button, Text$ )
 
 
 XIncludeFile "../../../widgets.pbi" 
@@ -41,32 +41,32 @@ CompilerIf #PB_Compiler_IsMainFile
       ;If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
       ;If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text)
       If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small|#PB_ToolBar_Text)
-         ToolBarImageButton(10, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
-         ToolBarImageButton(1, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-         ToolBarImageButton(2, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
+         ToolBarImageButtonWidget(10, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
+         ToolBarImageButtonWidget(1, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
+         ToolBarImageButtonWidget(2, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
          
          ToolBarSeparator()
          
-         ToolBarImageButton(5, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-         ToolBarToolTip(0, 5, "Paste")
+         ToolBarImageButtonWidget(5, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+         ToolBarWidgetToolTip(0, 5, "Paste")
          
-         ToolBarImageButton(4, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-         ToolBarToolTip(0, 4, "Copy")
+         ToolBarImageButtonWidget(4, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+         ToolBarWidgetToolTip(0, 4, "Copy")
          
-         ToolBarImageButton(3, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-         ToolBarToolTip(0, 3, "Cut")
+         ToolBarImageButtonWidget(3, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+         ToolBarWidgetToolTip(0, 3, "Cut")
          
          ToolBarSeparator()
          
-         ToolBarImageButton(6, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-         ToolBarToolTip(0, 6, "Find a document")
+         ToolBarImageButtonWidget(6, LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+         ToolBarWidgetToolTip(0, 6, "Find a document")
       EndIf
       
-      DisableBarButton(0, 2, 1) ; Disable the button '2'
+      DisableBarButtonWidget(0, 2, 1) ; Disable the button '2'
       BindEvent( #PB_Event_Menu, @PB_ToolBarEvents( ))
    EndIf
    
-   If Open( 0, 0, ToolBarHeight( 0 ), 520, 380 )
+   If Open( 0, 0, ToolBarWidgetHeight( 0 ), 520, 380 )
    ;If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
       Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
@@ -102,9 +102,9 @@ CompilerIf #PB_Compiler_IsMainFile
          
          
          BarSeparator( )
-         BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New") ;: Debug widget( )\class
-         BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-         BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
+         BarButtonWidget(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New") ;: Debug widget( )\class
+         BarButtonWidget(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
+         BarButtonWidget(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
          BarSeparator( )
          
          
@@ -118,26 +118,26 @@ CompilerIf #PB_Compiler_IsMainFile
          
          
          BarSeparator( )
-         BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-         ; ToolTip(*toolbar, 5, "Paste")
+         BarButtonWidget(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+         ; WidgetToolTip(*toolbar, 5, "Paste")
          
-;          BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-;          ; ToolTip(*toolbar, 4, "Copy")
+;          BarButtonWidget(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+;          ; WidgetToolTip(*toolbar, 4, "Copy")
 ;          
-;          BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-;          ; ToolTip(*toolbar, 3, "Cut")
+;          BarButtonWidget(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+;          ; WidgetToolTip(*toolbar, 3, "Cut")
          
          BarSeparator( )
          
-         BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-         ; ToolTip(*toolbar, 6, "Find a document")
+         BarButtonWidget(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+         ; WidgetToolTip(*toolbar, 6, "Find a document")
       EndIf
       
-      DisableBarButton(*toolbar, 2, 1) ; Disable the button '2'
+      DisableBarButtonWidget(*toolbar, 2, 1) ; Disable the button '2'
       Bind( *toolbar, @ToolBarEvents( ) )
       
           ;SetState(*toolbar, 12 )
-            Button( 10,10, 50,150,"" )
+            ButtonWidget( 10,10, 50,150,"" )
            ;  Bind( root( ), #PB_Default )
    EndIf
    

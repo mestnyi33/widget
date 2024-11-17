@@ -106,15 +106,15 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(#PB_Any, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *item1 = ButtonGadget( #PB_Any, 10, 10, 50, 25, "item-1") ;: SetClass( *item1, "button-item-1" )
-    *item2 = ButtonGadget( #PB_Any, 60, 10, 50, 25, "item-2") ;: SetClass( *item2, "button-item-2" )
-    *item3 = ButtonGadget( #PB_Any, 110, 10, 50, 25, "item-3") ;: SetClass( *item3, "button-item-3" )
+    *item1 = ButtonGadget( #PB_Any, 10, 10, 50, 25, "item-1") ;: SetWidgetClass( *item1, "button-item-1" )
+    *item2 = ButtonGadget( #PB_Any, 60, 10, 50, 25, "item-2") ;: SetWidgetClass( *item2, "button-item-2" )
+    *item3 = ButtonGadget( #PB_Any, 110, 10, 50, 25, "item-3") ;: SetWidgetClass( *item3, "button-item-3" )
     BindGadgetEvent( *item1, @events( ), #PB_EventType_LeftClick )
     BindGadgetEvent( *item2, @events( ), #PB_EventType_LeftClick )
     BindGadgetEvent( *item3, @events( ), #PB_EventType_LeftClick )
     
-    *disable = ButtonGadget( #PB_Any, 180, 10, 50, 25, "disable") ;: SetClass( *disable, "button-disable" )
-    *enable = ButtonGadget( #PB_Any, 240, 10, 50, 25, "enable") ;: SetClass( *enable, "button-enable" )
+    *disable = ButtonGadget( #PB_Any, 180, 10, 50, 25, "disable") ;: SetWidgetClass( *disable, "button-disable" )
+    *enable = ButtonGadget( #PB_Any, 240, 10, 50, 25, "enable") ;: SetWidgetClass( *enable, "button-enable" )
     BindGadgetEvent( *enable, @events( ), #PB_EventType_LeftClick )
     BindGadgetEvent( *disable, @events( ), #PB_EventType_LeftClick )
     

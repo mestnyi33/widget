@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; SetGadgetAttribute(0, #PB_Button_Image, ImageID(#PB_Button_Image))
     SetGadgetAttribute(0, #PB_Button_PressedImage, ImageID(#PB_Button_PressedImage))
     
-    ButtonImage(10, 60, 180, 40, 0)
+    ButtonImageWidget(10, 60, 180, 40, 0)
     
     ; SetAttribute(widget(), #PB_Button_Image, (#PB_Button_Image))
     SetAttribute(widget(), #PB_Button_PressedImage, (#PB_Button_PressedImage))

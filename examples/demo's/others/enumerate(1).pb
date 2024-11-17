@@ -67,34 +67,34 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure OpenGadget( x,y,width,height )
       Protected *PARENT 
-      ;*PARENT = Panel( x,y,width,height*2 ) : AddItem(*PARENT, - 1, "item_0" )
-      *PARENT = Container( x,y,width,height ) 
+      ;*PARENT = PanelWidget( x,y,width,height*2 ) : AddItem(*PARENT, - 1, "item_0" )
+      *PARENT = ContainerWidget( x,y,width,height ) 
       ProcedureReturn *PARENT
    EndProcedure
    
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      *PARENT = Panel(10,145,200,160)  : SetClass(*PARENT, "PANEL") 
+      *PARENT = PanelWidget(10,145,200,160)  : SetWidgetClass(*PARENT, "PANEL") 
       AddItem(*PARENT, -1, "item (0)")
       ;              ;
-      ;              OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(0))")
-      ;              OpenGadget(10,10,160,30) : SetClass(widget(), "((0>))")
-      ;              OpenGadget(10,10,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
+      ;              OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "(PanelWidget(0))")
+      ;              OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((0>))")
+      ;              OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((0>>))") : CloseList( )
       ;              CloseList( )
       ;              CloseList( )
       ;              ;
       AddItem(*PARENT, -1, "item (1)")
       ;       ;
-      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(1))")
-      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>))")
-      ;       OpenGadget(10,10,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
+      ;       OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "(PanelWidget(1))")
+      ;       OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((1>))")
+      ;       OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((1>>))") : CloseList( )
       ;       CloseList( )
       ;       CloseList( )
       ;       ;
-      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = Button(20,90,160,30,"(Panel(2))") : SetClass(*PARENT_2, GetText(*PARENT_2)) 
+      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = ButtonWidget(20,90,160,30,"(PanelWidget(2))") : SetWidgetClass(*PARENT_2, GetTextWidget(*PARENT_2)) 
                                        ;
-      OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(2))")
-      OpenGadget(10,10,160,30) : SetClass(widget(), "((2>))")
-      OpenGadget(10,10,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
+      OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "(PanelWidget(2))")
+      OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((2>))")
+      OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((2>>))") : CloseList( )
       CloseList( )
       CloseList( )
       
@@ -103,20 +103,20 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       Debug ">"
       OpenList( *PARENT, 0 )
-      OpenGadget(10,10,160,30) : SetClass(widget(), "(Panel(0))")
-      OpenGadget(10,10,160,30) : SetClass(widget(), "((0>))")
-      OpenGadget(10,10,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
+      OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "(PanelWidget(0))")
+      OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((0>))")
+      OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((0>>))") : CloseList( )
       CloseList( )
       CloseList( )
       CloseList( )
       Debug "<"
       
-      *CHILD = OpenGadget(10,10,160,70) : SetClass(*CHILD, "CHILD") 
-      OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>)") 
-      OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>>)") 
-      Button(5,5,70,30,"Button1") : SetClass(widget(), "(CH>>>0)")  
-      ;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(CH>>>1)")  
-      ;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(CH>>>2)")  
+      *CHILD = OpenGadget(10,10,160,70) : SetWidgetClass(*CHILD, "CHILD") 
+      OpenGadget(10,10,160,70) : SetWidgetClass(widget(), "(CH>)") 
+      OpenGadget(10,10,160,70) : SetWidgetClass(widget(), "(CH>>)") 
+      ButtonWidget(5,5,70,30,"Button1") : SetWidgetClass(widget(), "(CH>>>0)")  
+      ;       ButtonWidget(15,15,70,30,"Button2") : SetWidgetClass(widget(), "(CH>>>1)")  
+      ;       ButtonWidget(25,25,70,30,"Button3") : SetWidgetClass(widget(), "(CH>>>2)")  
       CloseList( )
       CloseList( )
       CloseList( )

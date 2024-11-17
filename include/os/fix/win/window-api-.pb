@@ -40,7 +40,7 @@
     ;       Case #PB_EventType_Focus
     ;         Debug ""+eventobject + " #PB_EventType_Focus " 
     ;         events::DrawCanvasBack(eventobject, $FFA7A4)
-    ;         events::DrawCanvasFrame(eventobject, $2C70F5)
+    ;         events::DrawCanvasFrameWidget(eventobject, $2C70F5)
     ;         
     ;       Case #PB_EventType_LostFocus
     ;         Debug ""+eventobject + " #PB_EventType_LostFocus " 
@@ -60,11 +60,11 @@
     ;         
     ;       Case #PB_EventType_MouseEnter
     ;         Debug ""+eventobject + " #PB_EventType_MouseEnter " ;+ CocoaMessage(0, WindowID(window), "isActive") 
-    ;         events::DrawCanvasFrame(eventobject, $2C70F5)
+    ;         events::DrawCanvasFrameWidget(eventobject, $2C70F5)
     ;         
     ;       Case #PB_EventType_MouseLeave
     ;         Debug ""+eventobject + " #PB_EventType_MouseLeave "
-    ;         events::DrawCanvasFrame(eventobject, 0)
+    ;         events::DrawCanvasFrameWidget(eventobject, 0)
     ;         
     ;       Case #PB_EventType_Resize
     ;         Debug ""+eventobject + " #PB_EventType_Resize " 

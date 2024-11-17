@@ -8,17 +8,17 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    
    
-   Procedure Window_0_Resize( )
+   Procedure Window_0_ResizeWidget( )
       Debug 888
-    ;  ResizeGadget(GetGadget(root()),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
-     ;  Resize( root(),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
+    ;  ResizeGadget(GetCanvasGadget(root()),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
+     ;  ResizeWidget( root(),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
       ; PostEventRepaint( root())
    EndProcedure
    
-   Define Window_0 = GetWindow( Open( #PB_Any, 20, 20, 200, 200, "test", #PB_Window_SizeGadget))
+   Define Window_0 = GetCanvasWindow( Open( #PB_Any, 20, 20, 200, 200, "test", #PB_Window_SizeGadget))
    
-   ;Define Button_0 = Button( 200-50-5, 200-50-5, 50,  50, "right & bottom")
-   Define Button_0 = Button( 5, 5, 50,  50, "right & bottom")
+   ;Define Button_0 = ButtonWidget( 200-50-5, 200-50-5, 50,  50, "right & bottom")
+   Define Button_0 = ButtonWidget( 5, 5, 50,  50, "right & bottom")
    
    ;SetAlignment(Button_0, 0, 0,0,1,1 )
    ;SetAlignment(Button_0, #__align_right|#__align_bottom )
@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    While WaitWindowEvent(1000) : Wend ;: Delay(1000)
    
-   BindEvent(#PB_Event_SizeWindow, @Window_0_Resize( ))
+   BindEvent(#PB_Event_SizeWindow, @Window_0_ResizeWidget( ))
    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,300)
    
    PostEventRepaint( root())

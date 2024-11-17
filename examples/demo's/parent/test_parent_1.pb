@@ -37,16 +37,16 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open( 0, 100, 100, 470, 200, " CONT1 set in CONT2 and return in ROOT", #PB_Window_SystemMenu )
       a_init(root())
       ;
-      *CONT2 = Container( 220, 10, 200, 150) : SetClass(widget( ), "CONT2" ) 
-      Button( 10,5,80,25, "*btn2_1" )  : SetClass(widget( ), "btn2_1" ) 
-      Button( 10,35,80,25, "*btn2_2" )  : SetClass(widget( ), "btn2_2" ) 
-      Button( 10,65,80,25, "*btn2_3" )  : SetClass(widget( ), "btn2_3" ) 
+      *CONT2 = ContainerWidget( 220, 10, 200, 150) : SetWidgetClass(widget( ), "CONT2" ) 
+      ButtonWidget( 10,5,80,25, "*btn2_1" )  : SetWidgetClass(widget( ), "btn2_1" ) 
+      ButtonWidget( 10,35,80,25, "*btn2_2" )  : SetWidgetClass(widget( ), "btn2_2" ) 
+      ButtonWidget( 10,65,80,25, "*btn2_3" )  : SetWidgetClass(widget( ), "btn2_3" ) 
       CloseList()
       ;
-      *CONT1 = Container( 10, 10, 200, 150) : SetClass(widget( ), "CONT1" ) 
-      Button( 10,5,80,25, "*btn1_1" )  : SetClass(widget( ), "btn1_1" ) 
-      Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
-      Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
+      *CONT1 = ContainerWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
+      ButtonWidget( 10,5,80,25, "*btn1_1" )  : SetWidgetClass(widget( ), "btn1_1" ) 
+      ButtonWidget( 10,35,80,25, "*btn1_2" )  : SetWidgetClass(widget( ), "btn1_2" ) 
+      ButtonWidget( 10,65,80,25, "*btn1_3" )  : SetWidgetClass(widget( ), "btn1_3" ) 
       CloseList()
       
       ;\\

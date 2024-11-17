@@ -12,7 +12,7 @@ UseWidgets( )
 ; ;   
 ; ;   Image(10, 10, 380, 380, (0)) 
 ; ;   
-; ;   Button(10,390, 95, 25, "")
+; ;   ButtonWidget(10,390, 95, 25, "")
 ; ;   WaitClose()
 ; ; EndIf
 
@@ -58,21 +58,21 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure Window_0_Resize( )
+   Procedure Window_0_ResizeWidget( )
       Protected width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)
       Protected height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
       
-      Resize(*Image, #PB_Ignore, #PB_Ignore, width-20, height-85)
-      Resize(*Button, #PB_Ignore, height-65, width-10, #PB_Ignore)
-      Resize(*ComboBox, #PB_Ignore, height-35, width-10, #PB_Ignore)
+      ResizeWidget(*Image, #PB_Ignore, #PB_Ignore, width-20, height-85)
+      ResizeWidget(*Button, #PB_Ignore, height-65, width-10, #PB_Ignore)
+      ResizeWidget(*ComboBox, #PB_Ignore, height-35, width-10, #PB_Ignore)
    EndProcedure
    
    Procedure Window_0( )
       If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
          *Image = Image(10, 10, 230,  225, 10)
          
-         *Button = Button( 5,   245, 240,  25, "change image", #__flag_ButtonToggle)
-         *ComboBox = ComboBox( 5,   245+30, 240,  30)
+         *Button = ButtonWidget( 5,   245, 240,  25, "change image", #__flag_ButtonToggle)
+         *ComboBox = ComboBoxWidget( 5,   245+30, 240,  30)
          AddItem(*ComboBox, -1, "Default")
          AddItem(*ComboBox, -1, "Center")
          AddItem(*ComboBox, -1, "Mosaic")
@@ -87,7 +87,7 @@ CompilerIf #PB_Compiler_IsMainFile
          SetAlign(*Button, 0, 1,0,1,1 )
          SetAlign(*ComboBox, 0, 1,0,1,1 )
          
-         ; Resize( root(), 0, 0, 450, 610)
+         ; ResizeWidget( root(), 0, 0, 450, 610)
       EndIf
    EndProcedure
    
@@ -104,8 +104,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 73
+; CursorPosition = 46
+; FirstLine = 43
 ; Folding = --
 ; EnableXP
 ; DPIAware

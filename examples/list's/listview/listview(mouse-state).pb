@@ -121,14 +121,14 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         
       Case #__event_DragStart
         If *w1 = EventWidget()
-          DragText( GetItemText(EventWidget(), GetState(EventWidget())) )
+          DragTextWidget( GetItemTextWidget(EventWidget(), GetState(EventWidget())) )
           Debug  ""+IDWidget(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
         EndIf
       
       Case #__event_Drop
         If *w3 = EventWidget()
-          Debug  ""+IDWidget(EventWidget())+" - widget Drop "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropText( )
-          AddItem( *w3, EventWidget( )\RowEntered( )\_index + 1, EventDropText( ) )
+          Debug  ""+IDWidget(EventWidget())+" - widget Drop "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropTextWidget( )
+          AddItem( *w3, EventWidget( )\RowEntered( )\_index + 1, EventDropTextWidget( ) )
           SetActive( *w3 )
         EndIf
       
@@ -194,20 +194,20 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     SetGadgetState_(*g7, countitems-1) 
     
     ;\\ demo widget
-    *w1 = widget::ListView(265, 10, 120, 180 )
-    *w2 = widget::ListView(265+125, 10, 120, 180 )
+    *w1 = widget::ListViewWidget(265, 10, 120, 180 )
+    *w2 = widget::ListViewWidget(265+125, 10, 120, 180 )
     
     ;\\
-    *w3 = widget::ListView(265, 195, 120, 180, #PB_ListView_ClickSelect )
-    *w4 = widget::ListView(265+125, 195, 120, 180, #PB_ListView_ClickSelect )
+    *w3 = widget::ListViewWidget(265, 195, 120, 180, #PB_ListView_ClickSelect )
+    *w4 = widget::ListViewWidget(265+125, 195, 120, 180, #PB_ListView_ClickSelect )
     
     ;\\
-    *w5 = widget::ListView(265, 380, 120, 180, #PB_ListView_MultiSelect )
-    *w6 = widget::ListView(265+125, 380, 120, 180, #PB_ListView_MultiSelect )
+    *w5 = widget::ListViewWidget(265, 380, 120, 180, #PB_ListView_MultiSelect )
+    *w6 = widget::ListViewWidget(265+125, 380, 120, 180, #PB_ListView_MultiSelect )
     
     ;\\
-    *w7 = widget::ListView(265, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
-    *w8 = widget::ListView(265+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
+    *w7 = widget::ListViewWidget(265, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
+    *w8 = widget::ListViewWidget(265+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
     
     ;\\
     a = 0 

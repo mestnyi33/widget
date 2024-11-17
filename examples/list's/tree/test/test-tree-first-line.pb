@@ -152,7 +152,7 @@ EndProcedure
               Select PackEntryType(ZipFile)
                 Case #PB_Packer_File
                   If Image
-                    If FindString(Left(PackEntryName.S, 3), "vd_")
+                    If FindStringWidget(Left(PackEntryName.S, 3), "vd_")
                       PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
                       PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
                       
@@ -161,13 +161,13 @@ EndProcedure
                       PackEntryName.S = " "+Left.S+Right.S
                       
                       If IsGadget(Widget)
-                        If FindString(LCase(PackEntryName.S), "cursor")
+                        If FindStringWidget(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
                           AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
                           SetGadgetItemData(Widget, 0, ImageID(Image))
                           
-                        ElseIf FindString(LCase(PackEntryName.S), "window")
+                        ElseIf FindStringWidget(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
                           AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
@@ -179,13 +179,13 @@ EndProcedure
                         EndIf
                         
                       Else
-                        If FindString(LCase(PackEntryName.S), "cursor")
+                        If FindStringWidget(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
                           AddItem(Widget, 0, PackEntryName.S, Image)
                           ;SetItemData(Widget, 0, Image)
                           
-                        ElseIf FindString(LCase(PackEntryName.S), "window")
+                        ElseIf FindStringWidget(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
                           AddItem(Widget, 1, PackEntryName.S, Image)
@@ -246,10 +246,10 @@ EndProcedure
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
       Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        DragText(GetItemText(EventGadget, EventItem))
+        DragTextWidget(GetItemTextWidget(EventGadget, EventItem))
         
       Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
-        Debug EventDropText()
+        Debug EventDropTextWidget()
         
       Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
       Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
@@ -281,7 +281,7 @@ EndProcedure
 ; ;     
 ; ;     ;SetActiveGadget(g)
 ; ;     ;SetGadgetState(g, 1)
-; ;     ;     Debug "g "+ GetGadgetText(g)
+; ;     ;     Debug "g "+ GetGadgetTextWidget(g)
     g = 0
     ; 1_example
     TreeGadget_(g, 10, 10, 210, 100)                                         
@@ -331,7 +331,7 @@ EndProcedure
     Next
     
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    SetGadgetItemImage(g, 0, ImageID(0))
+    SetGadGetWidgetItemImage(g, 0, ImageID(0))
     
     g = 3
     ;  3_example
@@ -400,10 +400,10 @@ EndProcedure
     ;}
     
     Open(0, 0, 225, 1110, 425)
-    g_Canvas = GetGadget(root())
+    g_Canvas = GetCanvasGadget(root())
     g = 10
     
-; ;     *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
+; ;     *g = TreeWidget(10, 100, 210, 210, #__tree_CheckBoxes)                                         
 ; ;     
 ; ;     
 ; ;     ; 1_example
@@ -423,12 +423,12 @@ EndProcedure
 ; ; ; ;     ;BindGadgetEvent(g, @Events())
 ; ; ; ;     ;     SetState(*g, 3)
 ; ; ; ;     ;     SetState(*g, -1)
-; ; ; ;     ;Debug " - "+GetText(*g)
+; ; ; ;     ;Debug " - "+GetTextWidget(*g)
 ; ; ; ;     LoadFont(3, "Arial", 18)
 ; ; ; ;     SetFont(*g, 3)
     
     ; 1_example
-    *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
+    *g = TreeWidget(10, 100, 210, 210, #__tree_CheckBoxes)                                         
     AddItem (*g, 0, "Node "+Str(a), 0, 0)                                         
     AddItem (*g, 1, "Sub-Item 1", -1, 1)                                           
     AddItem (*g, 3, "Sub-Item 3", -1, 3)
@@ -437,7 +437,7 @@ EndProcedure
     ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
   
     ;{  3_example
-    *g5 = Tree(230, 100, 103, 210, #__Tree_NoButtons);|#__flag_Collapsed)                                         
+    *g5 = TreeWidget(230, 100, 103, 210, #__Tree_NoButtons);|#__flag_Collapsed)                                         
     AddItem(*g5, 0, "Tree_0", -1, 0 )
     AddItem(*g5, 1, "Tree_1", -1, 0) 
     AddItem(*g5, 2, "Tree_2", -1, 0) 
@@ -449,7 +449,7 @@ EndProcedure
     ;AddItem(*g5, 7, "Tree_4", -1, 0) 
    
     ; 4_example
-    *g6 = Tree(341, 100, 103, 210, #__flag_BorderLess|#PB_Tree_Collapsed)                                         
+    *g6 = TreeWidget(341, 100, 103, 210, #__flag_BorderLess|#PB_Tree_Collapsed)                                         
     
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 
@@ -464,7 +464,7 @@ EndProcedure
     Next i
     
     ;  5_example
-    *g = Tree(450, 100, 210, 210 );|#__flag_collapsedd)                                         
+    *g = TreeWidget(450, 100, 210, 210 );|#__flag_collapsedd)                                         
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1_1", 0, 1) 
     AddItem(*g, 4, "Tree_1_1_1", -1, 2) 

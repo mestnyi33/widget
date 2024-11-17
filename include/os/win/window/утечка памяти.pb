@@ -41,9 +41,9 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Declare   Drawing( )
     
-    Declare.i Panel( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Declare.i PanelWidget( x.l,y.l,width.l,height.l, Flag.i = 0 )
     Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.i = 0 )
-    Declare.i Button( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, Image.i = -1, round.l = 0 )
+    Declare.i ButtonWidget( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, Image.i = -1, round.l = 0 )
     Declare   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *callback = #Null, canvas = #PB_Any )
     
     ;}
@@ -84,7 +84,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     
-    Procedure.i Button( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, Image.i = -1, round.l = 0 )
+    Procedure.i ButtonWidget( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, Image.i = -1, round.l = 0 )
       Protected *this.allocate( widget )
       
       *this\class = "button"
@@ -99,7 +99,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn *this
     EndProcedure
     
-    Procedure.i Panel( x.l,y.l,width.l,height.l, Flag.i = 0 )
+    Procedure.i PanelWidget( x.l,y.l,width.l,height.l, Flag.i = 0 )
       Protected *this.allocate( widget )
       
       *this\class = "panel"
@@ -156,10 +156,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Open( OpenWindow( #PB_Any, 0,0,0,0, "ide" ) )
   
   ;     ;\\\ 
-  id_design_panel = Panel( 0,0,0,0 )
+  id_design_panel = PanelWidget( 0,0,0,0 )
   AddItem( id_design_panel, -1, "Form" )
-  Button( 0,0,0,0,"" )
-  Button( 0,0,0,0,"" )
+  ButtonWidget( 0,0,0,0,"" )
+  ButtonWidget( 0,0,0,0,"" )
   Drawing()
   
   Repeat 

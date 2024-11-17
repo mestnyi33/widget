@@ -44,13 +44,13 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
-      tree=Tree(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
+      tree=TreeWidget(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
       Define i
       For i = 0 To 10
          AddItem(tree, -1, Str(i)+"_item")
       Next
-      Button( 600-100, 10, 90,30, "test" )
-      Define *showButton = Button( 600-100, 300-40, 90,30, "show" )
+      ButtonWidget( 600-100, 10, 90,30, "test" )
+      Define *showButton = ButtonWidget( 600-100, 300-40, 90,30, "show" )
       Bind( *showButton, @ButtonEvents( ) )
       
       ShowMessage( )

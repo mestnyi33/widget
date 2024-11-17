@@ -157,7 +157,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   
   
   ;\\
-  ListView(10, 190, 250, 120)
+  ListViewWidget(10, 190, 250, 120)
   For a = 0 To 12
     AddItem (ID(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
@@ -166,7 +166,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(ID(0), 9) 
   ;SetItemState(ID(0), 5, 1) 
   
-  ListView(10+270, 190, 250, 120, #__flag_RowClickSelect)
+  ListViewWidget(10+270, 190, 250, 120, #__flag_RowClickSelect)
   For a = 0 To 12
     AddItem (ID(1), -1, "Item " + Str(a) + " of the Listview long long long long long") ; define listview content
   Next
@@ -174,7 +174,7 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(ID(1), 7) 
   SetState(ID(1), 9) 
   
-  ListView(10+270+270, 190, 250, 120, #__flag_RowMultiSelect)
+  ListViewWidget(10+270+270, 190, 250, 120, #__flag_RowMultiSelect)
   For a = 0 To 12
     AddItem (ID(2), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
@@ -182,9 +182,9 @@ If Open(1, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   SetState(ID(2), 7) 
   SetState(ID(2), 9) 
   
-  ;   Text(10,170, 250,20, "flag = no")
-  ;   Text(10+270,170, 250,20, "flag = ClickSelect")
-  ;   Text(10+270+270,170, 250,20, "flag = MultiSelect")
+  ;   TextWidget(10,170, 250,20, "flag = no")
+  ;   TextWidget(10+270,170, 250,20, "flag = ClickSelect")
+  ;   TextWidget(10+270+270,170, 250,20, "flag = MultiSelect")
   ;   TextGadget(#PB_Any, 10,170, 250,20, "flag = no")
   ;   TextGadget(#PB_Any, 10+270,170, 250,20, "flag = ClickSelect")
   ;   TextGadget(#PB_Any, 10+270+270,170, 250,20, "flag = MultiSelect")

@@ -37,13 +37,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
-      Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-      Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+      Button_0 = ButtonWidget(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+      Button_1 = ButtonWidget(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
       
-      Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-      Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-      Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-      Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+      Button_2 = ButtonWidget(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
+      Button_3 = ButtonWidget(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
+      Button_4 = ButtonWidget(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+      Button_5 = ButtonWidget(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
       
       Hide(Button_0, 1 ) 
       Hide(Button_1, 1 ) 
@@ -59,19 +59,19 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Button_4 = 0
 ;       Button_5 = 0
       
-      Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_FirstFixed) ; #PB_Splitter_Vertical|
-      Splitter_1 = Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+      Splitter_0 = SplitterWidget(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_FirstFixed) ; #PB_Splitter_Vertical|
+      Splitter_1 = SplitterWidget(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-      Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, Button_5)
-      Splitter_3 = Splitter(0, 0, 0, 0, Button_2, Splitter_2)
-      Splitter_4 = Splitter(430-GadgetX(GetGadget(root())), 10-GadgetY(GetGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+      Splitter_2 = SplitterWidget(0, 0, 0, 0, Splitter_1, Button_5)
+      Splitter_3 = SplitterWidget(0, 0, 0, 0, Button_2, Splitter_2)
+      Splitter_4 = SplitterWidget(430-GadgetX(GetCanvasGadget(root())), 10-GadgetY(GetCanvasGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
       
-      SetText(Splitter_0, "0")
-      SetText(Splitter_1, "1")
-      SetText(Splitter_2, "2")
-      SetText(Splitter_3, "3")
-      SetText(Splitter_4, "4")
+      SetTextWidget(Splitter_0, "0")
+      SetTextWidget(Splitter_1, "1")
+      SetTextWidget(Splitter_2, "2")
+      SetTextWidget(Splitter_3, "3")
+      SetTextWidget(Splitter_4, "4")
       
       SetState(Splitter_1, 20)
       ;SetState(Splitter_1, 410-20)

@@ -36,9 +36,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_0_root" )
-  Button(10,10,200,50,"Button_0")
-  SetClass(widget( ), "Button_0" )
+  SetWidgetClass(Root( ), "window_0_root" )
+  ButtonWidget(10,10,200,50,"Button_0")
+  SetWidgetClass(widget( ), "Button_0" )
   
   ;\\
   Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
@@ -46,9 +46,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_1_root" )
-  Button(10,10,200,50,"Button_1")
-  SetClass(widget( ), "Button_1" )
+  SetWidgetClass(Root( ), "window_1_root" )
+  ButtonWidget(10,10,200,50,"Button_1")
+  SetWidgetClass(widget( ), "Button_1" )
   
   ;\\
   Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
@@ -56,9 +56,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_2_root" )
-  Button(10,10,200,50,"Button_2")
-  SetClass(widget( ), "Button_2" )
+  SetWidgetClass(Root( ), "window_2_root" )
+  ButtonWidget(10,10,200,50,"Button_2")
+  SetWidgetClass(widget( ), "Button_2" )
   
   
   

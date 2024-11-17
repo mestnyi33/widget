@@ -16,11 +16,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *S_7._s_WIDGET
     
   Macro Create(index, x,y,width,height, text, flag=0)
-    String(x,y,width,height, text, flag)
+    StringWidget(x,y,width,height, text, flag)
     If flag & #PB_String_BorderLess = 0
-      SetFrame(widget( ), 1)
+      SetWidgetFrame(widget( ), 1)
     EndIf
-    ; Editor(x,y,width,height, flag) : setText(widget(), text)
+    ; EditorWidget(x,y,width,height, flag) : setTextWidget(widget(), text)
   EndMacro
   
  If Open(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     StringGadget(7, 8,  200, 290, 100, Text)
     
-    SetGadgetText(6, "GaT")
+    SetGadgetTextWidget(6, "GaT")
     
     ;\\
     *S_0 = Create(0, x+8,  10, 290, height, "Normal StringGadget...")
@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *S_7 = Create(7, x+8,  200, 290, 100, Text)
     
-    SetText(*S_6, "GaT")
+    SetTextWidget(*S_6, "GaT")
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

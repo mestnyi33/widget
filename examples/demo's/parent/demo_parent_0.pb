@@ -7,22 +7,22 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open( 0, 0, 0, 370, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
-      Container( 10, 10, 100, 100) : SetClass(widget( ), "CONT1" ) 
-      Button( 10,5,80,25, "*btn1_1" )  : SetClass(widget( ), "btn1_1" ) 
-      Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
-      Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
+      ContainerWidget( 10, 10, 100, 100) : SetWidgetClass(widget( ), "CONT1" ) 
+      ButtonWidget( 10,5,80,25, "*btn1_1" )  : SetWidgetClass(widget( ), "btn1_1" ) 
+      ButtonWidget( 10,35,80,25, "*btn1_2" )  : SetWidgetClass(widget( ), "btn1_2" ) 
+      ButtonWidget( 10,65,80,25, "*btn1_3" )  : SetWidgetClass(widget( ), "btn1_3" ) 
       CloseList()
       ;
-      Container( 120, 10, 100, 100) : SetClass(widget( ), "CONT2" ) 
-      Button( 10,5,80,25, "*btn2_1" )  : SetClass(widget( ), "btn2_1" ) 
-      Button( 10,35,80,25, "*btn2_2" )  : SetClass(widget( ), "btn2_2" ) 
-      Button( 10,65,80,25, "*btn2_3" )  : SetClass(widget( ), "btn2_3" ) 
+      ContainerWidget( 120, 10, 100, 100) : SetWidgetClass(widget( ), "CONT2" ) 
+      ButtonWidget( 10,5,80,25, "*btn2_1" )  : SetWidgetClass(widget( ), "btn2_1" ) 
+      ButtonWidget( 10,35,80,25, "*btn2_2" )  : SetWidgetClass(widget( ), "btn2_2" ) 
+      ButtonWidget( 10,65,80,25, "*btn2_3" )  : SetWidgetClass(widget( ), "btn2_3" ) 
       CloseList()
       ;
-      Container( 230, 10, 100, 100) : SetClass(widget( ), "CONT3" ) 
-      Button( 10,5,80,25, "*btn3_1" )  : SetClass(widget( ), "btn3_1" ) 
-      Button( 10,35,80,25, "btn3_2" )  : SetClass(widget( ), "btn3_2" ) 
-      Button( 10,65,80,25, "*btn3_3" )  : SetClass(widget( ), "btn3_3" ) 
+      ContainerWidget( 230, 10, 100, 100) : SetWidgetClass(widget( ), "CONT3" ) 
+      ButtonWidget( 10,5,80,25, "*btn3_1" )  : SetWidgetClass(widget( ), "btn3_1" ) 
+      ButtonWidget( 10,35,80,25, "btn3_2" )  : SetWidgetClass(widget( ), "btn3_2" ) 
+      ButtonWidget( 10,65,80,25, "*btn3_3" )  : SetWidgetClass(widget( ), "btn3_3" ) 
       CloseList()
       
       

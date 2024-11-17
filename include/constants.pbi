@@ -274,59 +274,59 @@
     
     
     ;-\\ create-type
-    #__type_Root          = - 1
-    #__type_Window        = - 2
-    #__type_Message       = - 3
-    #__type_PopupMenu     = - 4
-    #__type_Menu          = - 5
-    #__type_Tool       = - 6
-    #__type_Tab           = - 7
-    #__type_StatusBar     = - 8
-    #__type_Properties    = - 9
+    #PB_WidgetType_Root          = - 1
+    #PB_WidgetType_Window        = - 2
+    #PB_WidgetType_Message       = - 3
+    #PB_WidgetType_PopupMenu     = - 4
+    #PB_WidgetType_Menu          = - 5
+    #PB_WidgetType_Tool       = - 6
+    #PB_WidgetType_Tab           = - 7
+    #PB_WidgetType_StatusBar     = - 8
+    #PB_WidgetType_Properties    = - 9
     
-;     #__type_toggled
+;     #PB_WidgetType_toggled
 ;     
-;     #__type_ImageButton
-;     #__type_StringButton
-;     #__type_Hiasm
+;     #PB_WidgetType_ImageButton
+;     #PB_WidgetType_StringButton
+;     #PB_WidgetType_Hiasm
     
     Enumeration 
-      #__type_Unknown       = #PB_GadgetType_Unknown       ; 0
-      #__type_Button        = #PB_GadgetType_Button        ; 1
-      #__type_String        = #PB_GadgetType_String        ; 2
-      #__type_Text          = #PB_GadgetType_Text          ; 3
-      #__type_CheckBox      = #PB_GadgetType_CheckBox      ; 4
-      #__type_Option        = #PB_GadgetType_Option        ; 5
-      #__type_ListView      = #PB_GadgetType_ListView      ; 6
-      #__type_Frame         = #PB_GadgetType_Frame         ; 7
-      #__type_ComboBox      = #PB_GadgetType_ComboBox      ; 8
-      #__type_Image         = #PB_GadgetType_Image         ; 9
-      #__type_HyperLink     = #PB_GadgetType_HyperLink     ; 10
-      #__type_Container     = #PB_GadgetType_Container     ; 11
-      #__type_ListIcon      = #PB_GadgetType_ListIcon      ; 12
-      #__type_IPAddress     = #PB_GadgetType_IPAddress     ; 13
-      #__type_Progress      = #PB_GadgetType_ProgressBar   ; 14
-      #__type_Scroll        = #PB_GadgetType_ScrollBar     ; 15
-      #__type_ScrollArea    = #PB_GadgetType_ScrollArea    ; 16
-      #__type_Track         = #PB_GadgetType_TrackBar      ; 17
-      #__type_Web           = #PB_GadgetType_Web           ; 18
-      #__type_ButtonImage   = #PB_GadgetType_ButtonImage   ; 19
-      #__type_Calendar      = #PB_GadgetType_Calendar      ; 20
-      #__type_Date          = #PB_GadgetType_Date          ; 21
-      #__type_Editor        = #PB_GadgetType_Editor        ; 22
-      #__type_ExplorerList  = #PB_GadgetType_ExplorerList  ; 23
-      #__type_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
-      #__type_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
-      #__type_Spin          = #PB_GadgetType_Spin          ; 26
-      #__type_Tree          = #PB_GadgetType_Tree          ; 27
-      #__type_Panel         = #PB_GadgetType_Panel         ; 28
-      #__type_Splitter      = #PB_GadgetType_Splitter      ; 29
-      #__type_MDI           = #PB_GadgetType_MDI           ; 30
+      #PB_WidgetType_Unknown       = #PB_GadgetType_Unknown       ; 0
+      #PB_WidgetType_Button        = #PB_GadgetType_Button        ; 1
+      #PB_WidgetType_String        = #PB_GadgetType_String        ; 2
+      #PB_WidgetType_Text          = #PB_GadgetType_Text          ; 3
+      #PB_WidgetType_CheckBox      = #PB_GadgetType_CheckBox      ; 4
+      #PB_WidgetType_Option        = #PB_GadgetType_Option        ; 5
+      #PB_WidgetType_ListView      = #PB_GadgetType_ListView      ; 6
+      #PB_WidgetType_Frame         = #PB_GadgetType_Frame         ; 7
+      #PB_WidgetType_ComboBox      = #PB_GadgetType_ComboBox      ; 8
+      #PB_WidgetType_Image         = #PB_GadgetType_Image         ; 9
+      #PB_WidgetType_HyperLink     = #PB_GadgetType_HyperLink     ; 10
+      #PB_WidgetType_Container     = #PB_GadgetType_Container     ; 11
+      #PB_WidgetType_ListIcon      = #PB_GadgetType_ListIcon      ; 12
+      #PB_WidgetType_IPAddress     = #PB_GadgetType_IPAddress     ; 13
+      #PB_WidgetType_Progress      = #PB_GadgetType_ProgressBar   ; 14
+      #PB_WidgetType_Scroll        = #PB_GadgetType_ScrollBar     ; 15
+      #PB_WidgetType_ScrollArea    = #PB_GadgetType_ScrollArea    ; 16
+      #PB_WidgetType_Track         = #PB_GadgetType_TrackBar      ; 17
+      #PB_WidgetType_Web           = #PB_GadgetType_Web           ; 18
+      #PB_WidgetType_ButtonImage   = #PB_GadgetType_ButtonImage   ; 19
+      #PB_WidgetType_Calendar      = #PB_GadgetType_Calendar      ; 20
+      #PB_WidgetType_Date          = #PB_GadgetType_Date          ; 21
+      #PB_WidgetType_Editor        = #PB_GadgetType_Editor        ; 22
+      #PB_WidgetType_ExplorerList  = #PB_GadgetType_ExplorerList  ; 23
+      #PB_WidgetType_ExplorerTree  = #PB_GadgetType_ExplorerTree  ; 24
+      #PB_WidgetType_ExplorerCombo = #PB_GadgetType_ExplorerCombo ; 25
+      #PB_WidgetType_Spin          = #PB_GadgetType_Spin          ; 26
+      #PB_WidgetType_Tree          = #PB_GadgetType_Tree          ; 27
+      #PB_WidgetType_Panel         = #PB_GadgetType_Panel         ; 28
+      #PB_WidgetType_Splitter      = #PB_GadgetType_Splitter      ; 29
+      #PB_WidgetType_MDI           = #PB_GadgetType_MDI           ; 30
       
-      #__type_Scintilla     = #PB_GadgetType_Scintilla     ; 31
-      #__type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
-      #__type_Canvas        = #PB_GadgetType_Canvas        ; 33
-      #__type_OpenGL        = #PB_GadgetType_OpenGL        ; 34
+      #PB_WidgetType_Scintilla     = #PB_GadgetType_Scintilla     ; 31
+      #PB_WidgetType_Shortcut      = #PB_GadgetType_Shortcut      ; 32
+      #PB_WidgetType_Canvas        = #PB_GadgetType_Canvas        ; 33
+      #PB_WidgetType_OpenGL        = #PB_GadgetType_OpenGL        ; 34
     EndEnumeration
     
     ;-\\ create-flags

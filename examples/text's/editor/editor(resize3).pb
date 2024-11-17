@@ -121,9 +121,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
        
     Open(0, 270, 10, 250, 150)
-    g_Canvas = GetGadget(Root())
+    g_Canvas = GetCanvasGadget(Root())
     
-    *g=Editor(0, 0, 250, 150, #__Flag_autosize)
+    *g=EditorWidget(0, 0, 250, 150, #__Flag_autosize)
     For i=0 To 10
       If i = 5
         AddItem(*g, -1, "Line_long_long_long_long_long_"+Str(i))

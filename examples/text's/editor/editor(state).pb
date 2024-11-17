@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
         If state >= 0
-          Protected Range.NSRange\location = state ; Len(GetGadgetText(gadget))
+          Protected Range.NSRange\location = state ; Len(GetGadgetTextWidget(gadget))
           CocoaMessage(0, GadgetID(gadget), "scrollRangeToVisible:@", @Range)
         ;  CocoaMessage(0, GadgetID(gadget), "scrollColumnToVisible:", state)
         ;  CocoaMessage(0, GadgetID(gadget), "scrollRowToVisible:", state )
@@ -109,8 +109,8 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(*g2, @gadget_events())
     
     ; demo widget
-    *w1 = widget::Editor(265, 10, 250, 150, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
-    *w2 = widget::Editor(265, 165, 250, 260, #__Flag_GridLines) ; |#PB_Flag_MultiSelect
+    *w1 = widget::EditorWidget(265, 10, 250, 150, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
+    *w2 = widget::EditorWidget(265, 165, 250, 260, #__Flag_GridLines) ; |#PB_Flag_MultiSelect
     
     For a = 0 To countitems
       widget::AddItem(*w1, -1, "Item "+Str(a), 0)
@@ -122,11 +122,11 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(*w2, @widget_events())
     widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
-    *reset = widget::Button( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
+    *reset = widget::ButtonWidget( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
     widget::SetState( *reset, 1)
     widget::Bind(*reset, @button_events())
     
-    *added = widget::Button( 525 - 10-120, 435, 120, 30, "add new item")
+    *added = widget::ButtonWidget( 525 - 10-120, 435, 120, 30, "add new item")
     widget::Bind(*added, @button_events())
     
     widget::WaitClose()
@@ -146,7 +146,7 @@ CompilerEndIf
 ; ;   EditorGadget(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
 ; ;   
 ; ;   Open(0, 270, 10, 250, 150)
-; ;   *w=Editor(0, 0, 250, 150, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
+; ;   *w=EditorWidget(0, 0, 250, 150, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
 ; ;   
 ; ;   a=0
 ; ;   Define time = ElapsedMilliseconds()
@@ -184,7 +184,7 @@ CompilerEndIf
 ; ;   EditorGadget(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
 ; ;   
 ; ;   Open(0, 270, 170, 250, 520);, "", #__flag_borderless)
-; ;   *w=Editor(0, 0, 250, 520, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
+; ;   *w=EditorWidget(0, 0, 250, 520, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
 ; ;   ;
 ; ;   ;-
 ; ;   ;

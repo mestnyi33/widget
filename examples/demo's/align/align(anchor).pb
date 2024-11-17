@@ -172,24 +172,24 @@ Procedure SetAlign(Ev)
   
   
   Select Result
-    Case 0  : Resize(Sha, 19,19,21,21)
-    Case 1  : Resize(Sha, 0,19,21,21)
-    Case 3  : Resize(Sha, 19,0,21,21)
-    Case 5  : Resize(Sha, 38-1,19,21,21) 
-    Case 7  : Resize(Sha, 19,38-1,21,21)
+    Case 0  : ResizeWidget(Sha, 19,19,21,21)
+    Case 1  : ResizeWidget(Sha, 0,19,21,21)
+    Case 3  : ResizeWidget(Sha, 19,0,21,21)
+    Case 5  : ResizeWidget(Sha, 38-1,19,21,21) 
+    Case 7  : ResizeWidget(Sha, 19,38-1,21,21)
       
-    Case 10 : Resize(Sha, 0,0,40,60-2)
-    Case 11 : Resize(Sha, 0,0,60-2,40)
-    Case 12 : Resize(Sha, 19,0,40,60-2)
-    Case 13 : Resize(Sha, 0,19,60-2,40)
-    Case 14 : Resize(Sha, 0,19,60-2,21)
-    Case 15 : Resize(Sha, 19,0,21,60-2)
+    Case 10 : ResizeWidget(Sha, 0,0,40,60-2)
+    Case 11 : ResizeWidget(Sha, 0,0,60-2,40)
+    Case 12 : ResizeWidget(Sha, 19,0,40,60-2)
+    Case 13 : ResizeWidget(Sha, 0,19,60-2,40)
+    Case 14 : ResizeWidget(Sha, 0,19,60-2,21)
+    Case 15 : ResizeWidget(Sha, 19,0,21,60-2)
       
-    Case 2  : Resize(Sha, 0,0,21,21)
-    Case 4  : Resize(Sha, 38-1,0,21,21)
-    Case 6  : Resize(Sha, 38-1,38-1,21,21)
-    Case 8  : Resize(Sha, 0,38-1,21,21)
-    Case 9  : Resize(Sha, 0,0,60-2,60-2)
+    Case 2  : ResizeWidget(Sha, 0,0,21,21)
+    Case 4  : ResizeWidget(Sha, 38-1,0,21,21)
+    Case 6  : ResizeWidget(Sha, 38-1,38-1,21,21)
+    Case 8  : ResizeWidget(Sha, 0,38-1,21,21)
+    Case 9  : ResizeWidget(Sha, 0,0,60-2,60-2)
   EndSelect
 EndProcedure
 
@@ -334,24 +334,24 @@ Procedure AliginsEvent()
       
       Protected s3 = 17
       Select Result
-        Case 0  : Resize(Sha, 19,19,s3,s3)
-        Case 1  : Resize(Sha, 0,19,s3,s3)
-        Case 3  : Resize(Sha, 19,0,s3,s3)
-        Case 5  : Resize(Sha, 38-1,19,s3,s3) 
-        Case 7  : Resize(Sha, 19,38-1,s3,s3)
+        Case 0  : ResizeWidget(Sha, 19,19,s3,s3)
+        Case 1  : ResizeWidget(Sha, 0,19,s3,s3)
+        Case 3  : ResizeWidget(Sha, 19,0,s3,s3)
+        Case 5  : ResizeWidget(Sha, 38-1,19,s3,s3) 
+        Case 7  : ResizeWidget(Sha, 19,38-1,s3,s3)
           
-        Case 10 : Resize(Sha, 0,0,40,60-2)
-        Case 11 : Resize(Sha, 0,0,60-2,40)
-        Case 12 : Resize(Sha, 19,0,40,60-2)
-        Case 13 : Resize(Sha, 0,19,60-2,40)
-        Case 14 : Resize(Sha, 0,19,60-2,s3)
-        Case 15 : Resize(Sha, 19,0,s3,60-2)
+        Case 10 : ResizeWidget(Sha, 0,0,40,60-2)
+        Case 11 : ResizeWidget(Sha, 0,0,60-2,40)
+        Case 12 : ResizeWidget(Sha, 19,0,40,60-2)
+        Case 13 : ResizeWidget(Sha, 0,19,60-2,40)
+        Case 14 : ResizeWidget(Sha, 0,19,60-2,s3)
+        Case 15 : ResizeWidget(Sha, 19,0,s3,60-2)
           
-        Case 2  : Resize(Sha, 0,0,s3,s3)
-        Case 4  : Resize(Sha, 38-1,0,s3,s3)
-        Case 6  : Resize(Sha, 38-1,38-1,s3,s3)
-        Case 8  : Resize(Sha, 0,38-1,s3,s3)
-        Case 9  : Resize(Sha, 0,0,60-2,60-2)
+        Case 2  : ResizeWidget(Sha, 0,0,s3,s3)
+        Case 4  : ResizeWidget(Sha, 38-1,0,s3,s3)
+        Case 6  : ResizeWidget(Sha, 38-1,38-1,s3,s3)
+        Case 8  : ResizeWidget(Sha, 0,38-1,s3,s3)
+        Case 9  : ResizeWidget(Sha, 0,0,60-2,60-2)
       EndSelect
       
       
@@ -362,26 +362,26 @@ Procedure AliginsEvent()
 EndProcedure
 
 Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
-  Protected widget = Container(x, y, width, height)
+  Protected widget = ContainerWidget(x, y, width, height)
   Protected butt_size = 15, screen_size = 50, pos = 1
   
-  L_Button  = Button(x, y+pos+butt_size, butt_size, screen_size, " ", #__flag_ButtonToggle|#__button_vertical, -1, 7)                                              ;:ToolTip(L_Button,  "Включить привязку (влево)")
-  T_Button  = Button(x+pos+butt_size, y, screen_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                                 ;:ToolTip(T_Button,  "Включить привязку (верх)")
-  R_Button  = Button(x+pos+pos+butt_size+screen_size, y+pos+butt_size, butt_size, screen_size, " ", #__flag_ButtonToggle|#__button_vertical|#__flag_Textinvert, -1, 7) ;:ToolTip(R_Button,  "Включить привязку (вправо)")
-  B_Button  = Button(x+pos+butt_size, y+pos+pos+butt_size+screen_size, screen_size, butt_size, " ", #__flag_ButtonToggle|#__flag_Textinvert, -1, 7)                    ;:ToolTip(B_Button,  "Включить привязку (вниз)")
-  LT_Button = Button(x, y, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                                                 ;:ToolTip(LT_Button, "Включить привязку (влево верх)")
-  RT_Button = Button(x+pos+pos+butt_size+screen_size, y, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                   ;:ToolTip(RT_Button, "Включить привязку (вправо верх)")
-  LB_Button = Button(x, y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                   ;:ToolTip(LB_Button, "Включить привязку (влево вниз)")
-  RB_Button = Button(x+pos+pos+butt_size+screen_size, y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                     ;:ToolTip(RB_Button, "Включить привязку (вправо вниз)")
+  L_Button  = ButtonWidget(x, y+pos+butt_size, butt_size, screen_size, " ", #__flag_ButtonToggle|#__button_vertical, -1, 7)                                              ;:WidgetToolTip(L_Button,  "Включить привязку (влево)")
+  T_Button  = ButtonWidget(x+pos+butt_size, y, screen_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                                 ;:WidgetToolTip(T_Button,  "Включить привязку (верх)")
+  R_Button  = ButtonWidget(x+pos+pos+butt_size+screen_size, y+pos+butt_size, butt_size, screen_size, " ", #__flag_ButtonToggle|#__button_vertical|#__flag_Textinvert, -1, 7) ;:WidgetToolTip(R_Button,  "Включить привязку (вправо)")
+  B_Button  = ButtonWidget(x+pos+butt_size, y+pos+pos+butt_size+screen_size, screen_size, butt_size, " ", #__flag_ButtonToggle|#__flag_Textinvert, -1, 7)                    ;:WidgetToolTip(B_Button,  "Включить привязку (вниз)")
+  LT_Button = ButtonWidget(x, y, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                                                 ;:WidgetToolTip(LT_Button, "Включить привязку (влево верх)")
+  RT_Button = ButtonWidget(x+pos+pos+butt_size+screen_size, y, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                   ;:WidgetToolTip(RT_Button, "Включить привязку (вправо верх)")
+  LB_Button = ButtonWidget(x, y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                   ;:WidgetToolTip(LB_Button, "Включить привязку (влево вниз)")
+  RB_Button = ButtonWidget(x+pos+pos+butt_size+screen_size, y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                     ;:WidgetToolTip(RB_Button, "Включить привязку (вправо вниз)")
   
   ;
-  S_Screen = Container(x+pos+butt_size, y+pos+butt_size, screen_size, screen_size) ;:Disable(S_Screen,1)
-  Sha = Button(0, 0, butt_size+2, butt_size+2, "", #__flag_ButtonToggle) 
+  S_Screen = ContainerWidget(x+pos+butt_size, y+pos+butt_size, screen_size, screen_size) ;:Disable(S_Screen,1)
+  Sha = ButtonWidget(0, 0, butt_size+2, butt_size+2, "", #__flag_ButtonToggle) 
 ;   SetState(*this, 1)
 ;   SetAlign( *this, 1,1,0,0 )
   CloseList()
   
-  C_Button  = Button(x+pos+(screen_size+butt_size)/2, y+pos+(screen_size+butt_size)/2, butt_size, butt_size, "", 0, -1, 7)                                     ;:ToolTip(C_Button,  "Включить привязку (вцентре)")
+  C_Button  = ButtonWidget(x+pos+(screen_size+butt_size)/2, y+pos+(screen_size+butt_size)/2, butt_size, butt_size, "", 0, -1, 7)                                     ;:WidgetToolTip(C_Button,  "Включить привязку (вцентре)")
   
   SetState(L_Button, 1)
   SetState(T_Button, 1)
@@ -390,8 +390,8 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   ;SetState(LT_Button, 1)
   ; Post(#__event_LeftClick, LT_Button)
   
-  C_Add = Button(x, y+pos+pos+pos+butt_size+butt_size+screen_size, pos+pos+butt_size+butt_size+screen_size, butt_size, ">", #__flag_ButtonToggle, -1, 7)
-  ; ToolTip(C_Add, "Дополнительные параметры")
+  C_Add = ButtonWidget(x, y+pos+pos+pos+butt_size+butt_size+screen_size, pos+pos+butt_size+butt_size+screen_size, butt_size, ">", #__flag_ButtonToggle, -1, 7)
+  ; WidgetToolTip(C_Add, "Дополнительные параметры")
   
  
   
@@ -416,12 +416,12 @@ EndProcedure
 
 Window_3  = OpenWindow(#PB_Any, 0, 0, 400, 300, "Привязка выбраных гаджетов", #PB_Window_SystemMenu | #PB_Window_Tool | #PB_Window_Invisible)
 Open(Window_3)
-Container(0,0,0,0)
-SetColor(widget(), #PB_Gadget_BackColor, $4737D53F)
+ContainerWidget(0,0,0,0)
+SetWidgetColor(widget(), #PB_Gadget_BackColor, $4737D53F)
 ;SetAlignment(widget(), #__align_full,#__align_full,#__align_full,#__align_full)
 SetAlignment(widget(), #__align_auto,#__align_auto,#__align_auto,#__align_auto)
 
-demo = Button(120, 130, 60, 20, "demo")  
+demo = ButtonWidget(120, 130, 60, 20, "demo")  
 CloseList()
 
 SetAlignment(AlignWidget( ), 0,0,#__align_auto,0)

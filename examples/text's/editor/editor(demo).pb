@@ -19,27 +19,27 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work."
  
   Procedure ResizeCallBack()
-    Resize(splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
+    ResizeWidget(splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
   EndProcedure
  
   LoadFont(0, "Courier", 14)
   If Open(0, 0, 0, 522, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     
     EditorGadget(0, 8, 8, 306, 133) 
-    SetGadgetText(0, Text.s)
+    SetGadgetTextWidget(0, Text.s)
     For a = 0 To 5
       AddGadgetItem(0, a, "Line "+Str(a))
     Next
     SetGadgetFont(0, FontID(0))
    
-    g=Editor(8, 133+5+8, 306, 133) 
-    SetText(g, Text.s)
+    g=EditorWidget(8, 133+5+8, 306, 133) 
+    SetTextWidget(g, Text.s)
     For a = 0 To 5
       AddItem(g, a, "Line "+Str(a))
     Next
     SetFont(g, FontID(0))
    
-    splitter = Splitter(8, 8, 306, 276, 0,g)
+    splitter = SplitterWidget(8, 8, 306, 276, 0,g)
     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
    

@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  Procedure.s get_text(m.s = #LF$)
+  Procedure.s get_TextWidget(m.s = #LF$)
     Protected Text.s = "This is a long line." + m.s  + 
                        "Who should show." + 
                        m.s  + 
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     ; example scroll widget bar
-    widget::Text(300 + 10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#__flag_Textcenter)
+    widget::TextWidget(300 + 10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#__flag_Textcenter)
     *w = widget::Scroll  (300 + 10, 42, 250,  20, 30, 100, 30, 0)
     widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
     *w = widget::Scroll  (300 + 10, 42 + 30, 250,  15, 30, 100, 30, #__bar_invert);|#__bar_nobuttons, 7)
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *w = widget::Scroll  (300 + 10, 42 + 30 + 20, 250,  10, 30, 150, 230, #__bar_invert, 7)
     widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300 + 10,110, 250,  20, "ScrollBar Vertical  (start = 100, page = 50/300)",#__flag_Textright)
+    widget::TextWidget(300 + 10,110, 250,  20, "ScrollBar Vertical  (start = 100, page = 50/300)",#__flag_Textright)
     *w = widget::Scroll  (300 + 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical|#__bar_invert)
     widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
     *w = widget::Scroll  (300 + 270 + 30, 10,  25, 120 ,0, 300, 50, #__bar_vertical, 7)
@@ -63,16 +63,16 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(1212, 8000)
     
     ; example_2 track widget bar
-    widget::Text(300 + 10,  140 + 10, 250, 20,"TrackBar Standard");, #__flag_Textcenter)
+    widget::TextWidget(300 + 10,  140 + 10, 250, 20,"TrackBar Standard");, #__flag_Textcenter)
     *w = widget::TrackBarWidget(300 + 10,  140 + 40, 250, 20, 0, 10000, 0)
     widget::SetState(*w, 5000)
     *w = widget::TrackBarWidget(300 + 10,  140 + 40 + 20, 250, 20, 0, 10000, #__bar_invert)
     widget::SetState(*w, 5000)
-    widget::Text(300 + 10, 140 + 90, 250, 20, "TrackBar Ticks", #__flag_Textcenter)
+    widget::TextWidget(300 + 10, 140 + 90, 250, 20, "TrackBar Ticks", #__flag_Textcenter)
     ;     widget::TrackBarWidget(300 + 10, 140 + 120, 250, 20, 0, 30, #__bar_ticks)
     *w = widget::TrackBarWidget(300 + 10, 140 + 120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
     widget::SetState(*w, 60)
-    widget::Text(300 + 60, 140 + 160, 200, 20, "TrackBar Vertical", #__flag_Textright)
+    widget::TextWidget(300 + 60, 140 + 160, 200, 20, "TrackBar Vertical", #__flag_Textright)
     *w = widget::TrackBarWidget(300 + 270, 140 + 10, 25, 170, 0, 10000, #PB_TrackBar_Vertical|#__bar_invert)
     ;widget::SetAttribute(*w, #__bar_Inverted, 0)
     widget::SetState(*w, 8000)
@@ -89,12 +89,12 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     ; example_3 progress widget bar
-    widget::Text(300 + 10, 140 + 200 + 10, 250,  20, "ProgressBar Standard  (start = 65, page = 30/100)",#__flag_Textcenter)
+    widget::TextWidget(300 + 10, 140 + 200 + 10, 250,  20, "ProgressBar Standard  (start = 65, page = 30/100)",#__flag_Textcenter)
     *w = widget::Progress  (300 + 10, 140 + 200 + 42, 250,  20, 30, 100, 0)
     widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
     *w = widget::Progress  (300 + 10, 140 + 200 + 42 + 30, 250,  20, 30, 100, #__bar_invert, 14)
     widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300 + 10,140 + 200 + 100, 250,  20, "ProgressBar Vertical  (start = 100, page = 50/300)",#__flag_Textright)
+    widget::TextWidget(300 + 10,140 + 200 + 100, 250,  20, "ProgressBar Vertical  (start = 100, page = 50/300)",#__flag_Textright)
     *w = widget::Progress  (300 + 270, 140 + 200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical|#__bar_invert, 19)
     ;widget::SetAttribute(*w, #__bar_Inverted, 0)
     widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
@@ -163,46 +163,46 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;}
     
-    Button_0 = widget::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
+    Button_0 = widget::SpinWidget(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
     
     
-    Button_1 = widget::Panel(0, 0, 0, 0) 
+    Button_1 = widget::PanelWidget(0, 0, 0, 0) 
     AddItem(Button_1, -1, "Panel_0") 
     Define *w2 = Panel (5, 5, 140, 166)
     AddItem(*w2, -1, "Под -  - Панель 1")
     SetState(Option(5, 10, 70, 20, "option_0"), 1)
     OptionWidget(5, 32, 100, 20, "option_1")
-    SetState(CheckBox(5, 54, 100, 20, "checkbox_0", #PB_CheckBox_ThreeState), #PB_Checkbox_Inbetween)
-    Button(75, 10, 60, 20, "button")
-    HyperLink(75, 32, 60, 20, "HyperLink", $ffff0000)
+    SetState(CheckBoxWidget(5, 54, 100, 20, "checkbox_0", #PB_CheckBox_ThreeState), #PB_Checkbox_Inbetween)
+    ButtonWidget(75, 10, 60, 20, "button")
+    HyperLinkWidget(75, 32, 60, 20, "HyperLink", $ffff0000)
     
     AddItem(*w2, -1, "Под -  - Панель 2")
-    Button( 5, 5, 55, 22, "кнопка 5")
-    Button( 5, 30, 55, 22, "кнопка 30")
+    ButtonWidget( 5, 5, 55, 22, "кнопка 5")
+    ButtonWidget( 5, 30, 55, 22, "кнопка 30")
     
     AddItem(*w2, -1, "Под -  - Панель 3")
     AddItem(*w2, -1, "Под -  - Панель 4")
     
     AddItem(*w2, 1, "Под -  - Панель  - 2 - ")
-    Button( 15, 5, 55, 22, "кнопка 15")
-    Button( 20, 30, 55, 22, "кнопка 20")
+    ButtonWidget( 15, 5, 55, 22, "кнопка 15")
+    ButtonWidget( 20, 30, 55, 22, "кнопка 20")
     CloseList()
     ;SetState(*w2, 2)
     
     AddItem(Button_1, -1, "Panel_1") 
-    widget::Container(20,10,200,100)
-    widget::Button(20, 5, 100, 30, Text)
+    widget::ContainerWidget(20,10,200,100)
+    widget::ButtonWidget(20, 5, 100, 30, Text)
     
-    Define Panel = widget::Panel(20,30,200,100)
+    Define Panel = widget::PanelWidget(20,30,200,100)
     AddItem(Panel, -1, "Panel_0") 
-    widget::Button(10, 10, 100, 30, Text)
+    widget::ButtonWidget(10, 10, 100, 30, Text)
     AddItem(Panel, -1, "Panel_1") 
-    widget::Button(20, 20, 100, 30, Text)
+    widget::ButtonWidget(20, 20, 100, 30, Text)
     widget::CloseList()
     widget::CloseList()
     
     AddItem(Button_1, -1, "tab_2") 
-    Define *Tab = widget::Tab(0,0,0,0, #__flag_autosize|#__bar_vertical); No need to specify size or coordinates
+    Define *Tab = widget::TabBarWidget(0,0,0,0, #__flag_autosize|#__bar_vertical); No need to specify size or coordinates
     widget::AddItem(*Tab, -1, "Tab_0")
     widget::AddItem(*Tab, -1, "Tab_1 (long)")
     widget::AddItem(*Tab, -1, "Tab_2")
@@ -216,11 +216,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     AddItem(Button_1, -1, "editor_3") 
-    Define *Editor = widget::Editor(0, 0, 0, 0, #__flag_autosize) 
-    SetText(*Editor, get_text(#LF$))
+    Define *Editor = widget::EditorWidget(0, 0, 0, 0, #__flag_autosize) 
+    SetTextWidget(*Editor, get_TextWidget(#LF$))
     
     AddItem(Button_1, -1, "tree_4") 
-    Define *Tree = widget::Tree(0, 0, 0, 0, #__flag_autosize) 
+    Define *Tree = widget::TreeWidget(0, 0, 0, 0, #__flag_autosize) 
     widget::AddItem(*Tree, -1, "index_0_level_0")
     widget::AddItem(*Tree, -1, "index_1_sublevel_1", -1, 1)
     widget::AddItem(*Tree, -1, "index_2_sublevel_2", -1, 2)
@@ -232,13 +232,13 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tree, -1, "Form_0")
     widget::AddItem(*Tree, -1, "Form_0")
     widget::AddItem(*Tree, -1, "Form_0")
-    ;SetItemColor(*Tree,  #PB_All, #__color_line,  $FF00f000)
+    ;SetWidgetItemColor(*Tree,  #PB_All, #__color_line,  $FF00f000)
     
     AddItem(Button_1, -1, "window_5") 
     Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#__Window_titleBar|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget, Button_1) 
-    widget::Container(10,10,100,100)
-    widget::Container(10,10,100,100)
-    widget::Container(10,10,100,100)
+    widget::ContainerWidget(10,10,100,100)
+    widget::ContainerWidget(10,10,100,100)
+    widget::ContainerWidget(10,10,100,100)
     widget::CloseList()
     widget::CloseList()
     widget::CloseList()
@@ -248,55 +248,55 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Button_1, 4)
     
     ;     
-    ;     ;     Button_1 = widget::Editor(0, 0, 0, 0) : SetText(Button_1, text)
-    ;     ;     Button_1 = widget::Button(0, 0, 0, 0, text) ; No need to specify size or coordinates
-    ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__flag_Textborder) ; No need to specify size or coordinates
-    ;     ; ;     Button_1 = widget::MDI(0, 0, 0, 0) ; No need to specify size or coordinates
+    ;     ;     Button_1 = widget::EditorWidget(0, 0, 0, 0) : SetTextWidget(Button_1, text)
+    ;     ;     Button_1 = widget::ButtonWidget(0, 0, 0, 0, text) ; No need to specify size or coordinates
+    ;     ;Button_1 = widget::TextWidget(0, 0, 0, 0, text, #__flag_Textborder) ; No need to specify size or coordinates
+    ;     ; ;     Button_1 = widget::MDIWidget(0, 0, 0, 0) ; No need to specify size or coordinates
     ;     ; ;     widget::AddItem(Button_1, -1, "Form_0")
     ;     ; ;     widget::AddItem(Button_1, -1, "Form_1")
     ;     ; ;     widget::AddItem(Button_1, -1, "Form_2")
     ;     
     ;     ;     Define w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13,w_14,w_15
-    ;     ;     w_1 = widget::Button(0, 0, 0, 0, "BTN1")
-    ;     ;     w_2 = widget::Button(0, 0, 0, 0, "BTN2")
-    ;     ;     w_3 = widget::Splitter(125, 170, 250, 40, w_1, w_2, #PB_Splitter_Separator | #PB_Splitter_vertical | #PB_Splitter_FirstFixed)
+    ;     ;     w_1 = widget::ButtonWidget(0, 0, 0, 0, "BTN1")
+    ;     ;     w_2 = widget::ButtonWidget(0, 0, 0, 0, "BTN2")
+    ;     ;     w_3 = widget::SplitterWidget(125, 170, 250, 40, w_1, w_2, #PB_Splitter_Separator | #PB_Splitter_vertical | #PB_Splitter_FirstFixed)
     ;     ;     
-    ;     ;     w_4 = widget::Button(0, 0, 0, 0, "BTN4")
-    ;     ;     w_5 = widget::Button(0, 0, 0, 0, "BTN5")
-    ;     ;     w_6 = widget::Splitter(125, 170, 250, 40, w_4, w_5, #PB_Splitter_Separator | #PB_Splitter_vertical)
+    ;     ;     w_4 = widget::ButtonWidget(0, 0, 0, 0, "BTN4")
+    ;     ;     w_5 = widget::ButtonWidget(0, 0, 0, 0, "BTN5")
+    ;     ;     w_6 = widget::SplitterWidget(125, 170, 250, 40, w_4, w_5, #PB_Splitter_Separator | #PB_Splitter_vertical)
     ;     ;     
-    ;     ;     w_7 = widget::Button(0, 0, 0, 0, "BTN7")
-    ;     ;     w_8 = widget::Button(0, 0, 0, 0, "BTN8")
-    ;     ;     w_9 = widget::Splitter(125, 170 + 80, 250, 40, w_7, w_8, #PB_Splitter_Separator | #PB_Splitter_vertical | #PB_Splitter_SecondFixed)
+    ;     ;     w_7 = widget::ButtonWidget(0, 0, 0, 0, "BTN7")
+    ;     ;     w_8 = widget::ButtonWidget(0, 0, 0, 0, "BTN8")
+    ;     ;     w_9 = widget::SplitterWidget(125, 170 + 80, 250, 40, w_7, w_8, #PB_Splitter_Separator | #PB_Splitter_vertical | #PB_Splitter_SecondFixed)
     ;     ;     
-    ;     ;     w_10 = widget::Splitter(125, 170, 250, 70, w_3, w_6, #PB_Splitter_Separator)
+    ;     ;     w_10 = widget::SplitterWidget(125, 170, 250, 70, w_3, w_6, #PB_Splitter_Separator)
     ;     ;     
-    ;     ;     w_11 = widget::Button(0, 0, 0, 0, "BTN11")
-    ;     ;     Button_1 = widget::Splitter(125, 170, 250, 70, w_10, w_9, #PB_Splitter_Separator)
+    ;     ;     w_11 = widget::ButtonWidget(0, 0, 0, 0, "BTN11")
+    ;     ;     Button_1 = widget::SplitterWidget(125, 170, 250, 70, w_10, w_9, #PB_Splitter_Separator)
     ;     ;     widget::SetState(Button_1, 42)
     ;     ;     
     ;     ;     ; ;     ;     Button_10 = widget::Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
-    ;     ;     ; ;     ;     Button_1 = widget::Splitter(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
+    ;     ;     ; ;     ;     Button_1 = widget::SplitterWidget(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     
-    Button_2 = widget::ScrollArea(0, 0, 0, 0, 150, 150, 1) : widget::CloseList()        ; as they will be sized automatically
+    Button_2 = widget::ScrollAreaWidget(0, 0, 0, 0, 150, 150, 1) : widget::CloseList()        ; as they will be sized automatically
     Button_3 = widget::ProgressBarWidget(0, 0, 0, 0, 0, 100, 30)                                 ; as they will be sized automatically
     
-    Button_4 = widget::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
-    Button_5 = widget::Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
+    Button_4 = widget::SpinWidget(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
+    Button_5 = widget::TabBarWidget(0, 0, 0, 0)                  ; No need to specify size or coordinates
     widget::AddItem(Button_5, -1, "Tab_0")
     widget::AddItem(Button_5, -1, "Tab_1 (long)")
     widget::AddItem(Button_5, -1, "Tab_2")
     
     widget::SetState(Button_0, 50)
     
-    Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed);|#PB_Splitter_Separator)
-    Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed);|#PB_Splitter_Separator)
+    Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed);|#PB_Splitter_Separator)
+    Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed);|#PB_Splitter_Separator)
     widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
     widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
     ;widget::SetState(Splitter_1, 410/2 - 20)
-    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_5);, #PB_Splitter_Separator)
-    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_2);, #PB_Splitter_Separator)
-    Splitter_4 = widget::Splitter(300 + 10 + 15, 140 + 200 + 130, 285 + 15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical);|#PB_Splitter_Separator)
+    Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, Button_5);, #PB_Splitter_Separator)
+    Splitter_3 = widget::SplitterWidget(0, 0, 0, 0, Button_2, Splitter_2);, #PB_Splitter_Separator)
+    Splitter_4 = widget::SplitterWidget(300 + 10 + 15, 140 + 200 + 130, 285 + 15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical);|#PB_Splitter_Separator)
     
     ; widget::SetState(Button_2, 5)
     widget::SetState(Splitter_0, 26)
@@ -305,7 +305,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::SetState(Splitter_2, 15)
     
     If Button_2 And widget::OpenList(Button_2)
-      Button_4 = widget::ScrollArea( -1, -1, 50, 50, 100, 100, 1);, #__flag_nogadgets)
+      Button_4 = widget::ScrollAreaWidget( -1, -1, 50, 50, 100, 100, 1);, #__flag_nogadgets)
                                                                  ;       Define i
                                                                  ;       For i = 0 To 1000
       widget::ProgressBarWidget(10, 10, 50, 30, 1, 100, 30)

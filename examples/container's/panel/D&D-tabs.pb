@@ -73,7 +73,7 @@ Procedure events( )
               TargetItem  = CountItems + 1
               TargetLevel = 0
               
-            ElseIf Left( GetItemText(*Panel, TargetItem), 4 ) = "Item"      
+            ElseIf Left( GetItemTextWidget(*Panel, TargetItem), 4 ) = "Item"      
               ; if dropped on an "Item", move right after this item
               ;
               ; если упал на «предмет», переместиться сразу после этого предмета
@@ -143,7 +143,7 @@ Procedure events( )
                 ; copy everything here (also colors and GetItemData() etc if you use that)                
                 ;
                 ; скопируйте все сюда (также цвета и GetItemData() и т. д., если вы используете это)
-                Text$ = GetItemText(*Panel, SourceItem+i)              
+                Text$ = GetItemTextWidget(*Panel, SourceItem+i)              
                 Level = GetItemAttribute(*Panel, SourceItem+i, #PB_Item_Sublevel) - SourceLevel + TargetLevel
                 AddItem(*Panel, TargetItem+i, Text$, 0, Level)              
               Next i
@@ -181,7 +181,7 @@ Procedure events( )
               ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
               ;
               For i = 0 To ChildCount
-                Text$ = GetItemText(*Panel, SourceItem+i*2)
+                Text$ = GetItemTextWidget(*Panel, SourceItem+i*2)
                 Level = GetItemAttribute(*Panel, SourceItem+i*2, #PB_Item_Sublevel) - SourceLevel + TargetLevel
                 AddItem(*Panel, TargetItem+i, Text$, 0, Level)
               Next i
@@ -214,7 +214,7 @@ Procedure events( )
 EndProcedure
 
 If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
-  *Panel = Panel( 10, 10, 280, 480)
+  *Panel = PanelWidget( 10, 10, 280, 480)
   
   ; Add some items. We will be able to move items into the
   ; "Directory" ones.

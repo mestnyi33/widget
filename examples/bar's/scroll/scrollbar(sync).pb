@@ -110,11 +110,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Properties_( x,y,width,height, flag=0 )
       Protected position = 70
-      Protected *this._s_WIDGET = Container(x,y,width,height) 
-      Protected *first._s_WIDGET = Tree(0,0,0,0, #__flag_autosize)
-      Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_autosize)
+      Protected *this._s_WIDGET = ContainerWidget(x,y,width,height) 
+      Protected *first._s_WIDGET = TreeWidget(0,0,0,0, #__flag_autosize)
+      Protected *second._s_WIDGET = TreeWidget(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_autosize)
       
-      Protected *splitter._s_WIDGET = Splitter(0,0,0,0, *first,*second, #PB_Splitter_Vertical |#PB_Splitter_FirstFixed| #__flag_autosize )
+      Protected *splitter._s_WIDGET = SplitterWidget(0,0,0,0, *first,*second, #PB_Splitter_Vertical |#PB_Splitter_FirstFixed| #__flag_autosize )
       SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
       SetState(*splitter, width-position )
       SetData(*this, *splitter)
@@ -142,45 +142,45 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *Tree = Properties_(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
       Define Value = *Tree
       AddItem_(*Tree, #_pi_group_0, "common")
-      AddItem_(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-      AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
-      AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
+      AddItem_(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
+      AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
+      AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
       
       AddItem_(*Tree, #_pi_group_1, "layout")
-      AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
-      AddItem_(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
-      AddItem_(*Tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
-      AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
+      AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)
+      AddItem_(*Tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_WidgetType_Spin, 1)
+      AddItem_(*Tree, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #PB_WidgetType_Spin, 1)
+      AddItem_(*Tree, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #PB_WidgetType_Spin, 1)
       
       AddItem_(*Tree, #_pi_group_2, "state")
-      AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-      AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+      AddItem_(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #PB_WidgetType_ComboBox, 1);Str(Disable(Value)))
+      AddItem_(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_WidgetType_ComboBox, 1)
       
       Define *Tree1 = Properties_(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
       Define Value = *Tree1
       AddItem_(*Tree1, #_pi_group_0, "common")
-      AddItem_(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-      AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
-      AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
+      AddItem_(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
+      AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
+      AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
       
       AddItem_(*Tree1, #_pi_group_1, "layout")
-      AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #__type_Spin, 1)
-      AddItem_(*Tree1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #__type_Spin, 1)
-      AddItem_(*Tree1, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #__type_Spin, 1)
-      AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #__type_Spin, 1)
+      AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)
+      AddItem_(*Tree1, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_WidgetType_Spin, 1)
+      AddItem_(*Tree1, #_pi_width, "width:"+Chr(10)+Str(WidgetWidth(Value)), #PB_WidgetType_Spin, 1)
+      AddItem_(*Tree1, #_pi_height, "height:"+Chr(10)+Str(WidgetHeight(Value)), #PB_WidgetType_Spin, 1)
       
       AddItem_(*Tree1, #_pi_group_2, "state")
-      AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
-      AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
+      AddItem_(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #PB_WidgetType_ComboBox, 1);Str(Disable(Value)))
+      AddItem_(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_WidgetType_ComboBox, 1)
       
-      Splitter_0 = Splitter(0, 0, 300, 300, *Tree1, *Tree)
-      Splitter_1 = Splitter(30, 30, 300, 300, -1, Splitter_0, #PB_Splitter_Vertical)
+      Splitter_0 = SplitterWidget(0, 0, 300, 300, *Tree1, *Tree)
+      Splitter_1 = SplitterWidget(30, 30, 300, 300, -1, Splitter_0, #PB_Splitter_Vertical)
       
       ;
       SetBackgroundColor(Splitter_0, $FFAC86DB)
       SetBackgroundColor(Splitter_1, $FFACCBDB)
       
-      ;SetFrame(Splitter_1, 50)
+      ;SetWidgetFrame(Splitter_1, 50)
       
       
       ;     

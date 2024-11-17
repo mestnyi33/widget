@@ -63,10 +63,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure _events( )
       If is_root_(eventWidget( ))
          If WidgetEvent( ) = #__event_Focus
-            events( #PB_Event_ActivateWindow, GetWindow(eventWidget( )), #PB_All, widgetEventData( ) )
+            events( #PB_Event_ActivateWindow, GetCanvasWindow(eventWidget( )), #PB_All, widgetEventData( ) )
          EndIf
          If WidgetEvent( ) = #__event_LostFocus
-            events( #PB_Event_DeactivateWindow, GetWindow(eventWidget( )), #PB_All, widgetEventData( ) )
+            events( #PB_Event_DeactivateWindow, GetCanvasWindow(eventWidget( )), #PB_All, widgetEventData( ) )
          EndIf
       Else
          events( #PB_Event_Gadget, eventWidget( ), WidgetEvent( ), widgetEventData( ) )
@@ -76,8 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure OpenDemo( id, flag=0 )
       Static x,y
       Open( id, x,y,200,200,"win"+Str(id), #PB_Window_SystemMenu);|flag)
-      Button(40,40,200-80,55, "win"+Str(id)+"-btn1")
-      Button( 40,110,200-80,55, "win"+Str(id)+"-btn2")
+      ButtonWidget(40,40,200-80,55, "win"+Str(id)+"-btn1")
+      ButtonWidget( 40,110,200-80,55, "win"+Str(id)+"-btn2")
       
       Bind( root(), @_events())
       x + 100

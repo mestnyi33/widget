@@ -18,30 +18,30 @@ If editable
 EndIf
 
 ;\\
-SetData(Container(30, 30, 180, 180, editable), 1)
-SetData(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
-SetData(Container(40, 20, 180, 180, editable), 3)
-SetData(Container(20, 20, 180, 180, editable), 4)
+SetData(ContainerWidget(30, 30, 180, 180, editable), 1)
+SetData(ContainerWidget(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
+SetData(ContainerWidget(40, 20, 180, 180, editable), 3)
+SetData(ContainerWidget(20, 20, 180, 180, editable), 4)
 
-SetData(Container(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
-SetData(Container(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
-SetData(Container(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
+SetData(ContainerWidget(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
+SetData(ContainerWidget(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
+SetData(ContainerWidget(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
 
 SetData(Splitter(5, 80, 180, 50, 
-                 Container(0,0,0,0, #__Flag_NoGadgets|editable), 
-                 Container(0,0,0,0, #__Flag_NoGadgets|editable),
+                 ContainerWidget(0,0,0,0, #__Flag_NoGadgets|editable), 
+                 ContainerWidget(0,0,0,0, #__Flag_NoGadgets|editable),
                  #PB_Splitter_Vertical|editable), 8) 
 
 CloseList()
 CloseList()
-SetData(Container(10, 45, 70, 180, editable), 11) 
-SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-SetData(Container(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
-SetData(Container(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
-SetData(Container(10, 45, 70, 180, editable), 11) 
-SetData(Container(10, 5, 70, 180, editable), 11) 
-SetData(Container(10, 5, 70, 180, editable), 11) 
-SetData(Container(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
+SetData(ContainerWidget(10, 45, 70, 180, editable), 11) 
+SetData(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
+SetData(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
+SetData(ContainerWidget(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
+SetData(ContainerWidget(10, 45, 70, 180, editable), 11) 
+SetData(ContainerWidget(10, 5, 70, 180, editable), 11) 
+SetData(ContainerWidget(10, 5, 70, 180, editable), 11) 
+SetData(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
 CloseList()
 CloseList()
 CloseList()

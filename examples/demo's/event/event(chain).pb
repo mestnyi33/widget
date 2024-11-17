@@ -21,26 +21,26 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     ;Debug ClassFromEvent( WidgetEvent( ) )
     Select WidgetEvent( )
-      Case #__event_MouseEnter      : AddItem(*view, -1, Space + "enter <<" + Trim(GetText(*eventWidget)) + ">>")
-      Case #__event_MouseLeave      : AddItem(*view, -1, Space + "leave <<" + Trim(GetText(*eventWidget)) + ">>")
+      Case #__event_MouseEnter      : AddItem(*view, -1, Space + "enter <<" + Trim(GetTextWidget(*eventWidget)) + ">>")
+      Case #__event_MouseLeave      : AddItem(*view, -1, Space + "leave <<" + Trim(GetTextWidget(*eventWidget)) + ">>")
         
-        If GetText( *eventWidget ) = "new"
+        If GetTextWidget( *eventWidget ) = "new"
           Free( *eventWidget )
         EndIf
         
-      Case #__event_DragStart       : AddItem(*view, -1, Space + " drag <<" + Trim(GetText(*eventWidget)) + ">>")
+      Case #__event_DragStart       : AddItem(*view, -1, Space + " drag <<" + Trim(GetTextWidget(*eventWidget)) + ">>")
         If *eventWidget = *dragbutton
-           DDragText( "drag", #PB_Drag_Copy )
+           DDragTextWidget( "drag", #PB_Drag_Copy )
         EndIf
         
         If *eventWidget = *dropbutton
-          DDragText( "drag" )
+          DDragTextWidget( "drag" )
         EndIf
         
-      Case #__event_Drop            : AddItem(*view, -1, Space + " drop <<" + Trim(GetText(*eventWidget)) + ">>")
+      Case #__event_Drop            : AddItem(*view, -1, Space + " drop <<" + Trim(GetTextWidget(*eventWidget)) + ">>")
         
         If *eventWidget = *dropbutton And Not *eventWidget\press
-           Button( WidgetX(*eventWidget)+5, WidgetY(*eventWidget)+5, 30, 30, "new" )
+           ButtonWidget( WidgetX(*eventWidget)+5, WidgetY(*eventWidget)+5, 30, 30, "new" )
            Bind(widget( ), @events_widgets(), #__event_MouseEnter)
            Bind(widget( ), @events_widgets(), #__event_LeftDown)
            Bind(widget( ), @events_widgets(), #__event_MouseLeave)
@@ -51,11 +51,11 @@ CompilerIf #PB_Compiler_IsMainFile
           _2click = 0
           ClearItems(*view)
         EndIf
-        AddItem(*view, -1, Space + "down <<" + Trim(GetText(*eventWidget)) + ">>")
+        AddItem(*view, -1, Space + "down <<" + Trim(GetTextWidget(*eventWidget)) + ">>")
         
-      Case #__event_LeftUp    : AddItem(*view, -1, Space + " up <<" + Trim(GetText(*eventWidget)) + ">>")
-      Case #__event_LeftClick       : AddItem(*view, -1, Space + "  click <<" + Trim(GetText(*eventWidget)) + ">>") : _2click + 1
-      Case #__event_Left2Click : AddItem(*view, -1, Space + "   2_click <<" + Trim(GetText(*eventWidget)) + ">>") : _2click = 2
+      Case #__event_LeftUp    : AddItem(*view, -1, Space + " up <<" + Trim(GetTextWidget(*eventWidget)) + ">>")
+      Case #__event_LeftClick       : AddItem(*view, -1, Space + "  click <<" + Trim(GetTextWidget(*eventWidget)) + ">>") : _2click + 1
+      Case #__event_Left2Click : AddItem(*view, -1, Space + "   2_click <<" + Trim(GetTextWidget(*eventWidget)) + ">>") : _2click = 2
     EndSelect
     
     SetState(*view, countitems(*view) - 1)
@@ -64,8 +64,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   If Open(1, 0, 0, 260, 360, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *view = Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
-    *dragbutton = Button( 10, 280, 240, 70, "   drag", #__flag_TextLeft|#__flag_Textmultiline );| #__flag_ButtonToggle) 
+    *view = TreeWidget( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
+    *dragbutton = ButtonWidget( 10, 280, 240, 70, "   drag", #__flag_TextLeft|#__flag_Textmultiline );| #__flag_ButtonToggle) 
     ;EnableDDrop( *dragbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
     Bind(*dragbutton, @events_widgets(), #__event_LeftDown)
@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*dragbutton, @events_widgets(), #__event_DragStart)
     Bind(*dragbutton, @events_widgets(), constants::#__event_Drop)
       
-    *dropbutton = Button( 195, 295, 40, 40, "drop", #__flag_Textmultiline );| #__flag_ButtonToggle) 
+    *dropbutton = ButtonWidget( 195, 295, 40, 40, "drop", #__flag_Textmultiline );| #__flag_ButtonToggle) 
     EnableDDrop( *dropbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
     Bind(*dropbutton, @events_widgets(), #__event_LeftDown)

@@ -51,34 +51,34 @@ CompilerIf #PB_Compiler_IsMainFile
      
   EndProcedure
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  *mdi = MDI(x,y,width, height);, #__flag_autosize)
+  *mdi = MDIWidget(x,y,width, height);, #__flag_autosize)
   ; a_init( *mdi,1 )
   
   Define *g0 = AddItem(*mdi, -1, "form_0")
-  Button(10,10,80,80,"button_0")
+  ButtonWidget(10,10,80,80,"button_0")
   
   Define *g1 = AddItem(*mdi, -1, "form_1")
-  Button(10,10,80,80,"button_1")
+  ButtonWidget(10,10,80,80,"button_1")
   
   Define *g2 = AddItem(*mdi, -1, "form_2")
-  Button(10,10,80,80,"button_2")
+  ButtonWidget(10,10,80,80,"button_2")
   
   Define *g3 = AddItem(*mdi, -1, "form_3")
-  BinD(Button(10,10,80,80,"test"), @button_3_events(), #__event_LeftDown)
+  BinD(ButtonWidget(10,10,80,80,"test"), @button_3_events(), #__event_LeftDown)
   
   ; use root list
   OpenList(Root())
   
-  *spl1 = Splitter(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
-  *spl2 = Splitter(x,y,width,height, *spl1, #Null);, #__flag_autosize)
+  *spl1 = SplitterWidget(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
+  *spl2 = SplitterWidget(x,y,width,height, *spl1, #Null);, #__flag_autosize)
   
   SetState(*spl1, width); - 150)
   SetState(*spl2, height); - 150)
   
-  Resize(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
-  Resize(*g3, 10, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  ResizeWidget(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
+  ResizeWidget(*g3, 10, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   Bind(#PB_All, @events(), #__event_down)
   Bind(#PB_All, @events(), #__event_dragstart)

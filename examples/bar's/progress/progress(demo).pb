@@ -60,8 +60,8 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   ;\\
   ProgressBarGadget(1,  10, 110, 250,  30, 0, 200, #PB_ProgressBar_Smooth)
   SetGadgetState   (1, 50)   ;  set 2nd progressbar (ID = 1) to 50 of 200
-  SetGadgetColor(1, #PB_Gadget_BackColor, $00FFFF)
-  SetGadgetColor(1, #PB_Gadget_FrontColor, $FFFFFF)
+  SetGadGetWidgetColor(1, #PB_Gadget_BackColor, $00FFFF)
+  SetGadGetWidgetColor(1, #PB_Gadget_FrontColor, $FFFFFF)
       
   ;\\
   ProgressBarGadget(2, 270, 10,  30, 140, 0, 300, #PB_ProgressBar_Vertical)
@@ -89,20 +89,20 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   ;\\
   ProgressBarWidget(0,0,0,0, 0, 100, 0, 40)
   SetState(widget( ), 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
-  Resize(widget( ), 10+330, 30, 250,  30)
+  ResizeWidget(widget( ), 10+330, 30, 250,  30)
   
   ;\\
   ProgressBarWidget(10+330, 110, 250,  30, 0, 200, #PB_ProgressBar_Smooth, 17)
   SetState(widget( ), 50)   ;  set 2nd progressbar (ID = 1) to 50 of 200
   
-  SetColor(widget( ), #__color_back, $ff00ff00)
-  SetColor(widget( ), #__color_fore, $FFC1FFBC)
+  SetWidgetColor(widget( ), #__color_back, $ff00ff00)
+  SetWidgetColor(widget( ), #__color_fore, $FFC1FFBC)
   
-  SetColor(widget( ), #__Color_Fore,  $FFBCBFFF, #__color_state_selected)
-  SetColor(widget( ), #__Color_Back,  $ff0000ff, #__color_state_selected)
+  SetWidgetColor(widget( ), #__Color_Fore,  $FFBCBFFF, #__color_state_selected)
+  SetWidgetColor(widget( ), #__Color_Back,  $ff0000ff, #__color_state_selected)
   
-  ; SetColor(widget( ), #__color_frame, $ff0000ff)
-  ; SetColor(widget( ), #__Color_Frame,  $ffff0000, #__color_state_selected)
+  ; SetWidgetColor(widget( ), #__color_frame, $ff0000ff)
+  ; SetWidgetColor(widget( ), #__Color_Frame,  $ffff0000, #__color_state_selected)
   
   
   ;\\

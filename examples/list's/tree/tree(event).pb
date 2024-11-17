@@ -28,42 +28,42 @@ Procedure events_widgets()
   
   Select WidgetEvent()
     Case #__event_Focus
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( FOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( FOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
     Case #__event_LostFocus
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( LOSTFOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LOSTFOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Drop
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( DROP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DROP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_DragStart
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( DRAGSTART ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DRAGSTART ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Up
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( UP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( UP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Down
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( DOWN ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DOWN ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Change
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( CHANGE ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( CHANGE ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_ScrollChange
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( SCROLL ) "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ WidgetEventData()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( SCROLL ) "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ WidgetEventData()
       
     Case #__event_StatusChange
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_LeftClick
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( LEFTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Left2Click
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( LEFT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_RightClick
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( RIGHTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Right2Click
-      Debug  ""+IDWidget(EventWidget())+" "+GetClass(EventWidget())+" - event( RIGHT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
   EndSelect
 EndProcedure
@@ -137,7 +137,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   ;}
   ;--------------
   
-  *g = Tree(270, 30, 250, 120, #__tree_CheckBoxes|#__Flag_GridLines)
+  *g = TreeWidget(270, 30, 250, 120, #__tree_CheckBoxes|#__Flag_GridLines)
   For a = 0 To 6
     AddItem (*g, -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
     AddItem (*g, -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
@@ -149,7 +149,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   Next
   
   
-  Tree(270, 30+150, 250, 120, #__tree_CheckBoxes|#__flag_RowClickSelect|#__Flag_GridLines)
+  TreeWidget(270, 30+150, 250, 120, #__tree_CheckBoxes|#__flag_RowClickSelect|#__Flag_GridLines)
   For a = 0 To 2
     AddItem ( WidgetID(1), -1, "Item " + Str(a) + " of the Tree long long long long long", -1, 0) ; define Tree content
     AddItem ( WidgetID(1), -1, "Subitem " + Str(a) + " of the Tree", -1, 1)                       ; define Tree content
@@ -165,7 +165,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   SetState( WidgetID(1), 9) 
   
   
-  Tree(270, 30+150+150, 250, 120, #__tree_CheckBoxes|#__flag_RowMultiSelect|#__Flag_GridLines)
+  TreeWidget(270, 30+150+150, 250, 120, #__tree_CheckBoxes|#__flag_RowMultiSelect|#__Flag_GridLines)
   For a = 0 To 6
     AddItem ( WidgetID(2), -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
     AddItem ( WidgetID(2), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
@@ -185,9 +185,9 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   Next
   ;Bind(*g, @events_widgets( ))
   
-  Text(270,10, 250,20, "flag = no")
-  Text(270,10+150, 250,20, "flag = ClickSelect")
-  Text(270,10+150+150, 250,20, "flag = MultiSelect")
+  TextWidget(270,10, 250,20, "flag = no")
+  TextWidget(270,10+150, 250,20, "flag = ClickSelect")
+  TextWidget(270,10+150+150, 250,20, "flag = MultiSelect")
   
   
   Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow

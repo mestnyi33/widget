@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;   Procedure events_widget( )
    ;     
-   ;     Select GetText( EventWidget( ) )
+   ;     Select GetTextWidget( EventWidget( ) )
    ;       Case "Top"
    ;         BarPositon_( *panel, 2 )
    ;       Case "Left"
@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_gadget( )
       
-      Select GetGadgetText( EventGadget( ) )
+      Select GetGadgetTextWidget( EventGadget( ) )
          Case "Top"
             GadgetBarPositon_( 0, 2 )
             BarPositon_( *panel, 2 )
@@ -97,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Open(0, 270, 100, 600, 310, "Change tab location")
    ;a_init(root(),0)
-   SetColor(root(), #__color_back, $FFF2F2F2)
+   SetWidgetColor(root(), #__color_back, $FFF2F2F2)
    
    PanelGadget(0, 10, 10, 300 - 20, 180)
    AddGadgetItem (0, -1, "Tab 1", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
@@ -122,20 +122,20 @@ CompilerIf #PB_Compiler_IsMainFile
    BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
    
    
-   *panel = Panel(300+10, 10, 300 - 20, 180)
+   *panel = PanelWidget(300+10, 10, 300 - 20, 180)
    AddItem (*panel, -1, "Tab 1",  LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
    AddItem (*panel, -1, "Tab 2", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-   Button( 0,0,50,50,"Button" )
-   Button( 0,180-79+1,50,50,"Button" )
+   ButtonWidget( 0,0,50,50,"Button" )
+   ButtonWidget( 0,180-79+1,50,50,"Button" )
    AddItem (*panel, -1, "Tab 3", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
    CloseList() ; *panel
    
-   SetColor(*panel, #__color_back, $FFAFF8FF)
-   SetGadgetColor(0, #PB_Gadget_BackColor, $FFAFF8FF)
+   SetWidgetColor(*panel, #__color_back, $FFAFF8FF)
+   SetGadGetWidgetColor(0, #PB_Gadget_BackColor, $FFAFF8FF)
    
    ;SetState(*panel, -1)
    
-   ;   Frame(300+30, 200, 300 - 60, 100, "Tab location")
+   ;   FrameWidget(300+30, 200, 300 - 60, 100, "Tab location")
    ;   *option = OptionWidget(300+130, GadgetY(1) + 20, 80, 20, "Top")
    ;   OptionWidget(300+50, GadgetY(1) + 45, 80, 20, "Left")
    ;   OptionWidget(300+130, GadgetY(1) + 45, 80, 20, "Hide")

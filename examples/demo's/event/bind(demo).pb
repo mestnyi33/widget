@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_Draw And 
          WidgetEvent() <> #__event_StatusChange
          
-         If EventWidget( )\type = #__Type_Button
+         If EventWidget( )\type = #PB_WidgetType_Button
             Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (gadget)"
          EndIf
          
@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_MouseMove And 
          WidgetEvent() <> #__event_StatusChange
          
-         If EventWidget( )\type = #__Type_Button
+         If EventWidget( )\type = #PB_WidgetType_Button
             Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
          EndIf
          
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_MouseMove And 
          WidgetEvent() <> #__event_StatusChange
          
-         If EventWidget( )\type = #__Type_Button
+         If EventWidget( )\type = #PB_WidgetType_Button
             Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
          EndIf
       EndIf
@@ -53,9 +53,9 @@ CompilerIf #PB_Compiler_IsMainFile
          Bind(#PB_All, @events_roots())
          Bind(Window(80, 100, 300, 280, "Window_2", #PB_Window_SystemMenu), @events_windows())
          
-         Bind(Button(10,  10, 280, 80, "post event for one procedure"), @events_widgets())
-         Bind(Button(10, 100, 280, 80, "post event for to two procedure"), @events_widgets())
-         Bind(Button(10, 190, 280, 80, "post event for all procedures"), @events_widgets())
+         Bind(ButtonWidget(10,  10, 280, 80, "post event for one procedure"), @events_widgets())
+         Bind(ButtonWidget(10, 100, 280, 80, "post event for to two procedure"), @events_widgets())
+         Bind(ButtonWidget(10, 190, 280, 80, "post event for all procedures"), @events_widgets())
       EndIf
       
       WaitClose( )

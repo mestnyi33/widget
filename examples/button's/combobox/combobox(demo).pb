@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If EventType() = #PB_EventType_Focus
-      Debug ComboBox.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
+      Debug ComboBox.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
     Else
       Debug ComboBox.s +" - gadget"
     EndIf
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If eventtype = #__event_Focus
-      Debug ComboBox.s +" - widget" +" get text - "+ GetText(EventWidget( ))
+      Debug ComboBox.s +" - widget" +" get text - "+ GetTextWidget(EventWidget( ))
     Else
       If ComboBox.s <> "" 
         Debug ComboBox.s +" - widget " + EventWidget( )\class
@@ -105,17 +105,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     ;\\
-    ComboBox(305+10, 10, 250, 21, #PB_ComboBox_Editable)
+    ComboBoxWidget(305+10, 10, 250, 21, #PB_ComboBox_Editable)
     For a = 1 To 31
       AddItem(widget(), -1,"ComboBox item " + Str(a))
     Next
     
-    ComboBox(305+10, 40, 250, 21, #PB_ComboBox_Image)
+    ComboBoxWidget(305+10, 40, 250, 21, #PB_ComboBox_Image)
     AddItem(widget(), -1, "ComboBox item with image1", (0))
     AddItem(widget(), -1, "ComboBox item with image2", (1))
     AddItem(widget(), -1, "ComboBox item with image3", (2))
     
-    ComboBox(305+10, 70, 250, 21)
+    ComboBoxWidget(305+10, 70, 250, 21)
     AddItem(widget(), -1, "ComboBox editable...1")
     AddItem(widget(), -1, "ComboBox editable...2")
     AddItem(widget(), -1, "ComboBox editable...3")

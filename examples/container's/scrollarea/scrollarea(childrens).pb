@@ -10,31 +10,31 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 1, #PB_ScrollArea_Flat)
-    SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
+    *g = ScrollAreaWidget(310, 10, 290, 300, Sw, Sh, 1, #PB_ScrollArea_Flat)
+    SetWidgetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     Bind(*g, @events_widgets(), #__event_ScrollChange )
     Bind(*g, @events_widgets(), #__event_Resize )
     
-    Button(10,  10, 230, 30,"Button 1")
-    Button(50,  50, 230, 30,"Button 2") ;: SetAlign(widget(), #__align_right)
-    Button(90,  90, 230, 30,"Button 3")
-    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__flag_Textright)
-    ; SetColor(widget(), #PB_Gadget_BackColor, -1)
+    ButtonWidget(10,  10, 230, 30,"Button 1")
+    ButtonWidget(50,  50, 230, 30,"Button 2") ;: SetAlign(widget(), #__align_right)
+    ButtonWidget(90,  90, 230, 30,"Button 3")
+    TextWidget(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__flag_Textright)
+    ; SetWidgetColor(widget(), #PB_Gadget_BackColor, -1)
     
-    *b = Button(Sw-130, Sh-30, 130, 30,"Button")
+    *b = ButtonWidget(Sw-130, Sh-30, 130, 30,"Button")
     CloseList()
     
     ;
-    Splitter(10,10,590,480, 0, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical))
+    SplitterWidget(10,10,590,480, 0, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical))
     
     If wcount
       OpenList(*g)
       time = ElapsedMilliseconds()
       For i=1 To wcount
         If Bool(i>wcount-110)
-          Button((wcount-i)*2, (wcount-i)*2, 130, 30,"Button"+Str(i))
+          ButtonWidget((wcount-i)*2, (wcount-i)*2, 130, 30,"Button"+Str(i))
         Else
-          Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+          ButtonWidget(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
         EndIf
       Next
       CloseList()

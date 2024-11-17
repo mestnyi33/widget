@@ -34,7 +34,7 @@ Module AnchorBox
         If *this = Button 
           Protected a = widget::GetData(*this)
           widget::Hide(a, Bool( Not widget::GetState(*this)))
-          widget::Resize(a, widget::X(*this), widget::Y(*this)+widget::Height(*this), #PB_Ignore, #PB_Ignore )
+          widget::ResizeWidget(a, widget::X(*this), widget::Y(*this)+widget::WidgetHeight(*this), #PB_Ignore, #PB_Ignore )
           ; widget::Display(a, *this)
         Else
           ;\\
@@ -113,66 +113,66 @@ Module AnchorBox
           
           ;\\
           If LBUTTON_State And TBUTTON_State And RBUTTON_State And BBUTTON_State
-            widget::Resize(DBUTTON, size, size, width, height)
-            widget::SetText(Button, "FULL")
+            widget::ResizeWidget(DBUTTON, size, size, width, height)
+            widget::SetTextWidget(Button, "FULL")
             
           ElseIf LTBUTTON_State Or (LBUTTON_State And TBUTTON_State And RBUTTON_State=0 And BBUTTON_State=0)
-            widget::Resize(DBUTTON, size, size, size*2, size*2)
-            widget::SetText(Button, "LEFT&TOP")
+            widget::ResizeWidget(DBUTTON, size, size, size*2, size*2)
+            widget::SetTextWidget(Button, "LEFT&TOP")
           ElseIf RTBUTTON_State ;Or (LBUTTON_State=0 And TBUTTON_State And RBUTTON_State And BBUTTON_State=0)
-            widget::Resize(DBUTTON, width - size, size, size*2, size*2)
-            widget::SetText(Button, "TOP&RIGHT")
+            widget::ResizeWidget(DBUTTON, width - size, size, size*2, size*2)
+            widget::SetTextWidget(Button, "TOP&RIGHT")
           ElseIf RBBUTTON_State Or (LBUTTON_State=0 And TBUTTON_State=0 And RBUTTON_State And BBUTTON_State)
-            widget::Resize(DBUTTON, width - size, height - size, size*2, size*2)
-            widget::SetText(Button, "RIGHT&BOTTOM")
+            widget::ResizeWidget(DBUTTON, width - size, height - size, size*2, size*2)
+            widget::SetTextWidget(Button, "RIGHT&BOTTOM")
           ElseIf LBBUTTON_State Or (LBUTTON_State And TBUTTON_State=0 And RBUTTON_State=0 And BBUTTON_State)
-            widget::Resize(DBUTTON, size, height - size, size*2, size*2)
-            widget::SetText(Button, "BOTTOM&LEFT")
+            widget::ResizeWidget(DBUTTON, size, height - size, size*2, size*2)
+            widget::SetTextWidget(Button, "BOTTOM&LEFT")
             
           ElseIf LBUTTON_State And TBUTTON_State And BBUTTON_State
-            widget::Resize(DBUTTON, size, size, size*2, height)
-            widget::SetText(Button, "FULLLEFT")
+            widget::ResizeWidget(DBUTTON, size, size, size*2, height)
+            widget::SetTextWidget(Button, "FULLLEFT")
           ElseIf LBUTTON_State And TBUTTON_State And RBUTTON_State
-            widget::Resize(DBUTTON, size, size, width, size*2)
-            widget::SetText(Button, "FULLTOP")
+            widget::ResizeWidget(DBUTTON, size, size, width, size*2)
+            widget::SetTextWidget(Button, "FULLTOP")
           ElseIf TBUTTON_State And RBUTTON_State And BBUTTON_State
-            widget::Resize(DBUTTON, width - size, size, size*2, height)
-            widget::SetText(Button, "FULLRIGHT")
+            widget::ResizeWidget(DBUTTON, width - size, size, size*2, height)
+            widget::SetTextWidget(Button, "FULLRIGHT")
           ElseIf LBUTTON_State And RBUTTON_State And BBUTTON_State
-            widget::Resize(DBUTTON, size, height - size, width, size*2)
-            widget::SetText(Button, "FULLBOTTOM")
+            widget::ResizeWidget(DBUTTON, size, height - size, width, size*2)
+            widget::SetTextWidget(Button, "FULLBOTTOM")
             
           ElseIf LBUTTON_State And RBUTTON_State
-            widget::Resize(DBUTTON, size, y, width, size*2)
-            widget::SetText(Button, "LEFT&RIGHT")
+            widget::ResizeWidget(DBUTTON, size, y, width, size*2)
+            widget::SetTextWidget(Button, "LEFT&RIGHT")
           ElseIf TBUTTON_State And BBUTTON_State
-            widget::Resize(DBUTTON, x, size, size*2, height)
-            widget::SetText(Button, "TOP&BOTTOM")
+            widget::ResizeWidget(DBUTTON, x, size, size*2, height)
+            widget::SetTextWidget(Button, "TOP&BOTTOM")
             
           ElseIf LBUTTON_State
-            widget::Resize(DBUTTON, size, y, size*2, size*2)
-            widget::SetText(Button, "LEFT")
+            widget::ResizeWidget(DBUTTON, size, y, size*2, size*2)
+            widget::SetTextWidget(Button, "LEFT")
           ElseIf TBUTTON_State
-            widget::Resize(DBUTTON, x, size, size*2, size*2)
-            widget::SetText(Button, "TOP")
+            widget::ResizeWidget(DBUTTON, x, size, size*2, size*2)
+            widget::SetTextWidget(Button, "TOP")
           ElseIf RBUTTON_State
-            widget::Resize(DBUTTON, width - size, y, size*2, size*2)
-            widget::SetText(Button, "RIGHT")
+            widget::ResizeWidget(DBUTTON, width - size, y, size*2, size*2)
+            widget::SetTextWidget(Button, "RIGHT")
           ElseIf BBUTTON_State
-            widget::Resize(DBUTTON, x, height - size, size*2, size*2)
-            widget::SetText(Button, "BOTTOM")
+            widget::ResizeWidget(DBUTTON, x, height - size, size*2, size*2)
+            widget::SetTextWidget(Button, "BOTTOM")
             
           Else
             If Not CENTER_State And *this = CENTER 
-              widget::Resize(DBUTTON, size, size, width, height)
-              widget::SetText(Button, "FULL")
+              widget::ResizeWidget(DBUTTON, size, size, width, height)
+              widget::SetTextWidget(Button, "FULL")
               widget::SetState(LBUTTON, 1) ; left
               widget::SetState(TBUTTON, 1) ; top
               widget::SetState(RBUTTON, 1) ; right
               widget::SetState(BBUTTON, 1) ; bottom
             Else
-              widget::Resize(DBUTTON, x, y, size*2, size*2)
-              widget::SetText(Button, "CENTER")
+              widget::ResizeWidget(DBUTTON, x, y, size*2, size*2)
+              widget::SetTextWidget(Button, "CENTER")
             EndIf
           EndIf
         EndIf
@@ -187,27 +187,27 @@ Module AnchorBox
     Protected height1 = box_height-size*2 ; -2
     Protected fs = 1
      
-    Button = widget::Button(x,y,width, height, "LEFT&TOP",constants::#__flag_ButtonToggle);,-1,radius)
+    Button = widget::ButtonWidget(x,y,width, height, "LEFT&TOP",constants::#__flag_ButtonToggle);,-1,radius)
     
-    Protected *a.Structures::_s_widget = widget::Container(0,0,width,box_height)         ;, constants::#__flag_child)
-   ;widget::SetFrame(a,fs)
+    Protected *a.Structures::_s_widget = widget::ContainerWidget(0,0,width,box_height)         ;, constants::#__flag_child)
+   ;widget::SetWidgetFrame(a,fs)
     height1 - fs*2
     width1 - fs*2
     Protected x1 = size + width1
     Protected y1 = size + height1
-    DBUTTON = widget::Button(size, size, size*2, size*2, "",0,-1,radius)
+    DBUTTON = widget::ButtonWidget(size, size, size*2, size*2, "",0,-1,radius)
     
-    LBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    LTBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    TBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    LBUTTON = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    LTBUTTON = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    TBUTTON = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
-    RTBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    RBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    RBBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    RTBUTTON = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    RBUTTON = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    RBBUTTON = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
-    BBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    LBBUTTON = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
-    CENTER = widget::Button(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    BBUTTON = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    LBBUTTON = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
+    CENTER = widget::ButtonWidget(0, 0, size, size, "",constants::#__flag_ButtonToggle,-1,radius)
     
     
     ;widget::SetAlignment( button_full, #__align_full, 0,0,0,0)
@@ -226,7 +226,7 @@ Module AnchorBox
     ;widget::SetState( TBUTTON,1 )
     widget::CloseList( )
     
-    ;widget::setColor(a, constants::#__color_back, widget::GetColor( widget::GetParent( a ), constants::#__color_back) )
+    ;widget::SetWidgetColor(a, constants::#__color_back, widget::GetWidgetColor( widget::GetParent( a ), constants::#__color_back) )
     
     widget::Bind(LTBUTTON, @Events( ), constants::#__event_LeftClick )
     widget::Bind(LBUTTON, @Events( ), constants::#__event_LeftClick )

@@ -43,24 +43,24 @@ If Open(0, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | 
 ;   Bind(#PB_All, @deactive(), #__event_LostFocus)
 
   Window(10, 10, 190, 150, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  Define *string_0 = String(10,10,170,60,"string_0")
+  Define *string_0 = StringWidget(10,10,170,60,"string_0")
   ;SetActive(*string_0)
   
-  Define *string_1 = String(10,80,170,60,"string_1")
+  Define *string_1 = StringWidget(10,80,170,60,"string_1")
   ;SetActive(*string_1)
   
   Window(110, 30, 190, 150, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  Define *string_2 = String(10,10,170,60,"string_2")
+  Define *string_2 = StringWidget(10,10,170,60,"string_2")
   ;SetActive(*string_2)
   
-  Define *string_3 = String(10,80,170,60,"string_3")
+  Define *string_3 = StringWidget(10,80,170,60,"string_3")
   ;SetActive(*string_3)
   
   Window(220, 50, 190, 150, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  Define *string_4 = String(10,10,170,60,"string_4")
+  Define *string_4 = StringWidget(10,10,170,60,"string_4")
   SetActive(*string_4)
   
-  Define *string_5 = String(10,80,170,60,"string_5")
+  Define *string_5 = StringWidget(10,80,170,60,"string_5")
   ;SetActive(*string_5)
   
     

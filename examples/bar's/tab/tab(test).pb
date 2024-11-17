@@ -15,22 +15,22 @@ CompilerIf #PB_Compiler_IsMainFile
   
   widget::Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
-  *w0 = widget::Tab(310, 10, 200, 30)
+  *w0 = widget::TabBarWidget(310, 10, 200, 30)
   For i=0 To 3
     widget::AddItem(*w0, -1, "tab_"+Str(i))
   Next
   
-  *w1 = widget::Tab(320, 50, 200, 30)
+  *w1 = widget::TabBarWidget(320, 50, 200, 30)
   For i=0 To 10
     widget::AddItem(*w1, -1, "tab_"+Str(i))
   Next
   
-  *w3 = widget::Tab(330, 90, 200, 30)
+  *w3 = widget::TabBarWidget(330, 90, 200, 30)
   For i=0 To 10
     widget::AddItem(*w3, -1, "tab_rrrrrrrr"+Str(i))
   Next
   
-  *w4 = widget::Tab(340, 130, 200, 30)
+  *w4 = widget::TabBarWidget(340, 130, 200, 30)
   For i=0 To 10
     widget::AddItem(*w4, -1, "tab_"+Str(i))
   Next

@@ -39,9 +39,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Case *buttonOpen
             If Not *window
               *window = Window(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
-              Button(10, 10, 90,30,"button")
-              Button(10, 50, 90,30,"button")
-              ;*window = Button(Random(100,10), 10, 90,30,"button")
+              ButtonWidget(10, 10, 90,30,"button")
+              ButtonWidget(10, 50, 90,30,"button")
+              ;*window = ButtonWidget(Random(100,10), 10, 90,30,"button")
               Bind( *window, @events_() )
             EndIf
             
@@ -63,9 +63,9 @@ CompilerIf #PB_Compiler_IsMainFile
   *buttonOpen = ButtonGadget(#PB_Any, 500-100, 400-40, 90,30,"open")
   
   *window = Window(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
-  Button(10, 10, 90,30,"button")
-  Button(10, 50, 90,30,"button")
-  ;*window = Button(10, 10, 90,30,"button")
+  ButtonWidget(10, 10, 90,30,"button")
+  ButtonWidget(10, 50, 90,30,"button")
+  ;*window = ButtonWidget(10, 10, 90,30,"button")
 
   Bind( *window, @events_() )
   BindGadgetEvent( *buttonTest, @events_gadgets() )

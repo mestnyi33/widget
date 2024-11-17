@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
        DesktopUnscaledY(PB(OutputHeight)( ))
      EndMacro
      
-     Macro ImageWidth( _image_  )
+     Macro ImageWidget( _image_  )
        DesktopUnscaledX(PB(ImageWidth)( _image_ ))
      EndMacro
      
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_MouseMove
             If DragWidget = *ew
-               Resize( *ew, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
+               ResizeWidget( *ew, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
             EndIf
             
          Case #__Event_Draw
@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure MDI_AddImage( *mdi, x, y, img, round=0 )
       Protected *this._s_widget, width, height
       
-      width = ImageWidth( img )
+      width = ImageWidget( img )
       height = ImageHeight( img )
       
       ;ResizeImage(img, DpiScaled(width), DPIScaled(height) )
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *this\cursor = #PB_Cursor_Hand
       *this\round = DPIScaled(round)
       
-      Resize(*this, x, y, width, height )
+      ResizeWidget(*this, x, y, width, height )
       
       Bind( *this, @MDI_ImageEvents(), #__event_LeftUp )
       Bind( *this, @MDI_ImageEvents(), #__event_LeftDown )
@@ -152,21 +152,21 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;- \\
-   Procedure Canvas_resize( )
+   Procedure Canvas_ResizeWidget( )
       ;Protected width = GadgetWidth( EventGadget() )
       Protected width = WindowWidth( EventWindow() )
-      Resize( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
-      Resize( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
+      ResizeWidget( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
+      ResizeWidget( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
    EndProcedure
    
    Procedure Gadgets_Events()
       Select EventGadget()
          Case 2
             If GetGadgetState(2)
-                  SetGadgetText(2, "vertical bar")
+                  SetGadgetTextWidget(2, "vertical bar")
               SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
             Else
-                SetGadgetText(2, "horizontal bar")
+                SetGadgetTextWidget(2, "horizontal bar")
                 SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
             EndIf
             
@@ -206,7 +206,7 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   ;BindEvent(#PB_Event_SizeWindow, @Window_Resize(), 0)
+   ;BindEvent(#PB_Event_SizeWindow, @Window_ResizeWidget(), 0)
    ;
    CheckBoxGadget(5, 10, 10, 80,20, "clipoutput") : SetGadgetState(5, 1)
    CheckBoxGadget(2, 10, 30, 80,20, "vertical bar") : SetGadgetState(2, 1)
@@ -262,16 +262,16 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;
-   MyCanvas = GetGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
-   SetColor(root(), #__color_back, $ffffffff)
+   MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
+   SetWidgetColor(root(), #__color_back, $ffffffff)
    
-   ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
-   ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetWindow(Root()), MyCanvas, #PB_EventType_Resize )
+   ;BindGadgetEvent(MyCanvas, @Canvas_ResizeWidget(), #PB_EventType_Resize )
+   ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_ResizeWidget());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
    
-   *mdi = MDI(x,y,width,height);, #__flag_autosize)
+   *mdi = MDIWidget(x,y,width,height);, #__flag_autosize)
                                ;a_init( *mdi )
-   SetColor(*mdi, #__color_back, $ffffffff)
-   ;SetColor(*mdi, #__color_frame, $ffffffff)
+   SetWidgetColor(*mdi, #__color_back, $ffffffff)
+   ;SetWidgetColor(*mdi, #__color_frame, $ffffffff)
    
    Define b=DpiScaled(19);20        
    *mdi\scroll\v\round = DpiScaled(11)

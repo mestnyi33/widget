@@ -26,7 +26,7 @@ Module Window
       ; CocoaMessage(0, currentApplication, "activateWithOptions:", #NSApplicationActivateAllWindows | #NSApplicationActivateIgnoringOtherApps)
       
       
-      Procedure GetMenuBarHeight()
+      Procedure GetMenuBarWidgetHeight()
          Protected NSApp, NSMenu, Value.d
          
          NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")

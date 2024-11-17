@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure   DrawCanvasFrame(gadget, color)
+   Procedure   DrawCanvasFrameWidget(gadget, color)
       If GadgetType(gadget) = #PB_GadgetType_Canvas
          StartDrawing(CanvasOutput(gadget))
          If GetGadgetState(gadget)
@@ -43,13 +43,13 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       If event = #__event_MouseEnter
          Debug " -enter- "+*this\class +" ("+ *this\enter +") " + WidgetEventData( )
-         DrawCanvasFrame(*this\root\canvas\gadget, $00A600)
+         DrawCanvasFrameWidget(*this\root\canvas\gadget, $00A600)
       EndIf
       
       ;\\
       If event = #__event_MouseLeave
          Debug " -leave- "+*this\class +" ("+ *this\enter +") " + WidgetEventData( )
-         DrawCanvasFrame(*this\root\canvas\gadget, 0)
+         DrawCanvasFrameWidget(*this\root\canvas\gadget, 0)
       EndIf
       
       If event = #__event_MouseMove
@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(#PB_All, @HandlerEvents( ))
       
       ButtonGadget(-1, 0,0,500,20,"")
-      Button( 0,30,500,20,"")
+      ButtonWidget( 0,30,500,20,"")
       
       Debug WindowX( Root()\canvas\window, #PB_Window_InnerCoordinate ) ; 518
       Debug GadgetX( Root()\canvas\gadget, #PB_Gadget_ScreenCoordinate ) ; 518

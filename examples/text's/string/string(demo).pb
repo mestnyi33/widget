@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If EventType() = #PB_EventType_Focus
-      Debug String.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
+      Debug String.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
     Else
       Debug String.s +" - gadget"
     EndIf
@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If eventtype = #__event_Focus
-      Debug String.s +" - widget" +" get text - "+ GetText(EventWidget( ))
+      Debug String.s +" - widget" +" get text - "+ GetTextWidget(EventWidget( ))
     Else
       ; Debug String.s +" - widget"
     EndIf
@@ -120,9 +120,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
-  Macro EString(x,y,width,height, Text, flag=0)
-    String(x,y,width,height, Text, flag)
-    ; Editor(x,y,width,height, flag) : setText(widget(), text)
+  Macro EStringWidget(x,y,width,height, Text, flag=0)
+    StringWidget(x,y,width,height, Text, flag)
+    ; EditorWidget(x,y,width,height, flag) : setTextWidget(widget(), text)
   EndMacro
   
   Define null$ = "" ;"00000 00000 00000 00000"
@@ -145,21 +145,21 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     SetTextAlignment( )
-    ;SetGadgetText(6, "pas")
-    Debug GetGadgetText(6)+" - get gadget text"
+    ;SetGadgetTextWidget(6, "pas")
+    Debug GetGadgetTextWidget(6)+" - get gadget text"
     
-    EString(305+8, 10, 290, height, "Read-only StringGadget..." + null$ + null$, #PB_String_ReadOnly)
-    EString(305+8, (height+5)*1+10, 290, height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__flag_Textcenter)
-    EString(305+8, (height+5)*2+10, 290, height, null$ + null$ + " ...Right-text StringGadget", #__flag_Textright)
-    EString(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
-    EString(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
-    EString(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
-    EString(305+8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
-    EString(305+8, (height+5)*7+10, 290, height, "")
-    EString(305+8, (height+5)*8+10, 290, 90, Text)
+    EStringWidget(305+8, 10, 290, height, "Read-only StringGadget..." + null$ + null$, #PB_String_ReadOnly)
+    EStringWidget(305+8, (height+5)*1+10, 290, height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__flag_Textcenter)
+    EStringWidget(305+8, (height+5)*2+10, 290, height, null$ + null$ + " ...Right-text StringGadget", #__flag_Textright)
+    EStringWidget(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
+    EStringWidget(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
+    EStringWidget(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
+    EStringWidget(305+8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
+    EStringWidget(305+8, (height+5)*7+10, 290, height, "")
+    EStringWidget(305+8, (height+5)*8+10, 290, 90, Text)
     
-    ;SetText(ID(6+1), "pas")
-    Debug GetText(ID(6+1))+"- get widget text"
+    ;SetTextWidget(ID(6+1), "pas")
+    Debug GetTextWidget(ID(6+1))+"- get widget text"
     
     For i=0 To 8
       Bind(ID(i), @events_widgets())

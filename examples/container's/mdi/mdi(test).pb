@@ -52,14 +52,14 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
    a_init( root(),0 )
   
-  ;Define *mdi = MDI(0,0,0,0,#__flag_autosize)
-  ;Define *mdi = MDI(x,y,width, height)
-  Define *mdi = MDI(100, 300, 160,95) 
+  ;Define *mdi = MDIWidget(0,0,0,0,#__flag_autosize)
+  ;Define *mdi = MDIWidget(x,y,width, height)
+  Define *mdi = MDIWidget(100, 300, 160,95) 
   ; 
-  Debug " * "+ Width(*mdi, #__c_inner)+" "+ Height(*mdi, #__c_inner)
+  Debug " * "+ WidgetWidth(*mdi, #__c_inner)+" "+ WidgetHeight(*mdi, #__c_inner)
   
   ; 
   ; a_init( *mdi )
@@ -70,26 +70,26 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 ;   Debug ""
-;   Resize(*mdi,15,15,#PB_Ignore,#PB_Ignore )
-;   Resize(*mdi,25,#PB_Ignore,#PB_Ignore,#PB_Ignore )
-;   Resize(*mdi,#PB_Ignore,35,#PB_Ignore,#PB_Ignore )
+;   ResizeWidget(*mdi,15,15,#PB_Ignore,#PB_Ignore )
+;   ResizeWidget(*mdi,25,#PB_Ignore,#PB_Ignore,#PB_Ignore )
+;   ResizeWidget(*mdi,#PB_Ignore,35,#PB_Ignore,#PB_Ignore )
 ;   Debug ""
-;   Resize(*mdi,#PB_Ignore,#PB_Ignore,150,150 )
-;   Resize(*mdi,#PB_Ignore,#PB_Ignore,250,#PB_Ignore )
- ; Resize(*mdi,#PB_Ignore,#PB_Ignore,#PB_Ignore,350 )
+;   ResizeWidget(*mdi,#PB_Ignore,#PB_Ignore,150,150 )
+;   ResizeWidget(*mdi,#PB_Ignore,#PB_Ignore,250,#PB_Ignore )
+ ; ResizeWidget(*mdi,#PB_Ignore,#PB_Ignore,#PB_Ignore,350 )
   
 ;   
 ;   ; Debug " - test parent - mdi show and size scroll bars - "
-;   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,308,232 )
-;   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,307,#PB_Ignore )
-;   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,#PB_Ignore,231 )
-;   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,307,231 )
+;   ; ResizeWidget(*mdi,#PB_Ignore,#PB_Ignore,308,232 )
+;   ; ResizeWidget(*mdi,#PB_Ignore,#PB_Ignore,307,#PB_Ignore )
+;   ; ResizeWidget(*mdi,#PB_Ignore,#PB_Ignore,#PB_Ignore,231 )
+;   ; ResizeWidget(*mdi,#PB_Ignore,#PB_Ignore,307,231 )
 ;   
 ;   ; Debug " - test child - mdi show and size scroll bars - "
-;   ; Resize(*g0,#PB_Ignore,#PB_Ignore,392,368 )
-;   ; Resize(*g0,113,#PB_Ignore,#PB_Ignore,#PB_Ignore )
-;   ; Resize(*g0,#PB_Ignore,189,#PB_Ignore,#PB_Ignore )
-;   ; Resize(*g0,113,189,#PB_Ignore,#PB_Ignore )
+;   ; ResizeWidget(*g0,#PB_Ignore,#PB_Ignore,392,368 )
+;   ; ResizeWidget(*g0,113,#PB_Ignore,#PB_Ignore,#PB_Ignore )
+;   ; ResizeWidget(*g0,#PB_Ignore,189,#PB_Ignore,#PB_Ignore )
+;   ; ResizeWidget(*g0,113,189,#PB_Ignore,#PB_Ignore )
 ;   
 ;   ; widgets2
 ; ;   resize - Root 0 0 620 620

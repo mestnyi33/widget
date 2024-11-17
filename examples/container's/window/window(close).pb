@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure CallBack( )
     Select WidgetEvent( )
       Case #__event_leftclick
-        Select GetText( EventWidget())
+        Select GetTextWidget( EventWidget())
           Case "Button_0_close"
             If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetTitle( EventWidget( )\window )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               Close( EventWidget( )\window )
@@ -67,9 +67,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
      
-     SetClass(widget( ), "window_0" )
-     Button(10,10,200,50,"Button_0_close")
-     SetClass(widget( ), "Button_0_close" )
+     SetWidgetClass(widget( ), "window_0" )
+     ButtonWidget(10,10,200,50,"Button_0_close")
+     SetWidgetClass(widget( ), "Button_0_close" )
      
      ;\\
      Window( 230, 130, 300, 200, "window_1", #PB_Window_SystemMenu |
@@ -77,9 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                              #PB_Window_MinimizeGadget |
                                              #PB_Window_MaximizeGadget )
      
-     SetClass(widget( ), "window_1" )
-     Button(10,10,200,50,"Button_1_close")
-     SetClass(widget( ), "Button_1_close" )
+     SetWidgetClass(widget( ), "window_1" )
+     ButtonWidget(10,10,200,50,"Button_1_close")
+     SetWidgetClass(widget( ), "Button_1_close" )
      
      ;\\
      Window( 430, 230, 300, 200, "window_2", #PB_Window_SystemMenu |
@@ -87,9 +87,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                              #PB_Window_MinimizeGadget |
                                              #PB_Window_MaximizeGadget )
      
-     SetClass(widget( ), "window_2" )
-     Button(10,10,200,50,"Button_2_close")
-     SetClass(widget( ), "Button_2_close" )
+     SetWidgetClass(widget( ), "window_2" )
+     ButtonWidget(10,10,200,50,"Button_2_close")
+     SetWidgetClass(widget( ), "Button_2_close" )
      
      WaitEvent( #PB_All, @CallBack( ) )
   EndIf

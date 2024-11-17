@@ -179,8 +179,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Border(X.i, Y.i, Width.i, Height.i, Text.s)
       Protected Result.i
-      Result = Container(X, Y, Width, Height)
-      SetData(Result, Frame(0, 0, Width, Height, Text))
+      Result = ContainerWidget(X, Y, Width, Height)
+      SetData(Result, FrameWidget(0, 0, Width, Height, Text))
       ProcedureReturn Result
    EndProcedure
    
@@ -197,8 +197,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure UpdateItemAttributes(Position)
       ;;Debug 999;ProcedureReturn 
-      If GetText(*g_ItemText) <> GetItemText(*g_tab1, Position)
-         SetText(*g_ItemText, GetItemText(*g_tab1, Position))
+      If GetTextWidget(*g_ItemText) <> GetItemTextWidget(*g_tab1, Position)
+         SetTextWidget(*g_ItemText, GetItemTextWidget(*g_tab1, Position))
       EndIf
       
       SetState(*g_ItemDisabled, (GetItemState(*g_tab1, Position)&#__s_Disable))
@@ -228,8 +228,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Open(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_Canvas)
    
-   ;Resize( Get( ), 10, 10, 650-20, 30)
-   *g_tab1 = Tab(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)
+   ;ResizeWidget( Get( ), 10, 10, 650-20, 30)
+   *g_tab1 = TabBarWidget(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)
    AddItem(*g_tab1, #PB_Default, "In this")
    AddItem(*g_tab1, #PB_Default, "example")
    AddItem(*g_tab1, #PB_Default, "you can")
@@ -239,57 +239,57 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem(*g_tab1, #PB_Default, "and the")
    AddItem(*g_tab1, #PB_Default, "TabBar")
    AddItem(*g_tab1, #PB_Default, "include")
-   ;Tab_ToolTip(*g_tab1, "%ITEM", "new", "close")
+   ;Tab_WidgetToolTip(*g_tab1, "%ITEM", "new", "close")
    
-   *g_Container = Container( 0, GadgetHeight(#Gadget_Canvas), WindowWidth(#Window), WindowHeight(#Window)-GadgetHeight(#Gadget_Canvas), #PB_Container_Flat)
+   *g_Container = ContainerWidget( 0, GadgetHeight(#Gadget_Canvas), WindowWidth(#Window), WindowHeight(#Window)-GadgetHeight(#Gadget_Canvas), #PB_Container_Flat)
    If *g_Container
       If Border(5, 5, 170, 370, "Attributes for the bar")
-         *g_CloseButton = CheckBox(10, 20, 130, 20, "tab close button")
-         *g_SelectedCloseButton = CheckBox(10, 40, 130, 20, "selected tab close button")
-         *g_EmptyButton = CheckBox(10, 60, 130, 20, "'new' tab")
-         *g_CheckBox = CheckBox(10, 80, 130, 20, "tab check box")
-         *g_Vertical = CheckBox(10, 100, 130, 20, "vertical tab bar")
-         *g_MirroredTabs = CheckBox(10, 120, 130, 20, "mirror tab bar")
-         *g_ReverseOrdering = CheckBox(10, 140, 130, 20, "reverse ordering")
-         *g_MultiLine = CheckBox(10, 160, 130, 20, "multiline tab bar")
-         *g_TextCutting = CheckBox(10, 180, 130, 20, "text cutting")
-         *g_Editable = CheckBox(10, 200, 130, 20, "editable tab text")
-         *g_MultiSelect = CheckBox(10, 220, 130, 20, "multi select")
-         *g_NoTabMoving = CheckBox(10, 240, 130, 20, "no tab moving")
-         *g_BottomLine = CheckBox(10, 260, 130, 20, "bottom line")
-         Text(10, 285, 90, 20, "tab text alignment:")
-         *g_TabTextAlignment = Spin(100, 280, 60, 20, -1, 1, #PB_Spin_Numeric)
+         *g_CloseButton = CheckBoxWidget(10, 20, 130, 20, "tab close button")
+         *g_SelectedCloseButton = CheckBoxWidget(10, 40, 130, 20, "selected tab close button")
+         *g_EmptyButton = CheckBoxWidget(10, 60, 130, 20, "'new' tab")
+         *g_CheckBox = CheckBoxWidget(10, 80, 130, 20, "tab check box")
+         *g_Vertical = CheckBoxWidget(10, 100, 130, 20, "vertical tab bar")
+         *g_MirroredTabs = CheckBoxWidget(10, 120, 130, 20, "mirror tab bar")
+         *g_ReverseOrdering = CheckBoxWidget(10, 140, 130, 20, "reverse ordering")
+         *g_MultiLine = CheckBoxWidget(10, 160, 130, 20, "multiline tab bar")
+         *g_TextCutting = CheckBoxWidget(10, 180, 130, 20, "text cutting")
+         *g_Editable = CheckBoxWidget(10, 200, 130, 20, "editable tab text")
+         *g_MultiSelect = CheckBoxWidget(10, 220, 130, 20, "multi select")
+         *g_NoTabMoving = CheckBoxWidget(10, 240, 130, 20, "no tab moving")
+         *g_BottomLine = CheckBoxWidget(10, 260, 130, 20, "bottom line")
+         TextWidget(10, 285, 90, 20, "tab text alignment:")
+         *g_TabTextAlignment = SpinWidget(100, 280, 60, 20, -1, 1, #PB_Spin_Numeric)
          SetState(*g_TabTextAlignment, GetAttribute(*g_tab1, #__tab_TabTextAlignment))
-         Text(10, 305, 90, 20, "tab rounding:")
-         *g_TabRounding = Spin(100, 300, 60, 20, 0, 20, #PB_Spin_Numeric)
+         TextWidget(10, 305, 90, 20, "tab rounding:")
+         *g_TabRounding = SpinWidget(100, 300, 60, 20, 0, 20, #PB_Spin_Numeric)
          SetState(*g_TabRounding, GetAttribute(*g_tab1, #__tab_TabRounding))
-         Text(10, 325, 90, 20, "min tab length:")
-         *g_MinTabLength = Spin(100, 320, 60, 20, 0, 1000, #PB_Spin_Numeric)
+         TextWidget(10, 325, 90, 20, "min tab length:")
+         *g_MinTabLength = SpinWidget(100, 320, 60, 20, 0, 1000, #PB_Spin_Numeric)
          SetState(*g_MinTabLength, GetAttribute(*g_tab1, #__tab_MinTabLength))
-         Text(10, 345, 90, 20, "max tab length:")
-         *g_MaxTabLength = Spin(100, 340, 60, 20, 0, 1000, #PB_Spin_Numeric)
+         TextWidget(10, 345, 90, 20, "max tab length:")
+         *g_MaxTabLength = SpinWidget(100, 340, 60, 20, 0, 1000, #PB_Spin_Numeric)
          SetState(*g_MaxTabLength, GetAttribute(*g_tab1, #__tab_MaxTabLength))
          CloseList()
       EndIf
       
       If Border(180, 5, 375, 195, "Tabs")
-         Text(10, 28, 50, 20, "Position:")
-         *g_Item = ComboBox(60, 25, 100, 20)
-         *g_ItemBackColor = Button(10, 50, 100, 20, "background color")
-         *g_ItemFrontColor = Button(115, 50, 100, 20, "text color")
-         Text(10, 78, 30, 20, "Text:")
-         *g_ItemText = String(40, 75, 175, 20, GetText(*g_tab1))
-         *g_ItemDisabled = CheckBox(10, 100, 100, 20, "disabled")
-         *g_ItemSelected = CheckBox(10, 120, 100, 20, "seleced")
-         *g_ItemChecked = CheckBox(10, 140, 100, 20, "checked")
-         *g_ItemCloseButton = CheckBox(210, 100, 100, 20, "close button")
-         *g_ItemCheckBox = CheckBox(210, 120, 100, 20, "check box")
-         *g_ItemImage = Button(10, 165, 100, 20, "image or icon", #__flag_ButtonToggle)
+         TextWidget(10, 28, 50, 20, "Position:")
+         *g_Item = ComboBoxWidget(60, 25, 100, 20)
+         *g_ItemBackColor = ButtonWidget(10, 50, 100, 20, "background color")
+         *g_ItemFrontColor = ButtonWidget(115, 50, 100, 20, "text color")
+         TextWidget(10, 78, 30, 20, "Text:")
+         *g_ItemText = StringWidget(40, 75, 175, 20, GetTextWidget(*g_tab1))
+         *g_ItemDisabled = CheckBoxWidget(10, 100, 100, 20, "disabled")
+         *g_ItemSelected = CheckBoxWidget(10, 120, 100, 20, "seleced")
+         *g_ItemChecked = CheckBoxWidget(10, 140, 100, 20, "checked")
+         *g_ItemCloseButton = CheckBoxWidget(210, 100, 100, 20, "close button")
+         *g_ItemCheckBox = CheckBoxWidget(210, 120, 100, 20, "check box")
+         *g_ItemImage = ButtonWidget(10, 165, 100, 20, "image or icon", #__flag_ButtonToggle)
          CloseList()
       EndIf
       
       If Border(180, 210, 225, 120, "Events")
-         *g_Events = Editor(10, 20, 200, 90, #PB_Editor_ReadOnly)
+         *g_Events = EditorWidget(10, 20, 200, 90, #PB_Editor_ReadOnly)
          CloseList()
       EndIf
       
@@ -298,7 +298,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    
-   Procedure Window_Resize()
+   Procedure Window_ResizeWidget()
       
       If GetAttribute(*g_tab1, #__tab_Vertical)
          ResizeGadget(#Gadget_Canvas, 10, 10, #PB_Ignore, WindowHeight(#Window)-20)
@@ -306,12 +306,12 @@ CompilerIf #PB_Compiler_IsMainFile
          ResizeGadget(#Gadget_Canvas, 10, 10, WindowWidth(#Window)-20, #PB_Ignore)
       EndIf
       
-      Resize(*g_Container, 100, 100, WindowWidth(#Window)-150, WindowHeight(#Window)-150)
+      ResizeWidget(*g_Container, 100, 100, WindowWidth(#Window)-150, WindowHeight(#Window)-150)
       
    EndProcedure
    
-   BindEvent(#PB_Event_SizeWindow, @Window_Resize())
-   Window_Resize()
+   BindEvent(#PB_Event_SizeWindow, @Window_ResizeWidget())
+   Window_ResizeWidget()
    
    
    Repeat
@@ -342,7 +342,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         AddItem(*g_Events, 0, "CheckBox: "+Str(GetItemPosition(*g_tab1, #__tab_item_Event)))
                      Case #__event_Resize
                         AddItem(*g_Events, 0, "Resize")
-                        Window_Resize()
+                        Window_ResizeWidget()
                      Case #__event_EditItem
                         AddItem(*g_Events, 0, "EditItem: "+Str(GetItemPosition(*g_tab1, #__tab_item_Event)))
                      Case #__event_SwapItem
@@ -359,7 +359,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   SetAttribute(*g_tab1, #__tab_NewTab, GetState(*g_EmptyButton))
                Case *g_Vertical
                   SetAttribute(*g_tab1, #__tab_Vertical, GetState(*g_Vertical))
-                  Window_Resize()
+                  Window_ResizeWidget()
                Case *g_MirroredTabs
                   SetAttribute(*g_tab1, #__tab_MirroredTabs, GetState(*g_MirroredTabs))
                Case *g_TextCutting
@@ -387,23 +387,23 @@ CompilerIf #PB_Compiler_IsMainFile
                Case *g_TabTextAlignment
                   SetAttribute(*g_tab1, #__tab_TabTextAlignment, GetState(*g_TabTextAlignment))
                Case *g_Item
-                  ;Debug  "- "+GetItemText(*g_tab1, GetItemState_())
-                  SetText(*g_ItemText, GetItemText(*g_tab1, GetItemState_()))
+                  ;Debug  "- "+GetItemTextWidget(*g_tab1, GetItemState_())
+                  SetTextWidget(*g_ItemText, GetItemTextWidget(*g_tab1, GetItemState_()))
                   UpdateItemAttributes(GetItemState_())
                Case *g_ItemBackColor
-                  Color = GetItemColor(*g_tab1, GetState(*g_tab1), #PB_Gadget_BackColor)
+                  Color = GetWidgetItemColor(*g_tab1, GetState(*g_tab1), #PB_Gadget_BackColor)
                   Color = ColorRequester(Color)
                   If Color > -1
-                     SetItemColor(*g_tab1, GetItemState_(), #PB_Gadget_BackColor, Color)
+                     SetWidgetItemColor(*g_tab1, GetItemState_(), #PB_Gadget_BackColor, Color)
                   EndIf
                Case *g_ItemFrontColor
-                  Color = GetItemColor(*g_tab1, GetState(*g_tab1), #PB_Gadget_FrontColor)
+                  Color = GetWidgetItemColor(*g_tab1, GetState(*g_tab1), #PB_Gadget_FrontColor)
                   Color = ColorRequester(Color)
                   If Color > -1
-                     SetItemColor(*g_tab1, GetItemState_(), #PB_Gadget_FrontColor, Color)
+                     SetWidgetItemColor(*g_tab1, GetItemState_(), #PB_Gadget_FrontColor, Color)
                   EndIf
                Case *g_ItemText
-                  SetItemText(*g_tab1, GetItemState_(), GetText(*g_ItemText))
+                  SetItemTextWidget(*g_tab1, GetItemState_(), GetTextWidget(*g_ItemText))
                Case *g_ItemDisabled
                   SetItemState(*g_tab1, GetItemState_(), GetState(*g_ItemDisabled) * #__s_Disable)
                Case *g_ItemSelected
@@ -418,10 +418,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   If GetState(*g_ItemImage)
                      FileName = OpenFileRequester("Image", "", "Images (*.bmp;*.png)|*.bmp;*.png", 0)
                      If FileName And LoadImage(#Image, FileName)
-                        SetItemImage(*g_tab1, GetItemState_(), ImageID(#Image))
+                        SetWidgetItemImage(*g_tab1, GetItemState_(), ImageID(#Image))
                      EndIf
                   Else
-                     SetItemImage(*g_tab1, GetItemState_(), #Null)
+                     SetWidgetItemImage(*g_tab1, GetItemState_(), #Null)
                   EndIf
             EndSelect
             
@@ -632,8 +632,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    Procedure UpdateItemAttributes(Position)
       ;;Debug 999;ProcedureReturn 
-      If GetGadgetText(#Gadget_ItemText) <> GetItemText(*tab1, Position)
-         SetGadgetText(#Gadget_ItemText, GetItemText(*tab1, Position))
+      If GetGadgetTextWidget(#Gadget_ItemText) <> GetItemTextWidget(*tab1, Position)
+         SetGadgetTextWidget(#Gadget_ItemText, GetItemTextWidget(*tab1, Position))
       EndIf
       
       SetGadgetState(#Gadget_ItemDisabled, (GetItemState(*tab1, Position)&#__s_Disable))
@@ -663,8 +663,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    Open(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_TabBar)
    
-   ;ResizeGadget( GetGadget( ), 10, 10, 650-20, 30)
-   *tab1 = Tab(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)
+   ;ResizeGadget( GetCanvasGadget( ), 10, 10, 650-20, 30)
+   *tab1 = TabBarWidget(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)
    AddItem(*tab1, #PB_Default, "In this")
    AddItem(*tab1, #PB_Default, "example")
    AddItem(*tab1, #PB_Default, "you can")
@@ -674,7 +674,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    AddItem(*tab1, #PB_Default, "and the")
    AddItem(*tab1, #PB_Default, "TabBar")
    AddItem(*tab1, #PB_Default, "include")
-   ;Tab_ToolTip(*tab1, "%ITEM", "new", "close")
+   ;Tab_WidgetToolTip(*tab1, "%ITEM", "new", "close")
    
    If ContainerGadget(#Gadget_Container, 0, GadgetHeight(#Gadget_TabBar), WindowWidth(#Window), WindowHeight(#Window)-GadgetHeight(#Gadget_TabBar), #PB_Container_Flat)
       
@@ -713,7 +713,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
          ButtonGadget(#Gadget_ItemBackColor, 10, 50, 100, 20, "background color")
          ButtonGadget(#Gadget_ItemFrontColor, 115, 50, 100, 20, "text color")
          TextGadget(#PB_Any, 10, 78, 30, 20, "Text:")
-         StringGadget(#Gadget_ItemText, 40, 75, 175, 20, GetText(*tab1))
+         StringGadget(#Gadget_ItemText, 40, 75, 175, 20, GetTextWidget(*tab1))
          CheckBoxGadget(#Gadget_ItemDisabled, 10, 100, 100, 20, "disabled")
          CheckBoxGadget(#Gadget_ItemSelected, 10, 120, 100, 20, "seleced")
          CheckBoxGadget(#Gadget_ItemChecked, 10, 140, 100, 20, "checked")
@@ -733,7 +733,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf
    
    
-   Procedure Window_Resize()
+   Procedure Window_ResizeWidget()
       
       If GetAttribute(*tab1, #__tab_Vertical)
          ResizeGadget(#Gadget_TabBar, 10, 10, #PB_Ignore, WindowHeight(#Window)-20)
@@ -745,8 +745,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
    EndProcedure
    
-   BindEvent(#PB_Event_SizeWindow, @Window_Resize())
-   Window_Resize()
+   BindEvent(#PB_Event_SizeWindow, @Window_ResizeWidget())
+   Window_ResizeWidget()
    
    
    Repeat
@@ -777,7 +777,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
                         AddGadgetItem(#Gadget_Events, 0, "CheckBox: "+Str(GetItemPosition(*tab1, #__tab_item_Event)))
                      Case #__event_Resize
                         AddGadgetItem(#Gadget_Events, 0, "Resize")
-                        Window_Resize()
+                        Window_ResizeWidget()
                      Case #__event_EditItem
                         AddGadgetItem(#Gadget_Events, 0, "EditItem: "+Str(GetItemPosition(*tab1, #__tab_item_Event)))
                      Case #__event_SwapItem
@@ -794,7 +794,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
                   SetAttribute(*tab1, #__tab_NewTab, GetGadgetState(#Gadget_EmptyButton))
                Case #Gadget_Vertical
                   SetAttribute(*tab1, #__tab_Vertical, GetGadgetState(#Gadget_Vertical))
-                  Window_Resize()
+                  Window_ResizeWidget()
                Case #Gadget_MirroredTabs
                   SetAttribute(*tab1, #__tab_MirroredTabs, GetGadgetState(#Gadget_MirroredTabs))
                Case #Gadget_TextCutting
@@ -822,23 +822,23 @@ CompilerIf #PB_Compiler_IsMainFile = 99
                Case #Gadget_TabTextAlignment
                   SetAttribute(*tab1, #__tab_TabTextAlignment, GetGadgetState(#Gadget_TabTextAlignment))
                Case #Gadget_Item
-                  ;Debug  "- "+GetItemText(*tab1, GetItemGadgetState())
-                  SetGadgetText(#Gadget_ItemText, GetItemText(*tab1, GetItemGadgetState()))
+                  ;Debug  "- "+GetItemTextWidget(*tab1, GetItemGadgetState())
+                  SetGadgetTextWidget(#Gadget_ItemText, GetItemTextWidget(*tab1, GetItemGadgetState()))
                   UpdateItemAttributes(GetItemGadgetState())
                Case #Gadget_ItemBackColor
-                  Color = GetItemColor(*tab1, GetState(*tab1), #PB_Gadget_BackColor)
+                  Color = GetWidgetItemColor(*tab1, GetState(*tab1), #PB_Gadget_BackColor)
                   Color = ColorRequester(Color)
                   If Color > -1
-                     SetItemColor(*tab1, GetItemGadgetState(), #PB_Gadget_BackColor, Color)
+                     SetWidgetItemColor(*tab1, GetItemGadgetState(), #PB_Gadget_BackColor, Color)
                   EndIf
                Case #Gadget_ItemFrontColor
-                  Color = GetItemColor(*tab1, GetState(*tab1), #PB_Gadget_FrontColor)
+                  Color = GetWidgetItemColor(*tab1, GetState(*tab1), #PB_Gadget_FrontColor)
                   Color = ColorRequester(Color)
                   If Color > -1
-                     SetItemColor(*tab1, GetItemGadgetState(), #PB_Gadget_FrontColor, Color)
+                     SetWidgetItemColor(*tab1, GetItemGadgetState(), #PB_Gadget_FrontColor, Color)
                   EndIf
                Case #Gadget_ItemText
-                  SetItemText(*tab1, GetItemGadgetState(), GetGadgetText(#Gadget_ItemText))
+                  SetItemTextWidget(*tab1, GetItemGadgetState(), GetGadgetTextWidget(#Gadget_ItemText))
                Case #Gadget_ItemDisabled
                   SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemDisabled) * #__s_Disable)
                Case #Gadget_ItemSelected
@@ -853,10 +853,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
                   If GetGadgetState(#Gadget_ItemImage)
                      FileName = OpenFileRequester("Image", "", "Images (*.bmp;*.png)|*.bmp;*.png", 0)
                      If FileName And LoadImage(#Image, FileName)
-                        SetItemImage(*tab1, GetItemGadgetState(), ImageID(#Image))
+                        SetWidgetItemImage(*tab1, GetItemGadgetState(), ImageID(#Image))
                      EndIf
                   Else
-                     SetItemImage(*tab1, GetItemGadgetState(), #Null)
+                     SetWidgetItemImage(*tab1, GetItemGadgetState(), #Null)
                   EndIf
             EndSelect
             

@@ -14,9 +14,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected result
       
       ;;\\ - widget::tree_SetState_
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #PB_WidgetType_Tree Or
+         *this\type = #PB_WidgetType_ListIcon Or
+         *this\type = #PB_WidgetType_ListView
         ; Debug *this\mode\check
         
         ; reset all selected items
@@ -167,7 +167,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
-    *this = widget::ListView(10, 10, 230, 310)
+    *this = widget::ListViewWidget(10, 10, 230, 310)
     
     For a = 0 To countitems
       widget::AddItem(*this, -1, "Item "+Str(a), 0)
@@ -176,10 +176,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Define h = 20, y = 20
     widget::Bind(*this, @widget_events(), #__event_Change)
     
-    *item1 = widget::Button( 250, y+(1+h)*1, 100, h, "1")
-    *item2 = widget::Button( 250, y+(1+h)*2, 100, h, "2")
-    *item3 = widget::Button( 250, y+(1+h)*3, 100, h, "3")
-    *item4 = widget::Button( 250, y+(1+h)*4, 100, h, "90")
+    *item1 = widget::ButtonWidget( 250, y+(1+h)*1, 100, h, "1")
+    *item2 = widget::ButtonWidget( 250, y+(1+h)*2, 100, h, "2")
+    *item3 = widget::ButtonWidget( 250, y+(1+h)*3, 100, h, "3")
+    *item4 = widget::ButtonWidget( 250, y+(1+h)*4, 100, h, "90")
     
     
     widget::Bind(*item1, @button_events(), #__event_Up)

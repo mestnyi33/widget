@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                 EndIf
 ;                 
 ;                 
-;                 Resize(*this, \x, \y, width, height)
+;                 ResizeWidget(*this, \x, \y, width, height)
 ;                 
 ;               ElseIf Bool(Mode&#__align_auto=#__align_auto)
 ;                 \align\top = Bool(Mode&#__align_top=#__align_top)
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                 EndIf
 ;               EndIf
 ;                 
-;                 Resize(*this, \x, \y, width, height)
+;                 ResizeWidget(*this, \x, \y, width, height)
 ;                 
 ;               Else
 ;                 \align\top = Bool(Mode&#__align_top=#__align_top)
@@ -154,7 +154,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;               EndIf
 ;               
 ;               ; update parent childrens coordinate
-;               Resize(\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;               ResizeWidget(\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
 ;             EndIf
 ;           Case 2 ; text
 ;           Case 3 ; image
@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       EndWith
     EndProcedure
  
-  Procedure.s get_text(m.s=#LF$)
+  Procedure.s get_TextWidget(m.s=#LF$)
     Protected Text.s = "This is a long line." + m.s +
                        "Who should show." + 
                        m.s +
@@ -245,42 +245,42 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
     
-    Define *cont = Container(15,15,100,100)
+    Define *cont = ContainerWidget(15,15,100,100)
     Define s2=10+6, s = s2+6, r2 = 4+3, r = r2+3-1, o=1, o2 = 1
-     *lt = Button(o,o,s,s,"",#__flag_ButtonToggle,0,r)
-     *rt = Button(98-s-o*2,o,s,s,"",#__flag_ButtonToggle,0,r)
-     *rb = Button(98-s-o*2,98-s-o*2,s,s,"",#__flag_ButtonToggle,0,r)
-     *lb = Button(o,98-s-o*2,s,s,"",#__flag_ButtonToggle,0,r)
+     *lt = ButtonWidget(o,o,s,s,"",#__flag_ButtonToggle,0,r)
+     *rt = ButtonWidget(98-s-o*2,o,s,s,"",#__flag_ButtonToggle,0,r)
+     *rb = ButtonWidget(98-s-o*2,98-s-o*2,s,s,"",#__flag_ButtonToggle,0,r)
+     *lb = ButtonWidget(o,98-s-o*2,s,s,"",#__flag_ButtonToggle,0,r)
     
      
-;      *dt = Button(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
-      *dl = Button(o2,s+1,s2,98-s*2-o2*4 ,"",#__flag_ButtonToggle,0,r2)
-      *dr = Button(98-s2-o2*2,s+1,s2,98-s*2-o2*4,"",#__flag_ButtonToggle,0,r2)
-;      *db = Button(o2,98-s2-o2*2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+;      *dt = ButtonWidget(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+      *dl = ButtonWidget(o2,s+1,s2,98-s*2-o2*4 ,"",#__flag_ButtonToggle,0,r2)
+      *dr = ButtonWidget(98-s2-o2*2,s+1,s2,98-s*2-o2*4,"",#__flag_ButtonToggle,0,r2)
+;      *db = ButtonWidget(o2,98-s2-o2*2,s2,s2,"",#__flag_ButtonToggle,0,r2)
      
-      *t = Button(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
-     *l = Button(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
-     *r = Button(98-s2-o2*2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
-     *b = Button(o2,98-s2-o2*2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+      *t = ButtonWidget(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+     *l = ButtonWidget(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+     *r = ButtonWidget(98-s2-o2*2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
+     *b = ButtonWidget(o2,98-s2-o2*2,s2,s2,"",#__flag_ButtonToggle,0,r2)
     SetState(*lt, 1)
      
-    Define *c._s_widget = Container(s2+o2*3-1,s2+o2*3-1,(98-s2*2-o2*6+1),(98-s2*2-o2*6+1))
+    Define *c._s_widget = ContainerWidget(s2+o2*3-1,s2+o2*3-1,(98-s2*2-o2*6+1),(98-s2*2-o2*6+1))
     *c\round = 9
     
-    *demo = Button(o,o,s,s,"",0,0, r)
-     *ce = Button(o2,o2,s2,s2,"",0,0, r2)
+    *demo = ButtonWidget(o,o,s,s,"",0,0, r)
+     *ce = ButtonWidget(o2,o2,s2,s2,"",0,0, r2)
     CloseList()
     
-;     SetClass(*t, "t_anchor")
-;     SetClass(*l, "l_anchor")
-;     SetClass(*r, "r_anchor")
-;     SetClass(*b, "b_anchor")
+;     SetWidgetClass(*t, "t_anchor")
+;     SetWidgetClass(*l, "l_anchor")
+;     SetWidgetClass(*r, "r_anchor")
+;     SetWidgetClass(*b, "b_anchor")
 ;     
-;     SetClass(*lt, "lt_anchor")
-;     SetClass(*rt, "rt_anchor")
-;     SetClass(*rb, "rb_anchor")
-;     SetClass(*lb, "lb_anchor")
-;     SetClass(*ce, "ce_anchor")
+;     SetWidgetClass(*lt, "lt_anchor")
+;     SetWidgetClass(*rt, "rt_anchor")
+;     SetWidgetClass(*rb, "rb_anchor")
+;     SetWidgetClass(*lb, "lb_anchor")
+;     SetWidgetClass(*ce, "ce_anchor")
     
     _SetAlignment(*t, #__align_Center|#__align_top)
     _SetAlignment(*b, #__align_Center|#__align_bottom)
@@ -324,14 +324,14 @@ CompilerIf #PB_Compiler_IsMainFile
         If Width = 100
            direction = 1
         EndIf
-        If Width = Width(root())-100
+        If Width = WidgetWidth(root())-100
           direction =- 1
         EndIf
 ;         
         Width + direction
         Height + direction
         
-        If Resize(*cont, #PB_Ignore, #PB_Ignore, Width, Height)
+        If ResizeWidget(*cont, #PB_Ignore, #PB_Ignore, Width, Height)
           ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
         EndIf
        
@@ -339,13 +339,13 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            Width = Width(*cont)
-            Height = Height(*cont)
+            Width = WidgetWidth(*cont)
+            Height = WidgetHeight(*cont)
             
             If GetGadgetState(0)
-              AddWindowTimer(GetWindow(root()), 1, 200)
+              AddWindowTimer(GetCanvasWindow(root()), 1, 200)
             Else
-              RemoveWindowTimer(GetWindow(root()), 1)
+              RemoveWindowTimer(GetCanvasWindow(root()), 1)
             EndIf
         EndSelect
         

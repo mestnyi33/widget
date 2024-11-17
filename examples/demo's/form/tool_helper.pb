@@ -48,8 +48,8 @@ Procedure Tool_Gadget_Event( )
                Disable(Tool_Line_Container,State2)  
                
                ;\\
-               SetColor(Tool_Align_To_Grid, #__Color_Front, State1 * $757B7B)
-               SetColor(Tool_Align_To_Line, #__Color_Front, State2 * $757B7B)
+               SetWidgetColor(Tool_Align_To_Grid, #__Color_Front, State1 * $757B7B)
+               SetWidgetColor(Tool_Align_To_Line, #__Color_Front, State2 * $757B7B)
          EndSelect
          
       Case Tool_Grid_Show
@@ -65,29 +65,29 @@ Procedure Tool_Gadget_Event( )
 EndProcedure
 
 Procedure Tool_Gadget( Window, Width, Height )
-   Tool_Container_Mode = Container(5, 5, Width-10, Height-10)
+   Tool_Container_Mode = ContainerWidget(5, 5, Width-10, Height-10)
    
    If Font
-      SetFont(Frame(10, 10, 333, 170, "Параметры выравнивания"),FontID(Font))
+      SetFont(FrameWidget(10, 10, 333, 170, "Параметры выравнивания"),FontID(Font))
    EndIf
    
-   Container(10+3, 10+35, 327, 132)
-   Tool_Alignment_Mode = Frame(5, 4, 317, 124, "Режим выравнивания")
+   ContainerWidget(10+3, 10+35, 327, 132)
+   Tool_Alignment_Mode = FrameWidget(5, 4, 317, 124, "Режим выравнивания")
    
-   Tool_Grid_Container = Container(10, 25, 152, 101)
-   ;Tool_Grid_Frame = Frame(1, 4, 150, 93, "")
-   Tool_Grid_Show = CheckBox(6, 24, 126, 16, "Показать сетку")
-   Tool_Grid_Snap = CheckBox(6, 44, 136, 16, "Привязать к сетке")
-   Tool_Grid_Size_Info = Text(71, 72, 126, 16, "Размер сетки:")
-   Tool_Grid_Size = Spin(6, 69, 66, 23,0,20,#PB_Spin_Numeric)
+   Tool_Grid_Container = ContainerWidget(10, 25, 152, 101)
+   ;Tool_Grid_Frame = FrameWidget(1, 4, 150, 93, "")
+   Tool_Grid_Show = CheckBoxWidget(6, 24, 126, 16, "Показать сетку")
+   Tool_Grid_Snap = CheckBoxWidget(6, 44, 136, 16, "Привязать к сетке")
+   Tool_Grid_Size_Info = TextWidget(71, 72, 126, 16, "Размер сетки:")
+   Tool_Grid_Size = SpinWidget(6, 69, 66, 23,0,20,#PB_Spin_Numeric)
    CloseList( )
-   Tool_Line_Container = Container(165, 25, 152, 101)
-   ;Tool_Line_Frame = Frame(1, 4, 150, 93, "")
-   Tool_Line_Show = CheckBox(6, 24, 126, 16, "Показать линию")
-   Tool_Line_Snap = CheckBox(6, 44, 136, 16, "Привязать к линии")
-   Tool_Line_Size_Info = Text(71, 72, 126, 16, "Размер линии:")
-   Tool_Line_Size = Spin(6, 69, 66, 23,0,20,#PB_Spin_Numeric)
-   ;SetColor( Tool_Line_Frame, #__color_back, GetColor(Tool_Line_Size_Info, #__color_back))
+   Tool_Line_Container = ContainerWidget(165, 25, 152, 101)
+   ;Tool_Line_Frame = FrameWidget(1, 4, 150, 93, "")
+   Tool_Line_Show = CheckBoxWidget(6, 24, 126, 16, "Показать линию")
+   Tool_Line_Snap = CheckBoxWidget(6, 44, 136, 16, "Привязать к линии")
+   Tool_Line_Size_Info = TextWidget(71, 72, 126, 16, "Размер линии:")
+   Tool_Line_Size = SpinWidget(6, 69, 66, 23,0,20,#PB_Spin_Numeric)
+   ;SetWidgetColor( Tool_Line_Frame, #__color_back, GetWidgetColor(Tool_Line_Size_Info, #__color_back))
    CloseList( )
    
    Tool_Align_To_Grid = OptionWidget(X(Tool_Grid_Container, 3)+6, WidgetY(Tool_Grid_Container, 3)+2, 152-12, 16, "Выровнять по сетке")
@@ -102,7 +102,7 @@ Procedure Tool_Gadget( Window, Width, Height )
 ;    Disable(Tool_Line_Size,1)
 ;    ;Disable(Tool_Line_Frame,1)
 ;    Disable(Tool_Line_Container,1)
-;    SetColor(Tool_Align_To_Line, #__Color_Front, $757B7B)
+;    SetWidgetColor(Tool_Align_To_Line, #__Color_Front, $757B7B)
    
    Bind(root( ), @Tool_Gadget_Event( ))
 EndProcedure
@@ -111,7 +111,7 @@ EndProcedure
 CompilerIf #PB_Compiler_IsMainFile
    Define Event
    Open( 1, 245, 144, 555, 555, "Tool", #PB_Window_SystemMenu )
-   Define Window = GetWindow(root( ))
+   Define Window = GetCanvasWindow(root( ))
    Tool_Gadget( Window, 555, 555 )
    
    While IsWindow( Window )

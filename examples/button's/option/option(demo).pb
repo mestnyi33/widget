@@ -46,13 +46,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       
       ;
-      OptionWidget(10+140, 20, 115, 20, "Option 1") : SetClass( widget( ), "Option 1" )
-      OptionWidget(10+140, 45, 115, 20, "Option 2") : SetClass( widget( ), "Option 2" )
-      OptionWidget(10+140, 70, 115, 20, "Option 3") : SetClass( widget( ), "Option 3" )
+      OptionWidget(10+140, 20, 115, 20, "Option 1") : SetWidgetClass( widget( ), "Option 1" )
+      OptionWidget(10+140, 45, 115, 20, "Option 2") : SetWidgetClass( widget( ), "Option 2" )
+      OptionWidget(10+140, 70, 115, 20, "Option 3") : SetWidgetClass( widget( ), "Option 3" )
       
-      CheckBox(10+140, 95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState ) : SetClass( widget( ), "CheckBox" )
-      OptionWidget(10+140, 120, 115, 20, "Option 4") : SetClass( widget( ), "Option 4" )
-      OptionWidget(10+140, 145, 115, 20, "Option 5") : SetClass( widget( ), "Option 5" )
+      CheckBoxWidget(10+140, 95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState ) : SetWidgetClass( widget( ), "CheckBox" )
+      OptionWidget(10+140, 120, 115, 20, "Option 4") : SetWidgetClass( widget( ), "Option 4" )
+      OptionWidget(10+140, 145, 115, 20, "Option 5") : SetWidgetClass( widget( ), "Option 5" )
       
       SetState(ID(1), 1)   ; set second option as active one
       SetState(ID(3), #PB_Checkbox_Inbetween)  

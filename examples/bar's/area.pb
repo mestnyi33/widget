@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Declare Canvas_Draw( canvas.i, List Images.IMAGES( ) )
    
    Macro Area_Draw( _this_ )
-      widget::bar_mdi_resize( _this_,
+      widget::bar_mdi_ResizeWidget( _this_,
                               _this_\scroll\h\x, 
                               _this_\scroll\v\y, 
                               (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
       Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
-      BindGadgetEvent( GetGadget( root( ) ), _callback_ )
+      BindGadgetEvent( GetCanvasGadget( root( ) ), _callback_ )
    EndMacro
    
    Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
@@ -248,7 +248,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #PB_EventType_Resize 
             ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) ; Bug ( 562 )
             
-            widget::bar_area_resize( *this, x+*this\fs, y+*this\fs, width-*this\fs*2, height-*this\fs*2 )
+            widget::bar_area_ResizeWidget( *this, x+*this\fs, y+*this\fs, width-*this\fs*2, height-*this\fs*2 )
             
             Repaint = #True
       EndSelect
@@ -268,7 +268,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define yy = 90
    Define xx = 0
    
-   Procedure Window_Resize()
+   Procedure Window_ResizeWidget()
       ResizeGadget(MyCanvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-10-100)
    EndProcedure
    
@@ -286,7 +286,7 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   BindEvent(#PB_Event_SizeWindow, @Window_Resize(), 0)
+   BindEvent(#PB_Event_SizeWindow, @Window_ResizeWidget(), 0)
    ;
    CheckBoxGadget(5, 10, 10, 80,20, "clipoutput") : SetGadgetState(5, 1)
    CheckBoxGadget(2, 10, 30, 100,20, "vertical bar") : SetGadgetState(2, 1)
@@ -357,10 +357,10 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventGadget()
                Case 2
                   If GetGadgetState(2)
-                     SetGadgetText(2, "vertical bar")
+                     SetGadgetTextWidget(2, "vertical bar")
                      SetGadgetState(3, GetAttribute(*this\scroll\v, #__bar_invert))
                   Else
-                     SetGadgetText(2, "horizontal bar")
+                     SetGadgetTextWidget(2, "horizontal bar")
                      SetGadgetState(3, GetAttribute(*this\scroll\h, #__bar_invert))
                   EndIf
                   
@@ -393,7 +393,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 256
-; FirstLine = 240
+; CursorPosition = 213
+; FirstLine = 191
 ; Folding = --------
 ; EnableXP

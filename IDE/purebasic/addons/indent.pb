@@ -316,7 +316,7 @@ Procedure.s GetIndentContinuationPrefix(PreviousLine$)
 						; identify the keyword
 						Word$ = LCase(PeekS(*WordStart, (*WordEnd - *WordStart) / #CharSize + 1))
 						
-						If FindString(PB_Keywords$, "|" + Word$ + "|")
+						If FindStringWidget(PB_Keywords$, "|" + Word$ + "|")
 							*ExpressionStart = *WordEnd + #CharSize
 							Break
 							
@@ -563,7 +563,7 @@ Procedure.s AddSpacesToParameters(Line.s)
 					CheckForNegativeSign = 1
 				EndIf
 			ElseIf *C\c = '-'                                                          ; Now check the '-'
-				If Right(RemoveString(LCase(Result$), " "), 2) <> ".p"                    ; ignore pseudotypes, like var.p-utf8
+				If Right(RemoveStringWidget(LCase(Result$), " "), 2) <> ".p"                    ; ignore pseudotypes, like var.p-utf8
 					If *Cprev\c <> ' '                                                     ; add missing space, if needed
 						Result$ + " "
 					EndIf
@@ -990,7 +990,7 @@ Procedure Main()
 	PreferenceGroup("Indentation")
 	j = ReadPreferenceInteger("NbKeywords", 0) - 1
 	For i = 0 To j
-		AddMapElement(Tags(), LCase(ReadPreferenceString("Keyword_" + Str(i), "")))
+		AddMapElement(Tags(), LCase(ReadPreferenceStringWidget("Keyword_" + Str(i), "")))
 		Tags()\Before = ReadPreferenceInteger("Before_" + Str(i), 0)
 		Tags()\After  = ReadPreferenceInteger("After_" + Str(i), 0)
 	Next i
@@ -1034,7 +1034,7 @@ Procedure Main()
 	;now read the whole file into Lines() list and do some basic action here already
 	While Eof(0) = 0
 		AddElement(Lines$())
-		a$ = ReadString(0, UTF_Flag)
+		a$ = ReadStringWidget(0, UTF_Flag)
 		If IsJustComment(a$)
 			; Remove whitespaces from the end of comments
 			Lines$() = RTrim(a$)

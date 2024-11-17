@@ -8,7 +8,7 @@ Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, S
 Procedure SetRound( *this._S_WIDGET, round.a )
   *this\round = DesktopScaledX(round)
   ;
-  If *this\type = #__type_Progress
+  If *this\type = #PB_WidgetType_Progress
     *this\bar\button[1]\round = *this\round
     *this\bar\button[2]\round = *this\round
   EndIf
@@ -41,14 +41,14 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
     Button_0 = ProgressBarWidget(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
     Button_1 = ProgressBarWidget(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
     
-    w_type = ListView(10, 10, 150, 200) 
+    w_type = ListViewWidget(10, 10, 150, 200) 
     Define i
     For i=0 To 33
       AddItem(w_type, -1, ClassFromType(i))
     Next
     
-    Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-    Splitter_1 = Splitter(10, 10, 400, 250, w_type, Splitter_0, #PB_Splitter_FirstFixed)
+    Splitter_0 = SplitterWidget(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    Splitter_1 = SplitterWidget(10, 10, 400, 250, w_type, Splitter_0, #PB_Splitter_FirstFixed)
   EndIf
   
   Button_3 = Track    (400+20, 10, 20,  250, 0,100, #PB_TrackBar_Vertical) 

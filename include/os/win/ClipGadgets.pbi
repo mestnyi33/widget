@@ -28,7 +28,7 @@ Procedure GadgetsClipCallBack( GadgetID, lParam )
             
             ;             Case #PB_GadgetType_Container 
             ;             ; Из-за бага когда устанавливаешь фоновый рисунок (например точки на кантейнер)
-            ;               SetGadgetColor( Gadget, #PB_Gadget_BackColor, GetSysColor_( #COLOR_BTNFACE ))
+            ;               SetGadGetWidgetColor( Gadget, #PB_Gadget_BackColor, GetSysColor_( #COLOR_BTNFACE ))
             ;               
             ;             Case #PB_GadgetType_Panel 
             ;             ; Для панел гаджета темный фон убирать
@@ -119,7 +119,7 @@ CompilerIf #PB_Compiler_IsMainFile = 1
     Gadgets( win2 )
     ;     SpinGadget     (310, 20, 20, 100, 25, 0, 1000)
     ;     SetGadgetState (310, 5) 
-    ;     SetGadgetText(310, "5")   ; set initial value
+    ;     SetGadgetTextWidget(310, "5")   ; set initial value
     ;     ComboBoxGadget (2100, 20, 35, 100, 155)
     
   SetWindowColor(2,RGB(255,255,0))

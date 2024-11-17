@@ -45,13 +45,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If IsGadget(EventGadget())
       If EventType() = #__Event_Focus
-        Debug String.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
+        Debug String.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
       Else
         Debug String.s +" - gadget"
       EndIf
     Else
       If EventType() = #__Event_Focus
-        Debug String.s +" - widget" +" get text - "+ GetText(EventGadget())
+        Debug String.s +" - widget" +" get text - "+ GetTextWidget(EventGadget())
       Else
         Debug String.s +" - widget"
       EndIf
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define height=60, Text1.s = "Borderless StringGadget" + #LF$ + " Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
   
-  Procedure.s get_text(m.s=#LF$)
+  Procedure.s get_TextWidget(m.s=#LF$)
     Protected Text.s = "This is a long line." + m.s +
                        "Who should show." + 
                        m.s +
@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ProcedureReturn Text
   EndProcedure
-  Define Text.s = get_text(#LF$)
+  Define Text.s = get_TextWidget(#LF$)
   ;     
   Procedure resize_splitter()
     SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
@@ -145,36 +145,36 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     Next
     
     SetTextAlignment()
-    SetGadgetText(7, "GaT")
-    Debug "Get gadget text "+GetGadgetText(7)
+    SetGadgetTextWidget(7, "GaT")
+    Debug "Get gadget text "+GetGadgetTextWidget(7)
     
-    *S_0 = String( 305+8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly|#__flag_Texttop)
-    *S_1 = String( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #PB_String_Numeric|#__flag_Textcenter)
-    *S_2 = String( 305+8,  (height+5)*2+10, 290, height, "Right-text StringGadget", #__flag_Textright|#__flag_Textbottom)
-    *S_3 = String( 305+8,  (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
-    *S_4 = String( 305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
-    *S_5 = String( 305+8, (height+5)*5+10, 290, height, Text1, #PB_String_BorderLess)
-    *S_6 = String( 305+8, (height+5)*6+10, 140, height, "")
-    *S_7 = String( 305+150+8, (height+5)*6+10, 140, height, "Password", #PB_String_Password )
-    ;     ; *S_8 = String( 305+8, (height+5)*8+10, 290, 90+150, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
-    ;     *S_8 = String( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
-    ;     *S_9 = String( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textwordwrap)
+    *S_0 = StringWidget( 305+8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly|#__flag_Texttop)
+    *S_1 = StringWidget( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #PB_String_Numeric|#__flag_Textcenter)
+    *S_2 = StringWidget( 305+8,  (height+5)*2+10, 290, height, "Right-text StringGadget", #__flag_Textright|#__flag_Textbottom)
+    *S_3 = StringWidget( 305+8,  (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
+    *S_4 = StringWidget( 305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
+    *S_5 = StringWidget( 305+8, (height+5)*5+10, 290, height, Text1, #PB_String_BorderLess)
+    *S_6 = StringWidget( 305+8, (height+5)*6+10, 140, height, "")
+    *S_7 = StringWidget( 305+150+8, (height+5)*6+10, 140, height, "Password", #PB_String_Password )
+    ;     ; *S_8 = StringWidget( 305+8, (height+5)*8+10, 290, 90+150, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
+    ;     *S_8 = StringWidget( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
+    ;     *S_9 = StringWidget( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textwordwrap)
     
-    SetText(*S_7, "GaT")
-    Debug "Get widget text "+GetText(*S_7)
+    SetTextWidget(*S_7, "GaT")
+    Debug "Get widget text "+GetTextWidget(*S_7)
     
     
     EditorGadget(21, 0,0,0,0)
     EditorGadget(22, 0,0,0,0, #PB_Editor_WordWrap)
     
-    *S_21 = Editor( 0,0,0,0);, #__flag_gridlines)
-    *S_22 = Editor( 0,0,0,0, #PB_Editor_WordWrap)  ;#__flag_gridlines|
+    *S_21 = EditorWidget( 0,0,0,0);, #__flag_gridlines)
+    *S_22 = EditorWidget( 0,0,0,0, #PB_Editor_WordWrap)  ;#__flag_gridlines|
     
-    SetGadgetText(21, get_text(#LF$))
-    SetGadgetText(22, get_text(""))
+    SetGadgetTextWidget(21, get_TextWidget(#LF$))
+    SetGadgetTextWidget(22, get_TextWidget(""))
     
-    SetText(*S_21, get_text(#LF$))
-    SetText(*S_22, get_text(""))
+    SetTextWidget(*S_21, get_TextWidget(#LF$))
+    SetTextWidget(*S_22, get_TextWidget(""))
     
     For a = 0 To 2
       AddGadgetItem((21), a, "Line "+Str(a))
@@ -187,10 +187,10 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*S_21, a, "Line "+Str(a))
     Next
     
-    *S_23 = Splitter( 0,0,0,0,*S_22,*S_21 )
-    *S_213 = Splitter( 0,0,0,0, 22, 21 )
+    *S_23 = SplitterWidget( 0,0,0,0,*S_22,*S_21 )
+    *S_213 = SplitterWidget( 0,0,0,0, 22, 21 )
     
-    *S_25 = Splitter( 8,(height+5)*7+10,600-6, 250, *S_213,*S_23, #PB_Splitter_Vertical )
+    *S_25 = SplitterWidget( 8,(height+5)*7+10,600-6, 250, *S_213,*S_23, #PB_Splitter_Vertical )
     ;SetGadgetState(25, 30)
     ;SetGadgetState(25, 97)
     ;SetGadgetState(25, 82)
@@ -248,13 +248,13 @@ CompilerEndIf
 ;     
 ;     If IsGadget(EventGadget())
 ;       If EventType() = #__Event_Focus
-;         Debug String.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
+;         Debug String.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
 ;       Else
 ;         Debug String.s +" - gadget"
 ;       EndIf
 ;     Else
 ;       If EventType() = #__Event_Focus
-;         Debug String.s +" - widget" +" get text - "+ GetText(EventGadget())
+;         Debug String.s +" - widget" +" get text - "+ GetTextWidget(EventGadget())
 ;       Else
 ;         Debug String.s +" - widget"
 ;       EndIf
@@ -297,7 +297,7 @@ CompilerEndIf
 ;   Define height=60, Text1.s = "Borderless StringGadget" + #LF$ + " Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
 ;   
 ;   
-;   Procedure.s get_text(m.s=#LF$)
+;   Procedure.s get_TextWidget(m.s=#LF$)
 ;     Protected Text.s = "This is a long line." + m.s +
 ;                        "Who should show." + 
 ;                        m.s +
@@ -314,7 +314,7 @@ CompilerEndIf
 ;     
 ;     ProcedureReturn Text
 ;   EndProcedure
-;   Define Text.s = get_text(#LF$)
+;   Define Text.s = get_TextWidget(#LF$)
 ;   ;     
 ;   Procedure resize_splitter()
 ;     SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
@@ -324,16 +324,16 @@ CompilerEndIf
 ;     EditorGadget(21, 0,0,0,0)
 ;     EditorGadget(22, 0,0,0,0, #PB_Editor_WordWrap)
 ;     
-;     *w_211 = Editor(0,0,0,0)
-;     *w_212 = Editor(0,0,0,0, #__editor_wordwrap)
-;     SetFrame( *w_211, 2)
-;     SetFrame( *w_212, 2)
+;     *w_211 = EditorWidget(0,0,0,0)
+;     *w_212 = EditorWidget(0,0,0,0, #__editor_wordwrap)
+;     SetWidgetFrame( *w_211, 2)
+;     SetWidgetFrame( *w_212, 2)
 ;     
-;     SetGadgetText(21, get_text(#LF$))
-;     SetGadgetText(22, get_text(""))
+;     SetGadgetTextWidget(21, get_TextWidget(#LF$))
+;     SetGadgetTextWidget(22, get_TextWidget(""))
 ;     
-;     SetText(*w_211, get_text(#LF$))
-;     SetText(*w_212, get_text(""))
+;     SetTextWidget(*w_211, get_TextWidget(#LF$))
+;     SetTextWidget(*w_212, get_TextWidget(""))
 ;     
 ;     For a = 0 To 2
 ;       AddGadgetItem((21), a, "Line "+Str(a))
@@ -348,10 +348,10 @@ CompilerEndIf
 ;       AddItem(*w_211, a, "Line "+Str(a))
 ;     Next
 ;     
-;     *s_1 = Splitter(0,0,0,0, *w_211,21 )
-;     *s_2 = Splitter(0,0,0,0, *w_212,22 )
+;     *s_1 = SplitterWidget(0,0,0,0, *w_211,21 )
+;     *s_2 = SplitterWidget(0,0,0,0, *w_212,22 )
 ;     
-;     *s_3 = Splitter(8,10,600, 250, *S_2,*S_1, #PB_Splitter_Vertical )
+;     *s_3 = SplitterWidget(8,10,600, 250, *S_2,*S_1, #PB_Splitter_Vertical )
 ;     ;SetState(*s_3, 30)
 ;     ;SetState(*s_3, 97)
 ;     ;SetState(*s_3, 82)

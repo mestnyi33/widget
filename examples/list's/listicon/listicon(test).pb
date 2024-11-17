@@ -45,13 +45,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\ Shows possible flags of ListIcon in action...
     If Open(0, 0, 300, 800, 300, "ListIcons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;\\ left column
-      ListIcon(10,  25, 380, 70, "Column 1", 100)
-      ListIcon(10, 120, 380, 70, "Column 1", 100, #PB_ListIcon_CheckBoxes)  ; ListIcon with checkbox
-      ListIcon(10, 215, 380, 70, "Column 1", 100, #PB_ListIcon_MultiSelect) ; ListIcon with multi-selection
+      ListIconWidget(10,  25, 380, 70, "Column 1", 100)
+      ListIconWidget(10, 120, 380, 70, "Column 1", 100, #PB_ListIcon_CheckBoxes)  ; ListIcon with checkbox
+      ListIconWidget(10, 215, 380, 70, "Column 1", 100, #PB_ListIcon_MultiSelect) ; ListIcon with multi-selection
                                                                             ;\\ right column                                                                                ; right column
-      ListIcon(410,  25, 380, 70, "Column 1", 100, #PB_ListIcon_GridLines)
-      ListIcon(410, 120, 380, 70, "Column 1", 100, #PB_ListIcon_FullRowSelect | #PB_ListIcon_AlwaysShowSelection)
-      ListIcon(410, 220, 380, 65, "", 200,#PB_ListIcon_GridLines)
+      ListIconWidget(410,  25, 380, 70, "Column 1", 100, #PB_ListIcon_GridLines)
+      ListIconWidget(410, 120, 380, 70, "Column 1", 100, #PB_ListIcon_FullRowSelect | #PB_ListIcon_AlwaysShowSelection)
+      ListIconWidget(410, 220, 380, 65, "", 200,#PB_ListIcon_GridLines)
       
       ;\\
       Text    (10,  10, 380, 20, "ListIcon Standard", #PB_Text_Center)

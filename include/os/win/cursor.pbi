@@ -460,7 +460,7 @@ Module Cursor
 EndModule   
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 182
-; FirstLine = 157
+; FirstLine = 179
 ; Folding = -----------
 ; Optimizer
 ; EnableXP

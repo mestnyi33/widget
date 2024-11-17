@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent( )
       Case #PB_EventType_MouseEnter
         Debug "post enter - "+EventWidget( )\index
-        If EnteredButton( )
+        If EnteredButtonWidget( )
           EventWidget( )\color\back = $00FF00
         Else
           EventWidget( )\color\back = $0000FF
@@ -55,22 +55,22 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;   If Open(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_BorderLess)
-  ;     SetData(Container(20, 20, 180, 180), 1)
-  ;     SetData(Container(70, 10, 70, 180, #__flag_NoGadget), 9) 
-  ;     SetData(Container(20, 20, 180, 180), 2)
-  ;     SetData(Container(20, 20, 180, 180), 3)
+  ;     SetData(ContainerWidget(20, 20, 180, 180), 1)
+  ;     SetData(ContainerWidget(70, 10, 70, 180, #__flag_NoGadget), 9) 
+  ;     SetData(ContainerWidget(20, 20, 180, 180), 2)
+  ;     SetData(ContainerWidget(20, 20, 180, 180), 3)
   ;     
-  ;     SetData(Container(0, 20, 180, 30, #__flag_NoGadget), 4) 
-  ;     SetData(Container(0, 35, 180, 30, #__flag_NoGadget), 5) 
-  ;     SetData(Container(0, 50, 180, 30, #__flag_NoGadget), 6) 
-  ;     SetData(Splitter(20, 70, 180, 50, Container(0,0,0,0, #__flag_NoGadget), Container(0,0,0,0, #__flag_NoGadget), #PB_Splitter_Vertical), 7) 
+  ;     SetData(ContainerWidget(0, 20, 180, 30, #__flag_NoGadget), 4) 
+  ;     SetData(ContainerWidget(0, 35, 180, 30, #__flag_NoGadget), 5) 
+  ;     SetData(ContainerWidget(0, 50, 180, 30, #__flag_NoGadget), 6) 
+  ;     SetData(Splitter(20, 70, 180, 50, ContainerWidget(0,0,0,0, #__flag_NoGadget), ContainerWidget(0,0,0,0, #__flag_NoGadget), #PB_Splitter_Vertical), 7) 
   ;     
   ;     CloseList()
   ;     CloseList()
-  ;     SetData(Container(10, 70, 70, 180), 8) 
-  ;     SetData(Container(10, 10, 70, 30, #__flag_NoGadget), 10) 
-  ;     SetData(Container(10, 20, 70, 30, #__flag_NoGadget), 11) 
-  ;     SetData(Container(10, 30, 70, 30, #__flag_NoGadget), 12) 
+  ;     SetData(ContainerWidget(10, 70, 70, 180), 8) 
+  ;     SetData(ContainerWidget(10, 10, 70, 30, #__flag_NoGadget), 10) 
+  ;     SetData(ContainerWidget(10, 20, 70, 30, #__flag_NoGadget), 11) 
+  ;     SetData(ContainerWidget(10, 30, 70, 30, #__flag_NoGadget), 12) 
   ;     CloseList()
   ;     
   ;     Bind(@Events(), root())
@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ImageWidget(5, 5, 150, 100, 0, #__flag_Checkboxes)
     
-;     ListIcon(5, 110, 150, 100, "column_0", 80, #__flag_Checkboxes)
+;     ListIconWidget(5, 110, 150, 100, "column_0", 80, #__flag_Checkboxes)
 ;     AddColumn(widget(), -1, "column_1", 100)
 ;     For i=0 To 10;20
 ;       If i=3 Or i=8 Or i=14
@@ -96,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       EndIf
 ;     Next
     
-    Tree(5, 215, 150, 150, #__flag_Checkboxes)
+    TreeWidget(5, 215, 150, 150, #__flag_Checkboxes)
     For i=0 To 10;20
       If i=3 Or i=8 Or i=14
         AddItem(widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
@@ -113,8 +113,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(widget(), 5)
     
     ; demo editor
-    Editor(320, 5, 150, 100)
-    SetText(widget(), Text.s) 
+    EditorWidget(320, 5, 150, 100)
+    SetTextWidget(widget(), Text.s) 
     Define a
     For a = 0 To 2
       AddItem(widget(), a, "Line "+Str(a))
@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     ;SetFont(*g, FontID(0))
     
-    Tree(160, 110, 150, 100, #__flag_Checkboxes)
+    TreeWidget(160, 110, 150, 100, #__flag_Checkboxes)
     For i=0 To 20
       If i=3
         AddItem(widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
@@ -134,42 +134,42 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     
-    ScrollArea(320,110,150,100, 200,200)
-    Button(10, 15, 80, 24,"Кнопка 1")
-    ;     Combobox(10, 15, 80, 24)
+    ScrollAreaWidget(320,110,150,100, 200,200)
+    ButtonWidget(10, 15, 80, 24,"Кнопка 1")
+    ;     ComboBoxWidget(10, 15, 80, 24)
     ;     AddItem(Widget(), -1, "Combobox")
     ;     SetState(Widget(), 0)
     
-    Button(95, 15, 80, 24,"Кнопка 2")
+    ButtonWidget(95, 15, 80, 24,"Кнопка 2")
     CloseList()
     
-    Container(160,215,150,150, #PB_Container_Flat) 
-    Container(10,5,150,55, #PB_Container_Flat) 
-    Container(10,5,150,55, #PB_Container_Flat) 
-    Container(10,5,150,55, #PB_Container_Flat) 
-    Button(10,5,50,35, "butt") 
+    ContainerWidget(160,215,150,150, #PB_Container_Flat) 
+    ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+    ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+    ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+    ButtonWidget(10,5,50,35, "butt") 
     CloseList()
     CloseList()
     CloseList()
     
-    Container(10,75,150,55, #PB_Container_Flat) 
-    Container(10,5,150,55, #PB_Container_Flat) 
-    Container(10,5,150,55, #PB_Container_Flat) 
-    Button(10,5,50,35, "butt1") 
+    ContainerWidget(10,75,150,55, #PB_Container_Flat) 
+    ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+    ContainerWidget(10,5,150,55, #PB_Container_Flat) 
+    ButtonWidget(10,5,50,35, "butt1") 
     CloseList()
     CloseList()
     CloseList()
     CloseList()
     
     ; demo bar type
-    Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1")), Button(0, 0, 0, 0,"кнопка 2", #__bar_Vertical), #PB_Splitter_Vertical) 
-    ;Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3 "+#CRLF$+"кнопка 33", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1 "+#CRLF$+"кнопка 11")), Button(0, 0, 0, 0,"кнопка 2 "+#CRLF$+"кнопка 22", #__bar_Vertical), #PB_Splitter_Vertical) 
+    SplitterWidget(320, 215, 150, 150, SplitterWidget(0, 0, 0, 0, HyperLinkWidget(0, 0, 0, 0,"кнопка 3", $FF00FF00), ButtonWidget(0, 0, 0, 0,"кнопка 1")), ButtonWidget(0, 0, 0, 0,"кнопка 2", #__bar_Vertical), #PB_Splitter_Vertical) 
+    ;Splitter(320, 215, 150, 150, SplitterWidget(0, 0, 0, 0, HyperLinkWidget(0, 0, 0, 0,"кнопка 3 "+#CRLF$+"кнопка 33", $FF00FF00), ButtonWidget(0, 0, 0, 0,"кнопка 1 "+#CRLF$+"кнопка 11")), ButtonWidget(0, 0, 0, 0,"кнопка 2 "+#CRLF$+"кнопка 22", #__bar_Vertical), #PB_Splitter_Vertical) 
     
-    Spin(5, 365+5, 150, 30, 0, 20)
+    SpinWidget(5, 365+5, 150, 30, 0, 20)
     SetState(widget(), 5)
-    Spin(5, 365+40, 150, 30, 0, 20, #__bar_Vertical)
+    SpinWidget(5, 365+40, 150, 30, 0, 20, #__bar_Vertical)
     SetState(widget(), 5)
-    Spin(5, 365+75, 150, 30, 0, 21);, #__bar_Reverse)
+    SpinWidget(5, 365+75, 150, 30, 0, 21);, #__bar_Reverse)
     SetState(widget(), 5)
     
     ScrollBarWidget(160, 370, 150, 20, 0, 50, 30)

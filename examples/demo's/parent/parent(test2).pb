@@ -167,13 +167,13 @@ CompilerIf #PB_Compiler_IsMainFile
               
               Select PackEntryType( ZipFile )
                 Case #PB_Packer_File
-                  If FindString( Left( PackEntryName.S, 3 ), "vd_" )
+                  If FindStringWidget( Left( PackEntryName.S, 3 ), "vd_" )
                     PackEntryName.S = ReplaceString( PackEntryName.S,"vd_","" )
                     PackEntryName.S = ReplaceString( PackEntryName.S,"gadget","" )
                     PackEntryName.S = ReplaceString( PackEntryName.S,"bar","" )
                     PackEntryName = LCase( PackEntryName.S )
                     
-                    If FindString( PackEntryName, "cursor" )
+                    If FindStringWidget( PackEntryName, "cursor" )
                       PackEntryName.S = UCase( Left( PackEntryName.S, 1 ) ) + 
                                         Right( PackEntryName.S, Len( PackEntryName.S )-1 )
                       
@@ -182,25 +182,25 @@ CompilerIf #PB_Compiler_IsMainFile
                       SetItemData( *id, 0, Image )
                       Image = #Null
                       
-                    ElseIf FindString( PackEntryName, "window" )
+                    ElseIf FindStringWidget( PackEntryName, "window" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "image" )
+                    ElseIf FindStringWidget( PackEntryName, "image" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "button" )
+                    ElseIf FindStringWidget( PackEntryName, "button" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "string" )
+                    ElseIf FindStringWidget( PackEntryName, "string" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "text" )
+                    ElseIf FindStringWidget( PackEntryName, "text" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "progress" )
+                    ElseIf FindStringWidget( PackEntryName, "progress" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "container" )
+                    ElseIf FindStringWidget( PackEntryName, "container" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "scrollarea" )
+                    ElseIf FindStringWidget( PackEntryName, "scrollarea" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "splitter" )
+                    ElseIf FindStringWidget( PackEntryName, "splitter" )
                       Image = #PB_Any
-                    ElseIf FindString( PackEntryName, "panel" )
+                    ElseIf FindStringWidget( PackEntryName, "panel" )
                       Image = #PB_Any
                     Else
                       ; Image = #PB_Any
@@ -272,7 +272,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Case "window"    
           If Type( *parent ) = #PB_GadgetType_MDI
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
-            Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
+            ResizeWidget( *new, #PB_Ignore, #PB_Ignore, width,height )
           Else
             flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
             a_init(*parent)
@@ -280,28 +280,28 @@ CompilerIf #PB_Compiler_IsMainFile
             *new = Window( x,y,width,height, "", flag, *parent )
           EndIf
           
-          SetColor( *new, #__color_back, $FFECECEC )
+          SetWidgetColor( *new, #__color_back, $FFECECEC )
           Bind( *new, @widget_events( ) )
           
-        Case "container"   : *new = Container( x,y,width,height, flag )                             : CloseList( )
-          SetColor( *new, #__color_back, $FFF1F1F1 )
+        Case "container"   : *new = ContainerWidget( x,y,width,height, flag )                             : CloseList( )
+          SetWidgetColor( *new, #__color_back, $FFF1F1F1 )
           
-        Case "button"      : *new = Button( x,y,width,height, "", flag ) 
+        Case "button"      : *new = ButtonWidget( x,y,width,height, "", flag ) 
           
       EndSelect
       
       If *new
         If *new\container ;> 0
-          If *new\container = #__type_window
-            SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
+          If *new\container = #PB_WidgetType_window
+            SetWidgetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
           EndIf
           
           ;  SetBackgroundImage( *new, Points( mouse( )\steps-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
         EndIf
         
-        Class.s = "Form_"+GetClass( *new )+"_"+GetTypeCount( *new )
-        SetText( *new, class )
+        Class.s = "Form_"+GetWidgetClass( *new )+"_"+GetTypeCount( *new )
+        SetTextWidget( *new, class )
         
         
         ; get new add position & sublevel
@@ -335,7 +335,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Protected img =- 1
         countitems = CountItems( id_elements_tree )
         For i = 0 To countitems - 1
-          If LCase(StringField( Class, 2, "_" )) = LCase(GetItemText( id_elements_tree, i ))
+          If LCase(StringField( Class, 2, "_" )) = LCase(GetItemTextWidget( id_elements_tree, i ))
             img = GetItemData( id_elements_tree, i )
             Break
           EndIf
@@ -384,13 +384,13 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;           
                                                                                                              ;           If *currentRow\count\childrens
                                                                                                              ;             While PreviousElement(  *this\__items( )) 
-                                                                                                             ;               If IsChild(  *this\__items( ), *currentRow )
+                                                                                                             ;               If IsWidgetChild(  *this\__items( ), *currentRow )
                                                                                                              ;                 MoveElement(  *this\__items( ), #PB_List_After, *rowMoved\address )
                                                                                                              ;               EndIf
                                                                                                              ;             Wend
                                                                                                              ;             
                                                                                                              ;             While NextElement(  *this\__items( )) 
-                                                                                                             ;               If IsChild(  *this\__items( ), *currentRow )
+                                                                                                             ;               If IsWidgetChild(  *this\__items( ), *currentRow )
                                                                                                              ;                 MoveElement(  *this\__items( ), #PB_List_Before, *rowMoved\address )
                                                                                                              ;               EndIf
                                                                                                              ;             Wend
@@ -407,13 +407,13 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;           
                                                                                                              ;           If *currentRow\count\childrens
                                                                                                              ;             While NextElement(  *this\__items( )) 
-                                                                                                             ;               If IsChild(  *this\__items( ), *currentRow )
+                                                                                                             ;               If IsWidgetChild(  *this\__items( ), *currentRow )
                                                                                                              ;                 MoveElement(  *this\__items( ), #PB_List_Before, *last\currentRow\address )
                                                                                                              ;               EndIf
                                                                                                              ;             Wend
                                                                                                              ;             
                                                                                                              ;             While PreviousElement(  *this\__items( )) 
-                                                                                                             ;               If IsChild(  *this\__items( ), *currentRow )
+                                                                                                             ;               If IsWidgetChild(  *this\__items( ), *currentRow )
                                                                                                              ;                 MoveElement(  *this\__items( ), #PB_List_After, *currentRow\address )
                                                                                                              ;               EndIf
                                                                                                              ;             Wend
@@ -482,7 +482,7 @@ CompilerIf #PB_Compiler_IsMainFile
         *rows = SelectElement( *this\__items( ), position )
        ;sublevel = *this\__items( )\sublevel
      
-;         ; for the tree( )
+;         ; for the TreeWidget( )
 ;         If sublevel > *this\__items( )\sublevel
 ;           PushListPosition( *this\__items( ))
 ;           If PreviousElement( *this\__items( ))
@@ -535,13 +535,13 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                 Wend
 ;               EndIf
 ;               
-;               ; for the editor( )
+;               ; for the EditorWidget( )
 ;               If *this\row\added\RowParent( ) 
 ;                 If *this\row\added\RowParent( )\sublevel = sublevel 
 ;                   ;                     *rows\before = *this\row\added\RowParent( )
 ;                   ;                     *this\row\added\RowParent( )\after = *rows
 ;                   
-;                   If *this\type = #__type_Editor
+;                   If *this\type = #PB_WidgetType_Editor
 ;                     *parent_row = *this\row\added\RowParent( )
 ;                     *parent_row\_last = *rows
 ;                     *this\row\added = *parent_row
@@ -569,7 +569,7 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\row\added = *rows
         EndIf
         
-        ; for the tree( )
+        ; for the TreeWidget( )
         If *this\row\added\RowParent( ) And
            *this\row\added\RowParent( )\sublevel < sublevel
           *this\row\added\RowParent( )\_last = *this\row\added
@@ -649,19 +649,19 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventWidget = EventWidget( )
     Select WidgetEvent( ) 
         ; ;       Case #__event_DragStart
-        ; ;         If IsContainer( EventWidget )
+        ; ;         If IsWidgetContainer( EventWidget )
         ; ;           DragPrivate( #_drag_private_type )
         ; ;           SetCursor( EventWidget, #PB_Cursor_Cross )
         ; ;           ClearDebugOutput()
         ; ;         EndIf
         ; ;         
         ; ;       Case #__event_Drop
-        ; ;         If IsContainer( EventWidget )
+        ; ;         If IsWidgetContainer( EventWidget )
         ; ;            ;Debug "DROP "+EventWidget( )\class  +" "+ WidgetEvent( ) 
         ; ;           If GetState( id_elements_tree) <> 0 
         ; ;             Debug "create - drop"
-        ; ;             widget_add( EventWidget, GetText( id_elements_tree ), 
-        ; ;                         EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
+        ; ;             widget_add( EventWidget, GetTextWidget( id_elements_tree ), 
+        ; ;                         EventDropX( ), EventDropY( ), EventDropWidgetWidth( ), EventDropWidgetHeight( ) )
         ; ;             
         ; ;             ; end new create 
         ; ;             SetState( id_elements_tree, 0 )
@@ -670,7 +670,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #__event_DragStart
         If GetState( id_elements_tree) > 0 
-          If IsContainer( EventWidget )
+          If IsWidgetContainer( EventWidget )
             DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy )
           EndIf
         Else
@@ -679,10 +679,10 @@ CompilerIf #PB_Compiler_IsMainFile
         SetCursor(EventWidget, #PB_Cursor_Default)
         
       Case #__event_Drop
-        If IsContainer( EventWidget )
+        If IsWidgetContainer( EventWidget )
           If GetState( id_elements_tree) > 0 
-            widget_add( EventWidget, GetText( id_elements_tree ), 
-                        DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+            widget_add( EventWidget, GetTextWidget( id_elements_tree ), 
+                        DropX( ), DropY( ), DropWidgetWidth( ), DropWidgetHeight( ) )
             
             ; end new create
             SetState( id_elements_tree, 0 )
@@ -760,7 +760,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ;       Case #__event_LeftUp
         ;         If GetState( id_elements_tree) <> 0 
         ;           Debug ""+mouse( )\x+" "+mouse( )\delta\x
-        ;           widget_add( EventWidget( ), GetText( id_elements_tree ), mouse( )\delta\x-X(EventWidget( ), #PB_Gadget_ContainerCoordinate), mouse( )\delta\y-Y(EventWidget( ), #PB_Gadget_ContainerCoordinate) )
+        ;           widget_add( EventWidget( ), GetTextWidget( id_elements_tree ), mouse( )\delta\x-X(EventWidget( ), #PB_Gadget_ContainerCoordinate), mouse( )\delta\y-Y(EventWidget( ), #PB_Gadget_ContainerCoordinate) )
         ;            SetState( id_elements_tree, 0 )
         ;         EndIf
         
@@ -783,8 +783,8 @@ CompilerIf #PB_Compiler_IsMainFile
           ClearDebugOutput()
           
           Debug "drag - "
-          ;         DD_EventDragWidth( ) 
-          ;         DD_EventDragHeight( )
+          ;         DD_EventDragWidgetWidth( ) 
+          ;         DD_EventDragWidgetHeight( )
           
          ; a_transform( )\type = 0
          ; DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
@@ -814,31 +814,31 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
     Define root = widget::Open( 0, x,y,width,height, "ide", flag ) 
-    window_ide = widget::GetWindow( root )
-    canvas_ide = widget::GetGadget( root )
+    window_ide = widget::GetCanvasWindow( root )
+    canvas_ide = widget::GetCanvasGadget( root )
     
-    id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
+    id_inspector_tree = TreeWidget( 590,10,200,250, #__flag_gridlines )
     id_design_code = TreeGadget(-1, 590,270,200,250 )
-    id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
-    id_design_form = MDI( 10,10,410,510 ) 
+    id_elements_tree = TreeWidget( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
+    id_design_form = MDIWidget( 10,10,410,510 ) 
     a_init( id_design_form )
     
     ; ;     ; gadgets
-    ; ;     id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
+    ; ;     id_inspector_tree = TreeWidget( 0,0,0,0, #__flag_gridlines )
     ; ;     ;EnableDDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
     ; ;     
     ; ;     
-    ; ;     ;id_design_form = Container( 0,0,0,0 ) : a_init( id_design_form ) : CloseList( )
-    ; ;     id_design_form = MDI( 0,0,0,0 ) : a_init( id_design_form )
-    ; ;     ;id_design_form = MDI(10,10, Width( widget( ), #__c_inner )-20, Height( widget( ), #__c_inner )-20);, #__flag_autosize)
+    ; ;     ;id_design_form = ContainerWidget( 0,0,0,0 ) : a_init( id_design_form ) : CloseList( )
+    ; ;     id_design_form = MDIWidget( 0,0,0,0 ) : a_init( id_design_form )
+    ; ;     ;id_design_form = MDIWidget(10,10, WidgetWidth( widget( ), #__c_inner )-20, WidgetHeight( widget( ), #__c_inner )-20);, #__flag_autosize)
     ; ;     id_design_panel = id_design_form
     ; ;     ;id_design_code = listview_debug
     ; ;     
-    ; ; ;     id_inspector_panel = Panel( 0,0,0,0 )
+    ; ; ;     id_inspector_panel = PanelWidget( 0,0,0,0 )
     ; ; ;     
     ; ; ;     ; id_inspector_panel 1 item
     ; ; ;     AddItem( id_inspector_panel, -1, "elements", 0, 0 ) 
-    ; ;     id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
+    ; ;     id_elements_tree = TreeWidget( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
     ; ;     id_inspector_panel = id_elements_tree
     ; ; ;     ; id_inspector_panel 2 item
     ; ; ;     AddItem( id_inspector_panel, -1, "properties", 0, 0 )  
@@ -850,10 +850,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ; ;     CloseList( )
     ; ;     
     ; ;     
-    ; ;     Splitter_inspector = widget::Splitter( 0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed )
-    ; ;     ;splitter_debug = widget::Splitter( 0,0,0,0, id_design_panel,listview_debug, #PB_Splitter_SecondFixed )
+    ; ;     Splitter_inspector = widget::SplitterWidget( 0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed )
+    ; ;     ;splitter_debug = widget::SplitterWidget( 0,0,0,0, id_design_panel,listview_debug, #PB_Splitter_SecondFixed )
     ; ;     splitter_debug = id_design_panel
-    ; ;     Splitter_ide = widget::Splitter( 0,0,0,0, splitter_debug,Splitter_inspector, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
+    ; ;     Splitter_ide = widget::SplitterWidget( 0,0,0,0, splitter_debug,Splitter_inspector, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
     
     Bind( id_inspector_tree, @ide_events( ) )
     Bind( id_elements_tree, @ide_events( ), #__event_DragStart )

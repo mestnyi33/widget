@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Images()\img    = img
          Images()\x          = x
          Images()\y          = y
-         Images()\width  = ImageWidth(img)
+         Images()\width  = ImageWidget(img)
          Images()\height = ImageHeight(img)
          Images()\alphatest = alphatest
       EndIf
@@ -207,10 +207,10 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          
          If v1
-            Resize( \v, x1 , y, #PB_Ignore, height1 )
+            ResizeWidget( \v, x1 , y, #PB_Ignore, height1 )
          EndIf
          If h1
-            Resize( \h, x, y1, width1, #PB_Ignore )
+            ResizeWidget( \h, x, y1, width1, #PB_Ignore )
          EndIf
          
          
@@ -292,7 +292,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #PB_EventType_LeftButtonUp : Drag = #False
             
          Case #PB_EventType_LeftButtonDown
-            If Not EnteredButton( ) ; (EventWidget( ) And EventWidget( )\bar\index > 0)
+            If Not EnteredButtonWidget( ) ; (EventWidget( ) And EventWidget( )\bar\index > 0)
                Drag = Bool(HitTest(Images(), Mousex, Mousey))
                If Drag 
                   Repaint = #True 
@@ -314,7 +314,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   If Repaint
                      area_update( )
-                     bar_mdi_resize( *this, x, y, width, height)
+                     bar_mdi_ResizeWidget( *this, x, y, width, height)
                   EndIf
                EndIf
             EndIf
@@ -323,7 +323,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
             area_update( )
             bar_area_resize_( *this, x, y, width, height )
-            ;bar_mdi_resize( *this, x, y, width, height)
+            ;bar_mdi_ResizeWidget( *this, x, y, width, height)
             
             Repaint = #True
             
@@ -369,14 +369,14 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   MyCanvas = GetGadget(Open(0, 10, 10)) 
+   MyCanvas = GetCanvasGadget(Open(0, 10, 10)) 
    BindGadgetEvent(MyCanvas, @Canvas_CallBack())
    Bind(root( ), @events_draw(), #__event_ReDraw)
    
    *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_invert, 11)
    *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, #__bar_invert, 11)
    
-   bar_mdi_resize( *this, x, y, width, height)
+   bar_mdi_ResizeWidget( *this, x, y, width, height)
             
    Bind(*this\scroll\v, @events_scrolls())
    Bind(*this\scroll\h, @events_scrolls())

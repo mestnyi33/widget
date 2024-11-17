@@ -187,7 +187,7 @@ End
     EndIf
     For f=beginloop To endloop     
       AddGadgetItem(#PANEL_BOX_DICTIONARY,-1,Str(f+1)+Chr(10)+words$(f))     
-      SetGadgetItemColor(#PANEL_BOX_DICTIONARY,#PB_All,#PB_Gadget_FrontColor,$999999,0)
+      SetGadGetWidgetItemColor(#PANEL_BOX_DICTIONARY,#PB_All,#PB_Gadget_FrontColor,$999999,0)
 ;       If words_selected(f)=#True : SetGadgetItemState(#PANEL_BOX_DICTIONARY,f-beginloop,#PB_ListIcon_Checked) : EndIf
     Next f
    

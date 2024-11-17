@@ -3,19 +3,19 @@
 ;                                                         ToolBarID( #ToolBar )
 ;                                                         IsToolBar( #ToolBar )
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
-;                  DisableItem( *address, item, state ) - DisableBarButton( #ToolBar, Button, State )
+;                  DisableItem( *address, item, state ) - DisableBarButtonWidget( #ToolBar, Button, State )
 ;                                      Free( *address ) - FreeToolBar( #ToolBar )
 ;                        GetItemState( *address, item ) - GetBarButtonState( #ToolBar, Button )
 ;                 SetItemState( *address, item, state ) - SetBarButtonState( #ToolBar, Button, State )
-;                 SetItemText( *address, item, text.s ) - BarButtonText( #ToolBar, Button, Text$ )
-;                                    Height( *address ) - ToolBarHeight( #ToolBar )
-;      AddItem( *address, button, text.s, image, mode ) - ToolBarImageButton( #Button, ImageID [, Mode [, Text$]] )
-;       AddItem( *address, button, text.s, icon, mode ) - ToolBarStandardButton( #Button, #ButtonIcon [, Mode [, Text$]] )
-;                 ToolTipItem( *address, item, text.s ) - ToolBarToolTip( #ToolBar, Button, Text$ )
+;                 SetItemTextWidget( *address, item, text.s ) - BarButtonTextWidget( #ToolBar, Button, Text$ )
+;                                    WidgetHeight( *address ) - ToolBarWidgetHeight( #ToolBar )
+;      AddItem( *address, button, text.s, image, mode ) - ToolBarImageButtonWidget( #Button, ImageID [, Mode [, Text$]] )
+;       AddItem( *address, button, text.s, icon, mode ) - ToolBarStandardButtonWidget( #Button, #ButtonIcon [, Mode [, Text$]] )
+;                 ToolTipItem( *address, item, text.s ) - ToolBarWidgetToolTip( #ToolBar, Button, Text$ )
 ;
-;                         GetItemText( *address, item ) - 
-;                        GetItemImage( *address, item ) - 
-;                 SetItemImage( *address, item, image ) - 
+;                         GetItemTextWidget( *address, item ) - 
+;                        GetWidgetItemImage( *address, item ) - 
+;                 SetWidgetItemImage( *address, item, image ) - 
 
 #IDE_path = "../../../"
 XIncludeFile #IDE_path + "widgets.pbi"
@@ -65,37 +65,37 @@ CompilerIf #PB_Compiler_IsMainFile
    If OpenWindow(0, 100, 200, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
       
       If CreateToolBar(0, WindowID(0), #PB_ToolBar_Small)
-         ToolBarImageButton( #_tb_file_open, 0, #PB_ToolBar_Normal, "Open" )
-      ToolBarImageButton( #_tb_file_save, 0, #PB_ToolBar_Normal, "Save" )
+         ToolBarImageButtonWidget( #_tb_file_open, 0, #PB_ToolBar_Normal, "Open" )
+      ToolBarImageButtonWidget( #_tb_file_save, 0, #PB_ToolBar_Normal, "Save" )
       ToolBarSeparator( )
-      ToolBarImageButton( #_tb_group_select, ImageID( CatchImage( #PB_Any,?group )), #PB_ToolBar_Toggle ) ;: group_select = widget( )
+      ToolBarImageButtonWidget( #_tb_group_select, ImageID( CatchImage( #PB_Any,?group )), #PB_ToolBar_Toggle ) ;: group_select = widget( )
 ;       SetAttribute( widget( ), #PB_Button_Image, ImageID( CatchImage( #PB_Any,?group_un )))
 ;       SetAttribute( widget( ), #PB_Button_PressedImage, ImageID( CatchImage( #PB_Any,?group )))
       ToolBarSeparator( )
-      ToolBarImageButton( #_tb_group_left, ImageID( CatchImage( #PB_Any,?group_left )))
-      ToolBarImageButton( #_tb_group_right, ImageID( CatchImage( #PB_Any,?group_right )))
+      ToolBarImageButtonWidget( #_tb_group_left, ImageID( CatchImage( #PB_Any,?group_left )))
+      ToolBarImageButtonWidget( #_tb_group_right, ImageID( CatchImage( #PB_Any,?group_right )))
       ToolBarSeparator( )
-      ToolBarImageButton( #_tb_group_top, ImageID( CatchImage( #PB_Any,?group_top )))
-      ToolBarImageButton( #_tb_group_bottom, ImageID( CatchImage( #PB_Any,?group_bottom )))
+      ToolBarImageButtonWidget( #_tb_group_top, ImageID( CatchImage( #PB_Any,?group_top )))
+      ToolBarImageButtonWidget( #_tb_group_bottom, ImageID( CatchImage( #PB_Any,?group_bottom )))
       ToolBarSeparator( )
-      ToolBarImageButton( #_tb_group_width, ImageID( CatchImage( #PB_Any,?group_width )))
-      ToolBarImageButton( #_tb_group_height, ImageID( CatchImage( #PB_Any,?group_height )))
+      ToolBarImageButtonWidget( #_tb_group_width, ImageID( CatchImage( #PB_Any,?group_width )))
+      ToolBarImageButtonWidget( #_tb_group_height, ImageID( CatchImage( #PB_Any,?group_height )))
       
       ToolBarSeparator( )
-      ToolBarImageButton( #_tb_widget_copy, ImageID( CatchImage( #PB_Any,?widget_copy )))
-      ToolBarImageButton( #_tb_widget_paste, ImageID( CatchImage( #PB_Any,?widget_paste )))
-      ToolBarImageButton( #_tb_widget_cut, ImageID( CatchImage( #PB_Any,?widget_cut )))
-      ToolBarImageButton( #_tb_widget_delete, ImageID( CatchImage( #PB_Any,?widget_delete )))
+      ToolBarImageButtonWidget( #_tb_widget_copy, ImageID( CatchImage( #PB_Any,?widget_copy )))
+      ToolBarImageButtonWidget( #_tb_widget_paste, ImageID( CatchImage( #PB_Any,?widget_paste )))
+      ToolBarImageButtonWidget( #_tb_widget_cut, ImageID( CatchImage( #PB_Any,?widget_cut )))
+      ToolBarImageButtonWidget( #_tb_widget_delete, ImageID( CatchImage( #PB_Any,?widget_delete )))
       ToolBarSeparator( )
-      ToolBarImageButton( #_tb_align_left, ImageID( CatchImage( #PB_Any,?group_left )))
-      ToolBarImageButton( #_tb_align_top, ImageID( CatchImage( #PB_Any,?group_top )))
-      ToolBarImageButton( #_tb_align_center, ImageID( CatchImage( #PB_Any,?group_width )))
-      ToolBarImageButton( #_tb_align_bottom, ImageID( CatchImage( #PB_Any,?group_bottom )))
-      ToolBarImageButton( #_tb_align_right, ImageID( CatchImage( #PB_Any,?group_right )))
+      ToolBarImageButtonWidget( #_tb_align_left, ImageID( CatchImage( #PB_Any,?group_left )))
+      ToolBarImageButtonWidget( #_tb_align_top, ImageID( CatchImage( #PB_Any,?group_top )))
+      ToolBarImageButtonWidget( #_tb_align_center, ImageID( CatchImage( #PB_Any,?group_width )))
+      ToolBarImageButtonWidget( #_tb_align_bottom, ImageID( CatchImage( #PB_Any,?group_bottom )))
+      ToolBarImageButtonWidget( #_tb_align_right, ImageID( CatchImage( #PB_Any,?group_right )))
       
       EndIf
       
-      DisableBarButton(0, 2, 1) ; Disable the button '2'
+      DisableBarButtonWidget(0, 2, 1) ; Disable the button '2'
    EndIf
    
    
@@ -104,35 +104,35 @@ CompilerIf #PB_Compiler_IsMainFile
       Define w_ide_toolbar = Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
       w_ide_toolbar = ToolBar( w_ide_toolbar, #PB_ToolBar_Small )
-      BarButton( #_tb_file_open, -1, 0, "Open" )
-      BarButton( #_tb_file_save, -1, 0, "Save" )
+      BarButtonWidget( #_tb_file_open, -1, 0, "Open" )
+      BarButtonWidget( #_tb_file_save, -1, 0, "Save" )
       BarSeparator( )
-      BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) ;: group_select = widget( )
+      BarButtonWidget( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) ;: group_select = widget( )
 ;       SetAttribute( widget( ), #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
 ;       SetAttribute( widget( ), #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
       BarSeparator( )
-      BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
-      BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
+      BarButtonWidget( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
+      BarButtonWidget( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
       BarSeparator( )
-      BarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
-      BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
+      BarButtonWidget( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
+      BarButtonWidget( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
       BarSeparator( )
-      BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
-      BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
+      BarButtonWidget( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
+      BarButtonWidget( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
       
       BarSeparator( )
-      BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
-      BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
-      BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
-      BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+      BarButtonWidget( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
+      BarButtonWidget( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
+      BarButtonWidget( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
+      BarButtonWidget( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
       BarSeparator( )
-      BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-      BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-      BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-      BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-      BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+      BarButtonWidget( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+      BarButtonWidget( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+      BarButtonWidget( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+      BarButtonWidget( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+      BarButtonWidget( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
       
-     ; Resize( w_ide_toolbar, 0, 60, 800,60)
+     ; ResizeWidget( w_ide_toolbar, 0, 60, 800,60)
    EndIf
    
    

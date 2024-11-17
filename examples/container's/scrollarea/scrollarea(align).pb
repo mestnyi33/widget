@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
-    SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
+    SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
     ButtonGadget  (1,  10,  10, 230, 30,"Button 1")
     ButtonGadget  (2,  50,  50, 230, 30,"Button 2")
@@ -25,21 +25,21 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    ;*g = ScrollArea(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
-    *g = Container(0, 0, 0, 0)
-    SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
+    ;*g = ScrollAreaWidget(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    *g = ContainerWidget(0, 0, 0, 0)
+    SetWidgetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
-    Button(10,  10, 230, 30,"Button 1")
-    Define *b1=Button(50,  50, 230, 30,"align right") ;: SetAlign(widget(), #__align_right)
-    Button(90,  90, 230, 30,"Button 3")
-    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__flag_Textright)
-    ; SetColor(widget(), #PB_Gadget_BackColor, -1)
+    ButtonWidget(10,  10, 230, 30,"Button 1")
+    Define *b1=ButtonWidget(50,  50, 230, 30,"align right") ;: SetAlign(widget(), #__align_right)
+    ButtonWidget(90,  90, 230, 30,"Button 3")
+    TextWidget(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__flag_Textright)
+    ; SetWidgetColor(widget(), #PB_Gadget_BackColor, -1)
     
-    *b = Button(Sw-130, Sh-30, 130, 30,"Button")
+    *b = ButtonWidget(Sw-130, Sh-30, 130, 30,"Button")
     CloseList()
     
     ;
-    Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
+    SplitterWidget(10,10,590,480, SplitterWidget(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
     
     SetAlign(*b1, #__align_right)
     
@@ -60,9 +60,9 @@ CompilerIf #PB_Compiler_IsMainFile
       time = ElapsedMilliseconds()
       For i=0 To count
         If Bool(i>count-110)
-          Button((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
+          ButtonWidget((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
         Else
-          Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+          ButtonWidget(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
       
       ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
-      Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
+      ResizeWidget(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
       
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
       SetAttribute(*g, #PB_ScrollArea_Y, 0)

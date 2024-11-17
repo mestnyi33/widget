@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
     
     EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap) 
-    SetGadgetText(0, Text.s) 
+    SetGadgetTextWidget(0, Text.s) 
     For a = 0 To 2
       AddGadgetItem(0, a, "Line "+Str(a))
     Next
@@ -66,14 +66,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     Open(0, 270, 10, 250, 680)
-    ;Define *w = Editor(0, 0, 0, 0, #__flag_autosize) 
-    *g = Editor(0, 0, 250, 680, #__flag_autosize) 
-    g=getgadget(root())
+    ;Define *w = EditorWidget(0, 0, 0, 0, #__flag_autosize) 
+    *g = EditorWidget(0, 0, 250, 680, #__flag_autosize) 
+    g=GetCanvasGadget(root())
     
     ;     Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines|#PB_Flag_Numeric);#PB_Text_WordWrap|#PB_Flag_GridLines) 
     ;     *g._s_widget=GetGadgetData(g)
     
-    SetText(*g, Text.s) 
+    SetTextWidget(*g, Text.s) 
     For a = 0 To 2
       AddItem(*g, a, "Line "+Str(a))
     Next
@@ -104,9 +104,9 @@ CompilerIf #PB_Compiler_IsMainFile
                 
                 *E\Text\MultiLine !- 1
                 If  *E\Text\MultiLine = 1
-                  SetGadgetText(100,"~wrap")
+                  SetGadgetTextWidget(100,"~wrap")
                 Else
-                  SetGadgetText(100,"wrap")
+                  SetGadgetTextWidget(100,"wrap")
                 EndIf
                 
                 CompilerSelect #PB_Compiler_OS
@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
                       EditorGadget(0, 8, 8, 306, 133) 
                     EndIf
                     
-                    SetGadgetText(0, Text.s) 
+                    SetGadgetTextWidget(0, Text.s) 
                     For a = 0 To 5
                       AddGadgetItem(0, a, "Line "+Str(a))
                     Next

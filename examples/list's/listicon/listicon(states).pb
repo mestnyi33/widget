@@ -170,20 +170,20 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState_(*g7, countitems-1) 
     
     ;\\ demo widget
-    *w1 = widget::ListIcon(265, 10, 120, 180, "column", 100 )
-    *w2 = widget::ListIcon(265+125, 10, 120, 180, "column", 100 )
+    *w1 = widget::ListIconWidget(265, 10, 120, 180, "column", 100 )
+    *w2 = widget::ListIconWidget(265+125, 10, 120, 180, "column", 100 )
     
     ;\\
-    *w3 = widget::ListIcon(265, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
-    *w4 = widget::ListIcon(265+125, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
+    *w3 = widget::ListIconWidget(265, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
+    *w4 = widget::ListIconWidget(265+125, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
     
     ;\\
-    *w5 = widget::ListIcon(265, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
-    *w6 = widget::ListIcon(265+125, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
+    *w5 = widget::ListIconWidget(265, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
+    *w6 = widget::ListIconWidget(265+125, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
     
     ;\\
-    *w7 = widget::ListIcon(265, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
-    *w8 = widget::ListIcon(265+125, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
+    *w7 = widget::ListIconWidget(265, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
+    *w8 = widget::ListIconWidget(265+125, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
     
     ;\\
     For a = 0 To countitems

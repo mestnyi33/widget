@@ -7,10 +7,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure ResizeCallBack()
     Protected w = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65
     
-    Resize(*B_0, #PB_Ignore, #PB_Ignore, w, #PB_Ignore )
-    Resize(*B_1, #PB_Ignore, #PB_Ignore, w, #PB_Ignore )
-    Resize(*B_2, #PB_Ignore, #PB_Ignore, w, #PB_Ignore )
-    Resize(*B_3, #PB_Ignore, #PB_Ignore, w, #PB_Ignore )
+    ResizeWidget(*B_0, #PB_Ignore, #PB_Ignore, w, #PB_Ignore )
+    ResizeWidget(*B_1, #PB_Ignore, #PB_Ignore, w, #PB_Ignore )
+    ResizeWidget(*B_2, #PB_Ignore, #PB_Ignore, w, #PB_Ignore )
+    ResizeWidget(*B_3, #PB_Ignore, #PB_Ignore, w, #PB_Ignore )
     
     ResizeGadget(0, #PB_Ignore, #PB_Ignore, w, #PB_Ignore)
  ;     ; ResizeGadget(canvas_gadget, #PB_Ignore, #PB_Ignore, w+10, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-160)
@@ -34,13 +34,13 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
    Define width = 200
   If Open(0, 0, 0, width+90, 760, "text multiline", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    canvas_gadget = GetGadget(Root())
-    canvas_window = GetWindow(Root())
+    canvas_gadget = GetCanvasGadget(Root())
+    canvas_window = GetCanvasWindow(Root())
     
-    *B_0 = Text(10,  10, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Texttop)
-    *B_1 = Text(10, 160, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Textleft)
-    *B_2 = Text(10, 310, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#PB_Text_Right)
-    *B_3 = Text(10, 460, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Textbottom)
+    *B_0 = TextWidget(10,  10, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Texttop)
+    *B_1 = TextWidget(10, 160, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Textleft)
+    *B_2 = TextWidget(10, 310, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#PB_Text_Right)
+    *B_3 = TextWidget(10, 460, width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_Textbottom)
     
 ;     SetAlign(*B_0, #__align_left|#__align_right)
 ;     SetAlign(*B_1, #__align_left|#__align_right)

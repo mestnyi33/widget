@@ -17,10 +17,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     ResizeGadget(6, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
     ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
     
-    ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
-;     Resize(*w_3, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
-;     Resize(*w_6, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
-    Resize(*w_7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+    ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
+;     ResizeWidget(*w_3, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
+;     ResizeWidget(*w_6, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
+    ResizeWidget(*w_7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
   EndProcedure
   
   widget::Open(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
@@ -40,15 +40,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ; first splitter
-  *w_1 = widget::Button(0,0,0,0, "BTN1")
-  *w_2 = widget::Button(0,0,0,0, "BTN2")
-  *w_3 = widget::Splitter(0,0,0,0, *w_1, *w_2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
+  *w_1 = widget::ButtonWidget(0,0,0,0, "BTN1")
+  *w_2 = widget::ButtonWidget(0,0,0,0, "BTN2")
+  *w_3 = widget::SplitterWidget(0,0,0,0, *w_1, *w_2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
 
-  *w_4 = widget::Button(0,0,0,0, "BTN4")
-  *w_5 = widget::Button(0,0,0,0, "BTN5")
-  *w_6 = widget::Splitter(0,0,0,0, *w_4, *w_5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+  *w_4 = widget::ButtonWidget(0,0,0,0, "BTN4")
+  *w_5 = widget::ButtonWidget(0,0,0,0, "BTN5")
+  *w_6 = widget::SplitterWidget(0,0,0,0, *w_4, *w_5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
   ;
-  *w_7 = widget::Splitter(125, 170, 250, 70, *w_3, *w_6, #PB_Splitter_Separator | #PB_Splitter_Vertical)
+  *w_7 = widget::SplitterWidget(125, 170, 250, 70, *w_3, *w_6, #PB_Splitter_Separator | #PB_Splitter_Vertical)
   
   
   WaitClose( )

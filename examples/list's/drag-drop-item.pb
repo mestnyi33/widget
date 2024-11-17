@@ -17,8 +17,8 @@ Procedure event_widget()
         Case *list1, *list2         
           source = EventWidget()
           selectedIndex = GetState(EventWidget())           
-          selectedText$ = GetItemText(EventWidget(), selectedIndex)
-          DragText(selectedText$)                                           
+          selectedText$ = GetItemTextWidget(EventWidget(), selectedIndex)
+          DragTextWidget(selectedText$)                                           
           
       EndSelect
       
@@ -27,10 +27,10 @@ Procedure event_widget()
       drop = EventWidget()
       
       If drop <> source
-        dropText$ = EventDropText()
+        dropText$ = EventDropTextWidget()
         
         For i = 0 To CountItems(drop)-1
-          If GetItemText(drop, i) = dropText$
+          If GetItemTextWidget(drop, i) = dropText$
             SetActive(drop)
             SetState(drop, i)           
             Break             
@@ -45,16 +45,16 @@ EndProcedure
 Define wFlags = #PB_Window_SystemMenu | #PB_Window_ScreenCentered
 Open( 0, #PB_Ignore, #PB_Ignore, 600, 400, "Drag & Drop Text Matching", wFlags )
 
-Text(20, 10, 200, 30, "Bank Statement")
-Text(320, 10, 200, 30, "Personal Records")
+TextWidget(20, 10, 200, 30, "Bank Statement")
+TextWidget(320, 10, 200, 30, "Personal Records")
 
-*list1 = ListView(10, 40, 280, 350)
+*list1 = ListViewWidget(10, 40, 280, 350)
 AddItem(*list1, -1, "31DEC20#789")
 AddItem(*list1, -1, "19JAN21#456")
 AddItem(*list1, -1, "28JAN21#123")
 ;AddItem(*list1, -1, "555")
 
-*list2 = ListView(310, 40, 280, 350)
+*list2 = ListViewWidget(310, 40, 280, 350)
 AddItem(*list2, -1, "31DEC20#789")
 AddItem(*list2, -1, "02JAN21#123")
 AddItem(*list2, -1, "15JAN21#666")

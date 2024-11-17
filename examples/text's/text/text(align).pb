@@ -18,20 +18,20 @@ CompilerIf #PB_Compiler_IsMainFile
   Define width = 200
   
   If Open(0, 0, 0, width+20, 760, "test alignment text", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    canvas_gadget = GetGadget(Root())
-    canvas_window = GetWindow(Root())
+    canvas_gadget = GetCanvasGadget(Root())
+    canvas_window = GetCanvasWindow(Root())
     
-    *B_1 = Text(10,  10, width, 65, Text);, #__flag_Textleft)
-    *B_2 = Text(10,  10+65+10, width, 65, Text, #__flag_Texttop)
-    *B_3 = Text(10, 160, width, 65, Text, #__flag_Textright)
-    *B_4 = Text(10, 160+65+10, width, 65, Text, #__flag_Textbottom)
+    *B_1 = TextWidget(10,  10, width, 65, Text);, #__flag_Textleft)
+    *B_2 = TextWidget(10,  10+65+10, width, 65, Text, #__flag_Texttop)
+    *B_3 = TextWidget(10, 160, width, 65, Text, #__flag_Textright)
+    *B_4 = TextWidget(10, 160+65+10, width, 65, Text, #__flag_Textbottom)
     
-    *B_5 = Text(10, 310, width, 65, Text, #__flag_Textcenter|#__flag_Textleft)
-    *B_6 = Text(10, 310+65+10, width, 65, Text, #__flag_Textcenter|#__flag_Texttop)
-    *B_7 = Text(10, 460, width, 65, Text, #__flag_Textcenter|#__flag_Textright)
-    *B_8 = Text(10, 460+65+10, width, 65, Text, #__flag_Textcenter|#__flag_Textbottom)
+    *B_5 = TextWidget(10, 310, width, 65, Text, #__flag_Textcenter|#__flag_Textleft)
+    *B_6 = TextWidget(10, 310+65+10, width, 65, Text, #__flag_Textcenter|#__flag_Texttop)
+    *B_7 = TextWidget(10, 460, width, 65, Text, #__flag_Textcenter|#__flag_Textright)
+    *B_8 = TextWidget(10, 460+65+10, width, 65, Text, #__flag_Textcenter|#__flag_Textbottom)
     
-    *B_9 = Text(10, 610, width, 140, Text, #__flag_Textcenter)
+    *B_9 = TextWidget(10, 610, width, 140, Text, #__flag_Textcenter)
      
   
     Repeat

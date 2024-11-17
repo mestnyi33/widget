@@ -19,44 +19,44 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(OpenWindow(#PB_Any, 0, 0, 240,205, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     
-    Button(5, 5, 200, 30,"btn0") : SetClass(widget(), GetText(widget()))  
+    ButtonWidget(5, 5, 200, 30,"btn0") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     If #demo = #before
-      *b1 = Button( 5, 5,80,30, "btn1") : SetClass(widget(), GetText(widget()))
-      *b2 = Button(25,25,80,30, "btn2") : SetClass(widget(), GetText(widget()))
+      *b1 = ButtonWidget( 5, 5,80,30, "btn1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+      *b2 = ButtonWidget(25,25,80,30, "btn2") : SetWidgetClass(widget(), GetTextWidget(widget()))
     EndIf
     
-    *c0 = Panel(5, 40, 200, 100) : SetClass(widget(), "con0") 
-    SetColor(widget(), #PB_Gadget_BackColor, $ffff00ff)
+    *c0 = PanelWidget(5, 40, 200, 100) : SetWidgetClass(widget(), "con0") 
+    SetWidgetColor(widget(), #PB_Gadget_BackColor, $ffff00ff)
     
     AddItem(*c0, -1, "1")
-    Button(105,  5, 50, 30,"101") : SetClass(widget(), GetText(widget()))  
-    Button(115, 25, 50, 30,"102") : SetClass(widget(), GetText(widget()))  
-    Button(125, 45, 50, 30,"103") : SetClass(widget(), GetText(widget()))  
+    ButtonWidget(105,  5, 50, 30,"101") : SetWidgetClass(widget(), GetTextWidget(widget()))  
+    ButtonWidget(115, 25, 50, 30,"102") : SetWidgetClass(widget(), GetTextWidget(widget()))  
+    ButtonWidget(125, 45, 50, 30,"103") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     AddItem(*c0, -1, "2")
-    ;Define *b201 = Button(105,  5, 50, 30,"201") : SetClass(*b201, GetText(*b201))  
-    Button(105,  5, 50, 30,"201") : SetClass(widget(), GetText(widget()))  
-    Button(115, 25, 50, 30,"202") : SetClass(widget(), GetText(widget()))  
-    Button(125, 45, 50, 30,"203") : SetClass(widget(), GetText(widget()))  
+    ;Define *b201 = ButtonWidget(105,  5, 50, 30,"201") : SetWidgetClass(*b201, GetTextWidget(*b201))  
+    ButtonWidget(105,  5, 50, 30,"201") : SetWidgetClass(widget(), GetTextWidget(widget()))  
+    ButtonWidget(115, 25, 50, 30,"202") : SetWidgetClass(widget(), GetTextWidget(widget()))  
+    ButtonWidget(125, 45, 50, 30,"203") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     AddItem(*c0, -1, "3")
-    ;Define *b301 = Button(105,  5, 50, 30,"301") : SetClass(*b301, GetText(*b301))  
-    Button(105,  5, 50, 30,"301") : SetClass(widget(), GetText(widget()))  
-    Button(115, 25, 50, 30,"302") : SetClass(widget(), GetText(widget()))  
-    Button(125, 45, 50, 30,"303") : SetClass(widget(), GetText(widget()))  
+    ;Define *b301 = ButtonWidget(105,  5, 50, 30,"301") : SetWidgetClass(*b301, GetTextWidget(*b301))  
+    ButtonWidget(105,  5, 50, 30,"301") : SetWidgetClass(widget(), GetTextWidget(widget()))  
+    ButtonWidget(115, 25, 50, 30,"302") : SetWidgetClass(widget(), GetTextWidget(widget()))  
+    ButtonWidget(125, 45, 50, 30,"303") : SetWidgetClass(widget(), GetTextWidget(widget()))  
     CloseList()
     
-    Button(5, 145, 200, 30, "btn3") : SetClass(widget(), GetText(widget()))
+    ButtonWidget(5, 145, 200, 30, "btn3") : SetWidgetClass(widget(), GetTextWidget(widget()))
     
     If #demo = #after
-      *b1 = Button( 5, 5,80,50, "btn1") : SetClass(widget(), GetText(widget()))
-      *b2 = Button(25,25,80,50, "btn2") : SetClass(widget(), GetText(widget()))
+      *b1 = ButtonWidget( 5, 5,80,50, "btn1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+      *b2 = ButtonWidget(25,25,80,50, "btn2") : SetWidgetClass(widget(), GetTextWidget(widget()))
     EndIf
     
     If #demo = #open
       OpenList(*c0, 0)
-      *b1 = Button(5,5,80,50,"btn1") : SetClass(widget(), GetText(widget()))
+      *b1 = ButtonWidget(5,5,80,50,"btn1") : SetWidgetClass(widget(), GetTextWidget(widget()))
       CloseList()
       OpenList(*c0, 1)
-      *b2 = Button(25,25,80,50, "btn2") : SetClass(widget(), GetText(widget()))
+      *b2 = ButtonWidget(25,25,80,50, "btn2") : SetWidgetClass(widget(), GetTextWidget(widget()))
       CloseList()
     Else
       SetParent(*b1, *c0, 0)

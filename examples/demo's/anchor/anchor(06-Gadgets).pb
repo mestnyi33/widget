@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;-\\
    Procedure Button_DrawCallback(*Object._s_widget, x.d,y.d,width.d,height.d, DataValue.i)
-      Protected Text.s = GetText(*Object)
+      Protected Text.s = GetTextWidget(*Object)
       Protected Hue = DataValue
       
       Protected enter = Bool(*object\enter > 0)
@@ -119,7 +119,7 @@ CompilerIf #PB_Compiler_IsMainFile
             VectorSourceColor($FF000000)
          EndIf
          ClipPath( )
-         MovePathCursor(text_x, (Height-VectorParagraphHeight(Text, Width, Height))/2-press)
+         MovePathCursor(text_x, (Height-VectorParagraphWidgetHeight(Text, Width, Height))/2-press)
          DrawVectorParagraph(Text, Width, Height, #PB_VectorParagraph_Center)
       EndIf
       
@@ -133,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( ) 
          Case #__event_LeftClick
             If Not a_index( )
-               Debug "Button '" + GetText(*ew) + "' was clicked."
+               Debug "Button '" + GetTextWidget(*ew) + "' was clicked."
             EndIf
             
          Case #__event_Draw
@@ -151,7 +151,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *Object\class = "Button"
       *Object\container = 0
       *Object\data = HighlightColorHue
-      ;SetText(*Object, Text)                                 ; Set the button text as a dictionary entry
+      ;SetTextWidget(*Object, Text)                                 ; Set the button text as a dictionary entry
       Bind(*Object, @Button_Events( ), #__event_Draw )  ; Set the drawing callback with the specified highlighting color
       Bind(*Object, @Button_Events( ), #__event_LeftClick ) 
       ;a_set(*Object, #__a_size|#__a_position)        ; Add handles if you want to edit the buttons.
@@ -163,7 +163,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;-\\ 
    ;
    Procedure CheckBox_DrawCallback(*Object._s_widget, x.d,y.d,width.d,height.d, DataValue.i)
-      Protected Text.s = GetText(*Object)
+      Protected Text.s = GetTextWidget(*Object)
       Protected State.i = GetState(*Object)
       Protected yi.i = Int((Height-19)/2)
       Protected Hue = 205
@@ -255,14 +255,14 @@ CompilerIf #PB_Compiler_IsMainFile
          VectorFont(FontID(#Font))
          AddPathBox(text_x, 0, Width, Height)
          ClipPath( )
-         MovePathCursor(text_x, (Height-VectorParagraphHeight(Text, Width, Height))/2-press)
+         MovePathCursor(text_x, (Height-VectorParagraphWidgetHeight(Text, Width, Height))/2-press)
          If *object\disable
             VectorSourceColor($40000000)
          Else
             VectorSourceColor($FF000000)
          EndIf
          DrawVectorParagraph(Text, Width, Height, #PB_VectorParagraph_Left)
-         ;DrawVectorText(Text)
+         ;DrawVectorTextWidget(Text)
       EndIf
       
       ;
@@ -276,7 +276,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_LeftClick;, #__event_Left2Click, #__event_Left3Click
             If Not a_index( )
                SetState(*ew, 1 - GetState(*ew))
-               Debug "checkbox '" + GetText(*ew) + "' was changed."
+               Debug "checkbox '" + GetTextWidget(*ew) + "' was changed."
             EndIf
             
          Case #__event_Draw
@@ -293,7 +293,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *Object\type = 0
       *Object\class = "CheckBox"
       *Object\container = 0
-      ;SetText(*Object, Text)                                ; Set the button text as a dictionary entry
+      ;SetTextWidget(*Object, Text)                                ; Set the button text as a dictionary entry
       Bind(*Object, @CheckBox_Events( ), #__event_Draw)       ; Set the drawing callback with the specified highlighting color
       Bind(*Object, @CheckBox_Events( ), #__event_LeftClick)  ; Set the drawing callback with the specified highlighting color
       Bind(*Object, @CheckBox_Events( ), #__event_Left2Click) ; Set the drawing callback with the specified highlighting color
@@ -326,7 +326,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Not Open( #Window );, #Canvas )
       Debug "Unable to initialize the object manager !"    
    EndIf
-   SetColor(root( ), #__color_back, $FFF0F0F0 )
+   SetWidgetColor(root( ), #__color_back, $FFF0F0F0 )
    a_init(root( ), 0)
    
    ; 2DDrawing 

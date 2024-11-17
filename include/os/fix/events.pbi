@@ -73,7 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure   DrawCanvasFrame(gadget, color)
+  Procedure   DrawCanvasFrameWidget(gadget, color)
     If GadgetType(gadget) = #PB_GadgetType_Canvas
       StartDrawing(CanvasOutput(gadget))
       If GetGadgetState(gadget)
@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Focus
         Debug ""+eventobject + " #PB_EventType_Focus " 
         DrawCanvasBack(eventobject, $FFA7A4)
-        DrawCanvasFrame(eventobject, $2C70F5)
+        DrawCanvasFrameWidget(eventobject, $2C70F5)
         
       Case #PB_EventType_LostFocus
         Debug ""+eventobject + " #PB_EventType_LostFocus " 
@@ -145,11 +145,11 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_MouseEnter
         ;Debug ""+eventobject + " #PB_EventType_MouseEnter " ;+ CocoaMessage(0, WindowID(window), "isActive") 
-        DrawCanvasFrame(eventobject, $00A600)
+        DrawCanvasFrameWidget(eventobject, $00A600)
         
       Case #PB_EventType_MouseLeave
         ;Debug ""+eventobject + " #PB_EventType_MouseLeave "
-        DrawCanvasFrame(eventobject, 0)
+        DrawCanvasFrameWidget(eventobject, 0)
         
       Case #PB_EventType_Resize
         Debug ""+eventobject + " #PB_EventType_Resize " 

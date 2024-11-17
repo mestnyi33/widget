@@ -52,18 +52,18 @@ CompilerIf #PB_Compiler_IsMainFile
     
     x = 260
     ;\\
-    *combo1 = ComboBox(10+x, 10, 250, h, #PB_ComboBox_Editable)
+    *combo1 = ComboBoxWidget(10+x, 10, 250, h, #PB_ComboBox_Editable)
     AddItem(widget( ), -1, "ComboBox editable...")
     For a = 1 To 15
       AddItem(widget( ), -1,"ComboBox item " + Str(a))
     Next
     
-    *combo2 = ComboBox(10+x, 20+h*1, 250, h, #PB_ComboBox_Image)
+    *combo2 = ComboBoxWidget(10+x, 20+h*1, 250, h, #PB_ComboBox_Image)
     For a = 0 To 4
       AddItem(widget( ), -1,"ComboBox item with image" + Str(a), a)
     Next
     
-    *combo3 = ComboBox( 10+x, 30+h*2, 250, h)
+    *combo3 = ComboBoxWidget( 10+x, 30+h*2, 250, h)
     For a = 0 To 5
       AddItem(widget( ), -1,"ComboBox item " + Str(a))
     Next
@@ -78,12 +78,12 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(s1combo, -1,"ComboBox item " + Str(a))
     Next
     
-    Define *s1combo = ComboBox( 0,0,0,0 )
+    Define *s1combo = ComboBoxWidget( 0,0,0,0 )
     For a = 0 To 0
       AddItem(*s1combo, -1,"ComboBox item " + Str(a))
     Next
     
-    Splitter( 10, 40+h*3, 250, h*3, s1combo, *s1combo )
+    SplitterWidget( 10, 40+h*3, 250, h*3, s1combo, *s1combo )
     
     ;\\
     Define s2combo = ComboBoxGadget(#PB_Any, 0,0,0,0)
@@ -91,17 +91,17 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(s2combo, -1,"ComboBox item " + Str(a))
     Next
     
-    Define *s2combo = ComboBox( 0,0,0,0 )
+    Define *s2combo = ComboBoxWidget( 0,0,0,0 )
     For a = 0 To 5
       AddItem(*s2combo, -1,"ComboBox item " + Str(a))
     Next
     
-    Define s2combo = ComboBox( 0,0,0,0 )
+    Define s2combo = ComboBoxWidget( 0,0,0,0 )
     For a = 0 To 115
       AddItem(s2combo, -1,"ComboBox item " + Str(a))
     Next
     
-    Splitter( 10+x, 40+h*3, 250, h*3, s2combo, *s2combo , #PB_Splitter_Vertical)
+    SplitterWidget( 10+x, 40+h*3, 250, h*3, s2combo, *s2combo , #PB_Splitter_Vertical)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

@@ -22,7 +22,7 @@ Procedure CFE_Helper_Buttons_Events( )
     Case #__Event_LeftClick
       Select EventWidget( )
         Case Button_Cancel
-          Close( GetWindow( Button_Cancel ) )
+          Close( GetCanvasWindow( Button_Cancel ) )
           
         Case Button_Ok 
           Window_0_0_Image = GetState(Image_View)
@@ -32,19 +32,19 @@ Procedure CFE_Helper_Buttons_Events( )
               SetBackgroundImage(Checked, Window_0_0_Image)
               
             Case Properties_Image
-              If Width(Checked) <> ImageWidth(Window_0_0_Image) And Not IsContainer(Checked)
+              If WidgetWidth(Checked) <> ImageWidget(Window_0_0_Image) And Not IsWidgetContainer(Checked)
                 
                 If MessageRequester("Сообщение","Хотите изменить размер элемента?", #PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
-                  SetText(Checked, "")
-                  Resize(Checked, #PB_Ignore, #PB_Ignore, ImageWidth(Window_0_0_Image)+8+1, ImageHeight(Window_0_0_Image)+8+1)
+                  SetTextWidget(Checked, "")
+                  ResizeWidget(Checked, #PB_Ignore, #PB_Ignore, ImageWidget(Window_0_0_Image)+8+1, ImageHeight(Window_0_0_Image)+8+1)
                 EndIf
                 
               EndIf
               
-              SetImage(Checked, Window_0_0_Image)
+              SetWidgetImage(Checked, Window_0_0_Image)
           EndSelect
           
-          SetText(Event_, Window_0_OpenFile$)
+          SetTextWidget(Event_, Window_0_OpenFile$)
           ;*Create\ImagePuch(Str(Window_0_0_Image)) = Window_0_OpenFile$
           
           Close(Button_Ok)
@@ -74,13 +74,13 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   ; = Open(#PB_Any, #PB_Ignore,#PB_Ignore,200,300, "Image editor",Flag, Parent) 
   
   If ((Flag & #PB_Window_ScreenCentered) = #PB_Window_ScreenCentered)
-;     X = (Width(0)-Width)/2 
-;     Y = (Height(0)-Height)/2
+;     X = (WidgetWidth(0)-Width)/2 
+;     Y = (WidgetHeight(0)-Height)/2
     
   ElseIf ((Flag & #PB_Window_WindowCentered) = #PB_Window_WindowCentered)
     If Parent
-      X = (Width(Parent)-Width)/2 
-      Y = (Height(Parent)-Height)/2
+      X = (WidgetWidth(Parent)-Width)/2 
+      Y = (WidgetHeight(Parent)-Height)/2
     EndIf
   EndIf
   
@@ -89,9 +89,9 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   
   Image_View = ImageWidget(5, 5, 231, 166, 0);, #_Flag_Image_Center)
   ;
-  Button_Load = Button(240, 5, 101, 21, "Загрузить")
-  Button_Ok = Button(240, 125, 101, 21, "Применить")
-  Button_Cancel = Button(240, 150, 101, 21, "Отмена")
+  Button_Load = ButtonWidget(240, 5, 101, 21, "Загрузить")
+  Button_Ok = ButtonWidget(240, 125, 101, 21, "Применить")
+  Button_Cancel = ButtonWidget(240, 150, 101, 21, "Отмена")
   ;
   Bind(Window_0, @CFE_Helper_Buttons_Events())
   ; BindGadgetEvent(e, @ButtonEvent(), #_Event_LeftClick)

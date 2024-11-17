@@ -30,9 +30,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure CanvasButton( gadget, x,y,width,height,Text.s )
-      Button( x,y,width,height, Text )
-      SetClass(widget(), Str(gadget))
+   Procedure CanvasButtonWidget( gadget, x,y,width,height,Text.s )
+      ButtonWidget( x,y,width,height, Text )
+      SetWidgetClass(widget(), Str(gadget))
       Bind(widget(), @Events())
    EndProcedure
    
@@ -53,11 +53,11 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    If Open(1, 300, 300, 270, 140, "SetActiveGadget", #PB_Window_SystemMenu )
-      CanvasButton(0, 10, 10, 250, 20, "String")
-      CanvasButton(1, 10, 40, 250, 21, "ComboBox")
+      CanvasButtonWidget(0, 10, 10, 250, 20, "String")
+      CanvasButtonWidget(1, 10, 40, 250, 21, "ComboBox")
       
-      CanvasButton(2, 10,  90, 250, 20, "mouse enter to activate String")
-      CanvasButton(3, 10, 115, 250, 20, "mouse enter to activate ComboBox")
+      CanvasButtonWidget(2, 10,  90, 250, 20, "mouse enter to activate String")
+      CanvasButtonWidget(3, 10, 115, 250, 20, "mouse enter to activate ComboBox")
       
       Repeat
          Event = WaitWindowEvent()

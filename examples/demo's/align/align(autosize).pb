@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 0, 0, 600, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   If Open(0, 30, 30, 540, 340)
-    SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+    SetWidgetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
     a_init(root(), 20 )
     
     Define vfs = #__window_CaptionHeight+#__window_FrameSize*2
@@ -14,22 +14,22 @@ CompilerIf #PB_Compiler_IsMainFile
   
     ;a_init(Root())
     ;Window(50,50,440-hfs,240-vfs,"window", #__window_systemmenu)
-    ;MDI(50,50,440,240) : OpenList(widget())
-    ;Container(50,50,440,240)
-    ;ScrollArea(50,50,440,240, 800,500)
-    ;Panel(50,50,440,240) : AddItem(widget(), -1, "panel")
+    ;MDIWidget(50,50,440,240) : OpenList(widget())
+    ;ContainerWidget(50,50,440,240)
+    ;ScrollAreaWidget(50,50,440,240, 800,500)
+    ;PanelWidget(50,50,440,240) : AddItem(widget(), -1, "panel")
     ;a_init(widget())
-    ;SetColor(widget( ), #__color_back, $ff00ff00 )
+    ;SetWidgetColor(widget( ), #__color_back, $ff00ff00 )
     
     ;
-    ;String(0,0,0,0,"", #__flag_autosize);|#__flag_transparent)
-    Button(0,0,0,0,"button", #__flag_autosize)
+    ;StringWidget(0,0,0,0,"", #__flag_autosize);|#__flag_transparent)
+    ButtonWidget(0,0,0,0,"button", #__flag_autosize)
     ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize, widget())
     ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize|#__flag_child, widget())
-    ;MDI(0,0,0,0, #__flag_autosize)
-    ;SetColor(widget( ), #__color_back, -1 )
+    ;MDIWidget(0,0,0,0, #__flag_autosize)
+    ;SetWidgetColor(widget( ), #__color_back, -1 )
     
-    Debug ""+ Width(widget()) +" "+ Height(widget())
+    Debug ""+ WidgetWidth(widget()) +" "+ WidgetHeight(widget())
     
     WaitClose( )
   EndIf

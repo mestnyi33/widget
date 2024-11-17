@@ -61,10 +61,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
       Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        DragText(GetItemText(EventGadget, EventItem))
+        DragTextWidget(GetItemTextWidget(EventGadget, EventItem))
         
       Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
-        Debug EventDropText()
+        Debug EventDropTextWidget()
         
       Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
       Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
@@ -96,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;SetActiveGadget(g)
     ;SetGadgetState(g, 1)
-    ;     Debug "g "+ GetGadgetText(g)
+    ;     Debug "g "+ GetGadgetTextWidget(g)
     
     g = 2
     ; 2_example
@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    SetGadgetItemImage(g, 0, ImageID(0))
+    SetGadGetWidgetItemImage(g, 0, ImageID(0))
     
     g = 3
     ;  3_example
@@ -196,10 +196,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     Open(0, 0, 225+90, 1110, 425-90)
-    g_Canvas = GetGadget(root())
+    g_Canvas = GetCanvasGadget(root())
     g = 10
     
-    *g = Tree(10, 20, 210, th, #__tree_CheckBoxes)                                         
+    *g = TreeWidget(10, 20, 210, th, #__tree_CheckBoxes)                                         
     
     
     ; 1_example
@@ -214,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*g, -1, "File "+Str(a), -1, 0)  
     
     ;{  3_example
-    *g5 = Tree(230, 20, 103, th, #__Tree_NoButtons|#__flag_Collapsed)                                         
+    *g5 = TreeWidget(230, 20, 103, th, #__Tree_NoButtons|#__flag_Collapsed)                                         
     AddItem(*g5, 0, "Tree_0", -1 )
     AddItem(*g5, 1, "Tree_1", -1, 0) 
     AddItem(*g5, 2, "Tree_2", -1, 0) 
@@ -235,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 20, 103, th, #__flag_BorderLess|#__flag_Collapsed)                                         
+    *g6 = TreeWidget(341, 20, 103, th, #__flag_BorderLess|#__flag_Collapsed)                                         
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 
     AddItem(*g6, 0, "Tree_2_2", -1, 3) 
@@ -249,11 +249,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     
-    splitter(230, 20, 210, th, *g6,*g5, #PB_Splitter_Vertical)                                         
+    SplitterWidget(230, 20, 210, th, *g6,*g5, #PB_Splitter_Vertical)                                         
     
     
        ;  2_example
-    *g = Tree(450, 20, 210, th);|#__flag_collapsedd)                                         
+    *g = TreeWidget(450, 20, 210, th);|#__flag_collapsedd)                                         
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1", 0, 1) 
     AddItem(*g, 2, "Tree_2", -1, 2) 
@@ -275,7 +275,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 20, 210, th, #__tree_nolines|#__flag_OptionBoxes);|#__tree_NoButtons) ;                                        
+    *g = TreeWidget(670, 20, 210, th, #__tree_nolines|#__flag_OptionBoxes);|#__tree_NoButtons) ;                                        
 ;         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
 ;         AddItem(*g, 1, "Tree_1", -1, 1) 
 ;         AddItem(*g, 2, "Tree_2_2", -1, 2) 
@@ -302,7 +302,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 20, 210, th, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_OptionBoxes)                            
+    *g = TreeWidget(890, 20, 210, th, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_OptionBoxes)                            
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7
@@ -316,15 +316,15 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
     ;LoadFont(5, "Arial", 16)
     SetItemFont(*g, 3, 5)
-    SetItemText(*g, 3, "16_font and text change")
-    SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
-    SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
-    SetItemText(*g, 5, "backcolor and text change")
+    SetItemTextWidget(*g, 3, "16_font and text change")
+    SetWidgetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
+    SetWidgetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
+    SetItemTextWidget(*g, 5, "backcolor and text change")
     ;LoadFont(6, "Arial", 25)
     SetItemFont(*g, 4, 6)
-    SetItemText(*g, 4, "25_font and text change")
+    SetItemTextWidget(*g, 4, "25_font and text change")
     SetItemFont(*g, 14, 6)
-    SetItemText(*g, 14, "25_font and text change")
+    SetItemTextWidget(*g, 14, "25_font and text change")
     ;Bind(*g, @events_tree_widget())
     ;}
     

@@ -33,13 +33,13 @@ CompilerIf #PB_Compiler_IsMainFile
          ButtonGadget (0, 5, 65 + h, 390, 30, "set standart scrollbar", #PB_Button_Toggle)
          
          If Open(0, 10, 10, 380, 50 + h)
-            g_Canvas  = GetGadget(root())
-            Frame( 0,0,0,0, "demo bars", #__flag_autosize)
+            g_Canvas  = GetCanvasGadget(root())
+            FrameWidget( 0,0,0,0, "demo bars", #__flag_autosize)
             *track    = TrackBarWidget(15, 10, 350, 30, min, 50, flags)
-            *splitter = Splitter(15, 10 + 35 * 1, 350, 30, -1,  -1, flags | #__Bar_Vertical)
+            *splitter = SplitterWidget(15, 10 + 35 * 1, 350, 30, -1,  -1, flags | #__Bar_Vertical)
             *progress = ProgressBarWidget(15, 10 + 35 * 2 , 350, 30, min, 50, flags)
             *scroll   = ScrollBarWidget(15, 10 + 35 * 3, 350, 30, min, 50, 8, flags)
-            *spin     = Spin(15, 10 + 35 * 4, 350, 30, min, 50, 8, flags)
+            *spin     = SpinWidget(15, 10 + 35 * 4, 350, 30, min, 50, 8, flags)
             
             
             SetState(*splitter, min+2)
@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;*bar = ScrollBarWidget(15, 20+35*5, 350, 20, min, 50, 8)
             *bar = TrackBarWidget(15, 20 + 35 * 5, 350, 20, min, 50)
-            ;*bar = Splitter(15, 20+35*5, 350, 30, -1,-1, #__Bar_Vertical)
+            ;*bar = SplitterWidget(15, 20+35*5, 350, 30, -1,-1, #__Bar_Vertical)
             SetState(*bar, min+2)
             
             Bind( *bar, @events_widgets( ), #__event_Change )
@@ -82,9 +82,9 @@ CompilerIf #PB_Compiler_IsMainFile
                   SetWindowTitle(0, Str(GetState(*scroll)))
                   
                   If GetGadgetState(0)
-                     SetGadgetText(0, "set standart scrollbar")
+                     SetGadgetTextWidget(0, "set standart scrollbar")
                   Else
-                     SetGadgetText(0, "set inverted scrollbar")
+                     SetGadgetTextWidget(0, "set inverted scrollbar")
                   EndIf
                   
                   PostEventRepaint( root( ) )

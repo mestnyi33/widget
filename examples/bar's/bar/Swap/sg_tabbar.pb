@@ -3,7 +3,7 @@
 ;|  Title            : TabBar
 ;|  Version          : 1.5 Beta 2a (2019-03-25)
 ;|  Copyright        : UnionBytes
-;|                     (Martin Guttmann alias STARGÅTE)
+;|                     (Martin Guttmann alias STARGATE)
 ;|  PureBasic        : 5.20+
 ;|  String Format    : Ascii, Unicode
 ;|  Operating System : Windows, Linux, MacOS
@@ -31,13 +31,13 @@ EnableExplicit
 
 
 
-;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+;|??????????????????????????????????????????????????????????????????????????????????????????????????
 ;-  1. Constants / Konstanten
 ;|__________________________________________________________________________________________________
 
 
 
-; Attribute für das TabBar
+; Attribute fur das TabBar
 Enumeration
   #__tab_None                 = 0<<0
   #__tab_CloseButton          = 1<<0 ; 1
@@ -57,7 +57,7 @@ Enumeration
   #__tab_ImageSize            = 1<<23
   #__tab_TabTextAlignment     = 1<<24
   #__tab_ScrollPosition       = 1<<25
-  #__tab_NormalTabLength      = 1<<26 ; für Später
+  #__tab_NormalTabLength      = 1<<26 ; fur Spater
   #__tab_MaxTabLength         = 1<<27
   #__tab_MinTabLength         = 1<<28
   #__tab_TabRounding          = 1<<29
@@ -69,20 +69,20 @@ EndEnumeration
 Enumeration #PB_EventType_FirstCustomValue
   #__event_Pushed 
   #__event_Updated      ; Das Gadget hat sich aktualisiert (intern)
-  #__event_Change       ; Der aktive Tab wurde geändert
-  #__event_Resize       ; Die größe der Leiste hat sich geändert
+  #__event_Change       ; Der aktive Tab wurde geandert
+  #__event_Resize       ; Die gro?e der Leiste hat sich geandert
   #__event_NewItem      ; ein neuer Tab wird angefordert
   #__event_CloseItem    ; ein Tab soll geschlossen werden
   #__event_SwapItem     ; der aktive Tab wurde verschoben
-  #__event_EditItem     ; der Text einer Karte wurde geändert
-  #__event_CheckBox     ; der Status der Checkbox hat sich geändert
-  #__event_PopupButton  ; der Popup-Button wurde gedrückt
+  #__event_EditItem     ; der Text einer Karte wurde geandert
+  #__event_CheckBox     ; der Status der Checkbox hat sich geandert
+  #__event_PopupButton  ; der Popup-Button wurde gedruckt
 EndEnumeration
 
 
 
 
-; Positions-Konstanten für "Item"-Befehle
+; Positions-Konstanten fur "Item"-Befehle
 Enumeration
   #__tab_item_None        = -1 
   #__tab_item_NewTab      = -2
@@ -122,7 +122,7 @@ EndEnumeration
 
 
 
-;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+;|??????????????????????????????????????????????????????????????????????????????????????????????????
 ;-  2. Structures / Strukturen
 ;|__________________________________________________________________________________________________
 
@@ -132,7 +132,7 @@ Structure _s_canvas
   gadget.i  ; #Nummer
 EndStructure
 
-; Sortierter Eintrag für die Textkürzung
+; Sortierter Eintrag fur die Textkurzung
 Structure _s_SortedItem
   *Item._s_rows  ; Registerkarte
   Characters.i   ; Anzahl der Buchstaben
@@ -140,11 +140,11 @@ EndStructure
 
 ; Aktuelle Parameter eine Kartenzeile
 Structure _s_row
-  Length.i  ; Aktuelle Länge einer Zeile
+  Length.i  ; Aktuelle Lange einer Zeile
   Items.i   ; Aktuelle Anzahl der Tabs
 EndStructure
 
-; Farben für einen Eintrag
+; Farben fur einen Eintrag
 ; Structure _s_Color
 ;   front.i        ; Textfarbe
 ;   back.i  ; Hintergrundfarbe
@@ -161,15 +161,15 @@ EndStructure
     EndStructure
     
 
-; Lage und Größe einer Registerkarte 
+; Lage und Gro?e einer Registerkarte 
 Structure _s_itemLayout
   X.i         ; X-Position
   Y.i         ; Y-Position
   Width.i     ; (innere) Breite
-  Height.i    ; (innere) Höhe
-  PaddingX.i  ; Vergrößerung (z.B. bei aktiver Registerkarte)
+  Height.i    ; (innere) Hohe
+  PaddingX.i  ; Vergro?erung (z.B. bei aktiver Registerkarte)
   PaddingY.i  ; 
-  CrossX.i    ; Position des Schließen-X
+  CrossX.i    ; Position des Schlie?en-X
   CrossY.i    ;
   TextX.i     ; Textposition
   TextY.i     ;
@@ -182,32 +182,32 @@ EndStructure
 ; Registerkarte
 Structure _s_rows
   Text.s                                  ; Text
-  ShortText.s                             ; verkürzter Text
+  ShortText.s                             ; verkurzter Text
   color._s_color                          ; Farbattribute
   Image.i                                 ; Bild (Kopie vom Original)
   DrawedImage.i                           ; Bild (Kopie ggf. rotiert)
   DataValue.i                             ; Benutzer-Daten-Wert
   Attributes.i                            ; Attribute
   Disabled.i                              ; Deaktiviert
-  Selected.i                              ; Aktuell ausgewählt
+  Selected.i                              ; Aktuell ausgewahlt
   Checked.i                               ; Abgehakt
   ToolTip.s                               ; ToolTop
-  Length.i                                ; Länge in Pixel (TEMP)
+  Length.i                                ; Lange in Pixel (TEMP)
   Row.i                                   ; Zeile (TEMP)
   Position.i                              ; Position (TEMP)
   Visible.i                               ; Sichtbar und wird gezeichnet (TEMP)
   Face.i                                  ; Aussehen (TEMP)
   Layout._s_itemLayout                    ; Layout der Karte (TEMP)
-  *PreviousSelectedItem._s_rows           ; Zuvor ausgewählter Tab
+  *PreviousSelectedItem._s_rows           ; Zuvor ausgewahlter Tab
 EndStructure
 
 ; Tooltips
 Structure Tab_ToolTip
   *Current                         ; Aktuelle ToolTip-Adresse
   *Old                             ; Alte ToolTip-Adresse
-  ItemText.s                       ; Text für die Registerkarte
-  NewText.s                        ; Text für die "Neu"-Registerkarte
-  CloseText.s                      ; Text für den Schließen-Button
+  ItemText.s                       ; Text fur die Registerkarte
+  NewText.s                        ; Text fur die "Neu"-Registerkarte
+  CloseText.s                      ; Text fur den Schlie?en-Button
 EndStructure
 
 ; Editierte Karte
@@ -215,19 +215,19 @@ Structure _s_Editor
   *Item._s_rows  ; Zu Bearbeitende Karte
   OldText.s      ; Alter Text vor dem Bearbeiten
   Cursor.i       ; Cursor-Position
-  Selection.i    ; Textmarkierungslänge
-  Selectable.i   ; Ob die Mausbewegung zu einer Textmarkierung führt
+  Selection.i    ; Textmarkierungslange
+  Selectable.i   ; Ob die Mausbewegung zu einer Textmarkierung fuhrt
 EndStructure
 
 ; Layout der Leiste
 Structure _s_Layout
-  PreviousButtonX.i  ; Position des "zurück" Navigationspfeil
+  PreviousButtonX.i  ; Position des "zuruck" Navigationspfeil
   PreviousButtonY.i
   NextButtonX.i  ; Position des "vor" Navigationspfeil
   NextButtonY.i
   PopupButtonX.i ; Position des Popup-Pfeils
   PopupButtonY.i
-  ButtonWidth.i  ; Größe der Buttons
+  ButtonWidth.i  ; Gro?e der Buttons
   ButtonHeight.i
   ButtonSize.i
 EndStructure
@@ -240,16 +240,16 @@ Structure _s_widget
   Attributes.i                      ; Attribute
   List		Item._s_rows()            ; Registerkarten
   NewTabItem._s_rows                ; "Neu"-Registerkarte
-  *SelectedItem._s_rows             ; ausgewählte Registerkarte
+  *SelectedItem._s_rows             ; ausgewahlte Registerkarte
   *MoveItem._s_rows                 ; bewegte Registerkarte
   *HoverItem._s_rows                ; hervorgehobene Registerkarte
-  HoverClose.i                      ; Schließenbutton hervorgehoben
+  HoverClose.i                      ; Schlie?enbutton hervorgehoben
   HoverCheck.i                      ; Checkbox hervorgehoben
   HoverArrow.i                      ; Navigationbutton hervorgehoben
   *ReadyToMoveItem._s_rows          ; Registerkarte die bereit ist bewegt zu werden
-  *LockedItem._s_rows               ; Registerkarte angeschlagen wurde (für Klicks)
-  LockedClose.i                     ; Schließenbutton angeschlagen
-  LockedCheck.i                     ; Schließenbutton angeschlagen
+  *LockedItem._s_rows               ; Registerkarte angeschlagen wurde (fur Klicks)
+  LockedClose.i                     ; Schlie?enbutton angeschlagen
+  LockedCheck.i                     ; Schlie?enbutton angeschlagen
   LockedArrow.i                     ; Navigationsbutton angeschlagen
   SaveMouseX.i                      ; gespeicherte Mausposition
   SaveMouseY.i                      ; gespeicherte Mausposition
@@ -259,69 +259,69 @@ Structure _s_widget
   EventTab.i                        ; Registerkartenposition auf der das letzte Ereignis war
   Shift.i                           ; Verschiebung der Leiste
   LastShift.i                       ; Maximale sinnvolle Verschiebung
-  FocusingSelectedTab.i             ; muss die ausgewählte Registerkarte fokussiert werden
-  MaxLength.i                       ; maximal nutzbare Länge für Karten
-  Length.i                          ; Länge aller sichtbaren Karten
+  FocusingSelectedTab.i             ; muss die ausgewahlte Registerkarte fokussiert werden
+  MaxLength.i                       ; maximal nutzbare Lange fur Karten
+  Length.i                          ; Lange aller sichtbaren Karten
   Radius.i                          ; Radius der Kartenrundung
-  MinTabLength.i                    ; minimale Länge einer Karte
-  MaxTabLength.i                    ; maximale Länge einer Karte
-  NormalTabLength.i                 ; normale Länge einer Karte
+  MinTabLength.i                    ; minimale Lange einer Karte
+  MaxTabLength.i                    ; maximale Lange einer Karte
+  NormalTabLength.i                 ; normale Lange einer Karte
   TabTextAlignment.i                ; Textausrichtung
   ToolTip.Tab_ToolTip               ; ToolTip
-  TabSize.i                         ; Größer einer Registerkarte
+  TabSize.i                         ; Gro?er einer Registerkarte
   Rows.i                            ; Anzahl der Zeilen
-  Resized.i                         ; Das Gadget muss vergrößert werden
-  Editor._s_Editor                  ; Editor für eine Karte
+  Resized.i                         ; Das Gadget muss vergro?ert werden
+  Editor._s_Editor                  ; Editor fur eine Karte
   Layout._s_Layout                  ; Layout der Leiste
   UpdatePosted.i                    ; Nach einem PostEvent #True
 EndStructure
 
-; Timer für das kontinuierliche Scrollen
+; Timer fur das kontinuierliche Scrollen
 Structure Timer
   *widget._s_widget  ; TabBar-ID
   Type.i             ; Modus (Scrollen)
   Mutex.i            ; Mutex zur Sicherung
 EndStructure
 
-; Include für das Registerkartenleisten-Gadget
+; Include fur das Registerkartenleisten-Gadget
 Structure _s_include
   TabBarColor.i                   ; Hintergrundfarbe des Gadgets
   ;color\fore.i                     ; Hintergrundfarbe einer Karte
-  HoverColorPlus.i                ; Farbänderung für den Hover-Effekt
-  ActivColorPlus.i                ; Farbänderung für aktuell ausgewählte Karten
+  HoverColorPlus.i                ; Farbanderung fur den Hover-Effekt
+  ActivColorPlus.i                ; Farbanderung fur aktuell ausgewahlte Karten
   ;color\frame.i                   ; Rahmenfarbe
   ;color\front.i                     ; Textfarbe
   color._s_color
   
   PaddingX.i                      ; Innenabstand (Text zu Rahmen)
   PaddingY.i                      ; Innenabstand (Text zu Rahmen)
-  Margin.i                        ; Außenabstand (Rahmen zu Gadget-Rand)
+  Margin.i                        ; Au?enabstand (Rahmen zu Gadget-Rand)
   ImageSpace.i                    ; Freiraum zwischen Bild und Text
-  CloseButtonSize.i               ; Größe des Schließenkreuzes
+  CloseButtonSize.i               ; Gro?e des Schlie?enkreuzes
   CheckBoxSize.i
   ImageSize.i
-  ArrowSize.i                     ; Größe des Navigationspfeils
+  ArrowSize.i                     ; Gro?e des Navigationspfeils
   ArrowWidth.i                    ; 
   ArrowHeight.i                   ;
   Radius.i                        ; Radius der Abrundung der Karte
-  MinTabLength.i                  ; Mimimale Länge einer Karte
-  MaxTabLength.i                  ; Maximale Länge einer Karte
+  MinTabLength.i                  ; Mimimale Lange einer Karte
+  MaxTabLength.i                  ; Maximale Lange einer Karte
   TabTextAlignment.i
   VerticalTextBugFix.f            
-  NormalTabLength.i               ; [für später]
-  FadeOut.i                       ; Länge der Farbausblendung bei einer Navigation
+  NormalTabLength.i               ; [fur spater]
+  FadeOut.i                       ; Lange der Farbausblendung bei einer Navigation
   WheelDirection.i                ; Scrollrichtung bei Mausradbewegung
   RowDirection.i                  ; Reihenfolge der Zeilen
   EnableDoubleClickForNewTab.i    ; Doppelklick ins "Leere" erzeigt ein Ereignis 
   EnableMiddleClickForCloseTab.i  ; Mittelklick auf eine Karte erzeigt ein Ereignis
-  Timer.Timer                     ; Timer für das kontinuierliche Scrollen
+  Timer.Timer                     ; Timer fur das kontinuierliche Scrollen
 EndStructure
 
 
 
 
 
-;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+;|??????????????????????????????????????????????????????????????????????????????????????????????????
 ;-  3. Initializations / Initialisierungen
 ;|__________________________________________________________________________________________________
 
@@ -330,7 +330,7 @@ EndStructure
 Global includes._s_include
 Declare Timer(Null.i)
 
-; Diese Werte können sowohl im Include, als auch im Hauptcode später über includes\Feld geändert werden.
+; Diese Werte konnen sowohl im Include, als auch im Hauptcode spater uber includes\Feld geandert werden.
 With includes
   CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_Windows
@@ -379,18 +379,18 @@ EndWith
 
 
 
-;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+;|??????????????????????????????????????????????????????????????????????????????????????????????????
 ;-  4. Procedures & Macros / Prozeduren & Makros
 ;|__________________________________________________________________________________________________
 
 
 
 ;-  4.1 Private procedures for internal calculations ! Not for use !
-;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+;???????????????????????????????????????????????????????????????????????????????????????????????????
 
 
 
-; Gitb die Adresse (ID) der Registerkarte zurück.
+; Gitb die Adresse (ID) der Registerkarte zuruck.
 ;   Position kann eine Konstante, Position oder ID sein.
 Procedure.i ItemID(*this._s_widget, Position.i) ; Code OK
   
@@ -442,7 +442,7 @@ EndProcedure
 
 
 
-; Wählt die angegebene Karte aus und aktualisiert die Select-Hierarchie
+; Wahlt die angegebene Karte aus und aktualisiert die Select-Hierarchie
 Procedure SelectItem(*this._s_widget, *Item._s_rows) ; Code OK
   
   If *this\Attributes & #__tab_MultiSelect = #False
@@ -463,7 +463,7 @@ EndProcedure
 
 
 
-; Wählt die angegebene Karte ab und aktualisiert die Select-Hierarchie
+; Wahlt die angegebene Karte ab und aktualisiert die Select-Hierarchie
 Procedure UnselectItem(*this._s_widget, *Item._s_rows) ; Code OK
   
   *Item\Selected = #False
@@ -476,7 +476,7 @@ Procedure UnselectItem(*this._s_widget, *Item._s_rows) ; Code OK
       EndIf
     EndIf
   Next
-  If *this\SelectedItem = *Item ; Auswahl muss geändert werden
+  If *this\SelectedItem = *Item ; Auswahl muss geandert werden
     *this\SelectedItem = *Item\PreviousSelectedItem
     If *this\SelectedItem
       *this\SelectedItem\Selected = #True
@@ -529,8 +529,8 @@ EndProcedure
 
 
 
-; Gibt #True zurück, wenn die Maus innerhalb des Rechtecks ist.
-;   Width und Height können auch negativ sein.
+; Gibt #True zuruck, wenn die Maus innerhalb des Rechtecks ist.
+;   Width und Height konnen auch negativ sein.
 Procedure.i MouseIn(*this._s_widget, X.i, Y.i, Width.i, Height.i) ; Code OK
   
   With *this
@@ -601,7 +601,7 @@ EndProcedure
 
 
 
-; Zeichnet ein (Schließen-)Kreuz
+; Zeichnet ein (Schlie?en-)Kreuz
 Procedure DrawCross(X.i, Y.i, Size.i, Color.i) ; Code OK
   
   Protected Alpha.i = Alpha(Color)/4
@@ -618,7 +618,7 @@ EndProcedure
 
 
 ; Zeichnet einen Button
-Procedure DrawButton(X.i, Y.i, Width.i, Height.i, Type.i, Color, Vertical.i=#False) ; Code OK
+Procedure DrawButtonWidget(X.i, Y.i, Width.i, Height.i, Type.i, Color, Vertical.i=#False) ; Code OK
   
   If Type
     DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Gradient)
@@ -765,7 +765,7 @@ EndProcedure
 
 
 
-; Gibt die Länge der Registerkate zurück.
+; Gibt die Lange der Registerkate zuruck.
 Procedure.i ItemLength(*this._s_widget, *Item._s_rows) ; Code OK
   
   Protected TextLength.i = TextWidth(*Item\ShortText)
@@ -773,7 +773,7 @@ Procedure.i ItemLength(*this._s_widget, *Item._s_rows) ; Code OK
   Protected Characters.i, VerticalTextBugFix.f = 1.0
   
   If *this\Attributes & #__tab_Vertical
-    TextLength * includes\VerticalTextBugFix ; 5% länger, wegen Ungenaugikeit von TextWidth bei Rotation
+    TextLength * includes\VerticalTextBugFix ; 5% langer, wegen Ungenaugikeit von TextWidth bei Rotation
     VerticalTextBugFix = includes\VerticalTextBugFix
   EndIf
   If *Item\Attributes & #__tab_CloseButton Or (*Item\Attributes & #__s_SelectedCloseButton And *Item\Selected)
@@ -814,7 +814,7 @@ EndProcedure
 
 
 
-; Gibt den maximal zur verfügungstehenden Platz für Registerkarten zurück.
+; Gibt den maximal zur verfugungstehenden Platz fur Registerkarten zuruck.
 Procedure.i MaxLength(*this._s_widget, WithNewTab.i=#True) ; Code OK
   
   Protected Length.i
@@ -848,7 +848,7 @@ EndProcedure
 
 
 
-; Führt eine Textkürzung durch, bis alle Karte in die Leiste passen.
+; Fuhrt eine Textkurzung durch, bis alle Karte in die Leiste passen.
 Procedure.i TextCutting(*this._s_widget) ; Code OK
   
   Protected NewList SortedItem._s_SortedItem()
@@ -857,7 +857,7 @@ Procedure.i TextCutting(*this._s_widget) ; Code OK
   
   With *this
     
-    ; Der Textlänge nach (groß -> klein) sortierte Einträge anlegen.
+    ; Der Textlange nach (gro? -> klein) sortierte Eintrage anlegen.
     ForEach \Item()
       \Item()\ShortText      = \Item()\Text
       \Item()\Length         = ItemLength(*this, @\Item())
@@ -874,7 +874,7 @@ Procedure.i TextCutting(*this._s_widget) ; Code OK
       MaxLength + \Item()\Length - 1
     Next
     
-    ; Textkürzung durchführen, bis alle Karte in die maximale Breite passen.
+    ; Textkurzung durchfuhren, bis alle Karte in die maximale Breite passen.
     While MaxLength > \MaxLength And FirstElement(SortedItem())
       *SortedItem = @SortedItem()
       If *SortedItem\Characters > 3 And *SortedItem\Item\Length > \MinTabLength
@@ -900,7 +900,7 @@ EndProcedure
 
 
 
-; Rotiert das Image abhängig von der Leistenausrichtung 
+; Rotiert das Image abhangig von der Leistenausrichtung 
 Procedure RotateImage(*this._s_widget, *Item._s_rows) ; Code OK
   
   Protected LastX.i = ImageWidth(*Item\Image)-1
@@ -955,7 +955,7 @@ EndProcedure
 
 
 
-; (Er-)setz ein neues Icon für die Karte
+; (Er-)setz ein neues Icon fur die Karte
 Procedure ReplaceImage(*this._s_widget, *Item._s_rows, NewImageID.i=#Null) ; Code OK
   
   If *Item\Image
@@ -1346,7 +1346,7 @@ Procedure DrawItem(*this._s_widget, *Item._s_rows)
         GradientColor(1.0, ColorMinus(Color, $FF101010))
     EndSelect
     
-    ; 		; andere ausgewählte Nachbarn
+    ; 		; andere ausgewahlte Nachbarn
     ; 		If *Item <> *this\NewTabItem And *Item\Selected
     ; 			PushListPosition(*this\Item())
     ; 			ChangeCurrentElement(*this\Item(), *Item)
@@ -1445,13 +1445,13 @@ Procedure DrawItem(*this._s_widget, *Item._s_rows)
       DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Transparent)
     EndIf
     
-    ; Schließen-Schaltfläche
+    ; Schlie?en-Schaltflache
     If *Item\Attributes & #__tab_CloseButton Or (*Item\Attributes & #__s_SelectedCloseButton And *Item\Selected)
       If *this\HoverItem = *Item And *this\HoverClose
         If *this\LockedClose And *this\LockedItem = *Item
-          DrawButton(*Item\Layout\CrossX, *Item\Layout\CrossY, \CloseButtonSize, \CloseButtonSize, -1, *Item\color\back, *this\Attributes & #__tab_Vertical)
+          DrawButtonWidget(*Item\Layout\CrossX, *Item\Layout\CrossY, \CloseButtonSize, \CloseButtonSize, -1, *Item\color\back, *this\Attributes & #__tab_Vertical)
         Else
-          DrawButton(*Item\Layout\CrossX, *Item\Layout\CrossY, \CloseButtonSize, \CloseButtonSize, 1, *Item\color\back, *this\Attributes & #__tab_Vertical)
+          DrawButtonWidget(*Item\Layout\CrossX, *Item\Layout\CrossY, \CloseButtonSize, \CloseButtonSize, 1, *Item\color\back, *this\Attributes & #__tab_Vertical)
         EndIf
       EndIf
       If *Item\Disabled
@@ -1468,7 +1468,7 @@ EndProcedure
 
 
 ; Verwaltet die Ereignisse beim Editieren einer Karte
-Procedure Examine_Editor(*this._s_widget)
+Procedure Examine_EditorWidget(*this._s_widget)
   
   Protected MinDistance.i, Distance.i, Index.i
   
@@ -1602,9 +1602,9 @@ Procedure Examine_Editor(*this._s_widget)
             Case #PB_Shortcut_C
               If GetGadgetAttribute(\canvas\gadget, #PB_Canvas_Modifiers) & #PB_Canvas_Control
                 If \Editor\Selection > 0
-                  SetClipboardText(Mid(\Editor\Item\Text, \Editor\Cursor+1, \Editor\Selection))
+                  SetClipboardTextWidget(Mid(\Editor\Item\Text, \Editor\Cursor+1, \Editor\Selection))
                 ElseIf \Editor\Selection < 0
-                  SetClipboardText(Mid(\Editor\Item\Text, \Editor\Cursor+\Editor\Selection+1, -\Editor\Selection))
+                  SetClipboardTextWidget(Mid(\Editor\Item\Text, \Editor\Cursor+\Editor\Selection+1, -\Editor\Selection))
                 EndIf
               EndIf
             Case #PB_Shortcut_V
@@ -1617,9 +1617,9 @@ Procedure Examine_Editor(*this._s_widget)
                   \Editor\Cursor + \Editor\Selection
                   \Editor\Selection = 0
                 EndIf
-                \Editor\Item\Text = Left(\Editor\Item\Text, \Editor\Cursor) + GetClipboardText() + Mid(\Editor\Item\Text, \Editor\Cursor+1)
+                \Editor\Item\Text = Left(\Editor\Item\Text, \Editor\Cursor) + GetClipboardTextWidget() + Mid(\Editor\Item\Text, \Editor\Cursor+1)
                 \Editor\Item\ShortText = \Editor\Item\Text
-                \Editor\Cursor + Len(GetClipboardText())
+                \Editor\Cursor + Len(GetClipboardTextWidget())
               EndIf
           EndSelect
           \Editor\Item\ShortText = \Editor\Item\Text
@@ -1746,7 +1746,7 @@ Procedure Examine(*this._s_widget)
     ; Registerkarten
     If \HoverItem
       
-      ; Tooltip aktualisieren & Schließenbutton & Checkbox
+      ; Tooltip aktualisieren & Schlie?enbutton & Checkbox
       If \HoverItem\ToolTip
         \ToolTip\Current = @\HoverItem\ToolTip
       Else
@@ -1853,7 +1853,7 @@ Procedure Examine(*this._s_widget)
     EndIf
     
     ; Editor
-    Examine_Editor(*this)
+    Examine_EditorWidget(*this)
     
     ; Sonstiges
     Select EventType()
@@ -2088,7 +2088,7 @@ Procedure Update(*this._s_widget)
       
       \MaxLength = MaxLength(*this)
       
-      ; ggf. Textkürzung
+      ; ggf. Textkurzung
       If \Attributes & #__tab_TextCutting
         \Length = TextCutting(*this)
         If \Length <= \MaxLength
@@ -2104,7 +2104,7 @@ Procedure Update(*this._s_widget)
         \Length + \Item()\Length-1
       Next
       
-      ; Navigation nötig ?
+      ; Navigation notig ?
       If \Length > \MaxLength
         \Attributes | (#__tab_PreviousArrow | #__tab_NextArrow)
         \MaxLength = MaxLength(*this)
@@ -2128,7 +2128,7 @@ Procedure Update(*this._s_widget)
         \LastShift = 0
       EndIf
       
-      ; ggf. aktuell ausgewählte Registerkarte in den sichtbaren Bereich bringen
+      ; ggf. aktuell ausgewahlte Registerkarte in den sichtbaren Bereich bringen
       If \FocusingSelectedTab And \SelectedItem
         ChangeCurrentElement(\Item(), \SelectedItem)
         If ListIndex(\Item()) <= \Shift
@@ -2192,7 +2192,7 @@ Procedure Update(*this._s_widget)
         Until Not NextElement(\Item())
       EndIf
       
-      ; nächste Registerkarte
+      ; nachste Registerkarte
       If \Attributes & #__tab_NextArrow And ListIndex(\Item()) <> -1
         If ListIndex(\Item()) <> ListSize(\Item())-1
           \Item()\Position = Position + \Length
@@ -2227,7 +2227,7 @@ Procedure Update(*this._s_widget)
       
     EndIf
     
-    ; Größenänderung des Gadgets
+    ; Gro?enanderung des Gadgets
     If Rows <> \Rows And (EventType() >= #PB_EventType_FirstCustomValue Or GetGadgetAttribute(\canvas\gadget, #PB_Canvas_Buttons) & #PB_Canvas_LeftButton = #False)
       StopDrawing()
       If \Attributes & #__tab_Vertical
@@ -2433,9 +2433,9 @@ Procedure Draw(*this._s_widget)
     If \Attributes & #__tab_PreviousArrow
       If \HoverArrow = #__tab_PreviousArrow
         If \HoverArrow = \LockedArrow
-          DrawButton(\Layout\PreviousButtonX-\Layout\ButtonWidth/2, \Layout\PreviousButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
+          DrawButtonWidget(\Layout\PreviousButtonX-\Layout\ButtonWidth/2, \Layout\PreviousButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         Else
-          DrawButton(\Layout\PreviousButtonX-\Layout\ButtonWidth/2, \Layout\PreviousButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
+          DrawButtonWidget(\Layout\PreviousButtonX-\Layout\ButtonWidth/2, \Layout\PreviousButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         EndIf
         DrawArrow(\Layout\PreviousButtonX, \Layout\PreviousButtonY, #__tab_PreviousArrow, includes\color\front, *this\Attributes)
       ElseIf \Shift > 0
@@ -2447,9 +2447,9 @@ Procedure Draw(*this._s_widget)
     If \Attributes & #__tab_NextArrow
       If \HoverArrow = #__tab_NextArrow
         If \HoverArrow = \LockedArrow
-          DrawButton(\Layout\NextButtonX-\Layout\ButtonWidth/2, \Layout\NextButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
+          DrawButtonWidget(\Layout\NextButtonX-\Layout\ButtonWidth/2, \Layout\NextButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         Else
-          DrawButton(\Layout\NextButtonX-\Layout\ButtonWidth/2, \Layout\NextButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
+          DrawButtonWidget(\Layout\NextButtonX-\Layout\ButtonWidth/2, \Layout\NextButtonY-\Layout\ButtonHeight/2, \Layout\ButtonWidth, \Layout\ButtonHeight, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         EndIf
         DrawArrow(\Layout\NextButtonX, \Layout\NextButtonY, #__tab_NextArrow, includes\color\front, *this\Attributes)
       ElseIf \Shift < \LastShift
@@ -2468,9 +2468,9 @@ Procedure Draw(*this._s_widget)
     If \Attributes & #__tab_PopupButton
       If \HoverArrow = #__tab_PopupButton
         If \HoverArrow = \LockedArrow
-          DrawButton(\Layout\PopupButtonX-\Layout\ButtonSize/2, \Layout\PopupButtonY-\Layout\ButtonSize/2, \Layout\ButtonSize, \Layout\ButtonSize, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
+          DrawButtonWidget(\Layout\PopupButtonX-\Layout\ButtonSize/2, \Layout\PopupButtonY-\Layout\ButtonSize/2, \Layout\ButtonSize, \Layout\ButtonSize, -1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         Else
-          DrawButton(\Layout\PopupButtonX-\Layout\ButtonSize/2, \Layout\PopupButtonY-\Layout\ButtonSize/2, \Layout\ButtonSize, \Layout\ButtonSize, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
+          DrawButtonWidget(\Layout\PopupButtonX-\Layout\ButtonSize/2, \Layout\PopupButtonY-\Layout\ButtonSize/2, \Layout\ButtonSize, \Layout\ButtonSize, 1, includes\color\fore, *this\Attributes & #__tab_Vertical)
         EndIf
         DrawArrow(\Layout\PopupButtonX, \Layout\PopupButtonY, #__tab_PopupButton, includes\color\front, *this\Attributes)
       Else
@@ -2484,7 +2484,7 @@ EndProcedure
 
 
 
-; Dauerschleife für das automatische Scrollen in der Navigation
+; Dauerschleife fur das automatische Scrollen in der Navigation
 Procedure Timer(Null.i) ; Code OK
   
   With includes\Timer
@@ -2524,7 +2524,7 @@ EndProcedure
 
 
 
-; Callback für BindGadgetEvent()
+; Callback fur BindGadgetEvent()
 Procedure Callback() ; Code OK
   
   Protected *this._s_widget = GetGadgetData(EventGadget())
@@ -2571,11 +2571,11 @@ EndProcedure
 
 
 ;-  4.2 Procedures for the TabBar
-;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+;???????????????????????????????????????????????????????????????????????????????????????????????????
 
 
 
-; Führt eine Aktualisierung (Neuzeichnung) des Gadgets durch.
+; Fuhrt eine Aktualisierung (Neuzeichnung) des Gadgets durch.
 Procedure ReDraw (*this._s_widget) ; Code OK, Hilfe OK
   
   
@@ -2653,7 +2653,7 @@ EndProcedure
 
 
 
-; Fügt eine Registerkarte an die angegebenen Position ein.
+; Fugt eine Registerkarte an die angegebenen Position ein.
 Procedure.i AddItem(*this._s_widget, Position.i, Text.s, ImageID.i=#Null, DataValue.i=#Null) ; Code OK, Hilfe OK
   Protected *Item._s_rows
   
@@ -2723,7 +2723,7 @@ EndProcedure
 
 
 
-; Gibt die Anzahl der Registerkarten zurück.
+; Gibt die Anzahl der Registerkarten zuruck.
 Procedure.i CountItems(*this._s_widget) ; Code OK, Hilfe OK
   
   
@@ -2733,8 +2733,8 @@ Procedure.i CountItems(*this._s_widget) ; Code OK, Hilfe OK
 EndProcedure
 
 
-; Setz einen ToolTip für die Registerkartenleiste (für die Registerkarten, die "Neu"-Registerkarte und den Schließenbutton)
-Procedure Tab_ToolTip(*this._s_widget, ItemText.s="", NewText.s="", CloseText.s="") ; Code OK, Hilfe OK
+; Setz einen ToolTip fur die Registerkartenleiste (fur die Registerkarten, die "Neu"-Registerkarte und den Schlie?enbutton)
+Procedure Tab_WidgetToolTip(*this._s_widget, ItemText.s="", NewText.s="", CloseText.s="") ; Code OK, Hilfe OK
   
   
   
@@ -2746,8 +2746,8 @@ EndProcedure
 
 
 
-; Setz einen ToolTip für die Registerkarte.
-Procedure Tab_ItemToolTip(*this._s_widget, Tab.i, Text.s) ; Code OK, Hilfe OK
+; Setz einen ToolTip fur die Registerkarte.
+Procedure Tab_ItemWidgetToolTip(*this._s_widget, Tab.i, Text.s) ; Code OK, Hilfe OK
   
   Protected *Item._s_rows = ItemID(*this, Tab)
   
@@ -2759,7 +2759,7 @@ EndProcedure
 
 
 
-; Ändert den Wert eines Attributs der Registerkartenleiste.
+; Andert den Wert eines Attributs der Registerkartenleiste.
 Procedure SetAttribute(*this._s_widget, Attribute.i, Value.i, Overwrite.i=#True) ; Code OK, Hilfe OK
   
   Select Attribute
@@ -2846,7 +2846,7 @@ EndProcedure
 
 
 
-; Gibt den Wert eines Attributs der Registerkartenleiste zurück.
+; Gibt den Wert eines Attributs der Registerkartenleiste zuruck.
 Procedure.i GetAttribute(*this._s_widget, Attribute.i) ; Code OK, Hilfe OK
   
   
@@ -2876,7 +2876,7 @@ EndProcedure
 
 
 
-; Ändert den Daten-Wert der Registerkartenleiste.
+; Andert den Daten-Wert der Registerkartenleiste.
 Procedure SetData(*this._s_widget, DataValue.i) ; Code OK, Hilfe OK
   
   
@@ -2887,7 +2887,7 @@ EndProcedure
 
 
 
-; Gibt den Daten-Wert der Registerkartenleiste zurück.
+; Gibt den Daten-Wert der Registerkartenleiste zuruck.
 Procedure.i GetData(*this._s_widget) ; Code OK, Hilfe OK
   
   
@@ -2898,7 +2898,7 @@ EndProcedure
 
 
 
-; Ändert die zu nutzende Schrift.
+; Andert die zu nutzende Schrift.
 Procedure SetFont(*this._s_widget, FontID.i) ; Code OK, Hilfe OK
   
   
@@ -2915,7 +2915,7 @@ EndProcedure
 
 
 
-; Ändert den Status der Registerkartenleiste.
+; Andert den Status der Registerkartenleiste.
 Procedure SetState(*this._s_widget, State.i) ; Code OK, Hilfe OK
   
   
@@ -2941,7 +2941,7 @@ EndProcedure
 
 
 
-; Gibt den Status der Registerkartenleiste zurück.
+; Gibt den Status der Registerkartenleiste zuruck.
 Procedure.i GetState(*this._s_widget) ; Code OK, Hilfe OK
   
   
@@ -2958,7 +2958,7 @@ EndProcedure
 
 
 ; Wechselt zur der Registerkarte mit dem angegebenen Text
-Procedure SetText(*this._s_widget, Text.s) ; Code OK
+Procedure SetTextWidget(*this._s_widget, Text.s) ; Code OK
   
   
   
@@ -2974,8 +2974,8 @@ EndProcedure
 
 
 
-; Gibt den Text der aktuell ausgewählten Registerkarte zurück.
-Procedure.s GetText(*this._s_widget) ; Code OK, Hilfe OK
+; Gibt den Text der aktuell ausgewahlten Registerkarte zuruck.
+Procedure.s GetTextWidget(*this._s_widget) ; Code OK, Hilfe OK
   
   
   
@@ -2987,7 +2987,7 @@ EndProcedure
 
 
 
-; Ändert die Attribute der angegebenen Registerkarte.
+; Andert die Attribute der angegebenen Registerkarte.
 Procedure SetItemAttribute(*this._s_widget, Tab.i, Attribute.i, Value.i)
   
   
@@ -3009,7 +3009,7 @@ EndProcedure
 
 
 
-; Gibt den Status der angegebenen Registerkarte zurück.
+; Gibt den Status der angegebenen Registerkarte zuruck.
 Procedure.i GetItemAttribute(*this._s_widget, Tab.i, Attribute.i)
   
   Protected *Item._s_rows = ItemID(*this, Tab)
@@ -3030,7 +3030,7 @@ EndProcedure
 
 
 
-; Ändert den Datenwert der angegebenen Registerkarte.
+; Andert den Datenwert der angegebenen Registerkarte.
 Procedure SetItemData(*this._s_widget, Tab.i, DataValue.i) ; Code OK, Hilfe OK
   
   Protected *Item._s_rows = ItemID(*this, Tab)
@@ -3043,7 +3043,7 @@ EndProcedure
 
 
 
-; Gibt den Datenwert der angegebenen Registerkarte zurück.
+; Gibt den Datenwert der angegebenen Registerkarte zuruck.
 Procedure.i GetItemData(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
   
   Protected *Item._s_rows = ItemID(*this, Tab)
@@ -3056,8 +3056,8 @@ EndProcedure
 
 
 
-; Ändert die Farbe der angegebenen Registerkarte.
-Procedure SetItemColor(*this._s_widget, Tab.i, Type.i, Color.i) ; Code OK, Hilfe OK
+; Andert die Farbe der angegebenen Registerkarte.
+Procedure SetWidgetItemColor(*this._s_widget, Tab.i, Type.i, Color.i) ; Code OK, Hilfe OK
   
   Protected *Item._s_rows = ItemID(*this, Tab)
   
@@ -3081,8 +3081,8 @@ EndProcedure
 
 
 
-; Gibt die Farbe der angegebenen Registerkarte zurück.
-Procedure.i GetItemColor(*this._s_widget, Tab.i, Type.i) ; Code OK, Hilfe OK
+; Gibt die Farbe der angegebenen Registerkarte zuruck.
+Procedure.i GetWidgetItemColor(*this._s_widget, Tab.i, Type.i) ; Code OK, Hilfe OK
   
   Protected *Item._s_rows = ItemID(*this, Tab)
   
@@ -3099,8 +3099,8 @@ EndProcedure
 
 
 
-; Ändert das Icon der angegebenen Registerkarte.
-Procedure SetItemImage(*this._s_widget, Tab.i, ImageID.i) ; Code OK, Hilfe OK
+; Andert das Icon der angegebenen Registerkarte.
+Procedure SetWidgetItemImage(*this._s_widget, Tab.i, ImageID.i) ; Code OK, Hilfe OK
   
   
   Protected *Item._s_rows = ItemID(*this, Tab)
@@ -3114,7 +3114,7 @@ EndProcedure
 
 
 
-; Ändert die Position der angegebenen Registerkarte (die Registerkarte wird also verschoben).
+; Andert die Position der angegebenen Registerkarte (die Registerkarte wird also verschoben).
 Procedure SetItemPosition(*this._s_widget, Tab.i, Position.i) ; Code OK, Hilfe OK
   
   
@@ -3138,7 +3138,7 @@ EndProcedure
 
 
 
-; Gibt die Position der angegebenen Registerkarte zurück.
+; Gibt die Position der angegebenen Registerkarte zuruck.
 Procedure GetItemPosition(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
   
   
@@ -3178,7 +3178,7 @@ EndProcedure
 
 
 
-; Ändert den Status der angegebenen Registerkarte.
+; Andert den Status der angegebenen Registerkarte.
 Procedure SetItemState(*this._s_widget, Tab.i, State.i, Mask.i=#__s_Disabled|#__s_Selected|#__s_Checked) ; Code OK, Hilfe OK
   
   
@@ -3205,7 +3205,7 @@ EndProcedure
 
 
 
-; Gibt den Status der angegebenen Registerkarte zurück.
+; Gibt den Status der angegebenen Registerkarte zuruck.
 Procedure.i GetItemState(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
   
   Protected *Item._s_rows = ItemID(*this, Tab)
@@ -3218,8 +3218,8 @@ EndProcedure
 
 
 
-; Ändert den Text der angegebenen Registerkarte.
-Procedure SetItemText(*this._s_widget, Tab.i, Text.s) ; Code OK, Hilfe OK
+; Andert den Text der angegebenen Registerkarte.
+Procedure SetItemTextWidget(*this._s_widget, Tab.i, Text.s) ; Code OK, Hilfe OK
   
   Protected *Item._s_rows = ItemID(*this, Tab)
   
@@ -3233,8 +3233,8 @@ EndProcedure
 
 
 
-; Gibt den Text der angegebenen Registerkarte zurück.
-Procedure.s GetItemText(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
+; Gibt den Text der angegebenen Registerkarte zuruck.
+Procedure.s GetItemTextWidget(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
   
   Protected *Item._s_rows = ItemID(*this, Tab)
   
@@ -3319,8 +3319,8 @@ Procedure GetItemGadgetState()
 EndProcedure
 
 Procedure UpdateItemAttributes(Position)
-  If GetGadgetText(#Gadget_ItemText) <> GetItemText(*tab1, Position)
-    SetGadgetText(#Gadget_ItemText, GetItemText(*tab1, Position))
+  If GetGadgetTextWidget(#Gadget_ItemText) <> GetItemTextWidget(*tab1, Position)
+    SetGadgetTextWidget(#Gadget_ItemText, GetItemTextWidget(*tab1, Position))
   EndIf
   SetGadgetState(#Gadget_ItemDisabled, (GetItemState(*tab1, Position)&#__s_Disabled))
   SetGadgetState(#Gadget_ItemSelected, (GetItemState(*tab1, Position)&#__s_Selected))
@@ -3359,7 +3359,7 @@ AddItem(*tab1, #PB_Default, "Pure Basic")
 AddItem(*tab1, #PB_Default, "and the")
 AddItem(*tab1, #PB_Default, "TabBar")
 AddItem(*tab1, #PB_Default, "include")
-;Tab_ToolTip(*tab1, "%ITEM", "new", "close")
+;Tab_WidgetToolTip(*tab1, "%ITEM", "new", "close")
 
 If ContainerGadget(#Gadget_Container, 0, GadgetHeight(#Gadget_TabBar), WindowWidth(#Window), WindowHeight(#Window)-GadgetHeight(#Gadget_TabBar), #PB_Container_Flat)
   
@@ -3398,7 +3398,7 @@ If ContainerGadget(#Gadget_Container, 0, GadgetHeight(#Gadget_TabBar), WindowWid
     ButtonGadget(#Gadget_ItemBackColor, 10, 50, 100, 20, "background color")
     ButtonGadget(#Gadget_ItemFrontColor, 115, 50, 100, 20, "text color")
     TextGadget(#PB_Any, 10, 78, 30, 20, "Text:")
-    StringGadget(#Gadget_ItemText, 40, 75, 175, 20, GetText(*tab1))
+    StringGadget(#Gadget_ItemText, 40, 75, 175, 20, GetTextWidget(*tab1))
     CheckBoxGadget(#Gadget_ItemDisabled, 10, 100, 100, 20, "disabled")
     CheckBoxGadget(#Gadget_ItemSelected, 10, 120, 100, 20, "seleced")
     CheckBoxGadget(#Gadget_ItemChecked, 10, 140, 100, 20, "checked")
@@ -3418,7 +3418,7 @@ If ContainerGadget(#Gadget_Container, 0, GadgetHeight(#Gadget_TabBar), WindowWid
 EndIf
 
 
-Procedure Window_Resize()
+Procedure Window_ResizeWidget()
   
   If GetAttribute(*tab1, #__tab_Vertical)
     ResizeGadget(#Gadget_TabBar, 10, 10, #PB_Ignore, WindowHeight(#Window)-20)
@@ -3431,8 +3431,8 @@ Procedure Window_Resize()
  
 EndProcedure
 
-BindEvent(#PB_Event_SizeWindow, @Window_Resize())
-Window_Resize()
+BindEvent(#PB_Event_SizeWindow, @Window_ResizeWidget())
+Window_ResizeWidget()
 
 
 Repeat
@@ -3463,7 +3463,7 @@ Repeat
               AddGadgetItem(#Gadget_Events, 0, "CheckBox: "+Str(GetItemPosition(*tab1, #__tab_item_Event)))
             Case #__event_Resize
               AddGadgetItem(#Gadget_Events, 0, "Resize")
-              Window_Resize()
+              Window_ResizeWidget()
             Case #__event_EditItem
               AddGadgetItem(#Gadget_Events, 0, "EditItem: "+Str(GetItemPosition(*tab1, #__tab_item_Event)))
             Case #__event_SwapItem
@@ -3478,7 +3478,7 @@ Repeat
           SetAttribute(*tab1, #__tab_NewTab, GetGadgetState(#Gadget_EmptyButton))
         Case #Gadget_Vertical
           SetAttribute(*tab1, #__tab_Vertical, GetGadgetState(#Gadget_Vertical))
-          Window_Resize()
+          Window_ResizeWidget()
         Case #Gadget_MirroredTabs
           SetAttribute(*tab1, #__tab_MirroredTabs, GetGadgetState(#Gadget_MirroredTabs))
         Case #Gadget_TextCutting
@@ -3506,22 +3506,22 @@ Repeat
         Case #Gadget_TabTextAlignment
           SetAttribute(*tab1, #__tab_TabTextAlignment, GetGadgetState(#Gadget_TabTextAlignment))
         Case #Gadget_Item
-          SetGadgetText(#Gadget_ItemText, GetItemText(*tab1, GetItemGadgetState()))
+          SetGadgetTextWidget(#Gadget_ItemText, GetItemTextWidget(*tab1, GetItemGadgetState()))
           UpdateItemAttributes(GetItemGadgetState())
         Case #Gadget_ItemBackColor
-          Color = GetItemColor(*tab1, GetState(*tab1), #PB_Gadget_BackColor)
+          Color = GetWidgetItemColor(*tab1, GetState(*tab1), #PB_Gadget_BackColor)
           Color = ColorRequester(Color)
           If Color > -1
-            SetItemColor(*tab1, GetItemGadgetState(), #PB_Gadget_BackColor, Color)
+            SetWidgetItemColor(*tab1, GetItemGadgetState(), #PB_Gadget_BackColor, Color)
           EndIf
         Case #Gadget_ItemFrontColor
-          Color = GetItemColor(*tab1, GetState(*tab1), #PB_Gadget_FrontColor)
+          Color = GetWidgetItemColor(*tab1, GetState(*tab1), #PB_Gadget_FrontColor)
           Color = ColorRequester(Color)
           If Color > -1
-            SetItemColor(*tab1, GetItemGadgetState(), #PB_Gadget_FrontColor, Color)
+            SetWidgetItemColor(*tab1, GetItemGadgetState(), #PB_Gadget_FrontColor, Color)
           EndIf
         Case #Gadget_ItemText
-          SetItemText(*tab1, GetItemGadgetState(), GetGadgetText(#Gadget_ItemText))
+          SetItemTextWidget(*tab1, GetItemGadgetState(), GetGadgetTextWidget(#Gadget_ItemText))
         Case #Gadget_ItemDisabled
           SetItemState(*tab1, GetItemGadgetState(), GetGadgetState(#Gadget_ItemDisabled)*#__s_Disabled, #__s_Disabled)
         Case #Gadget_ItemSelected
@@ -3536,10 +3536,10 @@ Repeat
           If GetGadgetState(#Gadget_ItemImage)
             FileName = OpenFileRequester("Image", "", "Images (*.bmp;*.png)|*.bmp;*.png", 0)
             If FileName And LoadImage(#Image, FileName)
-              SetItemImage(*tab1, GetItemGadgetState(), ImageID(#Image))
+              SetWidgetItemImage(*tab1, GetItemGadgetState(), ImageID(#Image))
             EndIf
           Else
-            SetItemImage(*tab1, GetItemGadgetState(), #Null)
+            SetWidgetItemImage(*tab1, GetItemGadgetState(), #Null)
           EndIf
       EndSelect
       
@@ -3547,8 +3547,8 @@ Repeat
   
 ForEver
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 184
+; CursorPosition = 1136
+; FirstLine = 1023
 ; Folding = Po--0-------------------------------------------------------------------f4------
 ; Optimizer
 ; EnableXP

@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       For i = 0 To count
-         Container( 5*i, 5*i, 50,50)
+         ContainerWidget( 5*i, 5*i, 50,50)
       Next
       For i = 0 To count
          CloseList( )

@@ -47,7 +47,7 @@ UsePNGImageDecoder()
 ; Определите свойства объектов по умолчанию:
 ;AddObjectHandle(#Object_Default, #Handle_Position | #Handle_Size)
 a_init(root(), 0)
-SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
+SetWidgetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
   
 
 
@@ -67,12 +67,12 @@ SetAttach( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, н
 ; Если вы присоединяете объект к другому и устанавливаете его границы, он действует как гаджет панели.
 ; Здесь вы также можете переключаться между различными кадрами с помощью маленьких ручек вверху слева и вверху справа.
 
-*Object4 = Panel(450, 50, 300, 300);, ""
-SetColor(widget(), #__color_back, RGBA(64, 128, 192, alpha))
-SetColor(widget(), #__color_Frame, RGB(64, 128, 192))
-;SetColor(widget()\tab\widget, #__color_back, RGBA(64, 128, 192, alpha))
-SetFrame(widget(), 2)
-;;SetColor(*Object4, #__color_frame, RGBa(64, 128, 192, alpha))
+*Object4 = PanelWidget(450, 50, 300, 300);, ""
+SetWidgetColor(widget(), #__color_back, RGBA(64, 128, 192, alpha))
+SetWidgetColor(widget(), #__color_Frame, RGB(64, 128, 192))
+;SetWidgetColor(widget()\tab\widget, #__color_back, RGBA(64, 128, 192, alpha))
+SetWidgetFrame(widget(), 2)
+;;SetWidgetColor(*Object4, #__color_frame, RGBa(64, 128, 192, alpha))
 
 AddItem( *Object4, 0, "panel-item-0" )
 *Object5 = a_object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
@@ -91,14 +91,14 @@ SetState(*Object4, 2)
 ; Если вы присоединяете объект к другому объекту и устанавливаете его рамку обрезки, он действует как гаджет области прокрутки.
 ; Здесь вы также можете изменить видимую область с помощью ручек (стрелок) справа и снизу.
 
-*Object8 = ScrollArea( 850, 50, 300, 300,500, 500,1)
-SetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
-SetColor(widget(), #__color_Frame, RGB(128, 192, 64))
-; SetFrame(widget(), 2)
+*Object8 = ScrollAreaWidget( 850, 50, 300, 300,500, 500,1)
+SetWidgetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
+SetWidgetColor(widget(), #__color_Frame, RGB(128, 192, 64))
+; SetWidgetFrame(widget(), 2)
 
 ; Attach some objects to #Object8
 SetChildrenBounds( *Object8 )
-;;AddObjectFrame(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
+;;AddObjectFrameWidget(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
 OpenList( *Object8 )
 a_object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 a_object( 200, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0) 
@@ -112,7 +112,7 @@ CloseList( )
 ; Каждый объект может иметь фреймы (контейнеры для других объектов). Эти кадры пронумерованы от 1 до n.
 ; Если вы присоединяете объект (дочерний) к другому объекту (родительскому), вы можете указать, к какому фрейму он должен быть присоединен,
 ; в противном случае он будет автоматически добавлен в текущий видимый кадр.
-; Позже вы можете изменить отображаемый кадр с помощью команды ShowObjectFrame().
+; Позже вы можете изменить отображаемый кадр с помощью команды ShowObjectFrameWidget().
 
 WaitClose( )
 
@@ -138,10 +138,10 @@ WaitClose( )
 ; ; ; 						If Eventa_object(#Canvas) = #Object4 ; Panel container
 ; ; ; 							; Here the currently shown frame is changed.
 ; ; ; 							If EventHandle(#Canvas) = #Handle_Custom1 And CountObjectFrames(Eventa_object(#Canvas)) > 0
-; ; ; 								ShowObjectFrame(Eventa_object(#Canvas), (VisibleObjectFrame(Eventa_object(#Canvas))+CountObjectFrames(Eventa_object(#Canvas))-1) % CountObjectFrames(Eventa_object(#Canvas)))
+; ; ; 								ShowObjectFrameWidget(Eventa_object(#Canvas), (VisibleObjectFrameWidget(Eventa_object(#Canvas))+CountObjectFrames(Eventa_object(#Canvas))-1) % CountObjectFrames(Eventa_object(#Canvas)))
 ; ; ; 							EndIf
 ; ; ; 							If EventHandle(#Canvas) = #Handle_Custom2 And CountObjectFrames(Eventa_object(#Canvas)) > 0
-; ; ; 								ShowObjectFrame(Eventa_object(#Canvas), (VisibleObjectFrame(Eventa_object(#Canvas))+1) % CountObjectFrames(Eventa_object(#Canvas)))
+; ; ; 								ShowObjectFrameWidget(Eventa_object(#Canvas), (VisibleObjectFrameWidget(Eventa_object(#Canvas))+1) % CountObjectFrames(Eventa_object(#Canvas)))
 ; ; ; 							EndIf
 ; ; ; 						EndIf
 ; ; ; 					Case #EventType_LeftMouseButtonHold

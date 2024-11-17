@@ -9,27 +9,27 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open( 0, 0, 0, 400, 170, "( setparent( ) ) add object in PANEL item", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
-      *panel1 = Panel( 10, 10, 200, 150) : SetClass(widget( ), "CONT1" ) 
+      *panel1 = PanelWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
       ;
       AddItem(*panel1, -1, "item1" )
-      Button( 10,5,80,25, "*btn1_1" )  : SetClass(widget( ), "btn1_1" ) 
-      Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
-      Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
+      ButtonWidget( 10,5,80,25, "*btn1_1" )  : SetWidgetClass(widget( ), "btn1_1" ) 
+      ButtonWidget( 10,35,80,25, "*btn1_2" )  : SetWidgetClass(widget( ), "btn1_2" ) 
+      ButtonWidget( 10,65,80,25, "*btn1_3" )  : SetWidgetClass(widget( ), "btn1_3" ) 
       ;
       AddItem(*panel1, -1, "item2" )
-      Button( 10,5,80,25, "*btn2_4" )  : SetClass(widget( ), "btn2_4" ) 
-      Button( 10,35,80,25, "*btn2_5" )  : SetClass(widget( ), "btn2_5" ) 
-      Button( 10,65,80,25, "*btn2_6" )  : SetClass(widget( ), "btn2_6" ) 
+      ButtonWidget( 10,5,80,25, "*btn2_4" )  : SetWidgetClass(widget( ), "btn2_4" ) 
+      ButtonWidget( 10,35,80,25, "*btn2_5" )  : SetWidgetClass(widget( ), "btn2_5" ) 
+      ButtonWidget( 10,65,80,25, "*btn2_6" )  : SetWidgetClass(widget( ), "btn2_6" ) 
       ;
       AddItem(*panel1, -1, "item3" )
-      Button( 10,5,80,25, "*btn3_7" )  : SetClass(widget( ), "btn3_7" ) 
-      Button( 10,35,80,25, "*btn3_8" )  : SetClass(widget( ), "btn3_8" ) 
-      Button( 10,65,80,25, "*btn3_9" )  : SetClass(widget( ), "btn3_9" ) 
+      ButtonWidget( 10,5,80,25, "*btn3_7" )  : SetWidgetClass(widget( ), "btn3_7" ) 
+      ButtonWidget( 10,35,80,25, "*btn3_8" )  : SetWidgetClass(widget( ), "btn3_8" ) 
+      ButtonWidget( 10,65,80,25, "*btn3_9" )  : SetWidgetClass(widget( ), "btn3_9" ) 
       ;
       CloseList()
    
       ;\\ test
-      *but0 = Button( 100,35,80,25, "*btn1_added" ) : SetClass(widget( ), "btn1_added" ) 
+      *but0 = ButtonWidget( 100,35,80,25, "*btn1_added" ) : SetWidgetClass(widget( ), "btn1_added" ) 
       SetParent( *but0, *panel1, 0 )
       
       ;\\

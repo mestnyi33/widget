@@ -63,14 +63,14 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       If Open(0, 100, 100, 300, 280)
-         *test = Tree(10,  10, 280, 170)
+         *test = TreeWidget(10,  10, 280, 170)
          Define i
          For i = 0 To 12
             AddItem( *test, -1, "item-"+Str(i) )
          Next i
          ;
-         *bind = Button(10, 190, 135, 80, "Bind (events)")
-         *unbind = Button(155, 190, 135, 80, "Unbind (events)")
+         *bind = ButtonWidget(10, 190, 135, 80, "Bind (events)")
+         *unbind = ButtonWidget(155, 190, 135, 80, "Unbind (events)")
          Disable( *unbind, 1 )
          
          Bind(*unbind, @events_Unbind(), #__event_LeftClick)

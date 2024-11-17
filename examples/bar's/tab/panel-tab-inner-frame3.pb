@@ -46,7 +46,7 @@ UsePNGImageDecoder()
 ; Define the default properties of objects:
 ;AddObjectHandle(#Object_Default, #Handle_Position | #Handle_Size)
 a_init(root(), 0)
-SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
+SetWidgetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
   
 
 
@@ -75,19 +75,19 @@ SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
 ; If you attach an object to another and set its boundaries, it acts like a panel gadget.
 ; Here you can also swap between the different frames with the small handles on top left and top right.
 
-*Object4 = Panel(450, 50, 300, 300);, ""
-SetColor(widget(), #__color_back, RGBA(64, 128, 192, alpha))
-SetColor(widget(), #__color_Frame, RGB(64, 128, 192))
-SetFrame(widget(), 12)
-;;SetColor(*Object4, #__color_frame, RGBa(64, 128, 192, alpha))
+*Object4 = PanelWidget(450, 50, 300, 300);, ""
+SetWidgetColor(widget(), #__color_back, RGBA(64, 128, 192, alpha))
+SetWidgetColor(widget(), #__color_Frame, RGB(64, 128, 192))
+SetWidgetFrame(widget(), 12)
+;;SetWidgetColor(*Object4, #__color_frame, RGBa(64, 128, 192, alpha))
 ;AddObjectHandle(#Object4, #Handle_Custom1, CatchImage(#PB_Any, ?resultset_previous), #Alignment_Top | #Alignment_Left, 32, 16) ; This is the handle to swap the frame
 ;AddObjectHandle(#Object4, #Handle_Custom2, CatchImage(#PB_Any, ?resultset_next), #Alignment_Top | #Alignment_Right, -32, 16)   ; This is the handle to swap the frame
 
 ;SetObjectDrawingCallback(#Object_Default, @DrawAnObject(), RGBa(0, 64, 128))
 
-; AddObjectFrame(#Object4, 0, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ; Add some frames and set the view box for their child objects
-; AddObjectFrame(#Object4, 1, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ;   as well as the inner area size to bound the childs.
-; AddObjectFrame(#Object4, 2, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32)
+; AddObjectFrameWidget(#Object4, 0, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ; Add some frames and set the view box for their child objects
+; AddObjectFrameWidget(#Object4, 1, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32) ;   as well as the inner area size to bound the childs.
+; AddObjectFrameWidget(#Object4, 2, 0, 32, #Boundary_ParentSize, #Boundary_ParentSize-32, #Boundary_ParentSize, #Boundary_ParentSize-32)
 AddItem( *Object4, 0, "panel-item-0" )
 *Object5 = Object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
 AddItem( *Object4, 1, "panel-item-1" )
@@ -101,14 +101,14 @@ SetState(*Object4, 2)
 ; If you attach an object to another and set its clipping frame, it acts like a scroll area gadget.
 ; Here you can also change the visible area with the handles (arrows) on the right and bottom.
 
-*Object8 = ScrollArea( 850, 50, 300, 300,500, 500,1);, "", RGBa(128, 192, 64))
-SetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
-SetColor(widget(), #__color_Frame, RGB(128, 192, 64))
-SetFrame(widget(), 2)
-SetColor(widget()\scroll\v, #__color_back, RGBA(128, 192, 64, alpha))
-SetColor(widget()\scroll\h, #__color_back, RGBA(128, 192, 64, alpha))
-SetColor(widget()\scroll\v, #__color_Frame, RGB(128, 192, 64))
-SetColor(widget()\scroll\h, #__color_Frame, RGB(128, 192, 64))
+*Object8 = ScrollAreaWidget( 850, 50, 300, 300,500, 500,1);, "", RGBa(128, 192, 64))
+SetWidgetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
+SetWidgetColor(widget(), #__color_Frame, RGB(128, 192, 64))
+SetWidgetFrame(widget(), 2)
+SetWidgetColor(widget()\scroll\v, #__color_back, RGBA(128, 192, 64, alpha))
+SetWidgetColor(widget()\scroll\h, #__color_back, RGBA(128, 192, 64, alpha))
+SetWidgetColor(widget()\scroll\v, #__color_Frame, RGB(128, 192, 64))
+SetWidgetColor(widget()\scroll\h, #__color_Frame, RGB(128, 192, 64))
 
 ; AddObjectHandle(#Object8, #Handle_Custom1, CatchImage(#PB_Any, ?arrow_up), #Alignment_Top | #Alignment_Right, -12, 16) ; This is the handle the change the visible area
 ; AddObjectHandle(#Object8, #Handle_Custom2, CatchImage(#PB_Any, ?arrow_down), #Alignment_Bottom | #Alignment_Right, -12, -40) ; This is the handle the change the visible area
@@ -118,7 +118,7 @@ SetColor(widget()\scroll\h, #__color_Frame, RGB(128, 192, 64))
 ; SetObjectDrawingCallback(#Object_Default, @DrawAnObject(), RGBa(64, 128, 0))
 
 ; Attach some objects to #Object8
-;;AddObjectFrame(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
+;;AddObjectFrameWidget(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
 OpenList( *Object8 )
 Object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
 Object( 200, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0) 
@@ -132,7 +132,7 @@ CloseList( )
 ; Each object can have frames (containers for other objects). These frames are numbered from 1 to n.
 ; If you attach an object (children) to another object (parent), you can specify to which frame it should be attached,
 ; otherwise it will be automatically added to the current visible frame.
-; You can later change the displayed frame with the ShowObjectFrame() command.
+; You can later change the displayed frame with the ShowObjectFrameWidget() command.
 
 WaitClose( )
 
@@ -158,10 +158,10 @@ WaitClose( )
 ; ; ; 						If EventObject(#Canvas) = #Object4 ; Panel container
 ; ; ; 							; Here the currently shown frame is changed.
 ; ; ; 							If EventHandle(#Canvas) = #Handle_Custom1 And CountObjectFrames(EventObject(#Canvas)) > 0
-; ; ; 								ShowObjectFrame(EventObject(#Canvas), (VisibleObjectFrame(EventObject(#Canvas))+CountObjectFrames(EventObject(#Canvas))-1) % CountObjectFrames(EventObject(#Canvas)))
+; ; ; 								ShowObjectFrameWidget(EventObject(#Canvas), (VisibleObjectFrameWidget(EventObject(#Canvas))+CountObjectFrames(EventObject(#Canvas))-1) % CountObjectFrames(EventObject(#Canvas)))
 ; ; ; 							EndIf
 ; ; ; 							If EventHandle(#Canvas) = #Handle_Custom2 And CountObjectFrames(EventObject(#Canvas)) > 0
-; ; ; 								ShowObjectFrame(EventObject(#Canvas), (VisibleObjectFrame(EventObject(#Canvas))+1) % CountObjectFrames(EventObject(#Canvas)))
+; ; ; 								ShowObjectFrameWidget(EventObject(#Canvas), (VisibleObjectFrameWidget(EventObject(#Canvas))+1) % CountObjectFrames(EventObject(#Canvas)))
 ; ; ; 							EndIf
 ; ; ; 						EndIf
 ; ; ; 					Case #EventType_LeftMouseButtonHold

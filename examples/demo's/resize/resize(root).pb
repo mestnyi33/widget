@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MaximizeGadget | 
                                             #PB_Window_ScreenCentered )
       
-;        Button(0,0,0,0,"auto-resize-root-size" )
+;        ButtonWidget(0,0,0,0,"auto-resize-root-size" )
 ;        SetAlign( widget( ), #__align_full )
       
       WaitEvent( @resize_events( ), #__event_resize )

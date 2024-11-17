@@ -11,18 +11,18 @@ UseWidgets( )
 
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   ;;*this\_a_set = mode  
-  SetFrame(*this, size)
+  SetWidgetFrame(*this, size)
   If color <> #SelectionStyle_None
-    SetColor(*this, #__color_frame, Color&$FFFFFF | 255<<24)
+    SetWidgetColor(*this, #__color_frame, Color&$FFFFFF | 255<<24)
   EndIf    
 EndProcedure
 
 If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;
-  Define *g = Container(0,0,0,0, #__flag_autosize)
+  Define *g = ContainerWidget(0,0,0,0, #__flag_autosize)
   a_init(*g, 8)
-  ;SetColor(*g, #__color_back, RGBA(128, 192, 64, alpha))
-  ;SetColor(root( ), #__color_back, RGBA(255, 255, 255, 255))
+  ;SetWidgetColor(*g, #__color_back, RGBA(128, 192, 64, alpha))
+  ;SetWidgetColor(root( ), #__color_back, RGBA(255, 255, 255, 255))
   
   ; Create five different objects
   *Object1 = a_object(20, 20, 200, 100, "", RGBA(64, 128, 192, alpha)) 

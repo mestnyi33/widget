@@ -9,13 +9,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *g1 = Button(    30, 30, 200, h, "butt_left", #__flag_TextLeft)
-    *g2 = Button(30+210, 30, 200, h, "butt" + #LF$ + "center" + #LF$ + "multi", #__flag_Textmultiline)
-    *g3 = Button(30+420, 30, 200, h, "right_butt", #__flag_TextRight)
+    *g1 = ButtonWidget(    30, 30, 200, h, "butt_left", #__flag_TextLeft)
+    *g2 = ButtonWidget(30+210, 30, 200, h, "butt" + #LF$ + "center" + #LF$ + "multi", #__flag_Textmultiline)
+    *g3 = ButtonWidget(30+420, 30, 200, h, "right_butt", #__flag_TextRight)
     
-    *g4 = Splitter(0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-    *g5 = Splitter(30,30,620,h, *g4,*g3, #PB_Splitter_Vertical)
-    *g6 = Splitter(30,30,620,h, *g5,#Null)
+    *g4 = SplitterWidget(0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    *g5 = SplitterWidget(30,30,620,h, *g4,*g3, #PB_Splitter_Vertical)
+    *g6 = SplitterWidget(30,30,620,h, *g5,#Null)
     
     SetState(*g4, 200)
     SetState(*g5, 200*2)

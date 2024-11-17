@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
   test_redraw_items = 0
 
   If Open(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
-    *w = Tree(270, 10, 250, 680, #__Tree_NoLines|#__Tree_NoButtons) 
+    *w = TreeWidget(270, 10, 250, 680, #__Tree_NoLines|#__Tree_NoButtons) 
     
     Define time = ElapsedMilliseconds()
     For a = 0 To LN

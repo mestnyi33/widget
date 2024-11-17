@@ -3,7 +3,7 @@
 ;XIncludeFile "../../../-widgets-edit.pbi"
 ;XIncludeFile "../../../-widgets.pbi"
 ;XIncludeFile "../../../widget-events.pbi"
- ;XIncludeFile "editor(code).pb"
+ ;XIncludeFile "EditorWidget(code).pb"
  ;XIncludeFile "empty.pb"
 
 
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BindEvent( #PB_Event_Repaint, @event_repaint() )
     
     Open(0, 270, 10, 250, 680)
-    Define *w = Editor(0, 0, 250, 680) 
+    Define *w = EditorWidget(0, 0, 250, 680) 
     
     Define time = ElapsedMilliseconds()
     For a = 0 To LN

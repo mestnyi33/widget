@@ -39,8 +39,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(1, 0, 0, 170, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    w_flag = widget::Tree(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
-    w_this = widget::Button(10, 220, 150, 70, "Click me", #__flag_Textmultiline );| #__flag_ButtonToggle) 
+    w_flag = widget::TreeWidget(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
+    w_this = widget::ButtonWidget(10, 220, 150, 70, "Click me", #__flag_Textmultiline );| #__flag_ButtonToggle) 
     
     ; widget::Bind(w_this, @events_widgets( ), #PB_All )
     ; widget::Bind(w_this, @events_widgets( ), #__Event_Draw)

@@ -35,28 +35,28 @@
 ;       ;\\
 ;       *root = root()
 ;       ;     ;*root = Window( x, 0, 160,170-10, "") :x = 0
-;       ;     *root = Container( x, 0, 160,170-10) :x = 0
+;       ;     *root = ContainerWidget( x, 0, 160,170-10) :x = 0
 ;       
-;       *panel = Panel( x, 65, 160,95 ) 
-;          i=0:AddItem( *panel, i, Hex(i) ) : Button( 10,5,80,35, "_"+Str(i) )  : SetClass(widget( ), "btn"+Str(i) )  
-;          i=1:AddItem( *panel, i, Hex(i) ) : Button( 10,5,80,35, "_"+Str(i) )  : SetClass(widget( ), "btn"+Str(i) ) 
-;          i=2:AddItem( *panel, i, Hex(i) ) : Button( 10,5,80,35, "_"+Str(i) )  : SetClass(widget( ), "btn"+Str(i) ) 
-;          i=3:AddItem( *panel, i, Hex(i) ) : Button( 10,5,80,35, "_"+Str(i) )  : SetClass(widget( ), "btn"+Str(i) ) 
-;          i=4:AddItem( *panel, i, Hex(i) ) : Button( 10,5,80,35, "_"+Str(i) )  : SetClass(widget( ), "btn"+Str(i) ) 
-;          i=5:AddItem( *panel, i, Hex(i) ) : Button( 10,5,80,35, "_"+Str(i) )  : SetClass(widget( ), "btn"+Str(i) ) 
+;       *panel = PanelWidget( x, 65, 160,95 ) 
+;          i=0:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) )  
+;          i=1:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) ) 
+;          i=2:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) ) 
+;          i=3:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) ) 
+;          i=4:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) ) 
+;          i=5:AddItem( *panel, i, Hex(i) ) : ButtonWidget( 10,5,80,35, "_"+Str(i) )  : SetWidgetClass(widget( ), "btn"+Str(i) ) 
 ;       CloseList( )
 ;       
 ; ;           OpenList( *panel, 0 )
-; ;           Button( 20,25,80,35, "_0" ) : SetClass(widget( ), "btn"+Str(0) )  
+; ;           ButtonWidget( 20,25,80,35, "_0" ) : SetWidgetClass(widget( ), "btn"+Str(0) )  
 ; ;           CloseList( )
 ;       
-;        *butt0 = Button( 20,25,80,35, "_0" ) : SetClass(widget( ), "btn"+Str(0) ) 
+;        *butt0 = ButtonWidget( 20,25,80,35, "_0" ) : SetWidgetClass(widget( ), "btn"+Str(0) ) 
 ;        Debug " reparent "
 ;        SetParent( *butt0, *panel, 0 )
 ;       
 ; ;       ;
-; ;       *butt1 = Button( x,5,80,25, "*butt1" ) 
-; ;       *butt2 = Button( x,35,80,25, "*butt2" ) 
+; ;       *butt1 = ButtonWidget( x,5,80,25, "*butt1" ) 
+; ;       *butt2 = ButtonWidget( x,35,80,25, "*butt2" ) 
 ; ;       
 ; ;       If *panel
 ; ;          SetState( *panel, 2 )
@@ -116,29 +116,29 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open( 0, 0, 0, 220, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
-      *CONT = Panel( 10, 10, 200, 150) : SetClass(widget( ), "CONT1" ) 
+      *CONT = PanelWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
       AddItem(*CONT, -1, "item0" )
       ;
       AddItem(*CONT, -1, "item1" )
-      Button( 10,5,80,25, "*btn1_1" )  : SetClass(widget( ), "btn1_1" ) 
-;       Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
-;       Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
+      ButtonWidget( 10,5,80,25, "*btn1_1" )  : SetWidgetClass(widget( ), "btn1_1" ) 
+;       ButtonWidget( 10,35,80,25, "*btn1_2" )  : SetWidgetClass(widget( ), "btn1_2" ) 
+;       ButtonWidget( 10,65,80,25, "*btn1_3" )  : SetWidgetClass(widget( ), "btn1_3" ) 
 ; ;       ;
 ;       AddItem(*CONT, -1, "item2" )
-;       Button( 10,5,80,25, "*btn2_4" )  : SetClass(widget( ), "btn2_4" ) 
-;       Button( 10,35,80,25, "*btn2_5" )  : SetClass(widget( ), "btn2_5" ) 
-;       Button( 10,65,80,25, "*btn2_6" )  : SetClass(widget( ), "btn2_6" ) 
+;       ButtonWidget( 10,5,80,25, "*btn2_4" )  : SetWidgetClass(widget( ), "btn2_4" ) 
+;       ButtonWidget( 10,35,80,25, "*btn2_5" )  : SetWidgetClass(widget( ), "btn2_5" ) 
+;       ButtonWidget( 10,65,80,25, "*btn2_6" )  : SetWidgetClass(widget( ), "btn2_6" ) 
 ;       ;
 ;       AddItem(*CONT, -1, "item3" )
-;       Button( 10,5,80,25, "*btn3_7" )  : SetClass(widget( ), "btn3_7" ) 
-;       Button( 10,35,80,25, "*btn3_8" )  : SetClass(widget( ), "btn3_8" ) 
-;       Button( 10,65,80,25, "*btn3_9" )  : SetClass(widget( ), "btn3_9" ) 
+;       ButtonWidget( 10,5,80,25, "*btn3_7" )  : SetWidgetClass(widget( ), "btn3_7" ) 
+;       ButtonWidget( 10,35,80,25, "*btn3_8" )  : SetWidgetClass(widget( ), "btn3_8" ) 
+;       ButtonWidget( 10,65,80,25, "*btn3_9" )  : SetWidgetClass(widget( ), "btn3_9" ) 
       ;
       CloseList()
       
       ;\\ test 
-      *but0 = Button( 100,35,80,25, "*btn0_added" ) : SetClass(widget( ), "btn0_added" ) 
-      Button( 100,35,80,25, "*btn77" ) : SetClass(widget( ), "btn77" ) 
+      *but0 = ButtonWidget( 100,35,80,25, "*btn0_added" ) : SetWidgetClass(widget( ), "btn0_added" ) 
+      ButtonWidget( 100,35,80,25, "*btn77" ) : SetWidgetClass(widget( ), "btn77" ) 
       
       ;\\
       Debug " reParent       "

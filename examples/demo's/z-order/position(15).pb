@@ -13,42 +13,42 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   ; last-root
-   Define *w = window(10,10,200,200, "window_main", #PB_Window_SystemMenu|#__flag_autosize) : SetClass(*w, "window_main")
+   Define *w = window(10,10,200,200, "window_main", #PB_Window_SystemMenu|#__flag_autosize) : SetWidgetClass(*w, "window_main")
   
-  Define *f0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu, *w) : SetClass(*f0, "form_0")
-;   Button(10,10,100,30,"button_0_0") : SetClass(widget(), GetText(widget()))
-;   Button(10,50,100,30,"button_0_1") : SetClass(widget(), GetText(widget()))
-;   Button(10,90,100,30,"button_0_2") : SetClass(widget(), GetText(widget()))
+  Define *f0 = window(10,10,200,200, "form_0", #PB_Window_SystemMenu, *w) : SetWidgetClass(*f0, "form_0")
+;   ButtonWidget(10,10,100,30,"button_0_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+;   ButtonWidget(10,50,100,30,"button_0_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+;   ButtonWidget(10,90,100,30,"button_0_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
   
-  Define *g1 = Container(30,10,200,200) : SetClass(*g1, "container_1")
-  Button(10,10,100,30,"button_1_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,100,30,"button_1_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,100,30,"button_1_2") : SetClass(widget(), GetText(widget()))
+  Define *g1 = ContainerWidget(30,10,200,200) : SetWidgetClass(*g1, "container_1")
+  ButtonWidget(10,10,100,30,"button_1_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,50,100,30,"button_1_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,90,100,30,"button_1_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
 
-  Define *g2 = Container(50,10,200,200) : SetClass(*g2, "container_2")
-  Button(10,10,100,30,"button_2_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,100,30,"button_2_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,100,30,"button_2_2") : SetClass(widget(), GetText(widget()))
+  Define *g2 = ContainerWidget(50,10,200,200) : SetWidgetClass(*g2, "container_2")
+  ButtonWidget(10,10,100,30,"button_2_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,50,100,30,"button_2_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,90,100,30,"button_2_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
 ;   
-  Define *f1 = window(120,40,200,200, "form_1", #PB_Window_SystemMenu, *w) : SetClass(*f1, "form_1")
-  Button(10,10,80,30,"button_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,80,30,"button_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,80,30,"button_2") : SetClass(widget(), GetText(widget()))
+  Define *f1 = window(120,40,200,200, "form_1", #PB_Window_SystemMenu, *w) : SetWidgetClass(*f1, "form_1")
+  ButtonWidget(10,10,80,30,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,50,80,30,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,90,80,30,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
   
   OpenList(*f0)
-  Button(10,10,130,30,"button_0_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,130,30,"button_0_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,130,30,"button_0_2") : SetClass(widget(), GetText(widget()))
+  ButtonWidget(10,10,130,30,"button_0_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,50,130,30,"button_0_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,90,130,30,"button_0_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
   CloseList()
   
 ;   ;SortStructuredList(widget(), #PB_Sort_Ascending, OffsetOf(_s_count\index), TypeOf(_s_count\index))
             
            
-;   Resize(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
-;   Resize(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;   ResizeWidget(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
+;   ResizeWidget(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   Debug "---->>"
   ForEach widgets()
     Debug ""+ Space((widgets()\level-1)*5) +" "+ widgets()\class

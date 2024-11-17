@@ -9,9 +9,9 @@
 ; - RemoveItem(): Remove a panel. 
 ; - CountItems(): Count the number of panels. 
 ; - ClearItems(): Remove all panels. 
-; - GetItemText(): Retrieve the text of the specified item. 
-; - SetItemText(): Change the text of the specified item. 
-; - SetItemImage(): Change the image of the specified item. ;;;;;;;;;;;(Not supported on OS X) 
+; - GetItemTextWidget(): Retrieve the text of the specified item. 
+; - SetItemTextWidget(): Change the text of the specified item. 
+; - SetWidgetItemImage(): Change the image of the specified item. ;;;;;;;;;;;(Not supported on OS X) 
 ; - GetItemData(): Retrieve the value associated With the specified item. 
 ; - SetItemData(): Associate a value With the specified item. 
 ; 
@@ -46,11 +46,11 @@ Procedure events_gbuttons()
           OpenGadgetList(1)
           AddGadgetItem(1, 1, "Sub 2 (add)")
           If CountGadgetItems(1) > 1
-            SetGadgetItemText(1, 1, "Sub 2 (add&set)")
-            Debug GetGadgetItemText(1, 1) + " - get item text"
+            SetGadgetItemTextWidget(1, 1, "Sub 2 (add&set)")
+            Debug GetGadgetItemTextWidget(1, 1) + " - get item text"
           Else
-            SetGadgetItemText(1, 0, "Sub 1 (add&set)")
-            Debug GetGadgetItemText(1, 0) + " - get item text"
+            SetGadgetItemTextWidget(1, 0, "Sub 1 (add&set)")
+            Debug GetGadgetItemTextWidget(1, 0) + " - get item text"
           EndIf
           CloseGadgetList()
       EndSelect
@@ -74,11 +74,11 @@ Procedure events_wbuttons()
           ;OpenList( WidgetID(1))
           AddItem( WidgetID(1), 1, "Sub 2 (add)")
           If CountItems( WidgetID(1)) > 1
-            SetItemText( WidgetID(1), 1, "Sub 2 (add&set)")
-            Debug GetItemText( WidgetID(1), 1) + " - get item text"
+            SetItemTextWidget( WidgetID(1), 1, "Sub 2 (add&set)")
+            Debug GetItemTextWidget( WidgetID(1), 1) + " - get item text"
           Else
-            SetItemText( WidgetID(1), 0, "Sub 1 (add&set)")
-            Debug GetItemText( WidgetID(1), 0) + " - get item text"
+            SetItemTextWidget( WidgetID(1), 0, "Sub 1 (add&set)")
+            Debug GetItemTextWidget( WidgetID(1), 0) + " - get item text"
           EndIf
           ;CloseList()
       EndSelect
@@ -125,12 +125,12 @@ If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #P
   Debug ""+CountGadgetItems(1) +" - count gadget items"
   
   Open(0, 322, 0, 322, 220)
-  Panel(8, 8, 300, 200)
-  Define h = Height( WidgetID(0), #__c_inner )
-  Define w = Width( WidgetID(0), #__c_inner )
+  PanelWidget(8, 8, 300, 200)
+  Define h = WidgetHeight( WidgetID(0), #__c_inner )
+  Define w = WidgetWidth( WidgetID(0), #__c_inner )
   
   AddItem( WidgetID(0), -1, "Panel 1")
-  Panel(10, 10, w-20, h-20-34*3)
+  PanelWidget(10, 10, w-20, h-20-34*3)
   AddItem( WidgetID(1), -1, "Sub 1")
   AddItem( WidgetID(1), -1, "Sub 2")
   AddItem( WidgetID(1), -1, "Sub 3")
@@ -143,13 +143,13 @@ If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #P
   SetState( WidgetID(1), 5)
   CloseList( )
   
-  Button(10, h-34*2, 80, 24,"remove")
-  Button(10, h-34*3, 80, 24,"add")
-  Button(10, h-34*1, 80, 24,"clear")
+  ButtonWidget(10, h-34*2, 80, 24,"remove")
+  ButtonWidget(10, h-34*3, 80, 24,"add")
+  ButtonWidget(10, h-34*1, 80, 24,"clear")
   
   AddItem ( WidgetID(0), -1,"Panel 2")
-  Button(10, 10, 80, 24,"Button 3")
-  Button(95, 10, 80, 24,"Button 4")
+  ButtonWidget(10, 10, 80, 24,"Button 3")
+  ButtonWidget(95, 10, 80, 24,"Button 4")
   CloseList()
   
   For i = 0 To 1

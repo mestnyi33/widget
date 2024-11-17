@@ -35,25 +35,25 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     ;
-    *panel = Panel( x, 65, 160,95 ) 
+    *panel = PanelWidget( x, 65, 160,95 ) 
     For i = 0 To 5 
       AddItem( *panel, i, Hex(i) ) 
       If i
-        Button( 10,5,80,35, "_"+Str(i) ) 
+        ButtonWidget( 10,5,80,35, "_"+Str(i) ) 
       EndIf
     Next 
     CloseList( )
     
     OpenList( *panel, 0 )
-    Button( 20,25,80,35, "_0" ) 
+    ButtonWidget( 20,25,80,35, "_0" ) 
     CloseList( )
     
-    ;     *butt0 = Button( 20,25,80,35, "_0" )
+    ;     *butt0 = ButtonWidget( 20,25,80,35, "_0" )
     ;     SetParent( *butt0, *panel, 0 )
     
     ;
-    *butt1 = Button( x,5,80,25, "*butt1" ) 
-    *butt2 = Button( x,35,80,25, "*butt2" ) 
+    *butt1 = ButtonWidget( x,5,80,25, "*butt1" ) 
+    *butt2 = ButtonWidget( x,35,80,25, "*butt2" ) 
     
     If *panel
       SetState( *panel, 2 )
