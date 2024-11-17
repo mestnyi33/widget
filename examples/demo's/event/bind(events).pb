@@ -10,11 +10,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Global binded
    
    Procedure events_1()
-      Debug " "+Str(IDWidget( EventWidget( ) ))+ " - 1event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
+      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 1event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
    EndProcedure
    
    Procedure events_2()
-      Debug " "+Str(IDWidget( EventWidget( ) ))+ " - 2event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
+      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 2event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
    EndProcedure
    
    

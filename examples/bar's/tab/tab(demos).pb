@@ -663,7 +663,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    Open(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_TabBar)
    
-   ;ResizeGadget( GetGadget( ), 10, 10, 650-20, 30)
+   ;ResizeGadget( GetCanvasGadget( ), 10, 10, 650-20, 30)
    *tab1 = Tab(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)
    AddItem(*tab1, #PB_Default, "In this")
    AddItem(*tab1, #PB_Default, "example")

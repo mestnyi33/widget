@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
       Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, Button_5)
       Splitter_3 = Splitter(0, 0, 0, 0, Button_2, Splitter_2)
-      Splitter_4 = Splitter(430-GadgetX(GetGadget(root())), 10-GadgetY(GetGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+      Splitter_4 = Splitter(430-GadgetX(GetCanvasGadget(root())), 10-GadgetY(GetCanvasGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
       
       SetText(Splitter_0, "0")
       SetText(Splitter_1, "1")

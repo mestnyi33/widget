@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ButtonGadget   (0,    5,   95, 390,  30, "", #PB_Button_Toggle)
          
          If Open(0, 10, 10, 380, 80)
-            g_Canvas = GetGadget(root())
+            g_Canvas = GetCanvasGadget(root())
             *scrollbar = Scroll(5, 10, 370, 30, 20, 50, 8 )
             SetAttribute(*scrollbar, #__Bar_ButtonSize, 30 )
             buttonsize = GetAttribute( *scrollbar, #__Bar_ButtonSize )

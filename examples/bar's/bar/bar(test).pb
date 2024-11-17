@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ButtonGadget (0, 5, 65 + h, 390, 30, "set standart scrollbar", #PB_Button_Toggle)
          
          If Open(0, 10, 10, 380, 50 + h)
-            g_Canvas  = GetGadget(root())
+            g_Canvas  = GetCanvasGadget(root())
             Frame( 0,0,0,0, "demo bars", #__flag_autosize)
             *track    = Track(15, 10, 350, 30, min, 50, flags)
             *splitter = Splitter(15, 10 + 35 * 1, 350, 30, -1,  -1, flags | #__Bar_Vertical)

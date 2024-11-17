@@ -37,7 +37,7 @@ Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCe
 ;     ProcedureReturn W_IH
 ;   EndIf
   
-  ;W_IH = GetWindow(Open(OpenWindow(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID)))                                                
+  ;W_IH = GetCanvasWindow(Open(OpenWindow(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID)))                                                
   ;W_IH = 
   Window(10, 10, 386, 201, "ImageHelper", Flag, ParentID)                                               
   ;G_IH_ScrollArea_0 = ScrollArea(5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
@@ -91,7 +91,7 @@ EndProcedure
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  W_IH = GetWindow(Open(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
+  W_IH = GetCanvasWindow(Open(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
   W_IH_Open()
   
   While IsWindow(W_IH)

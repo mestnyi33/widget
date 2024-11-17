@@ -54,8 +54,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If Open( OpenWindow( #PB_Any, 300, 150, 380, 200, "form1", #PB_Window_SystemMenu ) )
-    canvas_1 = GetGadget( Root( ) )
-    canvas_1_win = GetWindow( Root( ) )
+    canvas_1 = GetCanvasGadget( Root( ) )
+    canvas_1_win = GetCanvasWindow( Root( ) )
     ;BindEventCanvas( )
     a_init(root())
     *root_1 = Root( )
@@ -67,8 +67,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   If Open( OpenWindow( #PB_Any, 300, 400, 380, 200, "form2", #PB_Window_SystemMenu | #PB_Window_SizeGadget ) )
-    canvas_2 = GetGadget( Root( ) )
-    canvas_2_win = GetWindow( Root( ) )
+    canvas_2 = GetCanvasGadget( Root( ) )
+    canvas_2_win = GetCanvasWindow( Root( ) )
     ;BindEventCanvas( ) 
     a_init(root())
     *root_2 = Root( )

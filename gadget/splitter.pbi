@@ -127,7 +127,7 @@ EndMacro
 ;       ;       widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
 ; ;       widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
 ;       
-;       Splitter_4 = widget::Splitter(430-GadgetX(GetGadget(Root())), 10-GadgetY(GetGadget(Root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+;       Splitter_4 = widget::Splitter(430-GadgetX(GetCanvasGadget(Root())), 10-GadgetY(GetCanvasGadget(Root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
 ;       
 ;       ; widget::SetState(Splitter_0, 20)
 ;       ; widget::SetState(Splitter_0, -20)
@@ -160,8 +160,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
   OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)
   ;   widget::Open()
-  ;   window_ide = widget::GetWindow(root())
-  ;   canvas_ide = widget::GetGadget(root())
+  ;   window_ide = widget::GetCanvasWindow(root())
+  ;   canvas_ide = widget::GetCanvasGadget(root())
   
   s_tbar = TextGadget(#PB_Any, 0,0,0,0,"", #__Text_Border)
   s_desi = TextGadget(#PB_Any, 0,0,0,0,"", #__Text_Border)

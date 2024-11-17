@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     ;\\
-    ResizeGadget(GetGadget( Root( ) ), #PB_Ignore, #PB_Ignore, Width, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
+    ResizeGadget(GetCanvasGadget( Root( ) ), #PB_Ignore, #PB_Ignore, Width, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
   EndProcedure
   
   If Open(11, 0, 0, 150, 235, "ImageButton", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)

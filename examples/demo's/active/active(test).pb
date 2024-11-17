@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;Root( )\text\align\right = 0
       SetClass(Root( ), "Root_0")
       SetText(Root( ), "Root_0")
-      SetWindowTitle( 1, "Root_0_canvas_"+Str(GetGadget(Root())))
+      SetWindowTitle( 1, "Root_0_canvas_"+Str(GetCanvasGadget(Root())))
    EndIf
    
    If OpenWindow(2, 0, 0, 500, 500, " focus demo ", #PB_Window_SystemMenu |

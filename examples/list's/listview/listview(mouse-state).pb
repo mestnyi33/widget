@@ -103,46 +103,46 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Select WidgetEvent()
 ;       Case #__event_Focus
-;         Debug  ""+IDWidget(EventWidget())+" - widget focus "+GetState(EventWidget())
+;         Debug  ""+GetIndex(EventWidget())+" - widget focus "+GetState(EventWidget())
 ;       Case #__event_LostFocus
-;         Debug  ""+IDWidget(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
+;         Debug  ""+GetIndex(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
 ;         
 ;       Case #__event_Up
-;         Debug  ""+IDWidget(EventWidget())+" - widget Up "+GetState(EventWidget())
+;         Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetState(EventWidget())
 ;         
 ;       Case #__event_Down
-;         Debug  ""+IDWidget(EventWidget())+" - widget Down "+GetState(EventWidget())
+;         Debug  ""+GetIndex(EventWidget())+" - widget Down "+GetState(EventWidget())
 ;         
 ;       Case #__event_ScrollChange
-;         Debug  ""+IDWidget(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
 ;       Case #__event_StatusChange
-;         ; Debug  ""+IDWidget(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
       Case #__event_DragStart
         If *w1 = EventWidget()
           DragText( GetItemText(EventWidget(), GetState(EventWidget())) )
-          Debug  ""+IDWidget(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
+          Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
         EndIf
       
       Case #__event_Drop
         If *w3 = EventWidget()
-          Debug  ""+IDWidget(EventWidget())+" - widget Drop "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropText( )
+          Debug  ""+GetIndex(EventWidget())+" - widget Drop "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropText( )
           AddItem( *w3, EventWidget( )\RowEntered( )\_index + 1, EventDropText( ) )
           SetActive( *w3 )
         EndIf
       
       Case #__event_Change
-        Debug  ""+IDWidget(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
       Case #__event_LeftClick
-        Debug  ""+IDWidget(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
 ;       Case #__event_Left2Click
-;         Debug  ""+IDWidget(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
 ;       Case #__event_RightClick
-;         Debug  ""+IDWidget(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
     EndSelect
   EndProcedure

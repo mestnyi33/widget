@@ -18,8 +18,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Define width = 200
   
   If Open(0, 0, 0, width+20, 760, "test alignment text", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    canvas_gadget = GetGadget(Root())
-    canvas_window = GetWindow(Root())
+    canvas_gadget = GetCanvasGadget(Root())
+    canvas_window = GetCanvasWindow(Root())
     
     *B_1 = Text(10,  10, width, 65, Text);, #__flag_Textleft)
     *B_2 = Text(10,  10+65+10, width, 65, Text, #__flag_Texttop)

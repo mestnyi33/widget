@@ -110,8 +110,8 @@ Procedure ide_open( x=100,y=100,width=800,height=600 )
    
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
    Define root = widget::Open( 1, x,y,width,height, "ide", flag ) 
-   window_ide = widget::GetWindow( root )
-   canvas_ide = widget::GetGadget( root )
+   window_ide = widget::GetCanvasWindow( root )
+   canvas_ide = widget::GetCanvasGadget( root )
    
    
    toolbar_design = ToolBar( toolbar_design )

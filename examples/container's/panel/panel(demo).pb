@@ -25,7 +25,7 @@ EndProcedure
 
 Procedure events_widgets()
   If WidgetEvent( ) <> #__event_MouseMove And WidgetEvent( ) <> #__event_Draw
-    Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(EventWidget( )) ; 
+    Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(EventWidget( )) ; 
   EndIf
 EndProcedure
 
@@ -60,7 +60,7 @@ EndProcedure
 Procedure events_wbuttons()
   Select WidgetEvent( )
     Case #__event_LeftClick
-      Select IDWidget( EventWidget( ) )
+      Select GetIndex( EventWidget( ) )
         Case 2 
           If CountItems( ID(1)) > 1
             RemoveItem( ID(1), 1)

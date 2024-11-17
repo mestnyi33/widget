@@ -79,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;   CloseGadgetList()
     
     
-    ;SetActiveGadget( GetGadget( Root( ) ) )
+    ;SetActiveGadget( GetCanvasGadget( Root( ) ) )
     
      WaitClose( )
   EndIf

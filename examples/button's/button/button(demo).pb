@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug FontID(0)
   
   If Open( 0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-    Global main = GetWindow( root( ) )
+    Global main = GetCanvasWindow( root( ) )
     ;BindEventCanvas( )
     
     ButtonGadget( 0, 10, 10, 200, 20, "Standard button", #PB_Button_Default )
@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
-    c2 = GetGadget( root( ) )
+    c2 = GetCanvasGadget( root( ) )
     
     *Button_0 = Button( 15, 42, 250,  60, "Button (Horisontal)", #__flag_Textmultiline,-1 )
 ;     SetColor( *Button_0, #__Color_fore, $0000FF )

@@ -69,7 +69,7 @@ Procedure Widget(GadgetID)
   ProcedureReturn GadgetID
 EndProcedure
 
-Procedure WidgetWindow(GadgetID)
+Procedure WidGetCanvasWindow(GadgetID)
   Protected Gadget = IDGadget(GadgetID)  
   Protected *Widget.GtkWidget = GadgetID :GadgetID = *Widget\object
   If IsGadget(Gadget) 
@@ -100,7 +100,7 @@ Procedure WidgetParent(GadgetID)
       ProcedureReturn GadgetID
     ElseIf GadgetType(Gadget) = #PB_GadgetType_ScrollArea
       ;GadgetID = Widget(GadgetID)
-      ;GadgetID = WidgetWindow(GadgetID)
+      ;GadgetID = WidGetCanvasWindow(GadgetID)
       *Widget.GtkWidget = GadgetID :GadgetID = *Widget\parent
       *Widget.GtkWidget = GadgetID :GadgetID = *Widget\window
        *Widget.GtkWidget = GadgetID :GadgetID = *Widget\parent
@@ -109,7 +109,7 @@ Procedure WidgetParent(GadgetID)
 ;       *Widget.GtkWidget = GadgetID :GadgetID = *Widget\object
       ProcedureReturn GadgetID
     Else
-     ProcedureReturn WidgetWindow(GadgetID)
+     ProcedureReturn WidGetCanvasWindow(GadgetID)
     EndIf
   EndIf
  EndProcedure

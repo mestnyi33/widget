@@ -866,7 +866,7 @@ Procedure widget_events( )
          
       Case #__event_Resize
          properties_update_coordinate( ide_inspector_properties, *e_widget )
-         SetWindowTitle( GetWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
+         SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
          
       Case #__event_MouseEnter,
            #__event_MouseLeave,
@@ -1288,8 +1288,8 @@ Procedure ide_open( x=100,y=100,width=850,height=600 )
    
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
    ide_root = Open( 1, x,y,width,height, "ide", flag ) 
-   ide_window = GetWindow( ide_root )
-   ide_g_canvas = GetGadget( ide_root )
+   ide_window = GetCanvasWindow( ide_root )
+   ide_g_canvas = GetCanvasGadget( ide_root )
    
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)

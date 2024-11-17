@@ -132,7 +132,7 @@ Procedure W_SH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_SizeGadg
     ProcedureReturn W_SH
   EndIf
   
-  W_SH = GetWindow(Open(#PB_Any, 570, 320, 286, 206, "SplitterHelper", Flag, ParentID))
+  W_SH = GetCanvasWindow(Open(#PB_Any, 570, 320, 286, 206, "SplitterHelper", Flag, ParentID))
   WindowBounds(W_SH, 185,WindowHeight(W_SH),700,WindowHeight(W_SH))
   G_SH_Text_G1 = Text(10, 15, 61, 16, "Gadget_1:", #PB_Text_Right)                                                                                                                                                                                                                                                                                   
   G_SH_Text_G2 = Text(10, 40, 61, 16, "Gadget_2:", #PB_Text_Right)                                                                                                                                                                                                                                                                                   

@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ; mask | #LeftMouseDraggedMask | #RightMouseDraggedMask
       ; mask | #KeyDownMask
       
-      Procedure GetGadgetWindow( Gadget )
+      Procedure GetGadGetCanvasWindow( Gadget )
         ProcedureReturn IDWindow( CocoaMessage( 0, GadgetID( Gadget ), "window" ) )
       EndProcedure
       
@@ -73,7 +73,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         If IsGadget( EventGadget( ) )
           If GetActiveGadget <> EventGadget( ) 
             If IsGadget( GetActiveGadget )
-              PostEvent( #PB_Event_Gadget , GetGadgetWindow( GetActiveGadget ), GetActiveGadget, #PB_EventType_LostFocus )
+              PostEvent( #PB_Event_Gadget , GetGadGetCanvasWindow( GetActiveGadget ), GetActiveGadget, #PB_EventType_LostFocus )
             EndIf
             
             GetActiveGadget = EventGadget( )

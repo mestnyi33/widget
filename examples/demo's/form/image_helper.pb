@@ -22,7 +22,7 @@ Procedure CFE_Helper_Buttons_Events( )
     Case #__Event_LeftClick
       Select EventWidget( )
         Case Button_Cancel
-          Close( GetWindow( Button_Cancel ) )
+          Close( GetCanvasWindow( Button_Cancel ) )
           
         Case Button_Ok 
           Window_0_0_Image = GetState(Image_View)

@@ -400,7 +400,7 @@ EndProcedure
     ;}
     
     Open(0, 0, 225, 1110, 425)
-    g_Canvas = GetGadget(root())
+    g_Canvas = GetCanvasGadget(root())
     g = 10
     
 ; ;     *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         

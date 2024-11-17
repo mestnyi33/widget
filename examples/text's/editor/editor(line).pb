@@ -54,11 +54,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select eventtype
       Case #__event_Focus
-        String.s = "focus "+Str(IDWidget(EventWidget( )))+" "+eventtype
+        String.s = "focus "+Str(GetIndex(EventWidget( )))+" "+eventtype
       Case #__event_LostFocus
-        String.s = "lostfocus "+Str(IDWidget(EventWidget( )))+" "+eventtype
+        String.s = "lostfocus "+Str(GetIndex(EventWidget( )))+" "+eventtype
       Case #__event_Change
-        String.s = "change "+Str(IDWidget(EventWidget( )))+" "+eventtype
+        String.s = "change "+Str(GetIndex(EventWidget( )))+" "+eventtype
     EndSelect
     
     If eventtype = #__event_Focus

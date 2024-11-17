@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
      
   EndProcedure
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   *mdi = MDI(x,y,width, height);, #__flag_autosize)
   ; a_init( *mdi,1 )

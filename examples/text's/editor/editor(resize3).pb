@@ -121,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
        
     Open(0, 270, 10, 250, 150)
-    g_Canvas = GetGadget(Root())
+    g_Canvas = GetCanvasGadget(Root())
     
     *g=Editor(0, 0, 250, 150, #__Flag_autosize)
     For i=0 To 10

@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Events()
       Protected event = WidgetEvent()
       If event =  #__Event_MouseEnter
-         Select IDWidget(EventWidget())
+         Select GetIndex(EventWidget())
             Case 2 : SetActive(ID(0))   ; Activate StringGadget
             Case 3 : SetActive(ID(1))   ; Activate ComboBoxGadget
          EndSelect
@@ -19,14 +19,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select event
          Case #__Event_Focus
-            Debug "focus ["+IDWidget(EventWidget()) +"]eventgadget ["+ IDWidget(GetActive()) +"]getactivegadget"
+            Debug "focus ["+GetIndex(EventWidget()) +"]eventgadget ["+ GetIndex(GetActive()) +"]getactivegadget"
             
             If GetActiveGadget( ) <> EventWidget( )\root\canvas\gadget
                SetActiveGadget( EventWidget( )\root\canvas\gadget )
             EndIf
             
          Case #__Event_LostFocus
-            Debug "lostfocus ["+IDWidget(EventWidget()) +"]eventgadget ["+ IDWidget(GetActive()) +"]getactivegadget"
+            Debug "lostfocus ["+GetIndex(EventWidget()) +"]eventgadget ["+ GetIndex(GetActive()) +"]getactivegadget"
       EndSelect
    EndProcedure
    

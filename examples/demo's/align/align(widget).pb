@@ -70,8 +70,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure example_1( )
     *root = Open( #PB_Any, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
-    Canvas_0 = GetGadget(*root)
-    Window_0 = GetWindow(*root)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
     SetColor(*root, #__color_back, $FFACE3FF )
     
     wlist(Hex(2)) = Button(55, 5, 80, 20, "center")   ; center \2     align_proportional_horizontal
@@ -114,8 +114,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure example_2( )
     *root = Open( #PB_Any, 310, 30, 190, 200, #PB_Compiler_Procedure+"(alignment-auto-indent)", #PB_Window_SizeGadget)
-    Canvas_0 = GetGadget(*root)
-    Window_0 = GetWindow(*root)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
     
     wlist(Hex(10)) = Button(0, 0, 90, 50, "left&center&right")      
     wlist(Hex(11)) = Button(0, 0, 90, 50, "top&center&bottom")      
@@ -156,8 +156,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure example_3( )
     *root = Open( #PB_Any, 250, 330, 390, 200, #PB_Compiler_Procedure+"(gadget-auto-dock)", #PB_Window_SizeGadget)
-    Canvas_0 = GetGadget(*root)
-    Window_0 = GetWindow(*root)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
     
     wlist(Hex(1)) = Button(0, 0, 60, 20, "left1")  
     wlist(Hex(2)) = Button(0, 0, 80, 40, "top1")   
@@ -215,8 +215,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure example_4( )
     ;ProcedureReturn 
     *root = Open( #PB_Any, 450, 460, 390, 200, #PB_Compiler_Procedure+"(window-auto-dock)", #PB_Window_SizeGadget)
-    Canvas_0 = GetGadget(*root)
-    Window_0 = GetWindow(*root)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
     
     wlist(Hex(1)) = Window(0, 0, 60, 20, "left1", #__flag_nogadgets)  
     wlist(Hex(2)) = Window(0, 0, 80, 40, "top1", #__flag_nogadgets)   
@@ -272,8 +272,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure example_5( )
     *root = Open( #PB_Any, 850, 460, 390, 200, #PB_Compiler_Procedure+"(auto-alignment)", #PB_Window_SizeGadget)
-    Canvas_0 = GetGadget(*root)
-    Window_0 = GetWindow(*root)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
     
     wlist(Hex(1)) = Button(0, 0, 60, 20, "left1")  
     wlist(Hex(2)) = Button(0, 0, 80, 40, "top1")   
@@ -330,8 +330,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected height = 200
     
     *root = Open( #PB_Any, 620, 30, width, height, #PB_Compiler_Procedure+"(Proportional)", #PB_Window_SizeGadget)
-    Canvas_0 = GetGadget(*root)
-    Window_0 = GetWindow(*root)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
     
     ;\\
     wlist(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
@@ -407,8 +407,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected height = 144
     
     *root = Open( #PB_Any, 320, 130, width, height, #PB_Compiler_Procedure+"(indent-auto-alignment (example_2))", #PB_Window_SizeGadget)
-    Canvas_0 = GetGadget(*root)
-    Window_0 = GetWindow(*root)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
     
     ;\\
     wlist(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
@@ -449,8 +449,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   Procedure example_demo()
     *root = Open( #PB_Any, 20, 540, 250, 410, "test", #PB_Window_SizeGadget)
-    Canvas_0 = GetGadget(*root)
-    Window_0 = GetWindow(*root)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
     
     ;     ;\\
     ;     tree_view = Tree(0, 0, 0, 0, #__flag_autosize)   

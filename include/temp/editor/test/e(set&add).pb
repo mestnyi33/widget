@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Open(0, 270, 10, 250, 680)
     ;Define *w = Editor(0, 0, 0, 0, #__flag_autosize) 
     *g = Editor(0, 0, 250, 680, #__flag_autosize) 
-    g=getgadget(root())
+    g=GetCanvasGadget(root())
     
     ;     Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines|#PB_Flag_Numeric);#PB_Text_WordWrap|#PB_Flag_GridLines) 
     ;     *g._s_widget=GetGadgetData(g)

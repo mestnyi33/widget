@@ -79,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Define window = GetWindow(Open( 0, 100, 100, 500, 250, "main window_0", #__Window_SystemMenu))
+   Define window = GetCanvasWindow(Open( 0, 100, 100, 500, 250, "main window_0", #__Window_SystemMenu))
    Define Container = ContainerGadget( #PB_Any, 10, 35, 80, 100-20, #PB_Container_Flat ) : CloseGadgetList( )
    
    CreateMenu(0, WindowID(window))

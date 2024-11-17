@@ -196,7 +196,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     Open(0, 0, 225+90, 1110, 425-90)
-    g_Canvas = GetGadget(root())
+    g_Canvas = GetCanvasGadget(root())
     g = 10
     
     *g = Tree(10, 20, 210, th, #__tree_CheckBoxes)                                         

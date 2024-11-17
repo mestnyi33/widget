@@ -19,12 +19,12 @@ EndProcedure
 
 Procedure events_progress_widgets()
   ;ClearDebugOutput()
-  ;Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
+  ;Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
   Select WidgetEvent( )
     Case #__Event_Change
-     ; SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-      ; Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+     ; SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      ; Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -42,12 +42,12 @@ EndProcedure
 
 Procedure events_track_widgets()
   ;ClearDebugOutput()
- ;; Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(IDWidget(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
+ ;; Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
   Select WidgetEvent( )
     Case #__Event_Change
-      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-      SetState(ID(IDWidget(EventWidget( ))-3), GetState(EventWidget( )))
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      SetState(ID(GetIndex(EventWidget( ))-3), GetState(EventWidget( )))
   EndSelect
 EndProcedure
 

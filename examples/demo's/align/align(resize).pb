@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       Define *w._S_widget = Open(0)
-      ;Canvas_0 = GetGadget(Root())
+      ;Canvas_0 = GetCanvasGadget(Root())
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
       

@@ -27,16 +27,16 @@ Procedure events_widgets()
   
   Select WidgetEvent( )
     Case #__event_Up
-      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+IDWidget(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
       
     Case #__event_Down
-      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+IDWidget(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
        
     Case #__event_Change
-      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+IDWidget(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
+      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 

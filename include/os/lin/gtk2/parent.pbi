@@ -9,7 +9,7 @@ DeclareModule Parent
   Declare GetWindowID( handle.i )
   Declare GetParentID( handle.i )
   
-  Declare GetWindow( gadget.i )
+  Declare GetCanvasWindow( gadget.i )
   Declare GetParent( gadget.i )
   Declare SetParent( gadget.i, ParentID.i, Item.l = #PB_Default )
 EndDeclareModule
@@ -183,7 +183,7 @@ Module Parent
     Wend
   EndProcedure
   
-  Procedure GetWindow( gadget.i ) ; Return the handle of the parent window from the gadget ident
+  Procedure GetCanvasWindow( gadget.i ) ; Return the handle of the parent window from the gadget ident
     ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget.i ) ) )
   EndProcedure
   
@@ -488,7 +488,7 @@ CompilerIf #PB_Compiler_IsMainFile
             If IsGadget( Parent )
               Debug "parent - gadget ( " + Parent + " )"
             Else
-              Debug "parent - window ( " + GetWindow( #CHILD ) + " )"
+              Debug "parent - window ( " + GetCanvasWindow( #CHILD ) + " )"
             EndIf
           EndIf
       EndSelect

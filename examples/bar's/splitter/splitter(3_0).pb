@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure resize_window_0()
     Protected width = WindowWidth(EventWindow())
-    ; ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
+    ; ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
 ;     ResizeGadget(3, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
 ;     ResizeGadget(6, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
     ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)

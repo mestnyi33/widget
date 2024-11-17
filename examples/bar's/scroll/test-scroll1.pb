@@ -20,15 +20,15 @@ CompilerIf #PB_Compiler_IsMainFile
  EndProcedure
 
   Procedure resize_window_0()
-    Protected width = WindowWidth(EventWindow())
-    ; ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
+    Protected Width = WindowWidth(EventWindow())
+    ; ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
 ;     ResizeGadget(3, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
 ;     ResizeGadget(6, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-    ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+    ResizeGadget(7, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
     
 ;     Resize(s_0, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
 ;     Resize(s_1, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-    Resize(s_2, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+    Resize(s_2, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
   EndProcedure
   
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global fixed = 0
   
   ; first splitter
-  ScrollBarGadget(3, 0, 0, 0, 0, 0, -250, 0)
+  ScrollBarGadget(3, 0, 0, 0, 0, 0, 250, 0)
   BindGadgetEvent(3, @events_gadgets())
   
   ScrollBarGadget(6, 0, 0, 0, 0, 0, 250, 0)
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9
-; FirstLine = 5
+; CursorPosition = 40
+; FirstLine = 18
 ; Folding = -
 ; EnableXP

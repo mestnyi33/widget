@@ -343,9 +343,9 @@ CompilerIf #PB_Compiler_IsMainFile
             Height = Height(*cont)
             
             If GetGadgetState(0)
-              AddWindowTimer(GetWindow(root()), 1, 200)
+              AddWindowTimer(GetCanvasWindow(root()), 1, 200)
             Else
-              RemoveWindowTimer(GetWindow(root()), 1)
+              RemoveWindowTimer(GetCanvasWindow(root()), 1)
             EndIf
         EndSelect
         

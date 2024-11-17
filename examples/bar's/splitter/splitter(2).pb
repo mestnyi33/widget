@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     ResizeGadget(6, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
     ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
     
-    ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
+    ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
 ;     Resize(*w_3, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
 ;     Resize(*w_6, #pb_Ignore, #pb_Ignore, width - 250, #pb_Ignore)
     Resize(*w_7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)

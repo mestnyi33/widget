@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_MouseMove
             If show = 0
                show = 1
-               GadgetToolTip( GetGadget( EventWidget( ) ), EventWidget( )\class )
+               GadgetToolTip( GetCanvasGadget( EventWidget( ) ), EventWidget( )\class )
             EndIf
             
      EndSelect

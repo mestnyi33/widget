@@ -111,7 +111,7 @@ EndProcedure
 CompilerIf #PB_Compiler_IsMainFile
    Define Event
    Open( 1, 245, 144, 555, 555, "Tool", #PB_Window_SystemMenu )
-   Define Window = GetWindow(root( ))
+   Define Window = GetCanvasWindow(root( ))
    Tool_Gadget( Window, 555, 555 )
    
    While IsWindow( Window )

@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Debug GetGadgetItemText(0,1007)
     
     Open(0, 10, 250, 402, 230)
-    *g = Editor(0, 0, 402, 230, #__flag_autosize) : g = *g ; getgadget(*g)
+    *g = Editor(0, 0, 402, 230, #__flag_autosize) : g = *g ; GetCanvasGadget(*g)
     Define time = ElapsedMilliseconds()
     SetText(*g, Text.s) 
     Debug Str(ElapsedMilliseconds()-time) + " - widget set text time count - " + CountItems(*g)

@@ -202,11 +202,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Define round = 50
    
    ;
-   MyCanvas = GetGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
+   MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
    SetColor(root(), #__color_back, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
-   ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetWindow(Root()), MyCanvas, #PB_EventType_Resize )
+   ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
    
    *mdi = MDI(x,y,width,height);, #__flag_autosize)
                                ;a_init( *mdi )

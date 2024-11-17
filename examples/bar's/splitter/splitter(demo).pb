@@ -20,8 +20,8 @@ Procedure events_widgets()
   Select WidgetEvent( )
     Case #__event_Change
       state = GetState(EventWidget( ))
-      SetGadgetState(IDWidget(EventWidget( )), state)
-      Debug  Str(IDWidget(EventWidget( )))+" - widget change " + state +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
+      SetGadgetState(GetIndex(EventWidget( )), state)
+      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + state +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
   EndSelect
 EndProcedure
 

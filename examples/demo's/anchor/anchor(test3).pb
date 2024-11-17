@@ -12,8 +12,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
   widget::Open(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag))
-  window_ide = widget::GetWindow(root())
-  canvas_ide = widget::GetGadget(root())
+  window_ide = widget::GetCanvasWindow(root())
+  canvas_ide = widget::GetCanvasGadget(root())
   a_init(root())
   
   s_tbar = Text(0,0,0,0,"", #__flag_TextBorder)
@@ -90,12 +90,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   ;widget::Resize(Splitter_ide, 0,0,820,620)
   
-  SetText(s_tbar, "size: ("+Str(Width(s_tbar))+"x"+Str(Height(s_tbar))+") - " );+ Str(IDWidget( widget::GetParent( s_tbar ))) )
-  SetText(s_desi, "size: ("+Str(Width(s_desi))+"x"+Str(Height(s_desi))+") - " );+ Str(IDWidget( widget::GetParent( s_desi ))))
-  SetText(s_view, "size: ("+Str(Width(s_view))+"x"+Str(Height(s_view))+") - " );+ Str(IDWidget( widget::GetParent( s_view ))))
-  SetText(s_list, "size: ("+Str(Width(s_list))+"x"+Str(Height(s_list))+") - " );+ Str(IDWidget( widget::GetParent( s_list ))))
-  SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(IDWidget( widget::GetParent( s_insp ))))
-  SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(IDWidget( widget::GetParent( s_help ))))
+  SetText(s_tbar, "size: ("+Str(Width(s_tbar))+"x"+Str(Height(s_tbar))+") - " );+ Str(GetIndex( widget::GetParent( s_tbar ))) )
+  SetText(s_desi, "size: ("+Str(Width(s_desi))+"x"+Str(Height(s_desi))+") - " );+ Str(GetIndex( widget::GetParent( s_desi ))))
+  SetText(s_view, "size: ("+Str(Width(s_view))+"x"+Str(Height(s_view))+") - " );+ Str(GetIndex( widget::GetParent( s_view ))))
+  SetText(s_list, "size: ("+Str(Width(s_list))+"x"+Str(Height(s_list))+") - " );+ Str(GetIndex( widget::GetParent( s_list ))))
+  SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(GetIndex( widget::GetParent( s_insp ))))
+  SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(GetIndex( widget::GetParent( s_help ))))
   
   ;WaitClose( )
   Define event

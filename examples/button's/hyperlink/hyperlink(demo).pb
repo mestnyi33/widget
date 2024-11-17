@@ -17,8 +17,8 @@ Procedure events_widgets()
    
    Select WidgetEvent( )
       Case #PB_EventType_LeftClick
-         SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-         Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+         SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
+         Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
    EndSelect
 EndProcedure
 

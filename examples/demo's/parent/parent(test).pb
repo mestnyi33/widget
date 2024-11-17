@@ -99,7 +99,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             If Is(Parent)
 ;               Debug "parent -  (" + Parent + ")"
 ;             Else
-;               Debug "parent - window (" + GetWindow(*CHILD) + ")"
+;               Debug "parent - window (" + GetCanvasWindow(*CHILD) + ")"
 ;             EndIf
           EndIf
       EndSelect 
@@ -194,8 +194,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Button(10,10,30,30,"?") 
 ;   CloseList( )
   
-  HideWindow(GetWindow(GetRoot(*window_10)),0)
-  HideWindow(GetWindow(GetRoot(*window_20)),0)
+  HideWindow(GetCanvasWindow(GetRoot(*window_10)),0)
+  HideWindow(GetCanvasWindow(GetRoot(*window_20)),0)
   
   Bind(GetRoot(*window_10), @Widgets_CallBack())
   Bind(GetRoot(*window_20), @Widgets_CallBack())

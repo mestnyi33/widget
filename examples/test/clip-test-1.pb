@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0))
+  MyCanvas = GetCanvasGadget(Open(0))
   a_init(root())
   
   ;\\

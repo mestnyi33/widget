@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_widgets()
       Select WidgetEvent( )
          Case #__event_LeftClick, #__event_Change
-            Debug  ""+IDWidget(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
+            Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
             
             Select EventWidget( )
                Case w_0 : SetGadgetState(0, GetState(EventWidget( )))

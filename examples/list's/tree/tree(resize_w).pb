@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    g_Canvas = GetGadget(Open(0))
+    g_Canvas = GetCanvasGadget(Open(0))
     
     g = TreeGadget_(#PB_Any, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         
     ; 3_example

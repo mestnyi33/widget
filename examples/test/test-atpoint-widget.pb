@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind( object, @CustomEvents( ), #__event_statuschange )
    Bind( object, @CustomEvents( ), #__event_resize )
    
-   AddWindowTimer( GetWindow(root( )), 1, 500)
+   AddWindowTimer( GetCanvasWindow(root( )), 1, 500)
    Procedure window_timer( )
       Static i
       
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
       EndIf
    EndProcedure
-   BindEvent(#PB_Event_Timer, @window_timer( ), GetWindow(root( )))
+   BindEvent(#PB_Event_Timer, @window_timer( ), GetCanvasWindow(root( )))
    
    WaitClose( )
    

@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-   ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
+   ; Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile = 333
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+Str(IDWidget(EventWidget()))+ " - widget event - " +WidgetEvent();+ " bar - " +this()\item+ " direction - " +this()\data 
+    Debug ""+Str(GetIndex(EventWidget()))+ " - widget event - " +WidgetEvent();+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))

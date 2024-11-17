@@ -19,8 +19,8 @@ CompilerIf #PB_Compiler_IsMainFile
   test_align = 1
   
   If Open(0, 0, 0, width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    canvas_gadget = GetGadget(Root())
-    canvas_window = GetWindow(Root())
+    canvas_gadget = GetCanvasGadget(Root())
+    canvas_window = GetCanvasWindow(Root())
     
     *B_1 = Image(10,  10, width, 65, Image);, #__Image_left)
     *B_2 = Image(10,  10+65+10, width, 65, Image, #__Image_top)

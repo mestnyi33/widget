@@ -985,9 +985,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Declare.l WidgetHeight( *this, mode.l = #__c_frame )
     
     Declare.i WidgetID( index )
-    Declare.l IDWidget( *this )
-    Declare.i GetGadget( *this = #Null )
-    Declare.i GetWindow( *this = #Null )
+    Declare.l GetIndex( *this )
+    Declare.i GetCanvasGadget( *this = #Null )
+    Declare.i GetCanvasWindow( *this = #Null )
     
     ;     
     ;     Declare.b Hide( *this, State.b = #PB_Default, flags.q = 0 )
@@ -4908,7 +4908,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn *this\type
     EndProcedure
     
-    Procedure.l IDWidget( *this._s_WIDGET )
+    Procedure.l GetIndex( *this._s_WIDGET )
       ProcedureReturn *this\index
     EndProcedure
     
@@ -5232,7 +5232,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn *this\parent
     EndProcedure
     
-    Procedure.i GetGadget( *this._s_WIDGET = #Null ) ; Returns canvas gadget
+    Procedure.i GetCanvasGadget( *this._s_WIDGET = #Null ) ; Returns canvas gadget
       Protected.i result
       If is_widget_( *this )
         result = *this\root\canvas\gadget
@@ -5244,7 +5244,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure.i GetWindow( *this._s_WIDGET = #Null ) ; Returns window
+    Procedure.i GetCanvasWindow( *this._s_WIDGET = #Null ) ; Returns window
       Protected.i result
       If is_widget_( *this )
         If is_root_( *this )
@@ -8581,7 +8581,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
+    ; Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
     
     Select WidgetEvent( )
       Case #__event_Resize
@@ -8652,7 +8652,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;
     Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
-    ;SplitterGadget(#PB_Any,10,10,590,480, SplitterGadget(#PB_Any,0,0,0,0, g,GetGadget(*g\root), #PB_Splitter_Vertical),ButtonGadget  (#PB_Any,  10,  10, 230, 30,"Button 1"))
+    ;SplitterGadget(#PB_Any,10,10,590,480, SplitterGadget(#PB_Any,0,0,0,0, g,GetCanvasGadget(*g\root), #PB_Splitter_Vertical),ButtonGadget  (#PB_Any,  10,  10, 230, 30,"Button 1"))
     
     ;     BindGadgetEvent(g, @events_gadgets())
     ;     Bind(*g, @events_widgets())

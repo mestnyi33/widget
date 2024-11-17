@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_roots( )
     If WidgetEvent( ) <> #__event_MouseMove
-      Debug "  "+ IDWidget(EventWidget()) +" - widget event - "+ WidgetEvent() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEvent()
+      Debug "  "+ GetIndex(EventWidget()) +" - widget event - "+ WidgetEvent() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEvent()
     EndIf
   EndProcedure
   

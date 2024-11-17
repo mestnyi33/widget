@@ -369,7 +369,7 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   MyCanvas = GetGadget(Open(0, 10, 10)) 
+   MyCanvas = GetCanvasGadget(Open(0, 10, 10)) 
    BindGadgetEvent(MyCanvas, @Canvas_CallBack())
    Bind(root( ), @events_draw(), #__event_ReDraw)
    

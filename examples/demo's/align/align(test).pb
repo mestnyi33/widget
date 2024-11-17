@@ -10,12 +10,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Window_0_Resize( )
       Debug 888
-    ;  ResizeGadget(GetGadget(root()),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
+    ;  ResizeGadget(GetCanvasGadget(root()),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
      ;  Resize( root(),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
       ; PostEventRepaint( root())
    EndProcedure
    
-   Define Window_0 = GetWindow( Open( #PB_Any, 20, 20, 200, 200, "test", #PB_Window_SizeGadget))
+   Define Window_0 = GetCanvasWindow( Open( #PB_Any, 20, 20, 200, 200, "test", #PB_Window_SizeGadget))
    
    ;Define Button_0 = Button( 200-50-5, 200-50-5, 50,  50, "right & bottom")
    Define Button_0 = Button( 5, 5, 50,  50, "right & bottom")

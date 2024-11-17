@@ -2,7 +2,7 @@
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
-  Macro IDWidget( this )
+  Macro GetIndex( this )
     MacroExpandedCount
   EndMacro
   UseWidgets( )
@@ -17,15 +17,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Procedure events_widgets()
     Select WidgetEvent( )
       Case #__event_Change
-        Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
+        Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( )) +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
     EndSelect
   EndProcedure
 
 
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
   widget::Open(0, 100,100,800,600, "ide", flag)
-  window_ide = widget::GetWindow(root())
-  canvas_ide = widget::GetGadget(root())
+  window_ide = widget::GetCanvasWindow(root())
+  canvas_ide = widget::GetCanvasGadget(root())
   
   s_tbar = TextGadget(#PB_Any,0,0,0,0,"", #__flag_TextBorder)
   s_desi = TextGadget(#PB_Any,0,0,0,0,"", #__flag_TextBorder)
@@ -98,12 +98,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   ;widget::Resize(Splitter_ide, 0,0,820,620)
   
-  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(IDWidget( widget::GetParent( s_tbar ))))
-  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(IDWidget( widget::GetParent( s_desi ))))
-  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(IDWidget( widget::GetParent( s_view ))))
-  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(IDWidget( widget::GetParent( s_list ))))
-  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(IDWidget( widget::GetParent( s_insp ))))
-  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(IDWidget( widget::GetParent( s_help ))))
+  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(GetIndex( widget::GetParent( s_tbar ))))
+  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(GetIndex( widget::GetParent( s_desi ))))
+  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(GetIndex( widget::GetParent( s_view ))))
+  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(GetIndex( widget::GetParent( s_list ))))
+  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(GetIndex( widget::GetParent( s_insp ))))
+  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(GetIndex( widget::GetParent( s_help ))))
   
   Bind(#PB_All, @events_widgets(), #__event_Change)
     

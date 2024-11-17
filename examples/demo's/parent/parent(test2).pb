@@ -814,8 +814,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
     Define root = widget::Open( 0, x,y,width,height, "ide", flag ) 
-    window_ide = widget::GetWindow( root )
-    canvas_ide = widget::GetGadget( root )
+    window_ide = widget::GetCanvasWindow( root )
+    canvas_ide = widget::GetCanvasGadget( root )
     
     id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
     id_design_code = TreeGadget(-1, 590,270,200,250 )

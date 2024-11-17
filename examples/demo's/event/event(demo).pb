@@ -63,10 +63,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure _events( )
       If is_root_(eventWidget( ))
          If WidgetEvent( ) = #__event_Focus
-            events( #PB_Event_ActivateWindow, GetWindow(eventWidget( )), #PB_All, widgetEventData( ) )
+            events( #PB_Event_ActivateWindow, GetCanvasWindow(eventWidget( )), #PB_All, widgetEventData( ) )
          EndIf
          If WidgetEvent( ) = #__event_LostFocus
-            events( #PB_Event_DeactivateWindow, GetWindow(eventWidget( )), #PB_All, widgetEventData( ) )
+            events( #PB_Event_DeactivateWindow, GetCanvasWindow(eventWidget( )), #PB_All, widgetEventData( ) )
          EndIf
       Else
          events( #PB_Event_Gadget, eventWidget( ), WidgetEvent( ), widgetEventData( ) )

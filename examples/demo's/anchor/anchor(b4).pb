@@ -57,7 +57,7 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
   a_object(110, 110, 200, 100, "Layer = 4", RGBA(192, 128, 64, alpha))
   a_object(140, 140, 200, 100, "Layer = 5", RGBA(128, 64, 192, alpha))
   
-  BindEvent( #PB_Event_Gadget, @right_events(), getwindow(root()), getgadget(root()), #PB_EventType_RightButtonUp )
+  BindEvent( #PB_Event_Gadget, @right_events(), GetCanvasWindow(root()), GetCanvasGadget(root()), #PB_EventType_RightButtonUp )
   BindEvent( #PB_Event_Menu, @menu_events())
   WaitClose( )
 EndIf

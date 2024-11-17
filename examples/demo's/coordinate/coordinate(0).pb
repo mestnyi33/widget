@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug ""
     
     Debug "Y ScrollArea-widget coordinate"
-    Debug "  screen - "+ Str(GadgetY(GetGadget(*g), #PB_Gadget_ScreenCoordinate)+y(*g, #__c_screen))
+    Debug "  screen - "+ Str(GadgetY(GetCanvasGadget(*g), #PB_Gadget_ScreenCoordinate)+y(*g, #__c_screen))
     Debug "  window - "+ Y(*g, #__c_window)
     Debug "  container - "+ Y(*g, #__c_container)
     Debug "  area - "+ GetAttribute(*g, #PB_ScrollArea_Y)

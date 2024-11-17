@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         EndIf
 ;         
 ;         ; draw active gadget focused frame
-;         If GetGadget( GetActive( ) ) = EventWidget
+;         If GetCanvasGadget( GetActive( ) ) = EventWidget
 ;           DrawingMode(#PB_2DDrawing_Outlined)
 ;           Box(0, 0, Width(EventWidget), Height(EventWidget), $FFFFFF00)
 ;         EndIf
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Window_0()
     w_list(Hex(110)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(110)), 110)
-    SetWindowTitle(GetWindow(root()), "Window_110") 
+    SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
     ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
     ;       w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Window_1()
     w_list(Hex(110)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(110)), 110)
-    SetWindowTitle(GetWindow(root()), "Window_110") 
+    SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
     ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
     ;       w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -153,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       w_list(Hex(210)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(210)), 210)
-      SetWindowTitle(GetWindow(root()), "Window_210") 
+      SetWindowTitle(GetCanvasWindow(root()), "Window_210") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(210)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 110)
       w_list(Hex(211)) = String(10, 10, 180, 85, "String_211") : SetData(w_list(Hex(211)), 211)
@@ -225,7 +225,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "-----"
       
       w_list(Hex(110)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(110)), 110)
-      SetWindowTitle(GetWindow(root()), "Window_110") 
+      SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
       w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)

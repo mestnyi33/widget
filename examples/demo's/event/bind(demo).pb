@@ -12,10 +12,10 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (gadget)"
+            Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (gadget)"
          EndIf
          
-         If IDWidget(EventWidget()) = 1
+         If GetIndex(EventWidget()) = 1
             ProcedureReturn #PB_Ignore ; no send to (window & root) - event
          EndIf
       EndIf
@@ -27,10 +27,10 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
+            Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
          EndIf
          
-         If IDWidget(EventWidget()) = 2
+         If GetIndex(EventWidget()) = 2
             ProcedureReturn #PB_Ignore ; no send to (root) - event
          EndIf
       EndIf
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
+            Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
          EndIf
       EndIf
    EndProcedure

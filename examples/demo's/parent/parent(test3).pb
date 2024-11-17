@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CloseList()
   
   
-  HideWindow(GetWindow(GetRoot(*window_10)),0)
+  HideWindow(GetCanvasWindow(GetRoot(*window_10)),0)
  
   Bind(GetRoot(*window_10), @Widgets_CallBack())
 ;   Bind(GetRoot(*window_20), @Widgets_CallBack())

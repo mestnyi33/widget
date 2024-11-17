@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             If Is(Parent)
 ;               Debug "parent -  (" + Parent + ")"
 ;             Else
-;               Debug "parent - window (" + GetWindow(*CHILD) + ")"
+;               Debug "parent - window (" + GetCanvasWindow(*CHILD) + ")"
 ;             EndIf
             
             ; Debug *CHILD\hide
@@ -205,8 +205,8 @@ CompilerIf #PB_Compiler_IsMainFile
   *_11 = Button(30,90,160,30,"Button >>(Canvas)") 
   CloseList()
   
-  HideWindow(GetWindow(GetRoot(*window_10)),0)
-  HideWindow(GetWindow(GetRoot(*window_20)),0)
+  HideWindow(GetCanvasWindow(GetRoot(*window_10)),0)
+  HideWindow(GetCanvasWindow(GetRoot(*window_20)),0)
   
   Bind(GetRoot(*window_10), @Widgets_CallBack())
   Bind(GetRoot(*window_20), @Widgets_CallBack())
