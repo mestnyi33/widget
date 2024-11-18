@@ -158,9 +158,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If OpenWindow( 0, 30, 200, 800, 380, "ToolBar example")   
-      Open(0,10,70,780,300)
-      a_init(root( ), 0)
-      
       If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_InlineText)
          ToolBarImageButton( #_tb_file_open, 0, 0, "Open" )
          ToolBarImageButton( #_tb_file_save, 0, 0, "Save" )
@@ -197,7 +194,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Define w_ide_toolbar, w_ide_toolbar_container                          ;= Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
       
-      w_ide_toolbar_container = Container( 10,60,700,120 )
+      Open(0,10,10+ToolBarHeight(0),780,300)
+      ;a_init(root( ), 0)
+      
+      w_ide_toolbar_container = Container( 10,10,700,120 )
       ;w_ide_toolbar_container = Window( 10,60,700,120, "", #PB_Window_SystemMenu )
       ;w_ide_toolbar_container = Panel( 10,60,700,120 )
       
@@ -240,7 +240,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
       
       
-      a_set( w_ide_toolbar_container )
+     ; a_set( w_ide_toolbar_container )
       
    EndIf
    
@@ -287,7 +287,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
-; Folding = -0
+; CursorPosition = 199
+; FirstLine = 182
+; Folding = --
 ; EnableXP

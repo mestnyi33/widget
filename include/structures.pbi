@@ -666,7 +666,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
 ;             *comboBar._s_WIDGET       ; = ComboBox( ) List view box
 ;          EndStructureUnion
          *menu._s_WIDGET
-         popup.b
+          displaypopup.b
          ;
          ;                           
          BarWidth.w               ; bar v size
@@ -729,6 +729,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CANVAS
       Structure _s_CANVAS
+         *menu._s_WIDGET
          postrepaint.b
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
@@ -792,8 +793,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 666
-; FirstLine = 645
+; CursorPosition = 732
+; FirstLine = 729
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
