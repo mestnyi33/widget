@@ -20,7 +20,7 @@ Global Gadget_SourceText,
        Gadget_SourceFiles,
        Gadget_SourceItem,
        Gadget_SourcePrivate,
-       Gadget_TargetText,
+       Gadget_TarGetWidgetText,
        Gadget_TargetImage,
        Gadget_TargetFiles,
        Gadget_TargetItem,
@@ -121,7 +121,7 @@ Procedure widget_events( )
           ; хочет начать перетаскивание. Мы сохраняем этот элемент для последующего использования
           ; и начинаем наше "частное" перетаскивание
           ;
-          SourceItem = GetState(Gadget_SourceItem)
+          SourceItem = GetWidgetState(Gadget_SourceItem)
           If SourceItem =- 1
             Debug " item не выбран"
           Else
@@ -142,7 +142,7 @@ Procedure widget_events( )
           EndIf
           
         Case Gadget_SourceText
-          Text$ = GetItemTextWidget( Gadget_SourceText, GetState( Gadget_SourceText ) )
+          Text$ = GetWidgetItemText( Gadget_SourceText, GetWidgetState( Gadget_SourceText ) )
           DDragTextWidget( Text$ )
           
         Case Gadget_SourceImage
@@ -151,9 +151,9 @@ Procedure widget_events( )
         Case Gadget_SourceFiles
           Files$ = ""       
           For i = 0 To CountItems( Gadget_SourceFiles )-1
-            If GetItemState( Gadget_SourceFiles, i ) & #PB_Explorer_Selected
-              ;; i = GetState( Gadget_SourceFiles )
-              Files$ + GetTextWidget( Gadget_SourceFiles ) + GetItemTextWidget( Gadget_SourceFiles, i ) ; + Chr( 10 )
+            If GetWidgetItemState( Gadget_SourceFiles, i ) & #PB_Explorer_Selected
+              ;; i = GetWidgetState( Gadget_SourceFiles )
+              Files$ + GetWidgetText( Gadget_SourceFiles ) + GetWidgetItemText( Gadget_SourceFiles, i ) ; + Chr( 10 )
             EndIf
           Next i 
           
@@ -165,7 +165,7 @@ Procedure widget_events( )
           ; also works with other applications ( Explorer, Word, etc )
           ;
         Case Gadget_SourcePrivate
-          If GetState( Gadget_SourcePrivate ) = 0
+          If GetWidgetState( Gadget_SourcePrivate ) = 0
             DDragPrivate( 1 )
           Else
             DDragPrivate( 2 )
@@ -192,9 +192,9 @@ Procedure widget_events( )
           ;
           If DDropType( ) = #PB_Drop_Private And
              DDropPrivate( ) = #PrivateType_0
-            Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetTextWidget(Gadget_TargetItem) +" "+ GetItemTextWidget(Gadget_TargetItem, GetState(Gadget_TargetItem))
+            Debug "start drop - "+ GetWidgetState(Gadget_TargetItem) +" "+ GetWidgetText(Gadget_TargetItem) +" "+ GetWidgetItemText(Gadget_TargetItem, GetWidgetState(Gadget_TargetItem))
             
-            TargetItem = GetState(Gadget_TargetItem)        
+            TargetItem = GetWidgetState(Gadget_TargetItem)        
             ;Debug "               - "+TargetItem
             ; nothing to do if source and target are equal
             ;
@@ -213,11 +213,11 @@ Procedure widget_events( )
                 TargetItem  = CountItems + 1
                 TargetLevel = 0
                 
-              ElseIf Left( GetItemTextWidget(Gadget_TargetItem, TargetItem), 4 ) = "Item"      
+              ElseIf Left( GetWidgetItemText(Gadget_TargetItem, TargetItem), 4 ) = "Item"      
                 ; if dropped on an "Item", move right after this item
                 ;
                 ; если упал на «предмет», переместиться сразу после этого предмета
-                TargetLevel = GetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel)
+                TargetLevel = GetWidgetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel)
                 TargetItem  + 1
                 
               Else
@@ -226,9 +226,9 @@ Procedure widget_events( )
                 ;
                 ; если вы попали в «Каталог», перейдите в каталог и в его конец
                 ; все это можно легко сделать, изучив подуровень
-                TargetLevel = GetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel) + 1
+                TargetLevel = GetWidgetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel) + 1
                 TargetItem + 1
-                While GetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel) >= TargetLevel
+                While GetWidgetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel) >= TargetLevel
                   TargetItem + 1
                 Wend
               EndIf
@@ -245,10 +245,10 @@ Procedure widget_events( )
               ;
               ; дочерние узлы следуют непосредственно за узлами с более высоким уровнем
               ;
-              SourceLevel = GetItemAttribute(Gadget_TargetItem, SourceItem, #PB_Tree_SubLevel)          
+              SourceLevel = GetWidgetItemAttribute(Gadget_TargetItem, SourceItem, #PB_Tree_SubLevel)          
               ChildCount  = 0
               For i = SourceItem+1 To CountItems
-                If GetItemAttribute(Gadget_TargetItem, i, #PB_Tree_SubLevel) > SourceLevel 
+                If GetWidgetItemAttribute(Gadget_TargetItem, i, #PB_Tree_SubLevel) > SourceLevel 
                   ChildCount + 1
                 Else
                   Break
@@ -282,11 +282,11 @@ Procedure widget_events( )
                 ; затронуты добавлением новых элементов в этом случае...
                 ;
                 For i = 0 To ChildCount  
-                  ; copy everything here (also colors and GetItemData() etc if you use that)                
+                  ; copy everything here (also colors and GetWidgetItemData() etc if you use that)                
                   ;
-                  ; скопируйте все сюда (также цвета и GetItemData() и т. д., если вы используете это)
-                  Text$ = GetItemTextWidget(Gadget_TargetItem, SourceItem+i)              
-                  Level = GetItemAttribute(Gadget_TargetItem, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
+                  ; скопируйте все сюда (также цвета и GetWidgetItemData() и т. д., если вы используете это)
+                  Text$ = GetWidgetItemText(Gadget_TargetItem, SourceItem+i)              
+                  Level = GetWidgetItemAttribute(Gadget_TargetItem, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
                   AddItem(Gadget_TargetItem, TargetItem+i, Text$, 0, Level)              
                 Next i
                 
@@ -298,7 +298,7 @@ Procedure widget_events( )
                 ; Это должно быть в отдельном цикле, иначе "расширенное" состояние элементов
                 ; не сохраняется, так как дочерние элементы еще не были добавлены в указанный выше цикл.
                 For i = 0 To ChildCount
-                  SetItemState(Gadget_TargetItem, TargetItem+i, GetItemState(Gadget_TargetItem, SourceItem+i))
+                  SetWidgetItemState(Gadget_TargetItem, TargetItem+i, GetWidgetItemState(Gadget_TargetItem, SourceItem+i))
                 Next i
                 
                 ; remove the source item. This automatically removes all children as well.
@@ -311,7 +311,7 @@ Procedure widget_events( )
                 ; выберите цель. Обратите внимание, что индекс теперь меньше на «ChildCount+1».
                 ; из-за удаления источника, который был до цели
                 ;Debug "---------------- "+Str(TargetItem - ChildCount - 1)
-                SetState(Gadget_TargetItem, TargetItem - ChildCount - 1)
+                SetWidgetState(Gadget_TargetItem, TargetItem - ChildCount - 1)
                 
               ElseIf TargetItem <= SourceItem
                 ; 
@@ -324,8 +324,8 @@ Procedure widget_events( )
                 ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
                 ;
                 For i = 0 To ChildCount
-                  Text$ = GetItemTextWidget(Gadget_TargetItem, SourceItem+i*2)
-                  Level = GetItemAttribute(Gadget_TargetItem, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
+                  Text$ = GetWidgetItemText(Gadget_TargetItem, SourceItem+i*2)
+                  Level = GetWidgetItemAttribute(Gadget_TargetItem, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
                   AddItem(Gadget_TargetItem, TargetItem+i, Text$, 0, Level)
                 Next i
                 
@@ -336,19 +336,19 @@ Procedure widget_events( )
                 ; 'ChildCount+1' больше, чем раньше, из-за добавленных целей
                 ;
                 For i = 0 To ChildCount
-                  SetItemState(Gadget_TargetItem, TargetItem+i, GetItemState(Gadget_TargetItem, SourceItem+ChildCount+1+i))
+                  SetWidgetItemState(Gadget_TargetItem, TargetItem+i, GetWidgetItemState(Gadget_TargetItem, SourceItem+ChildCount+1+i))
                 Next i            
                 
                 ; remove source and select target. Here the target index is not affected by the remove as it is lower
                 ;
                 ; удалить источник и выбрать цель. Здесь целевой индекс не затрагивается удалением, так как он ниже
                 RemoveItem(Gadget_TargetItem, SourceItem+ChildCount+1)          
-                SetState(Gadget_TargetItem, TargetItem)
+                SetWidgetState(Gadget_TargetItem, TargetItem)
                 
               EndIf
               
             EndIf      
-            Debug "stop drop - "+ GetState(Gadget_TargetItem) +" "+ GetTextWidget(Gadget_TargetItem) +" "+ GetItemTextWidget(Gadget_TargetItem, GetState(Gadget_TargetItem))
+            Debug "stop drop - "+ GetWidgetState(Gadget_TargetItem) +" "+ GetWidgetText(Gadget_TargetItem) +" "+ GetWidgetItemText(Gadget_TargetItem, GetWidgetState(Gadget_TargetItem))
             
             Debug ""
             ;ClearDebugOutput()
@@ -358,12 +358,12 @@ Procedure widget_events( )
             Next
           EndIf
           
-        Case Gadget_TargetText
+        Case Gadget_TarGetWidgetText
           ;;Debug "EventDropText - "+ DDropTextWidget( )
           ;           If EnteredItem( )
-          ;             AddItem( Gadget_TargetText, EnteredItem( )\index, DDropTextWidget( ) )
+          ;             AddItem( Gadget_TarGetWidgetText, EnteredItem( )\index, DDropTextWidget( ) )
           ;           Else
-          AddItem( Gadget_TargetText, - 1, DDropTextWidget( ) )
+          AddItem( Gadget_TarGetWidgetText, - 1, DDropTextWidget( ) )
           ;           EndIf
           
         Case Gadget_TargetImage
@@ -377,7 +377,7 @@ Procedure widget_events( )
               StopDrawing( )
             EndIf  
             
-            SetState( Gadget_TargetImage, ( #ImageGadget_Target ) )
+            SetWidgetState( Gadget_TargetImage, ( #ImageGadget_Target ) )
           EndIf
           
         Case Gadget_TargetFiles
@@ -413,7 +413,7 @@ Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
    ProcedureReturn TreeWidget(X,Y+20,Width,Height-20)
 EndProcedure
 
-If OpenRootWidget( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
+If OpenRoot( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
   ; Create and fill the Gadget_Source s
   ;
   Gadget_SourceText = ListIconWidget( 10, 10, 140, 140, "Drag Text here", 130 )   
@@ -458,7 +458,7 @@ If OpenRootWidget( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu
   
   ; Create the Gadget_Target s
   ;
-  Gadget_TargetText = ListIconWidget( 10, 160, 140, 140, "Drop Text here", 130 )
+  Gadget_TarGetWidgetText = ListIconWidget( 10, 160, 140, 140, "Drop Text here", 130 )
   Gadget_TargetImage = ImageWidget( 160, 160, 140, 140, ( #ImageGadget_Target ), #PB_Image_Border ) 
   Gadget_TargetFiles = ListIconWidget( 310, 160, 140, 140, "Drop Files here", 130 )
   Gadget_TargetPrivate1 = ListIconWidget( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
@@ -466,7 +466,7 @@ If OpenRootWidget( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu
   Gadget_TargetItem = Gadget_SourceItem
   
   
-  SetWidgetFrame( Gadget_TargetText, 1 )
+  SetWidgetFrame( Gadget_TarGetWidgetText, 1 )
   SetWidgetFrame( Gadget_TargetImage, 1 )
   SetWidgetFrame( Gadget_TargetFiles, 1 )
   ;SetWidgetFrame( Gadget_TargetPrivate1, 1 )
@@ -474,7 +474,7 @@ If OpenRootWidget( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu
   
   ; Now enable the dropping on the Gadget_Target s
   ;
-  EnableDDrop( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
+  EnableDDrop( Gadget_TarGetWidgetText,     #PB_Drop_Text,    #PB_Drag_Copy )
   EnableDDrop( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
   EnableDDrop( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
   EnableDDrop( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
@@ -487,7 +487,7 @@ If OpenRootWidget( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu
   BindWidgetEvent( Gadget_TargetImage, @widget_events( ), #__event_Drop )
   
   BindWidgetEvent( Gadget_SourceText, @widget_events( ), #__event_DragStart )
-  BindWidgetEvent( Gadget_TargetText, @widget_events( ), #__event_Drop )
+  BindWidgetEvent( Gadget_TarGetWidgetText, @widget_events( ), #__event_Drop )
   
   BindWidgetEvent( Gadget_SourceItem, @widget_events( ), #__event_DragStart )
   BindWidgetEvent( Gadget_TargetItem, @widget_events( ), #__event_Drop )
@@ -498,7 +498,7 @@ If OpenRootWidget( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu
   
   ; main loop
   ;
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
   ;   
   ;   Repeat
   ;     Event = WaitWindowEvent( )

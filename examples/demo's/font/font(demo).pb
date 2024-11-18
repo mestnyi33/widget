@@ -1,6 +1,6 @@
 ﻿;       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 ;         ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
-;         ;                     Root()\text\fontID = PB_(GetGadgetFont)(TextGadget) 
+;         ;                     Root()\text\fontID = PB_(GetWidgetFont)(TextGadget) 
 ;         ;                     FreeGadget(TextGadget)
 ;         ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
 ;         ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
@@ -44,11 +44,11 @@ LoadFont(#Font18R, "Arial Unicode MS Regular", igFS18, #PB_Font_HighQuality)
 Global *b._s_widget
 
 Procedure events_gadgets()
-	Debug ""+EventGadget() + " - gadget  event - " +EventType()+ "  item - " +GetGadgetState(EventGadget())
+	Debug ""+EventGadget() + " - gadget  event - " +EventType()+ "  item - " +GetGadGetWidgetState(EventGadget())
 EndProcedure
 
 Procedure events_widgets()
-	Debug ""+Str(IDWidget(EventWidget( )))+ " - widget  event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(EventWidget( )) ; 
+	Debug ""+Str(GetIndex(EventWidget( )))+ " - widget  event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetWidgetState(EventWidget( )) ; 
 EndProcedure
 
 Procedure events_gbuttons()
@@ -69,13 +69,13 @@ Procedure events_gbuttons()
 					AddGadgetItem(1, 1, "Sub 2 (add)")
 					Protected sub = Bool(CountGadgetItems(1) > 1)
 					
-					SetGadgetItemTextWidget(1, sub, "Sub "+Str(sub+1)+" (add&set)")
-					Debug GetGadgetItemTextWidget(1, sub) + " - get item text"
+					SetGadGetWidgetItemText(1, sub, "Sub "+Str(sub+1)+" (add&set)")
+					Debug GetGadGetWidgetItemText(1, sub) + " - get item text"
 					CloseGadgetList()
 					
-					; SetGadgetItemFont(1, sub, 5 + Bool(IDWidget(EventWidget( )) = 4))
-					SetGadgetItemState(1, sub, 1)
-					; SetState(1, 1)
+					; SetGadGetWidgetItemFont(1, sub, 5 + Bool(GetIndex(EventWidget( )) = 4))
+					SetGadGetWidgetItemState(1, sub, 1)
+					; SetWidgetState(1, 1)
 					
 			EndSelect
 	EndSelect
@@ -84,7 +84,7 @@ EndProcedure
 Procedure events_wbuttons()
 	Select WidgetEvent( )
 		Case #PB_EventType_LeftClick
-			Select IDWidget(EventWidget( ))
+			Select GetIndex(EventWidget( ))
 				Case 2 
 					If CountItems(ID(1)) > 1
 						RemoveItem(ID(1), 1)
@@ -99,13 +99,13 @@ Procedure events_wbuttons()
 					AddItem(ID(1), 1, "Sub 2 (add)")
 					Protected sub = Bool(CountItems(ID(1)) > 1)
 					
-					SetItemTextWidget(ID(1), sub, "Sub "+Str(sub+1)+" (add&set)")
-					Debug GetItemTextWidget(ID(1), sub) + " - get item text"
+					SetWidgetItemText(ID(1), sub, "Sub "+Str(sub+1)+" (add&set)")
+					Debug GetWidgetItemText(ID(1), sub) + " - get item text"
 					;CloseWidgetList()
 					
-					SetItemFont(ID(1), sub, 5 + Bool(IDWidget(EventWidget( )) = 4))
-					SetItemState(ID(1), sub, 1)
-					; SetState(ID(1), 1)
+					SetWidgetItemFont(ID(1), sub, 5 + Bool(GetIndex(EventWidget( )) = 4))
+					SetWidgetItemState(ID(1), sub, 1)
+					; SetWidgetState(ID(1), 1)
 			EndSelect
 	EndSelect
 	
@@ -115,7 +115,7 @@ EndProcedure
 
 ; Shows using of several panels...
 OpenWindow(0, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-If OpenRootWidget(0, 322+50, 0, 322+50, 220)
+If OpenRoot(0, 322+50, 0, 322+50, 220)
 	Define Text.s, *g
 	CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 		LoadFont(5, "Arial", 18)
@@ -148,16 +148,16 @@ If OpenRootWidget(0, 322+50, 0, 322+50, 220)
 		EndIf
 	Next 
 	
-	SetGadgetState(1, 2)
+	SetGadGetWidgetState(1, 2)
 	If GadgetType(1) = #PB_GadgetType_Panel
 		CloseGadgetList()
 	EndIf
 	
-	;SetGadgetItemFont(1, 2, 5)
-	SetGadgetItemTextWidget(1, 2, Text+"_2 (18)")
+	;SetGadGetWidgetItemFont(1, 2, 5)
+	SetGadGetWidgetItemText(1, 2, Text+"_2 (18)")
 	
-	;SetGadgetItemFont(1, 4, 6)
-	SetGadgetItemTextWidget(1, 4, Text+"_4 (25)")
+	;SetGadGetWidgetItemFont(1, 4, 6)
+	SetGadGetWidgetItemText(1, 4, Text+"_4 (25)")
 	
 	
 	ButtonGadget(2, 10, 145, 60, 24,"remove")
@@ -200,32 +200,32 @@ If OpenRootWidget(0, 322+50, 0, 322+50, 220)
 		EndIf
 	Next 
 	
-	SetState(*g, 2)
+	SetWidgetState(*g, 2)
 	If Type(*g) = #PB_GadgetType_Panel
 		CloseWidgetList()
 	EndIf
 	
-	SetItemFont(*g, 2, 5)
-	SetItemTextWidget(*g, 2, Text+"_2 (18)")
+	SetWidgetItemFont(*g, 2, 5)
+	SetWidgetItemText(*g, 2, Text+"_2 (18)")
 	
-	SetItemFont(*g, 4, 6)
-	SetItemTextWidget(*g, 4, Text+"_4 (25)")
+	SetWidgetItemFont(*g, 4, 6)
+	SetWidgetItemText(*g, 4, Text+"_4 (25)")
 	
 	ButtonWidget(10, 145, 60, 24,"remove")
-	SetFont(ButtonWidget(75, 145, 100, 24,"add (18)"), 5)
-	SetFont(ButtonWidget(180, 145, 100, 24,"add (25)"), 6)
-	SetFont(ButtonWidget(285, 145, 60, 24,"clear"), #Font18R)
+	SetWidgetFont(ButtonWidget(75, 145, 100, 24,"add (18)"), 5)
+	SetWidgetFont(ButtonWidget(180, 145, 100, 24,"add (25)"), 6)
+	SetWidgetFont(ButtonWidget(285, 145, 60, 24,"clear"), #Font18R)
 	
 	AddItem (ID(0), -1,"Panel 2")
-	SetFont(ButtonWidget(10, 15, 100, 24,"Button 2_1"), 5)
+	SetWidgetFont(ButtonWidget(10, 15, 100, 24,"Button 2_1"), 5)
 	ButtonWidget(115, 15, 100, 24,"Button 2_2")
 	
 	AddItem (ID(0), -1,"Panel 3")
 	ButtonWidget(10, 15, 100, 24,"Button 3_1")
 	*b = ButtonWidget(10+110, 15, 100, 24,"automatically resize button when changing font", #__flag_Textmultiline)
-	SetFont(*b, 5)
+	SetWidgetFont(*b, 5)
 	
-	;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
+	;   ; bug set font - FIXED SetWidgetFont() ; *this\root\text\fontID[1] =- 1 
 	; set auto font size
 	Define iw = 2 + (*b\bs+*b\text\x)*4 
 	
@@ -254,8 +254,8 @@ If OpenRootWidget(0, 322+50, 0, 322+50, 220)
 	
 	CloseWidgetList()
 	
-	SetItemFont(ID(0), 1, 6)
-	SetItemFont(ID(0), 2, #Font18R)
+	SetWidgetItemFont(ID(0), 1, 6)
+	SetWidgetItemFont(ID(0), 2, #Font18R)
 	
 	For i = 0 To 1
 		BindWidgetEvent(ID(i), @events_widgets())
@@ -267,13 +267,13 @@ If OpenRootWidget(0, 322+50, 0, 322+50, 220)
 	Debug ""+CountItems(ID(1)) +" - count widget items"
 	
 	;   ; bug set font - FIXED Repaint() ; Root(()\text\fontID[1] =- 1 >> *this\root\text\fontID[1] =- 1 
-	;   OpenRootWidget(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
+	;   OpenRoot(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
 	;   Global *panel._S_widget = PanelWidget(10,150,200,160) 
 	;   AddItem(*panel,-1,"Panel") 
 	;   AddItem(*panel,-1,"Second") 
 	;   AddItem(*panel,-1,"Third") 
 	;   CloseWidgetList()
-	;   OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 100, 100, "", 0, UseGadgetList(0)))
+	;   OpenRoot(OpenWindow(#PB_Any, 0, 0, 100, 100, "", 0, UseGadgetList(0)))
 	
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

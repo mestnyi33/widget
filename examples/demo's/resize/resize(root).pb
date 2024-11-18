@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
        Debug "resize - " + EventWidget( )\class +"( "+ EventWidget( )\x +" "+ EventWidget( )\y +" "+ EventWidget( )\width +" "+ EventWidget( )\height +" ) "; + EventWidget( )\root\canvas\gadget
    EndProcedure
    
-   If OpenRootWidget(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu |
+   If OpenRoot(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu |
                                             #PB_Window_SizeGadget |
                                             #PB_Window_MinimizeGadget |
                                             #PB_Window_MaximizeGadget | 

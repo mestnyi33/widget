@@ -38,12 +38,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;          Case #__event_LeftClick
 ;             Debug "error"
 ;             AddItem(tree, -1, "add_item")
-;             SetState(tree, 10);countitems(tree) - 1)
+;             SetWidgetState(tree, 10);countitems(tree) - 1)
             
       EndSelect
    EndProcedure
    
-   If OpenRootWidget( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
+   If OpenRoot( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
       tree=TreeWidget(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
       Define i
       For i = 0 To 10
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ShowMessage( )
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

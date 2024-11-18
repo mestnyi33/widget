@@ -26,30 +26,30 @@ Macro ResetStatic()
   RT = 0
   RB = 0
   LB = 0
-  SetState(L_Button,0)
-  SetState(T_Button,0)
-  SetState(R_Button,0)
-  SetState(B_Button,0)
-  SetState(LT_Button,0)
-  SetState(LB_Button,0)
-  SetState(RT_Button,0)
-  SetState(RB_Button,0)
+  SetWidgetState(L_Button,0)
+  SetWidgetState(T_Button,0)
+  SetWidgetState(R_Button,0)
+  SetWidgetState(B_Button,0)
+  SetWidgetState(LT_Button,0)
+  SetWidgetState(LB_Button,0)
+  SetWidgetState(RT_Button,0)
+  SetWidgetState(RB_Button,0)
 EndMacro
 
 Procedure SetAlign(Ev)
   Static L,LT,T,RT,R,RB,B,LB,C,Result
   
-  L = GetState(L_Button)
-  T = GetState(T_Button)
-  R = GetState(R_Button)
-  B = GetState(B_Button)
+  L = GetWidgetState(L_Button)
+  T = GetWidgetState(T_Button)
+  R = GetWidgetState(R_Button)
+  B = GetWidgetState(B_Button)
   
-  LT = GetState(LT_Button)
-  RT = GetState(RT_Button)
-  RB = GetState(RB_Button)
-  LB = GetState(LB_Button)
+  LT = GetWidgetState(LT_Button)
+  RT = GetWidgetState(RT_Button)
+  RB = GetWidgetState(RB_Button)
+  LB = GetWidgetState(LB_Button)
   
-  C = GetState(C_Button)
+  C = GetWidgetState(C_Button)
   
   
   If (L = #True And R = #True And T = #True And B = #True)
@@ -87,25 +87,25 @@ Procedure SetAlign(Ev)
   EndIf
   
   If L = #True Or T = #True Or R = #True Or B = #True
-    SetState(LT_Button,0)
-    SetState(RT_Button,0)
-    SetState(RB_Button,0)
-    SetState(LB_Button,0)
+    SetWidgetState(LT_Button,0)
+    SetWidgetState(RT_Button,0)
+    SetWidgetState(RB_Button,0)
+    SetWidgetState(LB_Button,0)
   EndIf
   
   Select Ev
     Case LT_Button 
       If LT = #True
         ResetStatic()
-        SetState(RB_Button,1)
-        SetState(L_Button,1)
-        SetState(T_Button,1)
+        SetWidgetState(RB_Button,1)
+        SetWidgetState(L_Button,1)
+        SetWidgetState(T_Button,1)
         Result = 2
       Else
         If B And R
-          SetState(L_Button,1)
-          SetState(T_Button,1)
-          SetState(LT_Button,0)
+          SetWidgetState(L_Button,1)
+          SetWidgetState(T_Button,1)
+          SetWidgetState(LT_Button,0)
           Result = 9
         EndIf
       EndIf
@@ -113,15 +113,15 @@ Procedure SetAlign(Ev)
     Case LB_Button 
       If LB = #True
         ResetStatic()
-        SetState(L_Button,1)
-        SetState(B_Button,1)
-        SetState(RT_Button,1)
+        SetWidgetState(L_Button,1)
+        SetWidgetState(B_Button,1)
+        SetWidgetState(RT_Button,1)
         Result = 8
       Else
         If T And R
-          SetState(L_Button,1)
-          SetState(B_Button,1)
-          SetState(LB_Button,0)
+          SetWidgetState(L_Button,1)
+          SetWidgetState(B_Button,1)
+          SetWidgetState(LB_Button,0)
           Result = 9
         EndIf
       EndIf
@@ -129,15 +129,15 @@ Procedure SetAlign(Ev)
     Case RT_Button   
       If RT = #True
         ResetStatic()
-        SetState(T_Button,1)
-        SetState(R_Button,1)
-        SetState(LB_Button,1)
+        SetWidgetState(T_Button,1)
+        SetWidgetState(R_Button,1)
+        SetWidgetState(LB_Button,1)
         Result = 4
       Else
         If L And B
-          SetState(R_Button,1)
-          SetState(T_Button,1)
-          SetState(RT_Button,0)
+          SetWidgetState(R_Button,1)
+          SetWidgetState(T_Button,1)
+          SetWidgetState(RT_Button,0)
           Result = 9
         EndIf
       EndIf
@@ -145,15 +145,15 @@ Procedure SetAlign(Ev)
     Case RB_Button     
       If RB = #True
         ResetStatic()
-        SetState(R_Button,1)
-        SetState(B_Button,1)
-        SetState(LT_Button,1)
+        SetWidgetState(R_Button,1)
+        SetWidgetState(B_Button,1)
+        SetWidgetState(LT_Button,1)
         Result = 6
       Else
         If L And T
-          SetState(R_Button,1)
-          SetState(B_Button,1)
-          SetState(RB_Button,0)
+          SetWidgetState(R_Button,1)
+          SetWidgetState(B_Button,1)
+          SetWidgetState(RB_Button,0)
           Result = 9
         EndIf
       EndIf
@@ -201,17 +201,17 @@ Procedure AliginsEvent()
     Case #__event_LeftClick
       Static L,LT,T,RT,R,RB,B,LB,C,Result
       
-      L = GetState(L_Button)
-      T = GetState(T_Button)
-      R = GetState(R_Button)
-      B = GetState(B_Button)
+      L = GetWidgetState(L_Button)
+      T = GetWidgetState(T_Button)
+      R = GetWidgetState(R_Button)
+      B = GetWidgetState(B_Button)
       
-      LT = GetState(LT_Button)
-      RT = GetState(RT_Button)
-      RB = GetState(RB_Button)
-      LB = GetState(LB_Button)
+      LT = GetWidgetState(LT_Button)
+      RT = GetWidgetState(RT_Button)
+      RB = GetWidgetState(RB_Button)
+      LB = GetWidgetState(LB_Button)
       
-      C = GetState(C_Button)
+      C = GetWidgetState(C_Button)
       
       
       If (L = #True And R = #True And T = #True And B = #True)
@@ -249,25 +249,25 @@ Procedure AliginsEvent()
       EndIf
       
       If L = #True Or T = #True Or R = #True Or B = #True
-        SetState(LT_Button,0)
-        SetState(RT_Button,0)
-        SetState(RB_Button,0)
-        SetState(LB_Button,0)
+        SetWidgetState(LT_Button,0)
+        SetWidgetState(RT_Button,0)
+        SetWidgetState(RB_Button,0)
+        SetWidgetState(LB_Button,0)
       EndIf
       
       Select Ev
         Case LT_Button 
           If LT = #True
             ResetStatic()
-            SetState(RB_Button,1)
-            SetState(L_Button,1)
-            SetState(T_Button,1)
+            SetWidgetState(RB_Button,1)
+            SetWidgetState(L_Button,1)
+            SetWidgetState(T_Button,1)
             Result = 2
           Else
             If B And R
-              SetState(L_Button,1)
-              SetState(T_Button,1)
-              SetState(LT_Button,0)
+              SetWidgetState(L_Button,1)
+              SetWidgetState(T_Button,1)
+              SetWidgetState(LT_Button,0)
               Result = 9
             EndIf
           EndIf
@@ -275,15 +275,15 @@ Procedure AliginsEvent()
         Case LB_Button 
           If LB = #True
             ResetStatic()
-            SetState(L_Button,1)
-            SetState(B_Button,1)
-            SetState(RT_Button,1)
+            SetWidgetState(L_Button,1)
+            SetWidgetState(B_Button,1)
+            SetWidgetState(RT_Button,1)
             Result = 8
           Else
             If T And R
-              SetState(L_Button,1)
-              SetState(B_Button,1)
-              SetState(LB_Button,0)
+              SetWidgetState(L_Button,1)
+              SetWidgetState(B_Button,1)
+              SetWidgetState(LB_Button,0)
               Result = 9
             EndIf
           EndIf
@@ -291,15 +291,15 @@ Procedure AliginsEvent()
         Case RT_Button   
           If RT = #True
             ResetStatic()
-            SetState(T_Button,1)
-            SetState(R_Button,1)
-            SetState(LB_Button,1)
+            SetWidgetState(T_Button,1)
+            SetWidgetState(R_Button,1)
+            SetWidgetState(LB_Button,1)
             Result = 4
           Else
             If L And B
-              SetState(R_Button,1)
-              SetState(T_Button,1)
-              SetState(RT_Button,0)
+              SetWidgetState(R_Button,1)
+              SetWidgetState(T_Button,1)
+              SetWidgetState(RT_Button,0)
               Result = 9
             EndIf
           EndIf
@@ -307,15 +307,15 @@ Procedure AliginsEvent()
         Case RB_Button     
           If RB = #True
             ResetStatic()
-            SetState(R_Button,1)
-            SetState(B_Button,1)
-            SetState(LT_Button,1)
+            SetWidgetState(R_Button,1)
+            SetWidgetState(B_Button,1)
+            SetWidgetState(LT_Button,1)
             Result = 6
           Else
             If L And T
-              SetState(R_Button,1)
-              SetState(B_Button,1)
-              SetState(RB_Button,0)
+              SetWidgetState(R_Button,1)
+              SetWidgetState(B_Button,1)
+              SetWidgetState(RB_Button,0)
               Result = 9
             EndIf
           EndIf
@@ -377,17 +377,17 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   ;
   S_Screen = ContainerWidget(x+pos+butt_size, y+pos+butt_size, screen_size, screen_size) ;:Disable(S_Screen,1)
   Sha = ButtonWidget(0, 0, butt_size+2, butt_size+2, "", #__flag_ButtonToggle) 
-;   SetState(*this, 1)
+;   SetWidgetState(*this, 1)
 ;   SetAlign( *this, 1,1,0,0 )
   CloseWidgetList()
   
   C_Button  = ButtonWidget(x+pos+(screen_size+butt_size)/2, y+pos+(screen_size+butt_size)/2, butt_size, butt_size, "", 0, -1, 7)                                     ;:WidgetToolTip(C_Button,  "Включить привязку (вцентре)")
   
-  SetState(L_Button, 1)
-  SetState(T_Button, 1)
-  SetState(LT_Button, 1)
+  SetWidgetState(L_Button, 1)
+  SetWidgetState(T_Button, 1)
+  SetWidgetState(LT_Button, 1)
   
-  ;SetState(LT_Button, 1)
+  ;SetWidgetState(LT_Button, 1)
   ; PostWidgetEvent(#__event_LeftClick, LT_Button)
   
   C_Add = ButtonWidget(x, y+pos+pos+pos+butt_size+butt_size+screen_size, pos+pos+butt_size+butt_size+screen_size, butt_size, ">", #__flag_ButtonToggle, -1, 7)
@@ -415,7 +415,7 @@ Procedure ShowAlignWindow()
 EndProcedure
 
 Window_3  = OpenWindow(#PB_Any, 0, 0, 400, 300, "Привязка выбраных гаджетов", #PB_Window_SystemMenu | #PB_Window_Tool | #PB_Window_Invisible)
-OpenRootWidget(Window_3)
+OpenRoot(Window_3)
 ContainerWidget(0,0,0,0)
 SetWidgetColor(widget(), #PB_Gadget_BackColor, $4737D53F)
 ;SetAlignment(widget(), #__align_full,#__align_full,#__align_full,#__align_full)

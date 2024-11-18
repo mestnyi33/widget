@@ -10,10 +10,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global a, *item2, *item3, *item4, *item1, *this._s_widget, *g1, *g2, countitems=99; количесвто итемов 
   
-  Procedure.b SetState_( *this._S_widget, state.f )
+  Procedure.b SetWidgetState_( *this._S_widget, state.f )
       Protected result
       
-      ;;\\ - widget::tree_SetState_
+      ;;\\ - widget::tree_SetWidgetState_
       If *this\type = #PB_WidgetType_Tree Or
          *this\type = #PB_WidgetType_ListIcon Or
          *this\type = #PB_WidgetType_ListView
@@ -117,10 +117,10 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Debug "--------------"
         Select widget::EventWidget( )
-          Case *item1 : SetState_(*this, 1)
-          Case *item2 : SetState_(*this, 2)
-          Case *item3 : SetState_(*this, 3)
-          Case *item4 : SetState_(*this, 90)
+          Case *item1 : SetWidgetState_(*this, 1)
+          Case *item2 : SetWidgetState_(*this, 2)
+          Case *item3 : SetWidgetState_(*this, 3)
+          Case *item4 : SetWidgetState_(*this, 90)
         EndSelect
         Debug "--------------"
         
@@ -151,7 +151,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         Debug "--------------"
-        SetState_(*this, widget::GetState(widget::EventWidget( )))
+        SetWidgetState_(*this, widget::GetWidgetState(widget::EventWidget( )))
         Debug "--------------"
         
         If *this\EnteredRow( )
@@ -166,7 +166,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If OpenRootWidget(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
+  If OpenRoot(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
     *this = widget::ListViewWidget(10, 10, 230, 310)
     
     For a = 0 To countitems

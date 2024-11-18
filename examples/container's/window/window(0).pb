@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "ww "+ WidgetEvent( ) +" "+ EventWidget( )\index
   EndProcedure
   
-  OpenRootWidget(OpenWindow(#PB_Any, 100, 100, 600, 600, "demo", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
+  OpenRoot(OpenWindow(#PB_Any, 100, 100, 600, 600, "demo", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
   
   WindowWidget(100, 100, 200, 200, "window_0", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
   ButtonWidget(0,0,80,20,"button")
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ButtonWidget(200-80,200-20,80,20,"button")
   
   BindWidgetEvent(Root(), @Events_widgets(), #PB_EventType_LeftClick)
-  WaitCloseRootWidget()
+  WaitCloseRoot()
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 13

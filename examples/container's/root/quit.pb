@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare CallBack( )
   
   ;\\
-  OpenRootWidget(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
+  OpenRoot(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
                                       #PB_Window_SizeGadget |
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetWidgetClass(widget( ), "window_0_root_butt_2" )
   
   ;\\
-  OpenRootWidget(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
+  OpenRoot(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetWidgetClass(widget( ), "window_1_root_butt_2" )
   
   ;\\
-  OpenRootWidget(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
+  OpenRoot(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ;ProcedureReturn 1
         
       Case #__event_LeftClick
-        Select GetTextWidget( EventWidget( ) )
+        Select GetWidgetText( EventWidget( ) )
           Case "button_message"
             MessageWidget( "message", "test", #__message_ScreenCentered )
             

@@ -12,9 +12,9 @@ Define font2 = LoadFont(#PB_Any, "Helvetica", 18, #PB_Font_Bold)
 
 If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     EditorGadget(0, 10, 10, 180, 230)
-    SetGadgetFont(0, FontID(font))
+    SetGadGetWidgetFont(0, FontID(font))
     
-    OpenRootWidget(0, 200, 10, 180, 230);, "", #__flag_borderless)
+    OpenRoot(0, 200, 10, 180, 230);, "", #__flag_borderless)
     *w = EditorWidget(0, 0, 180, 230)
     
     For i = 1 To 10
@@ -26,9 +26,9 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetGadGetWidgetItemColor(0, 3, #PB_Gadget_BackColor, $00FFFF)
     SetGadGetWidgetItemColor(0, 7, #PB_Gadget_BackColor, $FFFF00)
     
-    SetFont(*w, font)
-    SetItemFont(*w, 3, font1)
-    SetItemFont(*w, 7, font2)
+    SetWidgetFont(*w, font)
+    SetWidgetItemFont(*w, 3, font1)
+    SetWidgetItemFont(*w, 7, font2)
     
 ;     ; index-3 item default text-color 
 ;     SetWidgetItemColor(*w, 3, #__Color_Front, $FF00FF00)
@@ -57,7 +57,7 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     ; vertical and horizontal line back-color
     SetWidgetItemColor(*w, #PB_All, #__Color_Line,  $C03AD55A)
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
   CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)

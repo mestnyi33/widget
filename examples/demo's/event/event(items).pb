@@ -21,10 +21,10 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     Select WidgetEvent( )
-      Case #__event_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(getTextWidget(EventWidget( ))) + ">>")
-      Case #__event_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(getTextWidget(EventWidget( ))) + ">>")
+      Case #__event_MouseEnter      : AddItem(w_flag, -1, Space + "enter <<" + Trim(GetWidgetText(EventWidget( ))) + ">>")
+      Case #__event_MouseLeave      : AddItem(w_flag, -1, Space + "leave <<" + Trim(GetWidgetText(EventWidget( ))) + ">>")
         
-        If GetTextWidget( EventWidget( ) ) = "new"
+        If GetWidgetText( EventWidget( ) ) = "new"
           FreeWidget( EventWidget( ) )
         EndIf
         
@@ -48,10 +48,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_Left2Click : AddItem(w_flag, -1, Space + "   2_click") : _2click = 2
     EndSelect
     
-    SetState(w_flag, countitems(w_flag) - 1)
+    SetWidgetState(w_flag, countitems(w_flag) - 1)
   EndProcedure
   
-  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 200, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRoot(OpenWindow(#PB_Any, 0, 0, 200, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     
     w_flag = widget::TreeWidget( 10, 10, 180, 200, #__tree_nobuttons | #__tree_nolines ) 
     w_this = widget::TreeWidget( 10, 220, 180, 70, #__tree_nobuttons | #__tree_nolines )

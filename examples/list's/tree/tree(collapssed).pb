@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventGadget()
     Protected EventType = EventType()
     Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
+    Protected EventItem = GetGadGetWidgetState(EventGadget)
     
     Select EventType
       ; Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
@@ -46,13 +46,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventWidget( )
     Protected EventType = WidgetEvent( )
     Protected EventData; = this()\data
-    Protected EventItem = GetState(EventGadget)
+    Protected EventItem = GetWidgetState(EventGadget)
     
     Select EventType
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
       Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        ;; DD::DragTextWidget(GetItemTextWidget(EventGadget, EventItem))
+        ;; DD::DragTextWidget(GetWidgetItemText(EventGadget, EventItem))
         
       Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
         ;; Debug DD::DropTextWidget()
@@ -206,7 +206,7 @@ CompilerIf #PB_Compiler_IsMainFile
   LoadFont(6, "Arial", 25)
     
   
-  OpenRootWidget(OpenWindow(-1, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  OpenRoot(OpenWindow(-1, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   
   
   
@@ -223,16 +223,16 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     add(*g, -1, "Sub-Item 5", -1, 11)
 ; ;     add(*g, -1, "Sub-Item 6", -1, 1)
 ; ;     add(*g, -1, "File "+Str(a), -1, 0)  
-; ;     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+; ;     ;For i=0 To CountItems(*g) : SetWidgetItemState(*g, i, #PB_Tree_Expanded) : Next
 ; ;     
 ; ; ; ;     ; RemoveItem(*g,1)
-; ; ; ;     SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+; ; ; ;     SetWidgetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
 ; ; ; ;     ;BindGadgetEvent(g, @Events())
-; ; ; ;     ;     SetState(*g, 3)
-; ; ; ;     ;     SetState(*g, -1)
-; ; ; ;     ;Debug " - "+GetTextWidget(*g)
+; ; ; ;     ;     SetWidgetState(*g, 3)
+; ; ; ;     ;     SetWidgetState(*g, -1)
+; ; ; ;     ;Debug " - "+GetWidgetText(*g)
 ; ; ; ;     LoadFont(3, "Arial", 18)
-; ; ; ;     SetFont(*g, 3)
+; ; ; ;     SetWidgetFont(*g, 3)
     
     ; 1_example
     *g = TreeWidget(10, 10, 210, 100, #__tree_CheckBoxes)                                         
@@ -270,7 +270,7 @@ CompilerIf #PB_Compiler_IsMainFile
       add(*g5, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
     Next
     
-    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    ;For i=0 To CountItems(*g) : SetWidgetItemState(*g, i, #PB_Tree_Expanded) : Next
     ;     SetWidgetItemImage(*g, 0, 0)
     ;}
     
@@ -324,7 +324,7 @@ CompilerIf #PB_Compiler_IsMainFile
         add(*g, 2, "Tree_2_1", -1, 1) 
         add(*g, 3, "Tree_3_1", -1, 1) 
         add(*g, 3, "Tree_3_2", -1, 2) 
-        For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+        For i=0 To CountItems(*g) : SetWidgetItemState(*g, i, #PB_Tree_Expanded) : Next
 ; ;     add(*g, -1, "#PB_Window_SystemMenu    ", -1,1) ; Enables the system menu on the window title bar (Default", -1).
 ; ;     add(*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
 ; ;     add(*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
@@ -353,29 +353,29 @@ CompilerIf #PB_Compiler_IsMainFile
         add(*g, -1, "Tree_"+Str(i), 0, -1) 
       EndIf
     Next 
-    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
-    SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    ;For i=0 To CountItems(*g) : SetWidgetItemState(*g, i, #PB_Tree_Expanded) : Next
+    SetWidgetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetWidgetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
     
     ;LoadFont(5, "Arial", 16)
     
-    SetItemFont(*g, 3, 5)
-    SetItemTextWidget(*g, 3, "16_font and text change")
+    SetWidgetItemFont(*g, 3, 5)
+    SetWidgetItemText(*g, 3, "16_font and text change")
     SetWidgetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
     SetWidgetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
-    SetItemTextWidget(*g, 5, "backcolor and text change")
+    SetWidgetItemText(*g, 5, "backcolor and text change")
     
     ;LoadFont(6, "Arial", 25)
     
-    SetItemFont(*g, 4, 6)
-    SetItemTextWidget(*g, 4, "25_font and text change")
-    SetItemFont(*g, 14, 6)
-    SetItemTextWidget(*g, 14, "25_font and text change")
+    SetWidgetItemFont(*g, 4, 6)
+    SetWidgetItemText(*g, 4, "25_font and text change")
+    SetWidgetItemFont(*g, 14, 6)
+    SetWidgetItemText(*g, 14, "25_font and text change")
     ;BindWidgetEvent(*g, @events_tree_widget())
     ;}
     
   
-; ; ; ;   OpenRootWidget(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+; ; ; ;   OpenRoot(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ; ; ; ;   
 ; ; ; ;   g = 11
     *g = TreeWidget(10, 230, 210, 400);|#__flag_collapsedd)                                         
@@ -395,7 +395,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     add(*g, 9, "", -1, 0) 
     
-    add(*g, 10, "Procedure OpenRootWidget()", -1, 0) 
+    add(*g, 10, "Procedure OpenRoot()", -1, 0) 
     add(*g, 11, "If is_widget()", -1, 1) 
     add(*g, 12, "If is_Hide()", -1, 2) 
     add(*g, 13, " 1", -1, 3) 

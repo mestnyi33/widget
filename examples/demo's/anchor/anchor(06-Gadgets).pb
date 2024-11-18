@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;-\\
    Procedure Button_DrawCallback(*Object._s_widget, x.d,y.d,width.d,height.d, DataValue.i)
-      Protected Text.s = GetTextWidget(*Object)
+      Protected Text.s = GetWidgetText(*Object)
       Protected Hue = DataValue
       
       Protected enter = Bool(*object\enter > 0)
@@ -133,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( ) 
          Case #__event_LeftClick
             If Not a_index( )
-               Debug "Button '" + GetTextWidget(*ew) + "' was clicked."
+               Debug "Button '" + GetWidgetText(*ew) + "' was clicked."
             EndIf
             
          Case #__event_Draw
@@ -151,7 +151,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *Object\class = "Button"
       *Object\container = 0
       *Object\data = HighlightColorHue
-      ;SetTextWidget(*Object, Text)                                 ; Set the button text as a dictionary entry
+      ;SetWidgetText(*Object, Text)                                 ; Set the button text as a dictionary entry
       BindWidgetEvent(*Object, @Button_Events( ), #__event_Draw )  ; Set the drawing callback with the specified highlighting color
       BindWidgetEvent(*Object, @Button_Events( ), #__event_LeftClick ) 
       ;a_set(*Object, #__a_size|#__a_position)        ; Add handles if you want to edit the buttons.
@@ -163,8 +163,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;-\\ 
    ;
    Procedure CheckBox_DrawCallback(*Object._s_widget, x.d,y.d,width.d,height.d, DataValue.i)
-      Protected Text.s = GetTextWidget(*Object)
-      Protected State.i = GetState(*Object)
+      Protected Text.s = GetWidgetText(*Object)
+      Protected State.i = GetWidgetState(*Object)
       Protected yi.i = Int((Height-19)/2)
       Protected Hue = 205
       
@@ -275,8 +275,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( ) 
          Case #__event_LeftClick;, #__event_Left2Click, #__event_Left3Click
             If Not a_index( )
-               SetState(*ew, 1 - GetState(*ew))
-               Debug "checkbox '" + GetTextWidget(*ew) + "' was changed."
+               SetWidgetState(*ew, 1 - GetWidgetState(*ew))
+               Debug "checkbox '" + GetWidgetText(*ew) + "' was changed."
             EndIf
             
          Case #__event_Draw
@@ -293,7 +293,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *Object\type = 0
       *Object\class = "CheckBox"
       *Object\container = 0
-      ;SetTextWidget(*Object, Text)                                ; Set the button text as a dictionary entry
+      ;SetWidgetText(*Object, Text)                                ; Set the button text as a dictionary entry
       BindWidgetEvent(*Object, @CheckBox_Events( ), #__event_Draw)       ; Set the drawing callback with the specified highlighting color
       BindWidgetEvent(*Object, @CheckBox_Events( ), #__event_LeftClick)  ; Set the drawing callback with the specified highlighting color
       BindWidgetEvent(*Object, @CheckBox_Events( ), #__event_Left2Click) ; Set the drawing callback with the specified highlighting color
@@ -323,7 +323,7 @@ CompilerIf #PB_Compiler_IsMainFile
    OpenWindow(#Window, 0, 0, 800, 450, "Example 1: Creation of a basic objects.", #PB_Window_MinimizeGadget|#PB_Window_ScreenCentered)
    
    ; Create a canvas gadget and initializes the object management for the canvas gadget
-   If Not OpenRootWidget( #Window );, #Canvas )
+   If Not OpenRoot( #Window );, #Canvas )
       Debug "Unable to initialize the object manager !"    
    EndIf
    SetWidgetColor(root( ), #__color_back, $FFF0F0F0 )
@@ -347,8 +347,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Disable(*Object_Button2, 1)
    Disable(*Object_CheckBox2, 1)
-   SetState(*Object_CheckBox2, 1)
-   SetState(*Object_CheckBox3, 1)
+   SetWidgetState(*Object_CheckBox2, 1)
+   SetWidgetState(*Object_CheckBox3, 1)
    
    ; The window's event loop
    Repeat

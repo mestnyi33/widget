@@ -96,8 +96,8 @@ EnableExplicit
         
     If Event = #PB_Event_Gadget And EventGadget() = #Bar 
 
-      MouseX = GetGadgetAttribute(0, #PB_Canvas_MouseX)
-      MouseY = GetGadgetAttribute(0, #PB_Canvas_MouseY)
+      MouseX = GetWidgetAttribute(0, #PB_Canvas_MouseX)
+      MouseY = GetWidgetAttribute(0, #PB_Canvas_MouseY)
 
      ;_________
      ;Left down

@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 300, 300, "autosize", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     SetWindowColor( 0, $ff00ff)
   
-    OpenRootWidget(0, 20,20 )
+    OpenRoot(0, 20,20 )
     SetWidgetColor(root(), #PB_Gadget_BackColor, $ff00ff00)
    
     ;Window(0,0,0,0,"window", #__window_systemmenu|#__flag_autosize)

@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define i, img = 0
   Define pos = 100
       
-  If OpenRootWidget( 0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+  If OpenRoot( 0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     a_init(root( ))
     
     *this = ListViewWidget( 50,50,200,200, #__flag_gridlines | #__flag_borderless )

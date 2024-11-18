@@ -20,15 +20,15 @@ If OpenWindow(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Wi
 	g5 = SplitterGadget(#PB_Any, 30,30,620,h, g4,g3, #PB_Splitter_Vertical)
 	g6 = SplitterGadget(#PB_Any, 30,30,620,h, g5,TextGadget(-1,0,0,0,0,""))
 	
-	SetGadgetState(g4, 200)
-	SetGadgetState(g5, 200*2+8)
-	SetGadgetState(g6, h)
-	;;SetGadgetState(g4, 200) ; bug splitter
-	Debug GetGadgetAttribute(g2, #PB_ScrollArea_InnerWidth)
-	SetGadgetAttribute(g2, #PB_ScrollArea_X, 100/2 )
-	SetGadgetAttribute(g3, #PB_ScrollArea_X, 100 )
+	SetGadGetWidgetState(g4, 200)
+	SetGadGetWidgetState(g5, 200*2+8)
+	SetGadGetWidgetState(g6, h)
+	;;SetGadGetWidgetState(g4, 200) ; bug splitter
+	Debug GetWidgetAttribute(g2, #PB_ScrollArea_InnerWidth)
+	SetGadGetWidgetAttribute(g2, #PB_ScrollArea_X, 100/2 )
+	SetGadGetWidgetAttribute(g3, #PB_ScrollArea_X, 100 )
 	
-	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow ; WaitCloseRootWidget( )
+	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow ; WaitCloseRoot( )
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
 ; CursorPosition = 27

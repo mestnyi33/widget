@@ -10,18 +10,18 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global a, *added, *reset, *w1, *w2, *g1, *g2, countitems=9; количесвто итемов 
   
-  Procedure SetGadgetState_(gadget, state)
+  Procedure SetGadGetWidgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
         If state >= 0
-          Protected Range.NSRange\location = state ; Len(GetGadgetTextWidget(gadget))
+          Protected Range.NSRange\location = state ; Len(GetGadGetWidgetText(gadget))
           CocoaMessage(0, GadgetID(gadget), "scrollRangeToVisible:@", @Range)
         ;  CocoaMessage(0, GadgetID(gadget), "scrollColumnToVisible:", state)
         ;  CocoaMessage(0, GadgetID(gadget), "scrollRowToVisible:", state )
         EndIf
     CompilerEndSelect
     
-    SetGadgetState(gadget, state)
+    SetGadGetWidgetState(gadget, state)
   EndProcedure
   
   Procedure AddGadgetItem_(gadget, position, text.s, imageID=0, flags=0)
@@ -29,8 +29,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
-        If GetGadgetState(gadget) >= 0
-          SetGadgetState_(gadget, CountGadgetItems(gadget) - 1)
+        If GetGadGetWidgetState(gadget) >= 0
+          SetGadGetWidgetState_(gadget, CountGadgetItems(gadget) - 1)
         EndIf
     CompilerEndSelect
   EndProcedure
@@ -50,14 +50,14 @@ CompilerIf #PB_Compiler_IsMainFile
             AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
             
           Case *reset
-            If widget::GetState(*reset)
+            If widget::GetWidgetState(*reset)
               count = widget::CountItems( *w1 )
             EndIf
             
-            widget::SetState(*w1, count - 1)
-            widget::SetState(*w2, count - 1)
-            SetGadgetState_(*g1, count - 1)
-            SetGadgetState_(*g2, count - 1)
+            widget::SetWidgetState(*w1, count - 1)
+            widget::SetWidgetState(*w2, count - 1)
+            SetGadGetWidgetState_(*g1, count - 1)
+            SetGadGetWidgetState_(*g2, count - 1)
             
         EndSelect
         
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
       Case #__event_Change
-        widget::SetState(*w1, widget::GetState(widget::EventWidget( )))
+        widget::SetWidgetState(*w1, widget::GetWidgetState(widget::EventWidget( )))
         
     EndSelect
   EndProcedure
@@ -89,12 +89,12 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
       Case #PB_EventType_Change
-        SetGadgetState_(*g1, GetGadgetState(EventGadget()))
+        SetGadGetWidgetState_(*g1, GetGadGetWidgetState(EventGadget()))
         
     EndSelect
   EndProcedure
   
-  If OpenRootWidget(#PB_Any, 100, 50, 525, 435+40, "demo Editor state", #PB_Window_SystemMenu)
+  If OpenRoot(#PB_Any, 100, 50, 525, 435+40, "demo Editor state", #PB_Window_SystemMenu)
     ; demo gadget
     *g1 = EditorGadget(#PB_Any, 10, 10, 250, 150)
     *g2 = EditorGadget(#PB_Any, 10, 165, 250, 260)
@@ -104,8 +104,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(*g2, -1, "Item "+Str(a), 0)
     Next
     
-    SetGadgetState_(*g1, a-1)
-    SetGadgetState_(*g2, a-1) 
+    SetGadGetWidgetState_(*g1, a-1)
+    SetGadGetWidgetState_(*g2, a-1) 
     BindGadgetEvent(*g2, @gadget_events())
     
     ; demo widget
@@ -117,13 +117,13 @@ CompilerIf #PB_Compiler_IsMainFile
       widget::AddItem(*w2, -1, "Item "+Str(a), 0)
     Next
     
-    widget::SetState(*w1, a-1)
-    widget::SetState(*w2, a-1) 
+    widget::SetWidgetState(*w1, a-1)
+    widget::SetWidgetState(*w2, a-1) 
     widget::BindWidgetEvent(*w2, @widget_events())
     widget::BindWidgetEvent(*w2, @widget_events(), #__event_RightClick)
     
     *reset = widget::ButtonWidget( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
-    widget::SetState( *reset, 1)
+    widget::SetWidgetState( *reset, 1)
     widget::BindWidgetEvent(*reset, @button_events())
     
     *added = widget::ButtonWidget( 525 - 10-120, 435, 120, 30, "add new item")
@@ -145,7 +145,7 @@ CompilerEndIf
 ; ; If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
 ; ;   EditorGadget(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
 ; ;   
-; ;   OpenRootWidget(0, 270, 10, 250, 150)
+; ;   OpenRoot(0, 270, 10, 250, 150)
 ; ;   *w=EditorWidget(0, 0, 250, 150, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
 ; ;   
 ; ;   a=0
@@ -158,7 +158,7 @@ CompilerEndIf
 ; ;   a=0
 ; ;   Define time = ElapsedMilliseconds()
 ; ;   For a = 0 To LN
-; ;     SetState(*w, a-1) ; set (beginning with 0) the tenth item as the active one
+; ;     SetWidgetState(*w, a-1) ; set (beginning with 0) the tenth item as the active one
 ; ;   Next
 ; ;   Debug "  "+Str(ElapsedMilliseconds()-time) + " - widget set items state time"
 ; ;   
@@ -174,7 +174,7 @@ CompilerEndIf
 ; ;   a=0
 ; ;   Define time = ElapsedMilliseconds()
 ; ;   For a = 0 To LN
-; ;     SetGadgetState(0, a-1) ; set (beginning with 0) the tenth item as the active one
+; ;     SetGadGetWidgetState(0, a-1) ; set (beginning with 0) the tenth item as the active one
 ; ;   Next
 ; ;   Debug "  "+Str(ElapsedMilliseconds()-time) + " - gadget set items state time"
 ; ;   ; HideGadget(0, 0)
@@ -183,7 +183,7 @@ CompilerEndIf
 ; ;   
 ; ;   EditorGadget(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
 ; ;   
-; ;   OpenRootWidget(0, 270, 170, 250, 520);, "", #__flag_borderless)
+; ;   OpenRoot(0, 270, 170, 250, 520);, "", #__flag_borderless)
 ; ;   *w=EditorWidget(0, 0, 250, 520, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
 ; ;   ;
 ; ;   ;-
@@ -198,7 +198,7 @@ CompilerEndIf
 ; ;   a=0
 ; ;   Define time = ElapsedMilliseconds()
 ; ;   For a = 0 To LN
-; ;     SetItemState(*w, a, 1) ; set (beginning with 0) the tenth item as the active one
+; ;     SetWidgetItemState(*w, a, 1) ; set (beginning with 0) the tenth item as the active one
 ; ;   Next
 ; ;   Debug "  "+Str(ElapsedMilliseconds()-time) + " - widget set items state time"
 ; ;   
@@ -214,7 +214,7 @@ CompilerEndIf
 ; ;   a=0
 ; ;   Define time = ElapsedMilliseconds()
 ; ;   For a = 0 To LN
-; ;     SetGadgetItemState(10, a, 1) ; set (beginning with 0) the tenth item as the active one
+; ;     SetGadGetWidgetItemState(10, a, 1) ; set (beginning with 0) the tenth item as the active one
 ; ;   Next
 ; ;   Debug "  "+Str(ElapsedMilliseconds()-time) + " - gadget set items state time"
 ; ;   ; HideGadget(0, 0)

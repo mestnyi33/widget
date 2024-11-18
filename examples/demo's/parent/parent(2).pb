@@ -22,7 +22,7 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If OpenRootWidget(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
+If OpenRoot(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   *p1 = ContainerWidget(10, 10, 200, 200)            ; 0
   *w = ContainerWidget(10, 10, 100, 100)             ; 1
   ;ContainerWidget(10, 10, 100, 100)                  ; 2
@@ -32,7 +32,7 @@ If OpenRootWidget(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   CloseWidgetList()
   EndIf
   
-  If OpenRootWidget(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(1, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   *p2 = ContainerWidget(20, 180, 200, 200)           ; 4
   ButtonWidget(-25, 10, 100, 30, "Button_4_5")       ; 5

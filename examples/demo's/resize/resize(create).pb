@@ -73,10 +73,10 @@ CompilerIf #PB_Compiler_IsMainFile
          Case  5: result = CheckBoxWidget(X,Y,Width,Height,"CheckBox", flags) 
          Case  6: result = ListViewWidget(X,Y,Width,Height, flags) 
          Case  7: result = FrameWidget(X,Y,Width,Height,"Frame", flags) 
-         Case  8: result = ComboBoxWidget(X,Y,Width,Height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
+         Case  8: result = ComboBoxWidget(X,Y,Width,Height, flags): AddItem(result,-1,"ComboBox"): SetWidgetState(result,0)
          Case  9: result = ImageWidget(X,Y,Width,Height,0,#PB_Image_Border|flags) 
          Case 10: result = HyperLinkWidget(X,Y,Width,Height,"HyperLink",0, flags) 
-         Case 11: result = ContainerWidget(X,Y,Width,Height,#PB_Container_Flat|flags): ButtonWidget(0,0,80,Y,"Button1"):SetWidgetClass(widget(),GetTextWidget(widget())): ButtonWidget(10,50,80,Y,"Button2"):SetWidgetClass(widget(),GetTextWidget(widget())): CloseWidgetList() ; Container
+         Case 11: result = ContainerWidget(X,Y,Width,Height,#PB_Container_Flat|flags): ButtonWidget(0,0,80,Y,"Button1"):SetWidgetClass(widget(),GetWidgetText(widget())): ButtonWidget(10,50,80,Y,"Button2"):SetWidgetClass(widget(),GetWidgetText(widget())): CloseWidgetList() ; Container
          Case 12: result = ListIconWidget(X,Y,Width,Height,"",88, flags) 
             ;Case 13: result = IPAddress(x,y,width,height) 
             ;Case 14: result = ProgressBar(x,y,width,height,0,5)
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
-   If OpenRootWidget(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRoot(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetWidgetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
       SetWidgetClass(root( ), "[main-root]" )
       ;a_init( root())
@@ -183,7 +183,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;BindWidgetEvent( widget, @Events())
       BindWidgetEvent( #PB_All, @Events())
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

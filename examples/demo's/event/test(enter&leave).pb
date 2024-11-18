@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If OpenRootWidget(0, 10,10, 480, 480)
+      If OpenRoot(0, 10,10, 480, 480)
          a_init( root( ) )
          BindWidgetEvent(#PB_All, @HandlerEvents( ))
          WindowWidget(80, 100, 300, 280, "Window_2")
@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
       EndIf
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

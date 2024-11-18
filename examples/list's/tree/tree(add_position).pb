@@ -7,15 +7,15 @@ CompilerIf Defined(WIDGET, #PB_Module)
   Macro EventType() : ToPBEventType(WidgetEvent()) : EndMacro
   Macro AddGadgetItem(gadget,position,text,imageID=0,flags=) : AddItem(gadget,position,text,imageID,flags) : EndMacro
   Macro BindGadgetEvent(gadget,callback,eventtype=0) : BindWidgetEvent(gadget,callback,eventtype) : EndMacro
-  Macro GetGadgetState(gadget) : GetState(gadget) : EndMacro
-  Macro GetGadgetItemTextWidget(gadget,position) : GetItemTextWidget(gadget,position) : EndMacro
+  Macro GetGadGetWidgetState(gadget) : GetWidgetState(gadget) : EndMacro
+  Macro GetGadGetWidgetItemText(gadget,position) : GetWidgetItemText(gadget,position) : EndMacro
   Macro TreeGadget(gadget,x,y,width,height,flags=0) : TreeWidget(x,y,width,height,flags) : EndMacro
-  Macro OpenWindow(window,x,y,width,height,text, flags=0) : OpenRootWidget(window,x,y,width,height,text,flags) : EndMacro
+  Macro OpenWindow(window,x,y,width,height,text, flags=0) : OpenRoot(window,x,y,width,height,text,flags) : EndMacro
 CompilerEndIf
 
 Procedure TestHandler()
   If EventType() = #PB_EventType_LeftClick
-    Debug " "+GetGadgetState(EventGadget()) +" "+ GetGadgetItemTextWidget(EventGadget(), GetGadgetState(EventGadget()))
+    Debug " "+GetGadGetWidgetState(EventGadget()) +" "+ GetGadGetWidgetItemText(EventGadget(), GetGadGetWidgetState(EventGadget()))
   EndIf
 EndProcedure
 

@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  If OpenRootWidget(0, 0, 0, 250,240, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 250,240, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetWidgetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
     
     
@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Debug *g\scroll\h\bar\button[1]\size
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 
@@ -26,36 +26,36 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   If vertical
     ;\\ vertical
-    If OpenRootWidget(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    If OpenRoot(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       Define *scroll1 = ScrollBarWidget(20, 50, 50, 250,  0, 30, 0, #PB_ScrollBar_Vertical|#__bar_invert)
-      SetState(*scroll1, 5)
+      SetWidgetState(*scroll1, 5)
       
       Define *scroll2 = ScrollBarWidget(80, 50, 50, 250,  5, 30, 15, #PB_ScrollBar_Vertical)
-      SetState(*scroll2, 10)
+      SetWidgetState(*scroll2, 10)
       
       Define *scroll3 = ScrollBarWidget(140, 50, 50, 250,  0, 30, 0, #PB_ScrollBar_Vertical)
-      SetState(*scroll3, 5)
+      SetWidgetState(*scroll3, 5)
       
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
     EndIf
   Else
     
     ;\\ horizontal
-    If OpenRootWidget(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    If OpenRoot(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       Define *scroll1 = ScrollBarWidget(50, 20, 250, 50,  0, 30, 0, #__bar_invert)
-      SetState(*scroll1, 5)
+      SetWidgetState(*scroll1, 5)
       
       Define *scroll2 = ScrollBarWidget(50, 80, 250, 50,  5, 30, 15, 0, 55)
-      SetState(*scroll2, 10)
+      SetWidgetState(*scroll2, 10)
       
       Define *scroll3 = ScrollBarWidget(50, 140, 250, 50,  0, 30, 0)
-      SetState(*scroll3, 5)
+      SetWidgetState(*scroll3, 5)
       
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
     EndIf
   EndIf
 CompilerEndIf

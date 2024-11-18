@@ -35,8 +35,8 @@ CompilerIf #PB_Compiler_IsMainFile
   StopDrawing()
   
   Procedure resize_event( )
-    ;     Protected *root_1._s_root = GetGadgetData( canvas_1 )
-    ;     Protected *root_2._s_root = GetGadgetData( canvas_2 )
+    ;     Protected *root_1._s_root = GetGadGetWidgetData( canvas_1 )
+    ;     Protected *root_2._s_root = GetGadGetWidgetData( canvas_2 )
     
     ; PostEventCanvas( *root_1 )
     Debug "resize - " + WidgetEventItem( ) +" "+ WidgetEventData( )
@@ -44,16 +44,16 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure active_event( )
-    Debug "active - "+EventWindow() +" "+ GetActiveWindow() +" "+ GetActiveGadget()
+    Debug "active - "+EventWindow() +" "+ GetActiveWidgetWindow() +" "+ GetActiveWidgetGadget()
     
   EndProcedure
   Procedure deactive_event( )
-    Debug "deactive - "+EventWindow() +" "+ GetActiveWindow() +" "+ GetActiveGadget()
+    Debug "deactive - "+EventWindow() +" "+ GetActiveWidgetWindow() +" "+ GetActiveWidgetGadget()
     
   EndProcedure
   
   
-  If OpenRootWidget( OpenWindow( #PB_Any, 300, 150, 380, 200, "form1", #PB_Window_SystemMenu ) )
+  If OpenRoot( OpenWindow( #PB_Any, 300, 150, 380, 200, "form1", #PB_Window_SystemMenu ) )
     canvas_1 = GetCanvasGadget( Root( ) )
     canvas_1_win = GetCanvasWindow( Root( ) )
     ;BindEventCanvas( )
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BindWidgetEvent( widget( ), @resize_event( ), #PB_EventType_Resize )
   EndIf
   
-  If OpenRootWidget( OpenWindow( #PB_Any, 300, 400, 380, 200, "form2", #PB_Window_SystemMenu | #PB_Window_SizeGadget ) )
+  If OpenRoot( OpenWindow( #PB_Any, 300, 400, 380, 200, "form2", #PB_Window_SystemMenu | #PB_Window_SizeGadget ) )
     canvas_2 = GetCanvasGadget( Root( ) )
     canvas_2_win = GetCanvasWindow( Root( ) )
     ;BindEventCanvas( ) 
@@ -98,16 +98,16 @@ CompilerIf #PB_Compiler_IsMainFile
         If EventType() = #PB_EventType_LeftClick
           Select EventGadget()
             Case 1
-              ;               SetActive( *root_1 )
+              ;               SetActiveWidget( *root_1 )
               ;               SetActiveGadget( canvas_1 )
               SetActiveWindow( canvas_1_win )
             Case 2
-              ;               SetActive( *root_2 )
+              ;               SetActiveWidget( *root_2 )
               ;               SetActiveGadget( canvas_2 )
               SetActiveWindow( canvas_2_win )
               
             Case 3
-              Debug " "+GetActiveWindow() +" "+ GetActiveGadget()
+              Debug " "+GetActiveWidgetWindow() +" "+ GetActiveWidgetGadget()
           EndSelect
         EndIf
         

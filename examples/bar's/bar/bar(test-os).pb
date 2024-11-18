@@ -6,13 +6,13 @@
   Procedure events_widgets()
     Select EventType( )
       Case #PB_EventType_LeftClick
-        Protected state = GetGadgetState(*bar)
+        Protected state = GetGadGetWidgetState(*bar)
         Debug "#PB_EventType_Change "+state
-        SetGadgetState(*splitter, state)
-        SetGadgetState(*spin, state)
-        SetGadgetState(*progress, state)
-        SetGadgetState(*track, state)
-        SetGadgetState(*scroll, state)
+        SetGadGetWidgetState(*splitter, state)
+        SetGadGetWidgetState(*spin, state)
+        SetGadGetWidgetState(*progress, state)
+        SetGadGetWidgetState(*track, state)
+        SetGadGetWidgetState(*scroll, state)
     EndSelect
   EndProcedure
   
@@ -32,19 +32,19 @@
       *scroll   = ScrollBarGadget(#PB_Any, 15, 10 + 35 * 4, 350, 30, min, 50, 8, flag)
       
       
-      SetGadgetState(*splitter, min+2)
-      SetGadgetState(*spin, min+2)
-      SetGadgetState(*progress, min+2)
-      SetGadgetState(*track, min+2)
-      SetGadgetState(*scroll, min+2)
+      SetGadGetWidgetState(*splitter, min+2)
+      SetGadGetWidgetState(*spin, min+2)
+      SetGadGetWidgetState(*progress, min+2)
+      SetGadGetWidgetState(*track, min+2)
+      SetGadGetWidgetState(*scroll, min+2)
       
-      ;         SetGadgetState(0, GetAttribute(*scroll, #__Bar_Inverted))
-      ;         SetWindowTitle(0, Str(GetState(*scroll)))
+      ;         SetGadGetWidgetState(0, GetWidgetAttribute(*scroll, #__Bar_Inverted))
+      ;         SetWindowTitle(0, Str(GetWidgetState(*scroll)))
       
       ;*bar = ScrollBarGadget(#PB_Any, 15, 20+35*5, 350, 20, min, 50, 8)
       *bar = TrackBarGadget(#PB_Any, 15, 20 + 35 * 5, 350, 20, min, 50)
       ;*bar = SplitterGadget(#PB_Any, 15, 20+35*5, 350, 20, ButtonGadget(-1,0,0,0,0,""),ButtonGadget(-1,0,0,0,0,""), #PB_Splitter_Vertical)
-      SetGadgetState(*bar, min+2)
+      SetGadGetWidgetState(*bar, min+2)
       
       BindGadgetEvent( *bar, @events_widgets( ));, #PB_EventType_Change )
     EndIf
@@ -63,19 +63,19 @@
         
         Select EventGadget()
             ;           Case 0
-            ;             SetAttribute(*scroll, #__Bar_Inverted, GetGadgetState(0))
-            ;             SetWindowTitle(0, Str(GetState(*scroll)))
+            ;             SetWidgetAttribute(*scroll, #__Bar_Inverted, GetGadGetWidgetState(0))
+            ;             SetWindowTitle(0, Str(GetWidgetState(*scroll)))
             ;
-            ;             If GetGadgetState(0)
-            ;               SetGadgetTextWidget(0, "set standart scrollbar")
+            ;             If GetGadGetWidgetState(0)
+            ;               SetGadGetWidgetText(0, "set standart scrollbar")
             ;             Else
-            ;               SetGadgetTextWidget(0, "set inverted scrollbar")
+            ;               SetGadGetWidgetText(0, "set inverted scrollbar")
             ;             EndIf
             ;
             ;
             ;           Case g_Canvas
             ;             If widget()\change
-            ;               SetWindowTitle(0, Str(GetState(widget())))
+            ;               SetWindowTitle(0, Str(GetWidgetState(widget())))
             ;             EndIf
             
         EndSelect

@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TreeGadget(0, 10, 10, 180, 230)
     
-    OpenRootWidget(0, 200, 10, 180, 230);, "", #__flag_borderless)
+    OpenRoot(0, 200, 10, 180, 230);, "", #__flag_borderless)
     *w = TreeWidget(0, 0, 180, 230)
     
     For i = 1 To 10
@@ -24,10 +24,10 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*w, -1, "Text_"+Str(i))     ;+Chr(10)+"Text 2")
     Next
     
-    SetGadgetFont(0, FontID(font))
-;     SetGadgetItemFont(0, 3, FontID(font1))
-;     SetGadgetItemFont(0, 4, FontID(font1))
-;     SetGadgetItemFont(0, 7, FontID(font2))
+    SetGadGetWidgetFont(0, FontID(font))
+;     SetGadGetWidgetItemFont(0, 3, FontID(font1))
+;     SetGadGetWidgetItemFont(0, 4, FontID(font1))
+;     SetGadGetWidgetItemFont(0, 7, FontID(font2))
     
     SetGadGetWidgetItemColor(0, #PB_All, #PB_Gadget_FrontColor, $0000FF)
     SetGadGetWidgetItemColor(0, 3, #PB_Gadget_BackColor, $00FFFF)
@@ -35,10 +35,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     ;\\
-    SetFont(*w, font)
-    SetItemFont(*w, 3, font1)
-    SetItemFont(*w, 4, font1)
-    SetItemFont(*w, 7, font2)
+    SetWidgetFont(*w, font)
+    SetWidgetItemFont(*w, 3, font1)
+    SetWidgetItemFont(*w, 4, font1)
+    SetWidgetItemFont(*w, 7, font2)
     
     ;     ; index-3 item default text-color 
     ;     SetWidgetItemColor(*w, 3, #__Color_Front, $FF00FF00)
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; vertical and horizontal line back-color
     SetWidgetItemColor(*w, #PB_All, #__Color_Line,  $C03AD55A)
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)

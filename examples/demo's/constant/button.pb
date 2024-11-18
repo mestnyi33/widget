@@ -62,11 +62,11 @@ Debug  #PB_ListIcon_ThreeState ; 8                 ; 64
 ; 
 ; The following functions can be used To control the gadget: 
 ; 
-; - SetGadgetTextWidget(): Changes the text of the ButtonGadget. 
-; - GetGadgetTextWidget(): Returns the text of the ButtonGadget. 
-; - SetGadgetState() 
+; - SetGadGetWidgetText(): Changes the text of the ButtonGadget. 
+; - GetGadGetWidgetText(): Returns the text of the ButtonGadget. 
+; - SetGadGetWidgetState() 
 ;      #PB_Button_Toggle : Used with buttons to set the actual state (1 = toggled, 0 = normal).
-; - GetGadgetState() 
+; - GetGadGetWidgetState() 
 ;      #PB_Button_Toggle : Used with buttons to get the actual state of the button (1 = toggled, 0 = normal).
 
 ; ButtonImageGadget(
@@ -83,14 +83,14 @@ Debug  #PB_ListIcon_ThreeState ; 8                 ; 64
 ; 
 ; - SetGadGetWidgetImage(): Changes the image of the ButtonImageGadget. 
 ; - GetGadGetWidgetImage(): Returns the image of the ButtonImageGadget. 
-; - GetGadgetState()  
+; - GetGadGetWidgetState()  
 ;      #PB_Button_Toggle : can be used to get the toggle state of the gadget. 
-; - SetGadgetState() 
+; - SetGadGetWidgetState() 
 ;      #PB_Button_Toggle : can be used to set the toggle state of the gadget. 
-; - GetGadgetAttribute() : with the following values
+; - GetWidgetAttribute() : with the following values
 ;      #PB_Button_Image       : Get the displayed image ID, e.g. ImageID(#MyImage).
 ;      #PB_Button_PressedImage: Get the displayed image ID when the button is pressed, e.g. ImageID(#MyImagePressed).
-; - SetGadgetAttribute() : with the following values
+; - SetGadGetWidgetAttribute() : with the following values
 ;      #PB_Button_Image       : Set the displayed image.
 ;      #PB_Button_PressedImage: Set the image displayed when the button is pressed.
 
@@ -102,12 +102,12 @@ Debug  #PB_ListIcon_ThreeState ; 8                 ; 64
 ;                           : The flag can be used For a checkbox that represents the state of multiple items.
 ;                           : The "in between" state can then be used To indicate that the setting is Not the same For all items. 
 ;                           : By clicking on the checkbox, the user can bring it back To either the "on" Or "off" state To apply this To all the items.
-;                           : Therefore the "in between" state can only be set by the program via SetGadgetState() And Not by the user by clicking on the checkbox.; A 'mini help' can be added To this gadget using GadgetToolTip(). 
+;                           : Therefore the "in between" state can only be set by the program via SetGadGetWidgetState() And Not by the user by clicking on the checkbox.; A 'mini help' can be added To this gadget using GadgetToolTip(). 
 ; 
 ; A 'mini help' can be added To this gadget using GadgetToolTip(). 
 ; 
-; - GetGadgetState() can be used To get the current gadget state. 
-; - SetGadgetState() can be used To change the gadget state. 
+; - GetGadGetWidgetState() can be used To get the current gadget state. 
+; - SetGadGetWidgetState() can be used To change the gadget state. 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 16

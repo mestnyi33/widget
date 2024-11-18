@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       ;TextWidget(_x_,_y_,_width_,_height_,_text_,_flag_)
       ButtonWidget(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
-      ;EditorWidget(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : setTextWidget(widget(), _text_)
+      ;EditorWidget(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : SetWidgetText(widget(), _text_)
       ;StringWidget(_x_,_y_,_width_,_height_,_text_,_flag_)
    EndProcedure
    
@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define text_v.s = "Standard"+ m.s +"Button Button"+ m.s +"(Vertical)"
    Define y,x = (width+space)*3 + 5
    
-   If OpenRootWidget(0, 0, 0, x+(width+space)*3 + 15, y+(height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRoot(0, 0, 0, x+(width+space)*3 + 15, y+(height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetWidgetColor( widget( ), #__color_Back, $FFffffff )
       
       ; vertical

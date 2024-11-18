@@ -12,12 +12,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_roots( )
     If WidgetEvent( ) <> #__event_MouseMove
-      Debug "  "+ IDWidget(EventWidget()) +" - widget event - "+ WidgetEvent() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEvent()
+      Debug "  "+ GetIndex(EventWidget()) +" - widget event - "+ WidgetEvent() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEvent()
     EndIf
   EndProcedure
   
   Procedure Window_0( )
-    If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
+    If OpenRoot(OpenWindow(#PB_Any, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
       
       Define *butt0 = ButtonWidget(50, 50, 280, 35, "test-button-events") 
       BindWidgetEvent( *butt0, @events_roots( ) )
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
         gQuit = #True
         
         ;       Case #PB_Event_Gadget;Widget
-        ;         Debug ""+getTextWidget(EventWidget( )) +" "+ WidgetEvent( ) ;+" "+ *Value\This +" "+ *Value\event
+        ;         Debug ""+GetWidgetText(EventWidget( )) +" "+ WidgetEvent( ) ;+" "+ *Value\This +" "+ *Value\event
         ;         
         ;         Select EventWidget( )
         ;           Case *but

@@ -52,14 +52,14 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   EndIf
   
   If OpenWindow(0, 0, 0, 800, 600, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    OpenRootWidget(0, 10,10)
+    OpenRoot(0, 10,10)
     
     g = EditorWidget( 0, 0, 0, 0 , #__flag_Textwordwrap) 
     *g = EditorWidget(0, 0, 0, 0) 
     
     If g
       If set
-        SetTextWidget(g, Text.s) 
+        SetWidgetText(g, Text.s) 
       EndIf
       If add
         For a = 0 To 2
@@ -70,12 +70,12 @@ CompilerIf #PB_Compiler_IsMainFile
           AddItem(g, a, "Line "+Str(a))
         Next
       EndIf
-      ;SetFont(g, FontID(0))
+      ;SetWidgetFont(g, FontID(0))
     EndIf
     
     If *g
       If set
-        SetTextWidget(*g, Text.s) 
+        SetWidgetText(*g, Text.s) 
       EndIf
       If add
         For a = 0 To 2
@@ -86,17 +86,17 @@ CompilerIf #PB_Compiler_IsMainFile
           AddItem(*g, a, "Line "+Str(a))
         Next
       EndIf
-      ;SetFont(*g, FontID(0))
+      ;SetWidgetFont(*g, FontID(0))
     EndIf
     
     SplitterWidget(8, 35, 800-16, 600-16-35,g,*g, #PB_Splitter_Vertical|#__flag_autosize)
     
     If Not g
-      SetState(widget(), 0)
+      SetWidgetState(widget(), 0)
     EndIf
     
     If Not *g
-      SetState(widget(), 800)
+      SetWidgetState(widget(), 800)
     EndIf
     
     Repeat 

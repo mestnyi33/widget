@@ -6,8 +6,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
    Define width=800, height=600
 
- ; If OpenRootWidget(1, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  ; If OpenRootWidget(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+ ; If OpenRoot(1, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  ; If OpenRoot(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
   If WindowWidget(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ;a_init(Root())
   SetWidgetColor( Root( ), #__color_back, $ff00ffff)
@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget( widget( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
   
   
-  WaitCloseRootWidget()
+  WaitCloseRoot()
 EndIf
 
 End  

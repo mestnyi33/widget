@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   
-  If OpenRootWidget(0, 0, 225, #PB_Ignore, 230)
+  If OpenRoot(0, 0, 225, #PB_Ignore, 230)
     
     *g = TreeWidget(10, 10, 210, 210, #__tree_CheckBoxes)                                         
     *g1 = TreeWidget(230, 10, 210, 210, #__tree_CheckBoxes)                                         
@@ -78,14 +78,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
 ; ;   
 ; ;   item = 4
-; ;   Debug "g - "+ GetGadgetItemData(g, item) +" "+ GetGadgetItemTextWidget(g, item)
-; ;   Debug "w - "+ GetItemData(*g, item) +" "+ GetItemTextWidget(*g, item)
+; ;   Debug "g - "+ GetGadGetWidgetItemData(g, item) +" "+ GetGadGetWidgetItemText(g, item)
+; ;   Debug "w - "+ GetWidgetItemData(*g, item) +" "+ GetWidgetItemText(*g, item)
 ; ;   
-; ;   Debug "g1 - "+ GetGadgetItemData(g1, item) +" "+ GetGadgetItemTextWidget(g1, item)
-; ;   Debug "w1 - "+ GetItemData(*g1, item) +" "+ GetItemTextWidget(*g1, item)
+; ;   Debug "g1 - "+ GetGadGetWidgetItemData(g1, item) +" "+ GetGadGetWidgetItemText(g1, item)
+; ;   Debug "w1 - "+ GetWidgetItemData(*g1, item) +" "+ GetWidgetItemText(*g1, item)
   
-  For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-  For i=0 To CountGadgetItems(g1) : SetGadgetItemState(g1, i, #PB_Tree_Expanded) : Next
+  For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
+  For i=0 To CountGadgetItems(g1) : SetGadGetWidgetItemState(g1, i, #PB_Tree_Expanded) : Next
   
   Repeat
     Select WaitWindowEvent()   

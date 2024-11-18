@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWidget(*w_7, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
   EndProcedure
   
-  widget::OpenRootWidget(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+  widget::OpenRoot(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
   ; first splitter
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   *w_7 = widget::SplitterWidget(125, 170, 250, 70, *w_3, *w_6, #PB_Splitter_Separator | #PB_Splitter_Vertical)
   
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 9

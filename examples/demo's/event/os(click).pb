@@ -1,7 +1,7 @@
 ﻿Global *this,  w_flag
 Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
 
-Procedure SetGadgetState_(gadget, state)
+Procedure SetGadGetWidgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
         ; CocoaMessage(0, GadgetID(gadget), "scrollColumnToVisible:", state)
@@ -10,7 +10,7 @@ Procedure SetGadgetState_(gadget, state)
         EndIf
     CompilerEndSelect
     
-    SetGadgetState(gadget, state)
+    SetGadGetWidgetState(gadget, state)
   EndProcedure
   
   Procedure AddGadgetItem_(gadget, position, text.s, imageID=0, flags=0)
@@ -18,8 +18,8 @@ Procedure SetGadgetState_(gadget, state)
     
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
-        If GetGadgetState(gadget) >= 0
-          SetGadgetState_(gadget, CountGadgetItems(gadget) - 1)
+        If GetGadGetWidgetState(gadget) >= 0
+          SetGadGetWidgetState_(gadget, CountGadgetItems(gadget) - 1)
         EndIf
     CompilerEndSelect
   EndProcedure
@@ -35,7 +35,7 @@ Procedure SetGadgetState_(gadget, state)
     EndSelect
     
     If result
-      SetGadgetState_(w_flag, CountGadgetItems(w_flag) - 1)
+      SetGadGetWidgetState_(w_flag, CountGadgetItems(w_flag) - 1)
     EndIf
 EndProcedure
 

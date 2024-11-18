@@ -54,23 +54,23 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  ;   If OpenRootWidget(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_BorderLess)
-  ;     SetData(ContainerWidget(20, 20, 180, 180), 1)
-  ;     SetData(ContainerWidget(70, 10, 70, 180, #__flag_NoGadget), 9) 
-  ;     SetData(ContainerWidget(20, 20, 180, 180), 2)
-  ;     SetData(ContainerWidget(20, 20, 180, 180), 3)
+  ;   If OpenRoot(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_BorderLess)
+  ;     SetWidgetData(ContainerWidget(20, 20, 180, 180), 1)
+  ;     SetWidgetData(ContainerWidget(70, 10, 70, 180, #__flag_NoGadget), 9) 
+  ;     SetWidgetData(ContainerWidget(20, 20, 180, 180), 2)
+  ;     SetWidgetData(ContainerWidget(20, 20, 180, 180), 3)
   ;     
-  ;     SetData(ContainerWidget(0, 20, 180, 30, #__flag_NoGadget), 4) 
-  ;     SetData(ContainerWidget(0, 35, 180, 30, #__flag_NoGadget), 5) 
-  ;     SetData(ContainerWidget(0, 50, 180, 30, #__flag_NoGadget), 6) 
-  ;     SetData(Splitter(20, 70, 180, 50, ContainerWidget(0,0,0,0, #__flag_NoGadget), ContainerWidget(0,0,0,0, #__flag_NoGadget), #PB_Splitter_Vertical), 7) 
+  ;     SetWidgetData(ContainerWidget(0, 20, 180, 30, #__flag_NoGadget), 4) 
+  ;     SetWidgetData(ContainerWidget(0, 35, 180, 30, #__flag_NoGadget), 5) 
+  ;     SetWidgetData(ContainerWidget(0, 50, 180, 30, #__flag_NoGadget), 6) 
+  ;     SetWidgetData(Splitter(20, 70, 180, 50, ContainerWidget(0,0,0,0, #__flag_NoGadget), ContainerWidget(0,0,0,0, #__flag_NoGadget), #PB_Splitter_Vertical), 7) 
   ;     
   ;     CloseWidgetList()
   ;     CloseWidgetList()
-  ;     SetData(ContainerWidget(10, 70, 70, 180), 8) 
-  ;     SetData(ContainerWidget(10, 10, 70, 30, #__flag_NoGadget), 10) 
-  ;     SetData(ContainerWidget(10, 20, 70, 30, #__flag_NoGadget), 11) 
-  ;     SetData(ContainerWidget(10, 30, 70, 30, #__flag_NoGadget), 12) 
+  ;     SetWidgetData(ContainerWidget(10, 70, 70, 180), 8) 
+  ;     SetWidgetData(ContainerWidget(10, 10, 70, 30, #__flag_NoGadget), 10) 
+  ;     SetWidgetData(ContainerWidget(10, 20, 70, 30, #__flag_NoGadget), 11) 
+  ;     SetWidgetData(ContainerWidget(10, 30, 70, 30, #__flag_NoGadget), 12) 
   ;     CloseWidgetList()
   ;     
   ;     BindWidgetEvent(@Events(), root())
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 475, 525, "Root", #PB_Window_ScreenCentered));|#__flag_AutoSize)
+  If OpenRoot(OpenWindow(#PB_Any, 0, 0, 475, 525, "Root", #PB_Window_ScreenCentered));|#__flag_AutoSize)
     Define i, *w,*w1,*w2
     
     ImageWidget(5, 5, 150, 100, 0, #__flag_Checkboxes)
@@ -110,11 +110,11 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem (widget(), -1, "item_"+Str(i))
     Next
     CloseWidgetList()
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     
     ; demo editor
     EditorWidget(320, 5, 150, 100)
-    SetTextWidget(widget(), Text.s) 
+    SetWidgetText(widget(), Text.s) 
     Define a
     For a = 0 To 2
       AddItem(widget(), a, "Line "+Str(a))
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For a = 4 To 6
       AddItem(widget(), a, "Line "+Str(a))
     Next
-    ;SetFont(*g, FontID(0))
+    ;SetWidgetFont(*g, FontID(0))
     
     TreeWidget(160, 110, 150, 100, #__flag_Checkboxes)
     For i=0 To 20
@@ -138,7 +138,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonWidget(10, 15, 80, 24,"Кнопка 1")
     ;     ComboBoxWidget(10, 15, 80, 24)
     ;     AddItem(Widget(), -1, "Combobox")
-    ;     SetState(Widget(), 0)
+    ;     SetWidgetState(Widget(), 0)
     
     ButtonWidget(95, 15, 80, 24,"Кнопка 2")
     CloseWidgetList()
@@ -166,61 +166,61 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Splitter(320, 215, 150, 150, SplitterWidget(0, 0, 0, 0, HyperLinkWidget(0, 0, 0, 0,"кнопка 3 "+#CRLF$+"кнопка 33", $FF00FF00), ButtonWidget(0, 0, 0, 0,"кнопка 1 "+#CRLF$+"кнопка 11")), ButtonWidget(0, 0, 0, 0,"кнопка 2 "+#CRLF$+"кнопка 22", #__bar_Vertical), #PB_Splitter_Vertical) 
     
     SpinWidget(5, 365+5, 150, 30, 0, 20)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     SpinWidget(5, 365+40, 150, 30, 0, 20, #__bar_Vertical)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     SpinWidget(5, 365+75, 150, 30, 0, 21);, #__bar_Reverse)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     
     ScrollBarWidget(160, 370, 150, 20, 0, 50, 30)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     ScrollBarWidget(160, 370+25, 150, 10, 0, 50, 30, #__bar_Invert)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     
     TrackBarWidget(160, 370+53, 150, 20, 0, 20, #PB_TrackBar_Ticks,0)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     TrackBarWidget(160, 370+53+25, 150, 20, 0, 20, #__bar_Invert,0)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     
     ProgressBarWidget(160, 370+105, 150, 20, 0, 20)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     ProgressBarWidget(160, 370+105+25, 150, 10, 0, 20, #__bar_Invert)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     
     ScrollBarWidget(320, 370, 20, 150, 0, 50, 30, #__bar_Vertical, #__round+2)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     ScrollBarWidget(320+25, 370, 10, 150, 0, 50, 30, #__bar_Vertical|#__bar_Invert, #__round/2+2)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     
     TrackBarWidget(320+53, 370, 20, 150, 0, 20, #__bar_Vertical, #__round);|#__bar_Invert)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     TrackBarWidget(320+53+25, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
-    SetAttribute(widget(), #__bar_Invert, 0)
-    SetState(widget(), 5)
+    SetWidgetAttribute(widget(), #__bar_Invert, 0)
+    SetWidgetState(widget(), 5)
     
     ProgressBarWidget(320+105, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
-    SetAttribute(widget(), #__bar_Invert, 0)
-    SetState(widget(), 5)
+    SetWidgetAttribute(widget(), #__bar_Invert, 0)
+    SetWidgetState(widget(), 5)
     ProgressBarWidget(320+105+25, 370, 10, 150, 0, 20, #__bar_Vertical|#__bar_Invert, #__round/2)
-    SetState(widget(), 5)
+    SetWidgetState(widget(), 5)
     
     
     ;         ScrollBarWidget(160, 370, 150, 40, 0, 50, 30)
-    ;         SetState(Widget(), 5)
+    ;         SetWidgetState(Widget(), 5)
     ;         TrackBarWidget(160, 370+55, 150, 40, 0, 20)
-    ;         SetState(Widget(), 5)
+    ;         SetWidgetState(Widget(), 5)
     ;         ProgressBarWidget(160, 370+110, 150, 40, 0, 20)
-    ;         SetState(Widget(), 5)
+    ;         SetWidgetState(Widget(), 5)
     ;         
     ;         ScrollBarWidget(320, 370, 40, 150, 0, 50, 30, #__bar_Vertical)
-    ;         SetState(Widget(), 5)
+    ;         SetWidgetState(Widget(), 5)
     ;         TrackBarWidget(320+55, 370, 40, 150, 0, 20, #__bar_Vertical)
-    ;         SetState(Widget(), 5)
+    ;         SetWidgetState(Widget(), 5)
     ;         ProgressBarWidget(320+110, 370, 40, 150, 0, 20, #__bar_Vertical)
-    ;         SetState(Widget(), 5)
+    ;         SetWidgetState(Widget(), 5)
   EndIf
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
   
   Repeat
     Define Event = WaitWindowEvent()

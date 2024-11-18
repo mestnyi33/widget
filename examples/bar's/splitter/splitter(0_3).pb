@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::OpenRootWidget(0);, 0, 0, 510, 340)
+  widget::OpenRoot(0);, 0, 0, 510, 340)
   
   ; first splitter
   TextGadget(1, 0, 0, 0, 0, "BTN1", #PB_Text_Border|#PB_Text_Center)
@@ -47,9 +47,9 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   TextGadget(14, 0, 0, 0, 0, "BTN14", #PB_Text_Border|#PB_Text_Center)
 ;   SplitterGadget(15, 125, 10, 250, 150, 13, 14, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
 ;   
-; ;   SetGadgetState(12, 43)
-SetGadgetState(13, 30)
-; ;   SetGadgetState(15, 250-30-9)
+; ;   SetGadGetWidgetState(12, 43)
+SetGadGetWidgetState(13, 30)
+; ;   SetGadGetWidgetState(15, 250-30-9)
  
   ; first splitter
   *w_1 = widget::ButtonWidget(0, 0, 0, 0, "BTN1")
@@ -76,21 +76,21 @@ SetGadgetState(13, 30)
 ;   *w_15 = widget::SplitterWidget(125, 170, 250, 150, *w_13, *w_14, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
   
                   
-   widget::SetState(*w_13, 30)
+   widget::SetWidgetState(*w_13, 30)
 ;   
-;   ;widget::SetState(*w_15, 250-30-#__splittersize)
-;   widget::SetState(*w_12, 43)
-;   widget::SetState(*w_15, -30)
+;   ;widget::SetWidgetState(*w_15, 250-30-#__splittersize)
+;   widget::SetWidgetState(*w_12, 43)
+;   widget::SetWidgetState(*w_15, -30)
   
-; ;   Debug GetGadgetState(13)
-; ;   Debug GetGadgetState(15)
+; ;   Debug GetGadGetWidgetState(13)
+; ;   Debug GetGadGetWidgetState(15)
 ; ;   
 ; ;   Debug GadgetWidth(11)
 ; ;   Debug GadgetWidth(14)
 ; ;   
 ; ;   Debug ""
-; ;   Debug widget::GetState(*w_13)
-; ;   Debug widget::GetState(*w_15)
+; ;   Debug widget::GetWidgetState(*w_13)
+; ;   Debug widget::GetWidgetState(*w_15)
 ; ;   
 ; ;   Debug widget::WidgetWidth(*w_11)
 ; ;   Debug widget::WidgetWidth(*w_14)

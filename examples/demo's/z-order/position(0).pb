@@ -30,34 +30,34 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If OpenRootWidget(OpenWindow(#PB_Any, 0,0, 250,160, "Demo Z-Order", #PB_Window_ScreenCentered))
+  If OpenRoot(OpenWindow(#PB_Any, 0,0, 250,160, "Demo Z-Order", #PB_Window_ScreenCentered))
     
     Panel = PanelWidget(30,30,190,100);, "0")                                                               ;
     AddItem(Panel, -1, "tab_1")
-    last1 = ButtonWidget(110,30,50,35, "last1") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                               ;
-    next1 = ButtonWidget(70,30,50,35, "next1") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                                ;
-    prev1 = ButtonWidget(30,30,50,35, "prev1") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                                ;
-    first1 = ButtonWidget(10,10,170,35, "first1") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                             ;
+    last1 = ButtonWidget(110,30,50,35, "last1") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                               ;
+    next1 = ButtonWidget(70,30,50,35, "next1") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                                ;
+    prev1 = ButtonWidget(30,30,50,35, "prev1") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                                ;
+    first1 = ButtonWidget(10,10,170,35, "first1") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                             ;
     
     AddItem(Panel, -1, "tab_2") 
-    last2 = ButtonWidget(110,30,50,35, "last2") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                               ;
-    next2 = ButtonWidget(70,30,50,35, "next2") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                                ;
-    prev2 = ButtonWidget(30,30,50,35, "prev2") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                                ;
-    first2 = ButtonWidget(10,10,170,35, "first2") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                             ;
+    last2 = ButtonWidget(110,30,50,35, "last2") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                               ;
+    next2 = ButtonWidget(70,30,50,35, "next2") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                                ;
+    prev2 = ButtonWidget(30,30,50,35, "prev2") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                                ;
+    first2 = ButtonWidget(10,10,170,35, "first2") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                             ;
     
     AddItem(Panel, -1, "tab_3")
-    last3 = ButtonWidget(110,30,50,35, "last3") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                               ;
-    next3 = ButtonWidget(70,30,50,35, "next3") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                                ;
-    prev3 = ButtonWidget(30,30,50,35, "prev3") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                                ;
-    first3 = ButtonWidget(10,10,170,35, "first3") : SetWidgetClass(widget(), GetTextWidget(widget()))                                                             ;
+    last3 = ButtonWidget(110,30,50,35, "last3") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                               ;
+    next3 = ButtonWidget(70,30,50,35, "next3") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                                ;
+    prev3 = ButtonWidget(30,30,50,35, "prev3") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                                ;
+    first3 = ButtonWidget(10,10,170,35, "first3") : SetWidgetClass(widget(), GetWidgetText(widget()))                                                             ;
     
     CloseWidgetList()
     
     ;debug_position(root())
-    SetState(Panel, 1)
+    SetWidgetState(Panel, 1)
     BindWidgetEvent(#PB_All, @_Event())
     
-    WaitCloseRootWidget()
+    WaitCloseRoot()
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

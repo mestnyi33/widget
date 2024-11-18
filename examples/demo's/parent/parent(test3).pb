@@ -49,9 +49,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
-  OpenRootWidget(10) : SetTextWidget(Root(), "*root1" )
+  OpenRoot(10) : SetWidgetText(Root(), "*root1" )
   ;*window_10 = WindowWidget(0, 0, 425, 350,"demo set gadget new parent", Flags)
-  *window_10 = ContainerWidget(0, 0, 425, 350) : SetTextWidget(*window_10, "*window_10" )
+  *window_10 = ContainerWidget(0, 0, 425, 350) : SetWidgetText(*window_10, "*window_10" )
   
   *CHILD = ButtonWidget(-30,10,160,70,"child") 
   *_6 = ButtonWidget(30,90,160,25,"Button >>(Window)")
@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
   *PANEL1 = ButtonWidget(30,140,160,20,"Button >>(Panel (1))") 
   *PANEL2 = ButtonWidget(30,160,160,20,"Button >>(Panel (2))") 
   
-  *PANEL = PanelWidget(10,180,200,160) : SetTextWidget(*PANEL, "*PANEL" )
+  *PANEL = PanelWidget(10,180,200,160) : SetWidgetText(*PANEL, "*PANEL" )
   AddItem(*PANEL,-1,"Panel") 
   *_60 = ButtonWidget(30,90,160,30,">>(Panel (0))") 
   AddItem(*PANEL,-1,"First") 
@@ -69,11 +69,11 @@ CompilerIf #PB_Compiler_IsMainFile
   *_62 = ButtonWidget(40,90,160,30,">>(Panel (2))") 
   CloseWidgetList()
   
-  *CONTAINER = ContainerWidget(215,10,200,160,#PB_Container_Flat)  : SetTextWidget(*CONTAINER, "*CONTAINER" )
+  *CONTAINER = ContainerWidget(215,10,200,160,#PB_Container_Flat)  : SetWidgetText(*CONTAINER, "*CONTAINER" )
   *_7 = ButtonWidget(30,90,160,30,">>(Container)") 
   CloseWidgetList()
   
-  *SCROLLAREA = ScrollAreaWidget(215,180,200,160,200,160,10,#PB_ScrollArea_Flat)  : SetTextWidget(*SCROLLAREA, "*SCROLLAREA" )
+  *SCROLLAREA = ScrollAreaWidget(215,180,200,160,200,160,10,#PB_ScrollArea_Flat)  : SetWidgetText(*SCROLLAREA, "*SCROLLAREA" )
   *_8 = ButtonWidget(30,90,160,30,">>(ScrollArea)") 
   CloseWidgetList()
   

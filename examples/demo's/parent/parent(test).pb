@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 Case #__Event_Change
                   ParentID = GetParent(*CHILD)
                   
-                  Select GetState(*COMBO)
+                  Select GetWidgetState(*COMBO)
                     Case  1: *CHILD = ButtonWidget(30,20,150,30,"Button") 
                     Case  2: *CHILD = StringWidget(30,20,150,30,"String") 
                     Case  3: *CHILD = TextWidget(30,20,150,30,"Text", #PB_Text_Border) 
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  5: *CHILD = CheckBoxWidget(30,20,150,30,"CheckBox") 
                     Case  6: *CHILD = ListViewWidget(30,20,150,30) 
                     Case  7: *CHILD = FrameWidget(30,20,150,30,"Frame") 
-                    Case  8: *CHILD = ComboBoxWidget(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
+                    Case  8: *CHILD = ComboBoxWidget(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetWidgetState(*CHILD,0)
                     Case  9: *CHILD = ImageWidget(30,20,150,30,0,#PB_Image_Border) 
                     Case 10: *CHILD = HyperLinkWidget(30,20,150,30,"HyperLink",0) 
                     Case 11: *CHILD = ContainerWidget(30,20,150,30,#PB_Container_Flat): ButtonWidget(0,0,80,20,"Button"): CloseWidgetList() ; Container
@@ -107,9 +107,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
-  OpenRootWidget(10) : SetTextWidget(Root(), "*root1" )
+  OpenRoot(10) : SetWidgetText(Root(), "*root1" )
   ;*window_10 = WindowWidget(0, 0, 425, 350,"demo set gadget new parent", Flags)
-  *window_10 = ContainerWidget(0, 0, 425, 350) : SetTextWidget(*window_10, "*window_10" )
+  *window_10 = ContainerWidget(0, 0, 425, 350) : SetWidgetText(*window_10, "*window_10" )
   
   *_6 = ButtonWidget(30,90,160,25,"Button >>(Window)")
   
@@ -117,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
   *PANEL1 = ButtonWidget(30,140,160,20,"Button >>(Panel (1))") 
   *PANEL2 = ButtonWidget(30,160,160,20,"Button >>(Panel (2))") 
   
-  *PANEL = PanelWidget(10,180,200,160) : SetTextWidget(*PANEL, "*PANEL" )
+  *PANEL = PanelWidget(10,180,200,160) : SetWidgetText(*PANEL, "*PANEL" )
   AddItem(*PANEL,-1,"Panel") 
   *_60 = ButtonWidget(30,90,160,30,">>(Panel (0))") 
   AddItem(*PANEL,-1,"First") 
@@ -126,11 +126,11 @@ CompilerIf #PB_Compiler_IsMainFile
   *_62 = ButtonWidget(40,90,160,30,">>(Panel (2))") 
   CloseWidgetList()
   
-  *CONTAINER = ContainerWidget(215,10,200,160,#PB_Container_Flat)  : SetTextWidget(*CONTAINER, "*CONTAINER" )
+  *CONTAINER = ContainerWidget(215,10,200,160,#PB_Container_Flat)  : SetWidgetText(*CONTAINER, "*CONTAINER" )
   *_7 = ButtonWidget(30,90,160,30,">>(Container)") 
   CloseWidgetList()
   
-  *SCROLLAREA = ScrollAreaWidget(215,180,200,160,200,160,10,#PB_ScrollArea_Flat)  : SetTextWidget(*SCROLLAREA, "*SCROLLAREA" )
+  *SCROLLAREA = ScrollAreaWidget(215,180,200,160,200,160,10,#PB_ScrollArea_Flat)  : SetWidgetText(*SCROLLAREA, "*SCROLLAREA" )
   *_8 = ButtonWidget(30,90,160,30,">>(ScrollArea)") 
   CloseWidgetList()
   
@@ -138,9 +138,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   Flags = #PB_Window_Invisible | #PB_Window_TitleBar
   OpenWindow(20, WindowX(10)-210-35, WindowY(10), 240, 350, "old parent", Flags, WindowID(10))
-  OpenRootWidget(20) : SetTextWidget(Root(), "*root2" )
+  OpenRoot(20) : SetWidgetText(Root(), "*root2" )
   ;*window_20 = WindowWidget(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
-  *window_20 = ContainerWidget(0,0, 425, 350) : SetTextWidget(*window_20, "*window_20" )
+  *window_20 = ContainerWidget(0,0, 425, 350) : SetWidgetText(*window_20, "*window_20" )
   
   *CHILD = ButtonWidget(-30,10,160,70,"child") 
   *RETURN = ButtonWidget(30,90,160,25,"<<(Return)") 
@@ -183,10 +183,10 @@ CompilerIf #PB_Compiler_IsMainFile
   AddItem(*COMBO, -1, "Shortcut")  
   AddItem(*COMBO, -1, "Canvas")    
   
-  SetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #PB_EventType_Change)
+  SetWidgetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #PB_EventType_Change)
   
   ;*DESKTOP = ButtonWidget(30,150,160,20,"Button >>(Desktop)") 
-  *CANVASCONTAINER = ContainerWidget(30,180,200,160) : SetWidgetColor(*CANVASCONTAINER, #__color_back, $ffffffff) : SetTextWidget(*CANVASCONTAINER, "*CANVASCONTAINER" ) ; Canvas(30,180,200,160,#PB_Canvas_Container) 
+  *CANVASCONTAINER = ContainerWidget(30,180,200,160) : SetWidgetColor(*CANVASCONTAINER, #__color_back, $ffffffff) : SetWidgetText(*CANVASCONTAINER, "*CANVASCONTAINER" ) ; Canvas(30,180,200,160,#PB_Canvas_Container) 
   *_11 = ButtonWidget(30,90,160,30,">>(Canvas)") 
   CloseWidgetList()
    

@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    OpenWindow( 1, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu)
-   BindWidgetEvent(OpenRootWidget( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
+   BindWidgetEvent(OpenRoot( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
    
    ;\\
    menu = CreatePopupMenu( #PB_Any )

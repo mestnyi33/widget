@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 500, 500, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       Define Editable ; = 
       
-      If OpenRootWidget(0, 10,10, 480, 480)
+      If OpenRoot(0, 10,10, 480, 480)
         ; BindWidgetEvent(#PB_All, @events_roots())
         WindowWidget(80, 100, 300, 280, "Window_2", Editable)
         ;;BindWidgetEvent(widget(), @events_windows())
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Window_0()
   
-  WaitCloseRootWidget()
+  WaitCloseRoot()
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

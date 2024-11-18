@@ -75,8 +75,8 @@ Module events
                   ;
                   Gadget = CocoaMessage(0, View, "tag")
                   If IsGadget( Gadget )
-                     If GetActiveGadget( ) <> Gadget 
-                        If GetActiveGadget() 
+                     If GetActiveWidgetGadget( ) <> Gadget 
+                        If GetActiveWidgetGadget() 
                            SetActiveGadget( #PB_Default )
                         EndIf
                         SetActiveGadget( Gadget )
@@ -104,8 +104,8 @@ Module events
                      EndIf
                   Else
                      gadget = objc_getAssociatedObject_( Window, "focus_bug_fixed")
-                     If GetActiveGadget( ) <> Gadget
-                        If GetActiveGadget( )
+                     If GetActiveWidgetGadget( ) <> Gadget
+                        If GetActiveWidgetGadget( )
                            SetActiveGadget( #PB_Default )
                         EndIf
                         If IsGadget( Gadget )
@@ -248,17 +248,17 @@ Module events
             
             PressedGadget( ) = EnteredGadget( ) ; EventGadget( )
                                                 ; Debug CocoaMessage(0, Mouse::Window( ), "focusView")
-                                                ;             If GetActiveGadget() <> PressedGadget( ) 
-                                                ;                ; If GetActiveWindow() <> EventWindow()
+                                                ;             If GetActiveWidgetGadget() <> PressedGadget( ) 
+                                                ;                ; If GetActiveWidgetWindow() <> EventWindow()
                                                 ;                SetActiveGadget( #PB_Default )
                                                 ;                SetActiveGadget( PressedGadget( ) )
                                                 ;                ; EndIf
                                                 ;             EndIf
             If PressedGadget( ) >= 0
                If FocusedGadget( ) = - 1
-                  If GetActiveGadget( )
-                     If FocusedGadget( ) <> GetActiveGadget( )
-                        FocusedGadget( ) = GetActiveGadget( )
+                  If GetActiveWidgetGadget( )
+                     If FocusedGadget( ) <> GetActiveWidgetGadget( )
+                        FocusedGadget( ) = GetActiveWidgetGadget( )
                         ; CallCFunctionFast(refcon, FocusedGadget( ), #PB_EventType_LostFocus)
                      EndIf
                   EndIf
@@ -494,7 +494,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure OpenRootWidget( id, flag=0 )
+   Procedure OpenRoot( id, flag=0 )
       Static x,y
       OpenWindow( id, x,y,200,200,"window_"+Str(id), #PB_Window_SystemMenu|flag)
       CanvasGadget( id, 40,40,200-80,55, #PB_Canvas_Keyboard );| #PB_Canvas_Container) : CloseGadgetList()
@@ -506,9 +506,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    events::setCallBack( @events())
    
-   OpenRootWidget(1, #PB_Window_NoActivate)
-   OpenRootWidget(2, #PB_Window_NoActivate)
-   OpenRootWidget(3, #PB_Window_NoActivate)
+   OpenRoot(1, #PB_Window_NoActivate)
+   OpenRoot(2, #PB_Window_NoActivate)
+   OpenRoot(3, #PB_Window_NoActivate)
    
    Define event
    Repeat

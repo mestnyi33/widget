@@ -138,7 +138,7 @@ CompilerIf #PB_Compiler_IsMainFile
          PopListPosition( widgets( ) )
       EndMacro
       
-   If OpenRootWidget(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "(Window)")
       ButtonWidget(5,5,70,30,"Button1") : SetWidgetClass(widget(), "(w>0)")  
 ;       ButtonWidget(15,15,70,30,"Button2") : SetWidgetClass(widget(), "(w>1)")  
@@ -174,7 +174,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Show_DEBUG()
       
-      WaitCloseRootWidget()
+      WaitCloseRoot()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

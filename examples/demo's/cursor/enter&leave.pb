@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If OpenWindow(0, 0, 0, 685, 60+h, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       ;\\
-      *r1 = OpenRootWidget(0, 5, 5, 335, 60+h-10)
+      *r1 = OpenRoot(0, 5, 5, 335, 60+h-10)
       Define x = 50, y = 50
       *g11 = ContainerWidget( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g11,"*g11")
       *g12 = ContainerWidget( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g12,"*g12") 
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;\\
-      *r2 = OpenRootWidget(0, 345, 5, 335, 60+h-10, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      *r2 = OpenRoot(0, 345, 5, 335, 60+h-10, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Define x = 0, y = 0
       *g21 = ContainerWidget( x+10,y+10,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g21,"*g21")
       *g22 = ContainerWidget( x+30,y+30,size,size, #__flag_borderflat|#__flag_noGadgets ) : SetWidgetClass(*g22,"*g22") 

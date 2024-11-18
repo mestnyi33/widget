@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Demo()
     Protected   ParentID = OpenWindow(0, 0, 0, 250, 180, "Demo z-order gadget", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     
-    OpenRootWidget(0, 0, 0, 250, 180) 
+    OpenRoot(0, 0, 0, 250, 180) 
     
     ;{ first container
     ContainerWidget(55, 95, 30, 45)                     ; Gadget(9,   
@@ -72,17 +72,17 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetWidgetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     ;     SetWidgetClass(widget(), "first_2")
     ;     CloseWidgetList()
-    ButtonWidget(3, 4, 17, 25+6, "1", #__flag_TextLeft) : SetWidgetClass(widget(), GetTextWidget(widget())) 
+    ButtonWidget(3, 4, 17, 25+6, "1", #__flag_TextLeft) : SetWidgetClass(widget(), GetWidgetText(widget())) 
     CloseWidgetList()
     
     CloseWidgetList()
     ;}
     
-    ButtonWidget(55, 86, 170, 25, "2",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(8, 
-    ButtonWidget(55, 82, 150, 25, "3",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(7, 
-    ButtonWidget(55, 78, 130, 25, "4",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(6, 
+    ButtonWidget(55, 86, 170, 25, "2",#__flag_TextRight) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(8, 
+    ButtonWidget(55, 82, 150, 25, "3",#__flag_TextRight) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(7, 
+    ButtonWidget(55, 78, 130, 25, "4",#__flag_TextRight) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(6, 
     
-    ;*current = ButtonWidget(55, 74, 110, 25, "5",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(5, 
+    ;*current = ButtonWidget(55, 74, 110, 25, "5",#__flag_TextRight) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(5, 
     
     ;{ current container
     *this = ContainerWidget(10, 50, 60, 80)              ; Gadget(10, 
@@ -91,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ContainerWidget(10, 4, 60, 74-4)   
     SetWidgetColor(widget(), #PB_Gadget_BackColor, $ffff00)
-    ButtonWidget(10, 4, 60, 68-8, "5", #__flag_TextLeft) : SetWidgetClass(widget(), GetTextWidget(widget())) 
+    ButtonWidget(10, 4, 60, 68-8, "5", #__flag_TextLeft) : SetWidgetClass(widget(), GetWidgetText(widget())) 
     CloseWidgetList()
     
     CloseWidgetList()
@@ -99,9 +99,9 @@ CompilerIf #PB_Compiler_IsMainFile
     BindWidgetEvent(*this, @this_events(), #PB_EventType_LeftButtonUp)
     ;}
     
-    ButtonWidget(55, 70, 90, 25, "6",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(4, 
-    ButtonWidget(55, 66, 70, 25, "7",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(3, 
-    ButtonWidget(55, 62, 50, 25, "8",#__flag_TextRight) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(2, 
+    ButtonWidget(55, 70, 90, 25, "6",#__flag_TextRight) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(4, 
+    ButtonWidget(55, 66, 70, 25, "7",#__flag_TextRight) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(3, 
+    ButtonWidget(55, 62, 50, 25, "8",#__flag_TextRight) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(2, 
     
     ;{ last container
     ContainerWidget(55, 40, 30, 43)                     ; Gadget(1,
@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetWidgetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     ;     SetWidgetClass(widget(), "last_2")
     ;     CloseWidgetList()
-    ButtonWidget(3, -3, 17, 25+6, "9", #__flag_TextLeft) : SetWidgetClass(widget(), GetTextWidget(widget())) 
+    ButtonWidget(3, -3, 17, 25+6, "9", #__flag_TextLeft) : SetWidgetClass(widget(), GetWidgetText(widget())) 
     CloseWidgetList()
     
     CloseWidgetList()

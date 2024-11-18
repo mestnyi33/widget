@@ -31,21 +31,21 @@ Procedure events_buttons()
       ; Debug "click widget - " + Str(EventWidget( )\index - 1)
       
       Select (EventWidget( )\index)
-        Case 3 : SetActive(ID(0))   ; Activate StringGadget
-        Case 4 : SetActive(ID(1))   ; Activate ComboBoxGadget
+        Case 3 : SetActiveWidget(ID(0))   ; Activate StringGadget
+        Case 4 : SetActiveWidget(ID(1))   ; Activate ComboBoxGadget
       EndSelect
   EndSelect
 EndProcedure
 
 
-If OpenRootWidget(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   StringGadget  (0, 10, 10, 250, 20, "bla bla...")
   
   ComboBoxGadget(1, 10, 40, 250, 21)
   For a = 1 To 5 
     AddGadgetItem(1, -1, "ComboBox item " + Str(a)) 
   Next
-  SetGadgetState(1, 2)                ; set (beginning with 0) the third item as active one
+  SetGadGetWidgetState(1, 2)                ; set (beginning with 0) the third item as active one
   
   ButtonGadget  (2, 200, 65, 60, 20, "button")
   ButtonGadget  (3, 10,  90, 250, 20, "Activate StringGadget")
@@ -62,7 +62,7 @@ If OpenRootWidget(0, 0, 0, 270+270, 140, "SetActiveGadget", #PB_Window_SystemMen
   For a = 1 To 5 
      AddItem(*g, -1, "ComboBox item " + Str(a)) 
   Next
-  SetState(*g, 2)                ; set (beginning with 0) the third item as active one
+  SetWidgetState(*g, 2)                ; set (beginning with 0) the third item as active one
   
   ButtonWidget(200+270, 65, 60, 20, "button")
   ButtonWidget(10+270,  90, 250, 20, "Activate String")

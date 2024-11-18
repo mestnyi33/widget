@@ -53,14 +53,14 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     EditorGadget(0, 8, 8, 402, 230, #PB_Editor_WordWrap) 
     Define time = ElapsedMilliseconds()
-    SetGadgetTextWidget(0, Text.s) 
+    SetGadGetWidgetText(0, Text.s) 
     Debug Str(ElapsedMilliseconds()-time) + " - gadget set text time count - " + CountGadgetItems(0)
     
     
-    OpenRootWidget(0, 8, 250, 402, 230)
+    OpenRoot(0, 8, 250, 402, 230)
     *g = EditorWidget(0, 0, 402, 230, #__flag_autosize) : g = GetCanvasGadget(*g)
     Define time = ElapsedMilliseconds()
-    SetTextWidget(*g, Text.s) 
+    SetWidgetText(*g, Text.s) 
     Debug Str(ElapsedMilliseconds()-time) + " - widget set text time count - " + CountItems(*g)
     ;\\Close( )
     

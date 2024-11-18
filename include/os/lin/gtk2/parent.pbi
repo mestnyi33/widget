@@ -31,7 +31,7 @@ Module Parent
   Macro gtk_box( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_box_get_type_ ( ) ) : EndMacro
   Macro gtk_FrameWidget( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_frame_get_type_ ( ) ) : EndMacro
   Macro gtk_fixed( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_fixed_get_type_ ( ) ) : EndMacro
-  Macro gtk_ContainerWidget( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_container_get_type_ ( ) ) : EndMacro
+  Macro gtk_Container( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_container_get_type_ ( ) ) : EndMacro
   Macro gtk_widget( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_widget_get_type_ ( ) ) : EndMacro
   Macro gtk_window( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_window_get_type_ ( ) ) : EndMacro
   Macro gtk_table( _handle_ ) : gtk_widget_get_ancestor_ ( _handle_, gtk_table_get_type_ ( ) ) : EndMacro
@@ -87,7 +87,7 @@ Module Parent
 ;     GtkImage
     
     If handle 
-      If gtk_fixed( handle ) = gtk_ContainerWidget( handle )
+      If gtk_fixed( handle ) = gtk_Container( handle )
         ProcedureReturn gtk_widget( handle )
       Else
         ProcedureReturn gtk_container ( handle )
@@ -100,7 +100,7 @@ Module Parent
         
     Select GetClassName( handle )
       Case "GtkImage"
-        If gtk_ContainerWidget( handle ) = gtk_FrameWidget( handle ) ; gtk_widget_get_parent_( handle ) = gtk_FrameWidget( handle )
+        If gtk_Container( handle ) = gtk_FrameWidget( handle ) ; gtk_widget_get_parent_( handle ) = gtk_FrameWidget( handle )
           handle = gtk_widget_get_parent_( gtk_FrameWidget( handle ) ) ; GtkEventBox
         Else
           handle = gtk_widget_get_parent_( handle ) ; GtkEventBox
@@ -113,7 +113,7 @@ Module Parent
         handle = gtk_bin( handle ) ; "GtkScrolledWindow"
        
       Case "GtkVPaned"
-        handle = gtk_ContainerWidget( handle ) ; GtkContainer
+        handle = gtk_Container( handle ) ; GtkContainer
         
       Case "GtkLayout"
         handle = gtk_FrameWidget( handle ) ; "GtkFrame"
@@ -124,7 +124,7 @@ Module Parent
         EndIf
         
       Case "GtkLabel", "GtkBox"
-        If gtk_box( handle ) = gtk_ContainerWidget( handle ) Or
+        If gtk_box( handle ) = gtk_Container( handle ) Or
            gtk_box( handle ) = gtk_vbox( handle )
           handle = gtk_box( handle ) ; Spin ; Text ; "GtkBox"
         Else
@@ -305,7 +305,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndEnumeration
   
 ;   If LoadFont(0, "Arial", 8)
-;     SetGadgetFont(#PB_Default, FontID(0))   ; Set the loaded Arial 16 font as new standard
+;     SetGadGetWidgetFont(#PB_Default, FontID(0))   ; Set the loaded Arial 16 font as new standard
 ;   EndIf
   If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp")
     Define img = ImageID( 0 )
@@ -389,7 +389,7 @@ CompilerIf #PB_Compiler_IsMainFile
   AddGadgetItem( #COMBO, -1, "Shortcutgadget" )  
   AddGadgetItem( #COMBO, -1, "Canvasgadget" )    
   
-  SetGadgetState( #COMBO, #PB_GadgetType_Button );:  PostEvent( #PB_Event_gadget, #CHILD, #COMBO, #PB_EventType_Change )
+  SetGadGetWidgetState( #COMBO, #PB_GadgetType_Button );:  PostEvent( #PB_Event_gadget, #CHILD, #COMBO, #PB_EventType_Change )
   
   ButtonGadget( #DESKTOP, 30,150,160,20,"Button >>( Desktop )" ) 
   CompilerIf #PB_Compiler_Version > 546
@@ -425,7 +425,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 Case #PB_EventType_Change
                   Define ParentID = GetParentID( GadgetID( #CHILD ) )
                   
-                  Select GetGadgetState( #COMBO )
+                  Select GetGadGetWidgetState( #COMBO )
                     Case  1: ButtonGadget( #CHILD,30,20,150,30,"Buttongadget" ) 
                     Case  2: StringGadget( #CHILD,30,20,150,30,"Stringgadget" ) 
                     Case  3: TextGadget( #CHILD,30,20,150,30,"Textgadget");, #PB_Text_Border ) 
@@ -433,7 +433,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  4: CheckBoxGadget( #CHILD,30,20,150,30,"CheckBoxgadget" ) 
                     Case  6: ListViewGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ListViewGadget" )
                     Case  7: FrameGadget( #CHILD,30,20,150,30,"Framegadget" ) 
-                    Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadgetState( #CHILD,0 )
+                    Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadGetWidgetState( #CHILD,0 )
                     Case  9: ImageGadget( #CHILD,30,20,150,30,img);,#PB_Image_Border ) 
                     Case 10: HyperLinkGadget( #CHILD,30,20,150,30,"HyperLinkgadget",$ff0000FF ) 
                     Case 11: ContainerGadget( #CHILD,30,20,150,30,#PB_Container_Flat ): ButtonGadget( -1,0,0,80,20,"Buttongadget" ): CloseGadgetList( ) ; Containergadget
@@ -461,14 +461,14 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndSelect
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                    Select GetGadgetState( #COMBO )
+                    Select GetGadGetWidgetState( #COMBO )
                       Case 30: MDIgadget( #CHILD,30,10,150,70,0,0 )
                       Case 31: InitScintilla( ): ScintillaGadget( #CHILD,30,10,150,70,0 )
                       Case 32: ShortcutGadget( #CHILD,30,10,150,70,0 )
                       Case 33: CanvasGadget( #CHILD,30,10,150,70 ) 
                     EndSelect
                   CompilerElse
-                    Select GetGadgetState( #COMBO )
+                    Select GetGadGetWidgetState( #COMBO )
                       Case 30: InitScintilla( ): ScintillaGadget( #CHILD,30,10,150,70,0 )
                       Case 31: ShortcutGadget( #CHILD,30,10,150,70,0 )
                       Case 32: CanvasGadget( #CHILD,30,10,150,70 ) 

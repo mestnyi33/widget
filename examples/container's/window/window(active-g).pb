@@ -35,8 +35,8 @@ EndProcedure
 
 Define width=500, height=400
 
-If OpenRootWidget(0, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  ; If OpenRootWidget(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+If OpenRoot(0, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  ; If OpenRoot(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
   ; If WindowWidget(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   
 ;   BindWidgetEvent(#PB_All, @active(), #__event_Focus)
@@ -44,30 +44,30 @@ If OpenRootWidget(0, 100, 200, width, height, "PureBasic Window", #PB_Window_Sys
 
   WindowWidget(10, 10, 190, 150, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   Define *string_0 = StringWidget(10,10,170,60,"string_0")
-  ;SetActive(*string_0)
+  ;SetActiveWidget(*string_0)
   
   Define *string_1 = StringWidget(10,80,170,60,"string_1")
-  ;SetActive(*string_1)
+  ;SetActiveWidget(*string_1)
   
   WindowWidget(110, 30, 190, 150, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   Define *string_2 = StringWidget(10,10,170,60,"string_2")
-  ;SetActive(*string_2)
+  ;SetActiveWidget(*string_2)
   
   Define *string_3 = StringWidget(10,80,170,60,"string_3")
-  ;SetActive(*string_3)
+  ;SetActiveWidget(*string_3)
   
   WindowWidget(220, 50, 190, 150, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   Define *string_4 = StringWidget(10,10,170,60,"string_4")
-  SetActive(*string_4)
+  SetActiveWidget(*string_4)
   
   Define *string_5 = StringWidget(10,80,170,60,"string_5")
-  ;SetActive(*string_5)
+  ;SetActiveWidget(*string_5)
   
     
   BindWidgetEvent( #PB_All, @active_0(), #__event_Focus)
   BindWidgetEvent( #PB_All, @deactive_0(), #__event_LostFocus)
   
-  WaitCloseRootWidget()
+  WaitCloseRoot()
 
 ;   Repeat
 ;     Event = WaitWindowEvent()

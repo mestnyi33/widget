@@ -28,7 +28,7 @@
    For i = 1 To count
       If (i & 2) 
          AddGadgetItem(*w, i, "text-" + Str(i), 0, 1 )
-         ;SetItemFont(*w, i, 6)
+         ;SetWidgetItemFont(*w, i, 6)
       Else
          AddGadgetItem(*w, i, "text-" + Str(i))
       EndIf
@@ -37,7 +37,7 @@
    Debug "----"
    For i = 1 To count
       If (i & 2) 
-         ;SetgadgetItemFont(*w, i, 6)
+         ;SetgadGetWidgetItemFont(*w, i, 6)
          ;Debug i
       EndIf
    Next
@@ -53,7 +53,7 @@
          AddGadgetItem(*w, i, "text-" + Str(i))
       EndIf
    Next
-   ; SetFont(*w, 5)
+   ; SetWidgetFont(*w, 5)
    ;\\Close( )
    
    ;\\ 
@@ -77,7 +77,7 @@
          AddGadgetItem(*w, i, "text-" + Str(i))
       EndIf
    Next
-  ; SetFont(*w, 5)
+  ; SetWidgetFont(*w, 5)
     ;\\Close( )
    
    
@@ -90,7 +90,7 @@
          AddGadgetItem(*w, i, "text-" + Str(i))
       EndIf
    Next
-   ; SetFont(*w, 6)
+   ; SetWidgetFont(*w, 6)
    ;\\Close( )
    
    OpenWindow(#window_4, 590, 10, 200, 600 - 20, "root4")

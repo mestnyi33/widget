@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventGadget()
     Protected EventType = EventType()
     Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
+    Protected EventItem = GetGadGetWidgetState(EventGadget)
     
     Select EventType
       ; Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
@@ -55,13 +55,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventWidget( )
     Protected EventType = WidgetEvent( )
     Protected EventData = EventWidget( )\data
-    Protected EventItem = GetState(EventGadget)
+    Protected EventItem = GetWidgetState(EventGadget)
     
     Select EventType
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
       Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        DragTextWidget(GetItemTextWidget(EventGadget, EventItem))
+        DragTextWidget(GetWidgetItemText(EventGadget, EventItem))
         
       Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
         Debug EventDropTextWidget()
@@ -88,15 +88,15 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
     AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
     AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     ; RemoveGadgetItem(g,1)
-    ;SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+    ;SetGadGetWidgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
     ;BindGadgetEvent(g, @Events())
     
     ;SetActiveGadget(g)
-    ;SetGadgetState(g, 1)
-    ;     Debug "g "+ GetGadgetTextWidget(g)
+    ;SetGadGetWidgetState(g, 1)
+    ;     Debug "g "+ GetGadGetWidgetText(g)
     
     g = 2
     ; 2_example
@@ -119,7 +119,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(g, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
     Next
     
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     SetGadGetWidgetItemImage(g, 0, ImageID(0))
     
     g = 3
@@ -135,7 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem(g, -1, "Item" + Str(i), 0, 1)
       EndIf
     Next i
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
 ;     Define Indentation = 50  
 ;     ; ----- Read current indentation and set TrackBar to that value
@@ -164,7 +164,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, 13, "Tree_13", 0 )
     AddGadgetItem(g, 14, "Tree_14", 0 )
     AddGadgetItem(g, 15, "Tree_15", 0 )
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 5
     ; 5_example
@@ -175,7 +175,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, 2, "Tree_2_1", 0, 1) 
     AddGadgetItem(g, 3, "Tree_3_1", 0, 1) 
     AddGadgetItem(g, 3, "Tree_3_2", 0, 2) 
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 6
     ;  6_example
@@ -188,14 +188,14 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem(g, -1, "Tree_"+Str(i), ImageID(0)) 
       EndIf
     Next
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    SetGadgetItemState(g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
-    SetGadgetItemState(g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
+    SetGadGetWidgetItemState(g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetGadGetWidgetItemState(g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
     BindGadgetEvent(g, @events_tree_gadget())
     
     ;}
     
-    OpenRootWidget(0, 0, 225+90, 1110, 425-90)
+    OpenRoot(0, 0, 225+90, 1110, 425-90)
     g_Canvas = GetCanvasGadget(root())
     g = 10
     
@@ -282,7 +282,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         AddItem(*g, 2, "Tree_2_1", -1, 1) 
 ;         AddItem(*g, 3, "Tree_3_1", -1, 1) 
 ;         AddItem(*g, 3, "Tree_3_2", -1, 2) 
-;         For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+;         For i=0 To CountItems(*g) : SetWidgetItemState(*g, i, #PB_Tree_Expanded) : Next
     AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1,1) ; Enables the system menu on the window title bar (Default", -1).
     AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
     AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
@@ -311,24 +311,24 @@ CompilerIf #PB_Compiler_IsMainFile
         AddItem(*g, -1, "Tree_"+Str(i), 0, -1) 
       EndIf
     Next 
-    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
-    SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    ;For i=0 To CountItems(*g) : SetWidgetItemState(*g, i, #PB_Tree_Expanded) : Next
+    SetWidgetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetWidgetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
     ;LoadFont(5, "Arial", 16)
-    SetItemFont(*g, 3, 5)
-    SetItemTextWidget(*g, 3, "16_font and text change")
+    SetWidgetItemFont(*g, 3, 5)
+    SetWidgetItemText(*g, 3, "16_font and text change")
     SetWidgetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
     SetWidgetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
-    SetItemTextWidget(*g, 5, "backcolor and text change")
+    SetWidgetItemText(*g, 5, "backcolor and text change")
     ;LoadFont(6, "Arial", 25)
-    SetItemFont(*g, 4, 6)
-    SetItemTextWidget(*g, 4, "25_font and text change")
-    SetItemFont(*g, 14, 6)
-    SetItemTextWidget(*g, 14, "25_font and text change")
+    SetWidgetItemFont(*g, 4, 6)
+    SetWidgetItemText(*g, 4, "25_font and text change")
+    SetWidgetItemFont(*g, 14, 6)
+    SetWidgetItemText(*g, 14, "25_font and text change")
     ;BindWidgetEvent(*g, @events_tree_widget())
     ;}
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

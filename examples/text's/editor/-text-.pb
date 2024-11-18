@@ -72,22 +72,22 @@
    If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
       EditorGadget(0, 8, 8, 402, 230, #PB_Editor_WordWrap) 
       Define time = ElapsedMilliseconds()
-      SetGadgetTextWidget(0, Text.s) 
+      SetGadGetWidgetText(0, Text.s) 
       Debug Str(ElapsedMilliseconds()-time) + " - time gadget set text count - " + CountGadgetItems(0)
       
       
-      ;     OpenRootWidget(0, 8, 250, 402, 230)
+      ;     OpenRoot(0, 8, 250, 402, 230)
       ;     *g = EditorWidget(0, 0, 402, 230, #__flag_autosize) : g = GetCanvasGadget(*g)
       ;     Define time = ElapsedMilliseconds()
-      ;     SetTextWidget(*g, Text.s) 
+      ;     SetWidgetText(*g, Text.s) 
       ;     Debug Str(ElapsedMilliseconds()-time) + " - widget set text time count - " + CountItems(*g)
       ;     
       ;     
       Define item = 2395
       
       Define time = ElapsedMilliseconds()
-      Define String.s = GetGadgetItemTextWidget( 0, item)
-      Debug Str(ElapsedMilliseconds()-time) + " - time GetGadgetItemText " + item +" "+ String
+      Define String.s = GetGadGetWidgetItemText( 0, item)
+      Debug Str(ElapsedMilliseconds()-time) + " - time GetGadGetWidgetItemText " + item +" "+ String
       Debug ""
       Define time = ElapsedMilliseconds()
       Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
@@ -170,7 +170,7 @@ CompilerEndIf
 ; Количество прочитанных байтов: 100000
 ; 4 - Read time
 ; 4 - time gadget set text count - 2396
-; 10 - time GetGadgetItemText 2395 ; EnableXP
+; 10 - time GetGadGetWidgetItemText 2395 ; EnableXP
 ; 
 ; 2 - time widget set text count - 2396
 ; 0 - time StringField 2395 ; EnableXP

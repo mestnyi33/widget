@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
     #tree_item_invert
   EndEnumeration
   
-  Procedure.s get_TextWidget(m.s = #LF$)
+  Procedure.s get_Text(m.s = #LF$)
     Protected Text.s = "This is a long line." + m.s +
                        "Who should show." +
                        m.s +
@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   ; cr = "" : text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Text.s = get_TextWidget( )
+  Text.s = get_Text( )
   Global *this._s_widget,
          Tree,
          gadget,
@@ -70,24 +70,24 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventWidget
           Case *this
             If Flag(*this, #__flag_ButtonToggle)
-              SetState(button_toggle, GetState(EventWidget))
+              SetWidgetState(button_toggle, GetWidgetState(EventWidget))
             EndIf
             
           Case Button_type
-            If GetState(EventWidget)
+            If GetWidgetState(EventWidget)
               Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
-                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
+                SetWidgetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
-              SetTextWidget(Button_type, "widget")
+              SetWidgetText(Button_type, "widget")
             Else
               Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
-                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
+                SetWidgetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
               EndIf
-              SetTextWidget(Button_type, "gadget")
+              SetWidgetText(Button_type, "gadget")
             EndIf
             
             ;
@@ -103,23 +103,23 @@ CompilerIf #PB_Compiler_IsMainFile
             ;
             If EventWidget <> button_top 
               Flag(*this, #__flag_Texttop, 0)
-              SetState(button_top,0) 
+              SetWidgetState(button_top,0) 
             EndIf
             If EventWidget <> button_left 
               Flag(*this, #__flag_Textleft, 0)
-              SetState(button_left,0) 
+              SetWidgetState(button_left,0) 
             EndIf
             If EventWidget <> button_right 
               Flag(*this, #__flag_Textright, 0)
-              SetState(button_right,0) 
+              SetWidgetState(button_right,0) 
             EndIf
             If EventWidget <> button_bottom 
               Flag(*this, #__flag_Textbottom, 0)
-              SetState(button_bottom,0) 
+              SetWidgetState(button_bottom,0) 
             EndIf
             If EventWidget <> button_center 
               Flag(*this, #__flag_Textcenter, 0)
-              SetState(button_center,0) 
+              SetWidgetState(button_center,0) 
             EndIf
             
             Select EventWidget
@@ -136,27 +136,27 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(EventWidget))
+          Flag(*this, flag, GetWidgetState(EventWidget))
         EndIf
         
       Case #__event_Change
 ;         If EventWidget <> tree
-;           SetState(tree, - 1)
+;           SetWidgetState(tree, - 1)
 ;         EndIf
 ;         
 ;         Select EventWidget
 ;           Case button_default   
 ;           Case button_multiline 
 ;           Case button_top   
-;             SetState(tree, #tree_item_top)
+;             SetWidgetState(tree, #tree_item_top)
 ;           Case button_left      
-;             SetState(tree, #tree_item_left)
+;             SetWidgetState(tree, #tree_item_left)
 ;           Case button_right     
-;             SetState(tree, #tree_item_right)
+;             SetWidgetState(tree, #tree_item_right)
 ;           Case button_bottom    
-;             SetState(tree, #tree_item_bottom)
+;             SetWidgetState(tree, #tree_item_bottom)
 ;           Case button_center   
-;             SetState(tree, #tree_item_center)
+;             SetWidgetState(tree, #tree_item_center)
 ;           Case button_toggle    
 ;           Case button_invert    
 ;           Case button_vertical  
@@ -166,7 +166,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ComboBoxGadget(#PB_Any, 100, 100, 250, 200) : HideGadget(gadget, 1)
     *this  = widget::ComboBoxWidget(100, 100, 250, 200, #__flag_Textmultiline);|)
     AddItem( *this, -1, Text )
@@ -204,8 +204,8 @@ CompilerIf #PB_Compiler_IsMainFile
     BindWidgetEvent(#PB_All, @events_widgets())
     
     ;\\ set button toggled state
-    SetState(button_multiline, Flag(*this, #__flag_Textmultiline))
-    SetState(button_center, Flag(*this, #__flag_Textcenter))
+    SetWidgetState(button_multiline, Flag(*this, #__flag_Textmultiline))
+    SetWidgetState(button_center, Flag(*this, #__flag_Textcenter))
     If Button_type
        Hide(Button_type, 1)
     EndIf
@@ -217,10 +217,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
     
     ;\\
-    SetState(Splitter_0, pos)
-    SetState(Splitter_1, pos)
-    SetState(Splitter_3, width - pos - #__splittersize)
-    SetState(Splitter_2, height - pos - #__splittersize)
+    SetWidgetState(Splitter_0, pos)
+    SetWidgetState(Splitter_1, pos)
+    SetWidgetState(Splitter_3, width - pos - #__splittersize)
+    SetWidgetState(Splitter_2, height - pos - #__splittersize)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

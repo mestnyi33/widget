@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   ;
-  If OpenRootWidget(0, 0, 0, 800, 450, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 800, 450, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetWidgetColor(root( ), #__color_back, RGBA(244, 245, 233, 255))
     ;
     ;\\
@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
     a_object(320, 320, 200, 100, "Layer = 4", RGBA(192, 164, 128, 125))
     ;
     ;\\
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

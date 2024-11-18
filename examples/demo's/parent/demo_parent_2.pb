@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global._s_WIDGET *panel1, *panel2, *panel3
    
-   If OpenRootWidget( 0, 0, 0, 600, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot( 0, 0, 0, 600, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
       *panel1 = PanelWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
       AddItem(*panel1, -1, "item1" )
@@ -113,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       btn3_8 <<  btn3_9  >> --------
       ;       <<----
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf   
 CompilerEndIf
 

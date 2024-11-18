@@ -7,7 +7,7 @@ Global *w._S_widget
 If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)    ;, #PB_ListView_MultiSelect
   
-  OpenRootWidget(0, 270, 10, 250, 680);, "", #__flag_borderless)
+  OpenRoot(0, 270, 10, 250, 680);, "", #__flag_borderless)
   *w=EditorWidget(0, 0, 250, 680, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
   
   a=0
@@ -26,14 +26,14 @@ If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
 ;   Debug ""
 ;   a=0
 ;   Define time = ElapsedMilliseconds()
-;   For a = 0 To LN : SetItemData(*w, a,a) : Next
-;   For a = 0 To LN : SetItemTextWidget(*w, a,Str(a)) : Next
+;   For a = 0 To LN : SetWidgetItemData(*w, a,a) : Next
+;   For a = 0 To LN : SetWidgetItemText(*w, a,Str(a)) : Next
 ;   Debug " "+Str(ElapsedMilliseconds()-time) + " - widget set items time - " + CountItems(*w)
 ;   
 ;   a=0
 ;   Define time = ElapsedMilliseconds()
-;   For a = 0 To LN : SetGadgetItemData(0, a,a) : Next
-;   For a = 0 To LN : SetGadgetItemTextWidget(0, a,Str(a)) : Next
+;   For a = 0 To LN : SetGadGetWidgetItemData(0, a,a) : Next
+;   For a = 0 To LN : SetGadGetWidgetItemText(0, a,Str(a)) : Next
 ;   Debug " "+Str(ElapsedMilliseconds()-time) + " - gadget set items time - " + CountGadgetItems(0)
   
   
@@ -46,15 +46,15 @@ If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
   
 ;   Debug ""
 ;   Define item = 3
-;   Debug ""+GetItemData(*w, item) +" "+ GetItemTextWidget(*w, item) + " - get widget item 3"
-;   Debug ""+GetGadgetItemData(0, item) +" "+ GetGadgetItemTextWidget(0, item) +" - get gadget item 3"
+;   Debug ""+GetWidgetItemData(*w, item) +" "+ GetWidgetItemText(*w, item) + " - get widget item 3"
+;   Debug ""+GetGadGetWidgetItemData(0, item) +" "+ GetGadGetWidgetItemText(0, item) +" - get gadget item 3"
 ;   
 ;   item = 7
-;   SetItemData(*w, item, 555)
-;   SetGadgetItemData(0, item, 555)
+;   SetWidgetItemData(*w, item, 555)
+;   SetGadGetWidgetItemData(0, item, 555)
 ;   
-;   Debug ""+GetItemData(*w, item) +" "+ GetItemTextWidget(*w, item) + " - get widget item 7"
-;   Debug ""+GetGadgetItemData(0, item) +" "+ GetGadgetItemTextWidget(0, item) +" - get gadget item 7"
+;   Debug ""+GetWidgetItemData(*w, item) +" "+ GetWidgetItemText(*w, item) + " - get widget item 7"
+;   Debug ""+GetGadGetWidgetItemData(0, item) +" "+ GetGadGetWidgetItemText(0, item) +" - get gadget item 7"
 ;   
 ; ;   Debug ""
 ; ;   Define time = ElapsedMilliseconds()

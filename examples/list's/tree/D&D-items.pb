@@ -233,7 +233,7 @@ Procedure events( )
   If EventWidget( ) = *tree                     
     Select WidgetEvent( ) 
       Case #__event_Change
-        Debug "change - "+ GetState(*tree) +" "+ GetTextWidget(*tree) +" "+ GetItemTextWidget(*tree, GetState(*tree))
+        Debug "change - "+ GetWidgetState(*tree) +" "+ GetWidgetText(*tree) +" "+ GetWidgetItemText(*tree, GetWidgetState(*tree))
         
       Case #__event_DragStart 
         ; 
@@ -245,7 +245,7 @@ Procedure events( )
         ; хочет начать тащить его. Мы сохраняем этот элемент для последующего использования и
         ; начать нашу частную перетаскивание
         ;
-        SourceItem = GetState(*tree)
+        SourceItem = GetWidgetState(*tree)
         If DragPrivate(#PrivateType, #PB_Drag_Move)
           Protected img =- 1
           SelectElement(EventWidget( )\__items( ), SourceItem)
@@ -269,9 +269,9 @@ Procedure events( )
         ;
         If EventDropType( ) = #PB_Drop_Private And
            EventDropPrivate( ) = #PrivateType
-          Debug "start drop - "+ GetState(*tree) +" "+ GetTextWidget(*tree) +" "+ GetItemTextWidget(*tree, GetState(*tree))
+          Debug "start drop - "+ GetWidgetState(*tree) +" "+ GetWidgetText(*tree) +" "+ GetWidgetItemText(*tree, GetWidgetState(*tree))
           
-          TargetItem = GetState(*tree)        
+          TargetItem = GetWidgetState(*tree)        
           
           ; nothing to do if source and target are equal
           ;
@@ -290,11 +290,11 @@ Procedure events( )
               TargetItem  = CountItems + 1
               TargetLevel = 0
               
-            ElseIf Left( GetItemTextWidget(*tree, TargetItem), 4 ) = "Item"      
+            ElseIf Left( GetWidgetItemText(*tree, TargetItem), 4 ) = "Item"      
               ; if dropped on an "Item", move right after this item
               ;
               ; если упал на «предмет», переместиться сразу после этого предмета
-              TargetLevel = GetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel)
+              TargetLevel = GetWidgetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel)
               TargetItem  + 1
               
             Else
@@ -303,9 +303,9 @@ Procedure events( )
               ;
               ; если вы попали в «Каталог», перейдите в каталог и в его конец
               ; все это можно легко сделать, изучив подуровень
-              TargetLevel = GetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel) + 1
+              TargetLevel = GetWidgetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel) + 1
               TargetItem + 1
-              While GetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel) >= TargetLevel
+              While GetWidgetItemAttribute(*tree, TargetItem, #PB_Tree_SubLevel) >= TargetLevel
                 TargetItem + 1
               Wend
             EndIf
@@ -322,10 +322,10 @@ Procedure events( )
             ;
             ; дочерние узлы следуют непосредственно за узлами с более высоким уровнем
             ;
-            SourceLevel = GetItemAttribute(*tree, SourceItem, #PB_Tree_SubLevel)          
+            SourceLevel = GetWidgetItemAttribute(*tree, SourceItem, #PB_Tree_SubLevel)          
             ChildCount  = 0
             For i = SourceItem+1 To CountItems
-              If GetItemAttribute(*tree, i, #PB_Tree_SubLevel) > SourceLevel 
+              If GetWidgetItemAttribute(*tree, i, #PB_Tree_SubLevel) > SourceLevel 
                 ChildCount + 1
               Else
                 Break
@@ -359,11 +359,11 @@ Procedure events( )
               ; затронуты добавлением новых элементов в этом случае...
               ;
               For i = 0 To ChildCount  
-                ; copy everything here (also colors and GetItemData() etc if you use that)                
+                ; copy everything here (also colors and GetWidgetItemData() etc if you use that)                
                 ;
-                ; скопируйте все сюда (также цвета и GetItemData() и т. д., если вы используете это)
-                Text$ = GetItemTextWidget(*tree, SourceItem+i)              
-                Level = GetItemAttribute(*tree, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
+                ; скопируйте все сюда (также цвета и GetWidgetItemData() и т. д., если вы используете это)
+                Text$ = GetWidgetItemText(*tree, SourceItem+i)              
+                Level = GetWidgetItemAttribute(*tree, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
                 AddItem(*tree, TargetItem+i, Text$, 0, Level)              
               Next i
               
@@ -375,7 +375,7 @@ Procedure events( )
               ; Это должно быть в отдельном цикле, иначе "расширенное" состояние элементов
               ; не сохраняется, так как дочерние элементы еще не были добавлены в указанный выше цикл.
               For i = 0 To ChildCount
-                SetItemState(*tree, TargetItem+i, GetItemState(*tree, SourceItem+i))
+                SetWidgetItemState(*tree, TargetItem+i, GetWidgetItemState(*tree, SourceItem+i))
               Next i
               
               ; remove the source item. This automatically removes all children as well.
@@ -387,7 +387,7 @@ Procedure events( )
               ;
               ; выберите цель. Обратите внимание, что индекс теперь меньше на «ChildCount+1».
               ; из-за удаления источника, который был до цели
-              SetState(*tree, TargetItem - ChildCount - 1)
+              SetWidgetState(*tree, TargetItem - ChildCount - 1)
               
             ElseIf TargetItem <= SourceItem
               ; 
@@ -400,8 +400,8 @@ Procedure events( )
               ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
               ;
               For i = 0 To ChildCount
-                Text$ = GetItemTextWidget(*tree, SourceItem+i*2)
-                Level = GetItemAttribute(*tree, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
+                Text$ = GetWidgetItemText(*tree, SourceItem+i*2)
+                Level = GetWidgetItemAttribute(*tree, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
                 AddItem(*tree, TargetItem+i, Text$, 0, Level)
               Next i
               
@@ -412,19 +412,19 @@ Procedure events( )
               ; 'ChildCount+1' больше, чем раньше, из-за добавленных целей
               ;
               For i = 0 To ChildCount
-                SetItemState(*tree, TargetItem+i, GetItemState(*tree, SourceItem+ChildCount+1+i))
+                SetWidgetItemState(*tree, TargetItem+i, GetWidgetItemState(*tree, SourceItem+ChildCount+1+i))
               Next i            
               
               ; remove source and select target. Here the target index is not affected by the remove as it is lower
               ;
               ; удалить источник и выбрать цель. Здесь целевой индекс не затрагивается удалением, так как он ниже
               RemoveItem(*tree, SourceItem+ChildCount+1)          
-              SetState(*tree, TargetItem)
+              SetWidgetState(*tree, TargetItem)
               
             EndIf
             
           EndIf      
-          Debug "stop drop - "+ GetState(*tree) +" "+ GetTextWidget(*tree) +" "+ GetItemTextWidget(*tree, GetState(*tree))
+          Debug "stop drop - "+ GetWidgetState(*tree) +" "+ GetWidgetText(*tree) +" "+ GetWidgetItemText(*tree, GetWidgetState(*tree))
           
           Debug ""
           ;ClearDebugOutput()
@@ -442,7 +442,7 @@ Procedure events( )
   
 EndProcedure
 
-If OpenRootWidget(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
+If OpenRoot(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
   *tree = TreeWidget( 10, 10, 280, 480, #PB_Tree_NoLines|#PB_Tree_NoButtons|#__flag_GridLines)
   
   ; Add some items. We will be able to move items into the

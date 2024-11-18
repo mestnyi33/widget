@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-  If OpenRootWidget(0, 0, 0, 605+30, 560, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 605+30, 560, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define Value 
     Value = ButtonWidget(30,30, 100, 30, "button_0")
     StringWidget(30,30*2, 100, 30, "string_0")
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tree, #_pi_group_0, "common")
     widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
     widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
-    widget::AddItem(*Tree, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
+    widget::AddItem(*Tree, #_pi_text, "text:"+Chr(10)+GetWidgetText(Value), #PB_WidgetType_String, 1)
     
     widget::AddItem(*Tree, #_pi_group_1, "layout")
     widget::AddItem(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)
@@ -53,16 +53,16 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tree, #_pi_disable, "disable:"+Chr(10)+"", #PB_WidgetType_ComboBox, 1);Str(Disable(Value)))
     widget::AddItem(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_WidgetType_ComboBox, 1)
     
-    ;;;SetAttribute(*Tree, #__Transformation, #PB_All)
+    ;;;SetWidgetAttribute(*Tree, #__Transformation, #PB_All)
     Define vert=20, horiz=60, width=400, height=500
     Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, Button_1, *Tree, #PB_Splitter_FirstFixed)
     Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, Button_2, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
     Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, Button_3, #PB_Splitter_SecondFixed)
     Splitter_3 = widget::SplitterWidget(200, 30, width, height, Splitter_2, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-    SetState(Splitter_3, width-40-horiz)
-    SetState(Splitter_2, height-40-vert)
-    SetState(Splitter_0, vert)
-    SetState(Splitter_1, horiz)
+    SetWidgetState(Splitter_3, width-40-horiz)
+    SetWidgetState(Splitter_2, height-40-vert)
+    SetWidgetState(Splitter_0, vert)
+    SetWidgetState(Splitter_1, horiz)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

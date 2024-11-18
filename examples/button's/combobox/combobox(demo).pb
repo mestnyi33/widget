@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If EventType() = #PB_EventType_Focus
-      Debug ComboBox.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
+      Debug ComboBox.s +" - gadget" +" get text - "+ GetGadGetWidgetText(EventGadget()) ; Bug in mac os
     Else
       Debug ComboBox.s +" - gadget"
     EndIf
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If eventtype = #__event_Focus
-      Debug ComboBox.s +" - widget" +" get text - "+ GetTextWidget(EventWidget( ))
+      Debug ComboBox.s +" - widget" +" get text - "+ GetWidgetText(EventWidget( ))
     Else
       If ComboBox.s <> "" 
         Debug ComboBox.s +" - widget " + EventWidget( )\class
@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If OpenRootWidget(0, 0, 0, 615, 120, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 615, 120, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
     ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable)
     For a = 1 To 31 ; xp=31 ;linux-qt=11 ; mac = 5
@@ -95,9 +95,9 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(2, -1, "ComboBox editable...2")
     AddGadgetItem(2, -1, "ComboBox editable...3")
     
-    SetGadgetState(0, 2)
-    SetGadgetState(1, 1)
-    SetGadgetState(2, 0)    ; set (beginning with 0) the third item as active one
+    SetGadGetWidgetState(0, 2)
+    SetGadGetWidgetState(1, 1)
+    SetGadGetWidgetState(2, 0)    ; set (beginning with 0) the third item as active one
     
     
     For i = 0 To 2
@@ -120,15 +120,15 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget(), -1, "ComboBox editable...2")
     AddItem(widget(), -1, "ComboBox editable...3")
     
-    SetState(ID(0), 2)
-    SetState(ID(1), 1)
-    SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
+    SetWidgetState(ID(0), 2)
+    SetWidgetState(ID(1), 1)
+    SetWidgetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
     
     For i = 0 To 2
       BindWidgetEvent(ID(i), @events_widgets())
     Next
     
-    WaitCloseRootWidget( ) 
+    WaitCloseRoot( ) 
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

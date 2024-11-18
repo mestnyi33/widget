@@ -32,8 +32,8 @@ Procedure Tool_Gadget_Event( )
       Case Tool_Align_To_Grid, Tool_Align_To_Line
          Select WidgetEvent( )
             Case #__Event_Change
-               Protected State1 = Bool(GetState(Tool_Align_To_Line) = #PB_Checkbox_Checked)
-               Protected State2 = Bool(GetState(Tool_Align_To_Grid) = #PB_Checkbox_Checked)
+               Protected State1 = Bool(GetWidgetState(Tool_Align_To_Line) = #PB_Checkbox_Checked)
+               Protected State2 = Bool(GetWidgetState(Tool_Align_To_Grid) = #PB_Checkbox_Checked)
                
                Disable(Tool_Grid_Show,State1)
                Disable(Tool_Grid_Snap,State1)
@@ -55,7 +55,7 @@ Procedure Tool_Gadget_Event( )
       Case Tool_Grid_Show
          Select WidgetEvent( )
             Case #__Event_LeftClick
-               If GetState(Tool_Grid_Show) = #PB_Checkbox_Checked
+               If GetWidgetState(Tool_Grid_Show) = #PB_Checkbox_Checked
                   
                Else
                   
@@ -68,7 +68,7 @@ Procedure Tool_Gadget( Window, Width, Height )
    Tool_Container_Mode = ContainerWidget(5, 5, Width-10, Height-10)
    
    If Font
-      SetFont(FrameWidget(10, 10, 333, 170, "Параметры выравнивания"),FontID(Font))
+      SetWidgetFont(FrameWidget(10, 10, 333, 170, "Параметры выравнивания"),FontID(Font))
    EndIf
    
    ContainerWidget(10+3, 10+35, 327, 132)
@@ -96,7 +96,7 @@ Procedure Tool_Gadget( Window, Width, Height )
    CloseWidgetList( )
    
    ;
-    SetState( Tool_Align_To_Grid, 1) ; 
+    SetWidgetState( Tool_Align_To_Grid, 1) ; 
 ;    Disable(Tool_Line_Show,1)
 ;    Disable(Tool_Line_Snap,1)
 ;    Disable(Tool_Line_Size,1)
@@ -110,7 +110,7 @@ EndProcedure
 ;
 CompilerIf #PB_Compiler_IsMainFile
    Define Event
-   OpenRootWidget( 1, 245, 144, 555, 555, "Tool", #PB_Window_SystemMenu )
+   OpenRoot( 1, 245, 144, 555, 555, "Tool", #PB_Window_SystemMenu )
    Define Window = GetCanvasWindow(root( ))
    Tool_Gadget( Window, 555, 555 )
    

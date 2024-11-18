@@ -8,12 +8,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Global *w, *w1, *w2
   
-  If OpenRootWidget(0, 100, 0, 180, 130, "openlist1", #PB_Window_SystemMenu)
+  If OpenRoot(0, 100, 0, 180, 130, "openlist1", #PB_Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button1")
     *w = Root()
   EndIf
   
-  If OpenRootWidget(1, 300, 0, 180, 130, "openlist2", #PB_Window_SystemMenu)
+  If OpenRoot(1, 300, 0, 180, 130, "openlist2", #PB_Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button2")
   EndIf
   
@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ButtonWidget(30, 15, 120, 24,"openlist1")
   CloseWidgetList()
   
-  If OpenRootWidget(2, 500, 0, 180, 130, "openlist3", #PB_Window_SystemMenu)
+  If OpenRoot(2, 500, 0, 180, 130, "openlist3", #PB_Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button3")
     CloseWidgetList()
   EndIf

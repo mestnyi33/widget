@@ -56,10 +56,10 @@ If Not LoadImage(img1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.
 EndIf
 
 Procedure scrolled( )
-   SetState( ID(Hex(#PB_GadgetType_ProgressBar)), GetState( ID(Hex(#PB_GadgetType_ScrollBar))))
+   SetWidgetState( ID(Hex(#PB_GadgetType_ProgressBar)), GetWidgetState( ID(Hex(#PB_GadgetType_ScrollBar))))
 EndProcedure
 
-If OpenRootWidget(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    BindWidgetEvent(#PB_All, @events( ))
    
    ;a_init(root( ), 0)
@@ -69,28 +69,28 @@ If OpenRootWidget(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Wind
    ID(Hex(#PB_GadgetType_Button)) = ButtonWidget(5, 5, 160,95, "Multiline Button_"+Hex(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #__flag_Textmultiline, - 1, round ) 
    ID(Hex(#PB_GadgetType_String)) = StringWidget(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
    ID(Hex(#PB_GadgetType_Text)) = TextWidget(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text", #PB_Text_Border)        
-   ID(Hex(#PB_GadgetType_CheckBox)) = CheckBoxWidget(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox), #PB_CheckBox_ThreeState) : SetState(ID(), #PB_Checkbox_Inbetween)
-   ID(Hex(#PB_GadgetType_Option)) = OptionWidget(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option) ) : SetState(ID(), 1)                                                       
+   ID(Hex(#PB_GadgetType_CheckBox)) = CheckBoxWidget(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox), #PB_CheckBox_ThreeState) : SetWidgetState(ID(), #PB_Checkbox_Inbetween)
+   ID(Hex(#PB_GadgetType_Option)) = OptionWidget(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option) ) : SetWidgetState(ID(), 1)                                                       
    ID(Hex(#PB_GadgetType_ListView)) = ListViewWidget(5, 505, 160,95) : AddItem(ID(), -1, "ListView_"+Hex(#PB_GadgetType_ListView)) : For i=1 To 5 : AddItem(ID(), i, "item_"+Hex(i)) : Next
    
    ;\\ 2
    ID(Hex(#PB_GadgetType_Frame)) = FrameWidget(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame) )
-   ID(Hex(#PB_GadgetType_ComboBox)) = ComboBoxWidget(170, 105, 160,45 ) : AddItem(ID(), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(ID(), i, "item_"+Hex(i)) : Next : SetState(ID(), 0) 
-   ID(Hex(100+#PB_GadgetType_ComboBox)) = ComboBoxWidget(170, 155, 160,45, #PB_ComboBox_Editable) : AddItem(ID(), -1, "ComboBox_"+Hex(100+#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(ID(), i, "item_"+Hex(i)) : Next : SetState(ID(), 0) 
+   ID(Hex(#PB_GadgetType_ComboBox)) = ComboBoxWidget(170, 105, 160,45 ) : AddItem(ID(), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(ID(), i, "item_"+Hex(i)) : Next : SetWidgetState(ID(), 0) 
+   ID(Hex(100+#PB_GadgetType_ComboBox)) = ComboBoxWidget(170, 155, 160,45, #PB_ComboBox_Editable) : AddItem(ID(), -1, "ComboBox_"+Hex(100+#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(ID(), i, "item_"+Hex(i)) : Next : SetWidgetState(ID(), 0) 
    ID(Hex(#PB_GadgetType_Image)) = ImageWidget(170, 205, 160,95, img2, #PB_Image_Border ) 
    ID(Hex(#PB_GadgetType_HyperLink)) = HyperLinkWidget(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink), $00FF00, #PB_HyperLink_Underline ) 
    ID(Hex(#PB_GadgetType_Container)) = ContainerWidget(170, 405, 160,95, #PB_Container_Flat )
-   ID(Hex(101)) = OptionWidget(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container) )  : SetState(ID(), 1)  
+   ID(Hex(101)) = OptionWidget(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container) )  : SetWidgetState(ID(), 1)  
    ID(Hex(102)) = OptionWidget(10, 40, 110,20, "Option_widget");, #__flag_flat)  
    CloseWidgetList()
    ID(Hex(#PB_GadgetType_ListIcon)) = ListIconWidget(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon),120 )                           
    
    ;\\ 3
-   ID(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(ID(), MakeIPAddress(1, 2, 3, 4))    
-   ID(Hex(#PB_GadgetType_ProgressBar)) = ProgressBarWidget(335, 105, 160,95,0,100, 0, round) : SetState(ID(), 50)
-   ID(Hex(#PB_GadgetType_ScrollBar)) = ScrollBarWidget(335, 205, 160,95,0,120,20) : SetState(ID(), 50)
+   ID(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetWidgetState(ID(), MakeIPAddress(1, 2, 3, 4))    
+   ID(Hex(#PB_GadgetType_ProgressBar)) = ProgressBarWidget(335, 105, 160,95,0,100, 0, round) : SetWidgetState(ID(), 50)
+   ID(Hex(#PB_GadgetType_ScrollBar)) = ScrollBarWidget(335, 205, 160,95,0,120,20) : SetWidgetState(ID(), 50)
    ID(Hex(#PB_GadgetType_ScrollArea)) = ScrollAreaWidget(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : ID(Hex(201)) = ButtonWidget(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea) ) : ID(Hex(202)) = ButtonWidget(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseWidgetList()
-   ID(Hex(#PB_GadgetType_TrackBar)) = TrackBarWidget(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(ID(), 11)
+   ID(Hex(#PB_GadgetType_TrackBar)) = TrackBarWidget(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetWidgetState(ID(), 11)
    ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
    
    ;\\ 4
@@ -119,7 +119,7 @@ If OpenRootWidget(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Wind
    CloseWidgetList()
    CloseWidgetList()
    CloseWidgetList()
-   SetState( ID(Hex(#PB_GadgetType_Panel)), 4)
+   SetWidgetState( ID(Hex(#PB_GadgetType_Panel)), 4)
    id(Hex(301)) = SpinWidget(0, 0, 100,20,0,10, #__spin_plus)
    id(Hex(302)) = SpinWidget(0, 0, 100,20,0,10) ; ButtonWidget(0, 0, 100,20,"splitt-button")                 
    id(Hex(#PB_GadgetType_Splitter)) = SplitterWidget(665, 405, 160,95,id(Hex(301)), id(Hex(302)))
@@ -139,7 +139,7 @@ If OpenRootWidget(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Wind
 EndIf   
 
 CompilerIf #PB_Compiler_IsMainFile
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 79

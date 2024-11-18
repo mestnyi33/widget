@@ -7,27 +7,27 @@ CompilerIf #PB_Compiler_IsMainFile
   Define h = 185, bh = 26
   Define *g1, *g2, *g3, *g4, *g5, *g6
   
-  If OpenRootWidget(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *g1 = EditorWidget(     30, 30, 200, h)
-    SetTextWidget(*g1, "left 00000000000000000000000000000000000")
+    SetWidgetText(*g1, "left 00000000000000000000000000000000000")
     AddItem(*g1, -1, "left 00000000000000000000000000000000000")
     
     *g2 = EditorWidget( 30+210, 30, 200, h, #__flag_Textcenter|#__flag_Texttop)
-    SetTextWidget(*g2, "0000000000000000000 center 00000000000000000000" )
+    SetWidgetText(*g2, "0000000000000000000 center 00000000000000000000" )
     AddItem(*g2, -1, "0000000000000000000 center 00000000000000000000" )
     
     *g3 = EditorWidget( 30+420, 30, 200, h, #__flag_Textright|#__flag_Texttop)
-    SetTextWidget(*g3, "00000000000000000000000000000000000 right" )
+    SetWidgetText(*g3, "00000000000000000000000000000000000 right" )
     AddItem(*g3, -1, "00000000000000000000000000000000000 right" )
     
     *g4 = SplitterWidget( 0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     *g5 = SplitterWidget( 30,30,620,h, *g4,*g3, #PB_Splitter_Vertical)
     *g6 = SplitterWidget( 30,30,620,h, *g5,#Null)
     
-    SetState(*g4, 200)
-    SetState(*g5, 200*2+#__splittersize)
-    ;SetState(*g6, h)
+    SetWidgetState(*g4, 200)
+    SetWidgetState(*g5, 200*2+#__splittersize)
+    ;SetWidgetState(*g6, h)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

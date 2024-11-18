@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
   Define auto = 1
-  widget::OpenRootWidget(0);, 0, 0, 510, 340)
+  widget::OpenRoot(0);, 0, 0, 510, 340)
   
   ; first splitter
   ButtonGadget(1, 0, 0, 0, 0, "BTN1")
@@ -63,17 +63,17 @@ CompilerIf #PB_Compiler_IsMainFile
   Else
     SplitterGadget(13, 0, 0, 250, 150, 11, 12, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
   EndIf
-  ;SetGadgetState(12, 43)
-  ;SetGadgetState(13, 30)
+  ;SetGadGetWidgetState(12, 43)
+  ;SetGadGetWidgetState(13, 30)
   
   ; second splitter
   ButtonGadget(14, 0, 0, 0, 0, "BTN14")
   SplitterGadget(15, 125, 10, 250, 150, 13, 14, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
   ;   SplitterGadget(30,125, 10, 250, 150, 15, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator | #PB_Splitter_Vertical)
-  ;   SetGadgetState(30, 250)
+  ;   SetGadGetWidgetState(30, 250)
   
-  SetGadgetState(15, 250-30-#__splittersize)
-  SetGadgetState(13, 30)
+  SetGadGetWidgetState(15, 250-30-#__splittersize)
+  SetGadGetWidgetState(13, 30)
   
   
   ; first splitter
@@ -119,14 +119,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Else
     w_13 = widget::SplitterWidget(0, 0, 250, 150, w_11, w_12, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
   EndIf
-  ;SetState(w_9, 43)
+  ;SetWidgetState(w_9, 43)
   
   ; second splitter
   w_14 = widget::ButtonWidget(0, 0, 0, 0, "BTN14")
   w_15 = widget::SplitterWidget(125, 170, 250, 150, w_13, w_14, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
   
   ;   widget::SplitterWidget(125, 170, 250, 150, w_15, 0, #PB_Splitter_Separator | #PB_Splitter_Vertical)
-  ;   widget::SetState(widget(), 250)
+  ;   widget::SetWidgetState(widget(), 250)
   ;   
   Define *this._s_widget = w_13
   ;*this\bar\max = 0
@@ -135,22 +135,22 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   *this\bar\max = (*this\bar\area\len-*this\bar\thumb\len)
   ;   *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
   
-  widget::SetState(w_13, 30)
+  widget::SetWidgetState(w_13, 30)
   ;Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
-  ;widget::SetState(w_15, 250-30-#__splittersize)
-  widget::SetState(w_15, 250-30-#__splittersize)
+  ;widget::SetWidgetState(w_15, 250-30-#__splittersize)
+  widget::SetWidgetState(w_15, 250-30-#__splittersize)
   
   
   
-  Debug "get 13 state - "+GetGadgetState(13)
-  Debug "get 15 state - "+GetGadgetState(15)
+  Debug "get 13 state - "+GetGadGetWidgetState(13)
+  Debug "get 15 state - "+GetGadGetWidgetState(15)
   
   Debug "get 11 width - "+GadgetWidth(11)
   Debug "get 14 width - "+GadgetWidth(14)
   
   Debug ""
-  Debug "get 13 state - "+widget::GetState(w_13)
-  Debug "get 15 state - "+widget::GetState(w_15)
+  Debug "get 13 state - "+widget::GetWidgetState(w_13)
+  Debug "get 15 state - "+widget::GetWidgetState(w_15)
   
   Debug "get 11 width - "+widget::WidgetWidth(w_11)
   Debug "get 14 width - "+widget::WidgetWidth(w_14)

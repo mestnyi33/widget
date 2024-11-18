@@ -12,23 +12,23 @@ CompilerIf #PB_Compiler_IsMainFile
       If OpenWindow(0, 0, 0, 400, 130, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
          ButtonGadget   (0,    5,   95, 390,  30, "", #PB_Button_Toggle)
          
-         If OpenRootWidget(0, 10, 10, 380, 80)
+         If OpenRoot(0, 10, 10, 380, 80)
             g_Canvas = GetCanvasGadget(root())
             *scrollbar = ScrollBarWidget(5, 10, 370, 30, 20, 50, 8 )
-            SetAttribute(*scrollbar, #__Bar_ButtonSize, 30 )
-            buttonsize = GetAttribute( *scrollbar, #__Bar_ButtonSize )
+            SetWidgetAttribute(*scrollbar, #__Bar_ButtonSize, 30 )
+            buttonsize = GetWidgetAttribute( *scrollbar, #__Bar_ButtonSize )
             Debug "button-size - "+buttonsize
             
             SplitterWidget(5, 5, 370, 70, *scrollbar,-1)
-            SetState(widget(), 70)
+            SetWidgetState(widget(), 70)
             
-            SetGadgetState(0, buttonsize)
-            SetWindowTitle(0, Str(GetState(*scrollbar)))
+            SetGadGetWidgetState(0, buttonsize)
+            SetWindowTitle(0, Str(GetWidgetState(*scrollbar)))
             
-            If GetGadgetState(0)
-               SetGadgetTextWidget(0, "hide scrollbar buttons")
+            If GetGadGetWidgetState(0)
+               SetGadGetWidgetText(0, "hide scrollbar buttons")
             Else
-               SetGadgetTextWidget(0, "show scrollbar buttons")
+               SetGadGetWidgetText(0, "show scrollbar buttons")
             EndIf
             
          EndIf
@@ -48,20 +48,20 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select EventGadget()
                Case 0
-                  SetWindowTitle(0, Str(GetState(*scrollbar)))
+                  SetWindowTitle(0, Str(GetWidgetState(*scrollbar)))
                   
-                  If GetGadgetState(0)
-                     SetGadgetTextWidget(0, "hide scrollbar buttons")
-                     SetAttribute(*scrollbar, #__Bar_ButtonSize, buttonsize)
+                  If GetGadGetWidgetState(0)
+                     SetGadGetWidgetText(0, "hide scrollbar buttons")
+                     SetWidgetAttribute(*scrollbar, #__Bar_ButtonSize, buttonsize)
                   Else
-                     SetGadgetTextWidget(0, "show scrollbar buttons")
-                     SetAttribute(*scrollbar, #__Bar_ButtonSize, 0)
+                     SetGadGetWidgetText(0, "show scrollbar buttons")
+                     SetWidgetAttribute(*scrollbar, #__Bar_ButtonSize, 0)
                   EndIf
                   
                Case g_Canvas
                   If widget()\change
-                     ; SetWindowTitle(0, Str(GetState(widget())))
-                     Debug GetState(widget())
+                     ; SetWindowTitle(0, Str(GetWidgetState(widget())))
+                     Debug GetWidgetState(widget())
                      widget()\change = 0
                   EndIf
                   

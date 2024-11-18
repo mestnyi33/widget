@@ -7,15 +7,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Define width=500, height=400
   
   Procedure active()
-   ; Debug ""+#PB_Compiler_Procedure +" - "+ GetWidgetClass( EventWidget( ) ) +"_"+ GetTextWidget( EventWidget( ) )
+   ; Debug ""+#PB_Compiler_Procedure +" - "+ GetWidgetClass( EventWidget( ) ) +"_"+ GetWidgetText( EventWidget( ) )
   EndProcedure
   
   Procedure deactive()
-   ; Debug " "+#PB_Compiler_Procedure +" - "+ GetWidgetClass( EventWidget( ) ) +"_"+ GetTextWidget( EventWidget( ) )
+   ; Debug " "+#PB_Compiler_Procedure +" - "+ GetWidgetClass( EventWidget( ) ) +"_"+ GetWidgetText( EventWidget( ) )
   EndProcedure
   
   ;
-  If OpenRootWidget(0, 100, 200, width, height, "demo focus widget", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+  If OpenRoot(0, 100, 200, width, height, "demo focus widget", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
       
     WindowWidget(10, 10, 190, 90, "10", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget) : SetWidgetClass(widget(), "window_10")
     StringWidget(10,10,170,30,"1") : SetWidgetClass(widget(), "gadget_1")
@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BindWidgetEvent(#PB_All, @active(), #__event_Focus)
     BindWidgetEvent(#PB_All, @deactive(), #__event_LostFocus)
     
-    WaitCloseRootWidget()
+    WaitCloseRoot()
   EndIf
   
   End  

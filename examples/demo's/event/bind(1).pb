@@ -16,10 +16,10 @@ CompilerIf #PB_Compiler_IsMainFile
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
-				Debug ""+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ ClassFromEvent( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
+				Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ ClassFromEvent( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
 			EndIf
 			
-			If IDWidget(EventWidget()) = 1
+			If GetIndex(EventWidget()) = 1
 				If WidgetEvent() = #__event_MouseEnter
 					ResizeWidget( EventWidget(), #PB_Ignore, #PB_Ignore, 280, #PB_Ignore)
 				EndIf
@@ -37,10 +37,10 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEvent() <> #__event_StatusChange
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
-				Debug "  "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
+				Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
 			EndIf
 			
-			If IDWidget(EventWidget()) = 2
+			If GetIndex(EventWidget()) = 2
 				ProcedureReturn #PB_Ignore ; no send to (root) - event
 			EndIf
 		EndIf
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEvent() <> #__event_StatusChange
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
-				Debug "    "+IDWidget(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
+				Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
 			EndIf
 		EndIf
 	EndProcedure
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		If OpenWindow(0, 0, 0, 500, 500, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
 			Define Editable ; = 
 			
-			If OpenRootWidget(0, 10,10, 480, 480)
+			If OpenRoot(0, 10,10, 480, 480)
 				BindWidgetEvent(#PB_All, @events_roots())
 				BindWidgetEvent(Window(80, 100, 300, 280, "Window_2", Editable|#__Window_SystemMenu), @events_windows())
 				;SetWidgetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
@@ -118,17 +118,17 @@ CompilerEndIf
 ;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEvent()+" "+*ew\index
 ;   EndProcedure
 ;   
-;   If OpenRootWidget(OpenWindow(#PB_Any, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
-;     ; If OpenRootWidget(Window(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+;   If OpenRoot(OpenWindow(#PB_Any, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+;     ; If OpenRoot(Window(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
 ;     ; If WindowWidget(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
 ;     
 ;     ;a_add(root())
 ;     
 ;     StringWidget(10,10,180,30,"string_0")
-;     SetActive(widget())
+;     SetActiveWidget(widget())
 ;     
 ;     StringWidget(10,50,180,30,"string_1")
-;     SetActive(widget())
+;     SetActiveWidget(widget())
 ;     
 ;     Debug ""
 ;     BindWidgetEvent( #PB_All, @click(), #__event_LeftClick)

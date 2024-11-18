@@ -9,14 +9,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Global NewMap ID.i()
   Global.i Canvas_0, gEvent, gQuit, X=10,Y=10
   
-  Procedure Window_0_ResizeWidget()
+  Procedure Window_0_Resize()
     ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
     ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      Define *w._S_widget = OpenRootWidget(0)
+      Define *w._S_widget = OpenRoot(0)
       ;Canvas_0 = GetCanvasGadget(Root())
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
@@ -76,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ResizeWidget(ID(Hex(0)), #PB_Ignore, #PB_Ignore, 360,260)
       
-      BindEvent(#PB_Event_SizeWindow, @Window_0_ResizeWidget(), 0)
+      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
   EndProcedure
   
@@ -113,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Width = WidgetWidth(*th)
             Height = WidgetHeight(*th)
             
-            If GetGadgetState(0)
+            If GetGadGetWidgetState(0)
               AddWindowTimer(0, 1, 200)
             Else
               RemoveWindowTimer(0, 1)

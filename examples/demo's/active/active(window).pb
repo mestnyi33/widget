@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       EndSelect
    EndProcedure
    
-   If OpenRootWidget(0, 0, 0, 800, 600, " focus demo ", #PB_Window_SystemMenu |
+   If OpenRoot(0, 0, 0, 800, 600, " focus demo ", #PB_Window_SystemMenu |
                                               #PB_Window_ScreenCentered )
       
       ;\\

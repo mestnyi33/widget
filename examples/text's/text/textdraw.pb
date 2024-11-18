@@ -62,18 +62,18 @@ Procedure.S FontName( FontID )
   EndProcedure
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    Procedure _GetGadgetFont(gadget)
+    Procedure _GetWidgetFont(gadget)
       If gadget =- 1
         Protected fs.CGFloat 
         CocoaMessage(@fs,0,"NSFont systemFontSize") : fs - 1 ; ??? - 1 
         ProcedureReturn CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @fs) 
       Else
-        ProcedureReturn GetGadgetFont(gadget)
+        ProcedureReturn GetWidgetFont(gadget)
       EndIf
     EndProcedure
     
-    Macro GetGadgetFont(gadget)
-      _GetGadgetFont(gadget)
+    Macro GetWidgetFont(gadget)
+      _GetWidgetFont(gadget)
     EndMacro
   CompilerEndIf
   
@@ -96,11 +96,11 @@ LoadFont(0, "MS Shell Dlg", fontsize) ; xp - default
 ;LoadFont(0, "Charter", fontsize)
 ;LoadFont(0, "Tahoma", fontsize)
 FontID = FontID(0)
-;FontID = GetGadgetFont(#PB_Default)
+;FontID = GetWidgetFont(#PB_Default)
 
 Debug ""+FontSize(FontID)+" - "+FontName(FontID)
 
-Procedure draw_TextWidget(x, y, text.s, align=0, rotate=0)
+Procedure draw_Text(x, y, text.s, align=0, rotate=0)
   Static width,height
   Protected i, count = CountString(text, #LF$)
     
@@ -136,9 +136,9 @@ If OpenWindow(0, 0, 0, 450, 300, "2DDrawing Example", #PB_Window_SystemMenu | #P
       DrawingMode(#PB_2DDrawing_Transparent)
       Box(0, 0, 450, 300, RGB(230, 230, 230))
       
-      draw_TextWidget(30,30,text,0,0)
-      draw_TextWidget(100,30,text, 1,0)
-      draw_TextWidget(170,30,text, 2,0)
+      draw_Text(30,30,text,0,0)
+      draw_Text(100,30,text, 1,0)
+      draw_Text(170,30,text, 2,0)
       
       StopDrawing() 
       ImageGadget(0, 0, 0, 200, 200, ImageID(0))

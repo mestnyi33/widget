@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    Define i, time.q, count = 10000
    
-   If OpenRootWidget(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       For i = 0 To count
          ContainerWidget( 5*i, 5*i, 50,50)
       Next
@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       Debug "--- enumerate all gadgets time --- "+Str(ElapsedMilliseconds( ) - time)
       
-      WaitCloseRootWidget()
+      WaitCloseRoot()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

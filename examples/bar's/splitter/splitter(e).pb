@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  If OpenRootWidget(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Button_0 = ButtonGadget(#PB_Any, 0,0,0,0, "Button 0") ; as they will be sized automatically
       Button_1 = ButtonGadget(#PB_Any, 0,0,0,0, "Button 1") ; as they will be sized automatically
       
@@ -23,16 +23,16 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Splitter_0 = SplitterGadget(#PB_Any, 0,0,0,0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
       Splitter_1 = SplitterGadget(#PB_Any, 0,0,0,0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-      SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-      SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+      SetGadGetWidgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+      SetGadGetWidgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
       Splitter_2 = SplitterGadget(#PB_Any, 0,0,0,0, Splitter_1, Button_5, #PB_Splitter_Separator)
       Splitter_3 = SplitterGadget(#PB_Any, 0,0,0,0, Button_2, Splitter_2, #PB_Splitter_Separator)
       Splitter_4 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
       
-      SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
-      SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
+      SetGadGetWidgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
+      SetGadGetWidgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
       
-      SetGadgetState(Splitter_1, 20)
+      SetGadGetWidgetState(Splitter_1, 20)
       
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
@@ -47,18 +47,18 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Splitter_0 = SplitterWidget(0,0,0,0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
       Splitter_1 = SplitterWidget(0,0,0,0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-      SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-      SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+      SetWidgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+      SetWidgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
       Splitter_2 = SplitterWidget(0,0,0,0, Splitter_1, Button_5)
       Splitter_3 = SplitterWidget(0,0,0,0, Button_2, Splitter_2)
       Splitter_4 = SplitterWidget(430-GadgetX(GetCanvasGadget(Root())), 10-GadgetY(GetCanvasGadget(Root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
       
-      SetState(Splitter_1, 20)
-      ;SetState(Splitter_1, 410-20)
+      SetWidgetState(Splitter_1, 20)
+      ;SetWidgetState(Splitter_1, 410-20)
       
       TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
   
 CompilerEndIf

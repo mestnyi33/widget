@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   ParentID = GetParent(*CHILD)
                   FreeWidget( *CHILD )
                   
-                  Select GetState(*COMBO)
+                  Select GetWidgetState(*COMBO)
                     Case  1: *CHILD = ButtonWidget(30,20,150,30,"Button") 
                     Case  2: *CHILD = StringWidget(30,20,150,30,"String") 
                     Case  3: *CHILD = TextWidget(30,20,150,30,"Text", #PB_Text_Border) 
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  5: *CHILD = CheckBoxWidget(30,20,150,30,"CheckBox") 
                     Case  6: *CHILD = ListViewWidget(30,20,150,30) 
                     Case  7: *CHILD = FrameWidget(30,20,150,30,"Frame") 
-                    Case  8: *CHILD = ComboBoxWidget(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
+                    Case  8: *CHILD = ComboBoxWidget(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetWidgetState(*CHILD,0)
                       ; Debug ""+*CHILD\root\class +" "+ *CHILD\PopupBox( )\root\class
                        
                     Case  9: *CHILD = ImageWidget(30,20,150,30,0,#PB_Image_Border) 
@@ -115,7 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
-  OpenRootWidget(10)
+  OpenRoot(10)
   Root( )\class = "new"
   ;*window_10 = WindowWidget(0, 0, 425, 350,"demo set gadget new parent", Flags)
   *window_10 = ContainerWidget(0, 0, 425, 350)
@@ -147,7 +147,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   Flags = #PB_Window_Invisible | #PB_Window_TitleBar
   OpenWindow(20, WindowX(10)-210-35, WindowY(10), 240, 350, "old parent", Flags, WindowID(10))
-  OpenRootWidget(20)
+  OpenRoot(20)
   Root( )\class = "last"
   ;*window_20 = WindowWidget(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
   *window_20 = ContainerWidget(0,0, 425, 350)
@@ -198,7 +198,7 @@ CompilerIf #PB_Compiler_IsMainFile
   AddItem(*COMBO, -1, "Shortcut")  
   AddItem(*COMBO, -1, "Canvas")    
   
-  SetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #__event_Change)
+  SetWidgetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #__event_Change)
   
   *DESKTOP = ButtonWidget(30,150,160,20,"Button >>(Desktop)") 
   *CANVASCONTAINER = ContainerWidget(30,180,200,160) : SetWidgetColor(*CANVASCONTAINER, #__color_back, $ffffffff) ;Canvas(30,180,200,160,#PB_Canvas_Container) 

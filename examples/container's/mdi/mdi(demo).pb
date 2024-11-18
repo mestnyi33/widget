@@ -39,19 +39,19 @@ CompilerIf #PB_Compiler_IsMainFile
      
      If click = 0
         click = 1
-        state1 = GetState(*spl1)
-        state2 = GetState(*spl2)
-        SetState(*spl1, width)
-        SetState(*spl2, height)
+        state1 = GetWidgetState(*spl1)
+        state2 = GetWidgetState(*spl2)
+        SetWidgetState(*spl1, width)
+        SetWidgetState(*spl2, height)
      Else
         click = 0
-        SetState(*spl1, state1)
-        SetState(*spl2, state2)
+        SetWidgetState(*spl1, state1)
+        SetWidgetState(*spl2, state2)
      EndIf
      
   EndProcedure
   
-  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRoot(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   *mdi = MDIWidget(x,y,width, height);, #__flag_autosize)
   ; a_init( *mdi,1 )
@@ -74,8 +74,8 @@ CompilerIf #PB_Compiler_IsMainFile
   *spl1 = SplitterWidget(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
   *spl2 = SplitterWidget(x,y,width,height, *spl1, #Null);, #__flag_autosize)
   
-  SetState(*spl1, width); - 150)
-  SetState(*spl2, height); - 150)
+  SetWidgetState(*spl1, width); - 150)
+  SetWidgetState(*spl2, height); - 150)
   
   ResizeWidget(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
   ResizeWidget(*g3, 10, #PB_Ignore, #PB_Ignore, #PB_Ignore)

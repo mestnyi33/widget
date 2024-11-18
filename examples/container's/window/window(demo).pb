@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4-Bool(#PB_Compiler_OS=#PB_OS_Linux)*4)
   
-  If OpenRootWidget(0, 0, 0, 720+45, 405, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 720+45, 405, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Define._s_widget *f_0, *f_1, *f_2, *f_3, *f_4, *f_5, *f_6, *f_7, *f_8, *f_9, *f_10, *f_11, *sp_0, *sp_1, *sc_0
     ;a_init( root( ) )
     

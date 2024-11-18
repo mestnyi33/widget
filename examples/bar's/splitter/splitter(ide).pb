@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global s_desi, s_tbar, s_view, s_help, s_list,s_insp
   
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
-  widget::OpenRootWidget(0, 100,100,800,600, "ide", flag)
+  widget::OpenRoot(0, 100,100,800,600, "ide", flag)
   window_ide = widget::GetCanvasWindow(root())
   canvas_ide = widget::GetCanvasGadget(root())
   
@@ -33,8 +33,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
   Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-  widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+  widget::SetWidgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+  widget::SetWidgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
   Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, Button_5)
   Splitter_3 = widget::SplitterWidget(0, 0, 0, 0, Button_2, Splitter_2)
   Splitter_4 = widget::SplitterWidget(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
@@ -48,40 +48,40 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   If minsize
     ;\\ set splitter default minimum size
-    widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
-    widget::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
-    widget::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
-    widget::SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 100)
-    widget::SetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 200)
-    widget::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
-    widget::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
-    widget::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
-    widget::SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-    widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 200)
-    ;widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
+    widget::SetWidgetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
+    widget::SetWidgetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
+    widget::SetWidgetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
+    widget::SetWidgetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 100)
+    widget::SetWidgetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 200)
+    widget::SetWidgetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
+    widget::SetWidgetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
+    widget::SetWidgetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
+    widget::SetWidgetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
+    widget::SetWidgetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 200)
+    ;widget::SetWidgetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
   EndIf
 
   If state
     ; set splitters dafault positions
-    ;widget::SetState(Splitter_ide, -130)
-    widget::SetState(Splitter_ide, widget::WidgetWidth(Splitter_ide)-220)
-    widget::SetState(splitter_help, widget::WidgetHeight(splitter_help)-80)
-    widget::SetState(splitter_debug, widget::WidgetHeight(splitter_debug)-150)
-    widget::SetState(Splitter_inspector, 200)
-    widget::SetState(Splitter_design, 30)
-    widget::SetState(Splitter_5, 120)
+    ;widget::SetWidgetState(Splitter_ide, -130)
+    widget::SetWidgetState(Splitter_ide, widget::WidgetWidth(Splitter_ide)-220)
+    widget::SetWidgetState(splitter_help, widget::WidgetHeight(splitter_help)-80)
+    widget::SetWidgetState(splitter_debug, widget::WidgetHeight(splitter_debug)-150)
+    widget::SetWidgetState(Splitter_inspector, 200)
+    widget::SetWidgetState(Splitter_design, 30)
+    widget::SetWidgetState(Splitter_5, 120)
     
-    widget::SetState(Splitter_1, 20)
+    widget::SetWidgetState(Splitter_1, 20)
   EndIf
   
   ;widget::ResizeWidget(Splitter_ide, 0,0,820,620)
   
-  SetTextWidget(s_tbar, "size: ("+Str(WidgetWidth(s_tbar))+"x"+Str(WidgetHeight(s_tbar))+") - " );+ Str(IDWidget( widget::GetParent( s_tbar ))) )
-  SetTextWidget(s_desi, "size: ("+Str(WidgetWidth(s_desi))+"x"+Str(WidgetHeight(s_desi))+") - " );+ Str(IDWidget( widget::GetParent( s_desi ))))
-  SetTextWidget(s_view, "size: ("+Str(WidgetWidth(s_view))+"x"+Str(WidgetHeight(s_view))+") - " );+ Str(IDWidget( widget::GetParent( s_view ))))
-  SetTextWidget(s_list, "size: ("+Str(WidgetWidth(s_list))+"x"+Str(WidgetHeight(s_list))+") - " );+ Str(IDWidget( widget::GetParent( s_list ))))
-  SetTextWidget(s_insp, "size: ("+Str(WidgetWidth(s_insp))+"x"+Str(WidgetHeight(s_insp))+") - " );+ Str(IDWidget( widget::GetParent( s_insp ))))
-  SetTextWidget(s_help, "size: ("+Str(WidgetWidth(s_help))+"x"+Str(WidgetHeight(s_help))+") - " );+ Str(IDWidget( widget::GetParent( s_help ))))
+  SetWidgetText(s_tbar, "size: ("+Str(WidgetWidth(s_tbar))+"x"+Str(WidgetHeight(s_tbar))+") - " );+ Str(GetIndex( widget::GetParent( s_tbar ))) )
+  SetWidgetText(s_desi, "size: ("+Str(WidgetWidth(s_desi))+"x"+Str(WidgetHeight(s_desi))+") - " );+ Str(GetIndex( widget::GetParent( s_desi ))))
+  SetWidgetText(s_view, "size: ("+Str(WidgetWidth(s_view))+"x"+Str(WidgetHeight(s_view))+") - " );+ Str(GetIndex( widget::GetParent( s_view ))))
+  SetWidgetText(s_list, "size: ("+Str(WidgetWidth(s_list))+"x"+Str(WidgetHeight(s_list))+") - " );+ Str(GetIndex( widget::GetParent( s_list ))))
+  SetWidgetText(s_insp, "size: ("+Str(WidgetWidth(s_insp))+"x"+Str(WidgetHeight(s_insp))+") - " );+ Str(GetIndex( widget::GetParent( s_insp ))))
+  SetWidgetText(s_help, "size: ("+Str(WidgetWidth(s_help))+"x"+Str(WidgetHeight(s_help))+") - " );+ Str(GetIndex( widget::GetParent( s_help ))))
   
   ;WaitClose( )
   Define event
@@ -98,7 +98,7 @@ CompilerEndIf
 ;   Global mdi_design, toolbar_design, listview_debug, text_help, tree_inspector,panel_inspector
 ;   
 ;   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
-;   window_ide = GetCanvasWindow(OpenRootWidget(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)))
+;   window_ide = GetCanvasWindow(OpenRoot(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)))
 ;   
 ;   toolbar_design = TextWidget(0,0,0,0,"", #__flag_TextBorder)
 ;   mdi_design = TextWidget(0,0,0,0,"", #__flag_TextBorder)
@@ -120,47 +120,47 @@ CompilerEndIf
 ;   
 ;   If minsize
 ; ;         ; set splitter default minimum size
-; ;     SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 10)
-; ;     SetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 10)
-; ;     SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 10)
-; ;     SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 10)
-; ;     SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 10)
+; ;     SetWidgetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 20)
+; ;     SetWidgetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 10)
+; ;     SetWidgetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 20)
+; ;     SetWidgetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 10)
+; ;     SetWidgetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 20)
+; ;     SetWidgetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 10)
+; ;     SetWidgetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 20)
+; ;     SetWidgetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 10)
+; ;     SetWidgetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
+; ;     SetWidgetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 10)
 ;     
 ;         ; set splitter default minimum size
-;     SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
-;     SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
-;     SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
-;    ; SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
-;     SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
-;     SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
-;     SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-;     SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 200)
-;     ;SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
+;     SetWidgetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
+;     SetWidgetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
+;     SetWidgetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
+;    ; SetWidgetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
+;     SetWidgetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
+;     SetWidgetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
+;     SetWidgetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
+;     SetWidgetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 200)
+;     ;SetWidgetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
 ;   EndIf
 ; 
 ;   If state
 ;     ; set splitters dafault positions
-;     ;SetState(Splitter_ide, -130)
-;     SetState(Splitter_ide, WidgetWidth(Splitter_ide)-220)
-;     SetState(splitter_help, WidgetHeight(splitter_help)-80)
-;     SetState(splitter_debug, WidgetHeight(splitter_debug)-150)
-;     SetState(Splitter_inspector, 200)
-;     SetState(Splitter_design, 30)
+;     ;SetWidgetState(Splitter_ide, -130)
+;     SetWidgetState(Splitter_ide, WidgetWidth(Splitter_ide)-220)
+;     SetWidgetState(splitter_help, WidgetHeight(splitter_help)-80)
+;     SetWidgetState(splitter_debug, WidgetHeight(splitter_debug)-150)
+;     SetWidgetState(Splitter_inspector, 200)
+;     SetWidgetState(Splitter_design, 30)
 ;   EndIf
 ;   
 ;   ;ResizeWidget(Splitter_ide, 0,0,800,600)
 ;   
-;   SetTextWidget(toolbar_design, "size: ("+Str(WidgetWidth(toolbar_design))+"x"+Str(WidgetHeight(toolbar_design))+") - " + Str(IDWidget( GetParent( toolbar_design ))) )
-;   SetTextWidget(mdi_design, "size: ("+Str(WidgetWidth(mdi_design))+"x"+Str(WidgetHeight(mdi_design))+") - " + Str(IDWidget( GetParent( mdi_design ))))
-;   SetTextWidget(listview_debug, "size: ("+Str(WidgetWidth(listview_debug))+"x"+Str(WidgetHeight(listview_debug))+") - " + Str(IDWidget( GetParent( listview_debug ))))
-;   SetTextWidget(tree_inspector, "size: ("+Str(WidgetWidth(tree_inspector))+"x"+Str(WidgetHeight(tree_inspector))+") - " + Str(IDWidget( GetParent( tree_inspector ))))
-;   SetTextWidget(panel_inspector, "size: ("+Str(WidgetWidth(panel_inspector))+"x"+Str(WidgetHeight(panel_inspector))+") - " + Str(IDWidget( GetParent( panel_inspector ))))
-;   SetTextWidget(text_help, "size: ("+Str(WidgetWidth(text_help))+"x"+Str(WidgetHeight(text_help))+") - " + Str(IDWidget( GetParent( text_help ))))
+;   SetWidgetText(toolbar_design, "size: ("+Str(WidgetWidth(toolbar_design))+"x"+Str(WidgetHeight(toolbar_design))+") - " + Str(GetIndex( GetParent( toolbar_design ))) )
+;   SetWidgetText(mdi_design, "size: ("+Str(WidgetWidth(mdi_design))+"x"+Str(WidgetHeight(mdi_design))+") - " + Str(GetIndex( GetParent( mdi_design ))))
+;   SetWidgetText(listview_debug, "size: ("+Str(WidgetWidth(listview_debug))+"x"+Str(WidgetHeight(listview_debug))+") - " + Str(GetIndex( GetParent( listview_debug ))))
+;   SetWidgetText(tree_inspector, "size: ("+Str(WidgetWidth(tree_inspector))+"x"+Str(WidgetHeight(tree_inspector))+") - " + Str(GetIndex( GetParent( tree_inspector ))))
+;   SetWidgetText(panel_inspector, "size: ("+Str(WidgetWidth(panel_inspector))+"x"+Str(WidgetHeight(panel_inspector))+") - " + Str(GetIndex( GetParent( panel_inspector ))))
+;   SetWidgetText(text_help, "size: ("+Str(WidgetWidth(text_help))+"x"+Str(WidgetHeight(text_help))+") - " + Str(GetIndex( GetParent( text_help ))))
 ;   
 ;   BindWidgetEvent(-1,-1)
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow

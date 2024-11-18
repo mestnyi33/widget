@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global a, *first, *last, *added, *reset, *w1, *w2, *g1, *g2, countitems=9; количесвто итемов 
   
   ;\\
-  Procedure SetGadgetState_(gadget, state)
+  Procedure SetGadGetWidgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
         ; ExplorerListGadget, ListIconGadget и ListViewGadget — все три построены на одном и том же классе Cocoa (NSTableView).
@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         gtk_adjustment_value_changed_(*Adjustment)
     CompilerEndSelect 
     
-    SetGadgetState(gadget, state)
+    SetGadGetWidgetState(gadget, state)
   EndProcedure
   
   ;\\
@@ -46,8 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
 ;     CompilerSelect #PB_Compiler_OS
 ;       CompilerCase #PB_OS_MacOS
-        If GetGadgetState(gadget) >= 0
-          SetGadgetState_( gadget, CountGadgetItems(gadget) - 1 )
+        If GetGadGetWidgetState(gadget) >= 0
+          SetGadGetWidgetState_( gadget, CountGadgetItems(gadget) - 1 )
         EndIf
 ;     CompilerEndSelect
   EndProcedure
@@ -75,22 +75,22 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select widget::EventWidget( )
           Case *first
-            widget::SetState(*w1, 0)
-            widget::SetState(*w2, 0)
-            SetGadgetState_(*g1, 0)
-            SetGadgetState_(*g2, 0)
+            widget::SetWidgetState(*w1, 0)
+            widget::SetWidgetState(*w2, 0)
+            SetGadGetWidgetState_(*g1, 0)
+            SetGadGetWidgetState_(*g2, 0)
             
-            widget::SetState(*reset, 1)
-            widget::SetState(*last, 0)
+            widget::SetWidgetState(*reset, 1)
+            widget::SetWidgetState(*last, 0)
             
           Case *last
-            widget::SetState(*w1, widget::CountItems( *w1 ) - 1)
-            widget::SetState(*w2, widget::CountItems( *w2 ) - 1)
-            SetGadgetState_(*g1, CountGadgetItems(*g1) - 1)
-            SetGadgetState_(*g2, CountGadgetItems(*g2) - 1)
+            widget::SetWidgetState(*w1, widget::CountItems( *w1 ) - 1)
+            widget::SetWidgetState(*w2, widget::CountItems( *w2 ) - 1)
+            SetGadGetWidgetState_(*g1, CountGadgetItems(*g1) - 1)
+            SetGadGetWidgetState_(*g2, CountGadgetItems(*g2) - 1)
             
-            widget::SetState(*reset, 1)
-            widget::SetState(*first, 0)
+            widget::SetWidgetState(*reset, 1)
+            widget::SetWidgetState(*first, 0)
             
           Case *added
             widget::AddItem(*w1, -1, "item " +Str(widget::CountItems(*w1)) +" (added)")
@@ -99,24 +99,24 @@ CompilerIf #PB_Compiler_IsMainFile
             AddGadgetItem_(*g1, -1, "item " +Str(CountGadgetItems(*g1)) +" (added)")
             AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
             
-            widget::SetState(*last, widget::GetState(*reset))
-            widget::SetState(*first, 0)
+            widget::SetWidgetState(*last, widget::GetWidgetState(*reset))
+            widget::SetWidgetState(*first, 0)
             
           Case *reset
-            If widget::GetState(*reset)
+            If widget::GetWidgetState(*reset)
               count = widget::CountItems( *w1 )
-              SetTextWidget(*reset, "reset state")
-              widget::SetState(*last, 1)
+              SetWidgetText(*reset, "reset state")
+              widget::SetWidgetState(*last, 1)
             Else
-              SetTextWidget(*reset, "set state")
-              widget::SetState(*first, 0)
-              widget::SetState(*last, 0)
+              SetWidgetText(*reset, "set state")
+              widget::SetWidgetState(*first, 0)
+              widget::SetWidgetState(*last, 0)
             EndIf
             
-            widget::SetState(*w1, count - 1)
-            widget::SetState(*w2, count - 1)
-            SetGadgetState_(*g1, count - 1)
-            SetGadgetState_(*g2, count - 1)
+            widget::SetWidgetState(*w1, count - 1)
+            widget::SetWidgetState(*w2, count - 1)
+            SetGadGetWidgetState_(*g1, count - 1)
+            SetGadGetWidgetState_(*g2, count - 1)
             
             
         EndSelect
@@ -134,7 +134,7 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
       Case #__event_Change
-        widget::SetState(*w1, widget::GetState(widget::EventWidget( )))
+        widget::SetWidgetState(*w1, widget::GetWidgetState(widget::EventWidget( )))
         
     EndSelect
   EndProcedure
@@ -149,12 +149,12 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
       Case #PB_EventType_Change
-        SetGadgetState_(*g1, GetGadgetState(EventGadget()))
+        SetGadGetWidgetState_(*g1, GetGadGetWidgetState(EventGadget()))
         
     EndSelect
   EndProcedure
   
-  If OpenRootWidget(1, 100, 50, 525, 435+40, "demo ListView state", #PB_Window_SystemMenu)
+  If OpenRoot(1, 100, 50, 525, 435+40, "demo ListView state", #PB_Window_SystemMenu)
     ; demo gadget
     *g1 = ListViewGadget_(#PB_Any, 10, 10, 250, 100, #PB_ListView_ClickSelect)
     *g2 = ListViewGadget_(#PB_Any, 10, 115, 250, 310, #PB_ListView_MultiSelect)
@@ -164,8 +164,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
     Next
     
-    SetGadgetState_(*g1, a-1)
-    SetGadgetState_(*g2, a-1) 
+    SetGadGetWidgetState_(*g1, a-1)
+    SetGadGetWidgetState_(*g2, a-1) 
     BindGadgetEvent(*g2, @gadget_events())
     
     ; demo widget
@@ -177,8 +177,8 @@ CompilerIf #PB_Compiler_IsMainFile
       widget::AddItem(*w2, -1, "Item "+Str(a), 0)
     Next
     
-    widget::SetState(*w1, a-1)
-    widget::SetState(*w2, a-1) 
+    widget::SetWidgetState(*w1, a-1)
+    widget::SetWidgetState(*w2, a-1) 
     widget::BindWidgetEvent(*w2, @widget_events())
     widget::BindWidgetEvent(*w2, @widget_events(), #__event_RightClick)
     
@@ -187,8 +187,8 @@ CompilerIf #PB_Compiler_IsMainFile
     *last = widget::ButtonWidget( 525 - (10+120)*2, 435, 120, 30, "last item state", #__flag_ButtonToggle)
     *added = widget::ButtonWidget( 525 - (10+120)*1, 435, 120, 30, "add new item")
     
-    widget::SetState( *reset, 1)
-    widget::SetState( *last, 1)
+    widget::SetWidgetState( *reset, 1)
+    widget::SetWidgetState( *last, 1)
     
     widget::BindWidgetEvent(*reset, @button_events(), #__event_Up)
     widget::BindWidgetEvent(*first, @button_events(), #__event_Up)

@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure SplitterCallBack()
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, 400, 400, "autosize", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 400, 400, "autosize", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ;SetWindowColor( 0, $ff00ff)
   
     SetWidgetColor(root(), #PB_Gadget_BackColor, $ff00ff00)

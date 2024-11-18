@@ -57,14 +57,14 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(EventWidget))
+          Flag(*this, flag, GetWidgetState(EventWidget))
         EndIf
         
   EndSelect
     
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, width+180, height+55, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, width+180, height+55, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
     
@@ -118,16 +118,16 @@ CompilerIf #PB_Compiler_IsMainFile
     Button_7 = widget::ButtonWidget(width+45, y+30*8, 100, 26, "gridlines", #__flag_ButtonToggle) 
     
     ;\\ set button toggled state
-    widget::SetState(Button_0, Flag(*this, #__tree_nolines))
-    widget::SetState(Button_1, Flag(*this, #__tree_nobuttons))
-    widget::SetState(Button_2, Flag(*this, #__tree_checkboxes))
-    widget::SetState(Button_3, Flag(*this, #__flag_optionboxes))
-    widget::SetState(Button_4, Flag(*this, #__tree_threestate))
-    ;widget::SetState(Button_5, Flag(*this, #__flag_collapsedd))
-    ;widget::SetState(Button_6, Flag(*this, #__tree_expanded))
-    ;widget::SetState(Button_7, Flag(*this, #__tree_gridlines))
-    ;     widget::SetState(Button_8, Flag(*this, #__tree_nolines))
-    ;     widget::SetState(Button_9, Flag(*this, #__tree_nobuttons))
+    widget::SetWidgetState(Button_0, Flag(*this, #__tree_nolines))
+    widget::SetWidgetState(Button_1, Flag(*this, #__tree_nobuttons))
+    widget::SetWidgetState(Button_2, Flag(*this, #__tree_checkboxes))
+    widget::SetWidgetState(Button_3, Flag(*this, #__flag_optionboxes))
+    widget::SetWidgetState(Button_4, Flag(*this, #__tree_threestate))
+    ;widget::SetWidgetState(Button_5, Flag(*this, #__flag_collapsedd))
+    ;widget::SetWidgetState(Button_6, Flag(*this, #__tree_expanded))
+    ;widget::SetWidgetState(Button_7, Flag(*this, #__tree_gridlines))
+    ;     widget::SetWidgetState(Button_8, Flag(*this, #__tree_nolines))
+    ;     widget::SetWidgetState(Button_9, Flag(*this, #__tree_nobuttons))
     If Button_type
        widget::Hide(Button_type, 1)
     EndIf
@@ -145,10 +145,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
     Define pos = 30
-    widget::SetState(Splitter_0, pos)
-    widget::SetState(Splitter_1, pos)
-    widget::SetState(Splitter_3, width-pos-#__splittersize)
-    widget::SetState(Splitter_2, height-pos-#__splittersize)
+    widget::SetWidgetState(Splitter_0, pos)
+    widget::SetWidgetState(Splitter_1, pos)
+    widget::SetWidgetState(Splitter_3, width-pos-#__splittersize)
+    widget::SetWidgetState(Splitter_2, height-pos-#__splittersize)
     
     widget::BindWidgetEvent(root( ), @events_widgets())
     

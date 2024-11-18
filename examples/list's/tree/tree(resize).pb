@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *this._s_widget, i, pos = 100, width=450, height=400
   Global Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
       
-  If OpenRootWidget(0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, width+20, height+20, "resize demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *this = widget::TreeWidget(100, 100, 250, 200, #PB_Tree_CheckBoxes )
     
     For i = 1 To 6
@@ -20,10 +20,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, #PB_Default, #PB_Splitter_SecondFixed)
     Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #PB_Default, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
-    SetState(Splitter_0, pos)
-    SetState(Splitter_1, pos)
-    SetState(Splitter_3, width-pos-#__splittersize)
-    SetState(Splitter_2, height-pos-#__splittersize)
+    SetWidgetState(Splitter_0, pos)
+    SetWidgetState(Splitter_1, pos)
+    SetWidgetState(Splitter_3, width-pos-#__splittersize)
+    SetWidgetState(Splitter_2, height-pos-#__splittersize)
     
      
 ;     Debug " --v-- "

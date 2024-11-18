@@ -6,36 +6,36 @@ Global i
 
 Procedure events_gadgets( )
   ClearDebugOutput( )
-  ; Debug ""+EventGadget( )+ " - widget  event - " +EventType( )+ "  state - " +GetGadgetState( EventGadget( ) ) ; 
+  ; Debug ""+EventGadget( )+ " - widget  event - " +EventType( )+ "  state - " +GetGadGetWidgetState( EventGadget( ) ) ; 
   
   Select EventType( )
     Case #PB_EventType_LeftClick
-     SetState( WidgetID( EventGadget( ) ), GetGadgetState( EventGadget( ) ) )
-     Debug  ""+ EventGadget( ) +" - gadget change state " + GetGadgetState( EventGadget( ) )
+     SetWidgetState( WidgetID( EventGadget( ) ), GetGadGetWidgetState( EventGadget( ) ) )
+     Debug  ""+ EventGadget( ) +" - gadget change state " + GetGadGetWidgetState( EventGadget( ) )
      
  EndSelect
 EndProcedure
 
 Procedure events_widgets( )
   ClearDebugOutput( )
-  ; Debug ""+Str( EventWidget( )\index - 1 )+ " - widget  event - " +WidgetEvent( )+ "  state - " GetState( EventWidget( ) ) ; 
+  ; Debug ""+Str( EventWidget( )\index - 1 )+ " - widget  event - " +WidgetEvent( )+ "  state - " GetWidgetState( EventWidget( ) ) ; 
   
   Select WidgetEvent( )
     Case #__event_Change
-      SetGadgetState( IDWidget( EventWidget( ) ), GetState( EventWidget( ) ) )
-      Debug  Str( IDWidget( EventWidget( ) ) )+" - widget change state " + GetState( EventWidget( ) )
+      SetGadGetWidgetState( GetIndex( EventWidget( ) ), GetWidgetState( EventWidget( ) ) )
+      Debug  Str( GetIndex( EventWidget( ) ) )+" - widget change state " + GetWidgetState( EventWidget( ) )
       
   EndSelect
 EndProcedure
 
 Define cr.s = #LF$, Text.s = "this long" + cr + " multiline " + cr + "text"
   
-If OpenRootWidget( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+If OpenRoot( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
   CheckBoxGadget( 0, 10, 10, 140, 20, "CheckBox 1" )
   CheckBoxGadget( 1, 10, 35, 140, 40, Text, #PB_CheckBox_ThreeState )
   CheckBoxGadget( 2, 10, 80, 140, 20, "CheckBox (right)", #PB_CheckBox_Right )
-  SetGadgetState( 0, #PB_Checkbox_Checked )   
-  SetGadgetState( 1, #PB_Checkbox_Inbetween )  
+  SetGadGetWidgetState( 0, #PB_Checkbox_Checked )   
+  SetGadGetWidgetState( 1, #PB_Checkbox_Inbetween )  
   
   For i = 0 To 2
     BindGadgetEvent( i, @events_gadgets( ) )
@@ -44,15 +44,15 @@ If OpenRootWidget( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMen
   CheckBoxWidget( 10+160, 10, 140, 20, "CheckBox 1" )
   CheckBoxWidget( 10+160, 35, 140, 40, Text, #PB_CheckBox_ThreeState );| #__flag_Textcenter )
   CheckBoxWidget( 10+160, 80, 140, 20, "CheckBox (right)", #PB_CheckBox_Right )
-  SetState( WidgetID( 0 ), #PB_Checkbox_Checked )  
-  SetState( WidgetID( 1 ), #PB_Checkbox_Inbetween )  
+  SetWidgetState( WidgetID( 0 ), #PB_Checkbox_Checked )  
+  SetWidgetState( WidgetID( 1 ), #PB_Checkbox_Inbetween )  
   ;BindWidgetEvent( #PB_All, @events_widgets( ) )
   
   For i = 0 To 2
     BindWidgetEvent( WidgetID( i ), @events_widgets( ), #PB_EventType_Change )
   Next
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 51

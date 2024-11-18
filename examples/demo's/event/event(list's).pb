@@ -18,30 +18,30 @@ XIncludeFile "../../../widgets.pbi"
 UseWidgets( )
 
 Procedure events_gadgets()
-  ;  Debug  ""+EventType()+" "+ EventGadget() +" - gadget "+ GetGadgetState(EventGadget())
+  ;  Debug  ""+EventType()+" "+ EventGadget() +" - gadget "+ GetGadGetWidgetState(EventGadget())
   Select Event()
     Case #PB_Event_GadgetDrop
-      Debug ""+ EventGadget() +" - gadget Drop "+GetGadgetState(EventGadget()) ; "drop - "+EventDropTextWidget()
+      Debug ""+ EventGadget() +" - gadget Drop "+GetGadGetWidgetState(EventGadget()) ; "drop - "+EventDropTextWidget()
       
     Case #PB_Event_Gadget
       Select EventType()
         Case #PB_EventType_DragStart
-          Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+          Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadGetWidgetState(EventGadget())
           
           ; 
-          DragTextWidget(GetGadgetItemTextWidget(EventGadget(), GetGadgetState(EventGadget())))
+          DragTextWidget(GetGadGetWidgetItemText(EventGadget(), GetGadGetWidgetState(EventGadget())))
           
         Case #PB_EventType_Change
-          Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
+          Debug  ""+ EventGadget() +" - gadget Change "+GetGadGetWidgetState(EventGadget())
           
         Case #PB_EventType_LeftClick
-          Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadgetState(EventGadget())
+          Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadGetWidgetState(EventGadget())
           
         Case #PB_EventType_LeftDoubleClick
-          Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget())
+          Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadGetWidgetState(EventGadget())
           
         Case #PB_EventType_RightClick
-          Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadgetState(EventGadget())
+          Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadGetWidgetState(EventGadget())
           
       EndSelect
   EndSelect
@@ -50,63 +50,63 @@ EndProcedure
 Procedure events_widgets()
   Select WidgetEvent( )
     Case #__event_Drop
-      Debug  ""+IDWidget(EventWidget( ))+" - widget Drop "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+GetIndex(EventWidget( ))+" - widget Drop "+GetWidgetState(EventWidget( )) +" "+ WidgetEventItem( )
       
       ;     Case #__event_Up
-      ;       Debug  ""+IDWidget(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Up "+GetWidgetState(EventWidget( ))
       ;       
       ;     Case #__event_Down
-      ;       Debug  ""+IDWidget(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget Down "+GetWidgetState(EventWidget( ))
       ;       
       ;     Case #__event_ScrollChange
-      ;       Debug  ""+IDWidget(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget ScrollChange "+GetWidgetState(EventWidget( )) +" "+ WidgetEventItem( )
       ;       
       ;     Case #__event_StatusChange
-      ;       Debug  ""+IDWidget(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      ;       Debug  ""+GetIndex(EventWidget( ))+" - widget StatusChange "+GetWidgetState(EventWidget( )) +" "+ WidgetEventItem( )
       ;      
     Case #__event_DragStart
-      Debug  ""+IDWidget(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+GetIndex(EventWidget( ))+" - widget DragStart "+GetWidgetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_Change
-      Debug  ""+IDWidget(EventWidget( ))+" - widget Change "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+GetIndex(EventWidget( ))+" - widget Change "+GetWidgetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_LeftClick
-      Debug  ""+IDWidget(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+GetIndex(EventWidget( ))+" - widget LeftClick "+GetWidgetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_Left2Click
-      Debug  ""+IDWidget(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+GetIndex(EventWidget( ))+" - widget LeftDoubleClick "+GetWidgetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_RightClick
-      Debug  ""+IDWidget(EventWidget( ))+" - widget RightClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+GetIndex(EventWidget( ))+" - widget RightClick "+GetWidgetState(EventWidget( )) +" "+ WidgetEventItem( )
       
   EndSelect
 EndProcedure
 
-If OpenRootWidget(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ListViewGadget(0, 10, 30, 250, 120)
   For a = 0 To 12
     AddGadgetItem (0, -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetGadgetState(0, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(0, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(0, 9) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(0, 7) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(0, 8) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(0, 9) ; set (beginning with 0) the tenth item as the active one
   
   TreeGadget(1, 10+270, 30, 250, 120)
   For a = 0 To 12
     AddGadgetItem (1, -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 9) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(1, 7) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(1, 9) ; set (beginning with 0) the tenth item as the active one
   
   EditorGadget(2, 10+270+270, 30, 250, 120) ; ListIconGadget(2, 10+270+270, 30, 250, 120, "column_0", 80) : AddGadgetColumn(2, 1, "column_1", 80)
   For a = 0 To 12
     AddGadgetItem (2, -1, "Item " + Str(a) +Chr(10)+ " of the Listview") ; define listview content
   Next
-  SetGadgetState(2, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(2, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(2, 9) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(2, 7) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(2, 8) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(2, 9) ; set (beginning with 0) the tenth item as the active one
   
   TextGadget(#PB_Any, 10,10, 250,20, "list")
   TextGadget(#PB_Any, 10+270,10, 250,20, "tree")
@@ -125,18 +125,18 @@ If OpenRootWidget(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_Sy
   For a = 0 To 12
     AddItem (ID(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(ID(0), 7) ; set (beginning with 0) the tenth item as the active one
-  SetState(ID(0), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(ID(0), 9) ; set (beginning with 0) the tenth item as the active one
+  SetWidgetState(ID(0), 7) ; set (beginning with 0) the tenth item as the active one
+  SetWidgetState(ID(0), 8) ; set (beginning with 0) the tenth item as the active one
+  SetWidgetState(ID(0), 9) ; set (beginning with 0) the tenth item as the active one
   
   TreeWidget(10+270, 190, 250, 120)
   For a = 0 To 12
     AddItem (ID(1), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(ID(1), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(ID(1), 7) ; set (beginning with 0) the tenth item as the active one
-  SetState(ID(1), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(ID(1), 9) ; set (beginning with 0) the tenth item as the active one
+  SetWidgetState(ID(1), 8) ; set (beginning with 0) the tenth item as the active one
+  SetWidgetState(ID(1), 7) ; set (beginning with 0) the tenth item as the active one
+  SetWidgetState(ID(1), 8) ; set (beginning with 0) the tenth item as the active one
+  SetWidgetState(ID(1), 9) ; set (beginning with 0) the tenth item as the active one
   
   EditorWidget(10+270+270, 190, 250, 120) ; ListIconWidget(10+270+270, 190, 250, 120, "column_0", 80) : AddColumn(ID(2), 1, "column_1", 80)
   For a = 0 To 12
@@ -144,9 +144,9 @@ If OpenRootWidget(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_Sy
   Next
   ;   ResizeWidget(ID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 121)
   ;   ResizeWidget(ID(2), #PB_Ignore, #PB_Ignore, #PB_Ignore, 120)
-  ;   SetState(ID(2), 7) ; set (beginning with 0) the tenth item as the active one
-  ;   SetState(ID(2), 8) ; set (beginning with 0) the tenth item as the active one
-  ;   SetState(ID(2), 9) ; set (beginning with 0) the tenth item as the active one
+  ;   SetWidgetState(ID(2), 7) ; set (beginning with 0) the tenth item as the active one
+  ;   SetWidgetState(ID(2), 8) ; set (beginning with 0) the tenth item as the active one
+  ;   SetWidgetState(ID(2), 9) ; set (beginning with 0) the tenth item as the active one
   
   TextWidget(10,170, 250,20, "list")
   TextWidget(10+270,170, 250,20, "tree")

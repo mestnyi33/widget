@@ -6,43 +6,43 @@ UseWidgets( )
 
 Procedure events_gadgets()
   ClearDebugOutput()
-  ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
+  ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadGetWidgetState(EventGadget()) ; 
   
   Select EventType()
     Case #PB_EventType_LeftClick
-      ;SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
-      Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+      ;SetWidgetState(ID(EventGadget()), GetGadGetWidgetState(EventGadget()))
+      Debug  ""+ EventGadget() +" - gadget change " + GetGadGetWidgetState(EventGadget())
   EndSelect
 EndProcedure
 
 Procedure events_widgets()
   ClearDebugOutput()
-  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetState(EventWidget( )) ; 
+  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetWidgetState(EventWidget( )) ; 
   
   Select WidgetEvent( )
     Case #__event_Change
-      SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-      Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+      SetGadGetWidgetState(GetIndex(EventWidget( )), GetWidgetState(EventWidget( )))
+      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetWidgetState(EventWidget( ))
   EndSelect
 EndProcedure
 
-If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 500,0, 500);,140)
-  ScrollBarGadget  (0,  10, 42+30*0, 250,  20, 30, 100, 0) : SetGadgetState   (0,  88)                                            ; set 1st scrollbar (ID = 0) to 50 of 100
-  ScrollBarGadget  (1,  10, 42+30*1, 250,  20, 30, 100, 30) : SetGadgetState   (1,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
+If OpenRoot(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 500,0, 500);,140)
+  ScrollBarGadget  (0,  10, 42+30*0, 250,  20, 30, 100, 0) : SetGadGetWidgetState   (0,  88)                                            ; set 1st scrollbar (ID = 0) to 50 of 100
+  ScrollBarGadget  (1,  10, 42+30*1, 250,  20, 30, 100, 30) : SetGadGetWidgetState   (1,  50)                                           ; set 1st scrollbar (ID = 0) to 50 of 100
   ScrollBarGadget  (2,  10, 42+30*2, 250,  20, 100, 30, 30) 
-  Debug GetGadgetAttribute(2, #PB_ScrollBar_Minimum )
-  Debug GetGadgetAttribute(2, #PB_ScrollBar_Maximum )
-  Debug GetGadgetAttribute(2, #PB_ScrollBar_PageLength )
+  Debug GetWidgetAttribute(2, #PB_ScrollBar_Minimum )
+  Debug GetWidgetAttribute(2, #PB_ScrollBar_Maximum )
+  Debug GetWidgetAttribute(2, #PB_ScrollBar_PageLength )
   Debug ""
-  SetGadgetState   (2,  99)   ; set 1st scrollbar (ID = 0) to 50 of 100
-  Debug GetGadgetAttribute(2, #PB_ScrollBar_Minimum )
-  Debug GetGadgetAttribute(2, #PB_ScrollBar_Maximum )
-  Debug GetGadgetAttribute(2, #PB_ScrollBar_PageLength )
+  SetGadGetWidgetState   (2,  99)   ; set 1st scrollbar (ID = 0) to 50 of 100
+  Debug GetWidgetAttribute(2, #PB_ScrollBar_Minimum )
+  Debug GetWidgetAttribute(2, #PB_ScrollBar_Maximum )
+  Debug GetWidgetAttribute(2, #PB_ScrollBar_PageLength )
   Debug ""
   
-  ScrollBarGadget  (3,  10, 42+30*3, 250,  20, 30, 100, 100) : SetGadgetState   (3,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+  ScrollBarGadget  (3,  10, 42+30*3, 250,  20, 30, 100, 100) : SetGadGetWidgetState   (3,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
   
-  ScrollBarGadget  (10, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical) : SetGadgetState   (10, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+  ScrollBarGadget  (10, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical) : SetGadGetWidgetState   (10, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
   
   ;   TextGadget       (#PB_Any,  10, 20, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
   ;   TextGadget       (#PB_Any,  10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
@@ -53,13 +53,13 @@ If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB
   Next
   
   ScrollBarWidget(10, 42+30*0, 250,  20, 30, 100, 0) 
-  SetState   (widget( ),  88)
+  SetWidgetState   (widget( ),  88)
   
   ScrollBarWidget(10, 42+30*1, 250,  20, 30, 100, 30) 
-  SetState   (widget( ),  50)
+  SetWidgetState   (widget( ),  50)
   
   ScrollBarWidget(10, 42+30*2, 250,  20, 100, 30, 30) 
-  SetState   (widget( ),  99) ; 50 - center 
+  SetWidgetState   (widget( ),  99) ; 50 - center 
   
   ; disabled
   ScrollBarWidget(10, 42+30*3, 250,  20, 30, 100, 100) 
@@ -75,7 +75,7 @@ If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB
 ;   Debug widget( )\bar\thumb\end
 ;   Debug widget( )\bar\thumb\change
 ;   Debug ""
-    SetState   (widget( ),  50)
+    SetWidgetState   (widget( ),  50)
 ;   Debug " -- "
 ;   Debug widget( )\bar\page\pos
 ;   Debug widget( )\bar\page\len
@@ -91,40 +91,40 @@ If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB
 ;   
     
   ScrollBarWidget(10, 42+30*4, 250,  20, 30, 100, 0, #__bar_invert) 
-  SetState   (widget( ),  88)
+  SetWidgetState   (widget( ),  88)
   
   ScrollBarWidget(10, 42+30*5, 250,  20, 30, 100, 30, #__bar_invert) 
-  SetState   (widget( ),  50)
+  SetWidgetState   (widget( ),  50)
   
   ScrollBarWidget(10, 42+30*6, 250,  20, 100, 30, 30, #__bar_invert) 
-  SetState   (widget( ),  99) ; 50 - center 
+  SetWidgetState   (widget( ),  99) ; 50 - center 
   
   
   ; vertical
   ScrollBarWidget(280+30*0, 10,  20, 250, 30, 100, 0, #PB_ScrollBar_Vertical) 
-  SetState   (widget( ),  88)
+  SetWidgetState   (widget( ),  88)
   
   ScrollBarWidget(280+30*1, 10,20, 250, 30, 100, 30, #PB_ScrollBar_Vertical) 
-  SetState   (widget( ),  50)
+  SetWidgetState   (widget( ),  50)
   
   ScrollBarWidget(280+30*2, 10,20, 250, 100, 30, 30, #PB_ScrollBar_Vertical) 
-  SetState   (widget( ),  99) ; 50 - center 
+  SetWidgetState   (widget( ),  99) ; 50 - center 
   
   ; disabled
   ScrollBarWidget(280+30*3, 10,20, 250, 30, 100, 100, #PB_ScrollBar_Vertical) 
-  SetState   (widget( ),  50)
+  SetWidgetState   (widget( ),  50)
     
   ScrollBarWidget(280+30*4, 10,20, 250, 30, 100, 0, #PB_ScrollBar_Vertical|#__bar_invert) 
-  SetState   (widget( ),  88)
+  SetWidgetState   (widget( ),  88)
   
   ScrollBarWidget(280+30*5, 10,20, 250, 30, 100, 30, #PB_ScrollBar_Vertical|#__bar_invert) 
-  SetState   (widget( ),  50)
+  SetWidgetState   (widget( ),  50)
   
   ScrollBarWidget(280+30*6, 10,20, 250, 100, 30, 30, #PB_ScrollBar_Vertical|#__bar_invert) 
-  SetState   (widget( ),  99) ; 50 - center 
+  SetWidgetState   (widget( ),  99) ; 50 - center 
   
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 122

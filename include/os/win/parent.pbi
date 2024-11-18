@@ -201,7 +201,7 @@ CompilerIf #PB_Compiler_IsMainFile
   AddGadgetItem( #COMBO, -1, "Shortcutgadget" )  
   AddGadgetItem( #COMBO, -1, "Canvasgadget" )    
   
-  SetGadgetState( #COMBO, #PB_GadgetType_Button );:  PostEvent( #PB_Event_gadget, #CHILD, #COMBO, #PB_EventType_Change )
+  SetGadGetWidgetState( #COMBO, #PB_GadgetType_Button );:  PostEvent( #PB_Event_gadget, #CHILD, #COMBO, #PB_EventType_Change )
   
   ButtonGadget( #DESKTOP, 30,150,160,20,"Button >>( Desktop )" ) 
   CompilerIf #PB_Compiler_Version > 546
@@ -239,7 +239,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 Case #PB_EventType_Change
                   Define ParentID = Parent::Get( GadgetID( #CHILD ) )
                   
-                  Select GetGadgetState( #COMBO )
+                  Select GetGadGetWidgetState( #COMBO )
                     Case  1: ButtonGadget( #CHILD,30,20,150,30,"Buttongadget" ) 
                     Case  2: StringGadget( #CHILD,30,20,150,30,"Stringgadget" ) 
                     Case  3: TextGadget( #CHILD,30,20,150,30,"Textgadget", #PB_Text_Border ) 
@@ -247,7 +247,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     Case  5: CheckBoxGadget( #CHILD,30,20,150,30,"CheckBoxgadget" ) 
                     Case  6: ListViewGadget( #CHILD,30,20,150,30 ) 
                     Case  7: FrameGadget( #CHILD,30,20,150,30,"Framegadget" ) 
-                    Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadgetState( #CHILD,0 )
+                    Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadGetWidgetState( #CHILD,0 )
                     Case  9: ImageGadget( #CHILD,30,20,150,30,0,#PB_Image_Border ) 
                     Case 10: HyperLinkGadget( #CHILD,30,20,150,30,"HyperLinkgadget",0 ) 
                     Case 11: ContainerGadget( #CHILD,30,20,150,30,#PB_Container_Flat ): ButtonGadget( -1,0,0,80,20,"Buttongadget" ): CloseGadgetList( ) ; Containergadget
@@ -282,14 +282,14 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndSelect
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                    Select GetGadgetState( #COMBO )
+                    Select GetGadGetWidgetState( #COMBO )
                       Case 30: MDIGadget( #CHILD,30,10,150,70,0,0 )
                       Case 31: InitScintilla( ): ScintillaGadget( #CHILD,30,10,150,70,0 )
                       Case 32: ShortcutGadget( #CHILD,30,10,150,70,0 )
                       Case 33: CanvasGadget( #CHILD,30,10,150,70 ) 
                     EndSelect
                   CompilerElse
-                    Select GetGadgetState( #COMBO )
+                    Select GetGadGetWidgetState( #COMBO )
                       Case 30: InitScintilla( ): ScintillaGadget( #CHILD,30,10,150,70,0 )
                       Case 31: ShortcutGadget( #CHILD,30,10,150,70,0 )
                       Case 32: CanvasGadget( #CHILD,30,10,150,70 ) 

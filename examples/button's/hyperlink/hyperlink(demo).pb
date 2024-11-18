@@ -2,23 +2,23 @@
 
 Procedure events_gadgets()
    ;ClearDebugOutput()
-   ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
+   ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadGetWidgetState(EventGadget()) ; 
    
    Select EventType()
       Case #PB_EventType_LeftClick
-         SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
-         Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+         SetWidgetState(ID(EventGadget()), GetGadGetWidgetState(EventGadget()))
+         Debug  ""+ EventGadget() +" - gadget change " + GetGadGetWidgetState(EventGadget())
    EndSelect
 EndProcedure
 
 Procedure events_widgets()
    ;ClearDebugOutput()
-   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(EventWidget( )) ; 
+   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetWidgetState(EventWidget( )) ; 
    
    Select WidgetEvent( )
       Case #PB_EventType_LeftClick
-         SetGadgetState(IDWidget(EventWidget( )), GetState(EventWidget( )))
-         Debug  Str(IDWidget(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+         SetGadGetWidgetState(GetIndex(EventWidget( )), GetWidgetState(EventWidget( )))
+         Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetWidgetState(EventWidget( ))
    EndSelect
 EndProcedure
 
@@ -32,7 +32,7 @@ CompilerEndIf
 If OpenWindow(0, 0, 0, 270+270, 100, "HyperLinkGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    HyperLinkGadget(0, 10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline)
    HyperLinkGadget(1, 10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline)
-   SetGadgetFont(1, FontID(5))
+   SetGadGetWidgetFont(1, FontID(5))
    SetGadGetWidgetColor(1, #PB_Gadget_FrontColor, $ff0000)
    SetGadGetWidgetColor(1, #PB_Gadget_BackColor, $0000ff)
    
@@ -42,10 +42,10 @@ If OpenWindow(0, 0, 0, 270+270, 100, "HyperLinkGadget", #PB_Window_SystemMenu | 
 EndIf 
 
 ;
-If OpenRootWidget(0, 270,0,270,100)
+If OpenRoot(0, 270,0,270,100)
    HyperLinkWidget(10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline)
    HyperLinkWidget(10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline)
-   SetFont(ID(1), FontID(5))
+   SetWidgetFont(ID(1), FontID(5))
    SetWidgetColor(ID(1), #PB_Gadget_FrontColor, $ffff0000)
    SetWidgetColor(ID(1), #PB_Gadget_BackColor, $ff0000ff)
    

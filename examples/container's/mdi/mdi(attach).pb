@@ -12,22 +12,22 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRoot(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *mdi._s_widget = MDIWidget(x,y, width,height)
   a_init( *mdi )
   
   Define *g0._s_widget = AddItem(*mdi, -1, "main") : SetWidgetClass(widget(), "main") 
-  ButtonWidget(10,10,80,80,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  ButtonWidget(10,10,80,80,"button_0") : SetWidgetClass(widget(), GetWidgetText(widget())) 
   
   Define *g1._s_widget = AddItem(*mdi, -1, "Child 1 (Position Attach)") : SetWidgetClass(widget(), "form_1") 
-  ButtonWidget(10,10,80,80,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  ButtonWidget(10,10,80,80,"button_1") : SetWidgetClass(widget(), GetWidgetText(widget())) 
   
   Define *g2._s_widget = AddItem(*mdi, -1, "Child 2 (Frame Magnetic)") : SetWidgetClass(widget(), "form_2") 
-  ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetWidgetText(widget())) 
   
   Define *g3._s_widget = AddItem(*mdi, -1, "SubChild") : SetWidgetClass(widget(), "SubChild") 
-  ButtonWidget(10,10,80,80,"button_3") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  ButtonWidget(10,10,80,80,"button_3") : SetWidgetClass(widget(), GetWidgetText(widget())) 
   
   ;
   ResizeWidget(*g0, 50, 50, 400, 400)
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ResizeWidget(*g3, WidgetX(*g2, #__c_container), WidgetY(*g2, #__c_container) + WidgetHeight(*g2, #__c_Frame), 200, 100)
   
   
-  SetState(*mdi\scroll\h, 120)
+  SetWidgetState(*mdi\scroll\h, 120)
   
   Repeat
     Event = WaitWindowEvent()

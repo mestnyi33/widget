@@ -29,13 +29,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-  If OpenRootWidget(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define *prop = widget::Properties(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     Define Value = *prop
     widget::AddItem(*prop, #_pi_group_0, "common")
     widget::AddItem(*prop, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
     widget::AddItem(*prop, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
-    widget::AddItem(*prop, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
+    widget::AddItem(*prop, #_pi_text, "text:"+Chr(10)+GetWidgetText(Value), #PB_WidgetType_String, 1)
     
     widget::AddItem(*prop, #_pi_group_1, "layout")
     widget::AddItem(*prop, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*prop1, #_pi_group_0, "common")
     widget::AddItem(*prop1, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
     widget::AddItem(*prop1, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
-    widget::AddItem(*prop1, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
+    widget::AddItem(*prop1, #_pi_text, "text:"+Chr(10)+GetWidgetText(Value), #PB_WidgetType_String, 1)
     
     widget::AddItem(*prop1, #_pi_group_1, "layout")
     widget::AddItem(*prop1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)

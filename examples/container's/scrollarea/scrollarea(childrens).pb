@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug ""+EventWidget()+ " - widget event - " +WidgetEvent()
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *g = ScrollAreaWidget(310, 10, 290, 300, Sw, Sh, 1, #PB_ScrollArea_Flat)
     SetWidgetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     BindWidgetEvent(*g, @events_widgets(), #__event_ScrollChange )

@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_widget( )
       
-      Select GetTextWidget( EventWidget( ) )
+      Select GetWidgetText( EventWidget( ) )
          Case "Top"
             TabViewType( *panel, 2 )
          Case "Left"
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_gadget( )
       
-      Select GetGadgetTextWidget( EventGadget( ) )
+      Select GetGadGetWidgetText( EventGadget( ) )
          Case "Top"
             GadgetTabViewType( 0, 0 )
             TabViewType( *panel, 2 )
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
    CloseGadgetList()
    
    FrameGadget(1, 30, 200, 300 - 60, 100, "Tab location")
-   OptionGadget(2, 130, GadgetY(1) + 20, 80, 20, "Top"):SetGadgetState(2, #True)
+   OptionGadget(2, 130, GadgetY(1) + 20, 80, 20, "Top"):SetGadGetWidgetState(2, #True)
    OptionGadget(3, 50, GadgetY(1) + 45, 80, 20, "Left")
    OptionGadget(13, 130, GadgetY(1) + 45, 80, 20, "Hide")
    OptionGadget(4, 130, GadgetY(1) + 70, 80, 20, "Bottom")
@@ -96,17 +96,17 @@ CompilerIf #PB_Compiler_IsMainFile
    BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
    
    
-   OpenRootWidget(0, 300, 0,300,310)
+   OpenRoot(0, 300, 0,300,310)
    ; *panel = PanelWidget(10, 10, 300 - 20, 180)
    *panel = ContainerWidget(10, 10, 300 - 20, 180)
    ToolBar( widget( ));, #PB_ToolBar_Small )
-   BarButtonWidget(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-   BarButtonWidget(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-   BarButtonWidget(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
+   BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+   BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
+   BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
    CloseWidgetList() ; *panel
    
    FrameWidget(30, 200, 300 - 60, 100, "Tab location")
-   OptionWidget(130, GadgetY(1) + 20, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
+   OptionWidget(130, GadgetY(1) + 20, 80, 20, "Top", #__flag_Transparent) : SetWidgetState(widget(), #True)
    OptionWidget(50, GadgetY(1) + 45, 80, 20, "Left", #__flag_Transparent)
    OptionWidget(130, GadgetY(1) + 45, 80, 20, "Hide", #__flag_Transparent)
    OptionWidget(130, GadgetY(1) + 70, 80, 20, "Bottom", #__flag_Transparent)

@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   OpenRootWidget(0, 400, 200, 300, 200, "window_0", #PB_Window_SystemMenu |
+   OpenRoot(0, 400, 200, 300, 200, "window_0", #PB_Window_SystemMenu |
                                            #PB_Window_SizeGadget |
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;PostWidgetEvent(gadget, #__event_close)
    
    ;\\
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
    
    
 CompilerEndIf

@@ -36,14 +36,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;\\ Here we change the ListIcon display to large icons and show an image
     If LoadImage(0, #PB_Compiler_Home+"Examples\Sources\Data\File.bmp")     ; change path/filename to your own 32x32 pixel image
-      SetGadgetAttribute(5, #PB_ListIcon_DisplayMode, #PB_ListIcon_LargeIcon)
+      SetGadGetWidgetAttribute(5, #PB_ListIcon_DisplayMode, #PB_ListIcon_LargeIcon)
       AddGadgetItem(5, 1, "Picture 1", ImageID(0))
       AddGadgetItem(5, 2, "Picture 2", ImageID(0))
     EndIf
     
     
     ;\\ Shows possible flags of ListIcon in action...
-    If OpenRootWidget(0, 0, 300, 800, 300, "ListIcons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    If OpenRoot(0, 0, 300, 800, 300, "ListIcons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;\\ left column
       ListIconWidget(10,  25, 380, 70, "Column 1", 100)
       ListIconWidget(10, 120, 380, 70, "Column 1", 100, #PB_ListIcon_CheckBoxes)  ; ListIcon with checkbox
@@ -73,7 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; Here we change the ListIcon display to large icons and show an image
       If LoadImage(0, #PB_Compiler_Home+"Examples/Sources/Data/File.bmp")     ; change path/filename to your own 32x32 pixel image
-        SetAttribute(ID(5), #PB_ListIcon_DisplayMode, #PB_ListIcon_LargeIcon)
+        SetWidgetAttribute(ID(5), #PB_ListIcon_DisplayMode, #PB_ListIcon_LargeIcon)
         AddItem(ID(5), 1, "Picture 1", ImageID(0))
         AddItem(ID(5), 2, "Picture 2", ImageID(0))
       EndIf

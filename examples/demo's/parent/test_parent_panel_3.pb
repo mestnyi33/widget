@@ -12,7 +12,7 @@
 ;    Global i, x = 220, panel, butt1, butt2
 ;    Global._s_WIDGET *root, *panel, *butt0, *butt1, *butt2
 ;    
-;    If OpenRootWidget( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+;    If OpenRoot( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
 ;       ;\\
 ;       panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
 ;       For i = 0 To 5 
@@ -30,7 +30,7 @@
 ;       butt1 = ButtonGadget(#PB_Any, 10,5,80,25, "*butt1" ) 
 ;       butt2 = ButtonGadget(#PB_Any, 10,35,80,25, "*butt2" ) 
 ;       ;
-;       SetGadgetState( panel, 2 )
+;       SetGadGetWidgetState( panel, 2 )
 ;       
 ;       ;\\
 ;       *root = root()
@@ -59,7 +59,7 @@
 ; ;       *butt2 = ButtonWidget( x,35,80,25, "*butt2" ) 
 ; ;       
 ; ;       If *panel
-; ;          SetState( *panel, 2 )
+; ;          SetWidgetState( *panel, 2 )
 ; ;       EndIf
 ; ;       
 ;       Debug "----panel all childrens-----"
@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global._s_WIDGET *CONT, *but0
    
-   If OpenRootWidget( 0, 0, 0, 220, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot( 0, 0, 0, 220, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
       *CONT = PanelWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
       AddItem(*CONT, -1, "item0" )
@@ -185,7 +185,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       ;       result
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

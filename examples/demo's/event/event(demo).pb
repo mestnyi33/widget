@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure OpenDemo( id, flag=0 )
       Static x,y
-      OpenRootWidget( id, x,y,200,200,"win"+Str(id), #PB_Window_SystemMenu);|flag)
+      OpenRoot( id, x,y,200,200,"win"+Str(id), #PB_Window_SystemMenu);|flag)
       ButtonWidget(40,40,200-80,55, "win"+Str(id)+"-btn1")
       ButtonWidget( 40,110,200-80,55, "win"+Str(id)+"-btn2")
       

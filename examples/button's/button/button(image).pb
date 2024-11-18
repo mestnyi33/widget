@@ -18,16 +18,16 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 200, 110, "Image Button Gadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRoot(OpenWindow(#PB_Any, 0, 0, 200, 110, "Image Button Gadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ButtonImageGadget(0, 10, 10, 180, 40, ImageID(0))
     
-    ; SetGadgetAttribute(0, #PB_Button_Image, ImageID(#PB_Button_Image))
-    SetGadgetAttribute(0, #PB_Button_PressedImage, ImageID(#PB_Button_PressedImage))
+    ; SetGadGetWidgetAttribute(0, #PB_Button_Image, ImageID(#PB_Button_Image))
+    SetGadGetWidgetAttribute(0, #PB_Button_PressedImage, ImageID(#PB_Button_PressedImage))
     
     ButtonImageWidget(10, 60, 180, 40, 0)
     
-    ; SetAttribute(widget(), #PB_Button_Image, (#PB_Button_Image))
-    SetAttribute(widget(), #PB_Button_PressedImage, (#PB_Button_PressedImage))
+    ; SetWidgetAttribute(widget(), #PB_Button_Image, (#PB_Button_Image))
+    SetWidgetAttribute(widget(), #PB_Button_PressedImage, (#PB_Button_PressedImage))
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

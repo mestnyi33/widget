@@ -26,9 +26,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected font = LoadFont(#PB_Any, "arial", 40)
     Protected   ParentID = OpenWindow(0, 0, 0, 270, 145+s*9, "Demo z-order gadget", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     
-    OpenRootWidget(0, 0, 0, 270, 271+s*9)
+    OpenRoot(0, 0, 0, 270, 271+s*9)
     
-    ;    ButtonWidget(x, y+56+s*9, 215, h, "1",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget())) ; Gadget(8, 
+    ;    ButtonWidget(x, y+56+s*9, 215, h, "1",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget())) ; Gadget(8, 
     ;{ first container
     ContainerWidget(x, y+56+s*9, 215, h)                     ; Gadget(9,   
     SetWidgetClass(widget(), "first_0")
@@ -39,18 +39,18 @@ CompilerIf #PB_Compiler_IsMainFile
     SetWidgetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     
     ButtonWidget(4, 0, 215-12, h-8-4, "1", #__flag_TextRight|#__flag_Texttop) 
-    SetWidgetClass(widget(), GetTextWidget(widget())) 
+    SetWidgetClass(widget(), GetWidgetText(widget())) 
     CloseWidgetList()
     CloseWidgetList()
     ;}
     
     
-    *current = ButtonWidget(x, y+51+s*8, 195, h, "2",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget())) ; Gadget(8, 
-    ButtonWidget(x, y+47+s*7, 175, h, "3",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget())) ; Gadget(7, 
-    ButtonWidget(x, y+43+s*6, 155, h, "4",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget())) ; Gadget(6, 
+    *current = ButtonWidget(x, y+51+s*8, 195, h, "2",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget())) ; Gadget(8, 
+    ButtonWidget(x, y+47+s*7, 175, h, "3",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget())) ; Gadget(7, 
+    ButtonWidget(x, y+43+s*6, 155, h, "4",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget())) ; Gadget(6, 
     
-    ;;*this = ButtonWidget(10, y, 250, 80+h+s*9, "6 < 5 > 4", #__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget())) : *current = *this
-    ;;SetFont(widget(), FontID(font))
+    ;;*this = ButtonWidget(10, y, 250, 80+h+s*9, "6 < 5 > 4", #__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget())) : *current = *this
+    ;;SetWidgetFont(widget(), FontID(font))
     
     ;{ current container
     *this = ContainerWidget(10, y, 250, 80+h+s*9)              ; Gadget(10, 
@@ -67,11 +67,11 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseWidgetList()
     ;}
     
-    ButtonWidget(x, y+35+s*4, 115, h, "6",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(4, 
-    ButtonWidget(x, y+31+s*3, 95, h, "7",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget()))   ; Gadget(3, 
-    ButtonWidget(x, y+27+s*2, 75, h, "8",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget()))   ; Gadget(2, 
+    ButtonWidget(x, y+35+s*4, 115, h, "6",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(4, 
+    ButtonWidget(x, y+31+s*3, 95, h, "7",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget()))   ; Gadget(3, 
+    ButtonWidget(x, y+27+s*2, 75, h, "8",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget()))   ; Gadget(2, 
     
-    ;; ButtonWidget(x, y+23+s*1, 55, h, "9",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetTextWidget(widget()))  ; Gadget(2, 
+    ;; ButtonWidget(x, y+23+s*1, 55, h, "9",#__flag_TextRight|#__flag_Texttop) : SetWidgetClass(widget(), GetWidgetText(widget()))  ; Gadget(2, 
     ;{ last container
     ContainerWidget(x, y+23+s*1, 55, h)                     ; Gadget(1,
     SetWidgetClass(widget(), "last_0")
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetWidgetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     
     ButtonWidget(4, 0, 43, h-8-4, "9", #__flag_TextRight|#__flag_Texttop) 
-    SetWidgetClass(widget(), GetTextWidget(widget())) 
+    SetWidgetClass(widget(), GetWidgetText(widget())) 
     CloseWidgetList()
     CloseWidgetList()
     ;}
@@ -190,7 +190,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 EndIf
               EndIf
               
-              SetTextWidget(*current, Text)
+              SetWidgetText(*current, Text)
               
               ;             ClearDebugOutput()
               ;             ForEach widget()

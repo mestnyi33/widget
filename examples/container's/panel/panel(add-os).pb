@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseGadgetList() ; close *PANEL_1 list
       
       ;\\
-      SetGadgetState( *PANEL_1,1 )
+      SetGadGetWidgetState( *PANEL_1,1 )
       
       ;\\
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug "items count "+CountGadgetItems(*PANEL_1)
       
-      SetGadgetState(*PANEL_1, - 1 )
+      SetGadGetWidgetState(*PANEL_1, - 1 )
       
       Repeat
          Define Event = WaitWindowEvent()

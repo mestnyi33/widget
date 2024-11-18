@@ -118,8 +118,8 @@ CompilerIf #PB_Compiler_IsMainFile = 1
   
     Gadgets( win2 )
     ;     SpinGadget     (310, 20, 20, 100, 25, 0, 1000)
-    ;     SetGadgetState (310, 5) 
-    ;     SetGadgetTextWidget(310, "5")   ; set initial value
+    ;     SetGadGetWidgetState (310, 5) 
+    ;     SetGadGetWidgetText(310, "5")   ; set initial value
     ;     ComboBoxGadget (2100, 20, 35, 100, 155)
     
   SetWindowColor(2,RGB(255,255,0))

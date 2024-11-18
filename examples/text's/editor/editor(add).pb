@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
     BindEvent( #PB_Event_Repaint, @event_repaint() )
     
-    OpenRootWidget(0, 270, 10, 250, 680)
+    OpenRoot(0, 270, 10, 250, 680)
     Define *w = EditorWidget(0, 0, 250, 680) 
     
     Define time = ElapsedMilliseconds()
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     ;               #PB_EventType_Repaint)
 ;     ;     ; While WindowEvent() : Wend
 ;     ;   EndIf
-;     ; Editor::SetFont(*w, FontID(LoadFont(#PB_Any, "Impact", 18 , #PB_Font_HighQuality)))
+;     ; Editor::SetWidgetFont(*w, FontID(LoadFont(#PB_Any, "Impact", 18 , #PB_Font_HighQuality)))
     ;
     Repeat 
       Event=WaitWindowEvent()

@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Global *w, *w1, *w2
   
-  If OpenRootWidget(0, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu)
+  If OpenRoot(0, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu)
     
     *w = WindowWidget(100, 100, 180, 130, "openlist1", #__Window_SystemMenu)
     ButtonWidget( 50, 95, 80,20,"button1")

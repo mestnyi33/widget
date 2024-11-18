@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
   ;\\
-  OpenRootWidget(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  OpenRoot(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
   Define fs = 20
   ;\\
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   SetSizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
 ; ;   SetMoveBounds(object, fs, fs, 501-fs, 501-fs)
   
-  object1 = ScrollAreaWidget(10, 10, 250, 250, 350,350, 1) : SetState( GetBar( object1, #PB_WidgetType_Scroll, 1 ), 80 )
+  object1 = ScrollAreaWidget(10, 10, 250, 250, 350,350, 1) : SetWidgetState( GetBar( object1, #PB_WidgetType_Scroll, 1 ), 80 )
    ;  object = ScrollAreaWidget(100, 100, 250, 250, 150,150, 1) 
    ButtonWidget( 50,50,100,100, GetWidgetClass(object1))
    ; ContainerWidget( 50,50,100,100) : CloseWidgetList()
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
   ;\\
   BindWidgetEvent( widget( ), @CustomEvents(), #__event_draw )
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
   
   ;\\
   Procedure CustomEvents( )

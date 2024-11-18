@@ -57,7 +57,7 @@ ProcedureC eventTapFunction(proxy, type, event, refcon)
             View = CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "hitTest:@", @Point)
             
             If type = 1
-               If GetActiveWindow() <> EventWindow()
+               If GetActiveWidgetWindow() <> EventWindow()
                   gadget = CocoaMessage(0, View, "tag")
                   If IsGadget( gadget )
                      SetActiveGadget(gadget)
@@ -171,7 +171,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ; ; ProcedureC eventTapFunction(proxy, type, event, refcon)
    ; ;   Static window =- 1
    ; ;   
-   ; ;   If GetActiveWindow( ) <> EventWindow( )
+   ; ;   If GetActiveWidgetWindow( ) <> EventWindow( )
    ; ;     window = EventWindow( )
    ; ;   EndIf
    ; ;   

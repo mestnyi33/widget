@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
 
   Global  *combo1, *combo2, *combo3, a,x,h = 50
   
-  If OpenRootWidget(0, 0, 0, 530, 350, "ComboBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 530, 350, "ComboBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ComboBoxGadget(0, 10, 10, 250, h, #PB_ComboBox_Editable)
     AddGadgetItem(0, -1, "ComboBox editable...")
     For a = 1 To 15
@@ -46,9 +46,9 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(2, -1,"ComboBox item " + Str(a))
     Next
     
-    SetGadgetState(0, 0)
-    SetGadgetState(1, 0)
-    SetGadgetState(2, 3)    ; set (beginning with 0) the third item as active one
+    SetGadGetWidgetState(0, 0)
+    SetGadGetWidgetState(1, 0)
+    SetGadGetWidgetState(2, 3)    ; set (beginning with 0) the third item as active one
     
     x = 260
     ;\\
@@ -68,9 +68,9 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1,"ComboBox item " + Str(a))
     Next
     
-    SetState(*combo1, 0)
-    SetState(*combo2, 0)
-    SetState(*combo3, 3)    ; set (beginning with 0) the third item as active one
+    SetWidgetState(*combo1, 0)
+    SetWidgetState(*combo2, 0)
+    SetWidgetState(*combo3, 3)    ; set (beginning with 0) the third item as active one
     
     ;\\
     Define s1combo = ComboBoxGadget(#PB_Any, 0,0,0,0)

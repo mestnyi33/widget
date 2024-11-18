@@ -6,18 +6,18 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Procedure widget_events( )
-      Debug ""+EventWidget()\class+" "+classFromEvent( WidgetEvent( )) +" "+ GetState(EventWidget()) +" "+ 
+      Debug ""+EventWidget()\class+" "+classFromEvent( WidgetEvent( )) +" "+ GetWidgetState(EventWidget()) +" "+ 
             EventWidget()\bar\thumb\pos ;+" "+ EventWidget()\bar\page\pos ;+" "+ EventWidget()\bar\ThumbChange( ) +" "+ EventWidget()\bar\PageChange( ) ; WidgetEventData( )
    EndProcedure
    
-   If OpenRootWidget(0, 0, 0, 400, 130, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRoot(0, 0, 0, 400, 130, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ScrollBarWidget(10, 10, 370, 30, 20, 50, 8 )
       
-      SetState(widget( ), 30 )
-      SetAttribute(widget( ), #__Bar_ButtonSize, 30 )
+      SetWidgetState(widget( ), 30 )
+      SetWidgetAttribute(widget( ), #__Bar_ButtonSize, 30 )
       
       BindWidgetEvent(widget(), @widget_events())
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf
    
 CompilerEndIf

@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::OpenRootWidget(0);, 0, 0, 510, 340)
+  widget::OpenRoot(0);, 0, 0, 510, 340)
   
   ; first splitter
   ButtonGadget(1, 0, 0, 0, 0, "BTN1")
@@ -47,34 +47,34 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(61, 0, 0, 0, 0, 41, 51, #PB_Splitter_Separator | #PB_Splitter_Vertical )
   SplitterGadget(71, 125, 80, 250, 70, 31, 61, #PB_Splitter_Separator )
   
-  SetGadgetState(3, -10)
-  SetGadgetState(6, 250-10)
-  SetGadgetState(31, 250/2)
-  SetGadgetState(61, 10)
+  SetGadGetWidgetState(3, -10)
+  SetGadGetWidgetState(6, 250-10)
+  SetGadGetWidgetState(31, 250/2)
+  SetGadGetWidgetState(61, 10)
   
   
   ; first splitter
   b_0 = widget::ButtonWidget(0, 0, 0, 0, "BTN1")
   b_1 = widget::ButtonWidget(0, 0, 0, 0, "BTN2")
   s_0 = widget::SplitterWidget(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical )
-  SetState(s_0, -10)
+  SetWidgetState(s_0, -10)
   
   b_2 = widget::ButtonWidget(0, 0, 0, 0, "BTN3")
   b_3 = widget::ButtonWidget(0, 0, 0, 0, "BTN4")
   s_1 = widget::SplitterWidget(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical )
-  SetState(s_1, 250-10)
+  SetWidgetState(s_1, 250-10)
   s_2 = widget::SplitterWidget(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator)
   
   ; first splitter
   b_0 = widget::ButtonWidget(0, 0, 0, 0, "BTN1")
   b_1 = widget::ButtonWidget(0, 0, 0, 0, "BTN2")
   s_0 = widget::SplitterWidget(0, 0, 0, 0, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical )
-  SetState(s_0, 250/2)
+  SetWidgetState(s_0, 250/2)
   
   b_2 = widget::ButtonWidget(0, 0, 0, 0, "BTN3")
   b_3 = widget::ButtonWidget(0, 0, 0, 0, "BTN4")
   s_1 = widget::SplitterWidget(0, 0, 0, 0, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical )
-  SetState(s_1, 10)
+  SetWidgetState(s_1, 10)
   s_2 = widget::SplitterWidget(125, 250, 250, 70, s_0, s_1, #PB_Splitter_Separator)
   
   Define event

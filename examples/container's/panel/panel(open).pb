@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global i, x = 220, Panel, butt1, butt2
   Global._s_WIDGET *panel, *butt0, *butt1, *butt2
   
-  If OpenRootWidget( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+  If OpenRoot( #PB_Any, 0, 0, x+170, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     
     Panel = PanelGadget(#PB_Any, 10, 65, 160,95 ) 
     For i = 0 To 5 
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
     butt1 = ButtonGadget(#PB_Any, 10,5,80,25, "*butt1" ) 
     butt2 = ButtonGadget(#PB_Any, 10,35,80,25, "*butt2" ) 
     
-    SetGadgetState( Panel, 2 )
+    SetGadGetWidgetState( Panel, 2 )
     
     
     ;
@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *butt2 = ButtonWidget( x,35,80,25, "*butt2" ) 
     
     If *panel
-      SetState( *panel, 2 )
+      SetWidgetState( *panel, 2 )
     EndIf
     
     Debug "----panel all childrens-----"

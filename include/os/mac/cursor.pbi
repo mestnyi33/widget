@@ -206,8 +206,8 @@ Module Cursor
       CompilerIf #PB_Compiler_IsMainFile
         ; event =  __NSCFType
         Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-        Debug ""+eType +" "+ event +" "+ NSEvent ;+" "+ ID::ClassName(NSEvent) ; GetWindowTitle(GetActiveWindow( ))
-                                                 ;CocoaMessage(0, WindowID(GetActiveWindow( )), "disableCursorRects")
+        Debug ""+eType +" "+ event +" "+ NSEvent ;+" "+ ID::ClassName(NSEvent) ; GetWindowTitle(GetActiveWidgetWindow( ))
+                                                 ;CocoaMessage(0, WindowID(GetActiveWidgetWindow( )), "disableCursorRects")
                                                  ;Debug CocoaMessage(0, 0, "eventType:", event)
         
         ;         If EnteredID 

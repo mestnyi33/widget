@@ -16,7 +16,7 @@ Procedure event_gadget()
   EndSelect
 EndProcedure
 
-Procedure SetGadgetTextWordWrap( gadget,state )
+Procedure SetGadGetWidgetTextWordWrap( gadget,state )
   CompilerIf Subsystem("qt")
     QtScript(~"gadget("+gadget+").wordWrap = "+state+"")
   CompilerEndIf

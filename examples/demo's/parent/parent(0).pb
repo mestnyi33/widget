@@ -21,23 +21,23 @@ Procedure events_widgets( )
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-If OpenRootWidget(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
-  SetData(root( ), 1 )
-  *p2 = ContainerWidget(10, 10, 200, 200) : SetData(*p2, 2 )
+  SetWidgetData(root( ), 1 )
+  *p2 = ContainerWidget(10, 10, 200, 200) : SetWidgetData(*p2, 2 )
   CloseWidgetList()
   
-  *p1 = ContainerWidget(20, 180, 200, 200) : SetData(*p1, 3 )
-  *bb = ButtonWidget(-15, 10, 100, 50, "butt" ) : SetData(*bb, 4) 
-      *w = ContainerWidget(10, 20, 100, 100) : SetData(*w, 5 )
-        SetData(ContainerWidget(10, 10, 100, 100), 6 )
-           *ch = ButtonWidget(-25, 10, 100, 20, "Button")  : SetData(*ch, 7 )
+  *p1 = ContainerWidget(20, 180, 200, 200) : SetWidgetData(*p1, 3 )
+  *bb = ButtonWidget(-15, 10, 100, 50, "butt" ) : SetWidgetData(*bb, 4) 
+      *w = ContainerWidget(10, 20, 100, 100) : SetWidgetData(*w, 5 )
+        SetWidgetData(ContainerWidget(10, 10, 100, 100), 6 )
+           *ch = ButtonWidget(-25, 10, 100, 20, "Button")  : SetWidgetData(*ch, 7 )
         CloseWidgetList()
       CloseWidgetList()
   CloseWidgetList()
   
   
-  *b=ButtonWidget(10,430, 200, 30, "change parent", #__flag_ButtonToggle) : SetData(*b, 8) 
+  *b=ButtonWidget(10,430, 200, 30, "change parent", #__flag_ButtonToggle) : SetWidgetData(*b, 8) 
   
   i = 1
   
@@ -145,7 +145,7 @@ If OpenRootWidget(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #P
   
   BindWidgetEvent(*b, @events_widgets())
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
   ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

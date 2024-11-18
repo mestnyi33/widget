@@ -248,7 +248,7 @@ Procedure setCursor( gadget, cursor, ImageID.i=0 )
       EndIf
     EndIf
     
-    SetGadgetData(gadget, *cursor)
+    SetWidgetData(gadget, *cursor)
     
     ;     OldProc = SetWindowLong_(GadgetID, #GWL_WNDPROC, @Proc())
     
@@ -289,7 +289,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
         If PressedGadget() >= 0 And 
            PressedGadget() <> gadget  
           
-          *cursor.cursor = GetGadgetData(PressedGadget())
+          *cursor.cursor = GetGadGetWidgetData(PressedGadget())
           If *cursor And
              *cursor\cursor And 
              *cursor\change = 1
@@ -303,7 +303,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
            gadget <> PressedGadget()
           
           EnteredGadget() = gadget
-          *cursor.cursor = GetGadgetData(gadget)
+          *cursor.cursor = GetGadGetWidgetData(gadget)
           If *cursor And
              *cursor\cursor
             *cursor\change = 1
@@ -321,7 +321,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
 ;           ;
 ;           If EnteredGadget( ) <> gadget
 ;             If EnteredGadget( ) >= 0 
-;               *cursor.cursor = GetGadgetData(EnteredGadget( ))
+;               *cursor.cursor = GetGadGetWidgetData(EnteredGadget( ))
 ;               If *cursor And 
 ;                  *cursor\cursor And *cursor\change = 1
 ;                 *cursor\change = 0
@@ -333,7 +333,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
 ;             EnteredGadget( ) = gadget
 ;             
 ;             If EnteredGadget( ) >= 0 
-;               *cursor.cursor = GetGadgetData(EnteredGadget( ))
+;               *cursor.cursor = GetGadGetWidgetData(EnteredGadget( ))
 ;               If *cursor And
 ;                  *cursor\cursor And *cursor\change = 0
 ;                 *cursor\change = 1
@@ -353,7 +353,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
 ;           result = CallWindowProc_(OldProc, hWnd, uMsg, wParam, lParam)
 ;         Else
 ;           ;Debug "#WM_SETCURSOR - " + EnteredGadget( )
-; ;           *cursor.cursor = GetGadgetData(EnteredGadget( ))
+; ;           *cursor.cursor = GetGadGetWidgetData(EnteredGadget( ))
 ; ;           If *cursor And
 ; ;              *cursor\cursor 
 ; ;             Debug "e++"
@@ -370,7 +370,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
       ;
       If EnteredGadget( ) <> gadget
         If EnteredGadget( ) >= 0 
-          *cursor.cursor = GetGadgetData(EnteredGadget( ))
+          *cursor.cursor = GetGadGetWidgetData(EnteredGadget( ))
           If *cursor And 
              *cursor\cursor And *cursor\change = 1
             *cursor\change = 0
@@ -384,7 +384,7 @@ Procedure Proc(hWnd, uMsg, wParam, lParam)
         EnteredGadget( ) = gadget
         
         If EnteredGadget( ) >= 0 
-          *cursor.cursor = GetGadgetData(EnteredGadget( ))
+          *cursor.cursor = GetGadGetWidgetData(EnteredGadget( ))
           If *cursor And
              *cursor\cursor And *cursor\change = 0
             *cursor\change = 1
@@ -508,7 +508,7 @@ EndProcedure
 ;         If PressedGadget() >= 0 And 
 ;            PressedGadget() <> gadget  
 ;           
-;           *cursor.cursor = GetGadgetData(PressedGadget())
+;           *cursor.cursor = GetGadGetWidgetData(PressedGadget())
 ;           If *cursor And
 ;              *cursor\cursor And 
 ;              *cursor\change = 1
@@ -523,7 +523,7 @@ EndProcedure
 ;            gadget <> PressedGadget()
 ;           
 ;           EnteredGadget() = gadget
-;           *cursor.cursor = GetGadgetData(gadget)
+;           *cursor.cursor = GetGadGetWidgetData(gadget)
 ;           If *cursor And
 ;              *cursor\cursor
 ;             Debug "p+"
@@ -540,7 +540,7 @@ EndProcedure
 ;         
 ;         If EnteredGadget( ) <> gadget
 ;           If EnteredGadget( ) >= 0 
-;             *cursor.cursor = GetGadgetData(EnteredGadget( ))
+;             *cursor.cursor = GetGadGetWidgetData(EnteredGadget( ))
 ;             If *cursor And 
 ;                *cursor\cursor And 
 ;                *cursor\change = 1
@@ -554,7 +554,7 @@ EndProcedure
 ;           EnteredGadget( ) = gadget
 ;           
 ;           If EnteredGadget( ) >= 0 
-;             *cursor.cursor = GetGadgetData(EnteredGadget( ))
+;             *cursor.cursor = GetGadGetWidgetData(EnteredGadget( ))
 ;             If *cursor And
 ;                *cursor\cursor And 
 ;                *cursor\change = 0

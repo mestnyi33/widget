@@ -15,8 +15,8 @@ Procedure event_widget()
       Select EventWidget()         
         Case *list1, *list2, *list3       
           source = EventWidget()
-          selectedIndex = GetState(EventWidget())           
-          selectedText$ = GetItemTextWidget(EventWidget(), selectedIndex)
+          selectedIndex = GetWidgetState(EventWidget())           
+          selectedText$ = GetWidgetItemText(EventWidget(), selectedIndex)
           DDragTextWidget(selectedText$)                                           
           
       EndSelect
@@ -29,9 +29,9 @@ Procedure event_widget()
         dropText$ = DDropTextWidget()
         
         For i = 0 To CountItems(drop)-1
-          If GetItemTextWidget(drop, i) = dropText$
-            SetActive(drop)
-            SetState(drop, i)           
+          If GetWidgetItemText(drop, i) = dropText$
+            SetActiveWidget(drop)
+            SetWidgetState(drop, i)           
             Break             
           EndIf
         Next i
@@ -42,7 +42,7 @@ Procedure event_widget()
 EndProcedure
 
 Define wFlags = #PB_Window_SystemMenu | #PB_Window_ScreenCentered
-OpenRootWidget( 0, #PB_Ignore, #PB_Ignore, 600, 400, "Drag & Drop Text Matching", wFlags )
+OpenRoot( 0, #PB_Ignore, #PB_Ignore, 600, 400, "Drag & Drop Text Matching", wFlags )
 
 TextWidget(20, 10, 150, 30, "Personal Records")
 TextWidget(220, 10, 150, 30, "Bank Statement")

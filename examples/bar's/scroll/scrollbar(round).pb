@@ -12,28 +12,28 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 400, 130, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ButtonGadget   (0,    5,   95, 390,  30, "", #PB_Button_Toggle)
       
-      If OpenRootWidget(0, 10, 10, 380, 80)
+      If OpenRoot(0, 10, 10, 380, 80)
         g_Canvas = GetCanvasGadget(root())
         *scrollbar = ScrollBarWidget(5, 10, 370, 30, 20, 50, 8, 0, round)
-        SetState(widget(), 31)
+        SetWidgetState(widget(), 31)
         
         SplitterWidget(5, 5, 370, 70, *scrollbar,-1)
-        SetState(widget(), 70)
+        SetWidgetState(widget(), 70)
         
-        SetGadgetState(0, GetAttribute(*scrollbar, #__bar_buttonsize))
-        SetWindowTitle(0, Str(GetState(*scrollbar)))
+        SetGadGetWidgetState(0, GetWidgetAttribute(*scrollbar, #__bar_buttonsize))
+        SetWindowTitle(0, Str(GetWidgetState(*scrollbar)))
         
-        If GetGadgetState(0)
-          SetGadgetTextWidget(0, "box scrollbar buttons")
+        If GetGadGetWidgetState(0)
+          SetGadGetWidgetText(0, "box scrollbar buttons")
         Else
-          SetGadgetTextWidget(0, "round scrollbar buttons")
+          SetGadGetWidgetText(0, "round scrollbar buttons")
         EndIf
       EndIf
     EndIf
   EndProcedure
   
   Window_0()
-  SetAttribute(*scrollbar, #__Bar_ButtonSize, 62)
+  SetWidgetAttribute(*scrollbar, #__Bar_ButtonSize, 62)
             
   Repeat
     gEvent= WaitWindowEvent()
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            *scrollbar\round = GetGadgetState(0) * round
+            *scrollbar\round = GetGadGetWidgetState(0) * round
             *scrollbar\bar\button[0]\round = *scrollbar\round
             *scrollbar\bar\button[1]\round = *scrollbar\round
             *scrollbar\bar\button[2]\round = *scrollbar\round
@@ -54,20 +54,20 @@ CompilerIf #PB_Compiler_IsMainFile
              ; ResizeWidget(*scrollbar, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                       
             
-            SetWindowTitle(0, Str(GetState(*scrollbar)))
+            SetWindowTitle(0, Str(GetWidgetState(*scrollbar)))
             
-            If GetGadgetState(0)
-              SetGadgetTextWidget(0, "box scrollbar buttons")
+            If GetGadGetWidgetState(0)
+              SetGadGetWidgetText(0, "box scrollbar buttons")
             Else
-              SetGadgetTextWidget(0, "round scrollbar buttons")
+              SetGadGetWidgetText(0, "round scrollbar buttons")
             EndIf
             
             PostEventRepaint( root( ) )
             
           Case g_Canvas
             If widget()\change
-              ; SetWindowTitle(0, Str(GetState(widget())))
-              Debug GetState(widget())
+              ; SetWindowTitle(0, Str(GetWidgetState(widget())))
+              Debug GetWidgetState(widget())
               widget()\change = 0
             EndIf
             

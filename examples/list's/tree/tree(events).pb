@@ -11,48 +11,48 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select WidgetEvent()
       Case #__event_Focus
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( FOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( FOCUS ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       Case #__event_LostFocus
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LOSTFOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LOSTFOCUS ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_Drop
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DROP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DROP ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_DragStart
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DRAGSTART ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DRAGSTART ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_Up
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( UP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( UP ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_Down
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DOWN ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DOWN ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_Change
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( CHANGE ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( CHANGE ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_ScrollChange
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( SCROLL ) "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ WidgetEventData()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( SCROLL ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem() +" "+ WidgetEventData()
         
       Case #__event_StatusChange
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( STATUS ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_LeftClick
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFTCLICK ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_Left2Click
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFT2CLICK ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_RightClick
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHTCLICK ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_Right2Click
-        Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHT2CLICK ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
     EndSelect
   EndProcedure
   
   ;\\
-  If OpenRootWidget(0, 0, 0, 360, 460, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 360, 460, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define i,a
     ;\\
     *g = TreeWidget(10, 10, 165, 440, #__flag_gridLines)
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       i = (CountItems( *g )-1)
       If i%2
-        SetItemState(*g, i, #PB_Tree_Selected) 
+        SetWidgetItemState(*g, i, #PB_Tree_Selected) 
       EndIf
     Next
     
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       i = (CountItems( *g2 )-1)
       If i%2
-        SetItemState(*g2, i, #PB_Tree_Selected) 
+        SetWidgetItemState(*g2, i, #PB_Tree_Selected) 
       EndIf
     Next
     

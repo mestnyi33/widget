@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   If OpenRootWidget( 0, 0, 0, 370, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot( 0, 0, 0, 370, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
       ContainerWidget( 10, 10, 100, 100) : SetWidgetClass(widget( ), "CONT1" ) 
       ButtonWidget( 10,5,80,25, "*btn1_1" )  : SetWidgetClass(widget( ), "btn1_1" ) 
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       btn3_2 <<  btn3_3  >> --------
       ;       <<----
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf   
 CompilerEndIf
 

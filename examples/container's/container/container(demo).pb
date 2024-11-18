@@ -9,10 +9,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    ;Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
+    ;Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, 640, 560, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 640, 560, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ContainerGadget( 0, 10,10,200,100, #PB_Container_BorderLess ) 
     SetGadGetWidgetColor(0, #PB_Gadget_BackColor, $95E3F6 )
     CloseGadgetList( )
@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

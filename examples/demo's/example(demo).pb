@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  Procedure.s get_TextWidget(m.s = #LF$)
+  Procedure.s get_Text(m.s = #LF$)
     Protected Text.s = "This is a long line." + m.s  + 
                        "Who should show." + 
                        m.s  + 
@@ -25,81 +25,81 @@ CompilerIf #PB_Compiler_IsMainFile
   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  If OpenRootWidget(0, 0, 0, 605 + 30, 140 + 200 + 140 + 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 605 + 30, 140 + 200 + 140 + 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ; example scroll gadget bar
     TextGadget       ( -1,  10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#PB_Text_Center)
     ScrollBarGadget  (101,  10, 42, 250,  20, 30, 100, 30)
-    SetGadgetState   (101,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    SetGadGetWidgetState   (101,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       ( -1,  10,110, 250,  20, "ScrollBar Vertical  (start = 100, page = 50/300)",#PB_Text_Right)
     ScrollBarGadget  (201, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    SetGadgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    SetGadGetWidgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     ; example scroll widget bar
     widget::TextWidget(300 + 10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#__flag_Textcenter)
     *w = widget::Scroll  (300 + 10, 42, 250,  20, 30, 100, 30, 0)
-    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::SetWidgetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
     *w = widget::Scroll  (300 + 10, 42 + 30, 250,  15, 30, 100, 30, #__bar_invert);|#__bar_nobuttons, 7)
-    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::SetWidgetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
     
     *w = widget::Scroll  (300 + 10, 42 + 30 + 20, 250,  10, 30, 150, 230, #__bar_invert, 7)
-    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::SetWidgetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
     widget::TextWidget(300 + 10,110, 250,  20, "ScrollBar Vertical  (start = 100, page = 50/300)",#__flag_Textright)
     *w = widget::Scroll  (300 + 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical|#__bar_invert)
-    widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    widget::SetWidgetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
     *w = widget::Scroll  (300 + 270 + 30, 10,  25, 120 ,0, 300, 50, #__bar_vertical, 7)
-    widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    widget::SetWidgetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     
     ; example_2 track gadget bar
     TextGadget    ( -1, 10,  140 + 10, 250, 20,"TrackBar Standard", #PB_Text_Center)
     TrackBarGadget(1010, 10,  140 + 40, 250, 20, 0, 10000)
-    SetGadgetState(1010, 5000)
+    SetGadGetWidgetState(1010, 5000)
     TextGadget    ( -1, 10, 140 + 90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
     ;     TrackBarGadget(11, 10, 140 + 120, 250, 20, 0, 30, #PB_trackTicks)
     TrackBarGadget(1111, 10, 140 + 120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    SetGadgetState(1111, 60)
+    SetGadGetWidgetState(1111, 60)
     TextGadget    ( -1,  60, 140 + 160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
     TrackBarGadget(1212, 270, 140 + 10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SetGadgetState(1212, 8000)
+    SetGadGetWidgetState(1212, 8000)
     
     ; example_2 track widget bar
     widget::TextWidget(300 + 10,  140 + 10, 250, 20,"TrackBar Standard");, #__flag_Textcenter)
     *w = widget::TrackBarWidget(300 + 10,  140 + 40, 250, 20, 0, 10000, 0)
-    widget::SetState(*w, 5000)
+    widget::SetWidgetState(*w, 5000)
     *w = widget::TrackBarWidget(300 + 10,  140 + 40 + 20, 250, 20, 0, 10000, #__bar_invert)
-    widget::SetState(*w, 5000)
+    widget::SetWidgetState(*w, 5000)
     widget::TextWidget(300 + 10, 140 + 90, 250, 20, "TrackBar Ticks", #__flag_Textcenter)
     ;     widget::TrackBarWidget(300 + 10, 140 + 120, 250, 20, 0, 30, #__bar_ticks)
     *w = widget::TrackBarWidget(300 + 10, 140 + 120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    widget::SetState(*w, 60)
+    widget::SetWidgetState(*w, 60)
     widget::TextWidget(300 + 60, 140 + 160, 200, 20, "TrackBar Vertical", #__flag_Textright)
     *w = widget::TrackBarWidget(300 + 270, 140 + 10, 25, 170, 0, 10000, #PB_TrackBar_Vertical|#__bar_invert)
-    ;widget::SetAttribute(*w, #__bar_Inverted, 0)
-    widget::SetState(*w, 8000)
+    ;widget::SetWidgetAttribute(*w, #__bar_Inverted, 0)
+    widget::SetWidgetState(*w, 8000)
     *w = widget::TrackBarWidget(300 + 270 + 30, 140 + 10, 25, 170, 0, 10000, #__bar_vertical)
-    widget::SetState(*w, 8000)
+    widget::SetWidgetState(*w, 8000)
     
     
     ; example_3 progress gadget bar
     TextGadget       ( -1,  10, 140 + 200 + 10, 250,  20, "ProgressBar Standard  (start = 65, page = 30/100)",#PB_Text_Center)
     ProgressBarGadget  (2121,  10, 140 + 200 + 42, 250,  20, 30, 100)
-    SetGadgetState   (2121,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    SetGadGetWidgetState   (2121,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       ( -1,  10,140 + 200 + 100, 250,  20, "ProgressBar Vertical  (start = 100, page = 50/300)",#PB_Text_Right)
     ProgressBarGadget  (2222, 270, 140 + 200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
-    SetGadgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    SetGadGetWidgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     ; example_3 progress widget bar
     widget::TextWidget(300 + 10, 140 + 200 + 10, 250,  20, "ProgressBar Standard  (start = 65, page = 30/100)",#__flag_Textcenter)
     *w = widget::Progress  (300 + 10, 140 + 200 + 42, 250,  20, 30, 100, 0)
-    widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::SetWidgetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
     *w = widget::Progress  (300 + 10, 140 + 200 + 42 + 30, 250,  20, 30, 100, #__bar_invert, 14)
-    widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::SetWidgetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
     widget::TextWidget(300 + 10,140 + 200 + 100, 250,  20, "ProgressBar Vertical  (start = 100, page = 50/300)",#__flag_Textright)
     *w = widget::Progress  (300 + 270, 140 + 200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical|#__bar_invert, 19)
-    ;widget::SetAttribute(*w, #__bar_Inverted, 0)
-    widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    ;widget::SetWidgetAttribute(*w, #__bar_Inverted, 0)
+    widget::SetWidgetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     *w = widget::Progress  (300 + 270 + 30, 140 + 200,  25, 120 ,0, 300, #__bar_vertical)
-    widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    widget::SetWidgetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     
     ;{ PB splitter Gadget
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; first splitter
     ButtonGadget(11, 0, 0, 0, 0, "BTN1")
     Button_1 = SplitterGadget(#PB_Any, 125, 10, 250, 70, 10, 9, #PB_Splitter_Separator ) 
-    SetGadgetState(Button_1, 42)
+    SetGadGetWidgetState(Button_1, 42)
     ;Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1")  ; as they will be sized automatically
     
     Button_2 = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, 150, 150) : CloseGadgetList(); No need to specify size or coordinates
@@ -131,24 +131,24 @@ CompilerIf #PB_Compiler_IsMainFile
     Button_4 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100)                     ; No need to specify size or coordinates
     Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5")                      ; as they will be sized automatically
     
-    SetGadgetState(Button_0, 50)
+    SetGadGetWidgetState(Button_0, 50)
     
     Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;     ;SetGadgetState(Splitter_1, 20)
+    SetGadGetWidgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
+    SetGadGetWidgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
+    ;     ;SetGadGetWidgetState(Splitter_1, 20)
     Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
     Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
     Splitter_4 = SplitterGadget(#PB_Any, 10, 140 + 200 + 130, 285 + 15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
     
-    ;     SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2 - 5)
-    ;     SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2 - 5)
+    ;     SetGadGetWidgetState(Splitter_0, GadgetWidth(Splitter_0)/2 - 5)
+    ;     SetGadGetWidgetState(Splitter_1, GadgetWidth(Splitter_1)/2 - 5)
     
-    SetGadgetState(Splitter_0, 26)
-    SetGadgetState(Splitter_4, 225)
-    SetGadgetState(Splitter_3, 55)
-    SetGadgetState(Splitter_2, 15)
+    SetGadGetWidgetState(Splitter_0, 26)
+    SetGadGetWidgetState(Splitter_4, 225)
+    SetGadGetWidgetState(Splitter_3, 55)
+    SetGadGetWidgetState(Splitter_2, 15)
     
     If OpenGadgetList(Button_2)
       Button_4 = ScrollAreaGadget(#PB_Any, -1, -1, 50, 50, 100, 100, 1);, #__flag_nogadgets)
@@ -170,9 +170,9 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(Button_1, -1, "Panel_0") 
     Define *w2 = Panel (5, 5, 140, 166)
     AddItem(*w2, -1, "Под -  - Панель 1")
-    SetState(Option(5, 10, 70, 20, "option_0"), 1)
+    SetWidgetState(Option(5, 10, 70, 20, "option_0"), 1)
     OptionWidget(5, 32, 100, 20, "option_1")
-    SetState(CheckBoxWidget(5, 54, 100, 20, "checkbox_0", #PB_CheckBox_ThreeState), #PB_Checkbox_Inbetween)
+    SetWidgetState(CheckBoxWidget(5, 54, 100, 20, "checkbox_0", #PB_CheckBox_ThreeState), #PB_Checkbox_Inbetween)
     ButtonWidget(75, 10, 60, 20, "button")
     HyperLinkWidget(75, 32, 60, 20, "HyperLink", $ffff0000)
     
@@ -187,7 +187,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonWidget( 15, 5, 55, 22, "кнопка 15")
     ButtonWidget( 20, 30, 55, 22, "кнопка 20")
     CloseWidgetList()
-    ;SetState(*w2, 2)
+    ;SetWidgetState(*w2, 2)
     
     AddItem(Button_1, -1, "Panel_1") 
     widget::ContainerWidget(20,10,200,100)
@@ -212,12 +212,12 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tab, -1, "Tab_6")
     widget::AddItem(*Tab, -1, "Tab_7 (long)")
     widget::AddItem(*Tab, -1, "Tab_8")
-    SetState(*Tab, 7)
+    SetWidgetState(*Tab, 7)
     
     
     AddItem(Button_1, -1, "editor_3") 
     Define *Editor = widget::EditorWidget(0, 0, 0, 0, #__flag_autosize) 
-    SetTextWidget(*Editor, get_TextWidget(#LF$))
+    SetWidgetText(*Editor, get_Text(#LF$))
     
     AddItem(Button_1, -1, "tree_4") 
     Define *Tree = widget::TreeWidget(0, 0, 0, 0, #__flag_autosize) 
@@ -245,10 +245,10 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::CloseWidgetList() ; *window
     
     CloseWidgetList()
-    SetState(Button_1, 4)
+    SetWidgetState(Button_1, 4)
     
     ;     
-    ;     ;     Button_1 = widget::EditorWidget(0, 0, 0, 0) : SetTextWidget(Button_1, text)
+    ;     ;     Button_1 = widget::EditorWidget(0, 0, 0, 0) : SetWidgetText(Button_1, text)
     ;     ;     Button_1 = widget::ButtonWidget(0, 0, 0, 0, text) ; No need to specify size or coordinates
     ;     ;Button_1 = widget::TextWidget(0, 0, 0, 0, text, #__flag_Textborder) ; No need to specify size or coordinates
     ;     ; ;     Button_1 = widget::MDIWidget(0, 0, 0, 0) ; No need to specify size or coordinates
@@ -273,7 +273,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     ;     
     ;     ;     w_11 = widget::ButtonWidget(0, 0, 0, 0, "BTN11")
     ;     ;     Button_1 = widget::SplitterWidget(125, 170, 250, 70, w_10, w_9, #PB_Splitter_Separator)
-    ;     ;     widget::SetState(Button_1, 42)
+    ;     ;     widget::SetWidgetState(Button_1, 42)
     ;     ;     
     ;     ;     ; ;     ;     Button_10 = widget::Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
     ;     ;     ; ;     ;     Button_1 = widget::SplitterWidget(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
@@ -287,22 +287,22 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(Button_5, -1, "Tab_1 (long)")
     widget::AddItem(Button_5, -1, "Tab_2")
     
-    widget::SetState(Button_0, 50)
+    widget::SetWidgetState(Button_0, 50)
     
     Splitter_0 = widget::SplitterWidget(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed);|#PB_Splitter_Separator)
     Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed);|#PB_Splitter_Separator)
-    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;widget::SetState(Splitter_1, 410/2 - 20)
+    widget::SetWidgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
+    widget::SetWidgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
+    ;widget::SetWidgetState(Splitter_1, 410/2 - 20)
     Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, Button_5);, #PB_Splitter_Separator)
     Splitter_3 = widget::SplitterWidget(0, 0, 0, 0, Button_2, Splitter_2);, #PB_Splitter_Separator)
     Splitter_4 = widget::SplitterWidget(300 + 10 + 15, 140 + 200 + 130, 285 + 15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical);|#PB_Splitter_Separator)
     
-    ; widget::SetState(Button_2, 5)
-    widget::SetState(Splitter_0, 26)
-    widget::SetState(Splitter_4, 220)
-    widget::SetState(Splitter_3, 55)
-    widget::SetState(Splitter_2, 15)
+    ; widget::SetWidgetState(Button_2, 5)
+    widget::SetWidgetState(Splitter_0, 26)
+    widget::SetWidgetState(Splitter_4, 220)
+    widget::SetWidgetState(Splitter_3, 55)
+    widget::SetWidgetState(Splitter_2, 15)
     
     If Button_2 And widget::OpenWidgetList(Button_2)
       Button_4 = widget::ScrollAreaWidget( -1, -1, 50, 50, 100, 100, 1);, #__flag_nogadgets)

@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define Width=570, Height=300
    
    ;\\
-   If OpenRootWidget(0, 50, 50, Width, Height, "Root_0_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+   If OpenRoot(0, 50, 50, Width, Height, "Root_0_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
       SetWidgetClass(root( ), "root_0" )
       
       ;\\
@@ -55,8 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget( 304, 250, 250,40, "button_11_root_0") : SetWidgetClass(widget( ), "button_11_root_0" )
       
       
-      SetActive( widget( ) )
-      ;SetActive( WidgetID( 4 ) )
+      SetActiveWidget( widget( ) )
+      ;SetActiveWidget( WidgetID( 4 ) )
       
       ;\\
       BindWidgetEvent( #PB_All, @active(), #__event_Focus)
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;\\
-   If OpenRootWidget(1, 50, 400, Width, Height, "Root_1_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+   If OpenRoot(1, 50, 400, Width, Height, "Root_1_Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
       SetWidgetClass(root( ), "root_1" )
       
       ;\\
@@ -105,8 +105,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget( 304, 250, 250,40, "button_11_root_1") : SetWidgetClass(widget( ), "button_11_root_1" )
       
       
-      SetActive( widget( ) )
-      ;SetActive( WidgetID( 4 ) )
+      SetActiveWidget( widget( ) )
+      ;SetActiveWidget( WidgetID( 4 ) )
       
       ;\\
       BindWidgetEvent( #PB_All, @active(), #__event_Focus)
@@ -115,7 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;\\
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
    
    End 
 CompilerEndIf

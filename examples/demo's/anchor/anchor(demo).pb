@@ -22,32 +22,32 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug " StatusChange"
         
         If *size
-          SetState(*size, *this\anchors\size )
+          SetWidgetState(*size, *this\anchors\size )
         EndIf
         
         If *position
-          SetState(*position, *this\anchors\pos )
+          SetWidgetState(*position, *this\anchors\pos )
         EndIf
         
         If *grid
-          SetState(*grid, mouse( )\steps )
+          SetWidgetState(*grid, mouse( )\steps )
         EndIf
         
       Case #__event_Change
         Select *this 
           Case *size
-            a_set( a_focused( ), #__a_full, GetState(*this), GetState(*position))
+            a_set( a_focused( ), #__a_full, GetWidgetState(*this), GetWidgetState(*position))
             
           Case *position
-            a_set( a_focused( ), #__a_full, GetState(*size), GetState(*this))
+            a_set( a_focused( ), #__a_full, GetWidgetState(*size), GetWidgetState(*this))
             
            Case *grid, *gridType
-            mouse( )\steps = DPIScaled(GetState(*grid))
+            mouse( )\steps = DPIScaled(GetWidgetState(*grid))
             
             If IsImage( a_transform( )\grid_image )
               FreeImage( a_transform( )\grid_image )
             EndIf
-            a_transform( )\grid_image = a_grid_image( mouse( )\steps, GetState(*gridType) )
+            a_transform( )\grid_image = a_grid_image( mouse( )\steps, GetWidgetState(*gridType) )
             SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
             
             ; 
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If OpenRootWidget(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ContainerWidget( 10,10,220,210 )
     a_init( widget( ),5 )
     
@@ -99,16 +99,16 @@ CompilerIf #PB_Compiler_IsMainFile
     *gridType = ComboBoxWidget( 120,30+Y,100,30 )
     AddItem(*gridType, -1, "grid [point]" )
    AddItem(*gridType, -1, "grid [line]" )
-   SetState(*gridType, 1)
+   SetWidgetState(*gridType, 1)
    
     *FrameColor = ButtonWidget( 120,90+Y,100,30, "FrameColor" )
     *BackColor = ButtonWidget( 120,150+Y,100,30, "BackColor" )
     
     ; 
     If a_focused( )
-      SetState(*grid, DPIUnScaled(mouse( )\steps) )
-      SetState(*size, a_focused( )\anchors\size )
-      SetState(*position, a_focused( )\anchors\pos )
+      SetWidgetState(*grid, DPIUnScaled(mouse( )\steps) )
+      SetWidgetState(*size, a_focused( )\anchors\size )
+      SetWidgetState(*position, a_focused( )\anchors\pos )
     EndIf
     
     ;\\
@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BindWidgetEvent( *BackColor, @events_widgets( ), #__event_LeftClick )
     BindWidgetEvent( *FrameColor, @events_widgets( ), #__event_LeftClick )
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
   
   

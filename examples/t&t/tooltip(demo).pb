@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
-   If OpenRootWidget(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
+   If OpenRoot(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
                                         #PB_Window_ScreenCentered )
       
       ;\\

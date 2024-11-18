@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn *PARENT
    EndProcedure
    
-   If OpenRootWidget(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       *PARENT = PanelWidget(10,145,200,160)  : SetWidgetClass(*PARENT, "PANEL") 
       AddItem(*PARENT, -1, "item (0)")
       ;              ;
@@ -90,7 +90,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       CloseWidgetList( )
       ;       CloseWidgetList( )
       ;       ;
-      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = ButtonWidget(20,90,160,30,"(PanelWidget(2))") : SetWidgetClass(*PARENT_2, GetTextWidget(*PARENT_2)) 
+      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = ButtonWidget(20,90,160,30,"(PanelWidget(2))") : SetWidgetClass(*PARENT_2, GetWidgetText(*PARENT_2)) 
                                        ;
       OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "(PanelWidget(2))")
       OpenGadget(10,10,160,30) : SetWidgetClass(widget(), "((2>))")
@@ -155,7 +155,7 @@ CompilerIf #PB_Compiler_IsMainFile
          StopEnum( )
       EndIf
       
-      WaitCloseRootWidget()
+      WaitCloseRoot()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

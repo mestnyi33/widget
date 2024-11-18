@@ -15,12 +15,12 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Splitter_1 = SplitterGadget(#PB_Any, 10, 10, 285+30, 140, Button_1, Button_2, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
 
-    OpenRootWidget(5, 10, 160, 285+30+2, 140+2)
+    OpenRoot(5, 10, 160, 285+30+2, 140+2)
     Button_1 = ScrollAreaWidget( 0, 0, 0, 0, 150, 150, 1) : CloseWidgetList() 
     Button_2 = ButtonWidget( 0, 0, 0, 0, "button_1")
     Splitter_1 = SplitterWidget(0, 0, 285+30, 140, Button_1,Button_2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     
-    WaitCloseRootWidget()
+    WaitCloseRoot()
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

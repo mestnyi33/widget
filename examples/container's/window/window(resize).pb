@@ -22,19 +22,19 @@ CompilerIf #PB_Compiler_IsMainFile
             
             
          Case #__event_LeftClick
-            Select GetTextWidget( EventWidget( ))
+            Select GetWidgetText( EventWidget( ))
                Case "window_0_minimize", "window_1_minimize", "window_2_minimize"
-                  If GetState( EventWidget( )\window ) = #PB_Window_Minimize
-                     SetState( EventWidget( )\window, #PB_Window_Normal )
+                  If GetWidgetState( EventWidget( )\window ) = #PB_Window_Minimize
+                     SetWidgetState( EventWidget( )\window, #PB_Window_Normal )
                   Else
-                     SetState( EventWidget( )\window, #PB_Window_Minimize )
+                     SetWidgetState( EventWidget( )\window, #PB_Window_Minimize )
                   EndIf
                   
                Case "window_0_maximize", "window_1_maximize", "window_2_maximize"
-                  If GetState( EventWidget( )\window ) = #PB_Window_Maximize
-                     SetState( EventWidget( )\window, #PB_Window_Normal )
+                  If GetWidgetState( EventWidget( )\window ) = #PB_Window_Maximize
+                     SetWidgetState( EventWidget( )\window, #PB_Window_Normal )
                   Else
-                     SetState( EventWidget( )\window, #PB_Window_Maximize )
+                     SetWidgetState( EventWidget( )\window, #PB_Window_Maximize )
                   EndIf
                
          EndSelect
@@ -42,13 +42,13 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   If OpenRootWidget(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
+   If OpenRoot(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
                                                                                                  #PB_Window_SizeGadget |
                                                                                                  #PB_Window_MinimizeGadget |
                                                                                                  #PB_Window_MaximizeGadget | 
                                                                                                  #PB_Window_ScreenCentered )
    
-; ;    If OpenRootWidget(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess |
+; ;    If OpenRoot(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess |
 ; ;                                                                                                  #PB_Window_SizeGadget |
 ; ;                                                                                                  #PB_Window_ScreenCentered )
 ; ;       

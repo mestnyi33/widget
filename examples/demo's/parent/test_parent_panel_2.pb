@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global._s_WIDGET *panel1, *but0
    
-   If OpenRootWidget( 0, 0, 0, 220, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot( 0, 0, 0, 220, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;
       *panel1 = PanelWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
       AddItem(*panel1, -1, "item0" )
@@ -76,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       result
       
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

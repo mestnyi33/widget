@@ -27,13 +27,13 @@
    ;\\
    OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
    
-   Define *root._s_WIDGET = OpenRootWidget(#window_0, 0, 0, 424, 352): *root\class = "root": SetTextWidget(*root, "root")
+   Define *root._s_WIDGET = OpenRoot(#window_0, 0, 0, 424, 352): *root\class = "root": SetWidgetText(*root, "root")
    *w = PanelWidget( 10, 10, 424 - 20, 352 - 20) ; , #__flag_autosize )
    BarPosition( *w\TabBox( ), 1, 100 )
    For i = 1 To 100;0000
       If (i & 2) 
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
-         ;SetItemFont(*w, i, 6)
+         ;SetWidgetItemFont(*w, i, 6)
       Else
          AddItem(*w, i, "text-" + Str(i))
       EndIf
@@ -41,7 +41,7 @@
    i=0
    For i = 1 To 100;0000
       If (i & 2) 
-         SetItemFont(*w, i, 6)
+         SetWidgetItemFont(*w, i, 6)
          ;Debug i
       EndIf
    Next
@@ -51,7 +51,7 @@
    OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    
    ;\\ 
-   Define *root0._s_WIDGET = OpenRootWidget(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetTextWidget(*root0, "root0")
+   Define *root0._s_WIDGET = OpenRoot(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetWidgetText(*root0, "root0")
    *w = PanelWidget( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
    BarPosition( *w\TabBox( ), 1, 100 )
    For i = 1 To 100;0000
@@ -61,11 +61,11 @@
          AddItem(*w, i, "text-" + Str(i))
       EndIf
    Next
-   SetFont(*w, 5)
+   SetWidgetFont(*w, 5)
    ;\\Close( )
    
    ;\\ 
-   Define *root1._s_WIDGET = OpenRootWidget(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetTextWidget(*root1, "root1")
+   Define *root1._s_WIDGET = OpenRoot(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetWidgetText(*root1, "root1")
    *w = PanelWidget( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
    BarPosition( *w\TabBox( ), 1, 100 )
    For i = 1 To 100;0000
@@ -77,7 +77,7 @@
    Next
    ;\\Close( )
    
-   Define *root2._s_WIDGET = OpenRootWidget(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetTextWidget(*root2, "root2")
+   Define *root2._s_WIDGET = OpenRoot(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetWidgetText(*root2, "root2")
    *w = PanelWidget( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
    BarPosition( *w\TabBox( ), 1, 100 )
    For i = 1 To 100;0000
@@ -87,11 +87,11 @@
          AddItem(*w, i, "text-" + Str(i))
       EndIf
    Next
-   SetFont(*w, 5)
+   SetWidgetFont(*w, 5)
    ;\\Close( )
    
    
-   Define *root3._s_WIDGET = OpenRootWidget(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetTextWidget(*root3, "root3")
+   Define *root3._s_WIDGET = OpenRoot(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetWidgetText(*root3, "root3")
    *w = PanelWidget( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
    BarPosition( *w\TabBox( ), 1, 100 )
    For i = 1 To 100;0000
@@ -101,10 +101,10 @@
          AddItem(*w, i, "text-" + Str(i))
       EndIf
    Next
-   SetFont(*w, 6)
+   SetWidgetFont(*w, 6)
    ;\\Close( )
    
-   Define *root4._s_WIDGET = OpenRootWidget(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetTextWidget(*root4, "root4")
+   Define *root4._s_WIDGET = OpenRoot(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetWidgetText(*root4, "root4")
    *w = PanelWidget( 10, 10, 200 - 20, 600 - 20) ; , #__flag_autosize )
    BarPosition( *w\TabBox( ), 1, 100 )
    For i = 1 To 100;0000
@@ -118,7 +118,7 @@
    
    
    
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.04 LTS (Linux - x64)

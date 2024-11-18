@@ -534,8 +534,8 @@ EndProcedure
       ImportC ""
         gtk_widget_is_visible(widget)
         gtk_widget_get_window(*Widget.GtkWidget)
-        gtk_entry_set_placeholder_TextWidget(*entry, text.p-utf8)
-        gtk_entry_get_placeholder_TextWidget(*entry)
+        gtk_entry_set_placeholder_Text(*entry, text.p-utf8)
+        gtk_entry_get_placeholder_Text(*entry)
       EndImport
     CompilerEndIf
   CompilerEndIf
@@ -609,7 +609,7 @@ EndProcedure
       SendMessage_(GadgetID(Gadget), #EM_SETCUEBANNER, #True, Text)
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
       CompilerIf Subsystem("gtk3")
-        gtk_entry_set_placeholder_TextWidget(GadgetID(Gadget), Text)
+        gtk_entry_set_placeholder_Text(GadgetID(Gadget), Text)
       CompilerEndIf
     CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
       CocoaMessage(0, CocoaMessage(0, GadgetID(Gadget), "cell"), "setPlaceholderString:$", @Text)
@@ -623,7 +623,7 @@ EndProcedure
       SendMessage_(GadgetID(Gadget), #EM_GETCUEBANNER, @Text, StringByteLength(Text))
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
       CompilerIf Subsystem("gtk3")
-        Text = PeekS(gtk_entry_get_placeholder_TextWidget(GadgetID(Gadget)), -1, #PB_UTF8)
+        Text = PeekS(gtk_entry_get_placeholder_Text(GadgetID(Gadget)), -1, #PB_UTF8)
       CompilerEndIf
     CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
       Text = PeekS(CocoaMessage(0, CocoaMessage(0, CocoaMessage(0, GadgetID(Gadget), "cell"), "placeholderString"), "UTF8String"), -1, #PB_UTF8)
@@ -730,7 +730,7 @@ EndProcedure
       CompilerCase #PB_OS_MacOS
         Protected Range.NSRange
         
-        Range.NSRange\location = Len(GetGadgetTextWidget(EditorGadgetID))
+        Range.NSRange\location = Len(GetGadGetWidgetText(EditorGadgetID))
         CocoaMessage(0, GadgetID(EditorGadgetID), "scrollRangeToVisible:@", @Range)
         
       CompilerCase #PB_OS_Windows

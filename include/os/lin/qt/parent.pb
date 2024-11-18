@@ -1,10 +1,10 @@
 ﻿EnableExplicit
 
-Procedure SetTextWordWrap( g,s )
+Procedure SetWidgetTextWordWrap( g,s )
   QtScript(~"gadget("+g+").wordWrap = "+s+"")
 EndProcedure
 
-Procedure SetTextAlignment( g,s )
+Procedure SetWidgetTextAlignment( g,s )
   QtScript(~"gadget("+g+").alignment = "+s+"") ; 0x0004|0x0080")
 EndProcedure
 
@@ -27,8 +27,8 @@ If OpenWindow(0, 0, 0, 250, 200, "TextGadget Test", #PB_Window_SystemMenu | #PB_
   
   ContainerGadget(2, 50,50,100,100, #PB_Container_Flat)
   TextGadget(5, 10,10,80,80, "text wordwrap line")
-  SetTextWordWrap(5, 1)
-  SetTextAlignment(5, 1<<2|1<<7)
+  SetWidgetTextWordWrap(5, 1)
+  SetWidgetTextAlignment(5, 1<<2|1<<7)
   
   CloseGadgetList()
   

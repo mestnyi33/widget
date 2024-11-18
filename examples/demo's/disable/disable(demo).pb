@@ -21,37 +21,37 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Procedure scrolled( )
     ; If EventGadget() = #PB_GadgetType_ScrollBar
-      SetState( Widgets(Hex(#PB_GadgetType_ProgressBar)), GetState( Widgets(Hex(#PB_GadgetType_ScrollBar))))
+      SetWidgetState( Widgets(Hex(#PB_GadgetType_ProgressBar)), GetWidgetState( Widgets(Hex(#PB_GadgetType_ScrollBar))))
     ; EndIf 
   EndProcedure
   
   If OpenWindow(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    OpenRootWidget(GetActiveWindow())
+    OpenRoot(GetActiveWidgetWindow())
     ;
     ;Widgets("Container") = ContainerWidget(0, 0, 995, 455);, #__flag_AutoSize) 
     
     Widgets(Hex(#PB_GadgetType_Button)) = ButtonWidget(5, 5, 160,95, "Multiline Button_"+Hex(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #__flag_Textmultiline ) 
     Widgets(Hex(#PB_GadgetType_String)) = StringWidget(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
     Widgets(Hex(#PB_GadgetType_Text)) = TextWidget(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text", #PB_Text_Border)        
-    Widgets(Hex(#PB_GadgetType_CheckBox)) = CheckBoxWidget(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox), #PB_CheckBox_ThreeState) : SetState(Widgets(Hex(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween)
-    Widgets(Hex(#PB_GadgetType_Option)) = OptionWidget(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option) ) : SetState(Widgets(Hex(#PB_GadgetType_Option)), 1)                                                       
+    Widgets(Hex(#PB_GadgetType_CheckBox)) = CheckBoxWidget(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox), #PB_CheckBox_ThreeState) : SetWidgetState(Widgets(Hex(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween)
+    Widgets(Hex(#PB_GadgetType_Option)) = OptionWidget(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option) ) : SetWidgetState(Widgets(Hex(#PB_GadgetType_Option)), 1)                                                       
     Widgets(Hex(#PB_GadgetType_ListView)) = ListViewWidget(5, 505, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), -1, "ListView_"+Hex(#PB_GadgetType_ListView)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), i, "item_"+Hex(i)) : Next
     
     Widgets(Hex(#PB_GadgetType_Frame)) = FrameWidget(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame) )
-    Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBoxWidget(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)) : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
+    Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBoxWidget(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)) : Next : SetWidgetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
     Widgets(Hex(#PB_GadgetType_Image)) = ImageWidget(170, 205, 160,95, img, #PB_Image_Border ) 
     Widgets(Hex(#PB_GadgetType_HyperLink)) = HyperLinkWidget(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink), $00FF00, #PB_HyperLink_Underline ) 
     Widgets(Hex(#PB_GadgetType_Container)) = ContainerWidget(170, 405, 160,95, #PB_Container_Flat )
-    Widgets(Hex(101)) = OptionWidget(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container) )  : SetState(Widgets(Hex(101)), 1)  
+    Widgets(Hex(101)) = OptionWidget(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container) )  : SetWidgetState(Widgets(Hex(101)), 1)  
     Widgets(Hex(102)) = OptionWidget(10, 40, 110,20, "Option_widget");, #__flag_flat)  
     CloseWidgetList()
     ;Widgets(Hex(#PB_GadgetType_ListIcon)) = ListIconWidget(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon),120 )                           
     
-    ;Widgets(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(Widgets(Hex(#PB_GadgetType_IPAddress)), MakeIPAddress(1, 2, 3, 4))    
-    Widgets(Hex(#PB_GadgetType_ProgressBar)) = ProgressBarWidget(335, 105, 160,95,0,100, 0, 50) : SetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
-    Widgets(Hex(#PB_GadgetType_ScrollBar)) = ScrollBarWidget(335, 205, 160,95,0,120,20) : SetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
+    ;Widgets(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetWidgetState(Widgets(Hex(#PB_GadgetType_IPAddress)), MakeIPAddress(1, 2, 3, 4))    
+    Widgets(Hex(#PB_GadgetType_ProgressBar)) = ProgressBarWidget(335, 105, 160,95,0,100, 0, 50) : SetWidgetState(Widgets(Hex(#PB_GadgetType_ProgressBar)), 50)
+    Widgets(Hex(#PB_GadgetType_ScrollBar)) = ScrollBarWidget(335, 205, 160,95,0,120,20) : SetWidgetState(Widgets(Hex(#PB_GadgetType_ScrollBar)), 50)
     Widgets(Hex(#PB_GadgetType_ScrollArea)) = ScrollAreaWidget(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Hex(201)) = ButtonWidget(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea) ) : Widgets(Hex(202)) = ButtonWidget(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseWidgetList()
-    Widgets(Hex(#PB_GadgetType_TrackBar)) = TrackBarWidget(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
+    Widgets(Hex(#PB_GadgetType_TrackBar)) = TrackBarWidget(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetWidgetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
     ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
     
     Widgets(Hex(#PB_GadgetType_ButtonImage)) = ButtonImageWidget(500, 5, 160,95, 1)
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     CloseWidgetList()
     CloseWidgetList()
     CloseWidgetList()
-    SetState( Widgets(Hex(#PB_GadgetType_Panel)), 4)
+    SetWidgetState( Widgets(Hex(#PB_GadgetType_Panel)), 4)
     
     Widgets(Hex(301)) = SpinWidget(0, 0, 100,20,0,10, #__spin_plus)
     Widgets(Hex(302)) = SpinWidget(0, 0, 100,20,0,10)                 
@@ -140,7 +140,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Disable(Widgets(Hex(#PB_GadgetType_Tree)), 1)
     ;Disable(Widgets(Hex(#PB_GadgetType_Web)), 1)
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
 ;     Repeat
 ;       Define  Event = WaitWindowEvent()
 ;     Until Event= #PB_Event_CloseWindow

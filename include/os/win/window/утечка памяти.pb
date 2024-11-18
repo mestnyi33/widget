@@ -44,7 +44,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.i PanelWidget( x.l,y.l,width.l,height.l, Flag.i = 0 )
     Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.i = 0 )
     Declare.i ButtonWidget( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, Image.i = -1, round.l = 0 )
-    Declare   OpenRootWidget( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *callback = #Null, canvas = #PB_Any )
+    Declare   OpenRoot( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *callback = #Null, canvas = #PB_Any )
     
     ;}
   EndDeclareModule
@@ -114,7 +114,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn *this
     EndProcedure
     
-    Procedure   OpenRootWidget( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
+    Procedure   OpenRoot( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
       Protected w, g, UseGadgetList, result
       
       ; get a handle from the previous usage list
@@ -153,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define event
   Define id_design_panel
   
-  OpenRootWidget( OpenWindow( #PB_Any, 0,0,0,0, "ide" ) )
+  OpenRoot( OpenWindow( #PB_Any, 0,0,0,0, "ide" ) )
   
   ;     ;\\\ 
   id_design_panel = PanelWidget( 0,0,0,0 )

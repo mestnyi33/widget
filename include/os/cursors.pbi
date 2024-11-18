@@ -305,8 +305,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure   DrawCanvasFrameWidget(Gadget, color)
       If GadgetType(Gadget) = #PB_GadgetType_Canvas
          StartDrawing(CanvasOutput(Gadget))
-         If GetGadgetState(Gadget)
-            DrawImage(0,0, GetGadgetState(Gadget))
+         If GetGadGetWidgetState(Gadget)
+            DrawImage(0,0, GetGadGetWidgetState(Gadget))
          EndIf
          If Not color
             color = Point(10,10)
@@ -330,12 +330,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Macro GadgetMouseX(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
-      ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseX)
+      ; GetWidgetAttribute(_canvas_, #PB_Canvas_MouseX)
       DesktopMouseX() - GadgetX(_canvas_, _mode_)
       ; WindowMouseX(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetX(_canvas_, #PB_Gadget_WindowCoordinate)  
    EndMacro
    Macro GadgetMouseY(_canvas_, _mode_ = #PB_Gadget_ScreenCoordinate)
-      ; GetGadgetAttribute(_canvas_, #PB_Canvas_MouseY)
+      ; GetWidgetAttribute(_canvas_, #PB_Canvas_MouseY)
       DesktopMouseY() - GadgetY(_canvas_, _mode_)
       ; WindowMouseY(ID::Window(ID::GetWindowID(GadgetID(_canvas_)))) - GadgetY(_canvas_, #PB_Gadget_WindowCoordinate)
    EndMacro
@@ -829,7 +829,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ; Debug  CocoaMessage(0, CocoaMessage(0,0,"NSApplication sharedApplication"), "NSEvent")
          
          If LeavedGadget >= 0
-            ; Debug GetGadgetAttribute(LeavedGadget, #PB_Canvas_Buttons)
+            ; Debug GetWidgetAttribute(LeavedGadget, #PB_Canvas_Buttons)
             EventHandler(LeavedGadget, #PB_EventType_MouseLeave, 0)
             ;Cursor::Change(GadgetID(LeavedGadget), 0 )
             CompilerSelect #PB_Compiler_OS 
@@ -841,7 +841,7 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          
          If EnteredGadget >= 0
-            ; Debug GetGadgetAttribute(EnteredGadget, #PB_Canvas_Buttons)
+            ; Debug GetWidgetAttribute(EnteredGadget, #PB_Canvas_Buttons)
             EventHandler(EnteredGadget, #PB_EventType_MouseEnter, 1)
             ;Cursor::Change(GadgetID(EnteredGadget), 1 )
             CompilerSelect #PB_Compiler_OS 

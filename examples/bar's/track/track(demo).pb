@@ -9,12 +9,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_gadgets()
       Select EventType()
          Case #PB_EventType_LeftClick, #PB_EventType_Change
-            Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+            Debug  ""+ EventGadget() +" - gadget change " + GetGadGetWidgetState(EventGadget())
             
             Select EventGadget()
-               Case 0 : SetState(w_0, GetGadgetState(EventGadget()))
-               Case 1 : SetState(w_1, GetGadgetState(EventGadget()))
-               Case 2 : SetState(w_2, GetGadgetState(EventGadget()))
+               Case 0 : SetWidgetState(w_0, GetGadGetWidgetState(EventGadget()))
+               Case 1 : SetWidgetState(w_1, GetGadGetWidgetState(EventGadget()))
+               Case 2 : SetWidgetState(w_2, GetGadGetWidgetState(EventGadget()))
             EndSelect
             
             ; 
@@ -27,32 +27,32 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_widgets()
       Select WidgetEvent( )
          Case #__event_LeftClick, #__event_Change
-            Debug  ""+IDWidget(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
+            Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetWidgetState(EventWidget( ))
             
             Select EventWidget( )
-               Case w_0 : SetGadgetState(0, GetState(EventWidget( )))
-               Case w_1 : SetGadgetState(1, GetState(EventWidget( )))
-               Case w_2 : SetGadgetState(2, GetState(EventWidget( )))
+               Case w_0 : SetGadGetWidgetState(0, GetWidgetState(EventWidget( )))
+               Case w_1 : SetGadGetWidgetState(1, GetWidgetState(EventWidget( )))
+               Case w_2 : SetGadGetWidgetState(2, GetWidgetState(EventWidget( )))
             EndSelect
       EndSelect
    EndProcedure
    
    ; Shows possible flags of ButtonGadget in action...
-   If OpenRootWidget(0, 0, 0, 350+350, 220, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRoot(0, 0, 0, 350+350, 220, "TrackBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       TrackBarGadget(0, 10,  40, 250, 20, 0, 30)
-      SplitterGadget(100, 10,  40, 250, 20, 0,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadgetState(100, 250)
-      SetGadgetState(0, 25)
+      SplitterGadget(100, 10,  40, 250, 20, 0,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadGetWidgetState(100, 250)
+      SetGadGetWidgetState(0, 25)
       
       TrackBarGadget(1, 10, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
-      SplitterGadget(101, 10,  120, 250, 20, 1,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadgetState(101, 250)
-      ;SetGadgetState(1, 30)
+      SplitterGadget(101, 10,  120, 250, 20, 1,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border), #PB_Splitter_Vertical ) : SetGadGetWidgetState(101, 250)
+      ;SetGadGetWidgetState(1, 30)
       
       TrackBarGadget(2, 280, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
-      SplitterGadget(102, 280, 10, 20, 170, 2,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border) ) : SetGadgetState(102, 250)
-      SetGadgetState(2, 8000)
+      SplitterGadget(102, 280, 10, 20, 170, 2,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border) ) : SetGadGetWidgetState(102, 250)
+      SetGadGetWidgetState(2, 8000)
       
       TrackBarGadget(22, 320, 10, 20, 170, 0, 10, #PB_TrackBar_Vertical|#PB_TrackBar_Ticks)
-      SplitterGadget(122, 320, 10, 20, 170, 22,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border) ) : SetGadgetState(122, 250)
+      SplitterGadget(122, 320, 10, 20, 170, 22,  TextGadget(#PB_Any,0,0,0,0,"", #PB_Text_Border) ) : SetGadGetWidgetState(122, 250)
       
       TextGadget    (#PB_Any, 10,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
       TextGadget    (#PB_Any, 10, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
@@ -67,19 +67,19 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       Define X = 350
       w_0 = TrackBarWidget(10+X,  40, 250, 20, 0, 30)
-      SetState(Splitter(10+X,  40, 250, 20, w_0,  #PB_Default, #PB_Splitter_Vertical ), 250)
-      SetState(w_0, 25)
+      SetWidgetState(Splitter(10+X,  40, 250, 20, w_0,  #PB_Default, #PB_Splitter_Vertical ), 250)
+      SetWidgetState(w_0, 25)
       
       w_1 = TrackBarWidget(10+X, 120, 250, 20, -10, 10, #PB_TrackBar_Ticks)
-      SetState(Splitter(10+X,  120, 250, 20, w_1,  #PB_Default, #PB_Splitter_Vertical ), 250)
-      ;SetState(w_1, 30)
+      SetWidgetState(Splitter(10+X,  120, 250, 20, w_1,  #PB_Default, #PB_Splitter_Vertical ), 250)
+      ;SetWidgetState(w_1, 30)
       
       w_2 = TrackBarWidget(280+X, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
-      SetState(Splitter(280+X, 10, 20, 170, w_2,  #PB_Default ), 170)
-      SetState(w_2, 8000)
+      SetWidgetState(Splitter(280+X, 10, 20, 170, w_2,  #PB_Default ), 170)
+      SetWidgetState(w_2, 8000)
       
       w_2 = TrackBarWidget(320+X, 10, 20, 170, 0, 10, #PB_TrackBar_Vertical|#PB_TrackBar_Ticks)
-      SetState(Splitter(320+X, 10, 20, 170, w_2,  #PB_Default ), 170)
+      SetWidgetState(Splitter(320+X, 10, 20, 170, w_2,  #PB_Default ), 170)
       
       TextWidget(10+X,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
       TextWidget(10+X, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)

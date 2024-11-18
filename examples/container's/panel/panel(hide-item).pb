@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   OpenWindow(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    OpenRootWidget(3)
+    OpenRoot(3)
     
     ;ButtonWidget(10,5,50,35, "butt")
     
@@ -53,11 +53,11 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*w, -1,"Панель 4")
     CloseWidgetList()
     
-    SetState(*w,1)
+    SetWidgetState(*w,1)
     HideItem(*w, 2, 1)
     ; HideItem(*w, 1, 0)
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
     
      
 CompilerEndIf

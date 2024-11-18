@@ -8,14 +8,14 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    
    
-   Procedure Window_0_ResizeWidget( )
+   Procedure Window_0_Resize( )
       Debug 888
     ;  ResizeGadget(GetCanvasGadget(root()),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
      ;  ResizeWidget( root(),#PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()) )
       ; PostEventRepaint( root())
    EndProcedure
    
-   Define Window_0 = GetCanvasWindow( OpenRootWidget( #PB_Any, 20, 20, 200, 200, "test", #PB_Window_SizeGadget))
+   Define Window_0 = GetCanvasWindow( OpenRoot( #PB_Any, 20, 20, 200, 200, "test", #PB_Window_SizeGadget))
    
    ;Define Button_0 = ButtonWidget( 200-50-5, 200-50-5, 50,  50, "right & bottom")
    Define Button_0 = ButtonWidget( 5, 5, 50,  50, "right & bottom")
@@ -30,12 +30,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    While WaitWindowEvent(1000) : Wend ;: Delay(1000)
    
-   BindEvent(#PB_Event_SizeWindow, @Window_0_ResizeWidget( ))
+   BindEvent(#PB_Event_SizeWindow, @Window_0_Resize( ))
    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,300)
    
    PostEventRepaint( root())
    ;While WaitWindowEvent(2000) : Wend
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

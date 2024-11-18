@@ -4,7 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
-  If OpenRootWidget(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ContainerGadget( 1, 10,10,200,100, #PB_Container_Flat ) 
     SetGadGetWidgetColor(1, #PB_Gadget_BackColor, $95E3F6 )
     CloseGadgetList( )
@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseWidgetList( )
     SplitterWidget( 220,230,200,200, WidgetID(3), WidgetID(4) )
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

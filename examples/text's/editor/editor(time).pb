@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
     EditorGadget(0, 10, 10, 250, 680)
     
-    OpenRootWidget(0, 270, 10, 250, 680)
+    OpenRoot(0, 270, 10, 250, 680)
     Define *w = EditorWidget(0, 0, 250, 680) 
     
     Define time = ElapsedMilliseconds()
@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
     ; HideGadget(0, 0)
     
-    WaitCloseRootWidget()
+    WaitCloseRoot()
   EndIf
   
 CompilerEndIf

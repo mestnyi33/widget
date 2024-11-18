@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define vert=100, horiz=100, width=400, height=440
   
-  Procedure.s get_TextWidget(m.s=#LF$)
+  Procedure.s get_Text(m.s=#LF$)
     Protected Text.s = "This is a long line." + m.s +
                        "Who should show." + 
                        m.s +
@@ -37,24 +37,24 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventWidget( )
           Case *this
             If Flag(*this, #__flag_ButtonToggle)
-              SetState(Button_4, GetState(EventWidget( )))
+              SetWidgetState(Button_4, GetWidgetState(EventWidget( )))
             EndIf
             
           Case Button_type 
-            If GetState(EventWidget( ))
+            If GetWidgetState(EventWidget( ))
               Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
-                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
+                SetWidgetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
-              SetTextWidget(Button_type, "widget")
+              SetWidgetText(Button_type, "widget")
             Else
               Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
-                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
+                SetWidgetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
               EndIf
-              SetTextWidget(Button_type, "gadget")
+              SetWidgetText(Button_type, "gadget")
             EndIf
             
           Case Button_0 : flag = #__flag_ButtonDefault
@@ -69,21 +69,21 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(EventWidget( )))
+          Flag(*this, flag, GetWidgetState(EventWidget( )))
         EndIf
         ; PostWidgetEvent(#__event_repaint, #PB_All)
     EndSelect
     
   EndProcedure
   
-  If OpenRootWidget(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::ButtonWidget(100, 100, 250, 250, get_TextWidget(), #__flag_Textmultiline);|);|#__flag_Textleft) 
+    ;*this = widget::ButtonWidget(100, 100, 250, 250, get_Text(), #__flag_Textmultiline);|);|#__flag_Textleft) 
     ContainerWidget(10, 10, width, height) : a_init( widget( ))
     *this = widget::EditorWidget(10, 10, 250, 250);, #__flag_Textwordwrap) 
     CloseWidgetList( )
-    SetTextWidget(*this, get_TextWidget())
+    SetWidgetText(*this, get_Text())
     
     Define y = 10
     ; flag
@@ -102,12 +102,12 @@ CompilerIf #PB_Compiler_IsMainFile
     BindWidgetEvent(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(Button_1, Flag(*this, #__flag_Textmultiline))
-    SetState(Button_4, Flag(*this, #__flag_Textwordwrap))
-    SetState(Button_5, Flag(*this, #__flag_Texttop))
-    SetState(Button_2, Flag(*this, #__flag_Textleft))
-    SetState(Button_3, Flag(*this, #__flag_Textright))
-    SetState(Button_6, Flag(*this, #__flag_Textbottom))
+    SetWidgetState(Button_1, Flag(*this, #__flag_Textmultiline))
+    SetWidgetState(Button_4, Flag(*this, #__flag_Textwordwrap))
+    SetWidgetState(Button_5, Flag(*this, #__flag_Texttop))
+    SetWidgetState(Button_2, Flag(*this, #__flag_Textleft))
+    SetWidgetState(Button_3, Flag(*this, #__flag_Textright))
+    SetWidgetState(Button_6, Flag(*this, #__flag_Textbottom))
     If Button_type
        Hide(Button_type, 1)
     EndIf
@@ -116,10 +116,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         Splitter_1 = widget::SplitterWidget(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
 ;         Splitter_2 = widget::SplitterWidget(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
 ;         Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-; ;         SetState(Splitter_0, vert)
-; ;         SetState(Splitter_1, horiz)
-;          SetState(Splitter_3, width-horiz)
-;          SetState(Splitter_2, height-vert)
+; ;         SetWidgetState(Splitter_0, vert)
+; ;         SetWidgetState(Splitter_1, horiz)
+;          SetWidgetState(Splitter_3, width-horiz)
+;          SetWidgetState(Splitter_2, height-vert)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

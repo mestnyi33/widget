@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Declare CustomEvents( )
   
   ;\\
-  OpenRootWidget(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  OpenRoot(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
   Define fs = 20
   ;\\
@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   BindWidgetEvent( widget( ), @CustomEvents(), #__event_Draw )
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
   
   ;\\
   Procedure CustomEvents( )

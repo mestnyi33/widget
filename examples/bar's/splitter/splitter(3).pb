@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::OpenRootWidget(0);, 0, 0, 510, 340)
+  widget::OpenRoot(0);, 0, 0, 510, 340)
   
   ; first splitter
   ButtonGadget(1, 0, 0, 0, 0, "BTN1")
@@ -51,10 +51,10 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(71, 125, 80, 250, 70, 31, 61, #PB_Splitter_Separator )
   
   Define max = 250-#__splittersize
-  SetGadgetState(3, -10)
-  SetGadgetState(6, max-10)
-  SetGadgetState(31, max/2)
-  SetGadgetState(61, 10)
+  SetGadGetWidgetState(3, -10)
+  SetGadGetWidgetState(6, max-10)
+  SetGadGetWidgetState(31, max/2)
+  SetGadGetWidgetState(61, 10)
   
   
   ; first splitter
@@ -79,10 +79,10 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   s_5 = widget::SplitterWidget(125, 250, 250, 70, s_3, s_4, #PB_Splitter_Separator)
   
-  SetState(s_0, -10)
-  SetState(s_1, max-10)
-  SetState(s_3, max/2)
-  SetState(s_4, 10)
+  SetWidgetState(s_0, -10)
+  SetWidgetState(s_1, max-10)
+  SetWidgetState(s_3, max/2)
+  SetWidgetState(s_4, 10)
   
   Define event
   Repeat

@@ -17,23 +17,23 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       PanelWidget(x,y,width,height)
       AddItem(widget(), -1, "1Layer = "+text.s)
       AddItem(widget(), -1, "2Layer = "+text.s)
-      SetState(widget(),1)
+      SetWidgetState(widget(),1)
     ElseIf type = #PB_GadgetType_MDI
       AddItem(widget(), -1, "", -1);, #PB_Window_BorderLess)
       ResizeWidget(widget(), x,y,width,height)
     EndIf
     
-    SetTextWidget(widget(), "Layer = " +text )
+    SetWidgetText(widget(), "Layer = " +text )
     SetWidgetColor(widget(), #__color_back, RGBA(206, 156, 232, alpha))
     SetWidgetColor(widget(), #__color_frame, RGB(128, 64, 192))
     
     ContainerWidget(20, 20, 200, 100, #__flag_nogadgets) 
-    SetTextWidget(widget(), "Layer = " +text+ "-1")
+    SetWidgetText(widget(), "Layer = " +text+ "-1")
     SetWidgetColor(widget(), #__color_back, RGBA(64, 128, 192, alpha))
     SetWidgetColor(widget(), #__color_frame, RGB(64, 128, 192))
     
     ContainerWidget(50, 50, 200, 100);, #__flag_nogadgets)
-    SetTextWidget(widget(), "Layer = " +text+ "-2")
+    SetWidgetText(widget(), "Layer = " +text+ "-2")
     SetWidgetColor(widget(), #__color_back, RGBA(192, 64, 128, alpha))
     SetWidgetColor(widget(), #__color_frame, RGBA(192, 64, 128, 255))
     ButtonWidget(10, 10, 50, 30, "1") 
@@ -43,23 +43,23 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     ;ContainerWidget(80, 80, 200, 100, #__flag_nogadgets) 
     ButtonWidget(80, 80, 200, 100, "") 
-    SetTextWidget(widget(), "Layer = " +text+ "-3")
+    SetWidgetText(widget(), "Layer = " +text+ "-3")
     SetWidgetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
     SetWidgetColor(widget(), #__color_frame, RGB(128, 192, 64))
     
     ContainerWidget(110, 110, 200, 100, #__flag_nogadgets)
-    SetTextWidget(widget(), "Layer = " +text+ "-4")
+    SetWidgetText(widget(), "Layer = " +text+ "-4")
     SetWidgetColor(widget(), #__color_back, RGBA(192, 128, 64, alpha))
     SetWidgetColor(widget(), #__color_frame, RGBA(192, 128, 64, 255))
     
     ContainerWidget(140, 140, 200, 100, #__flag_nogadgets) 
-    SetTextWidget(widget(), "Layer = " +text+ "-5")
+    SetWidgetText(widget(), "Layer = " +text+ "-5")
     SetWidgetColor(widget(), #__color_back, RGBA(128, 64, 192, alpha))
     SetWidgetColor(widget(), #__color_frame, RGB(128, 64, 192))
     
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (context menu via right click)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (context menu via right click)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;;a_init(root(), 4) ; , 0)
     
     MDIWidget(50, 50, 800-100, 450-100) 
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     ;SetActiveGadget( GetCanvasGadget( Root( ) ) )
     
-     WaitCloseRootWidget( )
+     WaitCloseRoot( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

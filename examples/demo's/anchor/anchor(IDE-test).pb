@@ -55,13 +55,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     If a_transform()\widget\_a_transform = 1
       ;  transform = a_transform()\widget\parent
       
-      RemoveItem(id_inspector_tree, GetData(a_transform()\widget))
+      RemoveItem(id_inspector_tree, GetWidgetData(a_transform()\widget))
       FreeWidget(a_transform()\widget)
     Else
       ;  transform = a_transform()\widget
       
       ForEach a_transform()\group()
-        RemoveItem(id_inspector_tree, GetData(a_transform()\group()\widget))
+        RemoveItem(id_inspector_tree, GetWidgetData(a_transform()\group()\widget))
         FreeWidget(a_transform()\group()\widget)
         DeleteElement(a_transform()\group())
       Next
@@ -107,17 +107,17 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;       Case #PB_EventType_LeftClick
 ;         If e_widget = id_elements_tree
 ;           Debug "click"
-;           ; SetCursor(EventWidget( ), ImageID(GetItemData(id_elements_tree, a_transform()\type)))
+;           ; SetCursor(EventWidget( ), ImageID(GetWidgetItemData(id_elements_tree, a_transform()\type)))
 ;         EndIf
 ;         
 ;         If GetWidgetClass(e_widget) = "ToolBar"
-;           Protected transform, move_x, move_y, BarButton = GetData(e_widget)
+;           Protected transform, move_x, move_y, BarButton = GetWidgetData(e_widget)
 ;           Static NewList *copy._s_group()
 ;           
 ;           
 ;           Select BarButton
 ;             Case 1
-;               If Getstate(e_widget)  
+;               If GetWidgetState(e_widget)  
 ;                 ; group
 ;                 group_select = e_widget
 ;                 ; SetAtributte(e_widget, #PB_Button_PressedImage)
@@ -217,28 +217,28 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;widget()\text\padding\x = 0
     widget()\class = "ToolBar"
     widget()\data = _button_
-    ;SetData(widget(), _button_)
+    ;SetWidgetData(widget(), _button_)
     BindWidgetEvent(widget(), @toolbar_events())
   EndMacro
   
   Macro Separator_()
     TextWidget(2+(X(widget())+WidgetWidth(widget())), 2,1,barbuttonsize,"")
     ButtonWidget((X(widget())+WidgetWidth(widget())), 2+4,1,barbuttonsize-6,"")
-    SetData(widget(), - MacroExpandedCount)
+    SetWidgetData(widget(), - MacroExpandedCount)
     TextWidget((X(widget())+WidgetWidth(widget())), 2,1,barbuttonsize,"")
   EndMacro
   
   
-  OpenRootWidget(0, 150, 150, 600, 600+barbuttonsize+6, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
+  OpenRoot(0, 150, 150, 600, 600+barbuttonsize+6, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
   toolbar_design = ContainerWidget(0,0,600,barbuttonsize+6) 
   ;SetAlignmentFlag(widget(), #__align_top)
   ;ToolBar(toolbar, window, flags)
   
 ;   group_select = BarButton_(1, - 1, #__flag_ButtonToggle)
-;   SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
-;   SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
+;   SetWidgetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
+;   SetWidgetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
 ;   
-;   ;BarButtonWidget(2, CatchImage(#PB_Any,?group_un))
+;   ;BarButton(2, CatchImage(#PB_Any,?group_un))
    Separator_()
   BarButton_(#_tb_group_left, CatchImage(#PB_Any,?image_16))
   BarButton_(#_tb_group_right, CatchImage(#PB_Any,?image_24))
@@ -283,7 +283,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;ContainerWidget(30,30,400,400)
   ComboBoxWidget(120,160,115,50)
   AddItem(widget(), -1, "combo1")
-  SetState(widget(), 0)
+  SetWidgetState(widget(), 0)
   
   ;ButtonWidget(120,160,115,50,"butt1")
   AddItem(widget()\parent, -1, "item-2")

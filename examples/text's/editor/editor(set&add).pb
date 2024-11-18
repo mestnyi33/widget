@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
     
     EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap) 
-    SetGadgetTextWidget(0, Text.s) 
+    SetGadGetWidgetText(0, Text.s) 
     For a = 0 To 2
       AddGadgetItem(0, a, "Line "+Str(a))
     Next
@@ -62,18 +62,18 @@ CompilerIf #PB_Compiler_IsMainFile
     For a = 4 To 6
       AddGadgetItem(0, a, "Line "+Str(a))
     Next
-    ;SetGadgetFont(0, FontID(0))
+    ;SetGadGetWidgetFont(0, FontID(0))
     
     
-    OpenRootWidget(0, 270, 10, 250, 680)
+    OpenRoot(0, 270, 10, 250, 680)
     ;Define *w = EditorWidget(0, 0, 0, 0, #__flag_autosize) 
     *g = EditorWidget(0, 0, 250, 680, #__flag_autosize) 
     g=GetCanvasGadget(root())
     
     ;     Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines|#PB_Flag_Numeric);#PB_Text_WordWrap|#PB_Flag_GridLines) 
-    ;     *g._s_widget=GetGadgetData(g)
+    ;     *g._s_widget=GetGadGetWidgetData(g)
     
-    SetTextWidget(*g, Text.s) 
+    SetWidgetText(*g, Text.s) 
     For a = 0 To 2
       AddItem(*g, a, "Line "+Str(a))
     Next
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For a = 4 To 6
       AddItem(*g, a, "Line "+Str(a))
     Next
-    ;SetFont(*g, FontID(0))
+    ;SetWidgetFont(*g, FontID(0))
     ;\\Close( )
     
     SplitterGadget(10,8, 8, 306, 491-16, 0,g)
@@ -100,13 +100,13 @@ CompilerIf #PB_Compiler_IsMainFile
           If EventGadget() = 100
             Select EventType()
               Case #PB_EventType_LeftClick
-                Define *E._s_widget = GetGadgetData(g)
+                Define *E._s_widget = GetGadGetWidgetData(g)
                 
                 *E\Text\MultiLine !- 1
                 If  *E\Text\MultiLine = 1
-                  SetGadgetTextWidget(100,"~wrap")
+                  SetGadGetWidgetText(100,"~wrap")
                 Else
-                  SetGadgetTextWidget(100,"wrap")
+                  SetGadGetWidgetText(100,"wrap")
                 EndIf
                 
                 CompilerSelect #PB_Compiler_OS
@@ -125,11 +125,11 @@ CompilerIf #PB_Compiler_IsMainFile
                       EditorGadget(0, 8, 8, 306, 133) 
                     EndIf
                     
-                    SetGadgetTextWidget(0, Text.s) 
+                    SetGadGetWidgetText(0, Text.s) 
                     For a = 0 To 5
                       AddGadgetItem(0, a, "Line "+Str(a))
                     Next
-                    SetGadgetFont(0, FontID(0))
+                    SetGadGetWidgetFont(0, FontID(0))
                     
                     SplitterGadget(10,8, 8, 306, 276, 0,g)
                     

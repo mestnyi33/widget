@@ -25,7 +25,7 @@ Procedure CFE_Helper_Buttons_Events( )
           Close( GetCanvasWindow( Button_Cancel ) )
           
         Case Button_Ok 
-          Window_0_0_Image = GetState(Image_View)
+          Window_0_0_Image = GetWidgetState(Image_View)
           
           Select Event_ ; Is(*Create\Checked)
             Case Properties_ImageBg
@@ -35,7 +35,7 @@ Procedure CFE_Helper_Buttons_Events( )
               If WidgetWidth(Checked) <> ImageWidget(Window_0_0_Image) And Not IsWidgetContainer(Checked)
                 
                 If MessageRequester("Сообщение","Хотите изменить размер элемента?", #PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
-                  SetTextWidget(Checked, "")
+                  SetWidgetText(Checked, "")
                   ResizeWidget(Checked, #PB_Ignore, #PB_Ignore, ImageWidget(Window_0_0_Image)+8+1, ImageHeight(Window_0_0_Image)+8+1)
                 EndIf
                 
@@ -44,7 +44,7 @@ Procedure CFE_Helper_Buttons_Events( )
               SetWidgetImage(Checked, Window_0_0_Image)
           EndSelect
           
-          SetTextWidget(Event_, Window_0_OpenFile$)
+          SetWidgetText(Event_, Window_0_OpenFile$)
           ;*Create\ImagePuch(Str(Window_0_0_Image)) = Window_0_OpenFile$
           
           Close(Button_Ok)
@@ -59,7 +59,7 @@ Procedure CFE_Helper_Buttons_Events( )
           
           UsePNGImageDecoder()
           If img
-            SetState(Image_View, img)
+            SetWidgetState(Image_View, img)
           EndIf
           
       EndSelect
@@ -71,7 +71,7 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
   Protected X,Y,Width=346,Height=176, View
   Flag.q | #PB_Window_SystemMenu|#PB_Window_SizeGadget
   
-  ; = OpenRootWidget(#PB_Any, #PB_Ignore,#PB_Ignore,200,300, "Image editor",Flag, Parent) 
+  ; = OpenRoot(#PB_Any, #PB_Ignore,#PB_Ignore,200,300, "Image editor",Flag, Parent) 
   
   If ((Flag & #PB_Window_ScreenCentered) = #PB_Window_ScreenCentered)
 ;     X = (WidgetWidth(0)-Width)/2 
@@ -113,16 +113,16 @@ EndProcedure
 ;-
 ; Window  example
 CompilerIf #PB_Compiler_IsMainFile
-  OpenRootWidget(#PB_Any, 0,0, 432,284+4*65, "Demo ()") 
+  OpenRoot(#PB_Any, 0,0, 432,284+4*65, "Demo ()") 
   
   Define Window = root( )
   ;a_init(Window)
-  ;Define  h = GetAttribute(Window, #_Attribute_CaptionHeight)
+  ;Define  h = GetWidgetAttribute(Window, #_Attribute_CaptionHeight)
   Define gImage 
   CFE_Helper_Image(Window)
   Debug gImage
   
-  WaitCloseRootWidget(Window)
+  WaitCloseRoot(Window)
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

@@ -20,8 +20,8 @@
 ;                                                      CloseSubBar( ) - CloseSubMenu( )
 ; 
 ; 
-;                                 GetItemTextWidget( *address, TitleIndex ) - GetMenuTitleTextWidget( #Menu, Title )
-;                         SetItemTextWidget( *address, TitleIndex, text.s ) - SetMenuTitleTextWidget( #Menu, Title, Text$ )
+;                                 GetWidgetItemText( *address, TitleIndex ) - GetMenuTitleTextWidget( #Menu, Title )
+;                         SetWidgetItemText( *address, TitleIndex, text.s ) - SetMenuTitleTextWidget( #Menu, Title, Text$ )
 ;
 ;                          DisableBarItem( *address, BarItem, state ) - DisableMenuItem( #Menu, MenuItem, State )
 ;                         SetBarItemState( *address, BarItem, state ) - SetMenuItemState( #Menu, MenuItem, State )
@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       If event = #__event_MouseEnter
-         Debug "  - "+GetActiveGadget( )+" "+GetActiveWindow( )
+         Debug "  - "+GetActiveWidgetGadget( )+" "+GetActiveWidgetWindow( )
          ForEach roots( )
             Debug ""+roots( )\canvas\gadget +" "+ roots( )\canvas\window +" "+ roots( )\class +" "+ roots( )\focus
             
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Define windowID = OpenRootWidget( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
+   Define windowID = OpenRoot( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    ContainerGadget( #PB_Any, 10, 35, 80, 80, #PB_Container_Flat ) 
    StringGadget( #PB_Any, 10, 10, 80, 35, "String1" )
    StringGadget( #PB_Any, 10, 50, 80, 35, "String2" )

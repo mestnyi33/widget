@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
     Procedure Button_DrawCallback(*Object._s_widget, Width.i, Height.i, DataValue.i)
-      Protected Text.s = GetTextWidget(*Object)
+      Protected Text.s = GetWidgetText(*Object)
       Protected Hue = DataValue
         Protected x, y
        Draw_Button( *Object )
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;- \\
-   Procedure Canvas_ResizeWidget( )
+   Procedure Canvas_Resize( )
       ;Protected width = GadgetWidth( EventGadget() )
       Protected width = WindowWidth( EventWindow() )
       ResizeWidget( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
@@ -133,30 +133,30 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Gadgets_Events()
       Select EventGadget()
          Case 2
-            If GetGadgetState(2)
-                  SetGadgetTextWidget(2, "vertical bar")
-              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
+            If GetGadGetWidgetState(2)
+                  SetGadGetWidgetText(2, "vertical bar")
+              SetGadGetWidgetState(3, GetWidgetAttribute(*mdi\scroll\v, #__bar_invert))
             Else
-                SetGadgetTextWidget(2, "horizontal bar")
-                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
+                SetGadGetWidgetText(2, "horizontal bar")
+                SetGadGetWidgetState(3, GetWidgetAttribute(*mdi\scroll\h, #__bar_invert))
             EndIf
             
          Case 3
-            If GetGadgetState(2)
-               SetAttribute(*mdi\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
-               SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
+            If GetGadGetWidgetState(2)
+               SetWidgetAttribute(*mdi\scroll\v, #__bar_invert, Bool(GetGadGetWidgetState(3)))
+               SetWindowTitle(0, Str(GetWidgetState(*mdi\scroll\v)))
             Else
-               SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
-               SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
+               SetWidgetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadGetWidgetState(3)))
+               SetWindowTitle(0, Str(GetWidgetState(*mdi\scroll\h)))
             EndIf
             
          Case 4
-            If GetGadgetState(2)
-               SetAttribute(*mdi\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
-               SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
+            If GetGadGetWidgetState(2)
+               SetWidgetAttribute(*mdi\scroll\v, #__bar_buttonsize, Bool( Not GetGadGetWidgetState(4)) * vButton)
+               SetWindowTitle(0, Str(GetWidgetState(*mdi\scroll\v)))
             Else
-               SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
-               SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
+               SetWidgetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadGetWidgetState(4)) * hButton)
+               SetWindowTitle(0, Str(GetWidgetState(*mdi\scroll\h)))
             EndIf
             
           Case 5
@@ -171,10 +171,10 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   ;BindEvent(#PB_Event_SizeWindow, @Window_ResizeWidget(), 0)
+   ;BindEvent(#PB_Event_SizeWindow, @Window_Resize(), 0)
    ;
-   CheckBoxGadget(5, 10, 10, 80,20, "clipoutput") : SetGadgetState(5, 1)
-   CheckBoxGadget(2, 10, 30, 80,20, "vertical bar") : SetGadgetState(2, 1)
+   CheckBoxGadget(5, 10, 10, 80,20, "clipoutput") : SetGadGetWidgetState(5, 1)
+   CheckBoxGadget(2, 10, 30, 80,20, "vertical bar") : SetGadGetWidgetState(2, 1)
    CheckBoxGadget(3, 30, 50, 80,20, "invert")
    CheckBoxGadget(4, 30, 70, 80,20, "noButtons")
    
@@ -202,11 +202,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Define round = 50
    
    ;
-   MyCanvas = GetCanvasGadget(OpenRootWidget(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
+   MyCanvas = GetCanvasGadget(OpenRoot(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
    SetWidgetColor(root(), #__color_back, $ffffffff)
    
-   ;BindGadgetEvent(MyCanvas, @Canvas_ResizeWidget(), #PB_EventType_Resize )
-   ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_ResizeWidget());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
+   ;BindGadgetEvent(MyCanvas, @Canvas_Resize(), #PB_EventType_Resize )
+   ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_Resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
    
    *mdi = MDIWidget(x,y,width,height);, #__flag_autosize)
                                ;a_init( *mdi )
@@ -218,17 +218,17 @@ CompilerIf #PB_Compiler_IsMainFile
    *mdi\scroll\v\bar\button[1]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button[2]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button\round = *mdi\scroll\v\round
-   SetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
+   SetWidgetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
    
    *mdi\scroll\h\round = DPIScaled(11)
    *mdi\scroll\h\bar\button[1]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button[2]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button\round = *mdi\scroll\h\round
-   SetAttribute(*mdi\scroll\h, #__bar_buttonsize, b)
+   SetWidgetAttribute(*mdi\scroll\h, #__bar_buttonsize, b)
    
    ;Debug *mdi\Scroll\v\round
-   vButton = GetAttribute(*mdi\Scroll\v, #__bar_buttonsize);+1
-   hButton = GetAttribute(*mdi\Scroll\h, #__bar_buttonsize);+1
+   vButton = GetWidgetAttribute(*mdi\Scroll\v, #__bar_buttonsize);+1
+   hButton = GetWidgetAttribute(*mdi\Scroll\h, #__bar_buttonsize);+1
    
    MDI_AddObject( *mdi, #PB_GadgetType_Button, -80, -20, 100,100, "1" )
    MDI_AddObject( *mdi, #PB_GadgetType_Button, 100, 120, 100,100, "1" )
@@ -238,7 +238,7 @@ CompilerIf #PB_Compiler_IsMainFile
    MDI_AddObject( *mdi, #PB_GadgetType_Button, 90,30, 100,100, "1" , 100)
    
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 115

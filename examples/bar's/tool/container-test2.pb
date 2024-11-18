@@ -33,43 +33,43 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndEnumeration
   
-  If OpenRootWidget(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetWidgetColor( widget( ), #__color_Back, $FF95E3F6 )
     
     ContainerWidget( 100,100,200,100, #__flag_BorderFlat ) ; #__flag_BorderSingle ; #__flag_borderDouble
     
     ToolBar( widget( ) );, #PB_ToolBar_Small )
-    BarButtonWidget( #_tb_file_open, -1, 0, "Open" )
-    BarButtonWidget( #_tb_file_save, -1, 0, "Save" )
+    BarButton( #_tb_file_open, -1, 0, "Open" )
+    BarButton( #_tb_file_save, -1, 0, "Save" )
     Separator( )
-    BarButtonWidget( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) 
+    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) 
     Separator( )
-    BarButtonWidget( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
-    BarButtonWidget( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
+    BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
+    BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
     Separator( )
-    BarButtonWidget( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
-    BarButtonWidget( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
+    BarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
+    BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
     Separator( )
-    BarButtonWidget( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
-    BarButtonWidget( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
+    BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
+    BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
     
     Separator( )
-    BarButtonWidget( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
-    BarButtonWidget( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
-    BarButtonWidget( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
-    BarButtonWidget( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+    BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
+    BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
+    BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
+    BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
     Separator( )
-    BarButtonWidget( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-    BarButtonWidget( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-    BarButtonWidget( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-    BarButtonWidget( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-    BarButtonWidget( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+    BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+    BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+    BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+    BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
     
     
     ButtonWidget( 0,0,80,30,"button")
     CloseWidgetList( )
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 

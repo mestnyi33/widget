@@ -10,12 +10,12 @@ DeclareModule events
   CompilerEndIf
 
   Macro GadgetMouseX( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
-     ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
+     ;GetWidgetAttribute( _canvas_, #PB_Canvas_MouseX )
      ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
      DesktopMouseX( ) - DesktopScaledX(GadgetX( _canvas_, _mode_ ))
   EndMacro
   Macro GadgetMouseY( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
-     ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
+     ;GetWidgetAttribute( _canvas_, #PB_Canvas_MouseY )
      ;WindowMouseY(  ID::Window(ID::GetWindowID(GadgetID(_canvas_)))  ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
      DesktopMouseY( ) - DesktopScaledY(GadgetY( _canvas_, _mode_ ))
   EndMacro
@@ -76,8 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure   DrawCanvasFrameWidget(gadget, color)
     If GadgetType(gadget) = #PB_GadgetType_Canvas
       StartDrawing(CanvasOutput(gadget))
-      If GetGadgetState(gadget)
-        DrawImage(0,0, GetGadgetState(gadget))
+      If GetGadGetWidgetState(gadget)
+        DrawImage(0,0, GetGadGetWidgetState(gadget))
       EndIf
       If Not color
         color = Point(10,10)

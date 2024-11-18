@@ -29,8 +29,8 @@ EndProcedure
 
 Define width=500, height=400
 
-If OpenRootWidget(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
-  ; If OpenRootWidget(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+If OpenRoot(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+  ; If OpenRoot(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
   ; If WindowWidget(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   
 ;   BindWidgetEvent(#PB_All, @active(), #__event_Focus)
@@ -43,7 +43,7 @@ If OpenRootWidget(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window
 BindWidgetEvent(#PB_All, @active_0(), #__event_Focus)
 BindWidgetEvent(#PB_All, @deactive_0(), #__event_LostFocus)
 
-  WaitCloseRootWidget()
+  WaitCloseRoot()
 
 ;   Repeat
 ;     Event = WaitWindowEvent()

@@ -314,7 +314,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   If Repaint
                      area_update( )
-                     bar_mdi_ResizeWidget( *this, x, y, width, height)
+                     bar_mdi_Resize( *this, x, y, width, height)
                   EndIf
                EndIf
             EndIf
@@ -323,7 +323,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
             area_update( )
             bar_area_resize_( *this, x, y, width, height )
-            ;bar_mdi_ResizeWidget( *this, x, y, width, height)
+            ;bar_mdi_Resize( *this, x, y, width, height)
             
             Repaint = #True
             
@@ -369,14 +369,14 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10)) 
+   MyCanvas = GetCanvasGadget(OpenRoot(0, 10, 10)) 
    BindGadgetEvent(MyCanvas, @Canvas_CallBack())
    BindWidgetEvent(root( ), @events_draw(), #__event_ReDraw)
    
    *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_invert, 11)
    *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, #__bar_invert, 11)
    
-   bar_mdi_ResizeWidget( *this, x, y, width, height)
+   bar_mdi_Resize( *this, x, y, width, height)
             
    BindWidgetEvent(*this\scroll\v, @events_scrolls())
    BindWidgetEvent(*this\scroll\h, @events_scrolls())

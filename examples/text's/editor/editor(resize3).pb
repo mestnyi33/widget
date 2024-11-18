@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventGadget()
     Protected EventType = EventType()
     Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
+    Protected EventItem = GetGadGetWidgetState(EventGadget)
     
     Select EventType
       ;Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventWidget( )
     Protected EventType = WidgetEvent( )
     Protected EventData ;= *event\data
-    Protected EventItem = GetState(EventGadget)
+    Protected EventItem = GetWidgetState(EventGadget)
     
     Select EventType
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
        
-    OpenRootWidget(0, 270, 10, 250, 150)
+    OpenRoot(0, 270, 10, 250, 150)
     g_Canvas = GetCanvasGadget(Root())
     
     *g=EditorWidget(0, 0, 250, 150, #__Flag_autosize)

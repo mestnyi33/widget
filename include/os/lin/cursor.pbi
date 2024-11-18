@@ -326,7 +326,7 @@ Module Cursor
   EndProcedure
   
   Procedure Change( GadgetID.i, state.b )
-    Protected *cursor._s_cursor = g_object_get_data_(GadgetID, "__cursor") ; GetGadgetData(EnteredGadget( ))
+    Protected *cursor._s_cursor = g_object_get_data_(GadgetID, "__cursor") ; GetGadGetWidgetData(EnteredGadget( ))
     If *cursor And 
        *cursor\hcursor  
       
@@ -439,7 +439,7 @@ Module Cursor
     ;     
     ;     ;Debug ""+ CocoaMessage(@currentSystemCursor, 0, "NSCursor currentSystemCursor") +" "+ currentSystemCursor+" "+ CocoaMessage(0, 0, "NSCursor currentCursor")
     ;     
-    ;     If isHiden( ) ;  GetGadgetAttribute(EventGadget( ), #PB_Canvas_CustomCursor) ; 
+    ;     If isHiden( ) ;  GetWidgetAttribute(EventGadget( ), #PB_Canvas_CustomCursor) ; 
     ;       result = #__cursor_Invisible
     ;     Else
     ;       Select gdk_window_get_cursor( gdk_display_get_default_( ) )

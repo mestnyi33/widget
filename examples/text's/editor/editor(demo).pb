@@ -1,6 +1,6 @@
 ﻿XIncludeFile "../../../widgets.pbi"
 ;   WordWrap ! 1
-;         SetGadgetAttribute(0, #PB_Editor_WordWrap, WordWrap)
+;         SetGadGetWidgetAttribute(0, #PB_Editor_WordWrap, WordWrap)
       
 CompilerIf #PB_Compiler_IsMainFile
  EnableExplicit
@@ -23,21 +23,21 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
  
   LoadFont(0, "Courier", 14)
-  If OpenRootWidget(0, 0, 0, 522, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 522, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     
     EditorGadget(0, 8, 8, 306, 133) 
-    SetGadgetTextWidget(0, Text.s)
+    SetGadGetWidgetText(0, Text.s)
     For a = 0 To 5
       AddGadgetItem(0, a, "Line "+Str(a))
     Next
-    SetGadgetFont(0, FontID(0))
+    SetGadGetWidgetFont(0, FontID(0))
    
     g=EditorWidget(8, 133+5+8, 306, 133) 
-    SetTextWidget(g, Text.s)
+    SetWidgetText(g, Text.s)
     For a = 0 To 5
       AddItem(g, a, "Line "+Str(a))
     Next
-    SetFont(g, FontID(0))
+    SetWidgetFont(g, FontID(0))
    
     splitter = SplitterWidget(8, 8, 306, 276, 0,g)
     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug

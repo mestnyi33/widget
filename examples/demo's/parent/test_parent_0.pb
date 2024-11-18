@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;\\
-   Define *root1._s_WIDGET = OpenRootWidget(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetTextWidget(*root1, "root1")
+   Define *root1._s_WIDGET = OpenRoot(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetWidgetText(*root1, "root1")
    ;BindWidgetEvent( *root1, @HandlerEvents( ) )
    
   
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_LeftClick
             
-            Select GetTextWidget( EventWidget( ) )
+            Select GetWidgetText( EventWidget( ) )
                Case "hide_children"
                   Hide(*p, 1)
                   ; Disable(*c, 1)
@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   Hide(*p, 0)
                   
                Case "hide_parent"
-                  Hide(*c, GetState( EventWidget( ) ))
+                  Hide(*c, GetWidgetState( EventWidget( ) ))
                   
             EndSelect
             
@@ -91,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    OpenWidgetList( *root1 )
-   *panel = PanelWidget(20, 20, 180 + 40, 180 + 60, editable) : SetTextWidget(*panel, "1")
+   *panel = PanelWidget(20, 20, 180 + 40, 180 + 60, editable) : SetWidgetText(*panel, "1")
    AddItem( *panel, -1, "item_1" )
    
    AddItem( *panel, -1, "(hide&show)-test" )
@@ -126,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Show_DEBUG( )
 
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
    
 CompilerEndIf
 
@@ -173,10 +173,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Define i,a
    Define *w._s_WIDGET, *g._s_WIDGET
    
-   OpenRootWidget(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   OpenRoot(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    
    ;\\
-   Define *root1._s_WIDGET = root( ): *root1\class = "root1": SetTextWidget(*root1, "root1")
+   Define *root1._s_WIDGET = root( ): *root1\class = "root1": SetWidgetText(*root1, "root1")
    ;BindWidgetEvent( *root1, @HandlerEvents( ) )
    
    
@@ -239,24 +239,24 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    
    ;OpenWidgetList( *root1 )
-   *panel = PanelWidget(20, 20, 180 + 40, 180 + 60) : SetTextWidget(*panel, "1")
+   *panel = PanelWidget(20, 20, 180 + 40, 180 + 60) : SetWidgetText(*panel, "1")
    AddItem( *panel, -1, "(enter&leave)-test" )
    
-   ContainerWidget(40, 20, 180, 180)                   : SetTextWidget(widget(), "      (PanelWidget(0))") : SetWidgetClass(widget(), "(PanelWidget(0))")
-   ContainerWidget(20, 20, 180, 180)                   : SetTextWidget(widget(), "      7") : SetWidgetClass(widget(), "7")
-   ContainerWidget(5, 60, 180, 30, #__Flag_NoGadgets)  : SetTextWidget(widget(), "     10") : SetWidgetClass(widget(), "10")
+   ContainerWidget(40, 20, 180, 180)                   : SetWidgetText(widget(), "      (PanelWidget(0))") : SetWidgetClass(widget(), "(PanelWidget(0))")
+   ContainerWidget(20, 20, 180, 180)                   : SetWidgetText(widget(), "      7") : SetWidgetClass(widget(), "7")
+   ContainerWidget(5, 60, 180, 30, #__Flag_NoGadgets)  : SetWidgetText(widget(), "     10") : SetWidgetClass(widget(), "10")
    CloseWidgetList( ) ; 7
    CloseWidgetList( ) ; (PanelWidget(0))
    Debug "-------------"
    ;
-   ContainerWidget(10, 45, 70, 180)                    : SetTextWidget(widget(), "     (PanelWidget(1))") : SetWidgetClass(widget(), "(PanelWidget(1))")
+   ContainerWidget(10, 45, 70, 180)                    : SetWidgetText(widget(), "     (PanelWidget(1))") : SetWidgetClass(widget(), "(PanelWidget(1))")
    CloseWidgetList( ) ; (PanelWidget(1))
    CloseWidgetList( ) ; 1
    
    Show_DEBUG()
 ;    ;\\
 ;    OpenWidgetList( seven )
-;    SetTextWidget(ContainerWidget( - 5, 80, 180, 50, #__Flag_NoGadgets | editable), "container-7")
+;    SetWidgetText(ContainerWidget( - 5, 80, 180, 50, #__Flag_NoGadgets | editable), "container-7")
 ;    CloseWidgetList( ) ; 7
 ;    
    ;\\
@@ -273,7 +273,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    
   
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
    
 CompilerEndIf
 
@@ -324,11 +324,11 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       Debug "<<----"
    EndProcedure
    
-   If OpenRootWidget(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       *PANEL = PanelWidget(10,145,200,160)  : SetWidgetClass(*PANEL, "PANEL") 
-      AddItem(*PANEL, -1, "item (0)") : *PANEL_0 = ButtonWidget(pos_x,90,160,30,"(PanelWidget(0))") : SetWidgetClass(*PANEL_0, GetTextWidget(*PANEL_0))
-      AddItem(*PANEL, -1, "item (1)") : *PANEL_1 = ButtonWidget(pos_x+5,90,160,30,"(PanelWidget(1))") : SetWidgetClass(*PANEL_1, GetTextWidget(*PANEL_1)) 
-      AddItem(*PANEL, -1, "item (2)") : *PANEL_2 = ButtonWidget(pos_x+10,90,160,30,"(PanelWidget(2))") : SetWidgetClass(*PANEL_2, GetTextWidget(*PANEL_2)) 
+      AddItem(*PANEL, -1, "item (0)") : *PANEL_0 = ButtonWidget(pos_x,90,160,30,"(PanelWidget(0))") : SetWidgetClass(*PANEL_0, GetWidgetText(*PANEL_0))
+      AddItem(*PANEL, -1, "item (1)") : *PANEL_1 = ButtonWidget(pos_x+5,90,160,30,"(PanelWidget(1))") : SetWidgetClass(*PANEL_1, GetWidgetText(*PANEL_1)) 
+      AddItem(*PANEL, -1, "item (2)") : *PANEL_2 = ButtonWidget(pos_x+10,90,160,30,"(PanelWidget(2))") : SetWidgetClass(*PANEL_2, GetWidgetText(*PANEL_2)) 
       CloseWidgetList()
       
       
@@ -360,7 +360,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 ;       
 ;       Show_DEBUG()
 ;       
-      WaitCloseRootWidget()
+      WaitCloseRoot()
    EndIf
 CompilerEndIf
 
@@ -370,7 +370,7 @@ CompilerEndIf
 ;    
 ;    Global._s_WIDGET *CONT, *but
 ;    
-;    If OpenRootWidget( 0, 0, 0, 600, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+;    If OpenRoot( 0, 0, 0, 600, 170, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
 ;       ;
 ;       *CONT = ContainerWidget( 10, 10, 200, 150) : SetWidgetClass(widget( ), "CONT1" ) 
 ;       ButtonWidget( 10,5,80,25, "*btn1_1" )  : SetWidgetClass(widget( ), "btn1_1" ) 
@@ -443,7 +443,7 @@ CompilerEndIf
 ;       Debug "<<----"
 ;       
 ;      
-;       WaitCloseRootWidget( )
+;       WaitCloseRoot( )
 ;    EndIf   
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

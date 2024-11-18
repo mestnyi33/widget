@@ -11,27 +11,27 @@ Procedure events_widgets()
          Select EventWidget( )
             Case track_1
                EventWidget( ) = progress_1
-               EventWidget( )\round = GetState(track_1)
+               EventWidget( )\round = GetWidgetState(track_1)
                EventWidget( )\bar\button[1]\round = EventWidget( )\round
                EventWidget( )\bar\button[2]\round = EventWidget( )\round
                
             Case track_0
-               SetState(progress_1, GetState(track_0))
+               SetWidgetState(progress_1, GetWidgetState(track_0))
                
             Case track_3
                EventWidget( ) = progress_0
-               EventWidget( )\round = GetState(track_3)
+               EventWidget( )\round = GetWidgetState(track_3)
                EventWidget( )\bar\button[1]\round = EventWidget( )\round
                EventWidget( )\bar\button[2]\round = EventWidget( )\round
                
             Case track_2
-               SetState(progress_0, GetState(track_2))
+               SetWidgetState(progress_0, GetWidgetState(track_2))
                
          EndSelect
    EndSelect
 EndProcedure
 
-If OpenRootWidget(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    SetWidgetColor( root(), #__Color_Back, $ff00ffff)
    
    progress_0 = ProgressBarWidget(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
@@ -52,14 +52,14 @@ If OpenRootWidget(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMe
    BindWidgetEvent(track_3, @events_widgets())
    BindWidgetEvent(track_2, @events_widgets())
    
-   SetState(track_0, 40)
-   SetState(track_2, 40)
+   SetWidgetState(track_0, 40)
+   SetWidgetState(track_2, 40)
    
-   SetState(track_1, 120)
-   SetState(track_3, 120)
+   SetWidgetState(track_1, 120)
+   SetWidgetState(track_3, 120)
    
-   SetState(Splitter_0, 269)
-   WaitCloseRootWidget( )
+   SetWidgetState(Splitter_0, 269)
+   WaitCloseRoot( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 37

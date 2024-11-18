@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global i, *w0._S_WIDGET, *w1, *w2, *w3, *w4, *w5, *w6, *w7, *w8, *w9
   
-  widget::OpenRootWidget(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+  widget::OpenRoot(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
   ; first splitter
   *w0 = widget::TabBarWidget(0, 0, 0, 0)
@@ -30,13 +30,13 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   
 ;   widget::SplitterWidget(300, 110, 300, 70, *w1, -1, #PB_Splitter_Vertical)
    
-  ;  widget::bar_Tab_SetState(*w0, -1)
+  ;  widget::bar_Tab_SetWidgetState(*w0, -1)
 ;    Debug "max "+*w0\bar\max
 ;  *w0\bar\page\pos = 165;*w0\bar\max
 ;   
-   widget::bar_Tab_SetState(*w0, 9)
-;   widget::bar_Tab_SetState(*w1, 6)
-;   widget::bar_Tab_SetState(*w1, 1)
+   widget::bar_Tab_SetWidgetState(*w0, 9)
+;   widget::bar_Tab_SetWidgetState(*w1, 6)
+;   widget::bar_Tab_SetWidgetState(*w1, 1)
   
   widget::WaitClose( )
   End

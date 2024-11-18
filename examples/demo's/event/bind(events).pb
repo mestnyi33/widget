@@ -10,11 +10,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Global binded
    
    Procedure events_1()
-      Debug " "+Str(IDWidget( EventWidget( ) ))+ " - 1event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
+      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 1event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
    EndProcedure
    
    Procedure events_2()
-      Debug " "+Str(IDWidget( EventWidget( ) ))+ " - 2event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
+      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 2event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
    EndProcedure
    
    
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If OpenRootWidget(0, 100, 100, 300, 280)
+      If OpenRoot(0, 100, 100, 300, 280)
          *test = TreeWidget(10,  10, 280, 170)
          Define i
          For i = 0 To 12
@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
          BindWidgetEvent(*bind, @events_BindWidgetEvent(), #__event_LeftClick)
       EndIf
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

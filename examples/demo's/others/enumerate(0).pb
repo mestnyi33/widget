@@ -2,7 +2,7 @@
 
 ; Shows using of several panels...
 EnableExplicit
-If OpenRootWidget(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    Define i, *parent._s_Widget
    
    For i = 1 To 3
@@ -26,7 +26,7 @@ If OpenRootWidget(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMen
    ButtonWidget(10,10,100,30,"Button18")                                                    
    ButtonWidget(10,45,100,30,"Button19")                                                    
    CloseWidgetList()                                                                                         
-   SetState(*parent, 1)
+   SetWidgetState(*parent, 1)
    
    Debug "--- enumerate all widgets ---"
    If StartEnum( root( ) )

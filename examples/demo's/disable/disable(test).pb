@@ -9,11 +9,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Procedure events( )
     Select EventWidget( ) 
       Case *item1
-        SetState( *CHILD, 0)
+        SetWidgetState( *CHILD, 0)
       Case *item2
-        SetState( *CHILD, 1)
+        SetWidgetState( *CHILD, 1)
       Case *item3
-        SetState( *CHILD, 2)
+        SetWidgetState( *CHILD, 2)
         
       Case *enable
         Debug "enable"
@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
               FreeWidget(*CHILD)
             EndIf
             
-            Select GetState(*LIST)
+            Select GetWidgetState(*LIST)
               Case  1: *CHILD = ButtonWidget(30,20,150,30,"Button") 
               Case  2: *CHILD = StringWidget(30,20,150,30,"String") 
               Case  3: *CHILD = TextWidget(30,20,150,30,"Text", #PB_Text_Border) 
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
               Case  5: *CHILD = CheckBoxWidget(30,20,150,30,"CheckBox") 
               Case  6: *CHILD = ListViewWidget(30,20,150,30) 
               Case  7: *CHILD = FrameWidget(30,20,150,30,"Frame") 
-              Case  8: *CHILD = ComboBoxWidget(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetState(*CHILD,0)
+              Case  8: *CHILD = ComboBoxWidget(30,20,150,30): AddItem(*CHILD,-1,"ComboBox"): SetWidgetState(*CHILD,0)
               Case  9: *CHILD = ImageWidget(30,20,150,30,0,#PB_Image_Border) 
               Case 10: *CHILD = HyperLinkWidget(30,20,150,30,"HyperLink",0) 
               Case 11: *CHILD = ContainerWidget(30,20,150,30,#PB_Container_Flat): ButtonWidget(0,0,80,20,"Button"): CloseWidgetList() ; Container
@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndSelect
  EndProcedure
   
-  If OpenRootWidget(#PB_Any, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(#PB_Any, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *item1 = ButtonWidget( 10, 10, 50, 25, "item-1") : SetWidgetClass( *item1, "button-item-1" )
     *item2 = ButtonWidget( 60, 10, 50, 25, "item-2") : SetWidgetClass( *item2, "button-item-2" )
     *item3 = ButtonWidget( 110, 10, 50, 25, "item-3") : SetWidgetClass( *item3, "button-item-3" )
@@ -139,12 +139,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     AddItem(*LIST, -1, "Shortcut")  
     AddItem(*LIST, -1, "Canvas")    
     
-    SetState(*LIST, #PB_GadgetType_Button)
+    SetWidgetState(*LIST, #PB_GadgetType_Button)
     *CHILD = ButtonWidget(10,40, 280, 150,"Button") 
     Disable( *CHILD, 1 )
     Disable( *disable, 1 )
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

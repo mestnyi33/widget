@@ -72,14 +72,14 @@ Procedure events_widgets()
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-If OpenRootWidget(1, 150, 110, 222, 470, "ROOT1", #PB_Window_SystemMenu) : SetWidgetClass(widget( ), "ROOT1" )
+If OpenRoot(1, 150, 110, 222, 470, "ROOT1", #PB_Window_SystemMenu) : SetWidgetClass(widget( ), "ROOT1" )
    *root1 = root( )
    *CONT1 = ContainerWidget(20, 180, 200, 200) : SetWidgetClass(widget( ), "CONT2" ) 
    ButtonWidget(10,20, 200, 30, "CONT2_but1", #__flag_ButtonToggle) : SetWidgetClass(widget( ), "CONT2_but1" )
    CloseWidgetList()
 EndIf
 
-If OpenRootWidget(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCentered) : SetWidgetClass(widget( ), "ROOT2" )
+If OpenRoot(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCentered) : SetWidgetClass(widget( ), "ROOT2" )
    *root2 = root( )
    *CONT2 = ContainerWidget(10, 10, 200, 200) : SetWidgetClass(widget( ), "CONT1" ) 
    ButtonWidget(10,20, 200, 30, "CONT1_but1", #__flag_ButtonToggle) : SetWidgetClass(widget( ), "CONT1_but1" )

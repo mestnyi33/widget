@@ -47,10 +47,10 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  SetGadgetFont( #PB_Any, FontID( #Font18R ) )
+  SetGadGetWidgetFont( #PB_Any, FontID( #Font18R ) )
   Debug FontID(0)
   
-  If OpenRootWidget( 0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+  If OpenRoot( 0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     Global main = GetCanvasWindow( root( ) )
     ;BindEventCanvas( )
     
@@ -58,12 +58,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget( 1, 10, 40, 200, 20, "Left button", #PB_Button_Left )
     ButtonGadget( 2, 10, 70, 200, 20, "Right button", #PB_Button_Right )
     ButtonGadget( 3, 10,100, 200, 60, "Default button and change font", #PB_Button_Default )
-    SetGadgetFont(3, FontID(0))
+    SetGadGetWidgetFont(3, FontID(0))
     ButtonGadget( 4, 10,170, 200, 60, "Multiline button (longer text automatically multiline)", #PB_Button_MultiLine )
     ButtonGadget( 5, 10,170+70, 200, 25, "Toggle button", #PB_Button_Toggle ) ; height = 20 bug in mac os 
     
-    SetGadgetState( 5, 1 )
-    SetGadgetFont( 5, FontID( 0 ) )
+    SetGadGetWidgetState( 5, 1 )
+    SetGadGetWidgetFont( 5, FontID( 0 ) )
     
 ;     ; set default button cell
 ;     #NSRoundedBezelStyle = 1 ; for default button
@@ -80,12 +80,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonWidget( 10+222, 40, 200, 20, "Left button", #__flag_TextLeft )
     ButtonWidget( 10+222, 70, 200, 20, "Right button", #__flag_TextRight )
     ButtonWidget( 10+222,100, 200, 60, "Default button and change font", #__flag_ButtonDefault, -1,4 )
-    SetFont(widget(), FontID(0))
+    SetWidgetFont(widget(), FontID(0))
     ButtonWidget( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline, -1,4 )
     ButtonWidget( 10+222,170+70, 200, 25, "Toggle button", #__flag_ButtonToggle )
     
-    SetState( WidgetID( 5 ), 1 )
-    SetFont( WidgetID( 5 ), FontID( 0 ) )
+    SetWidgetState( WidgetID( 5 ), 1 )
+    SetWidgetFont( WidgetID( 5 ), FontID( 0 ) )
     BindWidgetEvent( #PB_All, @events_widgets( ) )
     
   EndIf
@@ -107,18 +107,18 @@ CompilerIf #PB_Compiler_IsMainFile
     SetWindowTitle( 11, Str( *Button_0\width ) +" - "+ Str( *Button_1\height ) )
   EndProcedure
   
-  If OpenRootWidget( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
+  If OpenRoot( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
     c2 = GetCanvasGadget( root( ) )
     
     *Button_0 = ButtonWidget( 15, 42, 250,  60, "Button (Horisontal)", #__flag_Textmultiline,-1 )
 ;     SetWidgetColor( *Button_0, #__Color_fore, $0000FF )
 ;     SetWidgetColor( *Button_0, #__Color_Back, $00FF00 )
      SetWidgetColor( *Button_0, #__Color_Front, $4919D5 ) 
-;     SetFont( *Button_0, FontID( 10 ) )
+;     SetWidgetFont( *Button_0, FontID( 10 ) )
     
     *Button_1 = ButtonWidget( 270, 15,  60, 120, "Button (Vertical)", #__flag_Textmultiline|#__flag_Textvertical|#__flag_Textinvert )
      SetWidgetColor( *Button_1, #__Color_Front, $FFD56F1A )
-;     SetFont( *Button_1, FontID( 10 ) )
+;     SetWidgetFont( *Button_1, FontID( 10 ) )
     
     
     ResizeWindow( 11, #PB_Ignore, WindowY( main )+WindowHeight( main, #PB_Window_FrameCoordinate )+10, #PB_Ignore, #PB_Ignore )

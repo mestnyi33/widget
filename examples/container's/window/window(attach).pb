@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  MyCanvas = GetCanvasGadget(OpenRootWidget(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(OpenRoot(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   ;Define *mdi._s_widget = ContainerWidget(x,y,Width, height)
   Define *mdi._s_widget = MDIWidget(x,y,Width, height)
@@ -63,17 +63,17 @@ CompilerIf #PB_Compiler_IsMainFile
   Define vfs ;= #__window_CaptionHeight+#__window_FrameSize*2
   
   Define *g0._s_widget = WindowWidget(50, 50, 400, 400-vfs, "main",flag|#__window_child, *mdi) : SetWidgetClass(widget(), "main") 
-  ButtonWidget(10,10,80,80,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  ButtonWidget(10,10,80,80,"button_0") : SetWidgetClass(widget(), GetWidgetText(widget())) 
   
   Define *g1._s_widget =  WindowWidget(X(*g0, #__c_container)+50, WidgetY(*g0, #__c_container)+50, 200, 300, "Child 1 (Position Attach)",flag,*g0) : SetWidgetClass(widget(), "form_1") 
-  Define *g1b = ButtonWidget(10,10,80,80,"message") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  Define *g1b = ButtonWidget(10,10,80,80,"message") : SetWidgetClass(widget(), GetWidgetText(widget())) 
   ; Sticky(*g1, 1)
   
   Define *g2._s_widget = WindowWidget(X(*g0, #__c_container)+WidgetWidth(*g0, #__c_Frame), WidgetY(*g0, #__c_container), 200, 300-vfs, "Child 2 (Frame Magnetic)",flag,*g0) : SetWidgetClass(widget(), "form_2") 
-  ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetWidgetText(widget())) 
   
   Define *g3._s_widget = WindowWidget(X(*g2, #__c_container), WidgetY(*g2, #__c_container)+WidgetHeight(*g2, #__c_Frame), 200, 100-vfs, "SubChild",flag,*g2) : SetWidgetClass(widget(), "SubChild") 
-  ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget())) 
+  ButtonWidget(10,10,80,80,"button_2") : SetWidgetClass(widget(), GetWidgetText(widget())) 
   
   BindWidgetEvent(*g1b, @CustomEvents(), #__event_LeftClick )
   
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   BindWidgetEvent(*g2, @CustomEvents(), #__event_Draw)
 ;   BindWidgetEvent(*g3, @CustomEvents(), #__event_Draw)
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 74

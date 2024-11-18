@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UsePNGImageDecoder()
   LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/world.png")
   
-  If OpenRootWidget(0, 0, 0, 270+w_x, 180, "ComboBox", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 270+w_x, 180, "ComboBox", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable)
       AddGadgetItem(0, -1, "ComboBox editable...")
 
@@ -21,9 +21,9 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem(2, -1,"ComboBox item " + Str(a))
       Next
 
-    SetGadgetState(0, 0)
-    SetGadgetState(1, 0)
-    SetGadgetState(2, 2)    ; set (beginning with 0) the third item as active one
+    SetGadGetWidgetState(0, 0)
+    SetGadGetWidgetState(1, 0)
+    SetGadGetWidgetState(2, 2)    ; set (beginning with 0) the third item as active one
     
     *w0 = ComboBoxWidget(w_x+10, 10, 250, 21, #PB_ComboBox_Editable)
     AddItem(widget( ), -1, "ComboBox editable...")
@@ -36,9 +36,9 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(widget( ), -1,"ComboBox item " + Str(a))
     Next
     
-    SetState(*w0, 0)
-    SetState(*w1, 0)
-    SetState(*w2, 2)    ; set (beginning with 0) the third item as active one
+    SetWidgetState(*w0, 0)
+    SetWidgetState(*w1, 0)
+    SetWidgetState(*w2, 2)    ; set (beginning with 0) the third item as active one
     
     ;ButtonWidget(w_x+10, 70+20, 250, 21, "")
     

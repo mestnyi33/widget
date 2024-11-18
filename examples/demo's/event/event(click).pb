@@ -34,11 +34,11 @@ CompilerIf #PB_Compiler_IsMainFile
      EndSelect
      
      If result
-        SetState(w_flag, countitems(w_flag) - 1)
+        SetWidgetState(w_flag, countitems(w_flag) - 1)
      EndIf
   EndProcedure
   
-  If OpenRootWidget(1, 0, 0, 170, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(1, 0, 0, 170, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     w_flag = widget::TreeWidget(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
     w_this = widget::ButtonWidget(10, 220, 150, 70, "Click me", #__flag_Textmultiline );| #__flag_ButtonToggle) 
     

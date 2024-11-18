@@ -112,8 +112,8 @@ Define i.I
    
    
     ; New code to handle the vertical scroll bar
-    SetGadgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Maximum,number_of_words-1)
-    SetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,0)
+    SetGadGetWidgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Maximum,number_of_words-1)
+    SetGadGetWidgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,0)
     update_vertical_scroll_bar_dictionary()   
    
     
@@ -157,11 +157,11 @@ Repeat
         Select EventType()
           Case #PB_EventType_MouseWheel_Down
             Debug "Mouse wheel moved down"
-            SetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,GetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)+10)
+            SetGadGetWidgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,GetGadGetWidgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)+10)
             update_vertical_scroll_bar_dictionary() 
           Case #PB_EventType_MouseWheel_Up
             Debug "Mouse wheel moved up"
-            SetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,GetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)-10)
+            SetGadGetWidgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,GetGadGetWidgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)-10)
             update_vertical_scroll_bar_dictionary() 
         EndSelect
       EndIf
@@ -175,11 +175,11 @@ End
   Procedure update_vertical_scroll_bar_dictionary() 
     ClearGadgetItems(#PANEL_BOX_DICTIONARY)
     If number_of_words=0
-      SetGadgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Minimum,0)
-      SetGadgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Maximum,0)
+      SetGadGetWidgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Minimum,0)
+      SetGadGetWidgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Maximum,0)
       ProcedureReturn
     EndIf
-    beginloop = GetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)
+    beginloop = GetGadGetWidgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)
 ;     endloop = beginloop + 10
     endloop=beginloop+number_of_lines-1
     If endloop>ArraySize(words$())
@@ -188,13 +188,13 @@ End
     For f=beginloop To endloop     
       AddGadgetItem(#PANEL_BOX_DICTIONARY,-1,Str(f+1)+Chr(10)+words$(f))     
       SetGadGetWidgetItemColor(#PANEL_BOX_DICTIONARY,#PB_All,#PB_Gadget_FrontColor,$999999,0)
-;       If words_selected(f)=#True : SetGadgetItemState(#PANEL_BOX_DICTIONARY,f-beginloop,#PB_ListIcon_Checked) : EndIf
+;       If words_selected(f)=#True : SetGadGetWidgetItemState(#PANEL_BOX_DICTIONARY,f-beginloop,#PB_ListIcon_Checked) : EndIf
     Next f
    
     t=beginloop
     t1=selected_dictionary_word-t
-;     If t1>=0 And t1<=10 : SetGadgetState(#PANEL_BOX_DICTIONARY,t1) : EndIf           
-    If t1>=0 And t1<=number_of_lines-1 : SetGadgetState(#PANEL_BOX_DICTIONARY,t1) : EndIf    
+;     If t1>=0 And t1<=10 : SetGadGetWidgetState(#PANEL_BOX_DICTIONARY,t1) : EndIf           
+    If t1>=0 And t1<=number_of_lines-1 : SetGadGetWidgetState(#PANEL_BOX_DICTIONARY,t1) : EndIf    
     
   
   EndProcedure  

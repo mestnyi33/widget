@@ -12,36 +12,36 @@ Global colorback = colors::*this\blue\fore,
        colorframe1=$ff0000ff
 
 ;\\
-OpenRootWidget(0, 0, 0, 240, 240, "enter&leave demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+OpenRoot(0, 0, 0, 240, 240, "enter&leave demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
 If editable 
    a_init(root())
 EndIf
 
 ;\\
-SetData(ContainerWidget(30, 30, 180, 180, editable), 1)
-SetData(ContainerWidget(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
-SetData(ContainerWidget(40, 20, 180, 180, editable), 3)
-SetData(ContainerWidget(20, 20, 180, 180, editable), 4)
+SetWidgetData(ContainerWidget(30, 30, 180, 180, editable), 1)
+SetWidgetData(ContainerWidget(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
+SetWidgetData(ContainerWidget(40, 20, 180, 180, editable), 3)
+SetWidgetData(ContainerWidget(20, 20, 180, 180, editable), 4)
 
-SetData(ContainerWidget(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
-SetData(ContainerWidget(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
-SetData(ContainerWidget(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
+SetWidgetData(ContainerWidget(5, 30, 180, 30, #__Flag_NoGadgets|editable), 5) 
+SetWidgetData(ContainerWidget(5, 45, 180, 30, #__Flag_NoGadgets|editable), 6) 
+SetWidgetData(ContainerWidget(5, 60, 180, 30, #__Flag_NoGadgets|editable), 7) 
 
-SetData(Splitter(5, 80, 180, 50, 
+SetWidgetData(Splitter(5, 80, 180, 50, 
                  ContainerWidget(0,0,0,0, #__Flag_NoGadgets|editable), 
                  ContainerWidget(0,0,0,0, #__Flag_NoGadgets|editable),
                  #PB_Splitter_Vertical|editable), 8) 
 
 CloseWidgetList()
 CloseWidgetList()
-SetData(ContainerWidget(10, 45, 70, 180, editable), 11) 
-SetData(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
-SetData(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
-SetData(ContainerWidget(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
-SetData(ContainerWidget(10, 45, 70, 180, editable), 11) 
-SetData(ContainerWidget(10, 5, 70, 180, editable), 11) 
-SetData(ContainerWidget(10, 5, 70, 180, editable), 11) 
-SetData(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
+SetWidgetData(ContainerWidget(10, 45, 70, 180, editable), 11) 
+SetWidgetData(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
+SetWidgetData(ContainerWidget(10, 20, 70, 30, #__Flag_NoGadgets|editable), 13) 
+SetWidgetData(ContainerWidget(10, 30, 170, 130, #__Flag_NoGadgets|editable), 14) 
+SetWidgetData(ContainerWidget(10, 45, 70, 180, editable), 11) 
+SetWidgetData(ContainerWidget(10, 5, 70, 180, editable), 11) 
+SetWidgetData(ContainerWidget(10, 5, 70, 180, editable), 11) 
+SetWidgetData(ContainerWidget(10, 10, 70, 30, #__Flag_NoGadgets|editable), 12) 
 CloseWidgetList()
 CloseWidgetList()
 CloseWidgetList()

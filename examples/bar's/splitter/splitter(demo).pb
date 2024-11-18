@@ -4,24 +4,24 @@ UseWidgets( )
 
 Procedure events_gadgets()
   ;ClearDebugOutput()
-  ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
+  ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadGetWidgetState(EventGadget()) ; 
   
   Select EventType()
     Case #PB_EventType_LeftClick
-      SetState( WidgetID(EventGadget()), GetGadgetState(EventGadget()))
-      Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+      SetWidgetState( WidgetID(EventGadget()), GetGadGetWidgetState(EventGadget()))
+      Debug  ""+ EventGadget() +" - gadget change " + GetGadGetWidgetState(EventGadget())
   EndSelect
 EndProcedure
 
 Procedure events_widgets()
   ;ClearDebugOutput()
-  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +WidgetEvent( )+ "  state - " GetState(EventWidget( )) ; 
+  ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +WidgetEvent( )+ "  state - " GetWidgetState(EventWidget( )) ; 
   Protected state 
   Select WidgetEvent( )
     Case #__event_Change
-      state = GetState(EventWidget( ))
-      SetGadgetState(IDWidget(EventWidget( )), state)
-      Debug  Str(IDWidget(EventWidget( )))+" - widget change " + state +" "+ WidgetHeight( WidgetID(0) ) +" "+ WidgetHeight( WidgetID(1) )
+      state = GetWidgetState(EventWidget( ))
+      SetGadGetWidgetState(GetIndex(EventWidget( )), state)
+      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + state +" "+ WidgetHeight( WidgetID(0) ) +" "+ WidgetHeight( WidgetID(1) )
   EndSelect
 EndProcedure
 
@@ -32,7 +32,7 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   #Splitter2 = 2
   #Splitter4 = 4
   
-  OpenRootWidget(0, 230,0, 230,200)
+  OpenRoot(0, 230,0, 230,200)
   ButtonWidget(0, 0, 0, 0, "Button 0") ; No need to specify size or coordinates
   ButtonWidget(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
   SplitterWidget(5, 5, 220, 120, WidgetID(#Button0), WidgetID(#Button1));, #PB_Splitter_Separator)
@@ -53,7 +53,7 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   ;BindGadgetEvent(#Splitter4, @events_gadgets())
   
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 42

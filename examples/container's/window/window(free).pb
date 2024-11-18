@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  OpenRootWidget(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
+  OpenRoot(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
   *buttonTest = ButtonGadget(#PB_Any, 500-100, 400-120, 90,30,"test")
   *buttonClose = ButtonGadget(#PB_Any, 500-100, 400-80, 90,30,"close")
   *buttonOpen = ButtonGadget(#PB_Any, 500-100, 400-40, 90,30,"open")
@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
   BindGadgetEvent( *buttonOpen, @events_gadgets() )
   BindGadgetEvent( *buttonClose, @events_gadgets() )
   
-  WaitCloseRootWidget()
+  WaitCloseRoot()
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 53

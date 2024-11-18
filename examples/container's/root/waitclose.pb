@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  OpenRootWidget(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
+  OpenRoot(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
                                       #PB_Window_SizeGadget |
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetWidgetClass(widget( ), "Button_0" )
   
   ;\\
-  OpenRootWidget(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
+  OpenRoot(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetWidgetClass(widget( ), "Button_1" )
   
   ;\\
-  OpenRootWidget(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
+  OpenRoot(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
@@ -91,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
   BindWidgetEvent( #PB_All, @CallBack( ) )
   
   ;\\
-  WaitCloseRootWidget( Root( ) )
+  WaitCloseRoot( Root( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 83

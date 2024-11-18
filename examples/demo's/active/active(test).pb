@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasGadget(gadget, x,y,width,height, #PB_Canvas_DrawFocus )
       
       If StartDrawing(CanvasOutput(gadget))
-         DrawingFont(GetGadgetFont(-1))
+         DrawingFont(GetWidgetFont(-1))
          DrawText((DesktopScaledX(width)-TextWidth(text))/2, (DesktopScaledY(height)-TextHeight(text))/2, text)
          StopDrawing()
       EndIf
@@ -28,24 +28,24 @@ CompilerIf #PB_Compiler_IsMainFile
    If OpenWindow(0, 100, 100, 270, 140, "CanvasWindow", #PB_Window_SystemMenu )
       CanvasButtonGadget(10, 10, 10, 250, 120, "CanvasGadget")
    EndIf
-   If OpenRootWidget(1, 100, 300, 270, 140, "Root_0_Window", #PB_Window_SystemMenu )
+   If OpenRoot(1, 100, 300, 270, 140, "Root_0_Window", #PB_Window_SystemMenu )
        WindowWidget( 30, 30, 200, 200, "Form", #PB_Window_SystemMenu )
       ;Root( )\text\align\right = 0
       SetWidgetClass(Root( ), "Root_0")
-      SetTextWidget(Root( ), "Root_0")
+      SetWidgetText(Root( ), "Root_0")
       SetWindowTitle( 1, "Root_0_canvas_"+Str(GetCanvasGadget(Root())))
    EndIf
    
    If OpenWindow(2, 0, 0, 500, 500, " focus demo ", #PB_Window_SystemMenu |
                                               #PB_Window_ScreenCentered )
       SetWindowColor( 2, $ACC0DB)
-      OpenRootWidget( 2, 10,10,235, 190 )
+      OpenRoot( 2, 10,10,235, 190 )
       SetWidgetClass(Root( ), "Root_2")
-      SetTextWidget(Root( ), "Root_2")
+      SetWidgetText(Root( ), "Root_2")
    
       CanvasButtonGadget(20, 255, 10, 235, 190, "CanvasGadget")
       
-      OpenRootWidget( 2, 10,210,480, 280 )
+      OpenRoot( 2, 10,210,480, 280 )
       ResizeWidget( Root( ), 10,10,460,260 )
       SetWidgetClass(root( ), "RootWindow" )
       
@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetWidgetClass(widget( ), "Spin" )
       StringWidget(10,65,100,50,"String")
       SetWidgetClass(widget( ), "String" )
-      SetActive( widget( ) )
+      SetActiveWidget( widget( ) )
       CloseWidgetList( )
       
       ;\\
@@ -76,11 +76,11 @@ CompilerIf #PB_Compiler_IsMainFile
       SetWidgetClass(widget( ), "Spin2" )
       StringWidget(10,65,100,50,"String2")
       SetWidgetClass(widget( ), "String2" )
-      SetActive( widget( ) )
+      SetActiveWidget( widget( ) )
       CloseWidgetList( )
       
 ;       ;
-       SetActive( 0 )
+       SetActiveWidget( 0 )
        SetActiveGadget( root( )\canvas\gadget )
       ;SetActiveGadget( widget( )\root\canvas\gadget )
       

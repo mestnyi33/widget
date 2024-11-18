@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(10, 0, 0, 613, 346, "demo set  new parent", Flags )
   
   ; Create desktop for the widgets
-  OpenRootWidget(10)
+  OpenRoot(10)
   *main = WindowWidget(200, 0, 413, 319+#__c_frame, "demo set  new parent", Flags )
   
   ;*w = ButtonWidget(-30,10,160,70,"Button") 
@@ -29,10 +29,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   SetParent(*w, *scrollarea)
-  SetState(*scrollarea\scroll\h, 30)
+  SetWidgetState(*scrollarea\scroll\h, 30)
 ;  setparent(*w, Root())
   
-;   SetState(*scrollarea\scroll\h, 10)
+;   SetWidgetState(*scrollarea\scroll\h, 10)
 ;   setparent(*w, *scrollarea)
   
   ;\\ get required pos&size

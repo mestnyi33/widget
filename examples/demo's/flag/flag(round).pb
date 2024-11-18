@@ -21,23 +21,23 @@ Procedure events_widgets()
         Case w_type
           
         Case Button_2
-          SetRound( Button_1, GetState(EventWidget( )) )
+          SetRound( Button_1, GetWidgetState(EventWidget( )) )
           
         Case Button_3
-          SetState(Button_1, GetState(EventWidget( )))
+          SetWidgetState(Button_1, GetWidgetState(EventWidget( )))
           
         Case Button_4
-          SetRound( Button_0, GetState(EventWidget( )) )
+          SetRound( Button_0, GetWidgetState(EventWidget( )) )
          
         Case Button_5
-          SetState(Button_0, GetState(EventWidget( )))
+          SetWidgetState(Button_0, GetWidgetState(EventWidget( )))
           
       EndSelect
   EndSelect
 EndProcedure
 
 If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  If OpenRootWidget(0)
+  If OpenRoot(0)
     Button_0 = ProgressBarWidget(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
     Button_1 = ProgressBarWidget(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
     
@@ -63,14 +63,14 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   BindWidgetEvent(Button_4, @events_widgets())
   BindWidgetEvent(Button_5, @events_widgets())
   
-  SetState(Button_2, 120)
-  SetState(Button_3, 100)
+  SetWidgetState(Button_2, 120)
+  SetWidgetState(Button_3, 100)
   
-  SetState(Button_4, 120)
-  SetState(Button_5, 100)
+  SetWidgetState(Button_4, 120)
+  SetWidgetState(Button_5, 100)
   
-  SetState(Splitter_0, 189)
-  WaitCloseRootWidget( )
+  SetWidgetState(Splitter_0, 189)
+  WaitCloseRoot( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 41

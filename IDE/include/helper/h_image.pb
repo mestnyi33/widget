@@ -31,13 +31,13 @@ Procedure W_IH_CallBack()
   W_IH_Events(Event())
 EndProcedure
 
-Procedure W_IH_OpenRootWidget(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCentered)
+Procedure W_IH_OpenRoot(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCentered)
 ;   If IsWindow(W_IH)
 ;     SetActiveWindow(W_IH)
 ;     ProcedureReturn W_IH
 ;   EndIf
   
-  ;W_IH = GetCanvasWindow(OpenRootWidget(OpenWindow(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID)))                                                
+  ;W_IH = GetCanvasWindow(OpenRoot(OpenWindow(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID)))                                                
   ;W_IH = 
   WindowWidget(10, 10, 386, 201, "ImageHelper", Flag, ParentID)                                               
   ;G_IH_ScrollArea_0 = ScrollAreaWidget(5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
@@ -69,13 +69,13 @@ Procedure W_IH_Events(Event)
                 
                 Protected img = LoadImage(#PB_Any, File$)
                 If IsImage(img)
-                  If ImageWidget(img) > GetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerWidth)
-                    SetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerWidth, ImageWidget(img))
+                  If ImageWidget(img) > GetWidgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerWidth)
+                    SetGadGetWidgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerWidth, ImageWidget(img))
                   EndIf
-                  If ImageHeight(img) > GetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerHeight)
-                    SetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerHeight, ImageHeight(img))
+                  If ImageHeight(img) > GetWidgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerHeight)
+                    SetGadGetWidgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerHeight, ImageHeight(img))
                   EndIf
-                  SetGadgetState(G_IH_View, ImageID(img))
+                  SetGadGetWidgetState(G_IH_View, ImageID(img))
                 EndIf
               EndIf
               
@@ -91,8 +91,8 @@ EndProcedure
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  W_IH = GetCanvasWindow(OpenRootWidget(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
-  W_IH_OpenRootWidget()
+  W_IH = GetCanvasWindow(OpenRoot(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
+  W_IH_OpenRoot()
   
   While IsWindow(W_IH)
     Define Event = WaitWindowEvent()

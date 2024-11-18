@@ -45,13 +45,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If IsGadget(EventGadget())
       If EventType() = #__Event_Focus
-        Debug String.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
+        Debug String.s +" - gadget" +" get text - "+ GetGadGetWidgetText(EventGadget()) ; Bug in mac os
       Else
         Debug String.s +" - gadget"
       EndIf
     Else
       If EventType() = #__Event_Focus
-        Debug String.s +" - widget" +" get text - "+ GetTextWidget(EventGadget())
+        Debug String.s +" - widget" +" get text - "+ GetWidgetText(EventGadget())
       Else
         Debug String.s +" - widget"
       EndIf
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndImport
   CompilerEndIf
   
-  Procedure SetTextAlignment()
+  Procedure SetWidgetTextAlignment()
     ; Alignment text
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       CocoaMessage(0,GadgetID(1),"setAlignment:", 2)
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define height=60, Text1.s = "Borderless StringGadget" + #LF$ + " Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
   
-  Procedure.s get_TextWidget(m.s=#LF$)
+  Procedure.s get_Text(m.s=#LF$)
     Protected Text.s = "This is a long line." + m.s +
                        "Who should show." + 
                        m.s +
@@ -111,14 +111,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ProcedureReturn Text
   EndProcedure
-  Define Text.s = get_TextWidget(#LF$)
+  Define Text.s = get_Text(#LF$)
   ;     
   Procedure resize_splitter()
-    SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
+    SetWindowTitle(EventWindow(), Str(GetGadGetWidgetState(EventGadget())))
   EndProcedure
   
   If OpenWindow(0, 0, 0, 615, (height+5)*7+20+90+160, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    OpenRootWidget( 0);, 0, 0, 615, (height+5)*7+20+90+160)
+    OpenRoot( 0);, 0, 0, 615, (height+5)*7+20+90+160)
     ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     ;       height = 20
     ;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -126,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
     ;       height = 20
     ;       LoadFont(0, "monospace", 9)
-    ;       SetGadgetFont(-1,FontID(0))
+    ;       SetGadGetWidgetFont(-1,FontID(0))
     ;     CompilerEndIf
     
     StringGadget(0, 8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly)
@@ -144,9 +144,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       BindGadgetEvent(i, @Events())
     ;     Next
     
-    SetTextAlignment()
-    SetGadgetTextWidget(7, "GaT")
-    Debug "Get gadget text "+GetGadgetTextWidget(7)
+    SetWidgetTextAlignment()
+    SetGadGetWidgetText(7, "GaT")
+    Debug "Get gadget text "+GetGadGetWidgetText(7)
     
     *S_0 = StringWidget( 305+8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly|#__flag_Texttop)
     *S_1 = StringWidget( 305+8,  (height+5)*1+10, 290, height, "123-only-4567", #PB_String_Numeric|#__flag_Textcenter)
@@ -160,8 +160,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     *S_8 = StringWidget( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
     ;     *S_9 = StringWidget( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textwordwrap)
     
-    SetTextWidget(*S_7, "GaT")
-    Debug "Get widget text "+GetTextWidget(*S_7)
+    SetWidgetText(*S_7, "GaT")
+    Debug "Get widget text "+GetWidgetText(*S_7)
     
     
     EditorGadget(21, 0,0,0,0)
@@ -170,11 +170,11 @@ CompilerIf #PB_Compiler_IsMainFile
     *S_21 = EditorWidget( 0,0,0,0);, #__flag_gridlines)
     *S_22 = EditorWidget( 0,0,0,0, #PB_Editor_WordWrap)  ;#__flag_gridlines|
     
-    SetGadgetTextWidget(21, get_TextWidget(#LF$))
-    SetGadgetTextWidget(22, get_TextWidget(""))
+    SetGadGetWidgetText(21, get_Text(#LF$))
+    SetGadGetWidgetText(22, get_Text(""))
     
-    SetTextWidget(*S_21, get_TextWidget(#LF$))
-    SetTextWidget(*S_22, get_TextWidget(""))
+    SetWidgetText(*S_21, get_Text(#LF$))
+    SetWidgetText(*S_22, get_Text(""))
     
     For a = 0 To 2
       AddGadgetItem((21), a, "Line "+Str(a))
@@ -191,11 +191,11 @@ CompilerIf #PB_Compiler_IsMainFile
     *S_213 = SplitterWidget( 0,0,0,0, 22, 21 )
     
     *S_25 = SplitterWidget( 8,(height+5)*7+10,600-6, 250, *S_213,*S_23, #PB_Splitter_Vertical )
-    ;SetGadgetState(25, 30)
-    ;SetGadgetState(25, 97)
-    ;SetGadgetState(25, 82)
-    ;SetGadgetState(25, 99)
-    ;SetGadgetState(25, 126)
+    ;SetGadGetWidgetState(25, 30)
+    ;SetGadGetWidgetState(25, 97)
+    ;SetGadGetWidgetState(25, 82)
+    ;SetGadGetWidgetState(25, 99)
+    ;SetGadGetWidgetState(25, 126)
     ;BindGadgetEvent(25, @resize_splitter())
     
     ;     BindEvent(#PB_Event_Widget, @Events())
@@ -223,7 +223,7 @@ CompilerEndIf
 ;   CompilerElse
 ;     LoadFont(0, "Arial", 11)
 ;   CompilerEndIf 
-;   SetGadgetFont( -1, FontID(0))
+;   SetGadGetWidgetFont( -1, FontID(0))
 ;   
 ;   ;   *this._const_
 ;   ;   
@@ -248,13 +248,13 @@ CompilerEndIf
 ;     
 ;     If IsGadget(EventGadget())
 ;       If EventType() = #__Event_Focus
-;         Debug String.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
+;         Debug String.s +" - gadget" +" get text - "+ GetGadGetWidgetText(EventGadget()) ; Bug in mac os
 ;       Else
 ;         Debug String.s +" - gadget"
 ;       EndIf
 ;     Else
 ;       If EventType() = #__Event_Focus
-;         Debug String.s +" - widget" +" get text - "+ GetTextWidget(EventGadget())
+;         Debug String.s +" - widget" +" get text - "+ GetWidgetText(EventGadget())
 ;       Else
 ;         Debug String.s +" - widget"
 ;       EndIf
@@ -269,7 +269,7 @@ CompilerEndIf
 ;     EndImport
 ;   CompilerEndIf
 ;   
-;   Procedure SetTextAlignment()
+;   Procedure SetWidgetTextAlignment()
 ;     ; Alignment text
 ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
 ;       CocoaMessage(0,GadgetID(1),"setAlignment:", 2)
@@ -297,7 +297,7 @@ CompilerEndIf
 ;   Define height=60, Text1.s = "Borderless StringGadget" + #LF$ + " Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
 ;   
 ;   
-;   Procedure.s get_TextWidget(m.s=#LF$)
+;   Procedure.s get_Text(m.s=#LF$)
 ;     Protected Text.s = "This is a long line." + m.s +
 ;                        "Who should show." + 
 ;                        m.s +
@@ -314,13 +314,13 @@ CompilerEndIf
 ;     
 ;     ProcedureReturn Text
 ;   EndProcedure
-;   Define Text.s = get_TextWidget(#LF$)
+;   Define Text.s = get_Text(#LF$)
 ;   ;     
 ;   Procedure resize_splitter()
-;     SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
+;     SetWindowTitle(EventWindow(), Str(GetGadGetWidgetState(EventGadget())))
 ;   EndProcedure
 ;   
-;   If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 615, 270, "Editor on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+;   If OpenRoot(OpenWindow(#PB_Any, 0, 0, 615, 270, "Editor on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ;     EditorGadget(21, 0,0,0,0)
 ;     EditorGadget(22, 0,0,0,0, #PB_Editor_WordWrap)
 ;     
@@ -329,11 +329,11 @@ CompilerEndIf
 ;     SetWidgetFrame( *w_211, 2)
 ;     SetWidgetFrame( *w_212, 2)
 ;     
-;     SetGadgetTextWidget(21, get_TextWidget(#LF$))
-;     SetGadgetTextWidget(22, get_TextWidget(""))
+;     SetGadGetWidgetText(21, get_Text(#LF$))
+;     SetGadGetWidgetText(22, get_Text(""))
 ;     
-;     SetTextWidget(*w_211, get_TextWidget(#LF$))
-;     SetTextWidget(*w_212, get_TextWidget(""))
+;     SetWidgetText(*w_211, get_Text(#LF$))
+;     SetWidgetText(*w_212, get_Text(""))
 ;     
 ;     For a = 0 To 2
 ;       AddGadgetItem((21), a, "Line "+Str(a))
@@ -352,11 +352,11 @@ CompilerEndIf
 ;     *s_2 = SplitterWidget(0,0,0,0, *w_212,22 )
 ;     
 ;     *s_3 = SplitterWidget(8,10,600, 250, *S_2,*S_1, #PB_Splitter_Vertical )
-;     ;SetState(*s_3, 30)
-;     ;SetState(*s_3, 97)
-;     ;SetState(*s_3, 82)
-;     ;SetState(*s_3, 99)
-;     ;SetState(*s_3, 126)
+;     ;SetWidgetState(*s_3, 30)
+;     ;SetWidgetState(*s_3, 97)
+;     ;SetWidgetState(*s_3, 82)
+;     ;SetWidgetState(*s_3, 99)
+;     ;SetWidgetState(*s_3, 126)
 ;     BindWidgetEvent(*s_3, @resize_splitter())
 ;     
 ;     ;     BindEvent(#PB_Event_Widget, @Events())

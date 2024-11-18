@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       EndWith
     EndProcedure
  
-  Procedure.s get_TextWidget(m.s=#LF$)
+  Procedure.s get_Text(m.s=#LF$)
     Protected Text.s = "This is a long line." + m.s +
                        "Who should show." + 
                        m.s +
@@ -187,9 +187,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *demo
   Procedure events_widgets()
-;     SetData(EventWidget( ), (GetData(EventWidget( )) ! 1))
+;     SetWidgetData(EventWidget( ), (GetWidgetData(EventWidget( )) ! 1))
 ;     
-;     If GetData(EventWidget( ))
+;     If GetWidgetData(EventWidget( ))
 ;      ; EventWidget( )\color\state = 2
 ;     EndIf
     
@@ -198,14 +198,14 @@ CompilerIf #PB_Compiler_IsMainFile
         _SetAlignment(*demo, #__align_Center|#__align_top|#__align_auto)
         
       Case *l
-;         If GetData(*r)
+;         If GetWidgetData(*r)
 ;           SetAlign(*demo, #__align_Center|#__align_left|#__align_right|#__align_auto)
 ;         Else
           _SetAlignment(*demo, #__align_Center|#__align_left|#__align_auto)
 ;         EndIf
         
       Case *r
-;         If GetData(*l)
+;         If GetWidgetData(*l)
 ;           SetAlign(*demo, #__align_Center|#__align_left|#__align_right|#__align_auto)
 ;         Else
           _SetAlignment(*demo, #__align_Center|#__align_right|#__align_auto)
@@ -220,14 +220,14 @@ CompilerIf #PB_Compiler_IsMainFile
         
         
       Case *lt
-        SetState(*l, 0)
-        SetState(*t, 0)
-        SetState(*r, 0)
-        SetState(*b, 0)
-        ;SetState(*lt, 0)
-        SetState(*rt, 0)
-        SetState(*rb, 0)
-        SetState(*lb, 0)
+        SetWidgetState(*l, 0)
+        SetWidgetState(*t, 0)
+        SetWidgetState(*r, 0)
+        SetWidgetState(*b, 0)
+        ;SetWidgetState(*lt, 0)
+        SetWidgetState(*rt, 0)
+        SetWidgetState(*rb, 0)
+        SetWidgetState(*lb, 0)
         _SetAlignment(*demo, #__align_left|#__align_top|#__align_auto)
         
       Case *rt
@@ -242,7 +242,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndSelect    
   EndProcedure
   
-  If OpenRootWidget(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If OpenRoot(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
     
     Define *cont = ContainerWidget(15,15,100,100)
@@ -262,7 +262,7 @@ CompilerIf #PB_Compiler_IsMainFile
      *l = ButtonWidget(o2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
      *r = ButtonWidget(98-s2-o2*2,o2,s2,s2,"",#__flag_ButtonToggle,0,r2)
      *b = ButtonWidget(o2,98-s2-o2*2,s2,s2,"",#__flag_ButtonToggle,0,r2)
-    SetState(*lt, 1)
+    SetWidgetState(*lt, 1)
      
     Define *c._s_widget = ContainerWidget(s2+o2*3-1,s2+o2*3-1,(98-s2*2-o2*6+1),(98-s2*2-o2*6+1))
     *c\round = 9
@@ -332,7 +332,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Height + direction
         
         If ResizeWidget(*cont, #PB_Ignore, #PB_Ignore, Width, Height)
-          ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
+          ; SetWindowTitle(0, "Change scroll direction "+ Str(GetWidgetAttribute(*Bar_0, #PB_Bar_Direction)))
         EndIf
        
       Case #PB_Event_Gadget
@@ -342,7 +342,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Width = WidgetWidth(*cont)
             Height = WidgetHeight(*cont)
             
-            If GetGadgetState(0)
+            If GetGadGetWidgetState(0)
               AddWindowTimer(GetCanvasWindow(root()), 1, 200)
             Else
               RemoveWindowTimer(GetCanvasWindow(root()), 1)

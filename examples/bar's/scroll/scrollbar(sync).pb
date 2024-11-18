@@ -32,20 +32,20 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Property_Events( )
       Protected *splitter._s_WIDGET = EventWidget( )\parent
-      Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected *first._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected *second._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_SecondGadget)
       
       Select WidgetEvent( )
          Case #__event_ScrollChange
             Select EventWidget( )
                Case *first 
-                  If GetState( *second\scroll\v ) <> WidgetEventData( )
-                     SetState(*second\scroll\v, WidgetEventData( ) )
+                  If GetWidgetState( *second\scroll\v ) <> WidgetEventData( )
+                     SetWidgetState(*second\scroll\v, WidgetEventData( ) )
                   EndIf
                   
                Case *second
-                  If GetState( *first\scroll\v ) <> WidgetEventData( )
-                     SetState(*first\scroll\v, WidgetEventData( ) )
+                  If GetWidgetState( *first\scroll\v ) <> WidgetEventData( )
+                     SetWidgetState(*first\scroll\v, WidgetEventData( ) )
                   EndIf
             EndSelect
             
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
             If EventWidget( ) = *first
                If WidgetEventData( ) = #PB_Tree_Expanded Or
                   WidgetEventData( ) = #PB_Tree_Collapsed
-                  If SetItemState( *second, WidgetEventItem( ), WidgetEventData( ) )
+                  If SetWidgetItemState( *second, WidgetEventItem( ), WidgetEventData( ) )
                      ReDraw( *second )
                   EndIf
                EndIf
@@ -100,9 +100,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure AddItem_( *this._s_WIDGET, item, Text.s, Image=-1, mode=0 )
-      Protected *splitter._s_WIDGET = GetData(*this)
-      Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected *splitter._s_WIDGET = GetWidgetData(*this)
+      Protected *first._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected *second._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_SecondGadget)
       
       AddItem( *first, item, StringField(Text.s, 1, Chr(10)), Image, mode )
       AddItem( *second, item, StringField(Text.s, 2, Chr(10)), Image, mode )
@@ -115,9 +115,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *second._s_WIDGET = TreeWidget(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_autosize)
       
       Protected *splitter._s_WIDGET = SplitterWidget(0,0,0,0, *first,*second, #PB_Splitter_Vertical |#PB_Splitter_FirstFixed| #__flag_autosize )
-      SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
-      SetState(*splitter, width-position )
-      SetData(*this, *splitter)
+      SetWidgetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
+      SetWidgetState(*splitter, width-position )
+      SetWidgetData(*this, *splitter)
       
       *splitter\bar\button\size = 5
       *splitter\bar\button\round = 0
@@ -129,22 +129,22 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseWidgetList( )
       
       
-      SetData(*second, *first)
-      SetData(*first, *second)
+      SetWidgetData(*second, *first)
+      SetWidgetData(*first, *second)
       
       BindWidgetEvent(*first, @Property_Events( ))
       BindWidgetEvent(*second, @Property_Events( ))
       ProcedureReturn *this
    EndProcedure
    
-   If OpenRootWidget(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRoot(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       Define *Tree = Properties_(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
       Define Value = *Tree
       AddItem_(*Tree, #_pi_group_0, "common")
       AddItem_(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
       AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
-      AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
+      AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetWidgetText(Value), #PB_WidgetType_String, 1)
       
       AddItem_(*Tree, #_pi_group_1, "layout")
       AddItem_(*Tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)
@@ -161,7 +161,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem_(*Tree1, #_pi_group_0, "common")
       AddItem_(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_WidgetType_String, 1)
       AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetWidgetClass(Value)+"_"+GetTypeCount(Value), #PB_WidgetType_String, 1)
-      AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetTextWidget(Value), #PB_WidgetType_String, 1)
+      AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetWidgetText(Value), #PB_WidgetType_String, 1)
       
       AddItem_(*Tree1, #_pi_group_1, "layout")
       AddItem_(*Tree1, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_WidgetType_Spin, 1)
@@ -184,9 +184,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;     
-      ;     Define *splitter._s_WIDGET = GetData(*Tree1)
-      ;      Define *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-      ;      Define *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      ;     Define *splitter._s_WIDGET = GetWidgetData(*Tree1)
+      ;      Define *first._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      ;      Define *second._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_SecondGadget)
       ;      ;*first\scroll\h\hide = 1
       ;      Repaint( *splitter\root )
       ;      Debug *first\scroll\h\hide

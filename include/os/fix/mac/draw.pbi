@@ -33,8 +33,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         PB(DrawingMode)(_mode_) 
       EndMacro
       
-      Macro GetGadgetFont(FontID)
-        FIXME(GetGadgetFont)(FontID)
+      Macro GetWidgetFont(FontID)
+        FIXME(GetWidgetFont)(FontID)
       EndMacro
       
       Macro DrawingFont(FontID)
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       
       
       Declare.i mac_SetOrigin( x.l, y.l )
-      Declare.i mac_GetGadgetFont(Gadget.i)
+      Declare.i mac_GetWidgetFont(Gadget.i)
       Declare.i mac_FreeFont(Font.i)
       Declare.i mac_TextHeight(Text.s)
       Declare.i mac_TextWidth(Text.s)
@@ -84,14 +84,14 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ;
       ;
       Procedure.i mac_FreeFont(Font.i)
-        If FontID(Font) = PB(GetGadgetFont)(#PB_Default)
-          SetGadgetFont(#PB_Default, #PB_Default)
+        If FontID(Font) = PB(GetWidgetFont)(#PB_Default)
+          SetGadGetWidgetFont(#PB_Default, #PB_Default)
         EndIf
         
         ProcedureReturn PB(FreeFont)(Font)
       EndProcedure
       
-      ;     Procedure.i mac_SetGadgetFont(Gadget.i, FontID.i)
+      ;     Procedure.i mac_SetGadGetWidgetFont(Gadget.i, FontID.i)
       ;       If Gadget =- 1 And FontID =- 1
       ;         Debug #PB_Compiler_Procedure
       ;         Protected fs.CGFloat 
@@ -99,11 +99,11 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ;         FontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @fs) 
       ;       EndIf
       ;       
-      ;       ProcedureReturn PB(SetGadgetFont)(Gadget, FontID)
+      ;       ProcedureReturn PB(SetGadGetWidgetFont)(Gadget, FontID)
       ;     EndProcedure
       
-      Procedure.i mac_GetGadgetFont(Gadget.i)
-        Protected FontID = PB(GetGadgetFont)(Gadget)
+      Procedure.i mac_GetWidgetFont(Gadget.i)
+        Protected FontID = PB(GetWidgetFont)(Gadget)
         
         If Gadget =- 1 And Not FontID
           ; Debug #PB_Compiler_Procedure
@@ -444,7 +444,7 @@ CompilerIf #PB_Compiler_IsMainFile
     PB(CanvasGadget)(2, 10, 10, 440, 200)
     StringGadget(12, 400, 10, 40, 25, "????")
     StringGadget(13, 400, 40, 40, 25, "????", #PB_String_Password)
-    Define FontID = PB(GetGadgetFont)( #PB_Default )
+    Define FontID = PB(GetWidgetFont)( #PB_Default )
     
     If PB(StartDrawing)( PB(CanvasOutput)( 2 ) )
       If FontID
@@ -490,7 +490,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(1, 350, 250, 460, 220, "fix clip then drawing", #PB_Window_SystemMenu)   ; and set origin
     CanvasGadget(1, 10, 10, 440, 200)
-    FontID = GetGadgetFont( #PB_Default )
+    FontID = GetWidgetFont( #PB_Default )
     
     If StartDrawing( CanvasOutput( 1 ) )
       If FontID

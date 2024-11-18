@@ -111,7 +111,7 @@ Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Tool
 Procedure ShowButtonBox( *second._S_WIDGET, item.i )
    Static *last._s_WIDGET
    Protected *this._s_WIDGET
-      *this = GetItemData(*second, item )
+      *this = GetWidgetItemData(*second, item )
       
       If *this
          If *last <> *this
@@ -125,11 +125,11 @@ Procedure ShowButtonBox( *second._S_WIDGET, item.i )
             SelectElement(*second\__items( ), item)
             Select *this\type
                Case #PB_WidgetType_String
-                  SetTextWidget( *this, (*second\__items( )\text\string) )
+                  SetWidgetText( *this, (*second\__items( )\text\string) )
                Case #PB_WidgetType_Spin
-                  SetState( *this, Val(*second\__items( )\text\string) )
+                  SetWidgetState( *this, Val(*second\__items( )\text\string) )
                Case #PB_WidgetType_ComboBox
-                  SetState( *this, Val(*second\__items( )\text\string) )
+                  SetWidgetState( *this, Val(*second\__items( )\text\string) )
             EndSelect
             
             *this\noscale = 1
@@ -139,7 +139,7 @@ Procedure ShowButtonBox( *second._S_WIDGET, item.i )
                    *second\__items( )\width,;-30, 
                    *second\__items( )\height )
             HideWidget( *this, 0 )
-            ; SetActive( *this )
+            ; SetActiveWidget( *this )
             PopListPosition(*second\__items( ))
          EndIf
       
@@ -150,8 +150,8 @@ EndProcedure
 ;-
 Procedure PropertiesEvents( )
    Protected *splitter._s_WIDGET = EventWidget( )\parent
-   Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+   Protected *first._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_FirstGadget)
+   Protected *second._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_SecondGadget)
     Static *last._s_WIDGET
   
    Select WidgetEvent( )
@@ -180,11 +180,11 @@ Procedure PropertiesEvents( )
       Case #__event_Change
          Select EventWidget( )\type
             Case #PB_WidgetType_String
-               SetItemTextWidget(EventWidget( )\parent, GetData(EventWidget( )), (GetTextWidget(EventWidget( ))) )
+               SetWidgetItemText(EventWidget( )\parent, GetWidgetData(EventWidget( )), (GetWidgetText(EventWidget( ))) )
             Case #PB_WidgetType_Spin
-               SetItemTextWidget(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+               SetWidgetItemText(EventWidget( )\parent, GetWidgetData(EventWidget( )), Str(GetWidgetState(EventWidget( ))) )
             Case #PB_WidgetType_ComboBox
-               SetItemTextWidget(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+               SetWidgetItemText(EventWidget( )\parent, GetWidgetData(EventWidget( )), Str(GetWidgetState(EventWidget( ))) )
             Default
                ;Debug "change item"
                
@@ -200,7 +200,7 @@ Procedure PropertiesEvents( )
             If WidgetEventData( ) = #PB_Tree_Expanded Or
                WidgetEventData( ) = #PB_Tree_Collapsed
                ;
-               If SetItemState( *second, WidgetEventItem( ), WidgetEventData( ) )
+               If SetWidgetItemState( *second, WidgetEventItem( ), WidgetEventData( ) )
                   ReDraw( *second )
                EndIf
             EndIf
@@ -236,14 +236,14 @@ Procedure PropertiesEvents( )
          
       Case #__event_ScrollChange
          If EventWidget( ) = *first 
-            If GetState( *second\scroll\v ) <> WidgetEventData( )
-               SetState(*second\scroll\v, WidgetEventData( ) )
+            If GetWidgetState( *second\scroll\v ) <> WidgetEventData( )
+               SetWidgetState(*second\scroll\v, WidgetEventData( ) )
             EndIf
          EndIf   
          
          If EventWidget( ) = *second
-            If GetState( *first\scroll\v ) <> WidgetEventData( )
-               SetState(*first\scroll\v, WidgetEventData( ) )
+            If GetWidgetState( *first\scroll\v ) <> WidgetEventData( )
+               SetWidgetState(*first\scroll\v, WidgetEventData( ) )
             EndIf
          EndIf
          
@@ -251,8 +251,8 @@ Procedure PropertiesEvents( )
 EndProcedure
 
 Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
-   Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+   Protected *first._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_FirstGadget)
+   Protected *second._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_SecondGadget)
    
    AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
    AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
@@ -265,25 +265,25 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    Select Type
       Case #PB_WidgetType_Spin
          *this = Create( *second, #PB_Compiler_Procedure, #PB_WidgetType_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__buttonsize, 0, 1 )
-         SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
+         SetWidgetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #PB_WidgetType_String
          *this = Create( *second, #PB_Compiler_Procedure, #PB_WidgetType_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
       Case #PB_WidgetType_ComboBox
          *this = Create( *second, #PB_Compiler_Procedure, #PB_WidgetType_ComboBox, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
          AddItem(*this, -1, "False")
          AddItem(*this, -1, "True")
-         SetState(*this, 1)
+         SetWidgetState(*this, 1)
    EndSelect
    
    
    If *this
-      SetData(*this, item)
+      SetWidgetData(*this, item)
       BindWidgetEvent(*this, @PropertiesEvents( ), #__event_Change)
       BindWidgetEvent(*this, @PropertiesEvents( ), #__event_LostFocus)
    EndIf
    
-   ; SetItemData(*first, item, *this)
-   SetItemData(*second, item, *this)
+   ; SetWidgetItemData(*first, item, *this)
+   SetWidgetItemData(*second, item, *this)
 EndProcedure
 
 Procedure CreateProperties( X,Y,Width,Height, flag=0 )
@@ -292,8 +292,8 @@ Procedure CreateProperties( X,Y,Width,Height, flag=0 )
    Protected *second._s_WIDGET = TreeWidget(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines)
    
    Protected *splitter._s_WIDGET = SplitterWidget(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
-   SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
-   ;SetState(*splitter, width-position )
+   SetWidgetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
+   ;SetWidgetState(*splitter, width-position )
    
    *splitter\bar\button\size = DPIScaled(5)
    *splitter\bar\button\round = DPIScaled(1)
@@ -311,8 +311,8 @@ Procedure CreateProperties( X,Y,Width,Height, flag=0 )
    CloseWidgetList( )
    
    
-   SetData(*second, *first)
-   SetData(*first, *second)
+   SetWidgetData(*second, *first)
+   SetWidgetData(*first, *second)
    
    BindWidgetEvent(*first, @PropertiesEvents( ))
    BindWidgetEvent(*second, @PropertiesEvents( ))
@@ -320,54 +320,54 @@ Procedure CreateProperties( X,Y,Width,Height, flag=0 )
 EndProcedure
 
 
-Procedure.s GetItemTextProperties( *splitter._s_WIDGET, item )
-   Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-   ProcedureReturn GetItemTextWidget( *first, item )
+Procedure.s GetWidgetItemTextProperties( *splitter._s_WIDGET, item )
+   Protected *first._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_FirstGadget)
+   Protected *second._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_SecondGadget)
+   ProcedureReturn GetWidgetItemText( *first, item )
 EndProcedure
 
-Procedure SetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
-   Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+Procedure SetWidgetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
+   Protected *first._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_FirstGadget)
+   Protected *second._s_WIDGET = GetWidgetAttribute(*splitter, #PB_Splitter_SecondGadget)
    
-   SetItemTextWidget( *first, item, StringField(Text.s, 1, Chr(10)) )
-   SetItemTextWidget( *second, item, StringField(Text.s, 2, Chr(10)) )
+   SetWidgetItemText( *first, item, StringField(Text.s, 1, Chr(10)) )
+   SetWidgetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
 EndProcedure
 
 
 ;-
 Macro properties_update_id( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_id,      GetItemTextProperties( _gadget_, #_pi_id )      +Chr( 10 )+Str( _value_ ) )
+   SetWidgetItemTextProperties( _gadget_, #_pi_id,      GetWidgetItemTextProperties( _gadget_, #_pi_id )      +Chr( 10 )+Str( _value_ ) )
 EndMacro
 
-Macro properties_update_TextWidget( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_text,    GetItemTextProperties( _gadget_, #_pi_text )    +Chr( 10 )+GetTextWidget( _value_ ) )
+Macro properties_update_Text( _gadget_, _value_ )
+   SetWidgetItemTextProperties( _gadget_, #_pi_text,    GetWidgetItemTextProperties( _gadget_, #_pi_text )    +Chr( 10 )+GetWidgetText( _value_ ) )
 EndMacro
 
 Macro properties_update_class( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 )+GetWidgetClass( _value_ )+"_"+GetTypeCount( _value_ ) )
+   SetWidgetItemTextProperties( _gadget_, #_pi_class,   GetWidgetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 )+GetWidgetClass( _value_ )+"_"+GetTypeCount( _value_ ) )
 EndMacro
 
 Macro properties_update_hide( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 )+Str( HideWidget( _value_ ) ) )
+   SetWidgetItemTextProperties( _gadget_, #_pi_hide,    GetWidgetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 )+Str( HideWidget( _value_ ) ) )
 EndMacro
 
 Macro properties_update_disable( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 )+Str( DisableWidget( _value_ ) ) )
+   SetWidgetItemTextProperties( _gadget_, #_pi_disable, GetWidgetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 )+Str( DisableWidget( _value_ ) ) )
 EndMacro
 
 Macro properties_update_coordinate( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_x,       GetItemTextProperties( _gadget_, #_pi_x )       +Chr( 10 )+Str( WidgetX( _value_, #__c_container ) ) )
-   SetItemTextProperties( _gadget_, #_pi_y,       GetItemTextProperties( _gadget_, #_pi_y )       +Chr( 10 )+Str( WidgetY( _value_, #__c_container ) ) )
-   SetItemTextProperties( _gadget_, #_pi_width,   GetItemTextProperties( _gadget_, #_pi_width )   +Chr( 10 )+Str( WidgetWidgetWidth( _value_ ) ) )
-   SetItemTextProperties( _gadget_, #_pi_height,  GetItemTextProperties( _gadget_, #_pi_height )  +Chr( 10 )+Str( WidgetWidgetHeight( _value_ ) ) )
+   SetWidgetItemTextProperties( _gadget_, #_pi_x,       GetWidgetItemTextProperties( _gadget_, #_pi_x )       +Chr( 10 )+Str( WidgetX( _value_, #__c_container ) ) )
+   SetWidgetItemTextProperties( _gadget_, #_pi_y,       GetWidgetItemTextProperties( _gadget_, #_pi_y )       +Chr( 10 )+Str( WidgetY( _value_, #__c_container ) ) )
+   SetWidgetItemTextProperties( _gadget_, #_pi_width,   GetWidgetItemTextProperties( _gadget_, #_pi_width )   +Chr( 10 )+Str( WidgetWidth( _value_ ) ) )
+   SetWidgetItemTextProperties( _gadget_, #_pi_height,  GetWidgetItemTextProperties( _gadget_, #_pi_height )  +Chr( 10 )+Str( WidgetHeight( _value_ ) ) )
 EndMacro
 
 Macro properties_updates( _gadget_, _value_ )
    properties_update_id( _gadget_, _value_ )
    properties_update_class( _gadget_, _value_ )
    
-   properties_update_TextWidget( _gadget_, _value_ )
+   properties_update_Text( _gadget_, _value_ )
    properties_update_coordinate( _gadget_, _value_ )
    
    properties_update_disable( _gadget_, _value_ )
@@ -545,14 +545,14 @@ EndMacro
 
 Macro widget_delete( )
    If a_focused( )\anchors
-      RemoveItem( ide_inspector_view, GetData( a_focused( ) ) )
+      RemoveItem( ide_inspector_view, GetWidgetData( a_focused( ) ) )
       
       FreeWidget( a_focused( ) )
       
-      a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
+      a_Set( GetWidgetItemData( ide_inspector_view, GetWidgetState( ide_inspector_view ) ) )
    Else
       ForEach a_group( )
-         RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
+         RemoveItem( ide_inspector_view, GetWidgetData( a_group( )\widget ) )
          FreeWidget( a_group( )\widget )
          DeleteElement( a_group( ) )
       Next
@@ -677,7 +677,7 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          ;           newClass.s = GetWidgetClass( *parent )+"_"+GetTypeCount( *parent )+"_"+GetWidgetClass( *new )+"_"+GetTypeCount( *new , 1 )
          ;         EndIf
          ;\\
-         SetTextWidget( *new, newClass )
+         SetWidgetText( *new, newClass )
          
          ;
          If IsWidgetContainer( *new )
@@ -696,55 +696,55 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          EndIf
          ;
          ; get new add position & sublevel
-         Protected i, countitems, sublevel, position = GetData( *parent ) 
-         countitems = CountItems( ide_inspector_view )
-         For i = 0 To countitems - 1
+         Protected i, CountItems, sublevel, position = GetWidgetData( *parent ) 
+         CountItems = CountItems( ide_inspector_view )
+         For i = 0 To CountItems - 1
             Position = ( i+1 )
             
-            If *parent = GetItemData( ide_inspector_view, i ) 
-               SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
+            If *parent = GetWidgetItemData( ide_inspector_view, i ) 
+               SubLevel = GetWidgetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
                Continue
             EndIf
             
-            If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
+            If SubLevel > GetWidgetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
                Position = i
                Break
             EndIf
          Next 
          
          ; set new widget data
-         SetData( *new, position )
+         SetWidgetData( *new, position )
          
          ; update new widget data item
-         If countitems > position
-            For i = position To countitems - 1
-               SetData( GetItemData( ide_inspector_view, i ), i + 1 )
+         If CountItems > position
+            For i = position To CountItems - 1
+               SetWidgetData( GetWidgetItemData( ide_inspector_view, i ), i + 1 )
             Next 
          EndIf
          
          ; get image associated with class
          Protected img =- 1
-         countitems = CountItems( ide_inspector_elements )
-         For i = 0 To countitems - 1
-            If LCase(StringField( class.s, 1, "_" )) = LCase(GetItemTextWidget( ide_inspector_elements, i ))
-               img = GetItemData( ide_inspector_elements, i )
+         CountItems = CountItems( ide_inspector_elements )
+         For i = 0 To CountItems - 1
+            If LCase(StringField( class.s, 1, "_" )) = LCase(GetWidgetItemText( ide_inspector_elements, i ))
+               img = GetWidgetItemData( ide_inspector_elements, i )
                Break
             EndIf
          Next  
          
          ; add to inspector
          AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
-         SetItemData( ide_inspector_view, position, *new )
-         ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
+         SetWidgetItemData( ide_inspector_view, position, *new )
+         ; SetWidgetItemState( ide_inspector_view, position, #PB_tree_selected )
          
          ; Debug " "+position
-         SetState( ide_inspector_view, position )
+         SetWidgetState( ide_inspector_view, position )
          
          If IsGadget( ide_g_code )
             AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
-            SetGadgetItemData( ide_g_code, position, *new )
-            ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
-            SetGadgetState( ide_g_code, position ) ; Bug
+            SetGadGetWidgetItemData( ide_g_code, position, *new )
+            ; SetGadGetWidgetItemState( ide_g_code, position, #PB_tree_selected )
+            SetGadGetWidgetState( ide_g_code, position ) ; Bug
          EndIf
          
          ; Debug  " pos "+position + "   ( debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
@@ -773,18 +773,18 @@ Procedure widget_events( )
          
       Case #__event_Focus
          If a_focused( ) = *e_widget
-            If GetData( *e_widget ) >= 0
+            If GetWidgetData( *e_widget ) >= 0
                If IsGadget( ide_g_code )
-                  SetGadgetState( ide_g_code, GetData( *e_widget ) )
+                  SetGadGetWidgetState( ide_g_code, GetWidgetData( *e_widget ) )
                EndIf
-               SetState( ide_inspector_view, GetData( *e_widget ) )
+               SetWidgetState( ide_inspector_view, GetWidgetData( *e_widget ) )
             EndIf
             
             properties_updates( ide_inspector_properties, *e_widget )
             
-            If GetActive( ) <> ide_inspector_view 
-               SetActive( ide_inspector_view )
-               Debug "------------- "+GetActive( )\class
+            If GetActiveWidget( ) <> ide_inspector_view 
+               SetActiveWidget( ide_inspector_view )
+               Debug "------------- "+GetActiveWidget( )\class
             EndIf
          EndIf
          
@@ -797,7 +797,7 @@ Procedure widget_events( )
             If IsWidgetContainer( *e_widget ) 
                If MouseEnter( *e_widget )
                   If Not a_index( )
-                     If GetState( ide_inspector_elements) > 0 
+                     If GetWidgetState( ide_inspector_elements) > 0 
                         If DDragPrivate( #_DD_CreateNew )
                            ChangeCursor( *e_widget, #PB_Cursor_Cross )
                         EndIf
@@ -823,24 +823,24 @@ Procedure widget_events( )
                EndIf
                
             Case #_DD_CreateNew 
-               Debug " ----- DD_new ----- "+ GetTextWidget( ide_inspector_elements ) +" "+ DDropX( ) +" "+ DDropY( ) +" "+ DDropWidgetWidth( ) +" "+ DDropWidgetHeight( )
-               widget_add( *e_widget, GetTextWidget( ide_inspector_elements ), DDropX( ), DDropY( ), DDropWidgetWidth( ), DDropWidgetHeight( ) )
+               Debug " ----- DD_new ----- "+ GetWidgetText( ide_inspector_elements ) +" "+ DDropX( ) +" "+ DDropY( ) +" "+ DDropWidgetWidth( ) +" "+ DDropWidgetHeight( )
+               widget_add( *e_widget, GetWidgetText( ide_inspector_elements ), DDropX( ), DDropY( ), DDropWidgetWidth( ), DDropWidgetHeight( ) )
                
             Case #_DD_CreateCopy
-               Debug " ----- DD_copy ----- " + GetTextWidget( PressedWidget( ) )
+               Debug " ----- DD_copy ----- " + GetWidgetText( PressedWidget( ) )
                
                ;            *new = widget_add( *e_widget, GetWidgetClass( PressedWidget( ) ), 
-               ;                         WidgetX( PressedWidget( ) ), WidgetY( PressedWidget( ) ), WidgetWidgetWidth( PressedWidget( ) ), WidgetWidgetHeight( PressedWidget( ) ) )
+               ;                         WidgetX( PressedWidget( ) ), WidgetY( PressedWidget( ) ), WidgetWidth( PressedWidget( ) ), WidgetHeight( PressedWidget( ) ) )
                
                *new = widget_add( *e_widget, DDropTextWidget( ), DDropX( ), DDropY( ), DDropWidgetWidth( ), DDropWidgetHeight( ) )
-               SetTextWidget( *new, "Copy_"+ DDropTextWidget( ) )
+               SetWidgetText( *new, "Copy_"+ DDropTextWidget( ) )
                
          EndSelect
          
       Case #__event_LeftDown
          If IsWidgetContainer( *e_widget )
             If mouse( )\selector
-               If GetState( ide_inspector_elements) > 0 
+               If GetWidgetState( ide_inspector_elements) > 0 
                   mouse( )\selector\dotted = 0
                EndIf
             EndIf
@@ -850,15 +850,15 @@ Procedure widget_events( )
          ; then group select
          If IsWidgetContainer( *e_widget )
             If mouse( )\selector And ListSize( a_group( ) )
-               SetState( ide_inspector_view, - 1 )
+               SetWidgetState( ide_inspector_view, - 1 )
                If IsGadget( ide_g_code )
-                  SetGadgetState( ide_g_code, - 1 )
+                  SetGadGetWidgetState( ide_g_code, - 1 )
                EndIf
                
                ForEach a_group( )
-                  SetItemState( ide_inspector_view, GetData( a_group( )\widget ), #PB_Tree_Selected )
+                  SetWidgetItemState( ide_inspector_view, GetWidgetData( a_group( )\widget ), #PB_Tree_Selected )
                   If IsGadget( ide_g_code )
-                     SetGadgetItemState( ide_g_code, GetData( a_group( )\widget ), #PB_Tree_Selected )
+                     SetGadGetWidgetItemState( ide_g_code, GetWidgetData( a_group( )\widget ), #PB_Tree_Selected )
                   EndIf
                Next
             EndIf
@@ -866,7 +866,7 @@ Procedure widget_events( )
          
       Case #__event_Resize
          properties_update_coordinate( ide_inspector_properties, *e_widget )
-         SetWindowTitle( GetCanvasWindow(*e_widget\root), Str( WidgetWidgetWidth(*e_widget))+"x"+Str( WidgetWidgetHeight(*e_widget) ) )
+         SetWindowTitle( GetCanvasWindow(*e_widget\root), Str( WidgetWidth(*e_widget))+"x"+Str( WidgetHeight(*e_widget) ) )
          
       Case #__event_MouseEnter,
            #__event_MouseLeave,
@@ -881,7 +881,7 @@ Procedure widget_events( )
             EndIf
          Else
             If IsWidgetContainer( *e_widget ) 
-               If GetState( ide_inspector_elements ) > 0 
+               If GetWidgetState( ide_inspector_elements ) > 0 
                   If eventtype = #__event_MouseLeave
                      If CurrentCursor( ) <> #PB_Cursor_Default
                         ChangeCursor( *e_widget, #PB_Cursor_Default )
@@ -903,8 +903,8 @@ Procedure widget_events( )
       eventtype = #__event_RightUp 
       
       ; end new create
-      If GetState( ide_inspector_elements ) > 0 
-         SetState( ide_inspector_elements, 0 )
+      If GetWidgetState( ide_inspector_elements ) > 0 
+         SetWidgetState( ide_inspector_elements, 0 )
          ChangeCursor( *e_widget, #PB_Cursor_Default )
       EndIf
    EndIf
@@ -977,7 +977,7 @@ Procedure.i ide_add_image_list( *id, Directory$ )
                               
                               Image = CatchImage( #PB_Any, *memory, ImageSize )
                               AddItem( *id, 0, PackEntryName.S, Image )
-                              SetItemData( *id, 0, Image )
+                              SetWidgetItemData( *id, 0, Image )
                               Image = #Null
                               
                            ElseIf FindStringWidget( PackEntryName, "window" )
@@ -1010,7 +1010,7 @@ Procedure.i ide_add_image_list( *id, Directory$ )
                               
                               Image = CatchImage( #PB_Any, *memory, ImageSize )
                               AddItem( *id, -1, PackEntryName.S, Image )
-                              SetItemData( *id, CountItems( *id )-1, Image )
+                              SetWidgetItemData( *id, CountItems( *id )-1, Image )
                               Image = #Null
                            EndIf
                         EndIf    
@@ -1022,7 +1022,7 @@ Procedure.i ide_add_image_list( *id, Directory$ )
          EndIf
          
          ; select cursor
-         SetState( *id, 0 )
+         SetWidgetState( *id, 0 )
          ClosePack( ZipFile )
       EndIf
    EndIf
@@ -1037,7 +1037,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
    Select BarButton
       Case 1
          If WidgetType( *e_widget ) = #PB_WidgetType_Tool
-            If GetItemState( *e_widget, BarButton )  
+            If GetWidgetItemState( *e_widget, BarButton )  
                ; group
                group_select = *e_widget
                ; SetAtributte( *e_widget, #PB_Button_PressedImage )
@@ -1046,7 +1046,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
                group_select = 0
             EndIf
          Else
-            If GetState( *e_widget )  
+            If GetWidgetState( *e_widget )  
                ; group
                group_select = *e_widget
                ; SetAtributte( *e_widget, #PB_Button_PressedImage )
@@ -1093,42 +1093,43 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
            #_tb_group_height
          
          ;\\ toolbar buttons events
-         move_x = mouse( )\selector\x - a_focused( )\x[#__c_inner]
-         move_y = mouse( )\selector\y - a_focused( )\y[#__c_inner]
-         
-         ForEach a_group( )
-            Select BarButton
-               Case #_tb_group_left ; left
-                                    ;mouse( )\selector\x = 0
-                  mouse( )\selector\width = 0
-                  ResizeWidget( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  
-               Case #_tb_group_right ; right
-                  mouse( )\selector\x = 0
-                  mouse( )\selector\width = 0
-                  ResizeWidget( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  
-               Case #_tb_group_top ; top
-                                   ;mouse( )\selector\y = 0
-                  mouse( )\selector\height = 0
-                  ResizeWidget( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
-                  
-               Case #_tb_group_bottom ; bottom
-                  mouse( )\selector\y = 0
-                  mouse( )\selector\height = 0
-                  ResizeWidget( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
-                  
-               Case #_tb_group_width ; stretch horizontal
-                  ResizeWidget( a_group( )\widget, #PB_Ignore, #PB_Ignore, mouse( )\selector\width, #PB_Ignore )
-                  
-               Case #_tb_group_height ; stretch vertical
-                  ResizeWidget( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mouse( )\selector\height )
-                  
-            EndSelect
-         Next
-         
-         a_update( a_focused( ) )
-         
+         If mouse( )\selector
+            move_x = mouse( )\selector\x - a_focused( )\x[#__c_inner]
+            move_y = mouse( )\selector\y - a_focused( )\y[#__c_inner]
+            
+            ForEach a_group( )
+               Select BarButton
+                  Case #_tb_group_left ; left
+                                       ;mouse( )\selector\x = 0
+                     mouse( )\selector\width = 0
+                     ResizeWidget( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     
+                  Case #_tb_group_right ; right
+                     mouse( )\selector\x = 0
+                     mouse( )\selector\width = 0
+                     ResizeWidget( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     
+                  Case #_tb_group_top ; top
+                                      ;mouse( )\selector\y = 0
+                     mouse( )\selector\height = 0
+                     ResizeWidget( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
+                     
+                  Case #_tb_group_bottom ; bottom
+                     mouse( )\selector\y = 0
+                     mouse( )\selector\height = 0
+                     ResizeWidget( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
+                     
+                  Case #_tb_group_width ; stretch horizontal
+                     ResizeWidget( a_group( )\widget, #PB_Ignore, #PB_Ignore, mouse( )\selector\width, #PB_Ignore )
+                     
+                  Case #_tb_group_height ; stretch vertical
+                     ResizeWidget( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mouse( )\selector\height )
+                     
+               EndSelect
+            Next
+            
+            a_update( a_focused( ) )
+         EndIf
          
          ;       Case #_tb_menu
          ;          DisplayPopupBar( *e_widget )
@@ -1160,20 +1161,20 @@ Procedure ide_events( )
          If *e_widget = ide_inspector_elements
             Debug " ------ drag ide_events() ----- "
             If DDragPrivate( #_DD_CreateNew )
-               ChangeCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, GetState( *e_widget ) ) ) ) )
+               ChangeCursor( *e_widget, Cursor::Create( ImageID( GetWidgetItemData( *e_widget, GetWidgetState( *e_widget ) ) ) ) )
             EndIf
          EndIf
          
       Case #__event_StatusChange
          If *e_widget = ide_design_code
-            ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetState( ide_design_code )
+            ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetWidgetState( ide_design_code )
          EndIf
          
          If e_item = - 1
-            ;SetTextWidget( ide_help_view, GetItemTextWidget( *e_widget, GetState( *e_widget ) ) )
+            ;SetWidgetText( ide_help_view, GetWidgetItemText( *e_widget, GetWidgetState( *e_widget ) ) )
          Else
             If *e_widget = ide_inspector_view
-               SetTextWidget( ide_help_view, GetItemTextWidget( *e_widget, e_item ) )
+               SetWidgetText( ide_help_view, GetWidgetItemText( *e_widget, e_item ) )
                
                ;                ;\\ TEMP change visible
                ;                *this._s_widget = *e_widget
@@ -1192,20 +1193,20 @@ Procedure ide_events( )
             EndIf
             
             If *e_widget = ide_inspector_elements
-               SetTextWidget( ide_help_view, GetItemTextWidget( *e_widget, e_item ) )
+               SetWidgetText( ide_help_view, GetWidgetItemText( *e_widget, e_item ) )
             EndIf
             If *e_widget = ide_inspector_properties
-               SetTextWidget( ide_help_view, GetItemTextWidget( *e_widget, e_item ) )
+               SetWidgetText( ide_help_view, GetWidgetItemText( *e_widget, e_item ) )
             EndIf
             If *e_widget = ide_inspector_events
-               SetTextWidget( ide_help_view, GetItemTextWidget( *e_widget, e_item ) )
+               SetWidgetText( ide_help_view, GetWidgetItemText( *e_widget, e_item ) )
             EndIf
          EndIf
          
       Case #__event_Change
          If *e_widget = ide_inspector_view
-            ; Debug GetState(*e_widget)
-            a_set( GetItemData(*e_widget, GetState(*e_widget)), #__a_full )
+            ; Debug GetWidgetState(*e_widget)
+            a_set( GetWidgetItemData(*e_widget, GetWidgetState(*e_widget)), #__a_full )
             properties_updates( ide_inspector_properties, a_focused( ) )
          EndIf
          If *e_widget = ide_inspector_properties
@@ -1245,7 +1246,7 @@ Procedure ide_events( )
                      findstring = Mid( *e_widget\text\string, startpos, stoppos - startpos )
                      
                      If countstring = 4
-                        SetTextWidget( a_focused( ), findstring )
+                        SetWidgetText( a_focused( ), findstring )
                      Else
                         If countstring = 0
                            X = Val( findstring )
@@ -1263,7 +1264,7 @@ Procedure ide_events( )
                   EndIf
             EndSelect
             
-            ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetState( ide_design_code )
+            ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetWidgetState( ide_design_code )
          EndIf
          
       Case #__event_LeftClick
@@ -1275,19 +1276,19 @@ Procedure ide_events( )
          ;             EndIf
          ;          Else
          ;             If GetWidgetClass( *e_widget ) = "ToolBar"
-         ;                ide_menu_events( *e_widget, GetData( *e_widget ) )
+         ;                ide_menu_events( *e_widget, GetWidgetData( *e_widget ) )
          ;             EndIf
          ;          EndIf
          
    EndSelect
 EndProcedure
 
-Procedure ide_OpenRootWidget( X=100,Y=100,Width=850,Height=600 )
+Procedure ide_OpenRoot( X=100,Y=100,Width=850,Height=600 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
    
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-   ide_root = OpenRootWidget( 1, X,Y,Width,Height, "ide", flag ) 
+   ide_root = OpenRoot( 1, X,Y,Width,Height, "ide", flag ) 
    ide_window = GetCanvasWindow( ide_root )
    ide_g_canvas = GetCanvasGadget( ide_root )
    
@@ -1307,20 +1308,20 @@ Procedure ide_OpenRootWidget( X=100,Y=100,Width=850,Height=600 )
    CloseSubBar( )
    ;
    BarSeparator( )
-   BarButtonWidget( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) 
+   BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) 
    ;
-   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
-   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+   ;    SetWidgetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
+   ;    SetWidgetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
    ;
    BarSeparator( )
-   BarButtonWidget( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
-   BarButtonWidget( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
+   BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
+   BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
    BarSeparator( )
-   BarButtonWidget( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
-   BarButtonWidget( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
+   BarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
+   BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
    BarSeparator( )
-   BarButtonWidget( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
-   BarButtonWidget( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
+   BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
+   BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
    
    ;    BarSeparator( )
    ;    OpenSubBar("ComboBox")
@@ -1330,16 +1331,16 @@ Procedure ide_OpenRootWidget( X=100,Y=100,Width=850,Height=600 )
    ;    CloseSubBar( )
    
    BarSeparator( )
-   BarButtonWidget( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
-   BarButtonWidget( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
-   BarButtonWidget( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
-   BarButtonWidget( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+   BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
+   BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
+   BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
+   BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
    BarSeparator( )
-   BarButtonWidget( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-   BarButtonWidget( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-   BarButtonWidget( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-   BarButtonWidget( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-   BarButtonWidget( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+   BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+   BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+   BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+   BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+   BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
    CloseWidgetList( )
    
    ; gadgets
@@ -1423,24 +1424,24 @@ Procedure ide_OpenRootWidget( X=100,Y=100,Width=850,Height=600 )
    ;    ide_splitter = SplitterWidget( 0,0,0,0, ide_debug_splitter,ide_help_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetWidgetClass(ide_splitter, "ide_splitter" )
    ;    
    ;    ; set splitters default minimum size
-   ;    SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
-   ;    SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
-   ;    SetAttribute( ide_help_splitter, #PB_Splitter_FirstMinimumSize, 230 )
-   ;    SetAttribute( ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-   ;    SetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   ;    SetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
-   ;    SetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-   ;    SetAttribute( ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
-   ;    SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
-   ;    SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
-   ;    ; SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
+   ;    SetWidgetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
+   ;    SetWidgetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
+   ;    SetWidgetAttribute( ide_help_splitter, #PB_Splitter_FirstMinimumSize, 230 )
+   ;    SetWidgetAttribute( ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
+   ;    SetWidgetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
+   ;    SetWidgetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+   ;    SetWidgetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
+   ;    SetWidgetAttribute( ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
+   ;    SetWidgetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
+   ;    SetWidgetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
+   ;    ; SetWidgetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
    ;    
    ;    ; set splitters dafault positions
-   ;    SetState( ide_splitter, WidgetWidgetWidth( ide_splitter )-200 )
-   ;    SetState( ide_help_splitter, WidgetWidgetHeight( ide_help_splitter )-80 )
-   ;    SetState( ide_debug_splitter, WidgetWidgetHeight( ide_debug_splitter )-150 )
-   ;    SetState( ide_inspector_splitter, 200 )
-   ;    SetState( ide_design_splitter, WidgetWidgetHeight( ide_toolbar ) - 1 + 2 )
+   ;    SetWidgetState( ide_splitter, WidgetWidth( ide_splitter )-200 )
+   ;    SetWidgetState( ide_help_splitter, WidgetHeight( ide_help_splitter )-80 )
+   ;    SetWidgetState( ide_debug_splitter, WidgetHeight( ide_debug_splitter )-150 )
+   ;    SetWidgetState( ide_inspector_splitter, 200 )
+   ;    SetWidgetState( ide_design_splitter, WidgetHeight( ide_toolbar ) - 1 + 2 )
    
    ;
    ;\\ main splitter 2 example 
@@ -1451,23 +1452,23 @@ Procedure ide_OpenRootWidget( X=100,Y=100,Width=850,Height=600 )
    ide_splitter = SplitterWidget( 0,0,0,0, ide_toolbar_container, ide_design_splitter,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetWidgetClass(ide_splitter, "ide_splitter" )
    
    ; set splitters default minimum size
-   SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 20 )
-   SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 500 )
-   SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 120 )
-   SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 500 )
-   SetAttribute( ide_help_splitter, #PB_Splitter_FirstMinimumSize, 230 )
-   SetAttribute( ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-   SetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   SetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
-   SetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-   SetAttribute( ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
+   SetWidgetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 20 )
+   SetWidgetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 500 )
+   SetWidgetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 120 )
+   SetWidgetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 500 )
+   SetWidgetAttribute( ide_help_splitter, #PB_Splitter_FirstMinimumSize, 230 )
+   SetWidgetAttribute( ide_help_splitter, #PB_Splitter_SecondMinimumSize, 30 )
+   SetWidgetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
+   SetWidgetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+   SetWidgetAttribute( ide_inspector_splitter, #PB_Splitter_FirstMinimumSize, 100 )
+   SetWidgetAttribute( ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
    
    ; set splitters dafault positions
-   SetState( ide_splitter, WidgetWidgetHeight( ide_toolbar ) - 1 + 2 )
-   SetState( ide_design_splitter, 200 )
-   SetState( ide_help_splitter, WidgetWidgetHeight( ide_help_splitter )-80 )
-   SetState( ide_debug_splitter, WidgetWidgetHeight( ide_debug_splitter )-200 )
-   SetState( ide_inspector_splitter, 230 )
+   SetWidgetState( ide_splitter, WidgetHeight( ide_toolbar ) - 1 + 2 )
+   SetWidgetState( ide_design_splitter, 200 )
+   SetWidgetState( ide_help_splitter, WidgetHeight( ide_help_splitter )-80 )
+   SetWidgetState( ide_debug_splitter, WidgetHeight( ide_debug_splitter )-200 )
+   SetWidgetState( ide_inspector_splitter, 230 )
    
    
    ;
@@ -1502,9 +1503,9 @@ EndProcedure
 ;-
 CompilerIf #PB_Compiler_IsMainFile 
    Define event
-   ide_OpenRootWidget( )
+   ide_OpenRoot( )
    
-   SetState( ide_inspector_panel, 1 )
+   SetWidgetState( ide_inspector_panel, 1 )
    
    ;   ;OpenWidgetList(ide_design_MDI)
    Define result, example = 3
@@ -1522,14 +1523,14 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
       
       Define item = 1
-      SetState( ide_inspector_view, item )
+      SetWidgetState( ide_inspector_view, item )
       If IsGadget( ide_g_code )
-         SetGadgetState( ide_g_code, item )
+         SetGadGetWidgetState( ide_g_code, item )
       EndIf
       Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
       widget_add( *container2, "button", 10, 20, 30, 30 )
       
-      SetState( ide_inspector_view, 0 )
+      SetWidgetState( ide_inspector_view, 0 )
       widget_add( ide_design_form, "button", 10, 130, 100, 30 )
       
    ElseIf example = 3
@@ -1559,7 +1560,7 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*panel, "button", 135, 65+40, 80, 30)
       widget_add(*panel, "text", 145, 65+40*2, 50, 30)
       ;CloseWidgetList( )
-      SetState( *panel, 1 )
+      SetWidgetState( *panel, 1 )
       
    ElseIf example = 4
       ;\\ example 3
@@ -1574,7 +1575,7 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*container, "text", 25, 65, 50, 30)
       widget_add(*container, "button", 35, 65+40, 80, 30)
       widget_add(*container, "text", 45, 65+40*2, 50, 30)
-      SetActive( q )
+      SetActiveWidget( q )
       
    ElseIf example = 5
       ;\\ example 3
@@ -1589,7 +1590,7 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*container, "text", 25, 65, 50, 30)
       widget_add(*container, "button", 35, 65+40, 80, 30)
       widget_add(*container, "text", 45, 65+40*2, 50, 30)
-      SetActive( q )
+      SetActiveWidget( q )
    EndIf
    
    
@@ -1611,12 +1612,12 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       StopEnum( )
    ;    EndIf
    ;    
-   If SetActive( ide_inspector_view )
+   If SetActiveWidget( ide_inspector_view )
       SetActiveGadget( ide_g_canvas )
    EndIf
    
    ;\\ 
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
 CompilerEndIf
 
 
@@ -1642,8 +1643,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 872
-; FirstLine = 835
+; CursorPosition = 1107
+; FirstLine = 1074
 ; Folding = ---d0------------------------
 ; EnableXP
 ; DPIAware

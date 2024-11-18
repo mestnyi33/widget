@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure CallBack( )
     Select WidgetEvent( )
       Case #__event_leftclick
-        Select GetTextWidget( EventWidget())
+        Select GetWidgetText( EventWidget())
           Case "Button_0_close"
             If #PB_MessageRequester_Yes = MessageWidget( "message", "Close a "+GetTitle( EventWidget( )\window )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               Close( EventWidget( )\window )
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
+  If OpenRoot(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
                                          #PB_Window_ScreenCentered )
      ;\\
      WindowWidget( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |

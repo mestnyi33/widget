@@ -9,20 +9,20 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Events( )
       Protected i, j, Buffer$, Parent, Element, EventWidget = EventWidget( )
       
-      ;Buffer$=Gadgets(GetGadgetData(IDGadget))\Flag$
+      ;Buffer$=Gadgets(GetGadGetWidgetData(IDGadget))\Flag$
       
       For j=0 To CountItems(EventWidget)-1
-         If GetItemState(EventWidget, j)
-            Buffer$ +"|"+ GetItemTextWidget(EventWidget,j)
+         If GetWidgetItemState(EventWidget, j)
+            Buffer$ +"|"+ GetWidgetItemText(EventWidget,j)
          EndIf
       Next
-      ;Debug GetItemState(EventWidget, 0)
+      ;Debug GetWidgetItemState(EventWidget, 0)
       Debug Buffer$
-      ;     ;Buffer$=Gadgets(GetGadgetData(IDGadget))\Flag$
+      ;     ;Buffer$=Gadgets(GetGadGetWidgetData(IDGadget))\Flag$
       ;     For i=1 To CountString(Buffer$,"|")+1
       ;       For j=0 To CountGadgetItems(pElement)-1
-      ;         If GetGadgetItemTextWidget(pElement,j)=StringField(Buffer$,i,"|")
-      ;           SetGadgetItemState(pElement, j, #PB_ListIcon_Checked)
+      ;         If GetGadGetWidgetItemText(pElement,j)=StringField(Buffer$,i,"|")
+      ;           SetGadGetWidgetItemState(pElement, j, #PB_ListIcon_Checked)
       ;         EndIf
       ;       Next
       ;     Next
@@ -296,7 +296,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Define i
-   OpenRootWidget(0, 0,0, 530,460, "Demo ListIcon") 
+   OpenRoot(0, 0,0, 530,460, "Demo ListIcon") 
    Define g = ListIconGadget(#PB_Any,10,10,508,200, "Column_0",160, #PB_ListIcon_CheckBoxes|#PB_ListIcon_AlwaysShowSelection);|#PB_ListIcon_HeaderDragDrop)           
     AddGadgetItem(g, -1, "ListIcon_1", ImageID(GetButtonIcon(#PB_ToolBarIcon_Copy)) )
     AddGadgetItem(g, -1, "ListIcon_2") 
@@ -331,7 +331,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Debug "["+ListSize(*g\columns()\items())+"] second column items count"
    
    BindWidgetEvent(*g, @Events(), #__Event_Change|#__Event_LeftClick)
-   WaitCloseRootWidget( )
+   WaitCloseRoot( )
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)

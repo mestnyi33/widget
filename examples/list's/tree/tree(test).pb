@@ -22,8 +22,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventWidget()
     Protected EventType = WidgetEvent()
     Protected EventData = WidgetEventData()
-    Protected EventItem = GetState(EventGadget)
-    Protected State = GetItemState(EventGadget, EventItem)
+    Protected EventItem = GetWidgetState(EventGadget)
+    Protected State = GetWidgetItemState(EventGadget, EventItem)
     
     Select EventType
         ;     Case #__event_Focus    : Debug "gadget focus item = " + EventItem +" data "+ EventData
@@ -62,8 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventGadget()
     Protected EventType = EventType()
     Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
-    Protected State = GetGadgetItemState(EventGadget, EventItem)
+    Protected EventItem = GetGadGetWidgetState(EventGadget)
+    Protected State = GetGadGetWidgetItemState(EventGadget, EventItem)
     Protected Text$
     
     Select EventType
@@ -73,11 +73,11 @@ CompilerIf #PB_Compiler_IsMainFile
         If EventGadget = 3
           click ! 1
           If click
-            SetGadgetItemState(Tree, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
-            SetItemState(*tree, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
+            SetGadGetWidgetItemState(Tree, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
+            SetWidgetItemState(*tree, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
           Else
-            SetGadgetItemState(Tree, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
-            SetItemState(*tree, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
+            SetGadGetWidgetItemState(Tree, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
+            SetWidgetItemState(*tree, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
           EndIf
         EndIf
         
@@ -89,47 +89,47 @@ CompilerIf #PB_Compiler_IsMainFile
           ;             Repaints()
         EndIf
         If EventGadget = 5
-          If GetGadgetState(Tree) =- 1
+          If GetGadGetWidgetState(Tree) =- 1
             RemoveGadgetItem(Tree, 1)
           Else
-            RemoveGadgetItem(Tree, GetGadgetState(Tree))
+            RemoveGadgetItem(Tree, GetGadGetWidgetState(Tree))
           EndIf
           
-          If GetState(*tree) =- 1
+          If GetWidgetState(*tree) =- 1
             RemoveItem(*tree, 1)
           Else
-            RemoveItem(*tree, GetState(*tree))
+            RemoveItem(*tree, GetWidgetState(*tree))
           EndIf
         EndIf
         
         If EventGadget = 6
-;           If GetGadGetWidgetItemImage(tree, GetGadgetState(tree))
-;             SetGadGetWidgetItemImage(tree, GetGadgetState(tree), 0)
+;           If GetGadGetWidgetItemImage(tree, GetGadGetWidgetState(tree))
+;             SetGadGetWidgetItemImage(tree, GetGadGetWidgetState(tree), 0)
 ;           Else
-;             SetGadGetWidgetItemImage(tree, GetGadgetState(tree), ImageID(0))
+;             SetGadGetWidgetItemImage(tree, GetGadGetWidgetState(tree), ImageID(0))
 ;           EndIf
-          If GetWidgetItemImage(*tree, GetState(*tree) ) <> #PB_Default
-            SetWidgetItemImage(*tree, GetState(*tree), #PB_Default)
-            SetGadGetWidgetItemImage(Tree, GetGadgetState(Tree), #NUL)
+          If GetWidgetItemImage(*tree, GetWidgetState(*tree) ) <> #PB_Default
+            SetWidgetItemImage(*tree, GetWidgetState(*tree), #PB_Default)
+            SetGadGetWidgetItemImage(Tree, GetGadGetWidgetState(Tree), #NUL)
           Else
-            SetWidgetItemImage(*tree, GetState(*tree), 0)
-            SetGadGetWidgetItemImage(Tree, GetGadgetState(Tree), ImageID(0))
+            SetWidgetItemImage(*tree, GetWidgetState(*tree), 0)
+            SetGadGetWidgetItemImage(Tree, GetGadGetWidgetState(Tree), ImageID(0))
           EndIf
         EndIf
         If EventGadget = 7 ; <<
                            ;         FreeGadget(tree)
                            ;         FreeWidget(*tree)
           
-          SetGadgetState(Tree, 0)
-          SetState(*tree, 0)
+          SetGadGetWidgetState(Tree, 0)
+          SetWidgetState(*tree, 0)
         EndIf
         If EventGadget = 8 ; 0
-          SetGadgetState(Tree, -1)
-          SetState(*tree, -1)
+          SetGadGetWidgetState(Tree, -1)
+          SetWidgetState(*tree, -1)
         EndIf
         If EventGadget = 9 ; >>
-          SetGadgetState(Tree, CountGadgetItems(Tree)-1)
-          SetState(*tree, CountItems(*tree)-1)
+          SetGadGetWidgetState(Tree, CountGadgetItems(Tree)-1)
+          SetWidgetState(*tree, CountItems(*tree)-1)
         EndIf
         If EventGadget = 10
           ClearGadgetItems(Tree)
@@ -143,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_RightDoubleClick : Debug "gadget " +EventGadget+ " rdclick item = " + EventItem +" data "+ EventData +" State "+ State
         
       Case #PB_EventType_DragStart : Debug "gadget " +EventGadget+ " sdrag item = " + EventItem +" Data "+ EventData +" State "+ State
-        Text$ = GetGadgetItemTextWidget(EventGadget, GetGadgetState(EventGadget))
+        Text$ = GetGadGetWidgetItemText(EventGadget, GetGadGetWidgetState(EventGadget))
         DragTextWidget(Text$)
         
       Case #__event_Drop
@@ -189,7 +189,7 @@ EndProcedure
 
 Define a
     
-  If OpenRootWidget(0, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;ListViewGadget(0, 10, 10, 160, 160) 
     Tree = PB(TreeGadget_)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
     *tree = TreeWidget(190, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState );| #__flag_GridLines | #PB_Tree_Collapsed)                                                     ; | | #PB_Tree_AlwaysShowSelection #PB_Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
@@ -223,8 +223,8 @@ Define a
     EnableDDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     ;\\
-    For a=0 To CountItems(*tree) : SetItemState(*tree, a, #PB_Tree_Collapsed) : Next
-    ;For a=0 To CountGadgetItems(tree) : SetGadgetItemState(tree, a, #PB_Tree_Expanded) : Next
+    For a=0 To CountItems(*tree) : SetWidgetItemState(*tree, a, #PB_Tree_Collapsed) : Next
+    ;For a=0 To CountGadgetItems(tree) : SetGadGetWidgetItemState(tree, a, #PB_Tree_Expanded) : Next
     
     ;\\
     PB(ButtonGadget)(3, 10, 180, 110, 24, "change Item state")
@@ -249,7 +249,7 @@ Define a
     BindWidgetEvent(*tree, @events_tree_widget())
     
     ;\\
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

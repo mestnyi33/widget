@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
    Define width = 200
-  If OpenRootWidget(0, 0, 0, width+90, 760, "text multiline", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, width+90, 760, "text multiline", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     canvas_gadget = GetCanvasGadget(Root())
     canvas_window = GetCanvasWindow(Root())
     

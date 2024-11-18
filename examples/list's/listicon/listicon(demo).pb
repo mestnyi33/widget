@@ -6,16 +6,16 @@
 ; Debug #PB_ListIcon_HeaderDragDrop       ; = 268435456   ; = 32
 ; Debug #PB_ListIcon_FullRowSelect        ; = 1073741824  ; = 0
 ; 
-; ; GetGadgetAttribute
+; ; GetWidgetAttribute
 ; Debug #PB_ListIcon_ColumnCount          ; = 3           ; = 3
-; ; SetGadgetAttribute & GetGadgetAttribute
+; ; SetGadGetWidgetAttribute & GetWidgetAttribute
 ; Debug #PB_ListIcon_DisplayMode          ; = 2           ; = 2
 ;   Debug #PB_ListIcon_LargeIcon          ; = 0           ; = 0
 ;   Debug #PB_ListIcon_SmallIcon          ; = 1           ; = 1
 ;   Debug #PB_ListIcon_List               ; = 2           ; = 2
 ;   Debug #PB_ListIcon_Report             ; = 3           ; = 3
 ;   
-;   ; SetGadgetItemAttribute & GetGadgetItemAttribute
+;   ; SetGadGetWidgetItemAttribute & GetGadGetWidgetItemAttribute
 ; Debug #PB_ListIcon_ColumnWidth          ; = 1           ; = 1
 ; 
 ; Debug #PB_ListIcon_Selected             ; = 1           ; = 1
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define a,i
   
-  If OpenRootWidget(0, 0, 0, 800, 450, "ListiconGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 800, 450, "ListiconGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetActiveWindow(0)
     
     Define Count = 500
@@ -85,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;{ - widget
     t=ElapsedMilliseconds()
     g = 11
-    *g = ListIconWidget(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadgetData(g)                                        
+    *g = ListIconWidget(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadGetWidgetData(g)                                        
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To 7
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 12
-    *g = ListIconWidget(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
+    *g = ListIconWidget(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect) ;: *g = GetGadGetWidgetData(g)                                          
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 13
-    *g = ListIconWidget(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes) ;#__flag_RowFullSelect|: *g = GetGadgetData(g)                                          
+    *g = ListIconWidget(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes) ;#__flag_RowFullSelect|: *g = GetGadGetWidgetData(g)                                          
     
     ;HideListIconWidget(g,1)
     For i=1 To 2
@@ -117,13 +117,13 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug " time create canvas (listicon) - "+Str(ElapsedMilliseconds()-t)
     ;}
     
-    ;   Define *This.Gadget = GetGadgetData(g)
+    ;   Define *This.Gadget = GetGadGetWidgetData(g)
     ;   
     ;   With *This\Columns()
     ;     Debug "Scroll_Height "+*This\Scroll\Height
     ;   EndWith
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
     
     Repeat
       Select WaitWindowEvent()   
@@ -136,7 +136,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;                 Case #__event_ScrollChange : Debug "widget ScrollChange" +" "+ EventData()
           ;                 Case #__event_DragStart : Debug "widget dragStart"
           ;                 Case #__event_Change, #__event_LeftClick
-          ;                   Debug "widget id = " + GetState(EventGadget())
+          ;                   Debug "widget id = " + GetWidgetState(EventGadget())
           ;                   
           ;                   If EventType() = #__event_Change
           ;                     Debug "  widget change"
@@ -150,7 +150,7 @@ CompilerIf #PB_Compiler_IsMainFile
               Select EventType()
                 Case #PB_EventType_DragStart : Debug "gadget dragStart"
                 Case #PB_EventType_Change, #PB_EventType_LeftClick
-                  Debug "gadget id = " + GetGadgetState(EventGadget())
+                  Debug "gadget id = " + GetGadGetWidgetState(EventGadget())
                   
                   If EventType() = #PB_EventType_Change
                     Debug "  gadget change"

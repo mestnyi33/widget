@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    ; Debug ""+Str(IDWidget(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +GetWidgetClass(this()\item)+ " direction - " +this()\data 
+    ; Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +GetWidgetClass(this()\item)+ " direction - " +this()\data 
     
     Select WidgetEvent( )
       Case #__event_Resize
@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 30, #PB_ScrollArea_Flat)
     SetGadGetWidgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
@@ -102,43 +102,43 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
       CloseGadgetList()
     Else
-;       SetGadgetAttribute(g, #PB_ScrollArea_X, 50)
-;       SetAttribute(*g, #PB_ScrollArea_X, 50)
+;       SetGadGetWidgetAttribute(g, #PB_ScrollArea_X, 50)
+;       SetWidgetAttribute(*g, #PB_ScrollArea_X, 50)
       
-      SetGadgetAttribute(g, #PB_ScrollArea_Y, 50)
-      SetAttribute(*g, #PB_ScrollArea_Y, 50)
+      SetGadGetWidgetAttribute(g, #PB_ScrollArea_Y, 50)
+      SetWidgetAttribute(*g, #PB_ScrollArea_Y, 50)
       
-      SetGadgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
-      SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
+      SetGadGetWidgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
+      SetWidgetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
         
-      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
-      ResizeGadget(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
+      ResizeGadget(b, #PB_Ignore, GetWidgetAttribute(g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
+      ResizeGadget(*b, #PB_Ignore, GetWidgetAttribute(*g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
       
-      SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
-      SetAttribute(*g, #PB_ScrollArea_Y, 0)
+      SetGadGetWidgetAttribute(g, #PB_ScrollArea_Y, 0)
+      SetWidgetAttribute(*g, #PB_ScrollArea_Y, 0)
       
-      SetGadgetAttribute(g, #PB_ScrollArea_Y, sh)
-      SetAttribute(*g, #PB_ScrollArea_Y, sh)
+      SetGadGetWidgetAttribute(g, #PB_ScrollArea_Y, sh)
+      SetWidgetAttribute(*g, #PB_ScrollArea_Y, sh)
     EndIf
     
     Debug "gadget"
-    Debug "x - "+GetGadgetAttribute(g, #PB_ScrollArea_X)
-    Debug "y - "+GetGadgetAttribute(g, #PB_ScrollArea_Y)
-    Debug "iw - "+GetGadgetAttribute(g, #PB_ScrollArea_InnerWidth)
-    Debug "ih - "+GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)
-    Debug "step - "+GetGadgetAttribute(g, #PB_ScrollArea_ScrollStep)
+    Debug "x - "+GetWidgetAttribute(g, #PB_ScrollArea_X)
+    Debug "y - "+GetWidgetAttribute(g, #PB_ScrollArea_Y)
+    Debug "iw - "+GetWidgetAttribute(g, #PB_ScrollArea_InnerWidth)
+    Debug "ih - "+GetWidgetAttribute(g, #PB_ScrollArea_InnerHeight)
+    Debug "step - "+GetWidgetAttribute(g, #PB_ScrollArea_ScrollStep)
     
     Debug "widget"
-    Debug "x - "+GetAttribute(*g, #PB_ScrollArea_X)
-    Debug "y - "+GetAttribute(*g, #PB_ScrollArea_Y)
-    Debug "iw - "+GetAttribute(*g, #PB_ScrollArea_InnerWidth)
-    Debug "ih - "+GetAttribute(*g, #PB_ScrollArea_InnerHeight)
-    Debug "step - "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
+    Debug "x - "+GetWidgetAttribute(*g, #PB_ScrollArea_X)
+    Debug "y - "+GetWidgetAttribute(*g, #PB_ScrollArea_Y)
+    Debug "iw - "+GetWidgetAttribute(*g, #PB_ScrollArea_InnerWidth)
+    Debug "ih - "+GetWidgetAttribute(*g, #PB_ScrollArea_InnerHeight)
+    Debug "step - "+GetWidgetAttribute(*g, #PB_ScrollArea_ScrollStep)
     
     BindGadgetEvent(g, @events_gadgets())
     BindWidgetEvent(*g, @events_widgets())
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

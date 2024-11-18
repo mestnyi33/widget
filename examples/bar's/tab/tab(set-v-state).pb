@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global i, *w0, *w1, *w2, *w3, *w4, *w5, *w6, *w7, *w8, *w9
   
-  widget::OpenRootWidget(0, 10, 10, 390, 390, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+  widget::OpenRoot(0, 10, 10, 390, 390, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
   ; first splitter
   *w0 = widget::TabBarWidget(0, 0, 0, 0, #__bar_vertical )
@@ -43,15 +43,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
   *w6 = widget::SplitterWidget(30, 30, 160, 150, *w2, 0, #PB_Splitter_Separator)
   *w7 = widget::SplitterWidget(200, 30, 160, 150, *w5, 0, #PB_Splitter_Separator)
-  widget::SetState(*w6, 250)
-  widget::SetState(*w7, 250)
+  widget::SetWidgetState(*w6, 250)
+  widget::SetWidgetState(*w7, 250)
   
    
   *w8 = widget::TabBarWidget(30, 210, 50, 150, #__bar_vertical)
   For i=0 To 10
     widget::AddItem(*w8, -1, "Tab "+Str(i))
   Next
-  widget::bar_Tab_SetState(*w8, 6)
+  widget::bar_Tab_SetWidgetState(*w8, 6)
   
   *w9 = widget::PanelWidget(110, 210, 250, 150, #__bar_vertical)
   For i=0 To 10
@@ -59,17 +59,17 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::ButtonWidget(20, 60-3, 30, 30, Str(i))
   Next
   widget::CloseWidgetList()
-  widget::SetState(*w9, 6)
+  widget::SetWidgetState(*w9, 6)
   
-  ;   widget::SetState(*w0, -10)
-  ;   widget::SetState(*w1, 250-10)
-  ;   widget::SetState(*w3, 250/2)
-  ;   widget::SetState(*w4, 10)
+  ;   widget::SetWidgetState(*w0, -10)
+  ;   widget::SetWidgetState(*w1, 250-10)
+  ;   widget::SetWidgetState(*w3, 250/2)
+  ;   widget::SetWidgetState(*w4, 10)
   
-  widget::bar_Tab_SetState(*w0, -1)
-  widget::bar_Tab_SetState(*w1, 9)
-  widget::bar_Tab_SetState(*w3, 6)
-  widget::bar_Tab_SetState(*w4, 1)
+  widget::bar_Tab_SetWidgetState(*w0, -1)
+  widget::bar_Tab_SetWidgetState(*w1, 9)
+  widget::bar_Tab_SetWidgetState(*w3, 6)
+  widget::bar_Tab_SetWidgetState(*w4, 1)
   
   widget::WaitClose( )
   End

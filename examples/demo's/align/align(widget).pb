@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;Debug *eventWidget
           If *eventWidget And *eventWidget\align
             ;Debug AnchorLeft(*eventWidget)
-            If GetTextWidget(*eventWidget) = "parent stretch"
+            If GetWidgetText(*eventWidget) = "parent stretch"
               ; *eventWidget = *eventWidget\parent
             EndIf
             
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
               ;                 AddItem(tree_view, -1, "CENTER")
               ;               EndIf
               ;               
-              ;               ; SetItemState(tree_view, CountItems(tree_view), 1)
+              ;               ; SetWidgetItemState(tree_view, CountItems(tree_view), 1)
               
             EndIf
           EndIf
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #__flag_TextRight = #__flag_Textright
   
   Procedure example_1( )
-    *root = OpenRootWidget( #PB_Any, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
+    *root = OpenRoot( #PB_Any, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     SetWidgetColor(*root, #__color_back, $FFACE3FF )
@@ -113,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure example_2( )
-    *root = OpenRootWidget( #PB_Any, 310, 30, 190, 200, #PB_Compiler_Procedure+"(alignment-auto-indent)", #PB_Window_SizeGadget)
+    *root = OpenRoot( #PB_Any, 310, 30, 190, 200, #PB_Compiler_Procedure+"(alignment-auto-indent)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -155,7 +155,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure example_3( )
-    *root = OpenRootWidget( #PB_Any, 250, 330, 390, 200, #PB_Compiler_Procedure+"(gadget-auto-dock)", #PB_Window_SizeGadget)
+    *root = OpenRoot( #PB_Any, 250, 330, 390, 200, #PB_Compiler_Procedure+"(gadget-auto-dock)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -214,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure example_4( )
     ;ProcedureReturn 
-    *root = OpenRootWidget( #PB_Any, 450, 460, 390, 200, #PB_Compiler_Procedure+"(window-auto-dock)", #PB_Window_SizeGadget)
+    *root = OpenRoot( #PB_Any, 450, 460, 390, 200, #PB_Compiler_Procedure+"(window-auto-dock)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -271,7 +271,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure example_5( )
-    *root = OpenRootWidget( #PB_Any, 850, 460, 390, 200, #PB_Compiler_Procedure+"(auto-alignment)", #PB_Window_SizeGadget)
+    *root = OpenRoot( #PB_Any, 850, 460, 390, 200, #PB_Compiler_Procedure+"(auto-alignment)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -329,7 +329,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected width = 460
     Protected height = 200
     
-    *root = OpenRootWidget( #PB_Any, 620, 30, width, height, #PB_Compiler_Procedure+"(Proportional)", #PB_Window_SizeGadget)
+    *root = OpenRoot( #PB_Any, 620, 30, width, height, #PB_Compiler_Procedure+"(Proportional)", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -406,7 +406,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected width = 384
     Protected height = 144
     
-    *root = OpenRootWidget( #PB_Any, 320, 130, width, height, #PB_Compiler_Procedure+"(indent-auto-alignment (example_2))", #PB_Window_SizeGadget)
+    *root = OpenRoot( #PB_Any, 320, 130, width, height, #PB_Compiler_Procedure+"(indent-auto-alignment (example_2))", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -448,7 +448,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;
   Procedure example_demo()
-    *root = OpenRootWidget( #PB_Any, 20, 540, 250, 410, "test", #PB_Window_SizeGadget)
+    *root = OpenRoot( #PB_Any, 20, 540, 250, 410, "test", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
     
@@ -481,7 +481,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   example_demo( )
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
   ;   Repeat
   ;     gEvent= WaitWindowEvent()
   ;     

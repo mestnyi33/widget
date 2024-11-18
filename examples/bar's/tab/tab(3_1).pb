@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global i
   Global._s_widget *s_1, *s_2, *s_3, *s_4
   
-  widget::OpenRootWidget(OpenWindow(#PB_Any, 10, 10, 850, 250, "TAB-demos", #PB_Window_ScreenCentered | #PB_Window_SystemMenu))
+  widget::OpenRoot(OpenWindow(#PB_Any, 10, 10, 850, 250, "TAB-demos", #PB_Window_ScreenCentered | #PB_Window_SystemMenu))
   
  
   
@@ -50,10 +50,10 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget( ), -1, "tab_"+Str(i))
   Next
   
-  ;SetState(*s_1, -10)
-  SetState(*s_2, 9);250)
-  SetState(*s_3, 5);250/2)
-  SetState(*s_4, 1);10)
+  ;SetWidgetState(*s_1, -10)
+  SetWidgetState(*s_2, 9);250)
+  SetWidgetState(*s_3, 5);250/2)
+  SetWidgetState(*s_4, 1);10)
   
   Debug "-"
   Debug ""+*s_1\FocusedTabBarWidget( )+" "+*s_1\FocusedTabBarWidget( )\index+" "+*s_1\FocusedTabBarWidget( )\text\string

@@ -21,25 +21,25 @@ CompilerIf #PB_Compiler_IsMainFile
 	CompilerEndIf
 	
 	
-	widget::OpenRootWidget(0, 10, 10, 850, 370, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
+	widget::OpenRoot(0, 10, 10, 850, 370, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
 	
 	;
 	Procedure events_TabBar( )
 		Debug "events_tab"
-		SetState(*panel, GetState(*tab))
+		SetWidgetState(*panel, GetWidgetState(*tab))
 	EndProcedure
 	
 	*tab = widget::TabBarWidget(10, 30, 830, 30)
 	For i=0 To 10
 		widget::AddItem(*tab, -1, "Tab "+Str(i))
 	Next
-	widget::SetState(*tab, 6)
+	widget::SetWidgetState(*tab, 6)
 	widget::BindWidgetEvent(*tab, @events_TabBar( ), #PB_EventType_Change)
 	
 	;
 	Procedure events_PanelWidget( )
 		Debug "events_panel"
-		SetState(*tab, GetState(*panel))
+		SetWidgetState(*tab, GetWidgetState(*panel))
 	EndProcedure
 	*panel = widget::PanelWidget(300, 70, 250, 110)
 	For i=0 To 10
@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
 	ButtonWidget((i-4)*30+10,(i-4)*10+10,50,30,"+"+Str(i))
 	
 	widget::CloseWidgetList()
-	widget::SetState(*panel, 6)
+	widget::SetWidgetState(*panel, 6)
 	widget::BindWidgetEvent(*panel, @events_PanelWidget( ), #PB_EventType_Change)
 	
 	
@@ -93,24 +93,24 @@ CompilerIf #PB_Compiler_IsMainFile
 	
 	*w6 = widget::SplitterWidget(300, 180+30, 250, 70, *w2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
 	*w7 = widget::SplitterWidget(300, 180+110, 250, 70, *w5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
-	widget::SetState(*w6, 250)
-	widget::SetState(*w7, 250)
+	widget::SetWidgetState(*w6, 250)
+	widget::SetWidgetState(*w7, 250)
 	
 	
 	
 	;
-	;   widget::SetState(*w0, -10)
-	;   widget::SetState(*w1, 250-10)
-	;   widget::SetState(*w3, 250/2)
-	;   widget::SetState(*w4, 10)
+	;   widget::SetWidgetState(*w0, -10)
+	;   widget::SetWidgetState(*w1, 250-10)
+	;   widget::SetWidgetState(*w3, 250/2)
+	;   widget::SetWidgetState(*w4, 10)
 	
-	;widget::SetState(*w0, -1)
-	widget::SetState(*w1, 9)
-	widget::SetState(*w3, 6)
-	widget::SetState(*w4, 1)
+	;widget::SetWidgetState(*w0, -1)
+	widget::SetWidgetState(*w1, 9)
+	widget::SetWidgetState(*w3, 6)
+	widget::SetWidgetState(*w4, 1)
 	;   
-	;   widget::SetItemFont(*w0, 1, 6)
-	;   widget::SetItemFont(*w1, 7, 5)
+	;   widget::SetWidgetItemFont(*w0, 1, 6)
+	;   widget::SetWidgetItemFont(*w1, 7, 5)
 	
 	
 	widget::WaitClose( )

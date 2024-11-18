@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;CheckBoxWidget(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;
       ;TextWidget(_x_,_y_,_width_,_height_,_text_,_flag_)
-      ;EditorWidget(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : setTextWidget(widget(), _text_)
+      ;EditorWidget(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : SetWidgetText(widget(), _text_)
       ;StringWidget(_x_,_y_,_width_,_height_,_text_,_flag_)
    EndProcedure
    
@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define x,y = (height+space)*3 + 5
    
    
-   If OpenRootWidget(0, 0, 0, x+(width+space)*3 + 15, y+(height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRoot(0, 0, 0, x+(width+space)*3 + 15, y+(height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetWidgetColor( widget( ), #__color_Back, $FFffffff )
       
       ; horizontal

@@ -30,7 +30,7 @@ EndEnumeration
 LoadFont(#Font, "Arial", 12)
 
 ; Create a window
-OpenRootWidget(#Window, 0, 0, 1200, 450, "Example 5: Attachment and containers", #PB_Window_MinimizeGadget|#PB_Window_ScreenCentered)
+OpenRoot(#Window, 0, 0, 1200, 450, "Example 5: Attachment and containers", #PB_Window_MinimizeGadget|#PB_Window_ScreenCentered)
 
 ;SetCursorSelectionStyle(#Canvas, #SelectionStyle_Dashed|#SelectionStyle_Completely, $FFFF0000, 1, $20FF0000)
 
@@ -88,7 +88,7 @@ AddItem( *Object4, 1, "panel-item-1" )
 AddItem( *Object4, 2, "panel-item-2" )
 *Object7 = Object( 100, 100, 100, 150, "parent-item-2", RGBA(0, 64, 128, alpha1));, #Object4, 2) ; Attach object 6 directly to object 1 into the third frame
 CloseWidgetList( )
-SetState(*Object4, 2)
+SetWidgetState(*Object4, 2)
 
 ; --- Scroll area ---
 ; If you attach an object to another and set its clipping frame, it acts like a scroll area gadget.

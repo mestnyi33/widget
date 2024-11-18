@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *S_2
   
   
-  If OpenRootWidget(0, 0, 0, 615, 235, "IPAddressGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 615, 235, "IPAddressGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
     IPAddressGadget(0, 8,  10, 290, 40)
     IPAddressGadget(1, 8,  55, 290, 40)
@@ -40,11 +40,11 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndSelect
     
     ;\\
-    SetGadgetState(0, MakeIPAddress(127, 0, 30, 1))   ; set a valid ip address
-    SetGadgetState(1, MakeIPAddress(127, 190, 0, 1))   ; set a valid ip address
-    SetGadgetState(2, MakeIPAddress(127, 0, 0, 1))   ; set a valid ip address
+    SetGadGetWidgetState(0, MakeIPAddress(127, 0, 30, 1))   ; set a valid ip address
+    SetGadGetWidgetState(1, MakeIPAddress(127, 190, 0, 1))   ; set a valid ip address
+    SetGadGetWidgetState(2, MakeIPAddress(127, 0, 0, 1))   ; set a valid ip address
     
-    Debug GetGadgetState(0)
+    Debug GetGadGetWidgetState(0)
     
     ;\\
     IPAddress(18+290,  10, 290, 40)
@@ -52,11 +52,11 @@ CompilerIf #PB_Compiler_IsMainFile
     IPAddress(18+290,  100, 290, 40, #__flag_Textright)
     
     ;\\
-    SetState(ID(0), MakeIPAddress(127, 0, 30, 1))   ; set a valid ip address
-    SetState(ID(1), MakeIPAddress(127, 190, 0, 1))   ; set a valid ip address
-    SetState(ID(2), MakeIPAddress(127, 0, 0, 1))   ; set a valid ip address
+    SetWidgetState(ID(0), MakeIPAddress(127, 0, 30, 1))   ; set a valid ip address
+    SetWidgetState(ID(1), MakeIPAddress(127, 190, 0, 1))   ; set a valid ip address
+    SetWidgetState(ID(2), MakeIPAddress(127, 0, 0, 1))   ; set a valid ip address
     
-    Debug GetState(ID(0))
+    Debug GetWidgetState(ID(0))
     
      Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

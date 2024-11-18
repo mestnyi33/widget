@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget(OpenRootWidget(0))
+  MyCanvas = GetCanvasGadget(OpenRoot(0))
   a_init(root())
   
   ;\\
@@ -26,21 +26,21 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   Define *g1 = WindowWidget(30,30,200,200, "form_1-form_0", #PB_Window_SystemMenu) : SetWidgetClass(*g1, "form_1")
-  ButtonWidget(10,10,100,30,"button_1_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(10,50,100,30,"button_1_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(10,90,100,30,"button_1_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,10,100,30,"button_1_0") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(10,50,100,30,"button_1_1") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(10,90,100,30,"button_1_2") : SetWidgetClass(widget(), GetWidgetText(widget()))
   
   ;\\
   Define *g2 = WindowWidget(60,60,200,200, "form_2-form_1", #PB_Window_SystemMenu) : SetWidgetClass(*g2, "form_2")
-  ButtonWidget(10,10,100,30,"button_2_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(10,50,100,30,"button_2_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(10,90,100,30,"button_2_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,10,100,30,"button_2_0") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(10,50,100,30,"button_2_1") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(10,90,100,30,"button_2_2") : SetWidgetClass(widget(), GetWidgetText(widget()))
   
   ;\\ "form_0"
   OpenWidgetList(*g0)
-  ButtonWidget(10,10,130,30,"button_0_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(10,50,130,30,"button_0_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(10,90,130,30,"button_0_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,10,130,30,"button_0_0") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(10,50,130,30,"button_0_1") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(10,90,130,30,"button_0_2") : SetWidgetClass(widget(), GetWidgetText(widget()))
   CloseWidgetList()
   
   If GetWidgetClass(*g) = "window_0"
@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Next
   Debug "<<----"
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 51

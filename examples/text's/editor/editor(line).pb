@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
       gadget = g
     EndIf
     
-    SetGadgetTextWidget( gadget,Text )
+    SetGadGetWidgetText( gadget,Text )
     ProcedureReturn g
   EndProcedure
   
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If EventType() = #PB_EventType_Focus
-      Debug String.s +" - gadget" +" get text - "+ GetGadgetTextWidget(EventGadget()) ; Bug in mac os
+      Debug String.s +" - gadget" +" get text - "+ GetGadGetWidgetText(EventGadget()) ; Bug in mac os
     Else
       Debug String.s +" - gadget"
     EndIf
@@ -54,15 +54,15 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select eventtype
       Case #__event_Focus
-        String.s = "focus "+Str(IDWidget(EventWidget( )))+" "+eventtype
+        String.s = "focus "+Str(GetIndex(EventWidget( )))+" "+eventtype
       Case #__event_LostFocus
-        String.s = "lostfocus "+Str(IDWidget(EventWidget( )))+" "+eventtype
+        String.s = "lostfocus "+Str(GetIndex(EventWidget( )))+" "+eventtype
       Case #__event_Change
-        String.s = "change "+Str(IDWidget(EventWidget( )))+" "+eventtype
+        String.s = "change "+Str(GetIndex(EventWidget( )))+" "+eventtype
     EndSelect
     
     If eventtype = #__event_Focus
-      Debug String.s +" - widget" +" get text - "+ GetTextWidget(EventWidget( ))
+      Debug String.s +" - widget" +" get text - "+ GetWidgetText(EventWidget( ))
     Else
      ; Debug String.s +" - widget"
     EndIf
@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndImport
   CompilerEndIf
   
-  Procedure SetTextAlignment()
+  Procedure SetWidgetTextAlignment()
     ; Alignment text
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       CocoaMessage(0,GadgetID(1),"setAlignment:", #NSCenterTextAlignment)
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
-  If OpenRootWidget(0, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     StringGadget(0, 8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
     StringGadget(1, 8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric)
     StringGadget(2, 8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget")
@@ -149,9 +149,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     
-    SetTextAlignment( )
-    ;SetGadgetTextWidget(6, "pas")
-    Debug GetGadgetTextWidget(6)+" - get gadget text"
+    SetWidgetTextAlignment( )
+    ;SetGadGetWidgetText(6, "pas")
+    Debug GetGadGetWidgetText(6)+" - get gadget text"
     
     StringWidget(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
     StringWidget(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_Textcenter)
@@ -163,8 +163,8 @@ CompilerIf #PB_Compiler_IsMainFile
     StringWidget(305+8, (height+5)*7+10, 290, height, "")
     StringWidget(305+8, (height+5)*8+10, 290, 90, Text)
     
-    ;SetTextWidget(ID(6+1), "pas")
-    Debug GetTextWidget(ID(6+1))+"- get widget text"
+    ;SetWidgetText(ID(6+1), "pas")
+    Debug GetWidgetText(ID(6+1))+"- get widget text"
     
     For i=0 To 8
       BindWidgetEvent(ID(i), @events_widgets())

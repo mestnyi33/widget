@@ -10,13 +10,13 @@
 ;                                                                     - MenuID( #Menu )
 ; 
 ;                                                     Title( Title$ ) - MenuTitle( Title$ )
-;                                 GetItemTextWidget( *address, TitleIndex ) - GetMenuTitleTextWidget( #Menu, Title )
-;                         SetItemTextWidget( *address, TitleIndex, text.s ) - SetMenuTitleTextWidget( #Menu, Title, Text$ )
+;                                 GetWidgetItemText( *address, TitleIndex ) - GetMenuTitleTextWidget( #Menu, Title )
+;                         SetWidgetItemText( *address, TitleIndex, text.s ) - SetMenuTitleTextWidget( #Menu, Title, Text$ )
 ; 
 ;                                                    FreeWidget( *address ) - FreeMenu( #Menu )
 ;                                DisableItem( *address, item, state ) - DisableMenuItem( #Menu, MenuItem, State )
-;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
-;                                       GetItemTextWidget( *address, item ) - GetMenuItemTextWidget( #Menu, Item )
+;                                      GetWidgetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
+;                                       GetWidgetItemText( *address, item ) - GetMenuItemTextWidget( #Menu, Item )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
 ;                                             Separator( [*address] ) - MenuBar( )
 ;                                                  WidgetHeight( *address ) - MenuWidgetHeight( )
@@ -26,8 +26,8 @@
 ;                                        OpenItem( text.s [, image] ) - OpenSubMenu( Text$ [, ImageID] )
 ;                                                        CloseItem( ) - CloseSubMenu( )
 ; 
-;                               SetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
-;                               SetItemTextWidget( *address, item, text.s ) - SetMenuItemTextWidget( #Menu, Item, Text$ )
+;                               SetWidgetItemState( *address, item, state ) - SetMenuItemState( #Menu, MenuItem, State )
+;                               SetWidgetItemText( *address, item, text.s ) - SetMenuItemTextWidget( #Menu, Item, Text$ )
 ;
 ;                      BindWidgetEvent( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
 ;                    UnBindWidgetEvent( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Define WindowID = OpenWindow( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    
-   OpenRootWidget(0, 50,50,400,250)
+   OpenRoot(0, 50,50,400,250)
    CreateMenu(0, WindowID(0))
    MenuTitle("Title-1")
    MenuItem(1, "title-1-item-1")
@@ -159,9 +159,9 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(widget(), -1, "ComboBox editable...2")
     AddItem(widget(), -1, "ComboBox editable...3")
     
-    SetState(ID(0), 2)
-    SetState(ID(1), 1)
-    SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
+    SetWidgetState(ID(0), 2)
+    SetWidgetState(ID(1), 1)
+    SetWidgetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
       
    BindWidgetEvent(*menu, @TestHandler(), -1, 7)
    BindWidgetEvent(*menu, @QuitHandler(), -1, 8)

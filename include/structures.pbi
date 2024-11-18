@@ -28,18 +28,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;-- STRUCTUREs
       ;--     POINT
       Structure _s_POINT
-         y.l
-         x.l
+         Y.l
+         X.l
       EndStructure
       ;--     SIZE
       Structure _s_SIZE
-         width.l
-         height.l
+         Width.l
+         Height.l
       EndStructure
       ;--     COORDINATE
       Structure _s_COORDINATE Extends _s_SIZE
-         y.l
-         x.l
+         Y.l
+         X.l
       EndStructure
       ;--     RESIZEINFO
       Structure RESIZEINFO Extends _s_COORDINATE
@@ -111,22 +111,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ;*value
          StructureUnion
-            string.s
+            String.s
             files.s
          EndStructureUnion
          
          *value
       EndStructure
       Structure _s_DRAG Extends _s_DROP
-         y.l
-         x.l
-         width.l
-         height.l
+         Y.l
+         X.l
+         Width.l
+         Height.l
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD ; Ok
          *window._S_WIDGET  ; active window element ; FocusedWindow( )\
-         *widget._S_WIDGET  ; keyboard focus element ; GetActive( )\
+         *widget._S_WIDGET  ; keyboard focus element ; GetActiveWidget( )\
          change.b
          input.c
          key.l[2]
@@ -138,7 +138,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          line.l[4]
          fore.l[4]
          back.l[4]
-         frame.l[4]
+         Frame.l[4]
          _alpha.a
          *alpha._s_color
       EndStructure
@@ -154,7 +154,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ARROW
       Structure _s_ARROW
          size.a
-         type.b
+         Type.b
          direction.b
       EndStructure
       ;--     STATE
@@ -177,15 +177,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
          press.b
          
          round.a
-         hide.b
-         disable.b
+         Hide.b
+         Disable.b
       EndStructure
       ;--     BOX
       Structure _s_BOX Extends _s_STATE
-         x.l
-         y.l
-         width.l
-         height.l
+         X.l
+         Y.l
+         Width.l
+         Height.l
       EndStructure
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_BOX
@@ -210,7 +210,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          pos.l
          len.l
          
-         string.s
+         String.s
          change.b
          
          *color._s_color
@@ -343,7 +343,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;;--     margin
       Structure _s_margin Extends _s_COORDINATE
          color._s_color
-         hide.b
+         Hide.b
       EndStructure
       
       ;--     ITEMS
@@ -363,8 +363,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          visible.b
          
-         text._s_text
-         image._s_image
+         Text._s_text
+         Image._s_image
          color._s_color
          
          OffsetMove.i
@@ -383,7 +383,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ROWS
       Structure _s_ROWS Extends _s_ITEMS
          buttonbox._s_BOX ;  buttonbox\
-         checkbox._s_BOX  ;  checkbox\
+         CheckBox._s_BOX  ;  checkbox\
          
          
          ; если их убрать то при клике в примере TreeWidget(demo) в чек бокс происходит збой
@@ -409,7 +409,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROW
       Structure _s_ROW
-         id.i[4]
+         ID.i[4]
          
          ; column.a
          ; sublevelcolumn.a
@@ -504,16 +504,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     caption
       Structure _s_caption
-         y.l;[5]
-         x.l;[5]
-         height.l;[5]
-         width.l ;[5]
+         Y.l;[5]
+         X.l;[5]
+         Height.l;[5]
+         Width.l ;[5]
          
-         button._s_buttons[5]
+         Button._s_buttons[5]
          color._s_color
          
          interact.b
-         hide.b
+         Hide.b
          round.b
          _padding.b
       EndStructure
@@ -531,8 +531,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          visible.b
          
-         text._s_text
-         image._s_image
+         Text._s_text
+         Image._s_image
          color._s_color
       EndStructure
       
@@ -549,13 +549,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_COLUMN Extends _s_COORDINATE
          ;index.i
          
-         text._s_TEXT
-         image._s_image
+         Text._s_TEXT
+         Image._s_image
          
          
          ;--TEMP---
          drawing.b
-         hide.b
+         Hide.b
          state.b
          
          ;Map string.s( )
@@ -610,18 +610,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;          List *hook._s_HOOK( ) ; hook of events
          
          
-         redraw.b
+         ReDraw.b
          ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
          Resize.RESIZEINFO                 
          
          
-         y.l[constants::#__c]
-         x.l[constants::#__c]
-         height.l[constants::#__c]
-         width.l[constants::#__c]
+         Y.l[constants::#__c]
+         X.l[constants::#__c]
+         Height.l[constants::#__c]
+         Width.l[constants::#__c]
          ;
-         type.w
+         Type.w
          class.s
          ;
          level.c
@@ -632,13 +632,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
                                   ; transporent.b
                                   ; dragged.b              ;
          autosize.b
-         container.b              ; is container
+         Container.b              ; is container
                                   ; container > 0          ; if the has children ( Root( 1 ); WindowWidget( 2 ); MDIWidget( 3 ); PanelWidget( 3 ); ContainerWidget( 3 ); ScrollAreaWidget( 3 ) )
                                   ; container =- 1         ; if the not has children ( SplitterWidget( ); FrameWidget( ))
                                   ;
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
-         countitems.l             ; count items
+         CountItems.l             ; count items
                                   ;                        ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
          ;
@@ -661,10 +661,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *option_group_parent._s_WIDGET         ; = Option( ) group widget
          *stringBar._s_WIDGET                   ; = SpinBar( ) string box
          
-         StructureUnion
-            *popupBar._s_WIDGET       ; = PopupBar( ) List view box
-            *comboBar._s_WIDGET       ; = ComboBoxWidget( ) List view box
-         EndStructureUnion
+;          StructureUnion
+;             *popupBar._s_WIDGET       ; = PopupBar( ) List view box
+;             *comboBar._s_WIDGET       ; = ComboBoxWidget( ) List view box
+;          EndStructureUnion
+         *menu._s_WIDGET
          popup.b
          ;
          ;                           
@@ -692,8 +693,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *lastwidget._s_WIDGET
          ;
          bounds._s_BOUNDS
-         scroll._s_SCROLL            ; vertical & horizontal scrollbars
-         text._s_TEXT
+         Scroll._s_SCROLL            ; vertical & horizontal scrollbars
+         Text._s_TEXT
          ;
          *gadget._s_WIDGET;[3]
                           ; \root\gadget[0] - active gadget
@@ -701,7 +702,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
                           ; \gadget[1] - SplitterWidget( ) first gadget
                           ; \gadget[2] - SplitterWidget( ) second gadget
          
-         image._s_image[4]
+         Image._s_image[4]
          ; \image[0] - draw image
          ; \image[1] - released image
          ; \image[2] - pressed image
@@ -738,8 +739,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_ROOT Extends _s_WIDGET
          repaint.b
          drawmode.b
-         canvas._s_canvas
-         *menu._s_WIDGET
+         Canvas._s_canvas
          *active._s_WIDGET
       EndStructure
       
@@ -792,8 +792,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 314
+; CursorPosition = 666
+; FirstLine = 645
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

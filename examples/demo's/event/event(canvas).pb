@@ -22,8 +22,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure   DrawCanvasFrameWidget(gadget, color)
       If GadgetType(gadget) = #PB_GadgetType_Canvas
          StartDrawing(CanvasOutput(gadget))
-         If GetGadgetState(gadget)
-            DrawImage(0,0, GetGadgetState(gadget))
+         If GetGadGetWidgetState(gadget)
+            DrawImage(0,0, GetGadGetWidgetState(gadget))
          EndIf
          If Not color
             color = Point(10,10)
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   If OpenRootWidget(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   If OpenRoot(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       BindWidgetEvent(#PB_All, @HandlerEvents( ))
       
       ButtonGadget(-1, 0,0,500,20,"")
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug WindowWidth( Root()\canvas\window, #PB_Window_InnerCoordinate ) ; 500
       Debug GadgetWidth( Root()\canvas\gadget ) ; 500
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

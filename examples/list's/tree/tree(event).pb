@@ -6,19 +6,19 @@ Global g,*g._s_widget
 Procedure events_gadgets( )
   Select EventType( )
     Case #PB_EventType_DragStart
-      Debug  ""+ EventGadget( ) +" - gadget DragStart "+GetGadgetState(EventGadget( ))
+      Debug  ""+ EventGadget( ) +" - gadget DragStart "+GetGadGetWidgetState(EventGadget( ))
       
     Case #PB_EventType_Change
-      Debug  ""+ EventGadget( ) +" - gadget Change "+GetGadgetState(EventGadget( ))
+      Debug  ""+ EventGadget( ) +" - gadget Change "+GetGadGetWidgetState(EventGadget( ))
       
     Case #PB_EventType_LeftClick
-      Debug  ""+ EventGadget( ) +" - gadget LeftClick "+GetGadgetState(EventGadget( ))
+      Debug  ""+ EventGadget( ) +" - gadget LeftClick "+GetGadGetWidgetState(EventGadget( ))
       
     Case #PB_EventType_LeftDoubleClick
-      Debug  ""+ EventGadget( ) +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget( ))
+      Debug  ""+ EventGadget( ) +" - gadget LeftDoubleClick "+GetGadGetWidgetState(EventGadget( ))
       
     Case #PB_EventType_RightClick
-      Debug  ""+ EventGadget( ) +" - gadget RightClick "+GetGadgetState(EventGadget( ))
+      Debug  ""+ EventGadget( ) +" - gadget RightClick "+GetGadGetWidgetState(EventGadget( ))
       
   EndSelect
 EndProcedure
@@ -28,42 +28,42 @@ Procedure events_widgets()
   
   Select WidgetEvent()
     Case #__event_Focus
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( FOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( FOCUS ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
     Case #__event_LostFocus
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LOSTFOCUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LOSTFOCUS ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Drop
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DROP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DROP ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_DragStart
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DRAGSTART ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DRAGSTART ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Up
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( UP ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( UP ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Down
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DOWN ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( DOWN ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Change
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( CHANGE ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( CHANGE ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_ScrollChange
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( SCROLL ) "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ WidgetEventData()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( SCROLL ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem() +" "+ WidgetEventData()
       
     Case #__event_StatusChange
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( STATUS ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_LeftClick
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFTCLICK ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Left2Click
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( LEFT2CLICK ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_RightClick
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHTCLICK ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
     Case #__event_Right2Click
-      Debug  ""+IDWidget(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHT2CLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+      Debug  ""+GetIndex(EventWidget())+" "+GetWidgetClass(EventWidget())+" - event( RIGHT2CLICK ) "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
       
   EndSelect
 EndProcedure
@@ -72,7 +72,7 @@ EndProcedure
 #PB_Tree_MultiSelect = 0;#PB_ListView_MultiSelect
 Define i,a
   
-If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;{
   ;
   g = TreeGadget(0, 10, 30, 250, 120, #PB_Tree_CheckBoxes) 
@@ -82,14 +82,14 @@ If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_System
     i = (CountGadgetItems( 0 )-1)
     
     If i%2
-      SetGadgetItemState(0, i, #PB_Tree_Selected) 
+      SetGadGetWidgetItemState(0, i, #PB_Tree_Selected) 
     EndIf
   Next
-  For i=0 To CountGadgetItems(0) : SetGadgetItemState(0, i, #PB_Tree_Expanded) : Next
+  For i=0 To CountGadgetItems(0) : SetGadGetWidgetItemState(0, i, #PB_Tree_Expanded) : Next
   
-  SetGadgetState(0, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(0, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(0, 9) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(0, 7) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(0, 8) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(0, 9) ; set (beginning with 0) the tenth item as the active one
   
   ;
   TreeGadget(1, 10, 30+150, 250, 120, #PB_Tree_CheckBoxes|#PB_Tree_ClickSelect)
@@ -99,15 +99,15 @@ If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_System
     i = (CountGadgetItems( 1 )-1)
     
     If i%2
-      SetGadgetItemState(1, i, #PB_Tree_Selected) 
+      SetGadGetWidgetItemState(1, i, #PB_Tree_Selected) 
     EndIf
   Next
-  For i=0 To CountGadgetItems(1) : SetGadgetItemState(1, i, #PB_Tree_Expanded) : Next
+  For i=0 To CountGadgetItems(1) : SetGadGetWidgetItemState(1, i, #PB_Tree_Expanded) : Next
   
-  SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(1, 9) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(1, 7) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(1, 9) ; set (beginning with 0) the tenth item as the active one
   
   ;
   TreeGadget(2, 10, 30+150+150, 250, 120, #PB_Tree_CheckBoxes|#PB_Tree_MultiSelect)
@@ -118,14 +118,14 @@ If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_System
     i = (CountGadgetItems( 2 )-1)
     
     If i%2
-      SetGadgetItemState(2, i, #PB_Tree_Selected) 
+      SetGadGetWidgetItemState(2, i, #PB_Tree_Selected) 
     EndIf
   Next
-  For i=0 To CountGadgetItems(2) : SetGadgetItemState(2, i, #PB_Tree_Expanded) : Next
+  For i=0 To CountGadgetItems(2) : SetGadGetWidgetItemState(2, i, #PB_Tree_Expanded) : Next
   
-  SetGadgetState(2, 7) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(2, 8) ; set (beginning with 0) the tenth item as the active one
-  SetGadgetState(2, 9) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(2, 7) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(2, 8) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(2, 9) ; set (beginning with 0) the tenth item as the active one
   
   For i = 0 To 2
     BindGadgetEvent(i, @events_gadgets( ))
@@ -144,7 +144,7 @@ If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_System
     
     i = (CountItems( *g )-1)
     If i%2
-      SetItemState(*g, i, #PB_Tree_Selected) 
+      SetWidgetItemState(*g, i, #PB_Tree_Selected) 
     EndIf
   Next
   
@@ -157,12 +157,12 @@ If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_System
     i = (CountItems( WidgetID(1) )-1)
     
     If i%2
-      SetItemState( WidgetID(1), i, #PB_Tree_Selected) 
+      SetWidgetItemState( WidgetID(1), i, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState( WidgetID(1), 5) 
-  SetState( WidgetID(1), 7) 
-  SetState( WidgetID(1), 9) 
+  SetWidgetState( WidgetID(1), 5) 
+  SetWidgetState( WidgetID(1), 7) 
+  SetWidgetState( WidgetID(1), 9) 
   
   
   TreeWidget(270, 30+150+150, 250, 120, #__tree_CheckBoxes|#__flag_RowMultiSelect|#__Flag_GridLines)
@@ -173,12 +173,12 @@ If OpenRootWidget(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_System
     i = (CountItems( WidgetID(2) )-1)
     
     If i%2
-      SetItemState( WidgetID(2), i, #PB_Tree_Selected) 
+      SetWidgetItemState( WidgetID(2), i, #PB_Tree_Selected) 
     EndIf
   Next
-  SetState( WidgetID(2), 5) 
-  SetState( WidgetID(2), 7) 
-  SetState( WidgetID(2), 9) 
+  SetWidgetState( WidgetID(2), 5) 
+  SetWidgetState( WidgetID(2), 7) 
+  SetWidgetState( WidgetID(2), 9) 
   
   For i = 0 To 2
     BindWidgetEvent( WidgetID(i), @events_widgets( ))

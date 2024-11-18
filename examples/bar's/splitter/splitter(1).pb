@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::OpenRootWidget(0);, 0, 0, 510, 340)
+  widget::OpenRoot(0);, 0, 0, 510, 340)
   
   ;\\ gadget
   ButtonGadget(1, 0, 0, 0, 0, "BTN1")
@@ -53,10 +53,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   ;\\ state
-  SetGadgetState(3, 10)
-  SetGadgetState(6, 250-#__splittersize-10)
-  SetState(s_0, 10)
-  SetState(s_1, 250-#__splittersize-10)
+  SetGadGetWidgetState(3, 10)
+  SetGadGetWidgetState(6, 250-#__splittersize-10)
+  SetWidgetState(s_0, 10)
+  SetWidgetState(s_1, 250-#__splittersize-10)
   
   Define event
   Repeat

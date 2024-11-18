@@ -70,17 +70,17 @@ CompilerIf #PB_Compiler_IsMainFile
                           
                           ;Debug "add cursor"
                           AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 0, ImageID(Image))
+                          SetGadGetWidgetItemData(Widget, 0, ImageID(Image))
                           
                         ElseIf FindStringWidget(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
                           AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 1, ImageID(Image))
+                          SetGadGetWidgetItemData(Widget, 1, ImageID(Image))
                           
                         Else
                           AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
+                          SetGadGetWidgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
                         EndIf
                         
                       Else
@@ -88,17 +88,17 @@ CompilerIf #PB_Compiler_IsMainFile
                           
                           ;Debug "add cursor"
                           AddItem(Widget, 0, PackEntryName.S, Image)
-                          ;SetItemData(Widget, 0, Image)
+                          ;SetWidgetItemData(Widget, 0, Image)
                           
                         ElseIf FindStringWidget(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
                           AddItem(Widget, 1, PackEntryName.S, Image)
-                          ;SetItemData(Widget, 1, Image)
+                          ;SetWidgetItemData(Widget, 1, Image)
                           
                         Else
                           AddItem(Widget, -1, PackEntryName.S, Image)
-                          ;SetItemData(Widget, CountItems(Widget)-1, Image)
+                          ;SetWidgetItemData(Widget, CountItems(Widget)-1, Image)
                         EndIf
                       EndIf
                     EndIf
@@ -135,7 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = EventGadget()
     Protected EventType = EventType()
     Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
+    Protected EventItem = GetGadGetWidgetState(EventGadget)
     
     Select EventType
       ; Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
@@ -151,7 +151,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget = eventwidget()
     Protected EventType = WidgetEvent()
     Protected EventData = widgeteventdata()
-    Protected EventItem = GetState(EventGadget)
+    Protected EventItem = GetWidgetState(EventGadget)
     
     Select EventType
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
@@ -196,13 +196,13 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, 12, "Tree_5", 0 )
     AddGadgetItem(g, 13, "Tree_6", 0 )
     
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     
-    ;     OpenRootWidget(0, 0,0,0,0, "", #Null, #Null, #w_tree )
+    ;     OpenRoot(0, 0,0,0,0, "", #Null, #Null, #w_tree )
     ;     g = TreeWidget(0,0,0,0, #__flag_autosize)
     Gadget(#PB_WidgetType_Tree, #w_tree, 0, 0, 0, 0)
-    g = GetGadgetData(#w_tree)
+    g = GetGadGetWidgetData(#w_tree)
     If Not g : g = Root( ) : EndIf
     
     ;  3_example
@@ -225,7 +225,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SplitterGadget(#g_splitter,8, 8, 306, 491-16, #g_tree, #w_tree)
     SplitterGadget(#g_splitter2, 0,0,0,0, #g_tree, #w_tree)
     SplitterGadget(#g_splitter, 8, 8, 300-16, 491-16, TextGadget(#PB_Any,0,0,0,0,""),#g_splitter2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-    SetGadgetState(#g_splitter, 0)
+    SetGadGetWidgetState(#g_splitter, 0)
     
     
     CompilerIf #PB_Compiler_Version =< 546

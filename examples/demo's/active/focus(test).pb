@@ -11,22 +11,22 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Events()
       Protected event = WidgetEvent()
       If event =  #__Event_MouseEnter
-         Select IDWidget(EventWidget())
-            Case 2 : SetActive(ID(0))   ; Activate StringGadget
-            Case 3 : SetActive(ID(1))   ; Activate ComboBoxGadget
+         Select GetIndex(EventWidget())
+            Case 2 : SetActiveWidget(ID(0))   ; Activate StringGadget
+            Case 3 : SetActiveWidget(ID(1))   ; Activate ComboBoxGadget
          EndSelect
       EndIf
       
       Select event
          Case #__Event_Focus
-            Debug "focus ["+IDWidget(EventWidget()) +"]eventgadget ["+ IDWidget(GetActive()) +"]getactivegadget"
+            Debug "focus ["+GetIndex(EventWidget()) +"]eventgadget ["+ GetIndex(GetActiveWidget()) +"]GetActiveWidgetgadget"
             
-            If GetActiveGadget( ) <> EventWidget( )\root\canvas\gadget
+            If GetActiveWidgetGadget( ) <> EventWidget( )\root\canvas\gadget
                SetActiveGadget( EventWidget( )\root\canvas\gadget )
             EndIf
             
          Case #__Event_LostFocus
-            Debug "lostfocus ["+IDWidget(EventWidget()) +"]eventgadget ["+ IDWidget(GetActive()) +"]getactivegadget"
+            Debug "lostfocus ["+GetIndex(EventWidget()) +"]eventgadget ["+ GetIndex(GetActiveWidget()) +"]GetActiveWidgetgadget"
       EndSelect
    EndProcedure
    
@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasGadget(gadget, x,y,width,height, #PB_Canvas_DrawFocus )
       
       If StartDrawing(CanvasOutput(gadget))
-         DrawingFont(GetGadgetFont(-1))
+         DrawingFont(GetWidgetFont(-1))
          DrawText((DesktopScaledX(width)-TextWidth(text))/2, (DesktopScaledY(height)-TextHeight(text))/2, text)
          StopDrawing()
       EndIf
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasButtonGadget(11, 10, 40, 250, 21, "ComboBox")
    EndIf
    
-   If OpenRootWidget(1, 300, 300, 270, 140, "SetActiveGadget", #PB_Window_SystemMenu )
+   If OpenRoot(1, 300, 300, 270, 140, "SetActiveGadget", #PB_Window_SystemMenu )
       CanvasButtonWidget(0, 10, 10, 250, 20, "String")
       CanvasButtonWidget(1, 10, 40, 250, 21, "ComboBox")
       

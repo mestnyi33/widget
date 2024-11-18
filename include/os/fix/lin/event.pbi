@@ -32,7 +32,7 @@ Module events
       Debug value
       
       ; move scrollbar 1 step forward regardless of the event
-      SetGadgetState(0, GetGadgetState(0)+1)
+      SetGadGetWidgetState(0, GetGadGetWidgetState(0)+1)
       
       ; return #true to stop default processing
       ProcedureReturn #True
@@ -46,7 +46,7 @@ Module events
          ;Debug "Scroll State " + *event\state
          gdk_event_get_scroll_deltas(*event, @deltaX, @deltaY)
          
-         PostEvent(#PB_Event_Gadget, GetActiveWindow(), user_data, #PB_EventType_MouseWheel, -deltaY)
+         PostEvent(#PB_Event_Gadget, GetActiveWidgetWindow(), user_data, #PB_EventType_MouseWheel, -deltaY)
       EndIf
    EndProcedure
    

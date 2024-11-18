@@ -362,8 +362,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected i, Result$, CountItems = CountItems(Gadget)
     
     For i = 0 To CountItems - 1
-      If GetItemState(Gadget, i) & #PB_Tree_Checked  
-        Result$ + GetItemTextWidget(Gadget, i)+"|"
+      If GetWidgetItemState(Gadget, i) & #PB_Tree_Checked  
+        Result$ + GetWidgetItemText(Gadget, i)+"|"
       EndIf
     Next
     
@@ -377,8 +377,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     For i = 0 To CountString
       For ii = 0 To CountItems - 1
-        If GetItemTextWidget(Gadget, ii) = Trim( StringField( Text$, (i + (1)), "|"))
-          SetItemState(Gadget, ii, #PB_Tree_Checked) 
+        If GetWidgetItemText(Gadget, ii) = Trim( StringField( Text$, (i + (1)), "|"))
+          SetWidgetItemState(Gadget, ii, #PB_Tree_Checked) 
         EndIf
       Next
     Next
@@ -561,10 +561,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure SetFlag(Gadget, Object)
     Protected i, Flag
-    i = GetState(Gadget)
-    Flag = GetFlag(GetItemTextWidget(Gadget, i))
+    i = GetWidgetState(Gadget)
+    Flag = GetFlag(GetWidgetItemText(Gadget, i))
     
-    Flag(Object, Flag, Bool(GetItemState(Gadget, i) & #PB_Tree_Checked))
+    Flag(Object, Flag, Bool(GetWidgetItemState(Gadget, i) & #PB_Tree_Checked))
   EndProcedure
   
   
@@ -576,7 +576,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventWidget( )
           Case w_type 
             flag = Flag(*this)
-            Add(FlagFromType(GetState(w_type)))
+            Add(FlagFromType(GetWidgetState(w_type)))
             ;Debug FlagFromFlag(GetType(*this), flag)
             SetCheckedTextWidget(w_flag, FlagFromFlag(GetTypeCount(*this), flag))
             
@@ -592,14 +592,14 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(EventWidget( )))
+          Flag(*this, flag, GetWidgetState(EventWidget( )))
           PostWidgetEvent(#__event_repaint, #PB_All)
         EndIf
     EndSelect
     
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *this = widget::ButtonWidget(100, 100, 250, 200, text, #__flag_ButtonToggle|#__flag_Textmultiline) 
     
     

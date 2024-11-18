@@ -116,7 +116,7 @@ AddGadgetColumn(1, 6, "Sat", 35)
 AddGadgetColumn(1, 7, "Sun", 35)
 
 SendMessage_(ListGadget, #LVM_SETBKCOLOR, 0, RGB(255, 255, 223))
-SendMessage_(ListGadget, #WM_SETFONT, FontBold, #True)
+SendMessage_(ListGadget, #WM_SetWidgetFont, FontBold, #True)
 
 
 For i=18 To 34
@@ -139,7 +139,7 @@ For i=18 To 34
   rct\right = rct\left+SendMessage_(ListGadget, #LVM_GETCOLUMNWIDTH, 0, 0)
   ButtonGadget = ButtonGadget(i-15, rct\left, rct\top, rct\right-rct\left, rct\bottom-rct\top, Hour$)
   LabelWidth = rct\right-rct\left
-  SendMessage_(ButtonGadget, #WM_SETFONT, FontBold, #True)
+  SendMessage_(ButtonGadget, #WM_SetWidgetFont, FontBold, #True)
   OldButtonProc = SetWindowLong_(ButtonGadget, #GWL_WNDPROC, @ButtonProc())
 Next i
 LastButton = i-16
@@ -165,7 +165,7 @@ End
 
 Procedure KillFocus()
   If hEdit
-    SetGadgetItemTextWidget(1, CurItem, GetGadgetTextWidget(2), CurSubItem)
+    SetGadGetWidgetItemText(1, CurItem, GetGadGetWidgetText(2), CurSubItem)
     FreeGadget(2)
     hEdit = 0
   EndIf
@@ -232,11 +232,11 @@ Procedure LViewProc(hWnd, uMsg, wParam, lParam)
             Select CurSelSubItem
               Case 0
                 For i=1 To LastSubItem
-                  Text$+GetGadgetItemTextWidget(1, CurSelItem, i)+"  "
+                  Text$+GetGadGetWidgetItemText(1, CurSelItem, i)+"  "
                 Next i
                 SetClipboardTextWidget(Text$)
               Default
-                SetClipboardTextWidget(GetGadgetItemTextWidget(1, CurSelItem, CurSelSubItem))
+                SetClipboardTextWidget(GetGadGetWidgetItemText(1, CurSelItem, CurSelSubItem))
             EndSelect
           EndIf
         Case #VK_X
@@ -244,13 +244,13 @@ Procedure LViewProc(hWnd, uMsg, wParam, lParam)
             Select CurSelSubItem
               Case 0
                 For i=1 To LastSubItem
-                  Text$+GetGadgetItemTextWidget(1, CurSelItem, i)+"  "
-                  SetGadgetItemTextWidget(1, CurSelItem, "", i)
+                  Text$+GetGadGetWidgetItemText(1, CurSelItem, i)+"  "
+                  SetGadGetWidgetItemText(1, CurSelItem, "", i)
                 Next i
                 SetClipboardTextWidget(Text$)
               Default
-                SetClipboardTextWidget(GetGadgetItemTextWidget(1, CurSelItem, CurSelSubItem))
-                SetGadgetItemTextWidget(1, CurSelItem, "", CurSelSubItem)
+                SetClipboardTextWidget(GetGadGetWidgetItemText(1, CurSelItem, CurSelSubItem))
+                SetGadGetWidgetItemText(1, CurSelItem, "", CurSelSubItem)
             EndSelect
           EndIf
         Case #VK_V
@@ -263,16 +263,16 @@ Procedure LViewProc(hWnd, uMsg, wParam, lParam)
                 For i=1 To LastSubItem
                   LastPos = StartPos
                   StartPos = FindStringWidget(Text$, "  ", StartPos)
-                  SetGadgetItemTextWidget(1, CurSelItem, Mid(Text$, LastPos+1, StartPos-LastPos-1), i)
+                  SetGadGetWidgetItemText(1, CurSelItem, Mid(Text$, LastPos+1, StartPos-LastPos-1), i)
                   StartPos+1
                 Next i
               Default
-                SetGadgetItemTextWidget(1, CurSelItem, GetClipboardTextWidget(), CurSelSubItem)
+                SetGadGetWidgetItemText(1, CurSelItem, GetClipboardTextWidget(), CurSelSubItem)
             EndSelect
           EndIf
         Case #VK_DELETE
           If CellSelectOn
-            SetGadgetItemTextWidget(1, CurSelItem, "", CurSelSubItem)
+            SetGadGetWidgetItemText(1, CurSelItem, "", CurSelSubItem)
           EndIf
         Case #VK_UP
           If CellSelectOn And CurSelItem
@@ -438,15 +438,15 @@ Procedure LViewProc(hWnd, uMsg, wParam, lParam)
           UseGadgetList(hWnd)
           CurItem = pInfo\iItem
           CurSubItem = pInfo\iSubItem
-          Text$ = GetGadgetItemTextWidget(1, CurItem, CurSubItem)
+          Text$ = GetGadGetWidgetItemText(1, CurItem, CurSubItem)
           If CurSubItem=0
             rc\right = rc\left+SendMessage_(hWnd, #LVM_GETCOLUMNWIDTH, 0, 0)
           EndIf
           hEdit = StringGadget(2, rc\left+1, rc\top, rc\right-rc\left-1, rc\bottom-rc\top-1, Text$, #PB_String_BorderLess)
           If CurSubItem=0
-            SendMessage_(hEdit, #WM_SETFONT, FontBold, #True)
+            SendMessage_(hEdit, #WM_SetWidgetFont, FontBold, #True)
           Else
-            SendMessage_(hEdit, #WM_SETFONT, FontReg, #True)
+            SendMessage_(hEdit, #WM_SetWidgetFont, FontReg, #True)
           EndIf
           OldEditProc = SetWindowLong_(hEdit, #GWL_WNDPROC, @EditProc())
           SetFocus_(hEdit)

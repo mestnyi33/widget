@@ -40,7 +40,7 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
   EndIf
   ContainerWidget(x,y,width,height, #__flag_nogadgets) 
   If text
-    SetTextWidget(widget(), text)
+    SetWidgetText(widget(), text)
   EndIf
   SetWidgetColor(widget(), #__color_back, Color)
   SetWidgetColor(widget(), #__color_frame, Color&$FFFFFF | 255<<24)
@@ -54,7 +54,7 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
   ProcedureReturn widget( )
 EndProcedure
 
-If OpenRootWidget(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   ; Define handles to all objects
   a_init(root(), 10)
@@ -74,7 +74,7 @@ If OpenRootWidget(0, 0, 0, 782, 452, "Example 3: Object boundaries to position a
   SetSizeBounds(*Object4, 150, #PB_Ignore, 250, #PB_Ignore)
   SetSizeBounds(*Object5, #PB_Ignore, 50, #PB_Ignore, 150)
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 7

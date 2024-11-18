@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
          *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=6; количесвто итемов 
   
   ;\\
-  Procedure SetGadgetState_(gadget, state)
+  Procedure SetGadGetWidgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
         ; ExplorerListGadget, ListIconGadget и ListViewGadget — все три построены на одном и том же классе Cocoa (NSTableView).
@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ;         gtk_adjustment_value_changed_(*Adjustment)
     CompilerEndSelect 
     
-    SetGadgetState(gadget, state)
+    SetGadGetWidgetState(gadget, state)
   EndProcedure
   
   ;\\
@@ -46,8 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;     CompilerSelect #PB_Compiler_OS
     ;       CompilerCase #PB_OS_MacOS
-    If GetGadgetState(gadget) >= 0
-      SetGadgetState_( gadget, CountGadgetItems(gadget) - 1 )
+    If GetGadGetWidgetState(gadget) >= 0
+      SetGadGetWidgetState_( gadget, CountGadgetItems(gadget) - 1 )
     EndIf
     ;     CompilerEndSelect
   EndProcedure
@@ -75,27 +75,27 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_gadgets()
     Select EventType()
 ;       Case #PB_EventType_Focus
-;         Debug  ""+EventGadget()+" - gadget focus "+GetGadgetState(EventGadget())
+;         Debug  ""+EventGadget()+" - gadget focus "+GetGadGetWidgetState(EventGadget())
 ;       Case #PB_EventType_LostFocus
-;         Debug  ""+EventGadget()+" - gadget lost-focus "+GetGadgetState(EventGadget())
+;         Debug  ""+EventGadget()+" - gadget lost-focus "+GetGadGetWidgetState(EventGadget())
 ;         
       Case #PB_EventType_DragStart
         If *g1 = EventGadget()
           PB(DragText)( "drag" )
-          Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+          Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadGetWidgetState(EventGadget())
         EndIf
       
       Case #PB_EventType_Change
-        Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
+        Debug  ""+ EventGadget() +" - gadget Change "+GetGadGetWidgetState(EventGadget())
         
       Case #PB_EventType_LeftClick
-        Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadgetState(EventGadget())
+        Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadGetWidgetState(EventGadget())
         
 ;       Case #PB_EventType_LeftDoubleClick
-;         Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget())
+;         Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadGetWidgetState(EventGadget())
 ;         
 ;       Case #PB_EventType_RightClick
-;         Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadgetState(EventGadget())
+;         Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadGetWidgetState(EventGadget())
         
     EndSelect
   EndProcedure
@@ -103,51 +103,51 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Select WidgetEvent()
 ;       Case #__event_Focus
-;         Debug  ""+IDWidget(EventWidget())+" - widget focus "+GetState(EventWidget())
+;         Debug  ""+GetIndex(EventWidget())+" - widget focus "+GetWidgetState(EventWidget())
 ;       Case #__event_LostFocus
-;         Debug  ""+IDWidget(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
+;         Debug  ""+GetIndex(EventWidget())+" - widget lost-focus "+GetWidgetState(EventWidget())
 ;         
 ;       Case #__event_Up
-;         Debug  ""+IDWidget(EventWidget())+" - widget Up "+GetState(EventWidget())
+;         Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetWidgetState(EventWidget())
 ;         
 ;       Case #__event_Down
-;         Debug  ""+IDWidget(EventWidget())+" - widget Down "+GetState(EventWidget())
+;         Debug  ""+GetIndex(EventWidget())+" - widget Down "+GetWidgetState(EventWidget())
 ;         
 ;       Case #__event_ScrollChange
-;         Debug  ""+IDWidget(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
 ;       Case #__event_StatusChange
-;         ; Debug  ""+IDWidget(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
       Case #__event_DragStart
         If *w1 = EventWidget()
-          DragTextWidget( GetItemTextWidget(EventWidget(), GetState(EventWidget())) )
-          Debug  ""+IDWidget(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
+          DragTextWidget( GetWidgetItemText(EventWidget(), GetWidgetState(EventWidget())) )
+          Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         EndIf
       
       Case #__event_Drop
         If *w3 = EventWidget()
-          Debug  ""+IDWidget(EventWidget())+" - widget Drop "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropTextWidget( )
+          Debug  ""+GetIndex(EventWidget())+" - widget Drop "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropTextWidget( )
           AddItem( *w3, EventWidget( )\RowEntered( )\_index + 1, EventDropTextWidget( ) )
-          SetActive( *w3 )
+          SetActiveWidget( *w3 )
         EndIf
       
       Case #__event_Change
-        Debug  ""+IDWidget(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
       Case #__event_LeftClick
-        Debug  ""+IDWidget(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+GetIndex(EventWidget())+" - widget LeftClick "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
 ;       Case #__event_Left2Click
-;         Debug  ""+IDWidget(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
 ;       Case #__event_RightClick
-;         Debug  ""+IDWidget(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetWidgetState(EventWidget()) +" "+ WidgetEventItem()
         
     EndSelect
   EndProcedure
   
-  If OpenRootWidget(1, 100, 50, 520, 755, "demo ListView state", #PB_Window_SystemMenu)
+  If OpenRoot(1, 100, 50, 520, 755, "demo ListView state", #PB_Window_SystemMenu)
     ;\\ demo gadget
     *g1 = ListViewGadget_(#PB_Any, 10, 10, 120, 180 )
     *g2 = ListViewGadget_(#PB_Any, 10+125, 10, 120, 180)
@@ -181,17 +181,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     a = 0
     For a = 0 To countitems
-      SetGadgetState_(*g1, a)
-      SetGadgetState_(*g3, a)
-      SetGadgetState_(*g5, a)
-      SetGadgetState_(*g7, a)
+      SetGadGetWidgetState_(*g1, a)
+      SetGadGetWidgetState_(*g3, a)
+      SetGadGetWidgetState_(*g5, a)
+      SetGadGetWidgetState_(*g7, a)
     Next
     
 ;     ;\\
-;     SetGadgetState_(*g1, countitems-1)
-;     SetGadgetState_(*g3, countitems-1) 
-;     SetGadgetState_(*g5, countitems-1) 
-;     SetGadgetState_(*g7, countitems-1) 
+;     SetGadGetWidgetState_(*g1, countitems-1)
+;     SetGadGetWidgetState_(*g3, countitems-1) 
+;     SetGadGetWidgetState_(*g5, countitems-1) 
+;     SetGadGetWidgetState_(*g7, countitems-1) 
     
     ;\\ demo widget
     *w1 = widget::ListViewWidget(265, 10, 120, 180 )
@@ -226,25 +226,25 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     a = 0 
     For a = 0 To countitems
-      widget::SetState(*w1, a)
-      widget::SetState(*w3, a)
-      widget::SetState(*w5, a)
-      widget::SetState(*w7, a)
+      widget::SetWidgetState(*w1, a)
+      widget::SetWidgetState(*w3, a)
+      widget::SetWidgetState(*w5, a)
+      widget::SetWidgetState(*w7, a)
     Next
     
 ;     ;\\
-;     widget::SetState(*w1, countitems-1)
-;     widget::SetState(*w3, countitems-1) 
-;     widget::SetState(*w5, countitems-1) 
-;     widget::SetState(*w7, countitems-1) 
+;     widget::SetWidgetState(*w1, countitems-1)
+;     widget::SetWidgetState(*w3, countitems-1) 
+;     widget::SetWidgetState(*w5, countitems-1) 
+;     widget::SetWidgetState(*w7, countitems-1) 
     
     ;\\
     EnableDDrop( *w3, #PB_Drop_Text, #PB_Drag_Copy )
     
     ;\\
-    SetActive( *w5 )
+    SetActiveWidget( *w5 )
     SetActiveGadget( *g5 )
-    SetActive( *w5 )
+    SetActiveWidget( *w5 )
     
     ;\\
     BindGadgetEvent(*g1, @events_gadgets())

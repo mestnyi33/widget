@@ -23,10 +23,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 18)
-    ;  SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 12)))
+    ;  SetGadGetWidgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 12)))
   CompilerElse
     LoadFont(0, "Arial", 16)
-    ; SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 9)))
+    ; SetGadGetWidgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 9)))
   CompilerEndIf 
   
   Procedure ResizeCallBack()
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(GetCanvasGadget( Root( ) ), #PB_Ignore, #PB_Ignore, Width, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
   EndProcedure
   
-  If OpenRootWidget(11, 0, 0, 150, 235, "ImageButton", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+  If OpenRoot(11, 0, 0, 150, 235, "ImageButton", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
     WindowBounds(11,150,235,#PB_Ignore,235)
     
     ButtonWidget( 10,10,60,25,"text_right", #PB_Text_InLine,0)

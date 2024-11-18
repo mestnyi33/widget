@@ -165,17 +165,17 @@ EndProcedure
                           
                           ;Debug "add cursor"
                           AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 0, ImageID(Image))
+                          SetGadGetWidgetItemData(Widget, 0, ImageID(Image))
                           
                         ElseIf FindStringWidget(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
                           AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 1, ImageID(Image))
+                          SetGadGetWidgetItemData(Widget, 1, ImageID(Image))
                           
                         Else
                           AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
+                          SetGadGetWidgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
                         EndIf
                         
                       Else
@@ -183,17 +183,17 @@ EndProcedure
                           
                           ;Debug "add cursor"
                           AddItem(Widget, 0, PackEntryName.S, Image)
-                          ;SetItemData(Widget, 0, Image)
+                          ;SetWidgetItemData(Widget, 0, Image)
                           
                         ElseIf FindStringWidget(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
                           AddItem(Widget, 1, PackEntryName.S, Image)
-                          ;SetItemData(Widget, 1, Image)
+                          ;SetWidgetItemData(Widget, 1, Image)
                           
                         Else
                           AddItem(Widget, -1, PackEntryName.S, Image)
-                          ;SetItemData(Widget, CountItems(Widget)-1, Image)
+                          ;SetWidgetItemData(Widget, CountItems(Widget)-1, Image)
                         EndIf
                       EndIf
                     EndIf
@@ -223,7 +223,7 @@ EndProcedure
     Protected EventGadget = EventGadget()
     Protected EventType = EventType()
     Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
+    Protected EventItem = GetGadGetWidgetState(EventGadget)
     
     Select EventType
       ;Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
@@ -240,13 +240,13 @@ EndProcedure
     Protected EventGadget = EventWidget( )
     Protected EventType = WidgetEvent( )
     Protected EventData = EventWidget( )\data
-    Protected EventItem = GetState(EventGadget)
+    Protected EventItem = GetWidgetState(EventGadget)
     
     Select EventType
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
       Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        DragTextWidget(GetItemTextWidget(EventGadget, EventItem))
+        DragTextWidget(GetWidgetItemText(EventGadget, EventItem))
         
       Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
         Debug EventDropTextWidget()
@@ -273,15 +273,15 @@ EndProcedure
 ; ;     AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
 ; ;     AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
 ; ;     AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
-; ;     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+; ;     For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
 ; ;     
 ; ;     ; RemoveGadgetItem(g,1)
-; ;     SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+; ;     SetGadGetWidgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
 ; ;     ;BindGadgetEvent(g, @Events())
 ; ;     
 ; ;     ;SetActiveGadget(g)
-; ;     ;SetGadgetState(g, 1)
-; ;     ;     Debug "g "+ GetGadgetTextWidget(g)
+; ;     ;SetGadGetWidgetState(g, 1)
+; ;     ;     Debug "g "+ GetGadGetWidgetText(g)
     g = 0
     ; 1_example
     TreeGadget_(g, 10, 10, 210, 100)                                         
@@ -290,7 +290,7 @@ EndProcedure
     AddGadgetItem(g, -1, "Sub-Item 3", 0, 3)
     AddGadgetItem(g, -1, "Sub-Item 2", 0, 2)
     AddGadgetItem(g, -1, "Sub-Item 4", 0, 4)
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
       
     g = 1
@@ -301,7 +301,7 @@ EndProcedure
     AddGadgetItem(g, 3, "Sub-Item 3", 0, 3)
     AddGadgetItem(g, 2, "Sub-Item 2", 0, 2)
     AddGadgetItem(g, 4, "Sub-Item 4", 0, 4)
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
 ;     Define Indentation = 50    
 ;     ; ----- Read current indentation and set TrackBar to that value
@@ -330,7 +330,7 @@ EndProcedure
       AddGadgetItem(g, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
     Next
     
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     SetGadGetWidgetItemImage(g, 0, ImageID(0))
     
     g = 3
@@ -346,7 +346,7 @@ EndProcedure
         AddGadgetItem(g, -1, "Item" + Str(i), 0, 1)
       EndIf
     Next i
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     SplitterGadget(#PB_Any, 230, 10, 210, 210, 3,2, #PB_Splitter_Vertical)                                         
     
@@ -368,7 +368,7 @@ EndProcedure
     AddGadgetItem(g, 12, "Tree_5", 0 )
     AddGadgetItem(g, 13, "Tree_6", 0 )
     AddGadgetItem(g, 14, "Tree_7", 0 )
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 5
     ; 5_example
@@ -379,7 +379,7 @@ EndProcedure
     AddGadgetItem(g, 2, "Tree_2_1", 0, 1) 
     AddGadgetItem(g, 3, "Tree_3_1", 0, 1) 
     AddGadgetItem(g, 3, "Tree_3_2", 0, 2) 
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 6
     ;  6_example
@@ -392,14 +392,14 @@ EndProcedure
         AddGadgetItem(g, -1, "Tree_"+Str(i), ImageID(0)) 
       EndIf
     Next
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    SetGadgetItemState(g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
-    SetGadgetItemState(g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    For i=0 To CountGadgetItems(g) : SetGadGetWidgetItemState(g, i, #PB_Tree_Expanded) : Next
+    SetGadGetWidgetItemState(g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetGadGetWidgetItemState(g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
     BindGadgetEvent(g, @events_tree_gadget())
     
     ;}
     
-    OpenRootWidget(0, 0, 225, 1110, 425)
+    OpenRoot(0, 0, 225, 1110, 425)
     g_Canvas = GetCanvasGadget(root())
     g = 10
     
@@ -416,16 +416,16 @@ EndProcedure
 ; ;     AddItem (*g, -1, "Sub-Item 5", -1, 11)
 ; ;     AddItem (*g, -1, "Sub-Item 6", -1, 1)
 ; ;     AddItem (*g, -1, "File "+Str(a), -1, 0)  
-; ;     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+; ;     ;For i=0 To CountItems(*g) : SetWidgetItemState(*g, i, #PB_Tree_Expanded) : Next
 ; ;     
 ; ; ; ;     ; RemoveItem(*g,1)
-; ; ; ;     SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+; ; ; ;     SetWidgetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
 ; ; ; ;     ;BindGadgetEvent(g, @Events())
-; ; ; ;     ;     SetState(*g, 3)
-; ; ; ;     ;     SetState(*g, -1)
-; ; ; ;     ;Debug " - "+GetTextWidget(*g)
+; ; ; ;     ;     SetWidgetState(*g, 3)
+; ; ; ;     ;     SetWidgetState(*g, -1)
+; ; ; ;     ;Debug " - "+GetWidgetText(*g)
 ; ; ; ;     LoadFont(3, "Arial", 18)
-; ; ; ;     SetFont(*g, 3)
+; ; ; ;     SetWidgetFont(*g, 3)
     
     ; 1_example
     *g = TreeWidget(10, 100, 210, 210, #__tree_CheckBoxes)                                         
@@ -482,7 +482,7 @@ EndProcedure
 ;     AddItem(*g, 14, "Tree_7", -1 )
 
     
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
     
     ;Define *g5,*g6
     ; FreeWidget(*g)

@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340+140, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::OpenRootWidget(0);, 0, 0, 510, 340)
+  widget::OpenRoot(0);, 0, 0, 510, 340)
   Define fixed = 0
   
   ; first splitter
@@ -61,18 +61,18 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(77,125, 80, len, 70, 71, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
   SplitterGadget(88,125, 150, len, 70, 711, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
   
-  SetGadgetAttribute( 31, #PB_Splitter_FirstMinimumSize, len/2 )
-  SetGadgetAttribute( 61, #PB_Splitter_SecondMinimumSize, len/2 )
+  SetGadGetWidgetAttribute( 31, #PB_Splitter_FirstMinimumSize, len/2 )
+  SetGadGetWidgetAttribute( 61, #PB_Splitter_SecondMinimumSize, len/2 )
   
-  SetGadgetState(66, len)
-  SetGadgetState(77, len)
-  SetGadgetState(88, len)
+  SetGadGetWidgetState(66, len)
+  SetGadGetWidgetState(77, len)
+  SetGadGetWidgetState(88, len)
   
   
-  SetGadgetState(3, -10)
-  SetGadgetState(6, len-10)
-  SetGadgetState(31, len/2)
-  SetGadgetState(61, len/2)
+  SetGadGetWidgetState(3, -10)
+  SetGadGetWidgetState(6, len-10)
+  SetGadGetWidgetState(31, len/2)
+  SetGadGetWidgetState(61, len/2)
   
   
   ; first splitter
@@ -109,21 +109,21 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   s_10 = widget::SplitterWidget(125, 320, len, 70, s_5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
 ; ;   s_11 = widget::SplitterWidget(125, 400, len, 70, s_8, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
 ; ;   
-; ;   widget::SetAttribute( s_3, #PB_Splitter_FirstMinimumSize, len/2 )
-; ;   widget::SetAttribute( s_4, #PB_Splitter_SecondMinimumSize, len/2 )
+; ;   widget::SetWidgetAttribute( s_3, #PB_Splitter_FirstMinimumSize, len/2 )
+; ;   widget::SetWidgetAttribute( s_4, #PB_Splitter_SecondMinimumSize, len/2 )
     
- ; ;   SetState(s_10, len)
-; ;   SetState(s_11, len)
-  SetState(s_9, len)
+ ; ;   SetWidgetState(s_10, len)
+; ;   SetWidgetState(s_11, len)
+  SetWidgetState(s_9, len)
  
-  SetState(s_0, -10)
-  SetState(s_1, len-10-9)
+  SetWidgetState(s_0, -10)
+  SetWidgetState(s_1, len-10-9)
   
-; ;   SetState(s_3, 50)
-; ;   SetState(s_4, -50)
+; ;   SetWidgetState(s_3, 50)
+; ;   SetWidgetState(s_4, -50)
   
-; ;   SetState(s_6, len/2)
-; ;   SetState(s_7, len/2)
+; ;   SetWidgetState(s_6, len/2)
+; ;   SetWidgetState(s_7, len/2)
   
   Define event
   Repeat

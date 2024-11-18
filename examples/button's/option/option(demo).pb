@@ -8,26 +8,26 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_gadgets( )
       Protected event = EventType( )
-      Debug ""+event+ " - event gadget - " +EventGadget( ) ;+ " state - " +GetGadgetState(EventGadget( )) ; 
+      Debug ""+event+ " - event gadget - " +EventGadget( ) ;+ " state - " +GetGadGetWidgetState(EventGadget( )) ; 
       
       Select event
          Case #PB_EventType_LeftClick
-            SetState(ID(EventGadget( )), GetGadgetState(EventGadget( )))
+            SetWidgetState(ID(EventGadget( )), GetGadGetWidgetState(EventGadget( )))
       EndSelect
    EndProcedure
    
    Procedure events_widgets( )
       Protected event = WidgetEvent( )
-      Debug ""+event+ " - event widget - " +Str(Index(EventWidget( ))) ;+ " state - "+ GetState(EventWidget( )) ; 
+      Debug ""+event+ " - event widget - " +Str(Index(EventWidget( ))) ;+ " state - "+ GetWidgetState(EventWidget( )) ; 
       
       Select event
          Case #__Event_Change
-            SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
+            SetGadGetWidgetState(Index(EventWidget( )), GetWidgetState(EventWidget( )))
       EndSelect
    EndProcedure
    
    ;
-   If OpenRootWidget(0, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenRoot(0, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;
       OptionGadget(0, 10, 20, 115, 20, "Option 1") 
       OptionGadget(1, 10, 45, 115, 20, "Option 2")
@@ -37,9 +37,9 @@ CompilerIf #PB_Compiler_IsMainFile
       OptionGadget(4, 10, 120, 115, 20, "Option 4")
       OptionGadget(5, 10, 145, 115, 20, "Option 5")
       
-      SetGadgetState(1, 1)   ; set second option as active one
-      SetGadgetState(3, #PB_Checkbox_Inbetween)   
-      SetGadgetState(4, 1)   
+      SetGadGetWidgetState(1, 1)   ; set second option as active one
+      SetGadGetWidgetState(3, #PB_Checkbox_Inbetween)   
+      SetGadGetWidgetState(4, 1)   
       
       For i = 0 To 2
          BindGadgetEvent(i, @events_gadgets( ))
@@ -54,15 +54,15 @@ CompilerIf #PB_Compiler_IsMainFile
       OptionWidget(10+140, 120, 115, 20, "Option 4") : SetWidgetClass( widget( ), "Option 4" )
       OptionWidget(10+140, 145, 115, 20, "Option 5") : SetWidgetClass( widget( ), "Option 5" )
       
-      SetState(ID(1), 1)   ; set second option as active one
-      SetState(ID(3), #PB_Checkbox_Inbetween)  
-      SetState(ID(4), 1)  
+      SetWidgetState(ID(1), 1)   ; set second option as active one
+      SetWidgetState(ID(3), #PB_Checkbox_Inbetween)  
+      SetWidgetState(ID(4), 1)  
       
       For i = 0 To 2
          BindWidgetEvent(ID(i), @events_widgets( ), #__Event_Change)
       Next
       
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

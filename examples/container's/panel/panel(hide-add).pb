@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global._s_widget *PANEL_1, *PANEL_2
   
-  If OpenRootWidget(3, 0, 0, 400, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(3, 0, 0, 400, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *PANEL_1 = Panel (30, 30, 340, 240)
     AddItem(*PANEL_1, -1, "*PANEL_1 - 1")

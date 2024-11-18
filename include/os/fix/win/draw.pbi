@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
       PB(CanvasGadget)(2, 10, 10, 440, 200)
       StringGadget(12, 400, 10, 40, 25, "????")
       StringGadget(13, 400, 40, 40, 25, "????", #PB_String_Password)
-      Define FontID = PB(GetGadgetFont)( #PB_Default )
+      Define FontID = PB(GetWidgetFont)( #PB_Default )
       
       If PB(StartDrawing)( PB(CanvasOutput)( 2 ) )
          If FontID
@@ -117,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If OpenWindow(1, 350, 250, 460, 220, "fix clip then drawing", #PB_Window_SystemMenu)   ; and set origin
       CanvasGadget(1, 10, 10, 440, 200)
-      FontID = GetGadgetFont( #PB_Default )
+      FontID = GetWidgetFont( #PB_Default )
       draw::DrawingDC = StartDrawing( CanvasOutput( 1 ) )
       
       If draw::DrawingDC ; StartDrawing( CanvasOutput( 1 ) )

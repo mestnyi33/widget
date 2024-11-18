@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7
   Procedure events_gadgets()
     If GadgetType(EventGadget()) = #PB_GadgetType_ScrollBar
-      SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget()) ))
+      SetWindowTitle(EventWindow(), Str(GetGadGetWidgetState(EventGadget()) ))
     EndIf
   EndProcedure
 
@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   BindEvent(#PB_Event_SizeWindow, @resize_window_0())
   
-  widget::OpenRootWidget(0);, 0, 0, 510, 340)
+  widget::OpenRoot(0);, 0, 0, 510, 340)
   Global fixed = 0
   
   ; first splitter
@@ -53,13 +53,13 @@ CompilerIf #PB_Compiler_IsMainFile
   SplitterGadget(66,125, 10, 250, 70, 7, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
   SplitterGadget(77,125, 80, 250, 70, 71, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
   
-  SetGadgetState(66, 250)
-  SetGadgetState(77, 250)
+  SetGadGetWidgetState(66, 250)
+  SetGadGetWidgetState(77, 250)
   
-  SetGadgetState(3, -10)
-  SetGadgetState(6, 250-10)
-  SetGadgetState(31, 250/2)
-  SetGadgetState(61, 10)
+  SetGadGetWidgetState(3, -10)
+  SetGadGetWidgetState(6, 250-10)
+  SetGadGetWidgetState(31, 250/2)
+  SetGadGetWidgetState(61, 10)
   
   BindEvent(#PB_Event_Gadget, @events_gadgets())
   
@@ -77,15 +77,15 @@ CompilerIf #PB_Compiler_IsMainFile
  
   s_6 = widget::SplitterWidget(125, 170, 250, 70, s_2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   s_7 = widget::SplitterWidget(125, 250, 250, 70, s_5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical)
-  SetState(s_6, 250)
-  SetState(s_7, 250)
+  SetWidgetState(s_6, 250)
+  SetWidgetState(s_7, 250)
   
-  SetState(s_0, -10)
-  SetState(s_1, 250-10)
-  SetState(s_3, (250)/2)
-  SetState(s_4, 10)
+  SetWidgetState(s_0, -10)
+  SetWidgetState(s_1, 250-10)
+  SetWidgetState(s_3, (250)/2)
+  SetWidgetState(s_4, 10)
   
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
   
 ;   Define event
 ;   Repeat

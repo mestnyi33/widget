@@ -9,7 +9,7 @@ Global *w._S_widget
 If OpenWindow(0, 100, 50, 530, 170, "editor set&get item state", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 150)  
   
-  OpenRootWidget(0, 270, 10, 250, 150)
+  OpenRoot(0, 270, 10, 250, 150)
   *w=EditorWidget(0, 0, 250, 150, #__Flag_GridLines)  
   
   a=0
@@ -18,9 +18,9 @@ If OpenWindow(0, 100, 50, 530, 170, "editor set&get item state", #PB_Window_Syst
   Next
   
   Define i = 2
-  ; SetState(*w, - 1) 
-  SetState(*w, i*7+5) ; set (beginning with 0) the tenth item as the active one
-  SetActive( *w )
+  ; SetWidgetState(*w, - 1) 
+  SetWidgetState(*w, i*7+5) ; set (beginning with 0) the tenth item as the active one
+  SetActiveWidget( *w )
   
   ;
   a=0
@@ -28,7 +28,7 @@ If OpenWindow(0, 100, 50, 530, 170, "editor set&get item state", #PB_Window_Syst
     AddGadgetItem (0, -1, "Item "+Str(a), 0)
   Next
   
-  SetGadgetState(0, 5) ; set (beginning with 0) the tenth item as the active one
+  SetGadGetWidgetState(0, 5) ; set (beginning with 0) the tenth item as the active one
   
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow

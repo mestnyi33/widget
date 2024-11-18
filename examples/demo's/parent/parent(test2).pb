@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;-
   Declare widget_events( )
   
-  Procedure SetGadgetState_(gadget, state)
+  Procedure SetGadGetWidgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
         ; CocoaMessage(0, GadgetID(gadget), "scrollColumnToVisible:", state)
@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
     CompilerEndSelect
     
-    SetGadgetState(gadget, state)
+    SetGadGetWidgetState(gadget, state)
   EndProcedure
   
   Procedure AddGadgetItem_(gadget, position, Text.s, imageID=0, flags=0)
@@ -112,8 +112,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
-        If GetGadgetState(gadget) >= 0
-          SetGadgetState_(gadget, CountGadgetItems(gadget) - 1)
+        If GetGadGetWidgetState(gadget) >= 0
+          SetGadGetWidgetState_(gadget, CountGadgetItems(gadget) - 1)
         EndIf
     CompilerEndSelect
   EndProcedure
@@ -179,7 +179,7 @@ CompilerIf #PB_Compiler_IsMainFile
                       
                       Image = CatchImage( #PB_Any, *memory, ImageSize )
                       AddItem( *id, 0, PackEntryName.S, Image )
-                      SetItemData( *id, 0, Image )
+                      SetWidgetItemData( *id, 0, Image )
                       Image = #Null
                       
                     ElseIf FindStringWidget( PackEntryName, "window" )
@@ -212,7 +212,7 @@ CompilerIf #PB_Compiler_IsMainFile
                       
                       Image = CatchImage( #PB_Any, *memory, ImageSize )
                       AddItem( *id, -1, PackEntryName.S, Image )
-                      SetItemData( *id, CountItems( *id )-1, Image )
+                      SetWidgetItemData( *id, CountItems( *id )-1, Image )
                       Image = #Null
                     EndIf
                   EndIf    
@@ -224,7 +224,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ; select cursor
-        SetState( *id, 0 )
+        SetWidgetState( *id, 0 )
         ClosePack( ZipFile )
       EndIf
     EndIf
@@ -236,7 +236,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If *parent 
       class.s = LCase( Trim( class ) )
-      OpenWidgetList( *parent, GetState( *parent ) ) 
+      OpenWidgetList( *parent, GetWidgetState( *parent ) ) 
       
       If width < 5
         width = 100
@@ -301,33 +301,33 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         Class.s = "Form_"+GetWidgetClass( *new )+"_"+GetTypeCount( *new )
-        SetTextWidget( *new, class )
+        SetWidgetText( *new, class )
         
         
         ; get new add position & sublevel
-        Protected i, sublevel, countitems, position ;= GetData( *parent ) 
+        Protected i, sublevel, countitems, position ;= GetWidgetData( *parent ) 
         countitems = CountItems( id_inspector_tree )
         For i=0 To countitems - 1
           Position = (i+1)
           
-          If *parent = GetItemData(id_inspector_tree, i) 
-            SubLevel = GetItemAttribute(id_inspector_tree, i, #PB_Tree_SubLevel) + 1
+          If *parent = GetWidgetItemData(id_inspector_tree, i) 
+            SubLevel = GetWidgetItemAttribute(id_inspector_tree, i, #PB_Tree_SubLevel) + 1
             Continue
           EndIf
           
-          If SubLevel > GetItemAttribute(id_inspector_tree, i, #PB_Tree_SubLevel)
+          If SubLevel > GetWidgetItemAttribute(id_inspector_tree, i, #PB_Tree_SubLevel)
             Position = i
             Break
           EndIf
         Next 
         
         ; set new widget data
-        SetData( *new, position )
+        SetWidgetData( *new, position )
         
         ; update new widget data item
         If countitems > position
           For i = position To countitems - 1
-            SetData( GetItemData( id_inspector_tree, i ), i + 1 )
+            SetWidgetData( GetWidgetItemData( id_inspector_tree, i ), i + 1 )
           Next 
         EndIf
         
@@ -335,26 +335,26 @@ CompilerIf #PB_Compiler_IsMainFile
         Protected img =- 1
         countitems = CountItems( id_elements_tree )
         For i = 0 To countitems - 1
-          If LCase(StringField( Class, 2, "_" )) = LCase(GetItemTextWidget( id_elements_tree, i ))
-            img = GetItemData( id_elements_tree, i )
+          If LCase(StringField( Class, 2, "_" )) = LCase(GetWidgetItemText( id_elements_tree, i ))
+            img = GetWidgetItemData( id_elements_tree, i )
             Break
           EndIf
         Next  
         
         ; add to inspector
         AddItem( id_inspector_tree, position, class.s, img, sublevel )
-        SetItemData( id_inspector_tree, position, *new )
-        ; SetItemState( id_inspector_tree, position, #PB_tree_selected )
-        SetState( id_inspector_tree, position )
+        SetWidgetItemData( id_inspector_tree, position, *new )
+        ; SetWidgetItemState( id_inspector_tree, position, #PB_tree_selected )
+        SetWidgetState( id_inspector_tree, position )
         If IsImage(img)
           Protected ImageID = ImageID(img)
         EndIf
         
         If IsGadget( id_design_code ) 
           AddGadgetItem_( id_design_code, position, Class.s, ImageID, SubLevel )
-          SetGadgetItemData( id_design_code, position, *new )
-          ; SetGadgetItemState( id_design_code, position, #PB_tree_selected )
-          SetGadgetState_( id_design_code, position ) ; Bug
+          SetGadGetWidgetItemData( id_design_code, position, *new )
+          ; SetGadGetWidgetItemState( id_design_code, position, #PB_tree_selected )
+          SetGadGetWidgetState_( id_design_code, position ) ; Bug
         EndIf
         
       EndIf
@@ -658,18 +658,18 @@ CompilerIf #PB_Compiler_IsMainFile
         ; ;       Case #__event_Drop
         ; ;         If IsWidgetContainer( EventWidget )
         ; ;            ;Debug "DROP "+EventWidget( )\class  +" "+ WidgetEvent( ) 
-        ; ;           If GetState( id_elements_tree) <> 0 
+        ; ;           If GetWidgetState( id_elements_tree) <> 0 
         ; ;             Debug "create - drop"
-        ; ;             widget_add( EventWidget, GetTextWidget( id_elements_tree ), 
+        ; ;             widget_add( EventWidget, GetWidgetText( id_elements_tree ), 
         ; ;                         EventDropX( ), EventDropY( ), EventDropWidgetWidth( ), EventDropWidgetHeight( ) )
         ; ;             
         ; ;             ; end new create 
-        ; ;             SetState( id_elements_tree, 0 )
+        ; ;             SetWidgetState( id_elements_tree, 0 )
         ; ;           EndIf
         ; ;         EndIf
         
       Case #__event_DragStart
-        If GetState( id_elements_tree) > 0 
+        If GetWidgetState( id_elements_tree) > 0 
           If IsWidgetContainer( EventWidget )
             DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy )
           EndIf
@@ -680,12 +680,12 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #__event_Drop
         If IsWidgetContainer( EventWidget )
-          If GetState( id_elements_tree) > 0 
-            widget_add( EventWidget, GetTextWidget( id_elements_tree ), 
+          If GetWidgetState( id_elements_tree) > 0 
+            widget_add( EventWidget, GetWidgetText( id_elements_tree ), 
                         DropX( ), DropY( ), DropWidgetWidth( ), DropWidgetHeight( ) )
             
             ; end new create
-            SetState( id_elements_tree, 0 )
+            SetWidgetState( id_elements_tree, 0 )
           Else
             If SetParent( PressedWidget( ), EnteredWidget( ) )
               Debug "re-parent"
@@ -698,36 +698,36 @@ CompilerIf #PB_Compiler_IsMainFile
               ;               For i = 0 To countitems - 1
               ;                 Position = ( i+1 )
               ;                 
-              ;                 If *parent = GetItemData( id_inspector_tree, i ) 
-              ;                   SubLevel = GetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel ) + 1
+              ;                 If *parent = GetWidgetItemData( id_inspector_tree, i ) 
+              ;                   SubLevel = GetWidgetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel ) + 1
               ;                   Continue
               ;                 EndIf
               ;                 
-              ;                 If SubLevel > GetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel )
+              ;                 If SubLevel > GetWidgetItemAttribute( id_inspector_tree, i, #PB_Tree_SubLevel )
               ;                   Position = i
               ;                   Break
               ;                 EndIf
               ;               Next 
               ;               
               ;               ; set new widget data
-              ;               SetData( *new, position )
+              ;               SetWidgetData( *new, position )
               ;               
               ;               ; update new widget data item
               ;               If countitems > position
               ;                 For i = position To countitems - 1
-              ;                   SetData( GetItemData( id_inspector_tree, i ), i + 1 )
+              ;                   SetWidgetData( GetWidgetItemData( id_inspector_tree, i ), i + 1 )
               ;                 Next 
               ;               EndIf
               
-              position = GetData( *new )
-              SubLevel = GetItemAttribute( id_inspector_tree, Position, #PB_Tree_SubLevel )
+              position = GetWidgetData( *new )
+              SubLevel = GetWidgetItemAttribute( id_inspector_tree, Position, #PB_Tree_SubLevel )
               
-              position2 = GetData( *parent )
-              SubLevel2 = GetItemAttribute( id_inspector_tree, Position2, #PB_Tree_SubLevel )
+              position2 = GetWidgetData( *parent )
+              SubLevel2 = GetWidgetItemAttribute( id_inspector_tree, Position2, #PB_Tree_SubLevel )
               
               SubLevel = SubLevel2 + 1
               
-              SetItemAttribute( id_inspector_tree, Position, #PB_Tree_SubLevel, SubLevel )
+              SetWidgetItemAttribute( id_inspector_tree, Position, #PB_Tree_SubLevel, SubLevel )
 ;               
 ;               ; position = position2 + 1
               Protected *this._s_widget = id_inspector_tree
@@ -749,7 +749,7 @@ CompilerIf #PB_Compiler_IsMainFile
               
 ;               
 ;               If IsGadget( id_design_code )
-;                 SetGadgetItemAttribute( id_design_code, Position, #PB_Tree_SubLevel, *rows\sublevel )
+;                 SetGadGetWidgetItemAttribute( id_design_code, Position, #PB_Tree_SubLevel, *rows\sublevel )
 ;               EndIf
               ;;Tree_MoveItem( id_inspector_tree, position, SubLevel2, *parent_row )
             EndIf
@@ -758,10 +758,10 @@ CompilerIf #PB_Compiler_IsMainFile
         
         
         ;       Case #__event_LeftUp
-        ;         If GetState( id_elements_tree) <> 0 
+        ;         If GetWidgetState( id_elements_tree) <> 0 
         ;           Debug ""+mouse( )\x+" "+mouse( )\delta\x
-        ;           widget_add( EventWidget( ), GetTextWidget( id_elements_tree ), mouse( )\delta\x-X(EventWidget( ), #PB_Gadget_ContainerCoordinate), mouse( )\delta\y-Y(EventWidget( ), #PB_Gadget_ContainerCoordinate) )
-        ;            SetState( id_elements_tree, 0 )
+        ;           widget_add( EventWidget( ), GetWidgetText( id_elements_tree ), mouse( )\delta\x-X(EventWidget( ), #PB_Gadget_ContainerCoordinate), mouse( )\delta\y-Y(EventWidget( ), #PB_Gadget_ContainerCoordinate) )
+        ;            SetWidgetState( id_elements_tree, 0 )
         ;         EndIf
         
     EndSelect
@@ -787,7 +787,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;         DD_EventDragWidgetHeight( )
           
          ; a_transform( )\type = 0
-         ; DragCursor( ImageID( GetItemData( EventWidget, GetState( EventWidget ))))
+         ; DragCursor( ImageID( GetWidgetItemData( EventWidget, GetWidgetState( EventWidget ))))
           DragPrivate( #_DD_widget_new_create, #PB_Drag_Copy )
         EndIf
         
@@ -796,24 +796,24 @@ CompilerIf #PB_Compiler_IsMainFile
         If EventWidget = id_inspector_tree
           ClearDebugOutput()
           
-          *this = GetItemData( EventWidget, GetState( EventWidget ) )
+          *this = GetWidgetItemData( EventWidget, GetWidgetState( EventWidget ) )
           
           If a_set( *this )
           EndIf
           
-          ;;SetActive( *this )
+          ;;SetActiveWidget( *this )
         EndIf
         
         
     EndSelect
   EndProcedure
   
-  Procedure ide_OpenRootWidget( x=100,y=100,width=800,height=530 )
+  Procedure ide_OpenRoot( x=100,y=100,width=800,height=530 )
     ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
     ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
     
     Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-    Define root = widget::OpenRootWidget( 0, x,y,width,height, "ide", flag ) 
+    Define root = widget::OpenRoot( 0, x,y,width,height, "ide", flag ) 
     window_ide = widget::GetCanvasWindow( root )
     canvas_ide = widget::GetCanvasGadget( root )
     
@@ -863,7 +863,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;-
   CompilerIf #PB_Compiler_IsMainFile 
     Define event
-    ide_OpenRootWidget( )
+    ide_OpenRoot( )
     
     If id_elements_tree
       widget_images( id_elements_tree, GetCurrentDirectory( )+"Themes/" )

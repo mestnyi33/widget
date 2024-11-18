@@ -8,21 +8,21 @@ CompilerIf #PB_Compiler_IsMainFile
     If IsGadget(Gadget) 
       If state >= 0
         DisableGadget( Gadget, state )
-        SetGadgetData( Gadget, state )
+        SetWidgetData( Gadget, state )
       EndIf
       
-      ProcedureReturn GetGadgetData( Gadget )
+      ProcedureReturn GetGadGetWidgetData( Gadget )
     EndIf
   EndProcedure
   
   Procedure events( )
     Select EventGadget( ) 
       Case *item1
-        SetGadgetState( #CHILD, 0)
+        SetGadGetWidgetState( #CHILD, 0)
       Case *item2
-        SetGadgetState( #CHILD, 1)
+        SetGadGetWidgetState( #CHILD, 1)
       Case *item3
-        SetGadgetState( #CHILD, 2)
+        SetGadGetWidgetState( #CHILD, 2)
         
       Case *enable
         Debug "enable"
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case *LIST
         Select EventType( )
           Case #PB_EventType_LeftClick
-            Select GetGadgetState( *LIST )
+            Select GetGadGetWidgetState( *LIST )
               Case  1: ButtonGadget( #CHILD,30,20,150,30,"Buttongadget" ) 
               Case  2: StringGadget( #CHILD,30,20,150,30,"Stringgadget" ) 
               Case  3: TextGadget( #CHILD,30,20,150,30,"Textgadget", #PB_Text_Border ) 
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
               Case  5: CheckBoxGadget( #CHILD,30,20,150,30,"CheckBoxgadget" ) 
               Case  6: ListViewGadget( #CHILD,30,20,150,30 ) 
               Case  7: FrameGadget( #CHILD,30,20,150,30,"Framegadget" ) 
-              Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadgetState( #CHILD,0 )
+              Case  8: ComboBoxGadget( #CHILD,30,20,150,30 ): AddGadgetItem( #CHILD,-1,"ComboBoxgadget" ): SetGadGetWidgetState( #CHILD,0 )
               Case  9: ImageGadget( #CHILD,30,20,150,30,0,#PB_Image_Border ) 
               Case 10: HyperLinkGadget( #CHILD,30,20,150,30,"HyperLinkgadget",0 ) 
               Case 11: ContainerGadget( #CHILD,30,20,150,30,#PB_Container_Flat ): ButtonGadget( -1,0,0,80,20,"Buttongadget" ): CloseGadgetList( ) ; Containergadget
@@ -79,14 +79,14 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
             
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-              Select GetGadgetState( *LIST )
+              Select GetGadGetWidgetState( *LIST )
                 Case 30: MDIGadget( #CHILD,30,10,150,70,0,0 )
                 Case 31: InitScintilla( ): ScintillaGadget( #CHILD,30,10,150,70,0 )
                 Case 32: ShortcutGadget( #CHILD,30,10,150,70,0 )
                 Case 33: CanvasGadget( #CHILD,30,10,150,70 ) 
               EndSelect
             CompilerElse
-              Select GetGadgetState( *LIST )
+              Select GetGadGetWidgetState( *LIST )
                 Case 30: InitScintilla( ): ScintillaGadget( #CHILD,30,10,150,70,0 )
                 Case 31: ShortcutGadget( #CHILD,30,10,150,70,0 )
                 Case 32: CanvasGadget( #CHILD,30,10,150,70 ) 
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
     EndSelect
     
-     Debug " active - "+GetActiveGadget( )
+     Debug " active - "+GetActiveWidgetGadget( )
   EndProcedure
   
   If OpenWindow(#PB_Any, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -157,7 +157,7 @@ ListViewGadget( *LIST,300,10,150,180 )
   AddGadgetItem( *LIST, -1, "Shortcutgadget" )  
   AddGadgetItem( *LIST, -1, "Canvasgadget" )    
   
-  SetGadgetState( *LIST, #PB_GadgetType_Button );:  PostEvent( #PB_Event_gadget, #CHILD, *LIST, #PB_EventType_Change )
+  SetGadGetWidgetState( *LIST, #PB_GadgetType_Button );:  PostEvent( #PB_Event_gadget, #CHILD, *LIST, #PB_EventType_Change )
   ButtonGadget( #CHILD, 10,40, 280, 150,"Button") 
     Disable( #CHILD, 1 )
     Disable( *disable, 1 )

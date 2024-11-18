@@ -20,10 +20,10 @@ CompilerIf #PB_Compiler_IsMainFile
     If flag & #PB_String_BorderLess = 0
       SetWidgetFrame(widget( ), 1)
     EndIf
-    ; EditorWidget(x,y,width,height, flag) : setTextWidget(widget(), text)
+    ; EditorWidget(x,y,width,height, flag) : SetWidgetText(widget(), text)
   EndMacro
   
- If OpenRootWidget(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+ If OpenRoot(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define x=300
     Define height, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
     
@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
       height = 20
       LoadFont(0, "monospace", 9)
-      SetGadgetFont(-1,FontID(0))
+      SetGadGetWidgetFont(-1,FontID(0))
     CompilerEndIf
     
     ;\\
@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     StringGadget(7, 8,  200, 290, 100, Text)
     
-    SetGadgetTextWidget(6, "GaT")
+    SetGadGetWidgetText(6, "GaT")
     
     ;\\
     *S_0 = Create(0, x+8,  10, 290, height, "Normal StringGadget...")
@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *S_7 = Create(7, x+8,  200, 290, 100, Text)
     
-    SetTextWidget(*S_6, "GaT")
+    SetWidgetText(*S_6, "GaT")
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

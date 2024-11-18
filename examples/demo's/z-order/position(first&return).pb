@@ -180,14 +180,14 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget( OpenRootWidget(0, 10, 10) );, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget( OpenRoot(0, 10, 10) );, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *g0 = WindowWidget(10,10,200,200, "form_0", #PB_Window_SystemMenu) : SetWidgetClass(widget(), "form_0")
-  ButtonWidget(10,10,100,90,"button_0") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(30,30,100,90,"button_1") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(50,50,100,90,"button_2") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(70,70,100,90,"button_3") : SetWidgetClass(widget(), GetTextWidget(widget()))
-  ButtonWidget(90,90,100,90,"button_4") : SetWidgetClass(widget(), GetTextWidget(widget()))
+  ButtonWidget(10,10,100,90,"button_0") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(30,30,100,90,"button_1") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(50,50,100,90,"button_2") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(70,70,100,90,"button_3") : SetWidgetClass(widget(), GetWidgetText(widget()))
+  ButtonWidget(90,90,100,90,"button_4") : SetWidgetClass(widget(), GetWidgetText(widget()))
   
   ForEach widgets()
     If IsWidgetChild(widgets(), *g0)

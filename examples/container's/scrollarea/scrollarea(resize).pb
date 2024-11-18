@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define h = 185, bh = 20+9
   Define._s_widget *g1, *g2, *g3, *g4, *g5, *g6
   
-  If OpenRootWidget(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *g1 = ScrollAreaWidget(    30, 30, 200, h, 301,h-bh )
     ButtonWidget( 0,30,80,30, "button_1")
@@ -25,16 +25,16 @@ CompilerIf #PB_Compiler_IsMainFile
     *g5 = SplitterWidget(30,30,620,h, *g4,*g3, #PB_Splitter_Vertical)
     *g6 = SplitterWidget(30,30,620,h, *g5,#Null)
     
-    SetState(*g4, 200)
-    SetState(*g5, 200*2)
-    SetState(*g6, h)
-    ;SetState(*g4, 200) ; bug splitter
+    SetWidgetState(*g4, 200)
+    SetWidgetState(*g5, 200*2)
+    SetWidgetState(*g6, h)
+    ;SetWidgetState(*g4, 200) ; bug splitter
     
     Debug *g2\scroll\h\bar\page\end ;= 146
-    SetAttribute(*g2, #PB_ScrollArea_X, *g2\scroll\h\bar\page\end/2 )
-    SetAttribute(*g3, #PB_ScrollArea_X, *g3\scroll\h\bar\page\end )
+    SetWidgetAttribute(*g2, #PB_ScrollArea_X, *g2\scroll\h\bar\page\end/2 )
+    SetWidgetAttribute(*g3, #PB_ScrollArea_X, *g3\scroll\h\bar\page\end )
 
-    WaitCloseRootWidget( )
+    WaitCloseRoot( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)

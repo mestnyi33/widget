@@ -23,17 +23,17 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;         ;*g\bar\page\change = 0
 ; ;         ;*g\bar\thumb\change = 0
 ; ;      EndIf
-    x_0 = GetAttribute(*eWidget, #PB_ScrollArea_X)
-    y_0 = GetAttribute(*eWidget, #PB_ScrollArea_Y)
+    x_0 = GetWidgetAttribute(*eWidget, #PB_ScrollArea_X)
+    y_0 = GetWidgetAttribute(*eWidget, #PB_ScrollArea_Y)
     
     Select *eWidget 
     	Case *scroll1
-    		SetAttribute(*scroll2, #PB_ScrollArea_X, x_0)
-    		SetAttribute(*scroll2, #PB_ScrollArea_Y, y_0)
+    		SetWidgetAttribute(*scroll2, #PB_ScrollArea_X, x_0)
+    		SetWidgetAttribute(*scroll2, #PB_ScrollArea_Y, y_0)
     		
     	Case *scroll2
-    		SetAttribute(*scroll1, #PB_ScrollArea_X,x_0)
-    		SetAttribute(*scroll1, #PB_ScrollArea_Y,y_0) 
+    		SetWidgetAttribute(*scroll1, #PB_ScrollArea_X,x_0)
+    		SetWidgetAttribute(*scroll1, #PB_ScrollArea_Y,y_0) 
     		
     EndSelect
     
@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define imgw = ImageWidth(0)
   Define imgh = ImageHeight(0)
   
-  OpenRootWidget(0, 0, 0, 500, 430,"demonstration of how to sync two scroll area bars", #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
+  OpenRoot(0, 0, 0, 500, 430,"demonstration of how to sync two scroll area bars", #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   *scroll1 = ScrollAreaWidget(10, 10, 480,200, 2000, 2000, 1, #PB_ScrollArea_Flat|#PB_ScrollArea_Center)
   ButtonWidget(0,0,imgw,imgh, "", 0,0)
   ButtonWidget(imgw,imgh,2000-imgw*2,2000-imgh*2, "")
@@ -62,8 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   SplitterWidget( 10, 10, 480, 410, *scroll1,*scroll2 )
   
-;    SetState( *scroll1\scroll\v, *scroll1\scroll\v\bar\max )
-;    SetState( *scroll1\scroll\h, *scroll1\scroll\h\bar\max )
+;    SetWidgetState( *scroll1\scroll\v, *scroll1\scroll\v\bar\max )
+;    SetWidgetState( *scroll1\scroll\h, *scroll1\scroll\h\bar\max )
   
 ;   *g = *scroll1\scroll\v
 ;   

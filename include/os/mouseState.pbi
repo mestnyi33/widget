@@ -6,7 +6,7 @@ Enumeration #PB_EventType_FirstCustomValue
   #PB_eventtype_Left3Click
 EndEnumeration
 
-Procedure SetGadgetState_(gadget, state)
+Procedure SetGadGetWidgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
        ; ExplorerListGadget, ListIconGadget и ListViewGadget — все три построены на одном и том же классе Cocoa (NSTableView).
@@ -32,7 +32,7 @@ Procedure SetGadgetState_(gadget, state)
 				gtk_adjustment_value_changed_(*Adjustment)
 		CompilerEndSelect 
 		
-    SetGadgetState(gadget, state)
+    SetGadGetWidgetState(gadget, state)
   EndProcedure
   
   Procedure DoEvents( EventType )
@@ -47,7 +47,7 @@ Procedure SetGadgetState_(gadget, state)
   EndSelect
   
   If result
-    SetGadgetState(w_flag, CountGadgetItems(w_flag) - 1)
+    SetGadGetWidgetState(w_flag, CountGadgetItems(w_flag) - 1)
   EndIf
 EndProcedure
 

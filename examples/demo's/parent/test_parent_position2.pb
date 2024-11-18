@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-   If OpenRootWidget(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If OpenRoot(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       ;ButtonWidget(10,10,80,20,"((0>>))") : SetWidgetClass(widget(), "((0>>))") 
       *CHILD1 = ButtonWidget(10,10,80,20,"((1>>))") : SetWidgetClass(widget(), "((1>>))") 
       *CHILD2 = ButtonWidget(10,30,80,20,"((2>>))") : SetWidgetClass(widget(), "((2>>))") 
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Show_DEBUG()
       
       
-      WaitCloseRootWidget()
+      WaitCloseRoot()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

@@ -46,24 +46,24 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventWidget()
           Case *this
             If Flag(*this, #__flag_ButtonToggle)
-              SetState(f_4, GetState(EventWidget()))
+              SetWidgetState(f_4, GetWidgetState(EventWidget()))
             EndIf
             
           Case Button_type 
-            If GetState(EventWidget())
+            If GetWidgetState(EventWidget())
               Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
-                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
+                SetWidgetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
               EndIf
-              SetTextWidget(EventWidget(), "widget")
+              SetWidgetText(EventWidget(), "widget")
             Else
               Hide(*this, 0)
               HideGadget(gadget, 1)
               If Splitter_0
-                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
+                SetWidgetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
               EndIf
-              SetTextWidget(EventWidget(), "gadget")
+              SetWidgetText(EventWidget(), "gadget")
             EndIf
             
           Case f_0 : flag = #__flag_ButtonDefault
@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case f_4 : flag = #__flag_ButtonToggle
             
           Case f_5 : flag = #__flag_Texttop
-            ;SetState(f_6, 0)
+            ;SetWidgetState(f_6, 0)
           Case f_2 : flag = #__flag_Textleft
           Case f_3 : flag = #__flag_Textright
           Case f_6 : flag = #__flag_Textbottom
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(EventWidget()))
+          Flag(*this, flag, GetWidgetState(EventWidget()))
         EndIf
         
         ; PostCanvasRepaint( *this\root )
@@ -89,7 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If OpenRootWidget(0, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenRoot(0, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 ;     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget,1)
     *this = widget::Image(100, 100, 250, 250, get_image())
     
@@ -122,11 +122,11 @@ CompilerIf #PB_Compiler_IsMainFile
     BindWidgetEvent(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(f_1, Flag(*this, #__flag_Textmultiline))
-    SetState(f_5, Flag(*this, #__flag_Texttop))
-    SetState(f_2, Flag(*this, #__flag_Textleft))
-    SetState(f_3, Flag(*this, #__flag_Textright))
-    SetState(f_6, Flag(*this, #__flag_Textbottom))
+    SetWidgetState(f_1, Flag(*this, #__flag_Textmultiline))
+    SetWidgetState(f_5, Flag(*this, #__flag_Texttop))
+    SetWidgetState(f_2, Flag(*this, #__flag_Textleft))
+    SetWidgetState(f_3, Flag(*this, #__flag_Textright))
+    SetWidgetState(f_6, Flag(*this, #__flag_Textbottom))
     
     If Button_type
        Hide(Button_type, 1)
@@ -138,10 +138,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_3 = widget::SplitterWidget(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
     Define pos = 80
-    SetState(Splitter_0, pos)
-    SetState(Splitter_1, pos)
-    SetState(Splitter_3, width-pos-#__splittersize)
-    SetState(Splitter_2, height-pos-#__splittersize)
+    SetWidgetState(Splitter_0, pos)
+    SetWidgetState(Splitter_1, pos)
+    SetWidgetState(Splitter_3, width-pos-#__splittersize)
+    SetWidgetState(Splitter_2, height-pos-#__splittersize)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

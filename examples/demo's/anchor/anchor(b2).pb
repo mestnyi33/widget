@@ -17,7 +17,7 @@ Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   EndIf    
 EndProcedure
 
-If OpenRootWidget(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+If OpenRoot(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;
   a_init(root( ), 0)
   ;SetWidgetColor(root( ), #__color_back, RGBA(128, 192, 64, alpha))
@@ -63,7 +63,7 @@ If OpenRootWidget(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different hand
 ;   ; SetCursorSelectionStyle(#Canvas, #SelectionStyle_Solid|#SelectionStyle_Partially, RGBA(0, 128, 255, 255), 3, RGBA(0, 128, 255, 50)) 
 
   ;
-  WaitCloseRootWidget( )
+  WaitCloseRoot( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 9

@@ -42,7 +42,7 @@ Procedure events( )
         ; хочет начать тащить его. Мы сохраняем этот элемент для последующего использования и
         ; начать нашу частную перетаскивание
         ;
-        SourceItem = GetState(*Panel)
+        SourceItem = GetWidgetState(*Panel)
         DragPrivate(#PrivateType, #PB_Drag_Move)
         
       Case #PB_EventType_Drop 
@@ -54,7 +54,7 @@ Procedure events( )
         ; особенно если в вашей программе есть несколько элементов Drag & Drop.
         ;
         If EventDropType( ) = #PB_Drop_Private And EventDropPrivate( ) = #PrivateType
-          TargetItem = GetState(*Panel)        
+          TargetItem = GetWidgetState(*Panel)        
           
           ; nothing to do if source and target are equal
           ;
@@ -73,11 +73,11 @@ Procedure events( )
               TargetItem  = CountItems + 1
               TargetLevel = 0
               
-            ElseIf Left( GetItemTextWidget(*Panel, TargetItem), 4 ) = "Item"      
+            ElseIf Left( GetWidgetItemText(*Panel, TargetItem), 4 ) = "Item"      
               ; if dropped on an "Item", move right after this item
               ;
               ; если упал на «предмет», переместиться сразу после этого предмета
-              TargetLevel = GetItemAttribute(*Panel, TargetItem, #PB_Item_SubLevel)
+              TargetLevel = GetWidgetItemAttribute(*Panel, TargetItem, #PB_Item_SubLevel)
               TargetItem  + 1
               
             Else
@@ -86,9 +86,9 @@ Procedure events( )
               ;
               ; если вы попали в «Каталог», перейдите в каталог и в его конец
               ; все это можно легко сделать, изучив подуровень
-              TargetLevel = GetItemAttribute(*Panel, TargetItem, #PB_Item_Sublevel) + 1
+              TargetLevel = GetWidgetItemAttribute(*Panel, TargetItem, #PB_Item_Sublevel) + 1
               TargetItem + 1
-              While GetItemAttribute(*Panel, TargetItem, #PB_Item_Sublevel) >= TargetLevel
+              While GetWidgetItemAttribute(*Panel, TargetItem, #PB_Item_Sublevel) >= TargetLevel
                 TargetItem + 1
               Wend
             EndIf
@@ -105,10 +105,10 @@ Procedure events( )
             ;
             ; дочерние узлы следуют непосредственно за узлами с более высоким уровнем
             ;
-            SourceLevel = GetItemAttribute(*Panel, SourceItem, #PB_Item_Sublevel)          
+            SourceLevel = GetWidgetItemAttribute(*Panel, SourceItem, #PB_Item_Sublevel)          
             ChildCount  = 0
             For i = SourceItem+1 To CountItems
-              If GetItemAttribute(*Panel, i, #PB_Item_Sublevel) > SourceLevel 
+              If GetWidgetItemAttribute(*Panel, i, #PB_Item_Sublevel) > SourceLevel 
                 ChildCount + 1
               Else
                 Break
@@ -140,11 +140,11 @@ Procedure events( )
               ; затронуты добавлением новых элементов в этом случае...
               ;
               For i = 0 To ChildCount  
-                ; copy everything here (also colors and GetItemData() etc if you use that)                
+                ; copy everything here (also colors and GetWidgetItemData() etc if you use that)                
                 ;
-                ; скопируйте все сюда (также цвета и GetItemData() и т. д., если вы используете это)
-                Text$ = GetItemTextWidget(*Panel, SourceItem+i)              
-                Level = GetItemAttribute(*Panel, SourceItem+i, #PB_Item_Sublevel) - SourceLevel + TargetLevel
+                ; скопируйте все сюда (также цвета и GetWidgetItemData() и т. д., если вы используете это)
+                Text$ = GetWidgetItemText(*Panel, SourceItem+i)              
+                Level = GetWidgetItemAttribute(*Panel, SourceItem+i, #PB_Item_Sublevel) - SourceLevel + TargetLevel
                 AddItem(*Panel, TargetItem+i, Text$, 0, Level)              
               Next i
               
@@ -156,7 +156,7 @@ Procedure events( )
               ; Это должно быть в отдельном цикле, иначе "расширенное" состояние элементов
               ; не сохраняется, так как дочерние элементы еще не были добавлены в указанный выше цикл.
               For i = 0 To ChildCount
-                SetItemState(*Panel, TargetItem+i, GetItemState(*Panel, SourceItem+i))
+                SetWidgetItemState(*Panel, TargetItem+i, GetWidgetItemState(*Panel, SourceItem+i))
               Next i
               
               ; remove the source item. This automatically removes all children as well.
@@ -168,7 +168,7 @@ Procedure events( )
               ;
               ; выберите цель. Обратите внимание, что индекс теперь меньше на «ChildCount+1».
               ; из-за удаления источника, который был до цели
-              SetState(*Panel, TargetItem - ChildCount - 1)
+              SetWidgetState(*Panel, TargetItem - ChildCount - 1)
               
             ElseIf TargetItem <= SourceItem
               ; 
@@ -181,8 +181,8 @@ Procedure events( )
               ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
               ;
               For i = 0 To ChildCount
-                Text$ = GetItemTextWidget(*Panel, SourceItem+i*2)
-                Level = GetItemAttribute(*Panel, SourceItem+i*2, #PB_Item_Sublevel) - SourceLevel + TargetLevel
+                Text$ = GetWidgetItemText(*Panel, SourceItem+i*2)
+                Level = GetWidgetItemAttribute(*Panel, SourceItem+i*2, #PB_Item_Sublevel) - SourceLevel + TargetLevel
                 AddItem(*Panel, TargetItem+i, Text$, 0, Level)
               Next i
               
@@ -193,14 +193,14 @@ Procedure events( )
               ; 'ChildCount+1' больше, чем раньше, из-за добавленных целей
               ;
               For i = 0 To ChildCount
-                SetItemState(*Panel, TargetItem+i, GetItemState(*Panel, SourceItem+ChildCount+1+i))
+                SetWidgetItemState(*Panel, TargetItem+i, GetWidgetItemState(*Panel, SourceItem+ChildCount+1+i))
               Next i            
               
               ; remove source and select target. Here the target index is not affected by the remove as it is lower
               ;
               ; удалить источник и выбрать цель. Здесь целевой индекс не затрагивается удалением, так как он ниже
               RemoveItem(*Panel, SourceItem+ChildCount+1)          
-              SetState(*Panel, TargetItem)
+              SetWidgetState(*Panel, TargetItem)
               
             EndIf
             
@@ -213,7 +213,7 @@ Procedure events( )
   
 EndProcedure
 
-If OpenRootWidget(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
+If OpenRoot(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
   *Panel = PanelWidget( 10, 10, 280, 480)
   
   ; Add some items. We will be able to move items into the

@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *window
   
-    OpenRootWidget(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
+    OpenRoot(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
   Define *root._S_root = root()
   Define *widget._S_WIDGET
   
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
     
   
-  WaitCloseRootWidget()
+  WaitCloseRoot()
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 36

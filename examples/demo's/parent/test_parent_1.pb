@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-   If OpenRootWidget( 0, 100, 100, 470, 200, " CONT1 set in CONT2 and return in ROOT", #PB_Window_SystemMenu )
+   If OpenRoot( 0, 100, 100, 470, 200, " CONT1 set in CONT2 and return in ROOT", #PB_Window_SystemMenu )
       a_init(root())
       ;
       *CONT2 = ContainerWidget( 220, 10, 200, 150) : SetWidgetClass(widget( ), "CONT2" ) 
@@ -70,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       <<----
 
 
-      WaitCloseRootWidget( )
+      WaitCloseRoot( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)

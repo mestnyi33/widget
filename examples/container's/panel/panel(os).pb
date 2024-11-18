@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;   Procedure events_widget( )
    ;     
-   ;     Select GetTextWidget( EventWidget( ) )
+   ;     Select GetWidgetText( EventWidget( ) )
    ;       Case "Top"
    ;         BarPositon_( *panel, 2 )
    ;       Case "Left"
@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_gadget( )
       
-      Select GetGadgetTextWidget( EventGadget( ) )
+      Select GetGadGetWidgetText( EventGadget( ) )
          Case "Top"
             GadgetBarPositon_( 0, 2 )
             BarPositon_( *panel, 2 )
@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   OpenRootWidget(0, 270, 100, 600, 310, "Change tab location")
+   OpenRoot(0, 270, 100, 600, 310, "Change tab location")
    ;a_init(root(),0)
    SetWidgetColor(root(), #__color_back, $FFF2F2F2)
    
@@ -113,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
    OptionGadget(13, 130, GadgetY(1) + 45, 80, 20, "Hide")
    OptionGadget(4, 130, GadgetY(1) + 70, 80, 20, "Bottom")
    OptionGadget(5, 210, GadgetY(1) + 45, 80, 20, "Right")
-   SetGadgetState(2, #True)
+   SetGadGetWidgetState(2, #True)
    
    BindGadgetEvent(2, @events_gadget( ), #PB_EventType_LeftClick )
    BindGadgetEvent(3, @events_gadget( ), #PB_EventType_LeftClick )
@@ -133,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetWidgetColor(*panel, #__color_back, $FFAFF8FF)
    SetGadGetWidgetColor(0, #PB_Gadget_BackColor, $FFAFF8FF)
    
-   ;SetState(*panel, -1)
+   ;SetWidgetState(*panel, -1)
    
    ;   FrameWidget(300+30, 200, 300 - 60, 100, "Tab location")
    ;   *option = OptionWidget(300+130, GadgetY(1) + 20, 80, 20, "Top")
@@ -141,7 +141,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   OptionWidget(300+130, GadgetY(1) + 45, 80, 20, "Hide")
    ;   OptionWidget(300+130, GadgetY(1) + 70, 80, 20, "Bottom")
    ;   OptionWidget(300+210, GadgetY(1) + 45, 80, 20, "Right")
-   ;   SetState(*option, #True)
+   ;   SetWidgetState(*option, #True)
    ;   BindWidgetEvent( #PB_All, @events_widget( ), #PB_EventType_Change )
    
    

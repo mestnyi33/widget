@@ -60,7 +60,7 @@ Debug constants::BinaryFlag( flags, #__flag_Textbottom )
 
 ; FromPBFlag( Type, Flag.q )
 
-Procedure Flag_TextWidget( *this._s_WIDGET, flag.q )
+Procedure Flag_Text( *this._s_WIDGET, flag.q )
   ;                           windows ; macos ; linux
   ;   Debug  #PB_Text_Center ; 1      ;               ; The text is centered in the gadget.
   ;   Debug  #PB_Text_Right  ; 2      ;               ; The text is right aligned.

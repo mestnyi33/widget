@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent( )
       Case #PB_EventType_LeftClick
         
-        Select GetTextWidget( EventWidget( ) )
+        Select GetWidgetText( EventWidget( ) )
           Case "hide_2"
             Hide(*c, 1)
             ; Disable(*c, 1)
@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If OpenWindow(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    OpenRootWidget(3)
+    OpenRoot(3)
      
      ;ButtonWidget(10,5,50,35, "butt")
      
@@ -117,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonWidget( 15, 5, 80, 22, "кнопка 15")
       ButtonWidget( 20, 30, 80, 22, "кнопка 20")
       CloseWidgetList()
-      SetState(*w2, 4)
+      SetWidgetState(*w2, 4)
       
       AddItem(*w1, -1, "Под-Панель 5")
       
@@ -133,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       BindWidgetEvent(@Events(), *w)
       ;       BindWidgetEvent(@Events(), *w1)
       ;       BindWidgetEvent(@Events(), *w2)
-      SetState(*w1, 3)
+      SetWidgetState(*w1, 3)
       
     Repeat
       Define Event = WaitWindowEvent()
