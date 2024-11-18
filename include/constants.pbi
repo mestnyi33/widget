@@ -279,7 +279,7 @@
     #__type_Message       = - 3
     #__type_PopupMenu     = - 4
     #__type_Menu          = - 5
-    #__type_Tool       = - 6
+    #__type_Tool          = - 6
     #__type_Tab           = - 7
     #__type_StatusBar     = - 8
     #__type_Properties    = - 9
@@ -686,8 +686,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 281
-; FirstLine = 267
+; CursorPosition = 279
+; FirstLine = 275
 ; Folding = ----
 ; Optimizer
 ; EnableXP

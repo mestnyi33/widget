@@ -250,7 +250,7 @@ Procedure PropertiesEvents( )
    EndSelect
 EndProcedure
 
-Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, type=-1, mode=0 )
+Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    
@@ -262,7 +262,7 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, type=-1, mode=0 
    item = CountItems( *first ) - 1
    Protected flag ;= #__flag_child
    
-   Select type
+   Select Type
       Case #__type_Spin
          *this = Create( *second, #PB_Compiler_Procedure, #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__buttonsize, 0, 1 )
          SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
@@ -286,12 +286,12 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, type=-1, mode=0 
    SetItemData(*second, item, *this)
 EndProcedure
 
-Procedure CreateProperties( x,y,width,height, flag=0 )
+Procedure CreateProperties( X,Y,Width,Height, flag=0 )
    Protected position = 70
    Protected *first._s_WIDGET = Tree(0,0,0,0)
    Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines)
    
-   Protected *splitter._s_WIDGET = Splitter(x,y,width,height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
+   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    ;SetState(*splitter, width-position )
    
@@ -379,7 +379,7 @@ EndMacro
 Procedure.s FlagFromFlag( Type, flag.i ) ; 
    Protected flags.S
    
-   Select type
+   Select Type
       Case #__Type_Text
          If flag & #__flag_TextCenter
             flags + "#PB_Text_Center | "
@@ -586,7 +586,7 @@ Macro widget_paste( )
    ;a_update( a_focused( ) )
 EndMacro
 
-Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, height.l=#PB_Ignore )
+Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
    Protected *new._s_widget, *param1, *param2, *param3
    Protected is_window.b, flag.i 
    Protected newClass.s
@@ -600,25 +600,25 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
          class = "container" Or
          class = "panel"
          
-         If width = #PB_Ignore
-            width = 200
+         If Width = #PB_Ignore
+            Width = 200
          EndIf
-         If height = #PB_Ignore
-            height = 150
+         If Height = #PB_Ignore
+            Height = 150
          EndIf
          
          If class = "scrollarea"
-            *param1 = width
-            *param2 = height
+            *param1 = Width
+            *param2 = Height
             *param3 = 5
          EndIf
          
       Else
-         If width = #PB_Ignore
-            width = 100
+         If Width = #PB_Ignore
+            Width = 100
          EndIf
-         If height = #PB_Ignore
-            height = 30
+         If Height = #PB_Ignore
+            Height = 30
          EndIf
       EndIf
       
@@ -628,10 +628,10 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
             is_window = #True
             If Type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag )
-               Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
+               Resize( *new, #PB_Ignore, #PB_Ignore, Width,Height )
             Else
                flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
-               *new = Window( x,y,width,height, "", flag, *parent )
+               *new = Window( X,Y,Width,Height, "", flag, *parent )
             EndIf
             
             SetColor( *new, #__color_back, $FFECECEC )
@@ -647,24 +647,24 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
             SetClass( *new, UlCase(class))
             
          Case "container"   
-            *new = Container( x,y,width,height, flag ) : CloseList( )
+            *new = Container( X,Y,Width,Height, flag ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "panel"       
-            *new = Panel( x,y,width,height, flag ) : AddItem( *new, -1, class+"_item_0" ) : CloseList( )
+            *new = Panel( X,Y,Width,Height, flag ) : AddItem( *new, -1, class+"_item_0" ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "scrollarea"  
-            *new = ScrollArea( x,y,width,height, *param1, *param2, *param3, flag ) : CloseList( )
+            *new = ScrollArea( X,Y,Width,Height, *param1, *param2, *param3, flag ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
             
-         Case "splitter"    : *new = Splitter( x,y,width,height, *param1, *param2, flag )
-         Case "image"       : *new = Image( x,y,width,height, img, flag )
-         Case "buttonimage" : *new = ButtonImage( x,y,width,height, img, flag )
-         Case "progress"    : *new = Progress( x,y,width,height, 0,100, flag ) 
-         Case "button"      : *new = Button( x,y,width,height, "", flag ) 
-         Case "string"      : *new = String( x,y,width,height, "", flag )
-         Case "text"        : *new = Text( x,y,width,height, "", flag )
+         Case "splitter"    : *new = Splitter( X,Y,Width,Height, *param1, *param2, flag )
+         Case "image"       : *new = Image( X,Y,Width,Height, img, flag )
+         Case "buttonimage" : *new = ButtonImage( X,Y,Width,Height, img, flag )
+         Case "progress"    : *new = Progress( X,Y,Width,Height, 0,100, flag ) 
+         Case "button"      : *new = Button( X,Y,Width,Height, "", flag ) 
+         Case "string"      : *new = String( X,Y,Width,Height, "", flag )
+         Case "text"        : *new = Text( X,Y,Width,Height, "", flag )
       EndSelect
       
       If *new
@@ -696,9 +696,9 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
          EndIf
          ;
          ; get new add position & sublevel
-         Protected i, countitems, sublevel, position = GetData( *parent ) 
-         countitems = CountItems( ide_inspector_view )
-         For i = 0 To countitems - 1
+         Protected i, CountItems, sublevel, position = GetData( *parent ) 
+         CountItems = CountItems( ide_inspector_view )
+         For i = 0 To CountItems - 1
             Position = ( i+1 )
             
             If *parent = GetItemData( ide_inspector_view, i ) 
@@ -716,16 +716,16 @@ Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=#PB_Ignore, h
          SetData( *new, position )
          
          ; update new widget data item
-         If countitems > position
-            For i = position To countitems - 1
+         If CountItems > position
+            For i = position To CountItems - 1
                SetData( GetItemData( ide_inspector_view, i ), i + 1 )
             Next 
          EndIf
          
          ; get image associated with class
          Protected img =- 1
-         countitems = CountItems( ide_inspector_elements )
-         For i = 0 To countitems - 1
+         CountItems = CountItems( ide_inspector_elements )
+         For i = 0 To CountItems - 1
             If LCase(StringField( class.s, 1, "_" )) = LCase(GetItemText( ide_inspector_elements, i ))
                img = GetItemData( ide_inspector_elements, i )
                Break
@@ -1093,42 +1093,43 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
            #_tb_group_height
          
          ;\\ toolbar buttons events
-         move_x = mouse( )\selector\x - a_focused( )\x[#__c_inner]
-         move_y = mouse( )\selector\y - a_focused( )\y[#__c_inner]
-         
-         ForEach a_group( )
-            Select BarButton
-               Case #_tb_group_left ; left
-                                    ;mouse( )\selector\x = 0
-                  mouse( )\selector\width = 0
-                  Resize( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  
-               Case #_tb_group_right ; right
-                  mouse( )\selector\x = 0
-                  mouse( )\selector\width = 0
-                  Resize( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  
-               Case #_tb_group_top ; top
-                                   ;mouse( )\selector\y = 0
-                  mouse( )\selector\height = 0
-                  Resize( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
-                  
-               Case #_tb_group_bottom ; bottom
-                  mouse( )\selector\y = 0
-                  mouse( )\selector\height = 0
-                  Resize( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
-                  
-               Case #_tb_group_width ; stretch horizontal
-                  Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, mouse( )\selector\width, #PB_Ignore )
-                  
-               Case #_tb_group_height ; stretch vertical
-                  Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mouse( )\selector\height )
-                  
-            EndSelect
-         Next
-         
-         a_update( a_focused( ) )
-         
+         If mouse( )\selector
+            move_x = mouse( )\selector\x - a_focused( )\x[#__c_inner]
+            move_y = mouse( )\selector\y - a_focused( )\y[#__c_inner]
+            
+            ForEach a_group( )
+               Select BarButton
+                  Case #_tb_group_left ; left
+                                       ;mouse( )\selector\x = 0
+                     mouse( )\selector\width = 0
+                     Resize( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     
+                  Case #_tb_group_right ; right
+                     mouse( )\selector\x = 0
+                     mouse( )\selector\width = 0
+                     Resize( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     
+                  Case #_tb_group_top ; top
+                                      ;mouse( )\selector\y = 0
+                     mouse( )\selector\height = 0
+                     Resize( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
+                     
+                  Case #_tb_group_bottom ; bottom
+                     mouse( )\selector\y = 0
+                     mouse( )\selector\height = 0
+                     Resize( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
+                     
+                  Case #_tb_group_width ; stretch horizontal
+                     Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, mouse( )\selector\width, #PB_Ignore )
+                     
+                  Case #_tb_group_height ; stretch vertical
+                     Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mouse( )\selector\height )
+                     
+               EndSelect
+            Next
+            
+            a_update( a_focused( ) )
+         EndIf
          
          ;       Case #_tb_menu
          ;          DisplayPopupBar( *e_widget )
@@ -1642,8 +1643,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 832
-; FirstLine = 808
+; CursorPosition = 1096
+; FirstLine = 996
 ; Folding = ---d0------------------------
 ; EnableXP
 ; DPIAware
