@@ -589,7 +589,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro DoCurrentCursor( _this_, _cursor_, _data_=0 )
          If CurrentCursor( ) <> _cursor_
             CurrentCursor( ) = _cursor_
-            Debug " DoCurrentCursor( "+ _cursor_ +" ) " + _data_
+           ; Debug " DoCurrentCursor( "+ _cursor_ +" ) " + _data_
             DoEvents( _this_, #__event_Cursor, #PB_All, _data_ )
          EndIf
       EndMacro
@@ -20574,10 +20574,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                *tab = *this\TabEntered( )
                
                If *this\displaypopup ; *this\type = #__type_PopupMenu
-                                     ;                   If *this\menu
-                                     ;                      HidePopupBar( *this )
-                                     ;                      Send( *this, #__event_Change, *this\TabEntered( )\itemindex, *this\TabEntered( ) )
-                                     ;                   EndIf
                Else
                   ;\\
                   If *this\TabEntered( ) And *this\TabEntered( )\childrens 
@@ -21341,9 +21337,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          If eventtype = #PB_EventType_Focus
             If GetActive( )
                If EnteredWidget( )
-                  Debug "canvas - eFocus " + EnteredWidget( )\root\canvas\gadget + " " + eventgadget
-                  
-                  SetActive( EnteredWidget( ))
+                  If EnteredWidget( )\root\canvas\gadget = eventgadget
+                     Debug "canvas - eFocus " + EnteredWidget( )\root\canvas\gadget + " " + eventgadget
+                     
+                     SetActive( EnteredWidget( ))
+                  EndIf
                Else
                   PushMapPosition( roots( ) )
                   ForEach roots( )
@@ -21373,7 +21371,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If eventtype = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            Debug "resize - canvas ["+eventgadget+"]"
+            ; Debug "resize - canvas ["+eventgadget+"]"
+            
             ; ;               *root = root( )
             ;PushMapPosition( roots( ) )
             If Not ( root( ) And root( )\canvas\gadget = eventgadget )
@@ -24288,8 +24287,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20603
-; FirstLine = 20064
+; CursorPosition = 20576
+; FirstLine = 20023
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P9f-------------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP

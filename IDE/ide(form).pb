@@ -1216,8 +1216,8 @@ Procedure ide_events( )
          
          If *e_widget = ide_design_code
             Protected q, startpos, stoppos
-            Protected x = #PB_Ignore, y = #PB_Ignore
-            Protected width = #PB_Ignore, height = #PB_Ignore
+            Protected X = #PB_Ignore, Y = #PB_Ignore
+            Protected Width = #PB_Ignore, Height = #PB_Ignore
             
             Protected findstring.s = Left( *e_widget\text\string, *e_widget\text\caret\pos )
             Protected countstring = CountString( findstring, "," )
@@ -1249,16 +1249,16 @@ Procedure ide_events( )
                         SetText( a_focused( ), findstring )
                      Else
                         If countstring = 0
-                           x = Val( findstring )
+                           X = Val( findstring )
                         ElseIf countstring = 1
-                           y = Val( findstring )
+                           Y = Val( findstring )
                         ElseIf countstring = 2
-                           width = Val( findstring )
+                           Width = Val( findstring )
                         ElseIf countstring = 3
-                           height = Val( findstring )
+                           Height = Val( findstring )
                         EndIf
                         
-                        Resize( a_focused( ), x, y, width, height)
+                        Resize( a_focused( ), X, Y, Width, Height)
                      EndIf
                      
                   EndIf
@@ -1268,27 +1268,27 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_LeftClick
-         ide_menu_events( *e_widget, WidgetEventItem( ) )
+         ; ide_menu_events( *e_widget, WidgetEventItem( ) )
          
-         ;          If Type( *e_widget ) = #__type_Tool
-         ;             If *e_widget\EnteredTab( )
-         ;                ide_menu_events( *e_widget, *e_widget\EnteredTab( )\itemindex )
-         ;             EndIf
-         ;          Else
-         ;             If getclass( *e_widget ) = "ToolBar"
-         ;                ide_menu_events( *e_widget, GetData( *e_widget ) )
-         ;             EndIf
-         ;          EndIf
+         If Type( *e_widget ) = #__type_Tool
+            If *e_widget\TabEntered( )
+               ide_menu_events( *e_widget, *e_widget\TabEntered( )\itemindex )
+            EndIf
+         Else
+            If GetClass( *e_widget ) = "ToolBar"
+               ide_menu_events( *e_widget, GetData( *e_widget ) )
+            EndIf
+         EndIf
          
    EndSelect
 EndProcedure
 
-Procedure ide_open( x=100,y=100,width=850,height=600 )
+Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
    
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-   ide_root = Open( 1, x,y,width,height, "ide", flag ) 
+   ide_root = Open( 1, X,Y,Width,Height, "ide", flag ) 
    ide_window = GetCanvasWindow( ide_root )
    ide_g_canvas = GetCanvasGadget( ide_root )
    
@@ -1643,8 +1643,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1096
-; FirstLine = 996
+; CursorPosition = 1274
+; FirstLine = 1240
 ; Folding = ---d0------------------------
 ; EnableXP
 ; DPIAware

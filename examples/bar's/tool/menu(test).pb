@@ -55,7 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Define WindowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    ;\\
    ; Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
-   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   *menu = CreateBar( root( ) ) 
+   SetClass(widget( )\root, "mainroot" )
    
    ;\\
    BarTitle("Title-1")
@@ -122,8 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 17
+; CursorPosition = 58
+; FirstLine = 49
 ; Folding = -
 ; EnableXP
 ; DPIAware
