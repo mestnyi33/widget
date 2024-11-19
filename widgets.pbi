@@ -135,10 +135,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_atpoint
       Global test_event_entered
       
+      Global test_focus_set = 0
+      Global test_focus_show = 0
+      
       Global test_event_send = 0
       Global test_event_resize
-      Global test_event_focus
-      Global test_focus_show = 0
       Global test_event_canvas
       
       Global test_redraw_items = 1
@@ -7609,7 +7610,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\ set deactive all parents
                   If *deactiveWindow\root\focus = 2
                      *deactiveWindow\root\focus = 3
-                     Debug "Deactive canvas&root( ) "+*deactiveWindow\root\class
+                     If test_focus_set
+                        Debug "Deactive canvas&root( ) "+*deactiveWindow\root\class
+                     EndIf
                      ;
                      DoFocus( *deactiveWindow\root, #__event_LostFocus )
                   EndIf
@@ -7625,7 +7628,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  If IsChild( *deactive, widgets( ) )
                                     If widgets( )\focus = 2
                                        widgets( )\focus = 3
-                                       Debug "Deactive canvas&widget( ) "+widgets( )\class
+                                       If test_focus_set
+                                         Debug "Deactive canvas&widget( ) "+widgets( )\class
+                                       EndIf
                                        ;
                                        DoFocus( widgets( ), #__event_LostFocus )
                                     EndIf
@@ -7639,16 +7644,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   If *deactiveWindow\focus = 2
                      *deactiveWindow\focus = 3
+                     If test_focus_set
                      Debug "Deactive canvas&widgetwindow "+*deactiveWindow\class
-                     ;
+                  EndIf
+                  ;
                      DoFocus( *deactiveWindow, #__event_LostFocus )
                   EndIf
                   
                   If *deactiveGadget And
                      *deactiveGadget\focus = 2
                      *deactiveGadget\focus = 3
+                     If test_focus_set
                      Debug "Deactive canvas&widgetgadget "+*deactiveGadget\class
-                     ;
+                  EndIf
+                  ;
                      DoFocus( *deactiveGadget, #__event_LostFocus )
                   EndIf
                EndIf
@@ -7667,7 +7676,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\ set active all parents
                If ActiveWindow( )\root\focus = 3
                   ActiveWindow( )\root\focus = 2
-                  Debug "Active widgetroot "+ActiveWindow( )\root\class
+                  If test_focus_set
+                     Debug "Active widgetroot "+ActiveWindow( )\root\class
+                  EndIf
                   ;
                   DoFocus( ActiveWindow( )\root, #__event_Focus )
                EndIf
@@ -7683,8 +7694,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                               If IsChild( *active, widgets( ) )
                                  If widgets( )\focus = 3
                                     widgets( )\focus = 2
-                                    Debug "Active widget( ) "+widget( )\class
-                                    ;
+                                    If test_focus_set
+                     Debug "Active widget( ) "+widget( )\class
+                  EndIf
+                  ;
                                     DoFocus( widgets( ), #__event_Focus )
                                  EndIf
                               EndIf
@@ -7698,23 +7711,29 @@ CompilerIf Not Defined( widget, #PB_Module )
                If ActiveWindow( ) And ActiveWindow( )\root = *this\root
                   If ActiveWindow( )\focus = 3
                      ActiveWindow( )\focus = 2
+                     If test_focus_set
                      Debug "Active canvas&widgetwindow "+ActiveWindow( )\class
-                     ;
+                  EndIf
+                  ;
                      DoFocus( ActiveWindow( ), #__event_Focus )
                   EndIf
                   
                   If ActiveGadget( ) And
                      ActiveGadget( )\focus = 3
                      ActiveGadget( )\focus = 2
+                     If test_focus_set
                      Debug "Active canvas&widgetgadget "+ActiveGadget( )\class
-                     ;
+                  EndIf
+                  ;
                      DoFocus( ActiveGadget( ), #__event_Focus )
                   EndIf
                Else
                   If *this\focus = 3
                      *this\focus = 2
+                     If test_focus_set
                      Debug "Active canvas&widget "+*this\class
-                     ;
+                  EndIf
+                  ;
                      DoFocus( *this, #__event_Focus )
                   EndIf 
                EndIf
@@ -7797,8 +7816,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                        If widget( )\focus = 2
                                           widget( )\focus = 3
                                           
-                                          Debug "Deactive widget( ) "+widget( )\class
-                                          
+                                          If test_focus_set
+                     Debug "Deactive widget( ) "+widget( )\class
+                                          EndIf
                                           DoFocus( widget( ), #__event_LostFocus )
                                        EndIf
                                        ;EndIf
@@ -7813,8 +7833,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If Not IsChild( *active, *deactiveWindow )
                            If *deactiveWindow\focus <> 3 
                               *deactiveWindow\focus = 3
-                              Debug "Deactive widgetwindow "+*deactiveWindow\class
-                              ;
+                              If test_focus_set
+                     Debug "Deactive widgetwindow "+*deactiveWindow\class
+                  EndIf
+                  ;
                               DoFocus( *deactiveWindow, #__event_LostFocus )
                            EndIf
                         EndIf
@@ -7822,8 +7844,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *deactiveGadget And *deactiveGadget <> *active
                            If *deactiveGadget\focus <> 3
                               *deactiveGadget\focus = 3
-                              Debug "Deactive widgetgadget "+*deactiveGadget\class
-                              ;
+                             If test_focus_set
+                      Debug "Deactive widgetgadget "+*deactiveGadget\class
+                   EndIf
+                   ;
                               DoFocus( *deactiveGadget, #__event_LostFocus )
                            EndIf
                         EndIf
@@ -7835,8 +7859,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;\\ set active all parents
                      If ActiveWindow( )\root\focus = 3
                         ActiveWindow( )\root\focus = 2
-                        Debug "Active widgetroot "+ActiveWindow( )\root\class
-                        ;
+                        If test_focus_set
+                     Debug "Active widgetroot "+ActiveWindow( )\root\class
+                  EndIf
+                  ;
                         DoFocus( ActiveWindow( )\root, #__event_Focus )
                      EndIf
                      If *active\address
@@ -7851,8 +7877,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     If IsChild( *active, widgets( ) )
                                        If widgets( )\focus = 3
                                           widgets( )\focus = 2
-                                          Debug "Active widget( ) "+widget( )\class
-                                          ;
+                                          If test_focus_set
+                     Debug "Active widget( ) "+widget( )\class
+                  EndIf
+                  ;
                                           DoFocus( widgets( ), #__event_Focus )
                                        EndIf
                                     EndIf
@@ -7866,16 +7894,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      If ActiveWindow( )\focus <> 2
                         ActiveWindow( )\focus = 2
-                        Debug "Active widgetwindow "+ActiveWindow( )\class
-                        ;
+                        If test_focus_set
+                     Debug "Active widgetwindow "+ActiveWindow( )\class
+                  EndIf
+                  ;
                         DoFocus( ActiveWindow( ), #__event_Focus )
                      EndIf
                      
                      If ActiveGadget( ) And
                         ActiveGadget( )\focus <> 2
                         ActiveGadget( )\focus = 2
-                        Debug "Active widgetgadget "+ActiveGadget( )\class
-                        ;
+                        If test_focus_set
+                     Debug "Active widgetgadget "+ActiveGadget( )\class
+                  EndIf
+                  ;
                         DoFocus( ActiveGadget( ), #__event_Focus )
                      EndIf
                   EndIf
@@ -17680,6 +17712,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndWith
       EndProcedure
       
+      Macro draw_focus_frame( _address_, _color_ )
+         draw_roundbox_( _address_\inner_x( ), _address_\inner_y( ), _address_\inner_width( ), _address_\inner_height( ), _address_\round, _address_\round, _color_ )
+         ;draw_roundbox_( _address_\frame_x( ), _address_\frame_y( ), _address_\frame_width( ), _address_\frame_height( ), _address_\round, _address_\round, _color_ )
+         ;draw_roundbox_( _address_\frame_x( ) + 1, _address_\frame_y( ) + 1, _address_\frame_width( ) - 2, _address_\frame_height( ) - 2, _address_\round, _address_\round, _color_ )
+         ; draw_roundbox_( _address_\frame_x( ) + 2, _address_\frame_y( ) + 2, _address_\frame_width( ) - 4, _address_\frame_height( ) - 4, _address_\round, _address_\round, _color_ )
+      EndMacro
       Procedure.b Draw( *this._s_WIDGET )
          Protected arrow_right
          
@@ -17873,21 +17911,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;\\
                      If test_focus_show
                         If *this\focus 
-                           If Not *this\haschildren 
-                              draw_mode_(#PB_2DDrawing_Outlined)
-                              If *this = GetActive( )
-                                 draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ffff0000 )
-                                 draw_roundbox_( *this\frame_x( ) + 1, *this\frame_y( ) + 1, *this\frame_width( ) - 2, *this\frame_height( ) - 2, *this\round, *this\round, $ffff0000 )
-                                 draw_roundbox_( *this\frame_x( ) + 2, *this\frame_y( ) + 2, *this\frame_width( ) - 4, *this\frame_height( ) - 4, *this\round, *this\round, $ffff0000 )
-                              ElseIf *this\focus = 2
-                                 draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ff00ff00 )
-                                 draw_roundbox_( *this\frame_x( ) + 1, *this\frame_y( ) + 1, *this\frame_width( ) - 2, *this\frame_height( ) - 2, *this\round, *this\round, $ff00ff00 )
-                                 draw_roundbox_( *this\frame_x( ) + 2, *this\frame_y( ) + 2, *this\frame_width( ) - 4, *this\frame_height( ) - 4, *this\round, *this\round, $ff00ff00 )
-                              ElseIf *this\focus = 3
-                                 draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $FFBFBFC3 )
-                                 draw_roundbox_( *this\frame_x( ) + 1, *this\frame_y( ) + 1, *this\frame_width( ) - 2, *this\frame_height( ) - 2, *this\round, *this\round, $FFBFBFC3 )
-                                 draw_roundbox_( *this\frame_x( ) + 2, *this\frame_y( ) + 2, *this\frame_width( ) - 4, *this\frame_height( ) - 4, *this\round, *this\round, $FFBFBFC3 )
+                           draw_mode_(#PB_2DDrawing_Outlined)
+                           If *this\focus = 2
+                              If Not *this\haschildren 
+                                 If *this = GetActive( )
+                                    draw_focus_frame( *this, $ff0000ff) ; $ffff0000
+                                 Else
+                                    draw_focus_frame( *this, $ff00ff00)
+                                 EndIf
                               EndIf
+                           ElseIf *this\focus = 3
+                              draw_focus_frame( *this, $FFBFBFC3)
                            EndIf
                         EndIf
                      EndIf
@@ -18024,45 +18058,39 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If test_focus_show
                      ;\\ draw active containers frame
                      If GetActive( )
-                        If GetActive( )\focus > 0 And 
+                        If GetActive( )\focus = 2 And 
                            GetActive( )\haschildren 
                            ;
                            If GetActive( )\AfterWidget( ) = widgets( )  
                               clip_output_( GetActive( ), [#__c_draw] )
                               draw_mode_(#PB_2DDrawing_Outlined)
-                              draw_roundbox_( GetActive( )\frame_x( ), GetActive( )\frame_y( ), GetActive( )\frame_width( ), GetActive( )\frame_height( ), GetActive( )\round, GetActive( )\round, $ffff0000 )
-                              draw_roundbox_( GetActive( )\frame_x( ) + 1, GetActive( )\frame_y( ) + 1, GetActive( )\frame_width( ) - 2, GetActive( )\frame_height( ) - 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                              draw_roundbox_( GetActive( )\frame_x( ) + 2, GetActive( )\frame_y( ) + 2, GetActive( )\frame_width( ) - 4, GetActive( )\frame_height( ) - 4, GetActive( )\round, GetActive( )\round, $ffff0000 )
+                              draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
                            EndIf
                         EndIf
                         ;
                         ;\\ draw active parent frame
                         If ActiveWindow( )  
-                           If ActiveWindow( )\focus > 0 And 
+                           If ActiveWindow( )\focus = 2 And 
                               ActiveWindow( )\haschildren And  
                               ActiveWindow( ) <> GetActive( )
                               ;
                               If ActiveWindow( )\AfterWidget( ) = widgets( )  
                                  clip_output_( ActiveWindow( ), [#__c_draw] )
                                  draw_mode_(#PB_2DDrawing_Outlined)
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
-                                 draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
+                                 draw_focus_frame( ActiveWindow( ), $ff00ff00)
                               EndIf
                            EndIf
                            ;
                            ;\\ draw active child frame
                            If ActiveGadget( ) And
-                              ActiveGadget( )\focus > 0 And 
+                              ActiveGadget( )\focus = 2 And 
                               ActiveGadget( )\haschildren And  
                               ActiveGadget( ) <> GetActive( ) 
                               
                               If ActiveGadget( )\AfterWidget( ) = widgets( )  
                                  clip_output_( ActiveGadget( ), [#__c_draw] )
                                  draw_mode_(#PB_2DDrawing_Outlined)
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
-                                 draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
+                                 draw_focus_frame( ActiveGadget( ), $ff00ff00)
                               EndIf
                            EndIf
                         EndIf
@@ -18113,23 +18141,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If test_focus_show
                      ;\\ draw active containers frame
                      If GetActive( ) 
-                        If GetActive( )\focus > 0 And 
+                        If GetActive( )\focus = 2 And 
                            GetActive( )\haschildren 
                            ;
                            If Not GetActive( )\AfterWidget( ) 
                               If widgets( ) = GetPositionLast( GetActive( ) )
                                  clip_output_( GetActive( ), [#__c_draw] )
                                  draw_mode_(#PB_2DDrawing_Outlined)
-                                 draw_roundbox_( GetActive( )\frame_x( ), GetActive( )\frame_y( ), GetActive( )\frame_width( ), GetActive( )\frame_height( ), GetActive( )\round, GetActive( )\round, $ffff0000 )
-                                 draw_roundbox_( GetActive( )\frame_x( ) + 1, GetActive( )\frame_y( ) + 1, GetActive( )\frame_width( ) - 2, GetActive( )\frame_height( ) - 2, GetActive( )\round, GetActive( )\round, $ffff0000 )
-                                 draw_roundbox_( GetActive( )\frame_x( ) + 2, GetActive( )\frame_y( ) + 2, GetActive( )\frame_width( ) - 4, GetActive( )\frame_height( ) - 4, GetActive( )\round, GetActive( )\round, $ffff0000 )
+                                 draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
                               EndIf
                            EndIf
                         EndIf
                         ;
                         ;\\ draw active parent frame
                         If ActiveWindow( )  
-                           If ActiveWindow( )\focus > 0 And 
+                           If ActiveWindow( )\focus = 2 And 
                               ActiveWindow( )\haschildren And  
                               ActiveWindow( ) <> GetActive( ) 
                               ;
@@ -18137,16 +18163,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  If widgets( ) = GetPositionLast( ActiveWindow( ) )
                                     clip_output_( ActiveWindow( ), [#__c_draw] )
                                     draw_mode_(#PB_2DDrawing_Outlined)
-                                    draw_roundbox_( ActiveWindow( )\frame_x( ), ActiveWindow( )\frame_y( ), ActiveWindow( )\frame_width( ), ActiveWindow( )\frame_height( ), ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
-                                    draw_roundbox_( ActiveWindow( )\frame_x( ) + 1, ActiveWindow( )\frame_y( ) + 1, ActiveWindow( )\frame_width( ) - 2, ActiveWindow( )\frame_height( ) - 2, ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
-                                    draw_roundbox_( ActiveWindow( )\frame_x( ) + 2, ActiveWindow( )\frame_y( ) + 2, ActiveWindow( )\frame_width( ) - 4, ActiveWindow( )\frame_height( ) - 4, ActiveWindow( )\round, ActiveWindow( )\round, $ff00ff00 )
+                                    draw_focus_frame( ActiveWindow( ), $ff00ff00)
                                  EndIf
                               EndIf
                            EndIf
                            ; 
                            ;\\ draw active child frame
                            If ActiveGadget( ) And
-                              ActiveGadget( )\focus > 0 And 
+                              ActiveGadget( )\focus = 2 And 
                               ActiveGadget( )\haschildren And  
                               ActiveGadget( ) <> GetActive( ) 
                               
@@ -18154,9 +18178,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  If widgets( ) = GetPositionLast( ActiveGadget( ) )
                                     clip_output_( ActiveGadget( ), [#__c_draw] )
                                     draw_mode_(#PB_2DDrawing_Outlined)
-                                    draw_roundbox_( ActiveGadget( )\frame_x( ), ActiveGadget( )\frame_y( ), ActiveGadget( )\frame_width( ), ActiveGadget( )\frame_height( ), ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
-                                    draw_roundbox_( ActiveGadget( )\frame_x( ) + 1, ActiveGadget( )\frame_y( ) + 1, ActiveGadget( )\frame_width( ) - 2, ActiveGadget( )\frame_height( ) - 2, ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
-                                    draw_roundbox_( ActiveGadget( )\frame_x( ) + 2, ActiveGadget( )\frame_y( ) + 2, ActiveGadget( )\frame_width( ) - 4, ActiveGadget( )\frame_height( ) - 4, ActiveGadget( )\round, ActiveGadget( )\round, $ff00ff00 )
+                                    draw_focus_frame( ActiveGadget( ), $ff00ff00)
                                  EndIf
                               EndIf
                            EndIf
@@ -21336,10 +21358,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          If eventtype = #PB_EventType_Focus
             If GetActive( )
-               If EnteredWidget( )
+               If EnteredWidget( ) And EnteredWidget( )\press
                   If EnteredWidget( )\root\canvas\gadget = eventgadget
+                     If test_focus_set
                      Debug "canvas - eFocus " + EnteredWidget( )\root\canvas\gadget + " " + eventgadget
-                     
+                     EndIf
                      SetActive( EnteredWidget( ))
                   EndIf
                Else
@@ -21347,8 +21370,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ForEach roots( )
                      If roots( )\canvas\gadget = eventgadget
                         If roots( )\active 
-                           Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-                           
+                           If test_focus_set
+                     Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                           EndIf
                            SetActive( roots( )\active )
                         EndIf
                         Break
@@ -21363,8 +21387,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If eventtype = #PB_EventType_LostFocus
             If GetActive( ) And
                GetActive( )\root\canvas\gadget = eventgadget
-               Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-               
+               If test_focus_set
+                     Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+               EndIf
                SetActive( 0 )
             EndIf
          EndIf
@@ -24287,9 +24312,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20576
-; FirstLine = 20023
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P9f-------------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 18150
+; FirstLine = 17554
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------D-4-------------------------------------------------------------------8--------------------------------------------------------f--v0--+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

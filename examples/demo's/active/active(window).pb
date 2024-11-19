@@ -3,6 +3,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   test_focus_show = 1
    
    Procedure CallBack( )
 ;       Select WidgetEvent( )
@@ -64,8 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 24
+; CursorPosition = 6
 ; Folding = -
 ; EnableXP
 ; DPIAware

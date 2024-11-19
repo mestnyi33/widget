@@ -3,6 +3,8 @@
 CompilerIf #PB_Compiler_IsMainFile
    ;EnableExplicit
    UseWidgets( )
+   test_focus_set = 0
+   test_focus_show = 1
    
    Procedure DoFocus( *this._s_WIDGET, event.i )
       Debug ""+*this\class +" "+ ClassFromEvent(event)
@@ -27,21 +29,22 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__Event_LostFocus
             Debug "lostfocus ["+GetIndex(EventWidget()) +"]eventgadget ["+ GetIndex(GetActive()) +"]getactivegadget"
+            Debug EventWidget()\focus
       EndSelect
    EndProcedure
    
-   Procedure CanvasButton( gadget, x,y,width,height,Text.s )
-      Button( x,y,width,height, Text )
-      SetClass(widget(), Str(gadget))
+   Procedure CanvasButton( gadget, X,Y,Width,Height,Text.s )
+      Button( X,Y,Width,Height, Text )
+      SetClass(widget(), Text+"["+Str(gadget)+"]")
       Bind(widget(), @Events())
    EndProcedure
    
-   Procedure CanvasButtonGadget( gadget, x,y,width,height,text.s )
-      CanvasGadget(gadget, x,y,width,height, #PB_Canvas_DrawFocus )
+   Procedure CanvasButtonGadget( gadget, X,Y,Width,Height,Text.s )
+      CanvasGadget(gadget, X,Y,Width,Height, #PB_Canvas_DrawFocus )
       
       If StartDrawing(CanvasOutput(gadget))
          DrawingFont(GetGadgetFont(-1))
-         DrawText((DesktopScaledX(width)-TextWidth(text))/2, (DesktopScaledY(height)-TextHeight(text))/2, text)
+         DrawText((DesktopScaledX(Width)-TextWidth(Text))/2, (DesktopScaledY(Height)-TextHeight(Text))/2, Text)
          StopDrawing()
       EndIf
    EndProcedure
@@ -75,8 +78,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15
-; FirstLine = 10
+; CursorPosition = 31
+; FirstLine = 4
 ; Folding = ---
 ; EnableXP
 ; DPIAware

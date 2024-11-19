@@ -32,7 +32,7 @@
 ;                      Bind( *address, @callback( ), eventtype, item) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
 ;                    UnBind( *address, @callback( ), eventtype, item) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
 
-XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;\\
-   *menu = CreateBar( root( ) ) : SetClass(menu(), "root_MenuBar" )
+   *menu = CreateBar( root( ) ) : SetClass(widget(), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -213,7 +213,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 17
+; CursorPosition = 108
+; FirstLine = 104
 ; Folding = -
 ; EnableXP
