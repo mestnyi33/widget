@@ -98,6 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_MouseEnter
             Debug "enter " + EventWidget( )\class
+           
          Case #__event_MouseLeave
             Debug "leave " + EventWidget( )\class
             
@@ -109,11 +110,11 @@ CompilerIf #PB_Compiler_IsMainFile
                Debug "       RESETCURSOR " + EventWidget( )\class +" "+ WidgetEventData( )
             EndIf
             
-            Debug GetCursor( EventWidget( ) )
+           ; Debug " "+GetCursor( EventWidget( ) )
             
             ;\\ demo change current cursor
             If EventWidget( ) = object2
-               If a_transform( )
+               ;If a_transform( )
                   If CurrentCursor( )
                      If a_index( )
                         ProcedureReturn cursor::#__cursor_Hand
@@ -121,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         ProcedureReturn cursor::#__cursor_Cross
                      EndIf
                   EndIf
-               EndIf
+               ;EndIf
             EndIf
             
       EndSelect
@@ -129,7 +130,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 84
+; CursorPosition = 28
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
+; DPIAware

@@ -134,11 +134,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     COLOR
       Structure _s_COLOR
          state.b ; entered; selected; disabled;
-         front.l[4]
-         line.l[4]
-         fore.l[4]
-         back.l[4]
-         Frame.l[4]
+         front.i[4]
+         line.i[4]
+         fore.i[4]
+         back.i[4]
+         Frame.i[4]
          _alpha.a
          *alpha._s_color
       EndStructure
@@ -288,9 +288,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          dotline.a
          dotspace.a
          
-         backcolor.l
-         framecolor.l
-         fontcolor.l
+         backcolor.i
+         framecolor.i
+         fontcolor.i
       EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
@@ -317,8 +317,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          grid_type.l
          *grid_image
       
-         backcolor.l[3]
-         framecolor.l[3]
+         backcolor.i[3]
+         framecolor.i[3]
       EndStructure
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
@@ -793,8 +793,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 732
-; FirstLine = 729
+; CursorPosition = 787
+; FirstLine = 762
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

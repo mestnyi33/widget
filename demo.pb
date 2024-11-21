@@ -8,10 +8,12 @@ EnableExplicit
 UseWidgets( )
 
 test_draw_contex = 0
-
+;test_focus_set = 1
+test_focus_show = 1
+   
 Global i, *test._s_widget
 
-Procedure events( )
+Procedure Events( )
    Protected event = WidgetEvent( )
    Protected *this._s_widget = EventWidget( )
    
@@ -34,7 +36,10 @@ UsePNGImageDecoder()
 
 Global img1 = 1
 Global img2 = 2
-Global x,y,i,NewMap id.i(), round = 0
+Global X,Y,i, round = 0
+Global w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13,w_14,w_15,
+       w_16,w_17,w_18,w_19,w_20,w_21,w_22,w_23,w_24,w_25,w_26,w_27,w_28,w_29,w_30,
+       w_101,w_102,w_201,w_202,w_255,w_301,w_302
 
 CompilerIf #PB_Compiler_DPIAware
   Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
@@ -56,7 +61,7 @@ If Not LoadImage(img1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.
 EndIf
 
 Procedure scrolled( )
-   SetState( id(Hex(#PB_GadgetType_ProgressBar)), GetState( id(Hex(#PB_GadgetType_ScrollBar))))
+   SetState( w_15, GetState( w_16))
 EndProcedure
 
 If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -66,84 +71,84 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    ;
    ;id("Container") = Container(0, 0, 0, 0, #__flag_AutoSize) 
    ;\\ 1
-   id(Hex(#PB_GadgetType_Button)) = Button(5, 5, 160,95, "Multiline Button_"+Hex(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #__flag_Textmultiline, - 1, round ) 
-   id(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
-   id(Hex(#PB_GadgetType_Text)) = Text(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text", #PB_Text_Border)        
-   id(Hex(#PB_GadgetType_CheckBox)) = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox), #PB_CheckBox_ThreeState) : SetState(id(), #PB_Checkbox_Inbetween)
-   id(Hex(#PB_GadgetType_Option)) = Option(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option) ) : SetState(id(), 1)                                                       
-   id(Hex(#PB_GadgetType_ListView)) = ListView(5, 505, 160,95) : AddItem(id(), -1, "ListView_"+Hex(#PB_GadgetType_ListView)) : For i=1 To 5 : AddItem(id(), i, "item_"+Hex(i)) : Next
+   w_1 = Button(5, 5, 160,95, "Multiline Button_"+Hex(#__type_Button)+" (longer text gets automatically multiline)", #__flag_Textmultiline, - 1, round ) 
+   w_2 = String(5, 105, 160,95, "String_"+Hex(#__type_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
+   w_3 = Text(5, 205, 160,95, "Text_"+Hex(#__type_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text", #PB_Text_Border)        
+   w_4 = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#__type_CheckBox), #PB_CheckBox_ThreeState) : SetState(widget(), #PB_Checkbox_Inbetween)
+   w_5 = Option(5, 405, 160,95, "Option_"+Hex(#__type_Option) ) : SetState(widget(), 1)                                                       
+   w_6 = ListView(5, 505, 160,95) : AddItem(widget(), -1, "ListView_"+Hex(#__type_ListView)) : For i=1 To 5 : AddItem(widget(), i, "item_"+Hex(i)) : Next
    
    ;\\ 2
-   id(Hex(#PB_GadgetType_Frame)) = Frame(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame) )
-   id(Hex(#PB_GadgetType_ComboBox)) = ComboBox(170, 105, 160,45 ) : AddItem(id(), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(id(), i, "item_"+Hex(i)) : Next : SetState(id(), 0) 
-   id(Hex(100+#PB_GadgetType_ComboBox)) = ComboBox(170, 155, 160,45, #PB_ComboBox_Editable) : AddItem(id(), -1, "ComboBox_"+Hex(100+#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(id(), i, "item_"+Hex(i)) : Next : SetState(id(), 0) 
-   id(Hex(#PB_GadgetType_Image)) = Image(170, 205, 160,95, img2, #PB_Image_Border ) 
-   id(Hex(#PB_GadgetType_HyperLink)) = HyperLink(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink), $00FF00, #PB_HyperLink_Underline ) 
-   id(Hex(#PB_GadgetType_Container)) = Container(170, 405, 160,95, #PB_Container_Flat )
-   id(Hex(101)) = Option(10, 10, 110,20, "Container_"+Hex(#PB_GadgetType_Container) )  : SetState(id(), 1)  
-   id(Hex(102)) = Option(10, 40, 110,20, "Option_widget");, #__flag_flat)  
+   w_7 = Frame(170, 5, 160,95, "Frame_"+Hex(#__type_Frame) )
+   w_8 = ComboBox(170, 105, 160,45 ) : AddItem(widget(), -1, "ComboBox_"+Hex(#__type_ComboBox)) : For i=1 To 5 : AddItem(widget(), i, "item_"+Hex(i)) : Next : SetState(widget(), 0) 
+   w_9 = ComboBox(170, 155, 160,45, #PB_ComboBox_Editable) : AddItem(widget(), -1, "ComboBox_"+Hex(100+#__type_ComboBox)) : For i=1 To 5 : AddItem(widget(), i, "item_"+Hex(i)) : Next : SetState(widget(), 0) 
+   w_10 = Image(170, 205, 160,95, img2, #PB_Image_Border ) 
+   w_11 = HyperLink(170, 305, 160,95,"HyperLink_"+Hex(#__type_HyperLink), $00FF00, #PB_HyperLink_Underline ) 
+   w_12 = Container(170, 405, 160,95, #PB_Container_Flat )
+   w_101 = Option(10, 10, 110,20, "Container_"+Hex(#__type_Container) )  : SetState(widget(), 1)  
+   w_102 = Option(10, 40, 110,20, "Option_widget");, #__flag_flat)  
    CloseList()
-   id(Hex(#PB_GadgetType_ListIcon)) = ListIcon(170, 505, 160,95,"ListIcon_"+Hex(#PB_GadgetType_ListIcon),120 )                           
+   w_13 = ListIcon(170, 505, 160,95,"ListIcon_"+Hex(#__type_ListIcon),120 )                           
    
    ;\\ 3
-   id(Hex(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,95 ) : SetState(id(), MakeIPAddress(1, 2, 3, 4))    
-   id(Hex(#PB_GadgetType_ProgressBar)) = Progress(335, 105, 160,95,0,100, 0, round) : SetState(id(), 50)
-   id(Hex(#PB_GadgetType_ScrollBar)) = Scroll(335, 205, 160,95,0,120,20) : SetState(id(), 50)
-   id(Hex(#PB_GadgetType_ScrollArea)) = ScrollArea(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : id(Hex(201)) = Button(0, 0, 150,20, "ScrollArea_"+Hex(#PB_GadgetType_ScrollArea) ) : id(Hex(202)) = Button(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseList()
-   id(Hex(#PB_GadgetType_TrackBar)) = Track(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(id(), 11)
-   ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
+   w_14 = IPAddress(335, 5, 160,95 ) : SetState(widget(), MakeIPAddress(1, 2, 3, 4))    
+   w_15 = Progress(335, 105, 160,95,0,100, 0, round) : SetState(widget(), 50)
+   w_16 = Scroll(335, 205, 160,95,0,120,20) : SetState(widget(), 50)
+   w_17 = ScrollArea(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Button(0, 0, 150,20, "ScrollArea_"+Hex(#__type_ScrollArea) ) : Button(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseList()
+   w_18 = Track(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(widget(), 11)
+   ;     WebGadget(#__type_Web, 335, 505, 160,95,"" )
    
    ;\\ 4
-   id(Hex(#PB_GadgetType_ButtonImage)) = ButtonImage(500, 5, 160,95, img1)
-   ;     CalendarGadget(#PB_GadgetType_Calendar, 500, 105, 160,95 )
-   ;     DateGadget(#PB_GadgetType_Date, 500, 205, 160,95 )
-   id(Hex(#PB_GadgetType_Editor)) = Editor(500, 305, 160,95 ) : AddItem(id(), -1, "editor_"+Hex(#PB_GadgetType_Editor) +#LF$+"add"+#LF$+"multi"+#LF$+"line"+#LF$+"text")  
-   ;     id(Hex(#PB_GadgetType_ExplorerList)) = ExplorerList(500, 405, 160,95,"" )
-   ;     ExplorerTreeGadget(#PB_GadgetType_ExplorerTree, 500, 505, 160,95,"" )
+   w_19 = ButtonImage(500, 5, 160,95, img1)
+   ;     CalendarGadget(#__type_Calendar, 500, 105, 160,95 )
+   ;     DateGadget(#__type_Date, 500, 205, 160,95 )
+   w_22 = Editor(500, 305, 160,95 ) : AddItem(widget(), -1, "editor_"+Hex(#__type_Editor) +#LF$+"add"+#LF$+"multi"+#LF$+"line"+#LF$+"text")  
+   ;     id(Hex(#__type_ExplorerList)) = ExplorerList(500, 405, 160,95,"" )
+   ;     ExplorerTreeGadget(#__type_ExplorerTree, 500, 505, 160,95,"" )
    
    ;\\ 5   
-   ;     ExplorerComboGadget(#PB_GadgetType_ExplorerCombo, 665, 5, 160,95,"" )
-   id(Hex(#PB_GadgetType_Spin)) = Spin(665, 105, 160,95,20,100)
-   id(Hex(#PB_GadgetType_Tree)) = Tree( 665, 205, 160, 95 ) 
-   AddItem(id(), -1, "Tree_"+Hex(#PB_GadgetType_Tree)) 
-   For i=1 To 5 : AddItem(id(), i, "item_"+Hex(i)) : Next
-   id(Hex(#PB_GadgetType_Panel)) = Panel(665, 305, 160,95) 
-   AddItem(id(Hex(#PB_GadgetType_Panel)), -1, "Panel_"+Hex(#PB_GadgetType_Panel)) 
-   id(Hex(255)) = Button(0, 0, 90,20, "Button_255" ) 
-   For i=1 To 5 : AddItem(id(Hex(#PB_GadgetType_Panel)), i, "item_"+Hex(i)) : Button(10,5,50,35, "butt_"+Str(i)) : Next 
+   ;     ExplorerComboGadget(#__type_ExplorerCombo, 665, 5, 160,95,"" )
+   w_26 = Spin(665, 105, 160,95,20,100)
+   w_27 = Tree( 665, 205, 160, 95 ) 
+   AddItem(widget(), -1, "Tree_"+Hex(#__type_Tree)) 
+   For i=1 To 5 : AddItem(widget(), i, "item_"+Hex(i)) : Next
+   w_28 = Panel(665, 305, 160,95) 
+   AddItem(w_28, -1, "Panel_"+Hex(#__type_Panel)) 
+   w_255 = Button(0, 0, 90,20, "Button_255" ) 
+   For i=1 To 5 : AddItem(w_28, i, "item_"+Hex(i)) : Button(10,5,50,35, "butt_"+Str(i)) : Next 
    CloseList()
-   OpenList(id(Hex(#PB_GadgetType_Panel)), 1)
+   OpenList(w_28, 1)
    Container(10,5,150,55, #PB_Container_Flat) 
    Container(10,5,150,55, #PB_Container_Flat) 
    Button(10,5,50,35, "butt_1") 
    CloseList()
    CloseList()
    CloseList()
-   SetState( id(Hex(#PB_GadgetType_Panel)), 4)
-   id(Hex(301)) = Spin(0, 0, 100,20,0,10, #__spin_plus)
-   id(Hex(302)) = Spin(0, 0, 100,20,0,10) ; Button(0, 0, 100,20,"splitt-button")                 
-   id(Hex(#PB_GadgetType_Splitter)) = Splitter(665, 405, 160,95,id(Hex(301)), id(Hex(302)))
-   id(Hex(#PB_GadgetType_MDI)) = MDI(665, 505, 160,95)
-   Resize(AddItem(id(Hex(#PB_GadgetType_MDI)), -1, "form_0"), 7, 40, 120, 60)
+   SetState( w_28, 4)
+   w_301 = Spin(0, 0, 100,20,0,10, #__spin_plus)
+   w_302 = Spin(0, 0, 100,20,0,10) ; Button(0, 0, 100,20,"splitt-button")                 
+   w_29 = Splitter(665, 405, 160,95,w_301, w_302)
+   w_30 = MDI(665, 505, 160,95)
+   Resize(AddItem(widget(), -1, "form_0"), 7, 40, 120, 60)
    
    ;\\ 6
    ;     InitScintilla()
-   ;     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
-   ;     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
-   ;     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
+   ;     ScintillaGadget(#__type_Scintilla, 830, 5, 160,95,0 )
+   ;     ShortcutGadget(#__type_Shortcut, 830, 105, 160,95 ,-1)
+   ;     CanvasGadget(#__type_Canvas, 830, 205, 160,95 )
    
    CloseList()
    
    ;\\
-   Bind(id(Hex(#PB_GadgetType_ScrollBar)), @scrolled(), #__event_change )
+   Bind(w_16, @scrolled(), #__event_change )
 EndIf   
 
 CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 64
+; CursorPosition = 10
+; FirstLine = 3
 ; Folding = ---
 ; EnableXP
 ; DPIAware
