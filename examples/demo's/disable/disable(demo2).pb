@@ -5,6 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
    EnableExplicit
    UseWidgets( )
    Global *enable, *disable, *panel, *item1, *item2, *item3
+   Global event =#__event_LeftDown ; #__event_LeftClick ; 
    
    Procedure Events( )
       Select EventWidget( ) 
@@ -36,6 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
    
    If Open(0, 0, 0, 300, 195, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       *panel = Panel(10,10,280,145)
+         Disable(*panel, 1)
          AddItem(*panel, -1, "item-1")
          Button( 10, 10, 70, 25, "enable-[0]") 
          Button( 10, 40, 70, 25, "disable-[1]") 
@@ -50,21 +52,20 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       *item1 = Button( 10, 160, 50, 25, "item-1") : SetClass( *item1, "button-item-1" )
       *item2 = Button( 60, 160, 50, 25, "item-2") : SetClass( *item2, "button-item-2" )
       *item3 = Button( 110, 160, 50, 25, "item-3") : SetClass( *item3, "button-item-3" )
-      Bind( *item1, @events( ), #__event_LeftDown )
-      Bind( *item2, @events( ), #__event_LeftDown )
-      Bind( *item3, @events( ), #__event_LeftDown )
+      Bind( *item1, @events( ), event )
+      Bind( *item2, @events( ), event )
+      Bind( *item3, @events( ), event )
       
       *disable = Button( 180, 160, 50, 25, "disable") : SetClass( *disable, "button-disable" )
       *enable = Button( 240, 160, 50, 25, "enable") : SetClass( *enable, "button-enable" )
-      Bind( *enable, @events( ), #__event_LeftDown )
-      Bind( *disable, @events( ), #__event_LeftDown )
+      Bind( *enable, @events( ), event )
+      Bind( *disable, @events( ), event )
       
       WaitClose( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 32
+; CursorPosition = 7
 ; Folding = --
 ; EnableXP
 ; DPIAware

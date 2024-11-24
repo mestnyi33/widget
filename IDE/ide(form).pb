@@ -1536,7 +1536,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ElseIf example = 3
       ;\\ example 3
       ide_design_form = widget_add(ide_design_MDI, "window", 30, 30, 500, 250)
-      widget_add(ide_design_form, "button", 15, 25, 50, 30)
+      Disable(widget_add(ide_design_form, "button", 15, 25, 50, 30),1)
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
       widget_add(ide_design_form, "button", 35, 65+40, 50, 30)
       widget_add(ide_design_form, "text", 45, 65+40*2, 50, 30)
@@ -1643,8 +1643,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 202
+; CursorPosition = 1538
+; FirstLine = 1514
 ; Folding = ---f0------------------------
 ; EnableXP
 ; DPIAware

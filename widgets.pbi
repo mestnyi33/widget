@@ -3778,10 +3778,41 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro HideState( _this_, _parent_ )
          _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\TabBox( ) And _this_\TabIndex( ) <> _parent_\TabBox( )\TabState( ) ))))
 
+         If _this_\TabBox( )
+            If _this_\hide
+               _this_\TabBox( )\hide = - 1
+            Else
+               _this_\TabBox( )\hide = 0
+            EndIf
+         EndIf
+         If _this_\StringWidgetBar( )
+            If _this_\hide
+               _this_\StringWidgetBar( )\hide = - 1
+            Else
+               _this_\StringWidgetBar( )\hide = 0
+            EndIf
+         EndIf
+         If _this_\scroll
+            If _this_\scroll\v
+               If _this_\hide
+                  _this_\scroll\v\hide = - 1
+               Else
+                  _this_\scroll\v\hide = 0
+               EndIf
+            EndIf
+            If _this_\scroll\h
+               If _this_\hide
+                  _this_\scroll\h\hide = - 1
+               Else
+                  _this_\scroll\h\hide = 0
+               EndIf
+            EndIf
+         EndIf
+         
          ; Чтобы обновить границы отоброжения (clip-coordinate)
-          _this_\resize\clip = #True
+         _this_\resize\clip = #True
       EndMacro
-
+      
       Macro DisableState( _this_, _parent_ )
          _this_\disable = Bool( _this_\disable[1] Or ( _parent_ And ( _parent_\disable Or ( _parent_\TabBox( ) And _this_\TabIndex( ) <> _parent_\TabBox( )\TabState( ) ))))
          
@@ -3842,6 +3873,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If *this\disable[1] <> State
             *this\disable[1] = State
+            ;
+            ; reset color state
+            If *this\press
+               If *this\ColorState( ) 
+                  *this\ColorState( ) = #__s_0
+               EndIf
+            EndIf
             ;
             DisableState( *this, *this\parent )
             ;
@@ -6671,21 +6709,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             *this\TabIndex( ) = tabindex
-            
+            ;
             HideState( *this, *parent )
-            
-;             ;
-;             ; set hide state
-;             If *parent\hide
-;                *this\hide = #True
-;             ElseIf *parent\TabBox( )
-;                ; hide all children's except the selected tab
-;                *this\hide = Bool(*parent\TabBox( )\TabState( ) <> *this\TabIndex( ))
-;             ElseIf Not *this\hide[1]
-;                If *this\hide = #True
-;                   *this\hide = #False
-;                EndIf
-;             EndIf
+            DisableState( *this, *parent )
             ;
             ;\\
             If *this And
@@ -20534,9 +20560,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ DoEvents_Anchors( )
          a_events( *this, eventtype )
          
-         ;\\
          If Not *this\disable
-            ;\\ repaint state
+         
+         ;\\ repaint state
             Select eventtype
                Case #__event_ScrollChange,
                     #__event_StatusChange
@@ -20679,26 +20705,24 @@ CompilerIf Not Defined( widget, #PB_Module )
                               If CanvasMouseButton( ) & #PB_Canvas_LeftButton
                                  *this\ColorState( ) = #__s_2
                               EndIf
-                              ; If *this\type = #__type_ButtonImage
+                              
                               If *this\image[#__image_pressed]\id
                                  *this\image = *this\image[#__image_pressed]
                               EndIf
-                              ; EndIf
                            EndIf
                            
                         Case #__event_Up
                            If CanvasMouseButton( ) & #PB_Canvas_LeftButton
-                              If *this\mouseenter
+                              If Not *this\disable And *this\mouseenter
                                  *this\ColorState( ) = #__s_1
                               Else
                                  *this\ColorState( ) = #__s_0
                               EndIf
                            EndIf
-                           ; If *this\type = #__type_ButtonImage
+                           
                            If *this\image[#__image_released]\id
                               *this\image = *this\image[#__image_released]
                            EndIf
-                           ; EndIf
                            
                      EndSelect
                   EndIf
@@ -20801,8 +20825,6 @@ CompilerIf Not Defined( widget, #PB_Module )
            
            ; EndIf
             
-         EndIf
-         
          
          ;\\ before post-widget-events drop
          ;\\
@@ -20859,7 +20881,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;          EndIf
          
          ;\\ send-widget-events
-         If Not *this\disable
+         ;If Not *this\disable
             If eventtype = #__event_Cursor
             ElseIf eventtype = #__event_Create
             ElseIf eventtype = #__event_Focus
@@ -20879,7 +20901,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-         EndIf
          
          ;\\ enabled mouse behavior
          If eventtype = #__event_Down
@@ -20899,6 +20920,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Reclip( widgets( ) )
                EndIf
             EndIf
+         EndIf
          EndIf
          
          ;\\ cursor update
@@ -20992,7 +21014,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
          EndSelect
          
-            ;\\ key events
+         If Not *this\disable
+           ;\\ key events
          If eventtype = #__event_Input Or
             eventtype = #__event_KeyDown Or
             eventtype = #__event_KeyUp
@@ -21003,16 +21026,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                DoKeyEvents_Tree( *this, *this\__rows( ), eventtype )
             EndIf
          EndIf
-         
-      ;\\ post repaint canvas
-         If Not *this\disable
-            If *this\root\repaint = 1
-               ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(eventtype)
-               PostEventRepaint( *this\root )
-               *this\root\repaint = 0
-            EndIf
+         ;\\ post repaint canvas
+         If *this\root\repaint = 1
+            ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(eventtype)
+            PostEventRepaint( *this\root )
+            *this\root\repaint = 0
          EndIf
-      EndProcedure
+      EndIf
+         EndProcedure
       
       ;-
       Procedure EventResize( )
@@ -21510,19 +21531,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                ;\\ set active widget
-               If EnteredWidget( )\disable
-                  If event = #__event_LeftDown
-                     If GetActive( ) <> EnteredWidget( )\parent
-                        If EnteredButton( )
-                           ;
-                        Else
-                           If Not EnteredWidget( )\parent\disable
-                              SetActive( EnteredWidget( )\parent)
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               Else
+;                If EnteredWidget( )\disable
+;                   If event = #__event_LeftDown
+;                      If GetActive( ) <> EnteredWidget( )\parent
+;                         If EnteredButton( )
+;                            ;
+;                         Else
+;                            If Not EnteredWidget( )\parent\disable
+;                               SetActive( EnteredWidget( )\parent)
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                Else
                   PressedWidget( )       = EnteredWidget( )
                   PressedWidget( )\press = #True
                   ;
@@ -21531,7 +21552,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         SetActive( EnteredWidget( ))
                      EndIf
                   EndIf
-               EndIf
+               ;EndIf
                ;
                ;\\
                DoEvents( EnteredWidget( ), #__event_Down )
@@ -24092,9 +24113,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3781
-; FirstLine = 3777
-; Folding = --------------------------------------------------------------------------------------------------f------------r7------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-+----------------------------------------------------------------------------------------------------------------------------------d-f-u8+---------------v--------------------------------------------------------------------------------+---
+; CursorPosition = 21545
+; FirstLine = 20975
+; Folding = ---------------------------------------------------------------------------------------------------0-----------vq------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-8----------------------------------------------------------------------------------------------------------------------------------4--0-u8----------------7------00-v8-------------------------------------------------------------------8---
 ; Optimizer
 ; EnableXP
 ; DPIAware
