@@ -46,10 +46,10 @@ CompilerIf #PB_Compiler_IsMainFile
             *this = GetItemData(*second, WidgetEventItem( ))
             Debug 333
             If *this And *second\RowEntered( )
-               SelectElement(*second\__items( ), *second\RowEntered( )\index)
+               SelectElement(*second\__rows( ), *second\RowEntered( )\index)
                *this\noscale = 1
-               ;Resize(*this, *second\x+*second\__items( )\x, *second\y+*second\__items( )\y, *second\__items( )\width, *second\__items( )\height )
-               Resize(*this, *second\__items( )\x, *second\__items( )\y, *second\__items( )\width, *second\__items( )\height )
+               ;Resize(*this, *second\x+*second\__rows( )\x, *second\y+*second\__rows( )\y, *second\__rows( )\width, *second\__rows( )\height )
+               Resize(*this, *second\__rows( )\x, *second\__rows( )\y, *second\__rows( )\width, *second\__rows( )\height )
             EndIf
                
          Case #__event_ScrollChange
@@ -68,15 +68,15 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventWidget( )
                Case *first
                   If *first\RowLeaved( )
-                     SelectElement(*second\__items( ), *first\RowLeaved( )\index)
-                     *second\__items( )\color = *first\RowLeaved( )\color
+                     SelectElement(*second\__rows( ), *first\RowLeaved( )\index)
+                     *second\__rows( )\color = *first\RowLeaved( )\color
                   EndIf
                   If *first\RowEntered( )
-                     SelectElement(*second\__items( ), *first\RowEntered( )\index)
-                     *second\__items( )\color = *first\RowEntered( )\color
+                     SelectElement(*second\__rows( ), *first\RowEntered( )\index)
+                     *second\__rows( )\color = *first\RowEntered( )\color
                      
                      ;\\
-                     If *second\__items( )\RowButtonState( ) <> *first\RowEntered( )\RowButtonState( )
+                     If *second\__rows( )\RowButtonState( ) <> *first\RowEntered( )\RowButtonState( )
                         If *first\RowEntered( )\RowButtonState( )
                            SetItemState( *second, *first\RowEntered( )\index, #PB_Tree_Collapsed )
                         Else
@@ -88,24 +88,24 @@ CompilerIf #PB_Compiler_IsMainFile
                         ;Resize( *second, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                      EndIf
                      
-                     ; CopyStructure( *first\__items( )\color, *second\__items( )\color, _s_COLOR )
+                     ; CopyStructure( *first\__rows( )\color, *second\__rows( )\color, _s_COLOR )
                      ;SetItemState(*second, GetItem( *first ) , GetItemState(*first, GetItem( *first )  ) )
                   EndIf
                   
                Case *second
                   If *second\RowLeaved( )
-                     SelectElement(*first\__items( ), *second\RowLeaved( )\index)
-                     *first\__items( )\color = *second\RowLeaved( )\color
+                     SelectElement(*first\__rows( ), *second\RowLeaved( )\index)
+                     *first\__rows( )\color = *second\RowLeaved( )\color
                   EndIf
                   If *second\RowEntered( )
-                     SelectElement(*first\__items( ), *second\RowEntered( )\index)
-                     *first\__items( )\color = *second\RowEntered( )\color
+                     SelectElement(*first\__rows( ), *second\RowEntered( )\index)
+                     *first\__rows( )\color = *second\RowEntered( )\color
                   EndIf
             EndSelect
       EndSelect
    EndProcedure
    
-   Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, type=0, mode=0 )
+   Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=0, mode=0 )
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       
@@ -117,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
       item = CountItems( *first ) - 1
       Protected flag ;= #__flag_child
       
-      Select type
+      Select Type
          Case #__type_Spin
            ; *this = Spin(0,0,0,0,0,100)
             *this = Create( *second, #PB_Compiler_Procedure, #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__buttonsize, 0, 1 )
@@ -137,14 +137,14 @@ CompilerIf #PB_Compiler_IsMainFile
       SetItemData(*second, item, *this)
    EndProcedure
    
-   Procedure CreateProperties( x,y,width,height, flag=0 )
+   Procedure CreateProperties( X,Y,Width,Height, flag=0 )
       Protected position = 70
       Protected *first._s_WIDGET = Tree(0,0,0,0)
       Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines)
       
-      Protected *splitter._s_WIDGET = Splitter(x,y,width,height, *first,*second, flag|#PB_Splitter_Vertical |#PB_Splitter_FirstFixed )
+      Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical |#PB_Splitter_FirstFixed )
       SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
-      SetState(*splitter, width-position )
+      SetState(*splitter, Width-position )
       
       *splitter\bar\button\size = DPIScaled(5)
       *splitter\bar\button\round = DPIScaled(1)
@@ -190,7 +190,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Value = *Tree
       AddItemProperties(*Tree, #_pi_group_0, "common")
       AddItemProperties(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value),                                    #__type_String, 1)
-      AddItemProperties(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+      AddItemProperties(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+CountType(Value), #__type_String, 1)
       AddItemProperties(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value),                            #__type_String, 1)
       
       AddItemProperties(*Tree, #_pi_group_1, "layout")
@@ -207,7 +207,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Value = *Tree1
       AddItemProperties(*Tree1, #_pi_group_0, "common")
       AddItemProperties(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value),                                    #__type_String, 1)
-      AddItemProperties(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+      AddItemProperties(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+CountType(Value), #__type_String, 1)
       AddItemProperties(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value),                            #__type_String, 1)
       
       AddItemProperties(*Tree1, #_pi_group_1, "layout")
@@ -234,8 +234,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 214
-; FirstLine = 197
+; CursorPosition = 101
+; FirstLine = 71
 ; Folding = ----
 ; Optimizer
 ; EnableXP

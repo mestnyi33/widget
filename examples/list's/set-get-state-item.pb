@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  Global a, *item2, *item3, *item4, *item1, *this._s_widget, *g1, *g2, countitems=99; количесвто итемов 
+  Global a, *item2, *item3, *item4, *item1, *this._s_widget, *g1, *g2, CountItems=99; количесвто итемов 
   
   Procedure.b SetState_( *this._S_widget, state.f )
       Protected result
@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ;
-        If is_no_select_item_( *this\__items( ), State )
+        If is_no_select_item_( *this\__rows( ), State )
           ProcedureReturn #False
         EndIf
         
@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
           If *this\row\index <> state
           *this\row\index = state
           ;\\
-          If *this\RowFocused( ) <> *this\__items( )
+          If *this\RowFocused( ) <> *this\__rows( )
             If *this\RowFocused( )
               If *this\RowFocused( )\focus
                 *this\RowFocused( )\focus = #False
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
               *this\RowFocused( )\color\state = #__S_0
             EndIf
             
-            *this\RowFocused( ) = *this\__items( )
+            *this\RowFocused( ) = *this\__rows( )
             
             ; click select mode
             If *this\row\clickselect
@@ -192,7 +192,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 44
+; CursorPosition = 51
+; FirstLine = 47
 ; Folding = -------
 ; EnableXP

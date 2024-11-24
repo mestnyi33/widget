@@ -60,7 +60,7 @@
          If *mem
             bytes = ReadData(0, *mem, length) ; Читает данные из файла и помещает их в блок памяти
             Debug "Количество прочитанных байтов: " + Str(bytes)
-            text = PeekS(*mem, length, Format)
+            Text = PeekS(*mem, length, Format)
          EndIf
          
          CloseFile(0)
@@ -109,7 +109,7 @@
       
       While *End\c
          If *end\c = #LF ;Or *End\c = 0
-                         ;edit_AddItem( *this, *this\__items( ), - 1, *str, (*end-*str)>>#PB_Compiler_Unicode )
+                         ;edit_AddItem( *this, *this\__rows( ), - 1, *str, (*end-*str)>>#PB_Compiler_Unicode )
             If count = item
                Debug PeekS(*str, (*end-*str)>>#PB_Compiler_Unicode )
                Break

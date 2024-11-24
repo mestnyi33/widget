@@ -306,7 +306,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;PostEventCanvasRepaint( *this\parent\root, #__event_free )
             ;ClearStructure( *this, _S_WIDGET )
             
-            If *this = Root( )
+            If *this = root( )
                DeleteMapElement( roots( ), MapKey( roots( ) ) )
                ResetMap( roots( ) )
                Debug " free - "+*this\class
@@ -330,7 +330,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent
          Case #__event_close;, #__event_focus
-            Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ GetTypeCount( EventWidget( )\window ) 
+            Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ Type( EventWidget( )\window ) 
             
             __Free( EventWidget( ) )
             
@@ -444,8 +444,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 310
-; FirstLine = 305
+; CursorPosition = 332
+; FirstLine = 328
 ; Folding = --------------
 ; EnableXP
 ; DPIAware

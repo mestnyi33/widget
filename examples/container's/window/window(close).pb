@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
       Case #__event_close
-        ;Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ GetTypeCount( EventWidget( )\window ) 
+        ;Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ Type( EventWidget( )\window ) 
         
         ;\\ demo main window
         If GetTitle( EventWidget( ) ) = "window_2"
@@ -95,8 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 33
+; FirstLine = 32
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -171,6 +171,7 @@ GetCanvasGadget
 widget
 root
 mouse
+keyboard
 
 Events
 EventsData
@@ -192,6 +193,10 @@ IsChild
 SetClass
 GetClass
 
+GetAddress
+GetIndex
+GetLevel
+GetRoot
 
 Draw
 ReDraw
@@ -217,6 +222,7 @@ CloseList
 ComboBox
 Container
 CountItems
+CountType
 Date
 Editor
 ExplorerCombo

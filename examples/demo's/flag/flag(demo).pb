@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   Global *this._s_widget, i, w_type, w_flag
-  Define vert=100, horiz=100, width=400, height=400
+  Define vert=100, horiz=100, Width=400, Height=400
   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   
   
@@ -300,7 +300,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure.s FlagFromFlag( Type, flag.i ) ; 
     Protected flags.S
     
-    Select type
+    Select Type
       Case #PB_GadgetType_Text
         If flag & #__flag_Textcenter
           flags + "#PB_Text_Center|"
@@ -577,8 +577,8 @@ CompilerIf #PB_Compiler_IsMainFile
           Case w_type 
             flag = Flag(*this)
             Add(FlagFromType(GetState(w_type)))
-            ;Debug FlagFromFlag(GetType(*this), flag)
-            SetCheckedText(w_flag, FlagFromFlag(GetTypeCount(*this), flag))
+            ;Debug FlagFromFlag(Type(*this), flag)
+            SetCheckedText(w_flag, FlagFromFlag(Type(*this), flag))
             
           Case w_flag
             ;  Debug GetCheckedText(w_flag)
@@ -599,16 +599,16 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(0, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *this = widget::Button(100, 100, 250, 200, text, #__flag_ButtonToggle|#__flag_Textmultiline) 
+  If Open(0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    *this = widget::Button(100, 100, 250, 200, Text, #__flag_ButtonToggle|#__flag_Textmultiline) 
     
     
-    w_type = widget::ListView(width+45, 10, 150, 200) 
+    w_type = widget::ListView(Width+45, 10, 150, 200) 
     For i=0 To 33
       AddItem(w_type, -1, ClassFromType(i))
     Next
     
-    w_flag = widget::Tree(width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_optionboxes) 
+    w_flag = widget::Tree(Width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_optionboxes) 
     
     Bind(#PB_All, @events_widgets())
     
@@ -618,8 +618,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 12
+; CursorPosition = 581
+; FirstLine = 532
 ; Folding = f------70-
 ; EnableXP
 ; DPIAware

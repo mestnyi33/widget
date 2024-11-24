@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define Value = *prop
     widget::AddItem(*prop, #_pi_group_0, "common")
     widget::AddItem(*prop, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-    widget::AddItem(*prop, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+    widget::AddItem(*prop, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+CountType(Value), #__type_String, 1)
     widget::AddItem(*prop, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     widget::AddItem(*prop, #_pi_group_1, "layout")
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define Value = *prop1
     widget::AddItem(*prop1, #_pi_group_0, "common")
     widget::AddItem(*prop1, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-    widget::AddItem(*prop1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+    widget::AddItem(*prop1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+CountType(Value), #__type_String, 1)
     widget::AddItem(*prop1, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     widget::AddItem(*prop1, #_pi_group_1, "layout")
@@ -72,8 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 37
+; CursorPosition = 53
+; FirstLine = 41
 ; Folding = -
 ; Optimizer
 ; EnableXP

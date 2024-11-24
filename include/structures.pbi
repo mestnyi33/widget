@@ -179,8 +179,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          press.b
          
          round.a
-         Hide.b
-         Disable.b
+         Hide.b[2]
+         Disable.b[2]
       EndStructure
       ;--     BOX
       Structure _s_BOX Extends _s_STATE
@@ -350,18 +350,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
+         separator.b
+         
+         itemindex.i
          StructureUnion
-            _index.l     ; Index of new list element
-            index.l      ; Index of new list element
+            position.i
+            index.i
+            _index.i
          EndStructureUnion
-         itemindex.l
-         
-         ;*columnaddress
-         columnindex.c
-         
          change.b
          drawing.b
          
+         
+         
+         ;*columnaddress
+         columnindex.c
          
          Text._s_text
          Image._s_image
@@ -599,7 +602,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_WIDGET Extends _s_STATE
          ;          Map *eventshook._s_HOOK( )
          ;         
-         List lines._s_rows( )
+         List __lines._s_rows( )
          noscale.b
          deffocus.b ; default focus
          
@@ -616,19 +619,31 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Resize.RESIZEINFO                 
          
          
+         index.i         ; index widget
+         
+         ; placing layout
+         ;place\index
+         placingindex.i  ; z-oreder position
+         *afterroot._s_ROOT
+         *beforeroot._s_ROOT
+         *lastroot._s_ROOT
+         
+         *firstwidget._s_WIDGET
+         *afterwidget._s_WIDGET
+         *beforewidget._s_WIDGET
+         *lastwidget._s_WIDGET
+         
          Y.l[constants::#__c]
          X.l[constants::#__c]
          Height.l[constants::#__c]
          Width.l[constants::#__c]
          ;
          Type.w
-         class.s
-         ;
          level.c
+         class.s
          ;
          create.b
          change.b
-         hidden.b                 ; hide state
                                   ; transporent.b
                                   ; dragged.b              ;
          autosize.b
@@ -670,27 +685,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          ;                           
          BarWidth.w               ; bar v size
-         BarHeight.w              ; bar h size
+        ; BarHeight.w              ; bar h size
+         TitleBarHeight.w
+         ToolBarHeight.w
          MenuBarHeight.w
          StatusBarHeight.w
          
-         StructureUnion
-            ToolBarHeight.w
-            TabHeight.i
-         EndStructureUnion
+         ;StructureUnion
+            ;TabHeight.i
+         ;EndStructureUnion
          
          
-         index.i      ; - widget index
-         
-         ; placing layout
-         *afterroot._s_ROOT
-         *beforeroot._s_ROOT
-         *lastroot._s_ROOT
-         
-         *firstwidget._s_WIDGET
-         *afterwidget._s_WIDGET
-         *beforewidget._s_WIDGET
-         *lastwidget._s_WIDGET
          ;
          bounds._s_BOUNDS
          Scroll._s_SCROLL            ; vertical & horizontal scrollbars
@@ -793,8 +798,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 787
-; FirstLine = 762
+; CursorPosition = 182
+; FirstLine = 174
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

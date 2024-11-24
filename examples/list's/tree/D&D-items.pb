@@ -37,8 +37,8 @@ Global TargetItem, TargetLevel
 #ColBar = 16777215
 
 Structure TAB
-  height.i
-  y.i
+  Height.i
+  Y.i
   OffsetMove   .i
   OffsetMoveMin.i
   OffsetMoveMax.i
@@ -56,11 +56,11 @@ Global MouseDownY  .i
 Global TabsWi      .i
 
 Macro Tabs( )
-  *this\__items( )
+  *this\__rows( )
 EndMacro
 
 Procedure DrawBar (*this._s_widget)
-  Protected Y.i, x
+  Protected Y.i, X
   Protected *Tab      ._s_ROWS
   ;ProcedureReturn 
   ;Calc Y
@@ -72,8 +72,8 @@ Procedure DrawBar (*this._s_widget)
 ;   EndIf
   
  ; StartDrawing (CanvasOutput (*this\_root( )\canvas\gadget))
-  x = *this\x[#__c_inner]
-  y = *this\y[#__c_inner]
+  X = *this\x[#__c_inner]
+  Y = *this\y[#__c_inner]
   
   ;Draw background
   DrawingMode (#PB_2DDrawing_Default)
@@ -92,9 +92,9 @@ Procedure DrawBar (*this._s_widget)
   ;Draw swapping tab
   If *TabSwap
     DrawingMode (#PB_2DDrawing_AlphaBlend)
-    Box      ( x+*TabSwap\x, y+*TabSwap\Y + *TabSwap\OffsetMove, 280-20, *TabSwap\height, $70000000 | #ColSwp)
+    Box      ( X+*TabSwap\x, Y+*TabSwap\Y + *TabSwap\OffsetMove, 280-20, *TabSwap\height, $70000000 | #ColSwp)
     DrawingMode (#PB_2DDrawing_Transparent)
-    DrawText ( x+*TabSwap\x + *TabSwap\text\x, y+*TabSwap\Y + *TabSwap\text\y + *TabSwap\OffsetMove + 2, *TabSwap\text\string)
+    DrawText ( X+*TabSwap\x + *TabSwap\text\x, Y+*TabSwap\Y + *TabSwap\text\y + *TabSwap\OffsetMove + 2, *TabSwap\text\string)
   EndIf
   
  ; StopDrawing ()
@@ -103,7 +103,7 @@ EndProcedure
 
 
 Procedure DrawBarEvents( )
-  Protected y, *this._s_widget = EventWidget( )
+  Protected Y, *this._s_widget = EventWidget( )
   Protected EventType = WidgetEvent( )
   
   MouseX = mouse()\x 
@@ -227,7 +227,7 @@ EndIf
   
 EndProcedure
 
-Procedure events( )
+Procedure Events( )
   Protected i, Text$, Level, CountItems
   
   If EventWidget( ) = *tree                     
@@ -248,14 +248,14 @@ Procedure events( )
         SourceItem = GetState(*tree)
         If DragPrivate(#PrivateType, #PB_Drag_Move)
           Protected img =- 1
-          SelectElement(EventWidget( )\__items( ), SourceItem)
-          img = CreateImage(#PB_Any, EventWidget( )\__items( )\text\width, EventWidget( )\__items( )\text\height, 32, #PB_Image_Transparent )
+          SelectElement(EventWidget( )\__rows( ), SourceItem)
+          img = CreateImage(#PB_Any, EventWidget( )\__rows( )\text\width, EventWidget( )\__rows( )\text\height, 32, #PB_Image_Transparent )
           StartDrawing(ImageOutput(img))
           DrawingMode( #PB_2DDrawing_AllChannels)
-          DrawText(0, 0, EventWidget( )\__items( )\text\string, $ff000000)
+          DrawText(0, 0, EventWidget( )\__rows( )\text\string, $ff000000)
           StopDrawing()
           If IsImage(img)
-            SetCursor( *tree, Cursor::Create( ImageID(img), EventWidget( )\__items( )\text\width/2, EventWidget( )\__items( )\text\height/2 ))
+            SetCursor( *tree, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\text\width/2, EventWidget( )\__rows( )\text\height/2 ))
           EndIf
         EndIf
         
@@ -429,8 +429,8 @@ Procedure events( )
           Debug ""
           ;ClearDebugOutput()
           Define *this._s_widget = *tree
-          ForEach *this\__items( )
-            Debug ""+ *this\__items( )\_index +" "+ ListIndex(*this\__items( )) +" "+ *this\__items( )\text\string +""
+          ForEach *this\__rows( )
+            Debug ""+ *this\__rows( )\_index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\string +""
           Next
         EndIf
         
@@ -529,8 +529,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 516
-; FirstLine = 498
+; CursorPosition = 432
+; FirstLine = 402
 ; Folding = -----
 ; EnableXP
 ; DPIAware

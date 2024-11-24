@@ -52,15 +52,15 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Focus, #__event_LostFocus
             If EventWidget( ) = *first
                If *first\RowFocused( ) 
-                  SelectElement(*second\__items( ), *first\RowFocused( )\index)
-                  *second\__items( )\color = *first\RowFocused( )\color
+                  SelectElement(*second\__rows( ), *first\RowFocused( )\index)
+                  *second\__rows( )\color = *first\RowFocused( )\color
                EndIf
             EndIf
             
             If EventWidget( ) = *second
                If *second\RowFocused( )
-                  SelectElement(*first\__items( ), *second\RowFocused( )\index)
-                  *first\__items( )\color = *second\RowFocused( )\color
+                  SelectElement(*first\__rows( ), *second\RowFocused( )\index)
+                  *first\__rows( )\color = *second\RowFocused( )\color
                EndIf
             EndIf
             
@@ -78,22 +78,22 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventWidget( )
                Case *first
                   If *first\RowLeaved( )
-                     SelectElement(*second\__items( ), *first\RowLeaved( )\index)
-                     *second\__items( )\color = *first\RowLeaved( )\color
+                     SelectElement(*second\__rows( ), *first\RowLeaved( )\index)
+                     *second\__rows( )\color = *first\RowLeaved( )\color
                   EndIf
                   If *first\RowEntered( )
-                     SelectElement(*second\__items( ), *first\RowEntered( )\index)
-                     *second\__items( )\color = *first\RowEntered( )\color
+                     SelectElement(*second\__rows( ), *first\RowEntered( )\index)
+                     *second\__rows( )\color = *first\RowEntered( )\color
                   EndIf
                   
                Case *second
                   If *second\RowLeaved( )
-                     SelectElement(*first\__items( ), *second\RowLeaved( )\index)
-                     *first\__items( )\color = *second\RowLeaved( )\color
+                     SelectElement(*first\__rows( ), *second\RowLeaved( )\index)
+                     *first\__rows( )\color = *second\RowLeaved( )\color
                   EndIf
                   If *second\RowEntered( )
-                     SelectElement(*first\__items( ), *second\RowEntered( )\index)
-                     *first\__items( )\color = *second\RowEntered( )\color
+                     SelectElement(*first\__rows( ), *second\RowEntered( )\index)
+                     *first\__rows( )\color = *second\RowEntered( )\color
                   EndIf
             EndSelect
       EndSelect
@@ -108,15 +108,15 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem( *second, item, StringField(Text.s, 2, Chr(10)), Image, mode )
    EndProcedure
    
-   Procedure Properties_( x,y,width,height, flag=0 )
+   Procedure Properties_( X,Y,Width,Height, flag=0 )
       Protected position = 70
-      Protected *this._s_WIDGET = Container(x,y,width,height) 
+      Protected *this._s_WIDGET = Container(X,Y,Width,Height) 
       Protected *first._s_WIDGET = Tree(0,0,0,0, #__flag_autosize)
       Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_autosize)
       
       Protected *splitter._s_WIDGET = Splitter(0,0,0,0, *first,*second, #PB_Splitter_Vertical |#PB_Splitter_FirstFixed| #__flag_autosize )
       SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
-      SetState(*splitter, width-position )
+      SetState(*splitter, Width-position )
       SetData(*this, *splitter)
       
       *splitter\bar\button\size = 5
@@ -143,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Value = *Tree
       AddItem_(*Tree, #_pi_group_0, "common")
       AddItem_(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-      AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+      AddItem_(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+CountType(Value), #__type_String, 1)
       AddItem_(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
       
       AddItem_(*Tree, #_pi_group_1, "layout")
@@ -160,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Value = *Tree1
       AddItem_(*Tree1, #_pi_group_0, "common")
       AddItem_(*Tree1, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-      AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+      AddItem_(*Tree1, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+CountType(Value), #__type_String, 1)
       AddItem_(*Tree1, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
       
       AddItem_(*Tree1, #_pi_group_1, "layout")
@@ -195,8 +195,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 146
+; CursorPosition = 55
+; FirstLine = 51
 ; Folding = ----
 ; EnableXP
 ; DPIAware

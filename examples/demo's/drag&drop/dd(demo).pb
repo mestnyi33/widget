@@ -128,15 +128,15 @@ Procedure widget_events( )
             If DDragPrivate(#PrivateType_0, #PB_Drag_Move)
               Protected img =- 1
               
-              SelectElement(EventWidget( )\__items( ), SourceItem)
-              img = CreateImage(#PB_Any, EventWidget( )\__items( )\text\width, EventWidget( )\__items( )\text\height, 32, #PB_Image_Transparent )
+              SelectElement(EventWidget( )\__rows( ), SourceItem)
+              img = CreateImage(#PB_Any, EventWidget( )\__rows( )\text\width, EventWidget( )\__rows( )\text\height, 32, #PB_Image_Transparent )
               StartDrawing(ImageOutput(img))
               DrawingMode( #PB_2DDrawing_AllChannels)
-              DrawText(0, 0, EventWidget( )\__items( )\text\string, $ff000000)
+              DrawText(0, 0, EventWidget( )\__rows( )\text\string, $ff000000)
               StopDrawing()
               
               If IsImage(img)
-                ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__items( )\text\width/2, EventWidget( )\__items( )\text\height/2 ))
+                ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\text\width/2, EventWidget( )\__rows( )\text\height/2 ))
               EndIf
             EndIf
           EndIf
@@ -353,8 +353,8 @@ Procedure widget_events( )
             Debug ""
             ;ClearDebugOutput()
             Define *this._s_widget = Gadget_TargetItem
-            ForEach *this\__items( )
-              Debug ""+ *this\__items( )\_index +" "+ ListIndex(*this\__items( )) +" "+ *this\__items( )\text\string +""
+            ForEach *this\__rows( )
+              Debug ""+ *this\__rows( )\_index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\string +""
             Next
           EndIf
           
@@ -405,12 +405,12 @@ Procedure widget_events( )
 EndProcedure
 
 
-Procedure ListIconWidget( x,y,width,height, title.s, titleWidth )
+Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
   ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
   
    ;\\
-   Text(x,y,width,20,title) : SetColor( widget( ), #__color_back, $FFC2C2C2)
-   ProcedureReturn Tree(x,y+20,width,height-20)
+   Text(X,Y,Width,20,title) : SetColor( widget( ), #__color_back, $FFC2C2C2)
+   ProcedureReturn Tree(X,Y+20,Width,Height-20)
 EndProcedure
 
 If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
@@ -507,8 +507,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 481
-; FirstLine = 448
+; CursorPosition = 356
+; FirstLine = 326
 ; Folding = -----
 ; Optimizer
 ; EnableXP

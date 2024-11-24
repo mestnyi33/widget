@@ -70,36 +70,36 @@ CompilerIf #PB_Compiler_IsMainFile
     ;With *this
     If *this
       ;{ Генерируем идентификатор
-      If position < 0 Or position > ListSize( *this\__items( ) ) - 1
-        If LastElement( *this\__items( ) )
-          ;;*this\row\last = *this\__items( )
+      If position < 0 Or position > ListSize( *this\__rows( ) ) - 1
+        If LastElement( *this\__rows( ) )
+          ;;*this\row\last = *this\__rows( )
         EndIf
-        handle = AddElement( *this\__items( ) ) 
+        handle = AddElement( *this\__rows( ) ) 
         ;If position < 0 
-          position = ListIndex( *this\__items( ) )
+          position = ListIndex( *this\__rows( ) )
         ;EndIf
       Else
-        handle = SelectElement( *this\__items( ), position )
+        handle = SelectElement( *this\__rows( ), position )
         ; for the tree( )
-        If sublevel > *this\__items( )\sublevel
-          PushListPosition( *this\__items( ) )
-          If PreviousElement( *this\__items( ) )
-            *this\row\last = *this\__items( )
-            ;; NextElement( *this\__items( ) )
+        If sublevel > *this\__rows( )\sublevel
+          PushListPosition( *this\__rows( ) )
+          If PreviousElement( *this\__rows( ) )
+            *this\row\last = *this\__rows( )
+            ;; NextElement( *this\__rows( ) )
           Else
             *last = *this\row\last
-            sublevel = *this\__items( )\sublevel
+            sublevel = *this\__rows( )\sublevel
           EndIf
-          PopListPosition( *this\__items( ) )
+          PopListPosition( *this\__rows( ) )
 ; ;           If *last = *this\row\last
-; ;             sublevel = *this\__items( )\sublevel
+; ;             sublevel = *this\__rows( )\sublevel
 ; ;           EndIf
         Else
           *last = *this\row\last
-          sublevel = *this\__items( )\sublevel
+          sublevel = *this\__rows( )\sublevel
         EndIf
         
-        handle = InsertElement( *this\__items( ) )
+        handle = InsertElement( *this\__rows( ) )
       EndIf
       ;}
       
@@ -139,9 +139,9 @@ CompilerIf #PB_Compiler_IsMainFile
                 If *this\row\last\parent\sublevel = sublevel 
 ; ;                   *last = *this\row\last\parent
 ; ;                   *parent = *this\row\last\parent
-; ; ;                   *parent\last = *this\__items( )
+; ; ;                   *parent\last = *this\__rows( )
 ; ;                    *this\row\last = *parent
-                  *this\row\last\parent\after = *this\__items( )
+                  *this\row\last\parent\after = *this\__rows( )
                   ;*this\row\last = *parent
                   Debug Text
                 EndIf
@@ -151,12 +151,12 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-        *this\__items( )\parent = *parent
+        *this\__rows( )\parent = *parent
         
         If *last
          ; *this\row\last = *last
         Else
-          *this\row\last = *this\__items( )
+          *this\row\last = *this\__rows( )
         EndIf
         
         ; for the tree( )
@@ -168,29 +168,29 @@ CompilerIf #PB_Compiler_IsMainFile
         If sublevel = 0
           If *this\row\first 
             If *this\row\first\first
-              *this\__items( )\first = *this\row\first\first
+              *this\__rows( )\first = *this\row\first\first
             EndIf
-            *this\row\first\first = *this\__items( )
+            *this\row\first\first = *this\__rows( )
           EndIf
         EndIf
         
         If position = 0
-          *this\row\first = *this\__items( )
+          *this\row\first = *this\__rows( )
         EndIf
         
-        *this\__items( )\sublevel = sublevel
+        *this\__rows( )\sublevel = sublevel
         
         ; add lines
-        *this\__items( )\index = ListIndex( *this\__items( ) )
-        *this\__items( )\color = _get_colors_( )
-        *this\__items( )\color\state = 0
-        *this\__items( )\color\back = 0 
-        *this\__items( )\color\frame = 0
+        *this\__rows( )\index = ListIndex( *this\__rows( ) )
+        *this\__rows( )\color = _get_colors_( )
+        *this\__rows( )\color\state = 0
+        *this\__rows( )\color\back = 0 
+        *this\__rows( )\color\frame = 0
         
         If Text
-          *this\__items( )\text\change = 1
-          *this\__items( )\text\string = StringField( Text.s, 1, #LF$ )
-          *this\__items( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+          *this\__rows( )\text\change = 1
+          *this\__rows( )\text\string = StringField( Text.s, 1, #LF$ )
+          *this\__rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
         *this\count\items + 1
@@ -476,8 +476,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 399
-; FirstLine = 395
+; CursorPosition = 192
+; FirstLine = 161
 ; Folding = -------
 ; Optimizer
 ; EnableXP

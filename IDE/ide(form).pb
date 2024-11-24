@@ -121,26 +121,26 @@ Procedure ShowButtonBox( *second._S_WIDGET, item.i )
             
             *last = *this
             
-            PushListPosition(*second\__items( ))
-            SelectElement(*second\__items( ), item)
+            PushListPosition(*second\__rows( ))
+            SelectElement(*second\__rows( ), item)
             Select *this\type
                Case #__type_String
-                  SetText( *this, (*second\__items( )\text\string) )
+                  SetText( *this, (*second\__rows( )\text\string) )
                Case #__type_Spin
-                  SetState( *this, Val(*second\__items( )\text\string) )
+                  SetState( *this, Val(*second\__rows( )\text\string) )
                Case #__type_ComboBox
-                  SetState( *this, Val(*second\__items( )\text\string) )
+                  SetState( *this, Val(*second\__rows( )\text\string) )
             EndSelect
             
             *this\noscale = 1
             Resize(*this,
-                   *second\__items( )\x,;+30, 
-                   *second\__items( )\y+*second\scroll_y( ), 
-                   *second\__items( )\width,;-30, 
-                   *second\__items( )\height )
+                   *second\__rows( )\x,;+30, 
+                   *second\__rows( )\y+*second\scroll_y( ), 
+                   *second\__rows( )\width,;-30, 
+                   *second\__rows( )\height )
             Hide( *this, 0 )
             ; SetActive( *this )
-            PopListPosition(*second\__items( ))
+            PopListPosition(*second\__rows( ))
          EndIf
       
    EndIf
@@ -160,15 +160,15 @@ Procedure PropertiesEvents( )
          ;
          If EventWidget( ) = *first
             If *first\RowFocused( ) 
-               SelectElement(*second\__items( ), *first\RowFocused( )\index)
-               *second\__items( )\color = *first\RowFocused( )\color
+               SelectElement(*second\__rows( ), *first\RowFocused( )\index)
+               *second\__rows( )\color = *first\RowFocused( )\color
             EndIf
          EndIf
          
          If EventWidget( ) = *second
             If *second\RowFocused( )
-               SelectElement(*first\__items( ), *second\RowFocused( )\index)
-               *first\__items( )\color = *second\RowFocused( )\color
+               SelectElement(*first\__rows( ), *second\RowFocused( )\index)
+               *first\__rows( )\color = *second\RowFocused( )\color
             EndIf
          EndIf
          
@@ -207,19 +207,19 @@ Procedure PropertiesEvents( )
             
             ;
             If *first\RowLeaved( )
-               SelectElement(*second\__items( ), *first\RowLeaved( )\index)
-               *second\__items( )\color = *first\RowLeaved( )\color
+               SelectElement(*second\__rows( ), *first\RowLeaved( )\index)
+               *second\__rows( )\color = *first\RowLeaved( )\color
             EndIf
             If *first\RowEntered( ) 
-               SelectElement(*second\__items( ), *first\RowEntered( )\index)
-               *second\__items( )\color = *first\RowEntered( )\color
+               SelectElement(*second\__rows( ), *first\RowEntered( )\index)
+               *second\__rows( )\color = *first\RowEntered( )\color
             EndIf
          EndIf
          ;
          If EventWidget( ) = *second
             If *second\RowLeaved( )
-               SelectElement(*first\__items( ), *second\RowLeaved( )\index)
-               *first\__items( )\color = *second\RowLeaved( )\color
+               SelectElement(*first\__rows( ), *second\RowLeaved( )\index)
+               *first\__rows( )\color = *second\RowLeaved( )\color
             EndIf
             If *second\RowEntered( ) 
                If *second\RowEntered( )\childrens
@@ -227,9 +227,9 @@ Procedure PropertiesEvents( )
                   *second\RowEntered( )\enter = 0
                   *second\RowEntered( ) = 0
                Else
-                  SelectElement(*first\__items( ), *second\RowEntered( )\index)
-                  *first\__items( )\color = *second\RowEntered( )\color
-                 ;   *first\__items( )\text\string = "change2"
+                  SelectElement(*first\__rows( ), *second\RowEntered( )\index)
+                  *first\__rows( )\color = *second\RowEntered( )\color
+                 ;   *first\__rows( )\text\string = "change2"
                EndIf
             EndIf
          EndIf
@@ -345,7 +345,7 @@ Macro properties_update_text( _gadget_, _value_ )
 EndMacro
 
 Macro properties_update_class( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 )+GetClass( _value_ )+"_"+GetTypeCount( _value_ ) )
+   SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 )+GetClass( _value_ )+"_"+CountType( _value_ ) )
 EndMacro
 
 Macro properties_update_hide( _gadget_, _value_ )
@@ -669,12 +669,12 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
       
       If *new
          ;\\ первый метод формирования названия переменной
-         newClass.s = class+"_"+GetTypeCount( *new )
+         newClass.s = class+"_"+CountType( *new )
          ;\\ второй метод формирования названия переменной
          ;         If *parent = ide_design_MDI
-         ;           newClass.s = GetClass( *new )+"_"+GetTypeCount( *new , 1 )
+         ;           newClass.s = GetClass( *new )+"_"+CountType( *new , 1 )
          ;         Else
-         ;           newClass.s = GetClass( *parent )+"_"+GetTypeCount( *parent )+"_"+GetClass( *new )+"_"+GetTypeCount( *new , 1 )
+         ;           newClass.s = GetClass( *parent )+"_"+CountType( *parent )+"_"+GetClass( *new )+"_"+CountType( *new , 1 )
          ;         EndIf
          ;\\
          SetText( *new, newClass )
@@ -1643,9 +1643,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1274
-; FirstLine = 1240
-; Folding = ---d0------------------------
+; CursorPosition = 231
+; FirstLine = 202
+; Folding = ---f0------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

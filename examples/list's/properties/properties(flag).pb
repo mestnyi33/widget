@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *Tree = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     widget::AddItem(*Tree, #_pi_group_0, "common")
     widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-    widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetTypeCount(Value), #__type_String, 1)
+    widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+CountType(Value), #__type_String, 1)
     widget::AddItem(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     widget::AddItem(*Tree, #_pi_group_1, "layout")
@@ -54,13 +54,13 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
     
     ;;;SetAttribute(*Tree, #__Transformation, #PB_All)
-    Define vert=20, horiz=60, width=400, height=500
+    Define vert=20, horiz=60, Width=400, Height=500
     Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_1, *Tree, #PB_Splitter_FirstFixed)
     Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
     Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_3, #PB_Splitter_SecondFixed)
-    Splitter_3 = widget::Splitter(200, 30, width, height, Splitter_2, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-    SetState(Splitter_3, width-40-horiz)
-    SetState(Splitter_2, height-40-vert)
+    Splitter_3 = widget::Splitter(200, 30, Width, Height, Splitter_2, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+    SetState(Splitter_3, Width-40-horiz)
+    SetState(Splitter_2, Height-40-vert)
     SetState(Splitter_0, vert)
     SetState(Splitter_1, horiz)
     
@@ -68,8 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 42
+; CursorPosition = 42
+; FirstLine = 37
 ; Folding = -
 ; Optimizer
 ; EnableXP
