@@ -487,6 +487,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro ItemOptionBox( ): _option_group_parent: EndMacro
       
       ;-
+      Macro MenuBox( ): ToolBarWidget: EndMacro
       Macro TabBox( ): Tab\widget: EndMacro
       Macro TabEntered( ): Tab\entered: EndMacro   ; Returns mouse entered tab
       Macro TabPressed( ): Tab\pressed: EndMacro   ; Returns mouse focused tab
@@ -4186,6 +4187,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\TabBox( )\draw_width( )  = *this\draw_width( )  ; 39;*this\width[#__c_draw2] ; 
             *this\TabBox( )\draw_height( ) = *this\draw_height( )
          EndIf
+         If *this\MenuBox( )
+            *this\MenuBox( )\draw_x( )      = *this\draw_x( )
+            *this\MenuBox( )\draw_y( )      = *this\draw_y( )
+            *this\MenuBox( )\draw_width( )  = *this\draw_width( )  ; 39;*this\width[#__c_draw2] ; 
+            *this\MenuBox( )\draw_height( ) = *this\draw_height( )
+         EndIf
          If *this\StringWidgetBar( )
             *this\StringWidgetBar( )\draw_x( )      = *this\draw_x( )
             *this\StringWidgetBar( )\draw_y( )      = *this\draw_y( )
@@ -4620,8 +4627,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ if the integral tab bar
             If *this\TabBox( )
-               *this\inner_x( ) = X ; - *this\fs - *this\fs[1]
-               *this\inner_y( ) = Y ; - *this\fs - *this\fs[2]
+               *this\inner_x( ) = X
+               *this\inner_y( ) = Y
                
                ;\\
                If *this\TabBox( )\autosize
@@ -4636,10 +4643,39 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   Else
                      If *this\fs[2]
-                        Resize( *this\TabBox( ), *this\fs, *this\fs + *this\TitleBarHeight, *this\inner_width( ), *this\fs[2] - *this\TitleBarHeight - 1 )
+                        Resize( *this\TabBox( ), *this\fs, *this\fs + *this\TitleBarHeight + *this\MenuBarHeight, *this\inner_width( ), *this\fs[2] - *this\TitleBarHeight - *this\MenuBarHeight - 1 )
                      EndIf
                      If *this\fs[4]
                         Resize( *this\TabBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                     EndIf
+                  EndIf
+               EndIf
+               
+               *this\inner_x( ) + *this\fs + *this\fs[1]
+               *this\inner_y( ) + *this\fs + *this\fs[2]
+            EndIf
+            
+            If *this\MenuBox( )
+               *this\inner_x( ) = X
+               *this\inner_y( ) = Y
+               
+               ;\\
+               If *this\MenuBox( )\autosize
+                  Resize( *this\MenuBox( ), 0, 0, *this\inner_width( ), *this\inner_height( ) )
+               Else
+                  If *this\MenuBox( )\bar\vertical
+                     If *this\fs[1]
+                        Resize( *this\MenuBox( ), *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
+                     EndIf
+                     If *this\fs[3]
+                        Resize( *this\MenuBox( ), *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
+                     EndIf
+                  Else
+                     If *this\fs[2]
+                        Resize( *this\MenuBox( ), *this\fs, *this\fs + *this\TitleBarHeight, *this\inner_width( ), *this\MenuBarHeight )
+                     EndIf
+                     If *this\fs[4]
+                        Resize( *this\MenuBox( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
                      EndIf
                   EndIf
                EndIf
@@ -4688,10 +4724,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\caption\x      = *this\frame_x( ) + *this\fs
                   *this\caption\y      = *this\frame_y( ) + *this\fs
                   *this\caption\width  = *this\frame_width( ) - *this\fs * 2
-                  *this\caption\height = *this\fs[2] + *this\fs - 1
                   
-                  If *this\caption\height > *this\frame_height( ) - *this\fs ;*2
-                     *this\caption\height = *this\frame_height( ) - *this\fs ;*2
+                  *this\caption\height = *this\TitleBarHeight + *this\fs - 1
+                  If *this\caption\height > *this\frame_height( ) - *this\fs 
+                     *this\caption\height = *this\frame_height( ) - *this\fs 
                   EndIf
                   
                   ; caption close button
@@ -6975,6 +7011,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\TabBox( )
             *this\TabBox( )\root   = *this\root
             *this\TabBox( )\window = *this\window
+         EndIf
+         If *this\MenuBox( )
+            *this\MenuBox( )\root   = *this\root
+            *this\MenuBox( )\window = *this\window
          EndIf
          
          ;\\ is integrall string bar
@@ -12105,9 +12145,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
-         Protected fs = 2
-         If *this\type <> #__type_Panel
-            *this = *this\parent
+         Protected fs = 2, *box._s_WIDGET
+         
+         If *this\type = #__type_Panel
+            *box = *this\TabBox( )  
+         Else
+             *box = *this
+             *this = *this\parent
          EndIf
          
          ; reset position
@@ -12116,20 +12160,21 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\fs[3] = 0
          *this\fs[4] = 0
          
-         If  *this\TabBox( )
-            *this\TabBox( )\TabChange( ) = 1
+          
+         If  *box
+            *box\TabChange( ) = 1
             
             If size = #PB_Default
-               If constants::BinaryFlag( *this\TabBox( )\flag, #PB_ToolBar_Small )
+               If constants::BinaryFlag( *box\flag, #PB_ToolBar_Small )
                   size = 24
-               ElseIf constants::BinaryFlag( *this\TabBox( )\flag, #PB_ToolBar_Large )
+               ElseIf constants::BinaryFlag( *box\flag, #PB_ToolBar_Large )
                   size = 40
                Else ; If constants::BinaryFlag( *this\flag, #PB_Toolbar_Normal )
                   size = 32
                EndIf
                
                If position = 1 Or position = 3
-                  If constants::BinaryFlag( *this\TabBox( )\flag, #PB_ToolBar_InlineText )
+                  If constants::BinaryFlag( *box\flag, #PB_ToolBar_InlineText )
                      size = 80
                   Else
                      size = 50; - (1 + fs)
@@ -12138,31 +12183,31 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf   
             
             size = DPIScaled( size )
-            size + *this\TitleBarHeight
+            size + *this\TitleBarHeight + *this\MenuBarHeight
             
             If position = 0
-               *this\TabBox( )\hide = 1
+               *box\hide = 1
             Else
-               *this\TabBox( )\hide = 0
+               *box\hide = 0
             EndIf
             
             If position = 1
-               *this\TabBox( )\bar\vertical = 1
+               *box\bar\vertical = 1
                *this\fs[1] = size + fs ; #__panel_width
             EndIf
             
             If position = 3
-               *this\TabBox( )\bar\vertical = 1
+               *box\bar\vertical = 1
                *this\fs[3] = size + fs ; #__panel_width
             EndIf
             
             If position = 2
-               *this\TabBox( )\bar\vertical = 0
+               *box\bar\vertical = 0
                *this\fs[2] = size + fs ; #__panel_height
             EndIf
             
             If position = 4
-               *this\TabBox( )\bar\vertical = 0
+               *box\bar\vertical = 0
                *this\fs[4] = size + fs ; #__panel_height
             EndIf
             
@@ -12275,7 +12320,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this = Create( *parent, "["+*parent\class +"]-"+ ClassFromType( Type ), Type,
                             0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
             
-            *parent\TabBox( ) = *this  
+            If *parent\type = #__type_Panel Or Type = #__type_Tool
+               *parent\TabBox( ) = *this  
+            Else
+               *parent\MenuBox( ) = *this  
+               *parent\MenuBarHeight = DPIScaled(24)
+            EndIf
             
             If constants::BinaryFlag( Flag, #PB_Toolbar_Left ) 
                BarPosition( *this, 1, size )
@@ -15232,7 +15282,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If *this\type = #__type_Panel
-               *this\TabBox( ) = BarCreate( #__type_Tab, *this, #PB_ToolBar_Small ) 
+               BarCreate( #__type_Tab, *this, #PB_ToolBar_Small ) 
                
                If constants::BinaryFlag( Flag, #__flag_nobuttons ) 
                   If constants::BinaryFlag( Flag, #__bar_vertical ) 
@@ -17372,6 +17422,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                               bar_draw_tab( *this\TabBox( ) )
                            Default
                               Draw( *this\TabBox( ) ) ; clip_output_( *this, [#__c_draw] )
+                        EndSelect
+                     EndIf
+                     
+                     If *this\MenuBox( ) And
+                        *this\MenuBox( )\countitems
+                        Select *this\MenuBox( )\type
+                           Case #__type_Tool,
+                                #__type_Tab, 
+                                #__type_PopupMenu, 
+                                #__type_Menu
+                              bar_draw_tab( *this\MenuBox( ) )
+                           Default
+                              Draw( *this\MenuBox( ) ) ; clip_output_( *this, [#__c_draw] )
                         EndSelect
                      EndIf
                      
@@ -20285,6 +20348,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                is_atpoint_( *this\TabBox( ), mouse_x, mouse_y, [#__c_frame] ) And
                is_atpoint_( *this\TabBox( ), mouse_x, mouse_y, [#__c_draw] )
                *this = *this\TabBox( )
+            EndIf
+            ;\\ is integral tab bar
+            If *this\MenuBox( ) And Not *this\MenuBox( )\hide And
+               is_atpoint_( *this\MenuBox( ), mouse_x, mouse_y, [#__c_frame] ) And
+               is_atpoint_( *this\MenuBox( ), mouse_x, mouse_y, [#__c_draw] )
+               *this = *this\MenuBox( )
             EndIf
             ;\\ is integral scroll bar's
             If *this\scroll
@@ -24113,9 +24182,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21545
-; FirstLine = 20975
-; Folding = ---------------------------------------------------------------------------------------------------0-----------vq------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-8----------------------------------------------------------------------------------------------------------------------------------4--0-u8----------------7------00-v8-------------------------------------------------------------------8---
+; CursorPosition = 20355
+; FirstLine = 19756
+; Folding = ---------------------------------------------------------------------------------------------------4------------q+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--d40z-0-----------------------------------------------------------------------------------------------------------------------------v--8-d4----------------r------44--u-------------------------------------------------------------------v----
 ; Optimizer
 ; EnableXP
 ; DPIAware

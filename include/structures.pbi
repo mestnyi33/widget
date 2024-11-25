@@ -675,11 +675,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
                                   ;
          *option_group_parent._s_WIDGET         ; = Option( ) group widget
          *stringBar._s_WIDGET                   ; = SpinBar( ) string box
-         
-;          StructureUnion
-;             *popupBar._s_WIDGET       ; = PopupBar( ) List view box
-;             *comboBar._s_WIDGET       ; = ComboBox( ) List view box
-;          EndStructureUnion
          *menu._s_WIDGET
           displaypopup.b
          ;
@@ -690,7 +685,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ToolBarHeight.w
          MenuBarHeight.w
          StatusBarHeight.w
-         
+         *ToolBarWidget._s_WIDGET
          ;StructureUnion
             ;TabHeight.i
          ;EndStructureUnion
@@ -798,8 +793,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 174
+; CursorPosition = 687
+; FirstLine = 669
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
