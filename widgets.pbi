@@ -492,8 +492,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro TabFocused( ): Tab\focused: EndMacro   ; Returns mouse focused tab
                                                    ;
       Macro TabIndex( ): Tab\index: EndMacro
-      Macro TabSelectedIndex( ): Tab\state: EndMacro      
-      ;Macro TabAddIndex( ): Tab\addindex: EndMacro 
+      Macro TabState( ): Tab\state: EndMacro      
       
       ;-
       Macro MarginLine( ): row\margin: EndMacro ; temp
@@ -3773,35 +3772,35 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro HideState( _this_, _parent_ )
-         _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\__Tab( ) And _this_\TabIndex( ) <> _parent_\__Tab( )\TabSelectedIndex( ) ))))
+         _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\__Tab( ) And _this_\TabIndex( ) <> _parent_\__Tab( )\TabState( ) ))))
 
          If _this_\__Tab( )
             If _this_\hide
                _this_\__Tab( )\hide = - 1
             Else
-               _this_\__Tab( )\hide = 0
+               _this_\__Tab( )\hide = _this_\__Tab( )\hide[1]
             EndIf
          EndIf
          If _this_\__String( )
             If _this_\hide
                _this_\__String( )\hide = - 1
             Else
-               _this_\__String( )\hide = 0
+               _this_\__String( )\hide = _this_\__String( )\hide[1]
             EndIf
          EndIf
          If _this_\scroll
             If _this_\scroll\v
-               If _this_\hide
+               If _this_\hide Or _this_\scroll\v\bar\max <= _this_\scroll\v\bar\page\len
                   _this_\scroll\v\hide = - 1
                Else
-                  _this_\scroll\v\hide = 0
+                  _this_\scroll\v\hide = _this_\scroll\v\hide[1]
                EndIf
             EndIf
             If _this_\scroll\h
-               If _this_\hide
+               If _this_\hide Or _this_\scroll\h\bar\max <= _this_\scroll\h\bar\page\len
                   _this_\scroll\h\hide = - 1
                Else
-                  _this_\scroll\h\hide = 0
+                 _this_\scroll\h\hide = _this_\scroll\h\hide[1]
                EndIf
             EndIf
          EndIf
@@ -3811,35 +3810,35 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Macro DisableState( _this_, _parent_ )
-         _this_\disable = Bool( _this_\disable[1] Or ( _parent_ And ( _parent_\disable Or ( _parent_\__Tab( ) And _this_\TabIndex( ) <> _parent_\__Tab( )\TabSelectedIndex( ) ))))
+         _this_\disable = Bool( _this_\disable[1] Or ( _parent_ And ( _parent_\disable Or ( _parent_\__Tab( ) And _this_\TabIndex( ) <> _parent_\__Tab( )\TabState( ) ))))
          
          If _this_\__Tab( )
             If _this_\disable
                _this_\__Tab( )\disable = - 1
             Else
-               _this_\__Tab( )\disable = 0
+               _this_\__Tab( )\disable = _this_\__Tab( )\disable[1]
             EndIf
          EndIf
          If _this_\__String( )
             If _this_\disable
                _this_\__String( )\disable = - 1
             Else
-               _this_\__String( )\disable = 0
+               _this_\__String( )\disable = _this_\__String( )\disable[1]
             EndIf
          EndIf
          If _this_\scroll
             If _this_\scroll\v
-               If _this_\disable
+               If _this_\disable Or _this_\scroll\v\bar\max <= _this_\scroll\v\bar\page\len
                   _this_\scroll\v\disable = - 1
                Else
-                  _this_\scroll\v\disable = 0
+                  _this_\scroll\v\disable = _this_\scroll\v\disable[1]
                EndIf
             EndIf
             If _this_\scroll\h
-               If _this_\disable
+               If _this_\disable Or _this_\scroll\h\bar\max <= _this_\scroll\h\bar\page\len
                   _this_\scroll\h\disable = - 1
                Else
-                  _this_\scroll\h\disable = 0
+                  _this_\scroll\h\disable = _this_\scroll\h\disable[1]
                EndIf
             EndIf
          EndIf
@@ -5347,7 +5346,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If *this\type = #__type_Panel
             If *this\__Tab( )
-               ProcedureReturn *this\__Tab( )\TabSelectedIndex( )
+               ProcedureReturn *this\__Tab( )\TabState( )
             EndIf
          EndIf
          
@@ -5366,7 +5365,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_PopupMenu Or
             *this\type = #__type_Menu
             ;
-            ProcedureReturn *this\TabSelectedIndex( )
+            ProcedureReturn *this\TabState( )
          Else
             If *this\bar
                If *this\type = #__type_Splitter
@@ -6687,10 +6686,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             If tabindex < 0
-               ;tabindex = *parent\TabAddIndex( )
                If *parent\__tab( )
                   tabindex = *parent\__Tab( )\TabIndex( )
-                  ;Debug "tabindex "+tabindex +" "+*parent\__Tab( )\TabIndex( )
                Else
                   tabindex = 0
                EndIf
@@ -8865,8 +8862,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                item = ListIndex( *this\__tabs( ))
             Else
                If SelectElement( *this\__tabs( ), Item )
-                  If *this\TabSelectedIndex( ) >= Item
-                     *this\TabSelectedIndex( ) + 1
+                  If *this\TabState( ) >= Item
+                     *this\TabState( ) + 1
                   EndIf
                   
                   InsertElement( *this\__tabs( ))
@@ -8901,7 +8898,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ set default selected tab
          If item = 0 
             If Not *this\TabFocused( )
-               *this\TabSelectedIndex( )         = 0
+               *this\TabState( )         = 0
                ;
                If *this\type = #__type_Tab
                   *this\TabFocused( )       = *this\__tabs( )
@@ -8917,7 +8914,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\parent = Opened( )
                If *this\type = #__type_Tab
                   *this\TabIndex( ) = Item
-                  ;*this\parent\TabAddIndex( ) = Item
                EndIf
             Else
                OpenList( *this\parent, Item )
@@ -8938,8 +8934,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             item = *this\countitems - 1
          EndIf
          
-         If *this\TabSelectedIndex( ) <> item
-            *this\TabSelectedIndex( ) = item
+         If *this\TabState( ) <> item
+            *this\TabState( ) = item
             
             *this\TabChange( ) = #True
             
@@ -9046,7 +9042,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             pos + Bool(typ) * 2
             
             Protected layout = pos * 2
-            Protected text_pos = (6)
+            Protected text_pos = DPIScaled(6)
+            Protected image_pos = 3
             Protected separator_step = (1)
             
             If *this\type = #__type_Tool Or
@@ -9064,12 +9061,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *bar\max = 0
                   *this\image\x = ( *this\height - (16) - pos - (1) ) / 2
                   ; Debug " --- widget::Tab_Update( ) - " + *this\width +" "+ *this\height
-                  
-                  If *bar\vertical
-                     *this\text\y = text_pos
-                  Else
-                     *this\text\x = text_pos
-                  EndIf
                   
                   ; *this\text\width = *this\width
                   *this\scroll_width( ) = 0
@@ -9122,7 +9113,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *tabs( )\y = *bar\max + pos
                         
                         If *this\type = #__type_Tab
-                           If *this\TabSelectedIndex( ) = index
+                           If *this\TabState( ) = index
                               *tabs( )\x        = - Bool( *this\parent\fs[3] )
                               *tabs( )\width    = *this\width
                            Else
@@ -9200,7 +9191,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *tabs( )\x = *bar\max + pos
                         ;
                         If *this\type = #__type_Tab
-                           If *this\TabSelectedIndex( ) = index
+                           If *this\TabState( ) = index
                               *tabs( )\y       = - (Bool( *this\parent\fs[4] ))
                               *tabs( )\height  = *this\height
                            Else
@@ -9229,13 +9220,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *tabs( )\text\y  = *tabs( )\y + *this\text\y
                            
                            ;
-                           *tabs( )\image\x = *tabs( )\x + Bool( *tabs( )\image\width ) * *this\image\x ;+ Bool( *tabs( )\text\width ) * ( *this\text\x )
-                           *tabs( )\text\x  = *tabs( )\image\x + *tabs( )\image\width + *this\text\x
+                           *tabs( )\image\x = *tabs( )\x + Bool( *tabs( )\image\width ) * image_pos
+                           *tabs( )\text\x  = text_pos + *tabs( )\image\x + *tabs( )\image\width
                            
                            ;
-                           *tabs( )\width = Bool( *tabs( )\text\width ) * ( *this\text\x * 2 ) + *tabs( )\text\width +
-                                            Bool( *tabs( )\image\width ) * ( *this\image\x * 2 ) + *tabs( )\image\width - ( Bool( *tabs( )\image\width And *tabs( )\text\width ) * ( *this\text\x ))
-                           
+                           *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
+                                            Bool( *tabs( )\image\width ) * ( image_pos * 2 ) + *tabs( )\image\width) - Bool( *tabs( )\image\width And *tabs( )\text\width ) * ( text_pos )
+                          
                            ;
                            If *this\type = #__type_Tab
                               *bar\max + *tabs( )\width + DPIScaled(Bool( index <> *this\countitems - 1 )) - Bool(typ) * 2 + Bool( index = *this\countitems - 1 ) * layout
@@ -12164,7 +12155,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If size = #PB_Default
                If constants::BinaryFlag( *box\flag, #PB_ToolBar_Small )
-                  size = 24
+                  size = 20+Bool(*box\type = #__type_tab)*4
                ElseIf constants::BinaryFlag( *box\flag, #PB_ToolBar_Large )
                   size = 40
                Else ; If constants::BinaryFlag( *this\flag, #PB_Toolbar_Normal )
@@ -12293,26 +12284,27 @@ CompilerIf Not Defined( widget, #PB_Module )
             Hide( *this, #True ) 
          Else
             
-            If constants::BinaryFlag( Flag, #PB_ToolBar_Small ) 
-               size = 24
-            ElseIf constants::BinaryFlag( Flag, #PB_ToolBar_Large )
-               size = 40
-            Else ; If constants::BinaryFlag( Flag, #PB_Toolbar_Normal )
-               size = 32
-            EndIf
-            
-            ;If Not constants::BinaryFlag( Flag, #PB_Toolbar_InlineText )
-            If constants::BinaryFlag( Flag, #PB_Toolbar_Left ) Or constants::BinaryFlag( Flag, #PB_Toolbar_Right )
-               size + 40
-            EndIf
-            ;EndIf
+;             If constants::BinaryFlag( Flag, #PB_ToolBar_Small ) 
+;                size = 20
+;             ElseIf constants::BinaryFlag( Flag, #PB_ToolBar_Large )
+;                size = 40
+;             Else ; If constants::BinaryFlag( Flag, #PB_Toolbar_Normal )
+;                size = 32
+;             EndIf
+;             
+;             ;If Not constants::BinaryFlag( Flag, #PB_Toolbar_InlineText )
+;             If constants::BinaryFlag( Flag, #PB_Toolbar_Left ) Or 
+;                constants::BinaryFlag( Flag, #PB_Toolbar_Right )
+;                size + 40
+;             EndIf
+;             ;EndIf
             
             ;
             If constants::BinaryFlag( Flag, #PB_Toolbar_Left ) Or 
                constants::BinaryFlag( Flag, #PB_Toolbar_Right )
                Flag | #__flag_vertical
             EndIf
-            
+            size = - 1
             ;
             *this = Create( *parent, "["+*parent\class +"]-"+ ClassFromType( Type ), Type,
                             0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
@@ -17781,7 +17773,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Not ( Not widgets( )\hide And widgets( )\draw_width( ) > 0 And widgets( )\draw_height( ) > 0 )
                         
                         ; is child
-                        If Bool( Not ( widgets( )\parent\__Tab( ) And widgets( )\TabIndex( ) <> widgets( )\parent\__Tab( )\TabSelectedIndex( ) ))
+                        If Bool( Not ( widgets( )\parent\__Tab( ) And widgets( )\TabIndex( ) <> widgets( )\parent\__Tab( )\TabState( ) ))
                            draw_roundbox_( widgets( )\inner_x( ), widgets( )\inner_y( ), widgets( )\inner_width( ), widgets( )\inner_height( ), widgets( )\round, widgets( )\round, $ff00ffff )
                         EndIf
                      EndIf
@@ -22056,9 +22048,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not( *this\__Tab( ) And *this\__Tab( )\TabIndex( ) <> item )
                ProcedureReturn result
             EndIf
-;             If *this\TabAddIndex( ) = item
-;                ProcedureReturn result
-;             EndIf
          EndIf
          
          If *this
@@ -22083,7 +22072,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\__Tab( ) And 
                *this\__Tab( )\type = #__type_Tab
                *this\__Tab( )\TabIndex( ) = Item
-               ;*this\TabAddIndex( ) = item
             EndIf
             
             Opened( ) = *this
@@ -24192,9 +24180,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 495
-; FirstLine = 492
-; Folding = -------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------+---40----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0u---
+; CursorPosition = 3837
+; FirstLine = 3822
+; Folding = -------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------f----8+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v40---
 ; Optimizer
 ; EnableXP
 ; DPIAware

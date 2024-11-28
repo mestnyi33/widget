@@ -58,6 +58,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       
       *disable = Button( 180, 160, 50, 25, "disable") : SetClass( *disable, "button-disable" )
       *enable = Button( 240, 160, 50, 25, "enable") : SetClass( *enable, "button-enable" )
+      
+      Disable(*disable, 1)
+      
       Bind( *enable, @events( ), event )
       Bind( *disable, @events( ), event )
       
@@ -65,7 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7
+; CursorPosition = 61
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware

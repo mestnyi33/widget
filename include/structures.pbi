@@ -436,7 +436,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TAB
          state.c
          index.c
-         ;addindex.c
          
          ; tab
          *entered._s_ITEMS
