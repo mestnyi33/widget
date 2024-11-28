@@ -164,14 +164,6 @@ CompilerIf #PB_Compiler_IsMainFile
             
             
             
-            If *this\parent\TabBox( )
-               If *this\parent\TabBox( ) = *this
-                  FreeStructure( *this\parent\TabBox( ) )
-                  *this\parent\TabBox( ) = 0
-               EndIf
-               *this\parent\TabBox( ) = #Null
-            EndIf
-            
             If *this\parent\scroll
                If *this\parent\scroll\v = *this
                   FreeStructure( *this\parent\scroll\v )
@@ -205,15 +197,6 @@ CompilerIf #PB_Compiler_IsMainFile
                         
                         If widgets( )\parent <> widgets( )\root
                            widgets( )\parent\haschildren - 1
-                        EndIf
-                        
-                        If widgets( )\TabBox( )
-                           If widgets( )\TabBox( ) = widgets( )
-                              Debug "   free - tab " + widgets( )\TabBox( )\class
-                              FreeStructure( widgets( )\TabBox( ) )
-                              widgets( )\TabBox( ) = 0
-                           EndIf
-                           widgets( )\TabBox( ) = #Null
                         EndIf
                         
                         If widgets( )\scroll
@@ -444,8 +427,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 332
-; FirstLine = 328
-; Folding = --------------
+; CursorPosition = 201
+; FirstLine = 108
+; Folding = -------------
 ; EnableXP
 ; DPIAware

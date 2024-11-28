@@ -77,11 +77,11 @@ DeclareModule guiMarquee
 	;- DECLARES
 	Declare Create(parentWindow.i, timerID.i, scrollStep.w = #DefScrollStep, delay.i = #DefDelay)
 	Declare Free(*marquee.MARQUEE)
-	Declare CreateTool(*marquee.MARQUEE, x.i, y.i, width.i, height.i, text.s, clrText.l, clrBack.l, fontid.i, flags.l = #DirectionLeft, *exInfo.MARQUEE_TOOL_EXINFO = #Null)
+	Declare CreateTool(*marquee.MARQUEE, X.i, Y.i, Width.i, Height.i, Text.s, clrText.l, clrBack.l, fontid.i, flags.l = #DirectionLeft, *exInfo.MARQUEE_TOOL_EXINFO = #Null)
 	Declare DestroyTool(*tool.MARQUEE_TOOL)
-	Declare ResizeTool(*tool.MARQUEE_TOOL, x.i, y.i, width.i, height.i)
-	Declare HideTool(*tool.MARQUEE_TOOL, hide.b)
-	Declare SetToolText(*tool.MARQUEE_TOOL, text.s)
+	Declare ResizeTool(*tool.MARQUEE_TOOL, X.i, Y.i, Width.i, Height.i)
+	Declare HideTool(*tool.MARQUEE_TOOL, Hide.b)
+	Declare SetToolText(*tool.MARQUEE_TOOL, Text.s)
 	Declare OnTimerTick(*marquee.MARQUEE)
 	Declare SetDelay(*marquee.MARQUEE, ms.i)
 EndDeclareModule
@@ -136,11 +136,11 @@ Module guiMarquee
 		If *tool : DrawTool(*tool) : EndIf 
 	EndProcedure
 	
-	Procedure CreateTool(*marquee.MARQUEE, x.i, y.i, width.i, height.i, text.s, clrTxt.l, clrBack.l, fid.i, flags.l = #DirectionLeft, *exInfo.MARQUEE_TOOL_EXINFO = #Null)
+	Procedure CreateTool(*marquee.MARQUEE, X.i, Y.i, Width.i, Height.i, Text.s, clrTxt.l, clrBack.l, fid.i, flags.l = #DirectionLeft, *exInfo.MARQUEE_TOOL_EXINFO = #Null)
 		AddElement(*marquee\Tools())
 		*marquee\Tools()\Marquee = *marquee
-		*marquee\Tools()\Text = text
-		*marquee\Tools()\Canvas = CanvasGadget(#PB_Any, x, y, width, height)
+		*marquee\Tools()\Text = Text
+		*marquee\Tools()\Canvas = CanvasGadget(#PB_Any, X, Y, Width, Height)
 		*marquee\Tools()\ClrText = clrTxt
 		*marquee\Tools()\ClrBack = clrBack
 		*marquee\Tools()\Flags = flags
@@ -309,12 +309,12 @@ Module guiMarquee
 		*marquee\TimerMS = ms
 	EndProcedure
 	
-	Procedure ResizeTool(*tool.MARQUEE_TOOL, x.i, y.i, width.i, height.i)
-		ResizeGadget(*tool\Canvas, x, y, width, height)
+	Procedure ResizeTool(*tool.MARQUEE_TOOL, X.i, Y.i, Width.i, Height.i)
+		ResizeGadget(*tool\Canvas, X, Y, Width, Height)
 	EndProcedure
 	
-	Procedure SetToolText(*tool.MARQUEE_TOOL, text.s)
-		*tool\Text = text
+	Procedure SetToolText(*tool.MARQUEE_TOOL, Text.s)
+		*tool\Text = Text
 		DrawTool(*tool)
 	EndProcedure
 	
@@ -328,8 +328,8 @@ Module guiMarquee
 		Next 
 	EndProcedure
 	
-	Procedure HideTool(*tool.MARQUEE_TOOL, hide.b)
-		HideGadget(*tool\Canvas, hide)
+	Procedure HideTool(*tool.MARQUEE_TOOL, Hide.b)
+		HideGadget(*tool\Canvas, Hide)
 	EndProcedure
 EndModule
 
@@ -368,7 +368,8 @@ partext = "Every drawing output has a default unit of measurement. The default u
               "It is however possible to select a different unit of measurement for the output when " +
               "creating it with the ImageVectorOutput(), PrinterVectorOutput() or similar function."
 
-g_win = OpenWindow(#PB_Any, 10, 10, 400, 350, "MarqueeEX", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
+OpenWindow(0, 10, 10, 400, 350, "MarqueeEX", #PB_Window_SystemMenu | #PB_Window_SizeGadget)
+g_win = 0
 g_marquee = guiMarquee::Create(g_win, #MARQUEE_TIMER_ID)
 BindEvent(#PB_Event_Timer, @TimerEvent(), g_win)
 BindEvent(#PB_Event_SizeWindow, @SizeEvent(), g_win)
@@ -385,6 +386,8 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 guiMarquee::Free(g_marquee)
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 372
+; FirstLine = 355
 ; Folding = -------
 ; EnableXP

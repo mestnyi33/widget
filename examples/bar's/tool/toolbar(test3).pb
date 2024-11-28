@@ -82,8 +82,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-  
-  Procedure ToolBarEvents( )
+   
+   Procedure ToolBarEvents( )
       Protected *e_widget._s_WIDGET = EventWidget( )
       Protected BarButton = WidgetEventItem( ) ; GetData( *e_widget ) 
       
@@ -91,71 +91,6 @@ CompilerIf #PB_Compiler_IsMainFile
          Debug "click " + BarButton +" "+ *e_widget\TabEntered( )\itemindex
       EndIf
    EndProcedure
-   
-   
-;    Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Normal )
-;       ; ProcedureReturn *parent
-;       ;         If Flag & #__bar_vertical = #False
-;       ;                   *parent\fs[2] + #__panel_height
-;       ;                Else
-;       ;                   *parent\fs[1] = #__panel_width
-;       ;                EndIf
-;       If flag & #PB_ToolBar_Small 
-;          *parent\ToolBarHeight = 25
-;       ElseIf flag & #PB_ToolBar_Large 
-;          *parent\ToolBarHeight = 45
-;       Else;If flag & #PB_ToolBar_Normal 
-;          *parent\ToolBarHeight = 35
-;       EndIf
-;       Protected *this._s_WIDGET = Create( *parent, *parent\class + "_ToolBar", #__type_Tool, 0, 0, 900, *parent\ToolBarHeight, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-;       *parent\TabBox( ) = *this
-;       
-;       ;ProcedureReturn ToolBar( *parent, flag )
-;       
-;       ;  Debug *this\TabAddIndex( ) ; TabState( ) ; TabIndex( )
-;       ;*this\type = #__type_Tool
-;       ;SetFrame(*this, 10 )
-;       ;SetAlign( *this, #__align_full|#__align_top )
-;       
-;       Resize( *parent, #PB_Ignore, 30, #PB_Ignore, #PB_Ignore )
-;       
-;       widget( ) = *this ;????????????????
-;       ProcedureReturn *this
-;    EndProcedure
-;    
-;    
-;    Macro ToolBar( parent, flag = #PB_ToolBar_Normal )
-;       _ToolBar( parent, flag )
-;       ;    Container( 0,0,0,0 ) 
-;       ;    widget( )\class = "TOOLBAR"
-;       ;    Text( widget( )\x+widget( )\width, 5,3,30,"" )
-;       ;    widget( )\class = "^"
-;    EndMacro
-;    
-;    ;    Macro BarButton( _button_, _image_, _mode_=0, _text_="" )
-;    ;          If _image_
-;    ;             ButtonImage(( ( widget( )\x+widget( )\width ) ), 5,30,30,_image_, _mode_ )
-;    ;          Else
-;    ;             Button(( ( widget( )\x+widget( )\width ) ), 5,50,30,_text_, _mode_ )
-;    ;          EndIf
-;    ;          
-;    ;          ;widget( )\color = widget( )\parent\color
-;    ;          widget( )\class = "TOOLBAR_BOTTON_"+MacroExpandedCount
-;    ;          widget( )\data = _button_
-;    ;          
-;    ;          Bind( widget( ), @ide_events( ) )
-;    ;    EndMacro
-;    ;    
-;    ;    Macro Separator( )
-;    ;          Text( widget( )\x+widget( )\width, 5,1,30,"" )
-;    ;          widget( )\class = "<"
-;    ;          Button( widget( )\x+widget( )\width, 5+3,1,30-6,"" )
-;    ;          widget( )\class = "|"
-;    ;          ; SetData( widget( ), - MacroExpandedCount )
-;    ;          Text( widget( )\x+widget( )\width, 5,1,30,"" )
-;    ;          widget( )\class = ">"
-;    ;    EndMacro
-   
    
    If OpenWindow( 0, 30, 200, 800, 380, "ToolBar example")   
       If CreateToolBar(0, WindowID(0), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_InlineText)
@@ -237,57 +172,57 @@ CompilerIf #PB_Compiler_IsMainFile
       ;Bind( w_ide_toolbar, @ToolBarEvents( ), #__event_Change )
       
       Button( 110,10, 50,50,"btn1" ) : SetClass(widget( ), "btn1" )
-      CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
-      
-      
-     ; a_set( w_ide_toolbar_container )
-      
-   EndIf
-   
-   Show_DEBUG( )
-   
-   Define Event, Quit
-   Repeat
-      Event = WaitWindowEvent()
-      
-      Select Event
-            
-         Case #PB_Event_Menu
-            Debug Str(EventMenu())+" - event item"
-            
-         Case #PB_Event_CloseWindow  ; If the user has pressed on the close button
-            Quit = 1
-            
-      EndSelect
-      
-   Until Quit = 1
+   CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
    
    
-   End   ; All resources are automatically freed
+   ; a_set( w_ide_toolbar_container )
    
-   DataSection   
-      IncludePath #IDE_path + "ide/include/images"
-      
-      file_open:        : IncludeBinary "delete1.png"
-      file_save:        : IncludeBinary "paste.png"
-      
-      widget_delete:    : IncludeBinary "delete1.png"
-      widget_paste:     : IncludeBinary "paste.png"
-      widget_copy:      : IncludeBinary "copy.png"
-      widget_cut:       : IncludeBinary "cut.png"
-      
-      group:            : IncludeBinary "group/group.png"
-      group_un:         : IncludeBinary "group/group_un.png"
-      group_top:        : IncludeBinary "group/group_top.png"
-      group_left:       : IncludeBinary "group/group_left.png"
-      group_right:      : IncludeBinary "group/group_right.png"
-      group_bottom:     : IncludeBinary "group/group_bottom.png"
-      group_width:      : IncludeBinary "group/group_width.png"
-      group_height:     : IncludeBinary "group/group_height.png"
-   EndDataSection
+EndIf
+
+Show_DEBUG( )
+
+Define Event, Quit
+Repeat
+   Event = WaitWindowEvent()
+   
+   Select Event
+         
+      Case #PB_Event_Menu
+         Debug Str(EventMenu())+" - event item"
+         
+      Case #PB_Event_CloseWindow  ; If the user has pressed on the close button
+         Quit = 1
+         
+   EndSelect
+   
+Until Quit = 1
+
+
+End   ; All resources are automatically freed
+
+DataSection   
+   IncludePath #IDE_path + "ide/include/images"
+   
+   file_open:        : IncludeBinary "delete1.png"
+   file_save:        : IncludeBinary "paste.png"
+   
+   widget_delete:    : IncludeBinary "delete1.png"
+   widget_paste:     : IncludeBinary "paste.png"
+   widget_copy:      : IncludeBinary "copy.png"
+   widget_cut:       : IncludeBinary "cut.png"
+   
+   group:            : IncludeBinary "group/group.png"
+   group_un:         : IncludeBinary "group/group_un.png"
+   group_top:        : IncludeBinary "group/group_top.png"
+   group_left:       : IncludeBinary "group/group_left.png"
+   group_right:      : IncludeBinary "group/group_right.png"
+   group_bottom:     : IncludeBinary "group/group_bottom.png"
+   group_width:      : IncludeBinary "group/group_width.png"
+   group_height:     : IncludeBinary "group/group_height.png"
+EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 199
-; FirstLine = 182
+; CursorPosition = 206
+; FirstLine = 122
 ; Folding = --
 ; EnableXP

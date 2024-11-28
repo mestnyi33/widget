@@ -380,7 +380,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          sublevel.w
          
          *data  ; set/get item data
-         *menu._s_WIDGET
+         *rowmenu._s_WIDGET
       EndStructure
       
       ;--     ROWS
@@ -413,10 +413,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ROW
       Structure _s_ROW
          ID.i[4]
-         
-         ; column.a
-         ; sublevelcolumn.a
-         
          sublevelpos.a
          sublevelsize.a
          ;
@@ -434,17 +430,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          margin._s_margin
          
          *tt._s_tt
-         
-         ;  List lines._s_rows( )
       EndStructure
       
       ;--     TAB
       Structure _s_TAB
-         *widget._s_WIDGET
-         
          state.c
          index.c
-         addindex.c
+         ;addindex.c
          
          ; tab
          *entered._s_ITEMS
@@ -481,6 +473,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          invert.b
          vertical.b
          direction.b
+         
+        ;;; orient.b ; Поддерживаемые ориентации
          
          percent.f
          
@@ -673,10 +667,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
          *combobutton._s_BUTTONS  ; combobox
                                   ;
-         *option_group_parent._s_WIDGET         ; = Option( ) group widget
-         *stringBar._s_WIDGET                   ; = SpinBar( ) string box
-         *menu._s_WIDGET
-          displaypopup.b
+         *tabbox._s_WIDGET
+         *menubox._s_WIDGET
+         *optionbox._s_WIDGET         ; = Option( ) group widget
+         *stringbox._s_WIDGET                   ; = SpinBar( ) string box
+         *popupbox._s_WIDGET
+         
+         displaypopup.b
          ;
          ;                           
          BarWidth.w               ; bar v size
@@ -685,7 +682,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ToolBarHeight.w
          MenuBarHeight.w
          StatusBarHeight.w
-         *ToolBarWidget._s_WIDGET
          ;StructureUnion
             ;TabHeight.i
          ;EndStructureUnion
@@ -793,8 +789,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 687
-; FirstLine = 669
+; CursorPosition = 438
+; FirstLine = 434
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

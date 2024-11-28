@@ -43,10 +43,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ; reset selected items
       SetState( *PANEL_1, - 1 )
       
-      BarPosition( *PANEL_1\TabBox( ), 1, 100 )
-;       *PANEL_1\TabBox( )\bar\vertical = 1
-;       Resize( *PANEL_1, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
       
+      BarPosition( *PANEL_1\__Tab( ), 1, 100 )
+     
       
       *PANEL_1 = Panel( 30+340+10, 30, 340, 240 )
       ;\\
@@ -104,8 +103,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       WaitClose( )
    EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 45
-; FirstLine = 34
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 46
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
+; DPIAware

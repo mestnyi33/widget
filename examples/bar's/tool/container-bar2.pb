@@ -12,65 +12,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
-  Procedure TabViewType( *this._s_widget, position.i, size.i = #PB_Default )
+   Procedure TabViewType( *this._s_widget, position.i, size.i = #PB_Default )
         ProcedureReturn BarPosition(*this, position, size)
-        
-        *this = *this\parent
-     ; reset position
-      *this\fs[1] = 0
-      *this\fs[2] = 0
-      *this\fs[3] = 0
-      *this\fs[4] = 0
-      
-      If position = 1 Or position = 3
-         *this\ToolBarHeight = 80
-      EndIf
-      
-      If position = 0
-         *this\TabBox( )\hide = 1
-      Else
-         *this\TabBox( )\hide = 0
-      EndIf
-      
-      If position = 1
-         *this\TabBox( )\bar\vertical = 1
-         If size = #PB_Default
-            *this\fs[1] = *this\ToolBarHeight + 2 ; #__panel_width
-         Else
-            *this\fs[1] = size
-         EndIf
-      EndIf
-      
-      If position = 3
-         *this\TabBox( )\bar\vertical = 1
-         If size = #PB_Default
-            *this\fs[3] = *this\ToolBarHeight + 2 ; #__panel_width
-         Else
-            *this\fs[3] = size
-         EndIf
-      EndIf
-      
-      If position = 2
-         *this\TabBox( )\bar\vertical = 0
-         If size = #PB_Default
-            *this\fs[2] = *this\ToolBarHeight + 2 ; #__panel_height
-         Else
-            *this\fs[2] = size
-         EndIf
-      EndIf
-      
-      If position = 4
-         *this\TabBox( )\bar\vertical = 0
-         If size = #PB_Default
-            *this\fs[4] = *this\ToolBarHeight + 2 ; #__panel_height
-         Else
-            *this\fs[4] = size
-         EndIf
-      EndIf
-      
-      If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-         PostEventRepaint( *this\root )
-      EndIf
    EndProcedure
    
    If Open(0, 0, 0, 850, 430, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -201,8 +144,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 9
-; Folding = ---
+; CursorPosition = 16
+; FirstLine = 12
+; Folding = -
 ; Optimizer
 ; EnableXP
