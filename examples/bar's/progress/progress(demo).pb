@@ -19,12 +19,12 @@ EndProcedure
 
 Procedure events_progress_widgets()
   ;ClearDebugOutput()
-  ;Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
+  ;Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(Index(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
   Select WidgetEvent( )
     Case #__Event_Change
-     ; SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      ; Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+     ; SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
+      ; Debug  Str(Index(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -42,12 +42,12 @@ EndProcedure
 
 Procedure events_track_widgets()
   ;ClearDebugOutput()
- ;; Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(GetIndex(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
+ ;; Debug ""+WidgetEvent( )+ " - " +#PB_Compiler_Procedure+ " - " +Str(Index(EventWidget( ))) + " state - "+ GetState(EventWidget( )) ; 
   
   Select WidgetEvent( )
     Case #__Event_Change
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      SetState(ID(GetIndex(EventWidget( ))-3), GetState(EventWidget( )))
+      SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
+      SetState(ID(Index(EventWidget( ))-3), GetState(EventWidget( )))
   EndSelect
 EndProcedure
 
@@ -134,8 +134,8 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 104
+; CursorPosition = 49
+; FirstLine = 42
 ; Folding = --
 ; Optimizer
 ; EnableXP

@@ -21,28 +21,28 @@ CompilerIf Not Defined(Splitter, #PB_Module)
     ;- PUBLIC
     Procedure GetState(Gadget.i)
       If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        ProcedureReturn widget::GetState( widget::Root( ) )
+        ProcedureReturn widget::GetState( widget::root( ) )
       EndIf
     EndProcedure
     
     Procedure GetAttribute(Gadget.i, Attribute.i)
       If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        ProcedureReturn widget::GetAttribute( widget::Root( ), Attribute )
+        ProcedureReturn widget::GetAttribute( widget::root( ), Attribute )
       EndIf
     EndProcedure
     
     Procedure SetState(Gadget.i, State.i)
       If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        If widget::SetState( widget::Root( ), State) 
-          widget::PostEventRepaint( widget::Root( ) )
+        If widget::SetState( widget::root( ), State) 
+          widget::PostEventRepaint( widget::root( ) )
         EndIf
       EndIf
     EndProcedure
     
     Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
       If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        If widget::SetAttribute( widget::Root( ), Attribute, Value)
-          widget::PostEventRepaint( widget::Root( ) )
+        If widget::SetAttribute( widget::root( ), Attribute, Value)
+          widget::PostEventRepaint( widget::root( ) )
         EndIf
       EndIf
     EndProcedure
@@ -113,9 +113,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EnableExplicit
   #__flag_TextBorder = #PB_Text_Border
   
-  Macro GetIndex( this )
-    MacroExpandedCount
-  EndMacro
   Macro SetGadgetAttribute(_gadget_, _attribute_, _value_)
     Splitter::SetAttribute(_gadget_, _attribute_, _value_)
   EndMacro
@@ -134,7 +131,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 
 
 
-  ; Procedure.l GetIndex( *this._S_widget )
+  ; Procedure.l Index( *this._S_widget )
   ;     ; ProcedureReturn *this\index - 1
   ;   EndProcedure
   
@@ -221,20 +218,20 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   ;widget::Resize(Splitter_ide, 0,0,820,620)
   
-  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(GetIndex( widget::GetParent( s_tbar ))) )
-  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(GetIndex( widget::GetParent( s_desi ))))
-  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(GetIndex( widget::GetParent( s_view ))))
-  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(GetIndex( widget::GetParent( s_list ))))
-  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(GetIndex( widget::GetParent( s_insp ))))
-  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(GetIndex( widget::GetParent( s_help ))))
+  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+")")
+  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+")")
+  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+")")
+  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+")")
+  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+")")
+  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+")")
   
   Repeat 
     Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 107
+; CursorPosition = 225
+; FirstLine = 200
 ; Folding = ----
 ; EnableXP
 ; DPIAware

@@ -501,7 +501,7 @@ Procedure add_code( *new._s_widget, Class.s, Position.i, SubLevel.i )
    ;          FlagFromFlag( *new\type, *new\flag )+
    ;          " )"
    
-   code = Space( ( GetLevel(*new)-GetLevel(ide_design_MDI) )*5 ) + add_line( *new._s_widget, Class.s )
+   code = Space( ( Level(*new)-Level(ide_design_MDI) )*5 ) + add_line( *new._s_widget, Class.s )
    
    ;   ForEach widget( )
    ;     If Child( widget( ), ide_design_MDI )
@@ -1300,11 +1300,11 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    SetColor(ide_toolbar, #__color_back, $FFD8DBDB )
    
    OpenSubBar("Menu")
-   BarItem(#_tb_file_open, "Open")
-   BarItem(#_tb_file_save, "Save")
+   BarItem(#_tb_file_open, "Open" + Chr(9) + "Ctrl+O")
+   BarItem(#_tb_file_save, "Save" + Chr(9) + "Ctrl+S")
    BarItem(#_tb_file_save_as, "Save as...")
    BarSeparator( )
-   BarItem(#_tb_file_quit, "Quit")
+   BarItem(#_tb_file_quit, "Quit" + Chr(9) + "Ctrl+Q")
    CloseSubBar( )
    ;
    BarSeparator( )
@@ -1464,7 +1464,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    SetAttribute( ide_inspector_splitter, #PB_Splitter_SecondMinimumSize, 130 )
    
    ; set splitters dafault positions
-   SetState( ide_splitter, Height( ide_toolbar ) - 1 + 2 )
+   SetState( ide_splitter, Height( ide_toolbar ) )
    SetState( ide_design_splitter, 200 )
    SetState( ide_help_splitter, Height( ide_help_splitter )-80 )
    SetState( ide_debug_splitter, Height( ide_debug_splitter )-200 )
@@ -1643,8 +1643,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1538
-; FirstLine = 1514
+; CursorPosition = 503
+; FirstLine = 489
 ; Folding = ---f0------------------------
 ; EnableXP
 ; DPIAware

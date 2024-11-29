@@ -20,8 +20,8 @@ Procedure events_widgets()
   Select WidgetEvent( )
     Case #__event_Change
       state = GetState(EventWidget( ))
-      SetGadgetState(GetIndex(EventWidget( )), state)
-      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + state +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
+      SetGadgetState(Index(EventWidget( )), state)
+      Debug  Str(Index(EventWidget( )))+" - widget change " + state +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
   EndSelect
 EndProcedure
 
@@ -56,7 +56,7 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 42
+; CursorPosition = 23
 ; FirstLine = 18
 ; Folding = -
 ; Optimizer

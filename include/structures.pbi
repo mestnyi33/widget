@@ -673,53 +673,49 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *popupbox._s_WIDGET
          
          displaypopup.b
-         ;
          ;                           
-         BarWidth.w               ; bar v size
-        ; BarHeight.w              ; bar h size
          TitleBarHeight.w
-         ToolBarHeight.w
          MenuBarHeight.w
          StatusBarHeight.w
-         ;StructureUnion
-            ;TabHeight.i
-         ;EndStructureUnion
-         
-         
          ;
+         
+         *contex
+         *errors
+         notify.l                   ; оповестить об изменении
+         
+         mode._s_mode               ; drawing mode
          bounds._s_BOUNDS
-         Scroll._s_SCROLL            ; vertical & horizontal scrollbars
-         Text._s_TEXT
+         List *columns._s_column( )
+         
+         
          ;
+         flag.q
+         *root._s_ROOT
+         *window._s_WIDGET
+         *parent._s_WIDGET
+         *address                   ; widget( )\ list address
+         *data
          *gadget._s_WIDGET;[3]
                           ; \root\gadget[0] - active gadget
                           ; \gadget[0] - window active child gadget
                           ; \gadget[1] - splitter( ) first gadget
                           ; \gadget[2] - splitter( ) second gadget
-         
+                          ;
+         *cursor[4]                 
+         ; \cursor[0] 
+         ; \cursor[1]
+         ; \cursor[2]
+         ; \cursor[3]
          Image._s_image[4]
          ; \image[0] - draw image
          ; \image[1] - released image
          ; \image[2] - pressed image
          ; \image[3] - background image
-         
-         flag.q
-         *data
-         *cursor[4] ;
-         
-         *errors
-         notify.l ; оповестить об изменении
-         
-         mode._s_mode            ; drawing mode
+         ;
+         Text._s_TEXT
+         Scroll._s_SCROLL            ; vertical & horizontal scrollbars
          color._s_color[4]
          
-         List *columns._s_column( )
-         
-         *root._s_ROOT
-         *window._s_WIDGET
-         *parent._s_WIDGET
-         *address                 ; widget( )\ list address
-         *contex
       EndStructure
       
       ;--     CANVAS
@@ -788,8 +784,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 438
-; FirstLine = 434
+; CursorPosition = 675
+; FirstLine = 630
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

@@ -158,6 +158,9 @@ StopDrawWidget
 StartEnumWidget
 StopEnumWidget
 
+
+
+
 GadgetMouseX
 GadgetMouseY
 GetMouseX
@@ -166,7 +169,7 @@ SetBackgroundImage
 SetBackgroundColor
 GetCanvasWindow
 GetCanvasGadget
-
+GetRoot
 
 widget
 root
@@ -177,11 +180,14 @@ Events
 EventsData
 EventsItem
 
+Message
+PostQuit
+WaitQuit
 
+Create
 Open
-OpenRoot
-WaitCloseRoot
-CloseRoot
+WaitClose
+Close
 
 Bind
 Post
@@ -191,17 +197,29 @@ Unbind
 IsContainer
 IsChild
 
+SetForeground
+SetAttach
+SetAlign
+SetSizeBounds
+SetMoveBounds
+SetChildrenBounds
+
+SetFrame
+GetFrame
 SetClass
 GetClass
-
-GetAddress
-GetIndex
-GetLevel
-GetRoot
+SetItemFont
+GetItemFont
+SetParent
+GetParent
+SetCursor
+GetCursor
+ChangeCursor
 
 Draw
 ReDraw
 StartDraw
+Drawing
 StopDraw
 StartEnum
 StopEnum
@@ -234,14 +252,17 @@ Frame
 ItemID
 ToolTip
 Free
+Hide
+Disable
+Address
 Type
+Index
+Level
 ID
 X
 Y
 Width
 Height
-Hide
-Disable
 
 GetActive
 GetAttribute
@@ -280,7 +301,9 @@ SetFont
 SetItemAttribute
 SetItemColor
 SetItemData
+SetImage
 SetItemImage
+GetItemImage
 SetItemState
 SetItemText
 SetState

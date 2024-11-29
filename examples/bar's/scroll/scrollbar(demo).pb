@@ -20,8 +20,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_widgets()
       Select WidgetEvent( )
          Case #__event_Change
-            SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-            Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+            SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
+            Debug  Str(Index(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
       EndSelect
    EndProcedure
    
@@ -60,8 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 30
+; CursorPosition = 23
+; FirstLine = 18
 ; Folding = --
 ; Optimizer
 ; EnableXP

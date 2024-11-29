@@ -27,16 +27,16 @@ Procedure events_widgets()
   
   Select WidgetEvent( )
     Case #__event_Up
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+GetIndex(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
+      SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+Index(EventWidget( ))+" - widget up " + GetState(EventWidget( ))
       
     Case #__event_Down
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+GetIndex(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
+      SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+Index(EventWidget( ))+" - widget down " + GetState(EventWidget( ))
        
     Case #__event_Change
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
+      SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
+      Debug  ""+Index(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -112,8 +112,8 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 107
-; FirstLine = 82
+; CursorPosition = 38
+; FirstLine = 25
 ; Folding = --
 ; EnableXP
 ; DPIAware

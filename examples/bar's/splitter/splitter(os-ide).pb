@@ -1,11 +1,5 @@
 ﻿EnableExplicit
 #__flag_TextBorder = #PB_Text_Border
-Macro GetIndex( this )
-  MacroExpandedCount
-EndMacro
-Procedure.l GetParent( *this )
-  ;  ProcedureReturn *this\index - 1
-EndProcedure
 
 Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
 Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
@@ -91,16 +85,17 @@ EndIf
 
 ;Resize(Splitter_ide, 0,0,800,600)
 
-SetGadgetText(toolbar_design, "size: ("+Str(GadgetWidth(toolbar_design))+"x"+Str(GadgetHeight(toolbar_design))+") - " + Str(GetIndex( GetParent( toolbar_design ))) )
-SetGadgetText(mdi_design, "size: ("+Str(GadgetWidth(mdi_design))+"x"+Str(GadgetHeight(mdi_design))+") - " + Str(GetIndex( GetParent( mdi_design ))))
-SetGadgetText(listview_debug, "size: ("+Str(GadgetWidth(listview_debug))+"x"+Str(GadgetHeight(listview_debug))+") - " + Str(GetIndex( GetParent( listview_debug ))))
-SetGadgetText(tree_inspector, "size: ("+Str(GadgetWidth(tree_inspector))+"x"+Str(GadgetHeight(tree_inspector))+") - " + Str(GetIndex( GetParent( tree_inspector ))))
-SetGadgetText(panel_inspector, "size: ("+Str(GadgetWidth(panel_inspector))+"x"+Str(GadgetHeight(panel_inspector))+") - " + Str(GetIndex( GetParent( panel_inspector ))))
-SetGadgetText(text_help, "size: ("+Str(GadgetWidth(text_help))+"x"+Str(GadgetHeight(text_help))+") - " + Str(GetIndex( GetParent( text_help ))))
+SetGadgetText(toolbar_design, "size: ("+Str(GadgetWidth(toolbar_design))+"x"+Str(GadgetHeight(toolbar_design))+")")
+SetGadgetText(mdi_design, "size: ("+Str(GadgetWidth(mdi_design))+"x"+Str(GadgetHeight(mdi_design))+")")
+SetGadgetText(listview_debug, "size: ("+Str(GadgetWidth(listview_debug))+"x"+Str(GadgetHeight(listview_debug))+")")
+SetGadgetText(tree_inspector, "size: ("+Str(GadgetWidth(tree_inspector))+"x"+Str(GadgetHeight(tree_inspector))+")")
+SetGadgetText(panel_inspector, "size: ("+Str(GadgetWidth(panel_inspector))+"x"+Str(GadgetHeight(panel_inspector))+")")
+SetGadgetText(text_help, "size: ("+Str(GadgetWidth(text_help))+"x"+Str(GadgetHeight(text_help))+")")
 
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 22
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 64
 ; Folding = -
 ; Optimizer
 ; EnableXP

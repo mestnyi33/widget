@@ -21,8 +21,8 @@ Procedure events_widgets()
   
   Select WidgetEvent( )
     Case #__event_Change
-      SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-      Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+      SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
+      Debug  Str(Index(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
   EndSelect
 EndProcedure
 
@@ -127,8 +127,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; CursorPosition = 23
+; FirstLine = 19
 ; Folding = -
 ; EnableXP
 ; DPIAware

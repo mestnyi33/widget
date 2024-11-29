@@ -68,11 +68,11 @@ SetAttach( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, н
 ; Здесь вы также можете переключаться между различными кадрами с помощью маленьких ручек вверху слева и вверху справа.
 
 *Object4 = Panel(450, 50, 300, 300);, ""
-SetColor(widget(), #__color_back, RGBA(64, 128, 192, alpha))
-SetColor(widget(), #__color_Frame, RGB(64, 128, 192))
-;SetColor(widget()\tab\widget, #__color_back, RGBA(64, 128, 192, alpha))
-SetFrame(widget(), 2)
+SetColor(*Object4, #__color_back, RGBA(64, 128, 192, alpha))
+SetColor(*Object4, #__color_Frame, RGB(64, 128, 192))
 ;;SetColor(*Object4, #__color_frame, RGBa(64, 128, 192, alpha))
+;SetColor(widget()\tab\widget, #__color_back, RGBA(64, 128, 192, alpha))
+SetFrame(*Object4, 2)
 
 AddItem( *Object4, 0, "panel-item-0" )
 *Object5 = a_object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
@@ -98,6 +98,7 @@ SetColor(widget(), #__color_Frame, RGB(128, 192, 64))
 
 ; Attach some objects to #Object8
 SetChildrenBounds( *Object8 )
+
 ;;AddObjectFrame(#Object8, 0, 0, 0, #Boundary_ParentSize-24, #Boundary_ParentSize-24, 500, 500, 0, 0)
 OpenList( *Object8 )
 a_object( 50, 50, 100, 100, "", RGBA(64, 128, 0, alpha1));, #Object8, 0)
@@ -289,8 +290,8 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 65
+; CursorPosition = 74
+; FirstLine = 63
 ; Folding = +
 ; EnableXP
 ; DPIAware

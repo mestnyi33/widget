@@ -1313,6 +1313,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       
+      Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
+      Declare.q ToPBFlag( Type, Flag.q )
+      Declare.q FromPBFlag( Type, Flag.q )
+      Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
+      
       Declare.i ToPBEventType( event.i )
       Declare.i TypeFromClass( class.s )
       Declare.s ClassFromType( Type.w )
@@ -1320,19 +1325,23 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   SetBackgroundColor( *this, color.l )
       
       
+      Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color = $ff000000 )
+      Declare   Draw_Button( *this )
       Declare.b Draw( *this )
       Declare   ReDraw( *this._s_WIDGET )
       Declare   Drawing( *root = 0 )
-      Declare   Draw_Button( *this )
-      Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color = $ff000000 )
+      
+      Declare.b Hide( *this, State.b = #PB_Default, flags.q = 0 )
+      Declare.b Disable( *this, State.b = #PB_Default )
+      Declare.i Address( *this )
+      Declare.l Type( *this )
+      Declare.i ID( Index )
+      Declare.l Index( *this )
       
       Declare.l X( *this, mode.l = #__c_frame )
       Declare.l Y( *this, mode.l = #__c_frame )
       Declare.l Width( *this, mode.l = #__c_frame )
       Declare.l Height( *this, mode.l = #__c_frame )
-      
-      Declare.b Hide( *this, State.b = #PB_Default, flags.q = 0 )
-      Declare.b Disable( *this, State.b = #PB_Default )
       
       Declare   IsChild( *this, *parent )
       Declare.b IsContainer( *this )
@@ -1344,11 +1353,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   SetSizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
       
       
-      Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
-      Declare.q ToPBFlag( Type, Flag.q )
-      Declare.q FromPBFlag( Type, Flag.q )
-      Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
-      
       Declare.l CountItems( *this )
       Declare.l ClearItems( *this )
       Declare   RemoveItem( *this, Item.l )
@@ -1356,19 +1360,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   AddColumn( *this, Position.l, Text.s, Width.l, Image.i = - 1 )
       
       
-      
-      Declare.l Type( *this )
-      Declare.i ID( index )
-      Declare.l GetIndex( *this )
       Declare.i GetRoot( *this )
       Declare.i GetCanvasGadget( *this = #Null )
       Declare.i GetCanvasWindow( *this = #Null )
-      Declare.i GetAddress( *this )
-      Declare   DoEvent_Mouse( *root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
       
       
-      
-      Declare.l GetLevel( *this )
+      Declare.l Level( *this )
       Declare.i CountType( *this, mode.b = #False )
       Declare.i SetActive( *this )
       
@@ -1409,8 +1406,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i GetItemAttribute( *this, Item.l, Attribute.l, Column.l = 0 )
       Declare.i SetItemAttribute( *this, Item.l, Attribute.l, *value, Column.l = 0 )
       
-      Declare.i GetCursor( *this, index = 0 )
-      Declare   SetCursor( *this, *cursor, index = 0 )
+      Declare.i GetCursor( *this, Index = 0 )
+      Declare   SetCursor( *this, *cursor, Index = 0 )
       Declare   ChangeCursor( *this, *cursor )
       
       Declare   SetImage( *this, *image )
@@ -2012,10 +2009,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;     CompilerEndSelect ;}
       
       Procedure CreateIcon( img.l, Type.l )
-         Protected X, Y, Pixel, size = 8, index.i
+         Protected X, Y, Pixel, size = 8, Index.i
          
-         index = CreateImage( img, size, size )
-         If img = - 1 : img = index : EndIf
+         Index = CreateImage( img, size, size )
+         If img = - 1 : img = Index : EndIf
          
          If StartDrawing( ImageOutput( img ))
             draw_box_( 0, 0, size, size, $fff0f0f0 );GetSysColor_( #COLOR_bTNFACE ))
@@ -2753,7 +2750,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
-         ;\\
+         If mouse()\steps < 2
+            ProcedureReturn 0
+         EndIf
+         
+            ;\\
          ;Steps = DPIScaled(Steps)
          Protected hDC, X, Y
          ExamineDesktops( )
@@ -3890,16 +3891,28 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure.i Address( *this._s_WIDGET )
+         ProcedureReturn *this\address
+      EndProcedure
+      
       Procedure.l Type( *this._s_WIDGET ) ; Returns created widget type
          ProcedureReturn *this\type
       EndProcedure
       
-      Procedure.i ID( index )
+      Procedure.l Index( *this._s_WIDGET )
+         ProcedureReturn *this\placingindex
+      EndProcedure
+      
+      Procedure.l Level( *this._s_WIDGET )
+         ProcedureReturn *this\level
+      EndProcedure
+      
+      Procedure.i ID( Index )
          Protected.i result
-         If index >= 0
+         If Index >= 0
             PushListPosition( widgets( ) )
             ForEach widgets( )
-               If GetIndex( widgets( ) ) = index
+               If Index( widgets( ) ) = Index
                   result = widgets( )
                   Break
                EndIf
@@ -4971,18 +4984,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          ProcedureReturn result
-      EndProcedure
-      
-      Procedure.i GetAddress( *this._s_WIDGET )
-         ProcedureReturn *this\address
-      EndProcedure
-      
-      Procedure.l GetIndex( *this._s_WIDGET )
-         ProcedureReturn *this\placingindex
-      EndProcedure
-      
-      Procedure.l GetLevel( *this._s_WIDGET )
-         ProcedureReturn *this\level
       EndProcedure
       
       Procedure.i GetRoot( *this._s_WIDGET ) ; Returns root widget
@@ -7044,11 +7045,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.i GetCursor( *this._s_WIDGET, index = 0 )
-         ProcedureReturn *this\cursor[index]
+      Procedure.i GetCursor( *this._s_WIDGET, Index = 0 )
+         ProcedureReturn *this\cursor[Index]
       EndProcedure
       
-      Procedure.i SetCursor( *this._s_WIDGET, *cursor, index = 0 )
+      Procedure.i SetCursor( *this._s_WIDGET, *cursor, Index = 0 )
          If *this > 0
             If *this\cursor <> *cursor
                ; Debug "setCURSOR( " + *cursor +" )"
@@ -7080,235 +7081,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; SetPosition( PopupWindow( ), #PB_List_Last )
          EndIf
       EndProcedure
-      
-      ;       Procedure.i SetDeactive( *this._s_WIDGET )
-      ;          Protected *active._s_WIDGET
-      ;          
-      ;          If ActiveWindow( )
-      ;             If ActiveWindow( ) = *this 
-      ;                If is_integral_( GetActive( ) )
-      ;                   If GetActive( )\focus <> 3
-      ;                      GetActive( )\focus = 3
-      ;                      ;
-      ;                      DoFocus( GetActive( ), #__event_LostFocus )
-      ;                   EndIf
-      ;                EndIf
-      ;             Else
-      ;                If *this
-      ;                   If Not IsChild( *this, ActiveWindow( ) )
-      ;                      If ActiveWindow( )\focus <> 3
-      ;                         ActiveWindow( )\focus = 3
-      ;                         ;
-      ;                         DoFocus( ActiveWindow( ), #__event_LostFocus )
-      ;                      EndIf
-      ;                   EndIf
-      ;                   ;
-      ;                   ;\\ when we deactivate the window
-      ;                   ;\\ we will deactivate his last active gadget
-      ;                   If ActiveGadget( ) And
-      ;                      ActiveGadget( ) <> *this And 
-      ;                      ActiveGadget( )\focus <> 3
-      ;                      ActiveGadget( )\focus = 3
-      ;                      ;
-      ;                      DoFocus( ActiveGadget( ), #__event_LostFocus )
-      ;                   EndIf
-      ;                   ;
-      ;                   ;\\ deactive child widget bar
-      ;                   If GetActive( ) And
-      ;                      GetActive( ) <> ActiveWindow( ) And 
-      ;                      GetActive( ) <> ActiveGadget( )
-      ;                      ;
-      ;                      If GetActive( )\focus <> 3
-      ;                         GetActive( )\focus = 3
-      ;                         ;
-      ;                         DoFocus( GetActive( ), #__event_LostFocus )
-      ;                      EndIf
-      ;                   EndIf
-      ;                   ;
-      ;                   ;\\
-      ;                   If ActiveGadget( )
-      ;                      *active = ActiveGadget( )
-      ;                   ElseIf ActiveWindow( )
-      ;                      *active = ActiveWindow( )
-      ;                   EndIf
-      ;                   
-      ;                   ;\\ set deactive all parents
-      ;                   If *active And
-      ;                      *active\address And
-      ;                      Not is_root_( *active )
-      ;                      
-      ;                      If Not IsChild( *this, *active )
-      ;                         PushListPosition( widgets( ) )
-      ;                         ChangeCurrentElement( widgets( ), *active\address )
-      ;                         While PreviousElement( widgets( ))
-      ;                            widget( ) = widgets( )
-      ;                            
-      ;                            If widget( ) = *this\window
-      ;                               Break
-      ;                            EndIf
-      ;                            If widget( ) = *this
-      ;                               Break
-      ;                            EndIf
-      ;                            If IsChild( *active, widget( ))
-      ;                               ;If Not IsChild( *this, widget( ) )
-      ;                               If widget( )\focus <> 3
-      ;                                  widget( )\focus = 3
-      ;                                  DoFocus( widget( ), #__event_LostFocus )
-      ;                               EndIf
-      ;                               ;EndIf
-      ;                            EndIf
-      ;                         Wend
-      ;                         PopListPosition( widgets( ) )
-      ;                      EndIf
-      ;                   EndIf
-      ;                   
-      ;                EndIf
-      ;             EndIf
-      ;          Else
-      ;             If GetActive( ) 
-      ;                If GetActive( )\focus <> 3
-      ;                   GetActive( )\focus = 3
-      ;                   ;
-      ;                   DoFocus( GetActive( ), #__event_LostFocus )
-      ;                EndIf
-      ;             EndIf
-      ;          EndIf
-      ;       EndProcedure
-      ;       
-      ;       Procedure.i _SetActive( *this._s_WIDGET )
-      ;          ProcedureReturn 0
-      ;          Protected result.i, *active._s_WIDGET
-      ;          
-      ;          If *this And Not *this\disable
-      ;             If *this\focus =- 1 Or 
-      ;                *this\root\focus =- 1
-      ;                ProcedureReturn 0
-      ;             EndIf
-      ;             
-      ;             If is_integral_( *this )
-      ;                *active = *this\parent
-      ;             Else
-      ;                *active = *this
-      ;             EndIf
-      ;             
-      ;             ;\\
-      ;             If *active\anchors Or ( is_integral_( *active ) And *active\parent\anchors )
-      ;                If *active\anchors
-      ;                   a_set( *active, *active\anchors\mode, a_getsize(*active), a_getpos(*active) )
-      ;                Else
-      ;                   ProcedureReturn 0
-      ;                EndIf
-      ;             EndIf
-      ;             
-      ;             ;\\
-      ;             If *this\displaypopup
-      ;                ; Debug " Popup( setActive ) "
-      ;                ProcedureReturn 0
-      ;             EndIf
-      ;             
-      ;             ;             If GetActiveGadget( ) <> *active\root\canvas\gadget
-      ;             ;                SetActiveGadget( *active\root\canvas\gadget )
-      ;             ;             EndIf
-      ;             
-      ;             ;Debug "---focus--- "+*this\class
-      ;             ;\\ deactivate
-      ;             If GetActive( )
-      ;                If GetActive( ) <> *this
-      ;                   If Not ( is_integral_( *this ) And GetActive( ) = *this\parent )
-      ;                      SetDeactive( *this )
-      ;                   EndIf
-      ;                EndIf
-      ;             EndIf
-      ;             ;
-      ;             If GetActive( ) <> *this
-      ;                GetActive( ) = *this
-      ;             EndIf
-      ;             ;
-      ;             If *this\focus <> 2
-      ;                *this\focus = 2
-      ;                
-      ;                ;\\ get active window
-      ;                If is_root_( *active ) Or 
-      ;                   is_window_( *active )
-      ;                   ActiveWindow( ) = *active
-      ;                Else
-      ;                   If *active\window
-      ;                      ActiveWindow( ) = *active\window
-      ;                   Else
-      ;                      ActiveWindow( ) = *active\root
-      ;                   EndIf
-      ;                   If ActiveWindow( )
-      ;                      ActiveGadget( ) = *active
-      ;                   EndIf
-      ;                EndIf
-      ;                If ActiveWindow( )
-      ;                   If is_window_( ActiveGadget( ) )
-      ;                      ActiveGadget( ) = #Null
-      ;                   EndIf
-      ;                EndIf
-      ;                
-      ;                ;\\ set active all parents
-      ;                If *active\address
-      ;                   If Not is_root_( *active )
-      ;                      PushListPosition( widgets( ) )
-      ;                      ChangeCurrentElement( widgets( ), *active\address )
-      ;                      While PreviousElement( widgets( ) )
-      ;                         widget( ) = widgets( )
-      ;                         
-      ;                         If is_window_( widgets( ) )
-      ;                            If IsChild( *active, widgets( ) )
-      ;                               If widgets( )\focus <> 2
-      ;                                  widgets( )\focus = 2
-      ;                                  ;
-      ;                                  DoFocus( widgets( ), #__event_Focus )
-      ;                               EndIf
-      ;                            EndIf
-      ;                         EndIf
-      ;                      Wend
-      ;                      PopListPosition( widgets( ) )
-      ;                   EndIf
-      ;                EndIf
-      ;                
-      ;                ;\\
-      ;                If ActiveWindow( ) And 
-      ;                   ActiveWindow( )\focus <> 2
-      ;                   ActiveWindow( )\focus = 2
-      ;                   ;
-      ;                   ; when we activate the gadget
-      ;                   ; first we activate its parent window
-      ;                   DoFocus( ActiveWindow( ), #__event_Focus )
-      ;                EndIf
-      ;                
-      ;                ;\\
-      ;                DoFocus( *this, #__event_Focus )
-      ;                
-      ;                ;\\
-      ;                If ActiveWindow( )
-      ;                   If ActiveGadget( ) And
-      ;                      ActiveGadget( )\focus <> 2
-      ;                      ActiveGadget( )\focus = 2
-      ;                      ;
-      ;                      ; when we activate the window
-      ;                      ; we will activate his last gadget that lost focus
-      ;                      DoFocus( ActiveGadget( ), #__event_Focus )
-      ;                   EndIf
-      ;                   
-      ;                   ;\\ set window foreground position
-      ;                   SetForeground( ActiveWindow( ))
-      ;                EndIf
-      ;                
-      ;             EndIf
-      ;             
-      ;          Else
-      ;             If ActiveWindow( )
-      ;                SetDeactive( *this )
-      ;                ActiveWindow( ) = 0
-      ;             EndIf
-      ;          EndIf
-      ;          
-      ;          ProcedureReturn #True
-      ;       EndProcedure
-      ;       
       
       Procedure.i SetActive( *this._s_WIDGET )
          Protected result.i, *active._s_WIDGET
@@ -7665,6 +7437,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                While *this\bounds\attach\parent\bounds\attach
                   *this\bounds\attach\parent = *this\bounds\attach\parent\parent
                Wend
+               ;
                If *this\bounds\attach\parent\parent
                   *this\bounds\attach\parent = *this\bounds\attach\parent\parent
                Else
@@ -8124,32 +7897,56 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; If the value is set to #PB_Default, the value is reset to the system default (as it was before this command was invoked).
          Protected.l X = #PB_Ignore, Y = #PB_Ignore, Width = #PB_Ignore, Height = #PB_Ignore
          
-         *this\bounds\move.allocate(BOUNDMove)
+         *this\bounds\move.allocate(BOUNDMOVE)
          
          If MinimumX = #PB_Ignore
-            *this\bounds\move\min\x = *this\parent\scroll_x( ) 
+            If *this\parent\bounds\children
+               *this\bounds\move\min\x = *this\parent\scroll_x( ) 
+            Else
+               If Not *this\bounds\move\min\x
+                  *this\bounds\move\min\x = *this\frame_x( ) 
+               EndIf
+            EndIf
          Else
             *this\bounds\move\min\x = DPIScaledX(MinimumX)
          EndIf
          If MinimumY = #PB_Ignore
-            *this\bounds\move\min\y = *this\parent\scroll_y( ) 
+            If *this\parent\bounds\children
+               *this\bounds\move\min\y = *this\parent\scroll_y( ) 
+            Else
+               If Not *this\bounds\move\min\y
+                  *this\bounds\move\min\y = *this\frame_y( ) 
+               EndIf
+            EndIf
          Else
             *this\bounds\move\min\y = DPIScaledY(MinimumY)
          EndIf
          If MaximumX = #PB_Ignore
-            If *this\parent\scroll_width( ) 
-               *this\bounds\move\max\x = *this\parent\scroll_width( ) 
+            If *this\parent\bounds\children
+               If *this\parent\scroll_width( ) 
+                  *this\bounds\move\max\x = *this\parent\scroll_width( ) 
+               Else
+                  *this\bounds\move\max\x = *this\parent\inner_width( )
+               EndIf
             Else
-               *this\bounds\move\max\x = *this\parent\inner_width( )
+               If Not *this\bounds\move\max\x
+                  *this\bounds\move\max\x = *this\frame_x( ) + *this\frame_width( ) 
+               EndIf
             EndIf
          Else
             *this\bounds\move\max\x = DPIScaledX(MaximumX)
          EndIf
          If MaximumY = #PB_Ignore
-            If *this\parent\scroll_height( )
-               *this\bounds\move\max\y = *this\parent\scroll_height( ) 
+            If *this\parent\bounds\children
+               If *this\parent\scroll_height( )
+                  *this\bounds\move\max\y = *this\parent\scroll_height( ) 
+               Else
+                  *this\bounds\move\max\y = *this\parent\inner_height( )
+               EndIf
             Else
-               *this\bounds\move\max\y = *this\parent\inner_height( )
+               If Not *this\bounds\move\max\y
+                  *this\bounds\move\max\y = *this\frame_y( ) + *this\frame_height( ) 
+               EndIf
             EndIf
          Else
             *this\bounds\move\max\y = DPIScaledY(MaximumY) 
@@ -8204,33 +8001,57 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; If the value is set to #PB_Default, the value is reset to the system default (as it was before this command was invoked).
          Protected.l X = #PB_Ignore, Y = #PB_Ignore, Width = #PB_Ignore, Height = #PB_Ignore
          
-         *this\bounds\size.allocate(BOUNDSize)
+         *this\bounds\size.allocate(BOUNDSIZE)
          
          If MinimumWidth = #PB_Ignore
-            *this\bounds\size\min\width = *this\fs * 2 + *this\fs[1] + *this\fs[3]
+            If *this\parent\bounds\children
+               *this\bounds\size\min\width = *this\fs * 2 + *this\fs[1] + *this\fs[3]
+            Else
+               If Not *this\bounds\size\min\width
+                  *this\bounds\size\min\width = *this\frame_width( )
+               EndIf
+            EndIf
          Else
             *this\bounds\size\min\width = DPIScaledX(MinimumWidth)
          EndIf
          If MinimumHeight = #PB_Ignore
-            *this\bounds\size\min\height = *this\fs * 2 + *this\fs[2] + *this\fs[4]
+            If *this\parent\bounds\children
+               *this\bounds\size\min\height = *this\fs * 2 + *this\fs[2] + *this\fs[4]
+            Else
+               If Not *this\bounds\size\min\height
+                  *this\bounds\size\min\height = *this\frame_height( )
+               EndIf
+            EndIf
          Else
             *this\bounds\size\min\height = DPIScaledY(MinimumHeight)
          EndIf
          
          If MaximumWidth = #PB_Ignore
-            If *this\parent\scroll\h
-               *this\bounds\size\max\width = *this\parent\scroll\h\bar\max
+            If *this\parent\bounds\children
+               If *this\parent\scroll\h
+                  *this\bounds\size\max\width = *this\parent\scroll\h\bar\max
+               Else
+                  *this\bounds\size\max\width = *this\parent\inner_width( )
+               EndIf
             Else
-               *this\bounds\size\max\width = *this\parent\inner_width( )
+               If Not *this\bounds\size\max\width
+                  *this\bounds\size\max\width = *this\frame_width( )
+               EndIf
             EndIf
          Else
             *this\bounds\size\max\width = DPIScaledX(MaximumWidth)
          EndIf
          If MaximumHeight = #PB_Ignore
-            If *this\parent\scroll\v
-               *this\bounds\size\max\height = *this\parent\scroll\v\bar\max
+            If *this\parent\bounds\children
+               If *this\parent\scroll\v
+                  *this\bounds\size\max\height = *this\parent\scroll\v\bar\max
+               Else
+                  *this\bounds\size\max\height = *this\parent\inner_height( )
+               EndIf
             Else
-               *this\bounds\size\max\height = *this\parent\inner_height( )
+               If Not *this\bounds\size\max\height
+                  *this\bounds\size\max\height = *this\frame_height( )
+               EndIf
             EndIf
          Else
             *this\bounds\size\max\height = DPIScaledY(MaximumHeight)
@@ -9024,7 +8845,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global toogleline = 3
       Procedure.b bar_tab_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
          With *this
-            Protected index
+            Protected Index
             Protected typ = 0
             Protected pos = (1)
             
@@ -9106,14 +8927,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;\\
                      draw_font( *tabs( ), GetFontID( *this ) )
                      
-                     index = ListIndex( *tabs( ) )
+                     Index = ListIndex( *tabs( ) )
                      
                      ; init items position
                      If *bar\vertical
                         *tabs( )\y = *bar\max + pos
                         
                         If *this\type = #__type_Tab
-                           If *this\TabState( ) = index
+                           If *this\TabState( ) = Index
                               *tabs( )\x        = - Bool( *this\parent\fs[3] )
                               *tabs( )\width    = *this\width
                            Else
@@ -9183,15 +9004,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         ;
                         If *this\type = #__type_Tab
-                           *bar\max + *tabs( )\height + DPIScaled(Bool( index <> *this\countitems - 1 )) - Bool(typ) * 2 + Bool( index = *this\countitems - 1 ) * layout
+                           *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) - Bool(typ) * 2 + Bool( Index = *this\countitems - 1 ) * layout
                         Else
-                           *bar\max + *tabs( )\height + pos + Bool( index = *this\countitems - 1 )
+                           *bar\max + *tabs( )\height + pos + Bool( Index = *this\countitems - 1 )
                         EndIf
                      Else
                         *tabs( )\x = *bar\max + pos
                         ;
                         If *this\type = #__type_Tab
-                           If *this\TabState( ) = index
+                           If *this\TabState( ) = Index
                               *tabs( )\y       = - (Bool( *this\parent\fs[4] ))
                               *tabs( )\height  = *this\height
                            Else
@@ -9229,7 +9050,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                           
                            ;
                            If *this\type = #__type_Tab
-                              *bar\max + *tabs( )\width + DPIScaled(Bool( index <> *this\countitems - 1 )) - Bool(typ) * 2 + Bool( index = *this\countitems - 1 ) * layout
+                              *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) - Bool(typ) * 2 + Bool( Index = *this\countitems - 1 ) * layout
                               ;*bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
                            Else
                               If Not constants::BinaryFlag( *this\flag, #PB_ToolBar_InlineText )
@@ -9246,7 +9067,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  EndIf
                               EndIf
                               
-                              *bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
+                              *bar\max + *tabs( )\width + pos + Bool( Index = *this\countitems - 1 )
                            EndIf
                         EndIf
                      EndIf
@@ -12377,7 +12198,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected Width = #PB_Ignore
          Protected Height = #PB_Ignore
          
-         Protected index
+         Protected Index
          Protected mode = 0
          Protected *displayroot._s_root
          
@@ -22171,7 +21992,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          If PB(IsGadget)(Canvas)
             g = GadgetID( Canvas )
          Else
-            g = CanvasGadget( Canvas, X, Y, Width, Height, canvasflag|#PB_Canvas_DrawFocus )
+            If test_focus_set Or test_focus_show
+               canvasflag|#PB_Canvas_DrawFocus
+            EndIf
+            
+            g = CanvasGadget( Canvas, X, Y, Width, Height, canvasflag )
             If Canvas = - 1 : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
          EndIf
          ;
@@ -24180,10 +24005,11 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3837
-; FirstLine = 3822
-; Folding = -------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------f----8+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v40---
+; CursorPosition = 7947
+; FirstLine = 7355
+; Folding = --------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------f----------------------0----------------------------v----d----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v40---
 ; Optimizer
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
+; DisableDebugger
