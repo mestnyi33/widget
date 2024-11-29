@@ -3846,14 +3846,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          If _this_\scroll
             If _this_\scroll\v
-               If _this_\disable Or _this_\scroll\v\bar\max <= _this_\scroll\v\bar\page\len
+               If _this_\disable
                   _this_\scroll\v\disable = - 1
                Else
                   _this_\scroll\v\disable = _this_\scroll\v\disable[1]
                EndIf
             EndIf
             If _this_\scroll\h
-               If _this_\disable Or _this_\scroll\h\bar\max <= _this_\scroll\h\bar\page\len
+               If _this_\disable
                   _this_\scroll\h\disable = - 1
                Else
                   _this_\scroll\h\disable = _this_\scroll\h\disable[1]
@@ -20095,10 +20095,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         
+            
           ;\\
          If eventtype = #__event_Down
-            If CanvasMouseButton( ) & #PB_Canvas_LeftButton
+                If CanvasMouseButton( ) & #PB_Canvas_LeftButton
                   If *this\tab
                   *tab = *this\TabEntered( )
                   
@@ -20166,11 +20166,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                If *bar
-                  If EnteredButton( ) And
+                    If EnteredButton( ) And
                   EnteredButton( )\press = #False And
                   EnteredButton( )\disable = #False And
                   EnteredButton( )\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
-                  
+                       
                   PressedButton( )       = EnteredButton( )
                   PressedButton( )\press = #True
                   
@@ -20505,8 +20505,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                DoEvent_Rows( *this, *this\__rows( ), eventtype, mouse( )\x, mouse( )\y )
             EndIf
             
-            ;                   ;\\
-            ;                   DoEvent_Button( *this, eventtype, mouse( )\x, mouse( )\y )
             
             ;\\
                  If DoEvent_Bar( *this, eventtype )
@@ -24012,9 +24010,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 369
-; FirstLine = 352
-; Folding = ---------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------v---------------------nt8---------------------------8---f4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8d---
+; CursorPosition = 3855
+; FirstLine = 3802
+; Folding = ---------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------v---------------------nt8---------------------------8---f4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------------------------------------------8d---
 ; Optimizer
 ; EnableXP
 ; DPIAware
