@@ -1511,13 +1511,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Define result, example = 3
    
    
-   If example = 1
-      ;\\ example 1
-      ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
-      
-   ElseIf example = 2
+   ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
+   
+   If example = 2
       ;\\ example 2
-      ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
       widget_add( *container, "button", 10, 20, 30, 30 )
       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
@@ -1535,7 +1532,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    ElseIf example = 3
       ;\\ example 3
-      ide_design_form = widget_add(ide_design_MDI, "window", 30, 30, 500, 250)
+      Resize(ide_design_form, 30, 30, 500, 250)
       Disable(widget_add(ide_design_form, "button", 15, 25, 50, 30),1)
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
       widget_add(ide_design_form, "button", 35, 65+40, 50, 30)
@@ -1564,7 +1561,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    ElseIf example = 4
       ;\\ example 3
-      ide_design_form = widget_add(ide_design_MDI, "window", 30, 30, 400, 250)
+      Resize(ide_design_form, 30, 30, 400, 250)
+      
       Define q=widget_add(ide_design_form, "button", 15, 25, 50, 30)
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
       widget_add(ide_design_form, "button", 285, 25, 50, 30)
@@ -1579,7 +1577,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    ElseIf example = 5
       ;\\ example 3
-      ide_design_form = widget_add(ide_design_MDI, "window", 30, 30, 400, 250)
+      Resize(ide_design_form, 30, 30, 400, 250)
+      
       Define q=widget_add(ide_design_form, "button", 280, 25, 50, 30)
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
       widget_add(ide_design_form, "button", 340, 25, 50, 30)
@@ -1592,6 +1591,9 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*container, "text", 45, 65+40*2, 50, 30)
       SetActive( q )
    EndIf
+   ;SetMoveBounds( *scrollarea )
+   SetMoveBounds( ide_design_form )
+   ;SetChildrenBounds( ide_design_MDI )
    
    
    ;    Define._S_WIDGET *this, *parent
@@ -1643,8 +1645,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 503
-; FirstLine = 489
+; CursorPosition = 1594
+; FirstLine = 1566
 ; Folding = ---f0------------------------
 ; EnableXP
 ; DPIAware

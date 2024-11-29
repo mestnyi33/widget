@@ -12,12 +12,11 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
   a_init(root(), 4)
-  Define fs = 20
+  
   ;\\
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
   parent = Container(50, 50, 500, 500)
-  widget()\fs = fs*2 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
   ; object = Window(100, 100, 250, 250, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
@@ -27,12 +26,13 @@ CompilerIf #PB_Compiler_IsMainFile
   ; object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList()
   
   ;\\
-  widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  
+   Define fs = 20
+   SetFrame( parent, fs*2 )
+   SetFrame( object, fs )
+   
+   
   ;\\
   a_set(object, #__a_full, 18)
-; ;   SetSizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
-; ;   SetMoveBounds(object, fs, fs, 501-fs, 501-fs)
   
   ;\\
   Bind( widget( ), @CustomEvents(), #__event_draw )
@@ -78,8 +78,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 2
+; CursorPosition = 35
+; FirstLine = 24
 ; Folding = -
 ; EnableXP
 ; DPIAware

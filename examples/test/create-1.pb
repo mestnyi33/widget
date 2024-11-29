@@ -20,14 +20,14 @@
 ;   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
 ;   SetColor(parent, #__color_back, $FFE9E9E9)
   
-  Define text.s = "object"+#LF$+" multiline "+#LF$+"text"
+  Define Text.s = "object"+#LF$+" multiline "+#LF$+"text"
   ;\\
   ;object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
   ;object = Container(100, 100, 250, 250) : CloseList( )
   ;object = String(100, 100, 250, 250, text, #__flag_Textwordwrap|#__flag_Textcenter)
   ;object = Button(100, 100, 250, 250, text, #__flag_Textmultiline);, #__flag_borderless)
   ;object = Button(100, 100, 250, 250, text, #__flag_Textwordwrap);, #__flag_borderless)
-  object = Editor(100, 100, 250, 250, #__flag_Textwordwrap|#__flag_Textcenter) : SetText(object, text)
+  object = Editor(100, 100, 250, 250, #__flag_Textwordwrap|#__flag_Textcenter) : SetText(object, Text)
   ;object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1, "tree element line "+Str(i)) : Next
    
 ; ;   ;\\
@@ -41,12 +41,7 @@
 ; ;   a_set(object, #__a_full, anchor_size*2, 5)
 ; ;   a_set(object, #__a_full, anchor_size)
 ;   
-;   ;\\
-;   SetSizeBounds(object, anchor_size*2, anchor_size*2, 460, 460)
-;   ;MoveBounds(object, fs, fs, 501-fs, 501-fs)
-;   SetMoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
-;   
-  ;\\
+ ;\\
   Bind( parent, @CustomEvents(), #__event_statuschange )
   Bind( parent, @CustomEvents(), #__event_resize )
   
@@ -73,8 +68,8 @@
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 25
+; CursorPosition = 43
+; FirstLine = 27
 ; Folding = -
 ; EnableXP
 ; DPIAware

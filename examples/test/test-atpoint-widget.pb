@@ -39,10 +39,6 @@ CompilerIf #PB_Compiler_IsMainFile
    ; ;   a_set(object, #__a_full, anchor_size*2, 5)
    ; ;   a_set(object, #__a_full, anchor_size)
    ;   
-   ;   ;\\
-   ;   SetSizeBounds(object, anchor_size*2, anchor_size*2, 460, 460)
-   ;   ;SetMoveBounds(object, fs, fs, 501-fs, 501-fs)
-   ;   SetMoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
    ;   
    ;\\
    Bind( parent, @CustomEvents( ), #__event_statuschange )
@@ -62,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       If EnteredWidget( ) = object
          i = EnteredWidget( )\frame_width( ) - 5
-         Debug "timer "+i
+         Debug "e timer "+i
          Resize( object, #PB_Ignore, #PB_Ignore, i, #PB_Ignore)
          PostEventRepaint( root( ))
       Else
@@ -97,8 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 64
+; CursorPosition = 41
+; FirstLine = 24
 ; Folding = --
 ; EnableXP
 ; DPIAware

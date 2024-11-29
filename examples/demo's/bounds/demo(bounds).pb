@@ -18,8 +18,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
    parent = Container(50, 50, 500, 500)
    
-   SetSizeBounds(parent);, 500, 500, 500, 500)
-   SetMoveBounds(parent);, 50, 50, 50+500, 50+500)
+   SetSizeBounds(parent, -1,-1,-1,-1);, 500, 500, 500, 500)
+   SetMoveBounds(parent, -1,-1,-1,-1);, 50, 50, 50+500, 50+500)
    
    ;\\
    ; *object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
@@ -71,6 +71,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 21
-; FirstLine = 9
+; FirstLine = 4
 ; Folding = -
 ; EnableXP

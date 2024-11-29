@@ -1313,7 +1313,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       
-      Declare   GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
       Declare.q ToPBFlag( Type, Flag.q )
       Declare.q FromPBFlag( Type, Flag.q )
@@ -1349,7 +1348,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
       Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
       Declare.i SetAttach( *this, *parent, mode.a )
-      Declare   SetChildrenBounds( *this, state.b )
+      Declare   SetChildrenBounds( *this )
       Declare   SetMoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
       Declare   SetSizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
       
@@ -7028,7 +7027,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If *parent\bounds\children
-            SetSizeBounds( *this )
             SetMoveBounds( *this )
          EndIf
       EndProcedure
@@ -7900,7 +7898,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected.l X = #PB_Ignore, Y = #PB_Ignore, Width = #PB_Ignore, Height = #PB_Ignore
          
          *this\bounds\move.allocate(BOUNDMOVE)
-                  
+         
          If MinimumX = #PB_Ignore
             If *this\parent\bounds\children
                *this\bounds\move\min\x = *this\parent\scroll_x( ) 
@@ -7932,7 +7930,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             Else
                If Not *this\bounds\move\max\x
-                  *this\bounds\move\max\x = *this\container_x( ) + *this\frame_width( ) 
+                  *this\bounds\move\max\x = *this\container_x( ) + *this\container_width( ) 
                EndIf
             EndIf
          Else
@@ -7947,7 +7945,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             Else
                If Not *this\bounds\move\max\y
-                  *this\bounds\move\max\y = *this\container_y( ) + *this\frame_height( )
+                  *this\bounds\move\max\y = *this\container_y( ) + *this\frame_height( ) 
                EndIf
             EndIf
          Else
@@ -7955,24 +7953,47 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         If *this\bounds\move\min\x <> #PB_Ignore And
-            *this\bounds\move\min\x > *this\frame_x( )
-            X = DPIUnScaledX(*this\bounds\move\min\x)
-         EndIf
-         If *this\bounds\move\max\x <> #PB_Ignore And
-            *this\frame_width( ) > *this\bounds\move\max\x - *this\bounds\move\min\x
-            Width = DPIUnScaledX( *this\bounds\move\max\x - *this\bounds\move\min\x )
-         EndIf
-         If *this\bounds\move\min\y <> #PB_Ignore And
-            *this\bounds\move\min\y > *this\frame_y( )
-            Y = DPIUnScaledY(*this\bounds\move\min\y)
-         EndIf 
-         If *this\bounds\move\max\y <> #PB_Ignore And
-            *this\frame_height( ) > *this\bounds\move\max\y - *this\bounds\move\min\y
-            Height = DPIUnScaledY( *this\bounds\move\max\y - *this\bounds\move\min\y)
+         If Not *this\bounds\size
+            MinimumX = *this\bounds\move\min\x
+            MinimumY = *this\bounds\move\min\y
+            MaximumX = *this\bounds\move\max\x
+            MaximumY = *this\bounds\move\max\y
+            If MinimumX <> #PB_Ignore And
+               MaximumX <> #PB_Ignore
+               MaximumX - MinimumX
+            EndIf
+            If MinimumY <> #PB_Ignore And
+               MaximumY <> #PB_Ignore
+               MaximumY - MinimumY
+            EndIf
+            
+            ProcedureReturn SetSizeBounds( *this, #PB_Ignore, #PB_Ignore, DPIUnScaled(MaximumX), DPIUnScaled(MaximumY) )
+         Else
+            ;\\
+            If *this\bounds\move\min\x <> #PB_Ignore And
+               *this\bounds\move\min\x > *this\frame_x( )
+               X = DPIUnScaledX(*this\bounds\move\min\x)
+               If *this\frame_width( ) > *this\bounds\move\max\x - *this\bounds\move\min\x
+                  Width = DPIUnScaledX(*this\bounds\move\max\x - *this\bounds\move\min\x)
+               EndIf
+            ElseIf *this\bounds\move\max\x <> #PB_Ignore And
+                   *this\frame_width( ) > ( *this\bounds\move\max\x - *this\frame_x( ) )
+               Width = DPIUnScaledX(*this\bounds\move\max\x - *this\frame_x( ))
+            EndIf
+            If *this\bounds\move\min\y <> #PB_Ignore And
+               *this\bounds\move\min\y > *this\frame_y( )
+               Y = DPIUnScaledY(*this\bounds\move\min\y)
+               If *this\frame_height( ) > *this\bounds\move\max\y - *this\bounds\move\min\y
+                  Height = DPIUnScaledY(*this\bounds\move\max\y - *this\bounds\move\min\y)
+               EndIf
+            ElseIf *this\bounds\move\max\y <> #PB_Ignore And
+                   *this\frame_height( ) > ( *this\bounds\move\max\y - *this\frame_y( ) )
+               Height = DPIUnScaledY(*this\bounds\move\max\y - *this\frame_y( ))
+            EndIf
+            
+            ProcedureReturn Resize( *this, X, Y, Width, Height )
          EndIf
          
-         ProcedureReturn Resize( *this, X, Y, Width, Height )
       EndProcedure
       
       Procedure SetSizeBounds( *this._s_WIDGET, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
@@ -8037,23 +8058,21 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If *this\frame_width( ) < *this\bounds\size\min\width
-            Width = DPIUnScaledX( *this\bounds\size\min\width )
+            Width = DPIUnScaledX(*this\bounds\size\min\width)
+         ElseIf *this\frame_height( ) < *this\bounds\size\min\height
+            Height = DPIUnScaledY(*this\bounds\size\min\height)
          EndIf
          If *this\frame_width( ) > *this\bounds\size\max\width
-            Width = DPIUnScaledX( *this\bounds\size\max\width )
-         EndIf
-         If *this\frame_height( ) < *this\bounds\size\min\height
-            Height = DPIUnScaledY( *this\bounds\size\min\height )
-         EndIf
-         If *this\frame_height( ) > *this\bounds\size\max\height
-            Height = DPIUnScaledY( *this\bounds\size\max\height )
+            Width = DPIUnScaledX(*this\bounds\size\max\width)
+         ElseIf *this\frame_height( ) > *this\bounds\size\max\height
+            Height = DPIUnScaledY(*this\bounds\size\max\height)
          EndIf
          
          ProcedureReturn Resize( *this, X, Y, Width, Height )
       EndProcedure
       
-      Procedure SetChildrenBounds( *this._s_WIDGET, state.b )
-         *this\bounds\children = state
+      Procedure SetChildrenBounds( *this._s_WIDGET )
+         *this\bounds\children = 1
       EndProcedure
       
       
@@ -17953,283 +17972,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
-      Procedure GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
-         Protected i, a_index, Repaint, *this._s_WIDGET, *e._s_WIDGET
-         
-         ;\\ get at point address
-         If *root\haschildren
-            If ListSize( *list( ))
-               If *address
-                  ChangeCurrentElement( *list( ), *address )
-                  PreviousElement( *list( ))
-               Else
-                  LastElement( *list( ))
-               EndIf
-               Repeat
-                  If *list( )\address And
-                     *list( )\hide = 0 And
-                     *list( )\root = *root And 
-                     is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
-                     is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_draw] )
-                     
-                     ;\\ если переместили виджет то его исключаем
-                     If mouse( )\drag
-                        If is_drag_move( )
-                           If PressedWidget( ) = *list( )
-                              Continue
-                           EndIf
-                           EnteredWidget( ) = *list( )
-                           ProcedureReturn 0
-                        EndIf
-                     EndIf
-                     
-                     *this = *list( )
-                     Break
-                  EndIf
-               Until PreviousElement( *list( )) = #False
-            EndIf
-         EndIf
-         ;
-         ;\\ root no enumWidget
-         If Not *this
-            If is_atpoint_( *root, mouse_x, mouse_y, [#__c_frame] ) And
-               is_atpoint_( *root, mouse_x, mouse_y, [#__c_draw] )
-               *this = *root
-            EndIf
-         EndIf
-         ;
-         ;\\ is integral
-         If *this
-            ;\\ is integral string bar
-            If *this\__String( ) And Not *this\__String( )\hide And
-               is_atpoint_( *this\__String( ), mouse_x, mouse_y, [#__c_frame] ) And
-               is_atpoint_( *this\__String( ), mouse_x, mouse_y, [#__c_draw] )
-               *this = *this\__String( )
-            EndIf
-            ;\\ is integral tab bar
-            If *this\__Tab( ) And Not *this\__Tab( )\hide And
-               is_atpoint_( *this\__Tab( ), mouse_x, mouse_y, [#__c_frame] ) And
-               is_atpoint_( *this\__Tab( ), mouse_x, mouse_y, [#__c_draw] )
-               *this = *this\__Tab( )
-            EndIf
-            ;\\ is integral tab bar
-            If *this\__Menu( ) And Not *this\__Menu( )\hide And
-               is_atpoint_( *this\__Menu( ), mouse_x, mouse_y, [#__c_frame] ) And
-               is_atpoint_( *this\__Menu( ), mouse_x, mouse_y, [#__c_draw] )
-               *this = *this\__Menu( )
-            EndIf
-            ;\\ is integral scroll bar's
-            If *this\scroll
-               If *this\scroll\v And Not *this\scroll\v\hide And
-                  is_atpoint_( *this\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
-                  is_atpoint_( *this\scroll\v, mouse_x, mouse_y, [#__c_draw] )
-                  *this = *this\scroll\v
-               EndIf
-               If *this\scroll\h And Not *this\scroll\h\hide And
-                  is_atpoint_( *this\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
-                  is_atpoint_( *this\scroll\h, mouse_x, mouse_y, [#__c_draw] )
-                  *this = *this\scroll\h
-               EndIf
-            EndIf
-         EndIf
-         
-         If test_atpoint
-            Debug ""+*root\class+" "+*root\haschildren ;+" "+ *this\class
-         EndIf
-         ;
-         ;\\ entered anchor index
-         If CanvasMouseButtonPress( )
-            If a_index( ) And 
-               a_entered( ) And 
-               a_entered( )\anchors\id[a_index( )] And
-               a_entered( )\anchors\state
-               ;
-               If Not mouse( )\drag
-                  If *this <> a_entered( ) And 
-                     *this\root = a_entered( )\root 
-                     ;
-                     EnteredWidget( ) = a_entered( )
-                     *this = a_entered( )
-                  EndIf
-               EndIf
-            EndIf
-         Else
-            If Not a_entered( )
-               a_entered( ) = a_focused( )
-            EndIf
-            ;
-            If a_entered( )  
-               If Not (*this And a_entered( )\root <> *this\root )
-                  ;
-                  If a_enter( a_entered( ), - 3 )
-                     If a_entered( )
-                        If ( *this And a_entered( )\placingindex < *this\placingindex ) And 
-                           a_entered( ) <> a_focused( ) 
-                           ;
-                           a_index( ) = 0
-                        Else
-                           *this = a_entered( )
-                        EndIf
-                     EndIf
-                  Else
-                     If a_index( )
-                        Debug "a out to parent border "+a_entered( )\mouseenter 
-                        
-                        ; a_entered( )\mouseenter = 0
-                        a_index( ) = 0
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         ;
-         ;\\ reset
-         If EnteredButton( )
-            If a_index( ) Or ( EnteredWidget( ) And
-                               EnteredWidget( ) <> *this )
-               ;
-               If Leaved( EnteredButton( ) )
-                  If EnteredWidget( )
-                     EnteredWidget( )\root\repaint = #True
-                  Else
-                     *this\root\repaint = #True
-                  EndIf
-                  EnteredButton( ) = #Null
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\
-         If *this
-            If Not a_index( )
-               If Not CanvasMouseButtonPress( )
-                  ;\\
-                  DoEvent_Button( *this, #__event_MouseMove, mouse_x, mouse_y )
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\ do events entered & leaved
-         If EnteredWidget( ) <> *this
-            LeavedWidget( ) = EnteredWidget( )
-            EnteredWidget( ) = *this
-            Protected *parent._s_WIDGET 
-            
-            ;
-            If LeavedWidget( ) And Not ( *this And *this\parent = LeavedWidget( ) And is_integral_( *this ) ) And
-               LeavedWidget( )\mouseenter > 0
-               LeavedWidget( )\mouseenter = 0
-               ;
-               If is_integral_( LeavedWidget( ) )
-                 If LeavedWidget( )\parent And
-                   LeavedWidget( )\parent\mouseenter
-                  
-                     If *this = LeavedWidget( )\parent
-                        If is_atpoint_( *this, mouse_x, mouse_y, [#__c_inner] ) And
-                           is_atpoint_( *this, mouse_x, mouse_y, [#__c_draw] )
-                           *this\mouseenter = 2
-                        Else
-                           *this\mouseenter = 1
-                        EndIf
-                        ;
-                        ;DoEvents( *this\parent, #__event_StatusChange, -1, - 2 )
-                     Else
-                        LeavedWidget( )\parent\mouseenter = 0
-                     EndIf
-                  EndIf
-               Else
-                  If Not a_index( )
-                     If Not LeavedWidget( )\anchors
-                        If LeavedWidget( )\parent And 
-                           LeavedWidget( )\parent\type = #__type_Splitter
-                           ;
-                           *parent = LeavedWidget( )\parent
-                           While *parent And Not *parent\anchors
-                              *parent = *parent\parent
-                           Wend
-                           ;
-                           If *parent 
-                              If *parent\anchors And 
-                                 *parent\mouseenter = - 2
-                                 *parent\mouseenter = 0
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               ;
-               DoEvents( LeavedWidget( ), #__event_MouseLeave )
-               ;
-               If is_integral_( LeavedWidget( ) ) And 
-                  LeavedWidget( )\parent\mouseenter = 0
-                  ;
-                  DoEvents( LeavedWidget( )\parent, #__event_MouseLeave, -1, - 2 )
-               EndIf
-            EndIf
-            ;
-            ;
-            If *this And 
-               *this\mouseenter = 0
-               
-               If is_integral_( *this ) 
-                  If *this\parent  
-                     If *this\parent\mouseenter = 0
-                        If *this\parent\anchors
-                           If Not CanvasMouseButtonPress( )
-                              a_show( *this\parent )
-                           EndIf
-                        EndIf
-                        ;
-                        If Not a_index( )
-                           *this\parent\mouseenter = - 2
-                           DoEvents( *this\parent, #__event_MouseEnter, -1, - 2 )
-                        EndIf
-                     Else
-                        *this\parent\mouseenter = - 2
-                        ;
-                        ;DoEvents( *this\parent, #__event_StatusChange, -1, - 2 )
-                     EndIf
-                  EndIf
-               Else
-                  If Not CanvasMouseButtonPress( )
-                     If Not a_index( )
-                        If *this\anchors
-                           a_show( *this )
-                        Else
-                           If *this\parent And 
-                              *this\parent\type = #__type_Splitter
-                              ;
-                              *parent = *this\parent
-                              While *parent And Not *parent\anchors
-                                 *parent = *parent\parent
-                              Wend
-                              ;
-                              If *parent
-                                 If *parent\anchors
-                                    a_show( *parent )
-                                    ;
-                                    If Not a_index( )
-                                       *parent\mouseenter = - 2
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               If Not a_index( )
-                  *this\mouseenter = 1
-                  DoEvents( *this, #__event_MouseEnter )
-               EndIf
-            EndIf
-         EndIf
-         
-         ProcedureReturn *this
-      EndProcedure
-      
       Procedure.l DoKeyEvents_ListView( *this._s_WIDGET,List  *rows._s_ROWS( ), eventtype.l )
          Protected Repaint, mouse_x.l = mouse( )\x, mouse_y.l = mouse( )\y
          
@@ -20363,6 +20105,283 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn Repaint
       EndProcedure
       
+      Procedure DoEvent_Mouse( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
+         Protected i, a_index, Repaint, *this._s_WIDGET, *e._s_WIDGET
+         
+         ;\\ get at point address
+         If *root\haschildren
+            If ListSize( *list( ))
+               If *address
+                  ChangeCurrentElement( *list( ), *address )
+                  PreviousElement( *list( ))
+               Else
+                  LastElement( *list( ))
+               EndIf
+               Repeat
+                  If *list( )\address And
+                     *list( )\hide = 0 And
+                     *list( )\root = *root And 
+                     is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
+                     is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_draw] )
+                     
+                     ;\\ если переместили виджет то его исключаем
+                     If mouse( )\drag
+                        If is_drag_move( )
+                           If PressedWidget( ) = *list( )
+                              Continue
+                           EndIf
+                           EnteredWidget( ) = *list( )
+                           ProcedureReturn 0
+                        EndIf
+                     EndIf
+                     
+                     *this = *list( )
+                     Break
+                  EndIf
+               Until PreviousElement( *list( )) = #False
+            EndIf
+         EndIf
+         ;
+         ;\\ root no enumWidget
+         If Not *this
+            If is_atpoint_( *root, mouse_x, mouse_y, [#__c_frame] ) And
+               is_atpoint_( *root, mouse_x, mouse_y, [#__c_draw] )
+               *this = *root
+            EndIf
+         EndIf
+         ;
+         ;\\ is integral
+         If *this
+            ;\\ is integral string bar
+            If *this\__String( ) And Not *this\__String( )\hide And
+               is_atpoint_( *this\__String( ), mouse_x, mouse_y, [#__c_frame] ) And
+               is_atpoint_( *this\__String( ), mouse_x, mouse_y, [#__c_draw] )
+               *this = *this\__String( )
+            EndIf
+            ;\\ is integral tab bar
+            If *this\__Tab( ) And Not *this\__Tab( )\hide And
+               is_atpoint_( *this\__Tab( ), mouse_x, mouse_y, [#__c_frame] ) And
+               is_atpoint_( *this\__Tab( ), mouse_x, mouse_y, [#__c_draw] )
+               *this = *this\__Tab( )
+            EndIf
+            ;\\ is integral tab bar
+            If *this\__Menu( ) And Not *this\__Menu( )\hide And
+               is_atpoint_( *this\__Menu( ), mouse_x, mouse_y, [#__c_frame] ) And
+               is_atpoint_( *this\__Menu( ), mouse_x, mouse_y, [#__c_draw] )
+               *this = *this\__Menu( )
+            EndIf
+            ;\\ is integral scroll bar's
+            If *this\scroll
+               If *this\scroll\v And Not *this\scroll\v\hide And
+                  is_atpoint_( *this\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
+                  is_atpoint_( *this\scroll\v, mouse_x, mouse_y, [#__c_draw] )
+                  *this = *this\scroll\v
+               EndIf
+               If *this\scroll\h And Not *this\scroll\h\hide And
+                  is_atpoint_( *this\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
+                  is_atpoint_( *this\scroll\h, mouse_x, mouse_y, [#__c_draw] )
+                  *this = *this\scroll\h
+               EndIf
+            EndIf
+         EndIf
+         
+         If test_atpoint
+            Debug ""+*root\class+" "+*root\haschildren ;+" "+ *this\class
+         EndIf
+         ;
+         ;\\ entered anchor index
+         If CanvasMouseButtonPress( )
+            If a_index( ) And 
+               a_entered( ) And 
+               a_entered( )\anchors\id[a_index( )] And
+               a_entered( )\anchors\state
+               ;
+               If Not mouse( )\drag
+                  If *this <> a_entered( ) And 
+                     *this\root = a_entered( )\root 
+                     ;
+                     EnteredWidget( ) = a_entered( )
+                     *this = a_entered( )
+                  EndIf
+               EndIf
+            EndIf
+         Else
+            If Not a_entered( )
+               a_entered( ) = a_focused( )
+            EndIf
+            ;
+            If a_entered( )  
+               If Not (*this And a_entered( )\root <> *this\root )
+                  ;
+                  If a_enter( a_entered( ), - 3 )
+                     If a_entered( )
+                        If ( *this And a_entered( )\placingindex < *this\placingindex ) And 
+                           a_entered( ) <> a_focused( ) 
+                           ;
+                           a_index( ) = 0
+                        Else
+                           *this = a_entered( )
+                        EndIf
+                     EndIf
+                  Else
+                     If a_index( )
+                        Debug "a out to parent border "+a_entered( )\mouseenter 
+                        
+                        ; a_entered( )\mouseenter = 0
+                        a_index( ) = 0
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         ;
+         ;\\ reset
+         If EnteredButton( )
+            If a_index( ) Or ( EnteredWidget( ) And
+                               EnteredWidget( ) <> *this )
+               ;
+               If Leaved( EnteredButton( ) )
+                  If EnteredWidget( )
+                     EnteredWidget( )\root\repaint = #True
+                  Else
+                     *this\root\repaint = #True
+                  EndIf
+                  EnteredButton( ) = #Null
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\
+         If *this
+            If Not a_index( )
+               If Not CanvasMouseButtonPress( )
+                  ;\\
+                  DoEvent_Button( *this, #__event_MouseMove, mouse_x, mouse_y )
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\ do events entered & leaved
+         If EnteredWidget( ) <> *this
+            LeavedWidget( ) = EnteredWidget( )
+            EnteredWidget( ) = *this
+            Protected *parent._s_WIDGET 
+            
+            ;
+            If LeavedWidget( ) And Not ( *this And *this\parent = LeavedWidget( ) And is_integral_( *this ) ) And
+               LeavedWidget( )\mouseenter > 0
+               LeavedWidget( )\mouseenter = 0
+               ;
+               If is_integral_( LeavedWidget( ) )
+                 If LeavedWidget( )\parent And
+                   LeavedWidget( )\parent\mouseenter
+                  
+                     If *this = LeavedWidget( )\parent
+                        If is_atpoint_( *this, mouse_x, mouse_y, [#__c_inner] ) And
+                           is_atpoint_( *this, mouse_x, mouse_y, [#__c_draw] )
+                           *this\mouseenter = 2
+                        Else
+                           *this\mouseenter = 1
+                        EndIf
+                        ;
+                        ;DoEvents( *this\parent, #__event_StatusChange, -1, - 2 )
+                     Else
+                        LeavedWidget( )\parent\mouseenter = 0
+                     EndIf
+                  EndIf
+               Else
+                  If Not a_index( )
+                     If Not LeavedWidget( )\anchors
+                        If LeavedWidget( )\parent And 
+                           LeavedWidget( )\parent\type = #__type_Splitter
+                           ;
+                           *parent = LeavedWidget( )\parent
+                           While *parent And Not *parent\anchors
+                              *parent = *parent\parent
+                           Wend
+                           ;
+                           If *parent 
+                              If *parent\anchors And 
+                                 *parent\mouseenter = - 2
+                                 *parent\mouseenter = 0
+                              EndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               ;
+               DoEvents( LeavedWidget( ), #__event_MouseLeave )
+               ;
+               If is_integral_( LeavedWidget( ) ) And 
+                  LeavedWidget( )\parent\mouseenter = 0
+                  ;
+                  DoEvents( LeavedWidget( )\parent, #__event_MouseLeave, -1, - 2 )
+               EndIf
+            EndIf
+            ;
+            ;
+            If *this And 
+               *this\mouseenter = 0
+               
+               If is_integral_( *this ) 
+                  If *this\parent  
+                     If *this\parent\mouseenter = 0
+                        If *this\parent\anchors
+                           If Not CanvasMouseButtonPress( )
+                              a_show( *this\parent )
+                           EndIf
+                        EndIf
+                        ;
+                        If Not a_index( )
+                           *this\parent\mouseenter = - 2
+                           DoEvents( *this\parent, #__event_MouseEnter, -1, - 2 )
+                        EndIf
+                     Else
+                        *this\parent\mouseenter = - 2
+                        ;
+                        ;DoEvents( *this\parent, #__event_StatusChange, -1, - 2 )
+                     EndIf
+                  EndIf
+               Else
+                  If Not CanvasMouseButtonPress( )
+                     If Not a_index( )
+                        If *this\anchors
+                           a_show( *this )
+                        Else
+                           If *this\parent And 
+                              *this\parent\type = #__type_Splitter
+                              ;
+                              *parent = *this\parent
+                              While *parent And Not *parent\anchors
+                                 *parent = *parent\parent
+                              Wend
+                              ;
+                              If *parent
+                                 If *parent\anchors
+                                    a_show( *parent )
+                                    ;
+                                    If Not a_index( )
+                                       *parent\mouseenter = - 2
+                                    EndIf
+                                 EndIf
+                              EndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               
+               If Not a_index( )
+                  *this\mouseenter = 1
+                  DoEvents( *this, #__event_MouseEnter )
+               EndIf
+            EndIf
+         EndIf
+         
+         ProcedureReturn *this
+      EndProcedure
+      
       Procedure DoEvents( *this._s_WIDGET, eventtype.l, *button = #PB_All, *data = #Null )
          ; Debug "DoEvents( "+*this +" "+ eventtype
          ;       If eventtype = #__event_Down Or
@@ -21305,9 +21324,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;                          Debug "    "+root( )\class +" "+ ClassFromEvent(event)
                ;                      EndIf
                ;                      If ListSize( __gui\intersect( ) )
-               ;                         GetAtPoint( root( ), mouse( )\x, mouse( )\y, __gui\intersect( ) )
+               ;                         DoEvent_Mouse( root( ), mouse( )\x, mouse( )\y, __gui\intersect( ) )
                ;                      Else
-               GetAtPoint( root( ), mouse( )\x, mouse( )\y, widgets( ) )
+               DoEvent_Mouse( root( ), mouse( )\x, mouse( )\y, widgets( ) )
                ;                      EndIf
                
                If event = #__event_LeftDown Or
@@ -21323,7 +21342,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            DrawingMode( #PB_2DDrawing_AlphaChannel )
                            
                            If Not Alpha( Point( mouse( )\x - EnteredWidget( )\inner_x( ), mouse( )\y - EnteredWidget( )\inner_y( ) ) )
-                              GetAtPoint( root( ), mouse( )\x, mouse( )\y, widgets( ), EnteredWidget( )\address )
+                              DoEvent_Mouse( root( ), mouse( )\x, mouse( )\y, widgets( ), EnteredWidget( )\address )
                            EndIf
                            
                            StopDrawing( )
@@ -21497,11 +21516,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\ do enter&leave events
                   If mouse( )\drag
                      If EnteredWidget( ) <> PressedWidget( )
-                        GetAtPoint( root( ), mouse( )\x, mouse( )\y, widgets( ) )
+                        DoEvent_Mouse( root( ), mouse( )\x, mouse( )\y, widgets( ) )
                         
                         If EnteredWidget( ) <> PressedWidget( )
                            EnteredWidget( ) = PressedWidget( )
-                           GetAtPoint( PressedWidget( )\root, mouse( )\x, mouse( )\y, widgets( ) )
+                           DoEvent_Mouse( PressedWidget( )\root, mouse( )\x, mouse( )\y, widgets( ) )
                         EndIf
                      EndIf
                   EndIf
@@ -23986,10 +24005,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1351
-; FirstLine = 1348
-; Folding = --------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------f---------------------------------------------------4----u----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------48+--
-; Optimizer
+; CursorPosition = 7909
+; FirstLine = 7973
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = widgets-.app.exe

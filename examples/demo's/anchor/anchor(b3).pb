@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../widgets2.pbi" 
 
 UseWidgets( )
 Global alpha = 128
@@ -34,13 +34,13 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
     
   EndProcedure
   
-  Procedure _a_object( x.l,y.l,width.l,height.l, text.s, frameSize, Color.l  )
+  Procedure _a_object( X.l,Y.l,Width.l,Height.l, Text.s, frameSize, Color.l  )
   If Not Alpha(Color)
     Color = Color&$FFFFFF | 255<<24
   EndIf
-  Container(x,y,width,height, #__flag_nogadgets) 
-  If text
-    SetText(widget(), text)
+  Container(X,Y,Width,Height, #__flag_nogadgets) 
+  If Text
+    SetText(widget(), Text)
   EndIf
   SetColor(widget(), #__color_back, Color)
   SetColor(widget(), #__color_frame, Color&$FFFFFF | 255<<24)
@@ -77,8 +77,6 @@ If Open(0, 0, 0, 782, 452, "Example 3: Object boundaries to position and size", 
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7
-; FirstLine = 39
 ; Folding = --
 ; EnableXP
 ; DPIAware

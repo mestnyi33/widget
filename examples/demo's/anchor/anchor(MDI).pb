@@ -9,13 +9,13 @@ CompilerIf #PB_Compiler_IsMainFile
   Global object, parent, object1
   Declare CustomEvents( )
   
-  Procedure GetBar( *this._s_WIDGET, type.w, index.b = 0 )
-         If type = #__type_Scroll
+  Procedure GetBar( *this._s_WIDGET, Type.w, Index.b = 0 )
+         If Type = #__type_Scroll
             If *this\scroll
-               If index = 1
+               If Index = 1
                   ProcedureReturn *this\scroll\v
                EndIf
-               If index = 2
+               If Index = 2
                   ProcedureReturn *this\scroll\h
                EndIf
             EndIf
@@ -40,8 +40,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   SetFrame(object, fs)
   a_set(object, #__a_full, 8)
-; ;   SetSizeBounds(object, 200, 200, 501-fs*2, 501-fs*2)
-; ;   SetMoveBounds(object, fs, fs, 501-fs, 501-fs)
   
   object1 = ScrollArea(10, 10, 250, 250, 350,350, 1) : SetState( GetBar( object1, #__type_Scroll, 1 ), 80 )
    ;  object = ScrollArea(100, 100, 250, 250, 150,150, 1) 
@@ -94,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 41
+; CursorPosition = 42
+; FirstLine = 24
 ; Folding = --
 ; EnableXP

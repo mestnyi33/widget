@@ -342,10 +342,12 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 140
+; FirstLine = 123
 ; Folding = ---
 ; EnableThread
 ; EnableXP
-; EnableCompileCount = 478
+; EnableCompileCount = 481
 ; EnableBuildCount = 0
 ; EnableExeConstant

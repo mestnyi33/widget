@@ -48,8 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    If object
-      SetSizeBounds(object, anchor_size*2, anchor_size*2, 360, 360)
-      SetMoveBounds(object, 0, 0, 501-fs*2, 501-fs*2)
+      ;SetSizeBounds(object, anchor_size*2, anchor_size*2, 360, 360)
+      SetMoveBounds(object, 0, 0, 500, 500)
    EndIf
    
    ;\\
@@ -92,8 +92,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 57
+; CursorPosition = 50
+; FirstLine = 35
 ; Folding = --
 ; EnableXP
 ; DPIAware
