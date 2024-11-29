@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgetsDPI.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -134,8 +134,6 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 42
 ; Folding = --
 ; Optimizer
 ; EnableXP

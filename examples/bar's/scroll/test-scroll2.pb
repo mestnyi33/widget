@@ -47,7 +47,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
   ;   TextGadget       (#PB_Any,  10, 20, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
   ;   TextGadget       (#PB_Any,  10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
   
-  ;   Define i
+  Define i
   For i = 0 To 3
     BindGadgetEvent(i, @events_gadgets())
   Next
@@ -127,8 +127,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23
-; FirstLine = 19
+; CursorPosition = 49
+; FirstLine = 46
 ; Folding = -
 ; EnableXP
 ; DPIAware
