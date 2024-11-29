@@ -348,6 +348,6 @@ EndDataSection
 ; Folding = ---
 ; EnableThread
 ; EnableXP
-; EnableCompileCount = 481
+; EnableCompileCount = 483
 ; EnableBuildCount = 0
 ; EnableExeConstant

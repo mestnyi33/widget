@@ -24,6 +24,11 @@
       #PB_EventType_SizeItem = 65534
     CompilerEndIf
     
+    ;-\\ Bounds
+    #__bounds_Parentsize = 0
+    #__bounds_Children = 1<<0
+    #__bounds_move = 1<<1
+    #__bounds_size = 1<<2
     
     Enumeration - 1
       #SelectionStyle_Default
@@ -686,8 +691,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 279
-; FirstLine = 275
+; CursorPosition = 27
+; FirstLine = 13
 ; Folding = ----
 ; Optimizer
 ; EnableXP

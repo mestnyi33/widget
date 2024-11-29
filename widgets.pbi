@@ -360,6 +360,22 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro SetBounds( _this_, _mode_ = #__bounds_Parentsize )
+         If _mode_ = #__bounds_Parentsize 
+            SetSizeBounds( _this_ )
+            SetMoveBounds( _this_ )
+         EndIf
+         If _mode_ & #__bounds_Children 
+            SetChildrenBounds( _this_, 1 )
+         EndIf
+         If _mode_ & #__bounds_size
+            SetSizeBounds( _this_, -1,-1,-1,-1 )
+         EndIf
+         If _mode_ & #__bounds_move 
+            SetMoveBounds( _this_, -1,-1,-1,-1 )
+         EndIf
+      EndMacro
+      
       Macro CreateBar( _parent_, _flags_ = 0 )
          BarCreate( #__type_Menu, _parent_, #PB_ToolBar_Small|#PB_ToolBar_Text | _flags_ )
       EndMacro
@@ -1472,7 +1488,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
       Declare.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
       Declare.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = #__flag_nogadgets )
-      Declare.i Window( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, *parent = 0 )
       Declare.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
       Declare.i MDI( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
       
@@ -1496,6 +1511,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   WaitClose( *root = #Null, waittime.l = #PB_Default )
       Declare   EventHandler( Canvas.i = - 1, eventtype.i = - 1, eventdata = 0 )
       
+      Declare.i Window( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, *parent = 0 )
       Declare.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null )
    EndDeclareModule
    
@@ -4525,6 +4541,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          If Change_width
+            If *this\bounds\move And Not Change_x
+               If *this\bounds\move\max\x = ( *this\bounds\move\min\x + *this\frame_width( ) )
+                  *this\bounds\move\max\x = *this\bounds\move\min\x + Width
+               EndIf
+            EndIf
             *this\resize\width = Change_width
             *this\frame_width( )     = Width
             *this\container_width( ) = iwidth
@@ -4535,6 +4556,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\inner_width( ) = *this\container_width( )
          EndIf
          If Change_height
+            If *this\bounds\move And Not Change_y
+               If *this\bounds\move\max\y = ( *this\bounds\move\min\y + *this\frame_height( ) )
+                  *this\bounds\move\max\y = *this\bounds\move\min\y + Height
+               EndIf
+            EndIf
             *this\resize\height = Change_height
             *this\frame_height( )     = Height
             *this\container_height( ) = iheight
@@ -7902,56 +7928,56 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\bounds\move.allocate(BOUNDMOVE)
                   
          If MinimumX = #PB_Ignore
-            If *this\parent\bounds\children
+            If Not *this\bounds\move\min\x
                *this\bounds\move\min\x = *this\parent\scroll_x( ) 
-            Else
-               If Not *this\bounds\move\min\x
-                  *this\bounds\move\min\x = *this\container_x( ) 
-               EndIf
             EndIf
          Else
-            *this\bounds\move\min\x = DPIScaledX(MinimumX)
+            If MinimumX = #PB_Default
+               *this\bounds\move\min\x = *this\container_x( ) 
+            Else
+               *this\bounds\move\min\x = DPIScaledX(MinimumX)
+            EndIf
          EndIf
          If MinimumY = #PB_Ignore
-            If *this\parent\bounds\children
+            If Not *this\bounds\move\min\y
                *this\bounds\move\min\y = *this\parent\scroll_y( ) 
-            Else
-               If Not *this\bounds\move\min\y
-                  *this\bounds\move\min\y = *this\container_y( ) 
-               EndIf
             EndIf
          Else
-            *this\bounds\move\min\y = DPIScaledY(MinimumY)
+            If MinimumY = #PB_Default
+               *this\bounds\move\min\y = *this\container_y( ) 
+            Else
+               *this\bounds\move\min\y = DPIScaledY(MinimumY)
+            EndIf
          EndIf
          If MaximumX = #PB_Ignore
-            If *this\parent\bounds\children
+            If Not *this\bounds\move\max\x
                If *this\parent\scroll_width( ) 
                   *this\bounds\move\max\x = *this\parent\scroll_width( ) 
                Else
                   *this\bounds\move\max\x = *this\parent\inner_width( )
                EndIf
-            Else
-               If Not *this\bounds\move\max\x
-                  *this\bounds\move\max\x = *this\container_x( ) + *this\frame_width( ) 
-               EndIf
             EndIf
          Else
-            *this\bounds\move\max\x = DPIScaledX(MaximumX)
+            If MaximumX = #PB_Default
+               *this\bounds\move\max\x = *this\container_x( ) + *this\frame_width( ) 
+            Else
+               *this\bounds\move\max\x = DPIScaledX(MaximumX)
+            EndIf
          EndIf
          If MaximumY = #PB_Ignore
-            If *this\parent\bounds\children
+            If Not *this\bounds\move\max\y
                If *this\parent\scroll_height( )
                   *this\bounds\move\max\y = *this\parent\scroll_height( ) 
                Else
                   *this\bounds\move\max\y = *this\parent\inner_height( )
                EndIf
-            Else
-               If Not *this\bounds\move\max\y
-                  *this\bounds\move\max\y = *this\container_y( ) + *this\frame_height( )
-               EndIf
             EndIf
          Else
-            *this\bounds\move\max\y = DPIScaledY(MaximumY) 
+            If MaximumY = #PB_Default
+               *this\bounds\move\max\y = *this\container_y( ) + *this\frame_height( )
+            Else
+               *this\bounds\move\max\y = DPIScaledY(MaximumY) 
+            EndIf
          EndIf
          
          ;\\
@@ -7983,57 +8009,57 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\bounds\size.allocate(BOUNDSIZE)
          
          If MinimumWidth = #PB_Ignore
-            If *this\parent\bounds\children
+            If Not *this\bounds\size\min\width
                *this\bounds\size\min\width = *this\fs * 2 + *this\fs[1] + *this\fs[3]
-            Else
-               If Not *this\bounds\size\min\width
-                  *this\bounds\size\min\width = *this\frame_width( )
-               EndIf
             EndIf
          Else
-            *this\bounds\size\min\width = DPIScaledX(MinimumWidth)
+            If MinimumWidth = #PB_Default
+               *this\bounds\size\min\width = *this\frame_width( )
+            Else
+               *this\bounds\size\min\width = DPIScaledX(MinimumWidth)
+            EndIf
          EndIf
          If MinimumHeight = #PB_Ignore
-            If *this\parent\bounds\children
+            If Not *this\bounds\size\min\height
                *this\bounds\size\min\height = *this\fs * 2 + *this\fs[2] + *this\fs[4]
-            Else
-               If Not *this\bounds\size\min\height
-                  *this\bounds\size\min\height = *this\frame_height( )
-               EndIf
             EndIf
          Else
-            *this\bounds\size\min\height = DPIScaledY(MinimumHeight)
+            If MinimumHeight = #PB_Default
+               *this\bounds\size\min\height = *this\frame_height( )
+            Else
+               *this\bounds\size\min\height = DPIScaledY(MinimumHeight)
+            EndIf
          EndIf
          
          If MaximumWidth = #PB_Ignore
-            If *this\parent\bounds\children
+            If Not *this\bounds\size\max\width
                If *this\parent\scroll\h
                   *this\bounds\size\max\width = *this\parent\scroll\h\bar\max
                Else
                   *this\bounds\size\max\width = *this\parent\inner_width( )
                EndIf
-            Else
-               If Not *this\bounds\size\max\width
-                  *this\bounds\size\max\width = *this\frame_width( )
-               EndIf
             EndIf
          Else
-            *this\bounds\size\max\width = DPIScaledX(MaximumWidth)
+            If MaximumWidth = #PB_Default
+               *this\bounds\size\max\width = *this\frame_width( )
+            Else
+               *this\bounds\size\max\width = DPIScaledX(MaximumWidth)
+            EndIf
          EndIf
          If MaximumHeight = #PB_Ignore
-            If *this\parent\bounds\children
+            If Not *this\bounds\size\max\height
                If *this\parent\scroll\v
                   *this\bounds\size\max\height = *this\parent\scroll\v\bar\max
                Else
                   *this\bounds\size\max\height = *this\parent\inner_height( )
                EndIf
-            Else
-               If Not *this\bounds\size\max\height
-                  *this\bounds\size\max\height = *this\frame_height( )
-               EndIf
             EndIf
          Else
-            *this\bounds\size\max\height = DPIScaledY(MaximumHeight)
+            If MaximumHeight = #PB_Default
+               *this\bounds\size\max\height = *this\frame_height( )
+            Else
+               *this\bounds\size\max\height = DPIScaledY(MaximumHeight)
+            EndIf
          EndIf
          
          If *this\frame_width( ) < *this\bounds\size\min\width
@@ -23986,9 +24012,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1351
-; FirstLine = 1348
-; Folding = --------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------f---------------------------------------------------4----u----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------48+--
+; CursorPosition = 369
+; FirstLine = 352
+; Folding = ---------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------v---------------------nt8---------------------------8---f4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8d---
 ; Optimizer
 ; EnableXP
 ; DPIAware

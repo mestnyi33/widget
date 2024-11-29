@@ -196,10 +196,12 @@ Unbind
 
 IsContainer
 IsChild
+Tab
 
 SetForeground
 SetAttach
 SetAlign
+SetBounds
 SetSizeBounds
 SetMoveBounds
 SetChildrenBounds

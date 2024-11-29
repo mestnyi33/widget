@@ -1591,8 +1591,10 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*container, "text", 45, 65+40*2, 50, 30)
       SetActive( q )
    EndIf
-   ;SetMoveBounds( *scrollarea )
-   SetMoveBounds( ide_design_form )
+   ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
+   ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
+   ;SetSizeBounds( *scrollarea )
+   SetMoveBounds( ide_design_form, -1,-1,-1,-1 )
    ;SetChildrenBounds( ide_design_MDI )
    
    
@@ -1645,8 +1647,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1594
-; FirstLine = 1566
+; CursorPosition = 1596
+; FirstLine = 1572
 ; Folding = ---f0------------------------
 ; EnableXP
 ; DPIAware
