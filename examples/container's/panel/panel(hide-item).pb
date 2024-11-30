@@ -13,8 +13,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure HideItem( *this._s_widget, item.l, state.b )
     If *this\type = #__type_panel
       If *this\tab
-        SelectElement( *this\tab\widget\__tabs( ), item )
-        *this\tab\widget\__tabs( )\hide = state
+        SelectElement( *this\__Tab( )\__tabs( ), item )
+        *this\__Tab( )\__tabs( )\hide = state
         ;*this\state\repaint = #True
       EndIf
     EndIf
@@ -40,11 +40,12 @@ CompilerIf #PB_Compiler_IsMainFile
 
     	EndSelect
     EndProcedure
+    
     AddItem (*w, -1,"Панель 2")
     *butt1 = Button(10, 15, 80, 24,"hide item3")
     *butt2 = Button(95, 15, 80, 24,"show item3")
-    Bind(*butt1, @events_butt(), #PB_EventType_LeftClick)
-    Bind(*butt2, @events_butt(), #PB_EventType_LeftClick)
+    Bind(*butt1, @events_butt(), #__event_LeftClick)
+    Bind(*butt2, @events_butt(), #__event_LeftClick)
     
     AddItem (*w, -1,"Панель 3")
     Button(10, 15, 80, 24,"Кнопка 4")
@@ -62,6 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
      
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18
+; CursorPosition = 42
+; FirstLine = 21
 ; Folding = --
 ; EnableXP

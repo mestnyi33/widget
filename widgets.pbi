@@ -9281,35 +9281,35 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   If *this\type = #__type_Tab
-                     ;                      color = *this\parent\color\frame
-                     ;                      ;
-                     ;                      If *this\parent\fs[1]
-                     ;                         If *activeTAB
-                     ;                            ; horizontal tab bottom line
-                     ;                            Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                     ;                            Line( *this\frame_x( ) + *this\frame_width( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
-                     ;                         Else
-                     ;                            Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
-                     ;                         EndIf
-                     ;                      Else
-                     ;                         Line( *this\parent\frame_x( ), *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
-                     ;                      EndIf
-                     ;                      
-                     ;                      ;
-                     ;                      Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
-                     ;                      Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
-                     ;                      
-                     ;                      If *this\parent\fs[3]
-                     ;                         If *activeTAB 
-                     ;                            ; horizontal tab bottom line
-                     ;                            Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, ( y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                     ;                            Line( *this\frame_x( ) - 1, y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( y + *activeTAB\y + *activeTAB\height ), color )
-                     ;                         Else
-                     ;                            Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
-                     ;                         EndIf
-                     ;                      Else
-                     ;                         Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
-                     ;                      EndIf
+                     color = *this\parent\color\frame
+                     ;
+                     If *this\parent\fs[1]
+                        If *activeTAB
+                           ; horizontal tab bottom line
+                           Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
+                           Line( *this\frame_x( ) + *this\frame_width( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                        Else
+                           Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                        EndIf
+                     Else
+                        Line( *this\parent\frame_x( ), *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
+                     EndIf
+                     
+                     ;
+                     Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
+                     Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
+                     
+                     If *this\parent\fs[3]
+                        If *activeTAB 
+                           ; horizontal tab bottom line
+                           Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
+                           Line( *this\frame_x( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                        Else
+                           Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                        EndIf
+                     Else
+                        Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
+                     EndIf
                   EndIf
                   
                Else
@@ -9331,36 +9331,41 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   If *this\type = #__type_Tab
-                     ;                      color = *this\parent\color\frame
-                     ;                      ;
-                     ;                      If *this\parent\fs[2]
-                     ;                         If *activeTAB 
-                     ;                            ; horizontal tab bottom line
-                     ;                            Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                     ;                            Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
-                     ;                         Else
-                     ;                            Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
-                     ;                         EndIf
-                     ;                      Else
-                     ;                         Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
-                     ;                      EndIf
-                     ;                      
-                     ;                      ;
-                     ;                      Line( *this\parent\frame_x( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                     ;                      Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                     ;                      
-                     ;                      
-                     ;                      If *this\parent\fs[4]
-                     ;                         If *activeTAB 
-                     ;                            ; horizontal tab bottom line
-                     ;                            Line( *this\frame_x( ), *this\frame_y( ) - 1, ( x + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                     ;                            Line( x + *activeTAB\x + *activeTAB\width, *this\frame_y( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( x + *activeTAB\x + *activeTAB\width ), 1, color )
-                     ;                         Else
-                     ;                            Line( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), 1, color )
-                     ;                         EndIf
-                     ;                      Else
-                     ;                         Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
-                     ;                      EndIf
+                     color = *this\parent\color\frame
+                     ;
+                    ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
+                     If *this\parent\fs[2]
+                        If *activeTAB 
+                           ; horizontal tab bottom line
+                           Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                           Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
+                        Else
+                           Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
+                        EndIf
+                     Else
+                        Line( *this\parent\inner_x( ), *this\parent\inner_y( ), *this\parent\inner_width( ), 1, color )
+                     EndIf
+                     
+                     ;
+                     Line( *this\parent\inner_x( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+                    ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ) - 1, 1, *this\parent\frame_height( ) + 2, color )
+                     
+                     Line( *this\parent\inner_x( ) + *this\parent\inner_width( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+                    ; Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ) - 1, 1, *this\parent\frame_height( ) + 2, color )
+                     
+                     ;
+                     If *this\parent\fs[4]
+                        If *activeTAB 
+                           ; horizontal tab bottom line
+                           Line( *this\frame_x( ), *this\frame_y( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                           Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
+                        Else
+                           Line( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), 1, color )
+                        EndIf
+                     Else
+                        Line( *this\parent\inner_x( ), *this\parent\inner_y( ) + *this\parent\inner_height( ), *this\parent\inner_width( ), 1, color )
+                     EndIf
+                    ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
                   EndIf
                   
                EndIf
@@ -17043,13 +17048,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;               EndIf
                
                If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
-                  If *this\inner_width( ) And 
-                     *this\inner_height( ) 
-                     draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, *this\color\frame )
-                  EndIf
-                  If *this\type = #__type_Container
+;                   If *this\inner_width( ) And 
+;                      *this\inner_height( ) 
+;                      ;If *this\type <> #__type_Panel
+;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
+;                      ;EndIf
+;                   EndIf
+;                   If *this\type = #__type_Container
                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-                  EndIf
+;                   EndIf
                   
                ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
                       constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
@@ -24010,9 +24017,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3855
-; FirstLine = 3802
-; Folding = ---------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------v---------------------nt8---------------------------8---f4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------------------------------------------8d---
+; CursorPosition = 9355
+; FirstLine = 8666
+; Folding = ---------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------v---------------------nt8---------------------------8---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------------------------------------------8d---
 ; Optimizer
 ; EnableXP
 ; DPIAware

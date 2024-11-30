@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global i
   Global._s_widget *s_1, *s_2, *s_3, *s_4
   
-  widget::Open(OpenWindow(#PB_Any, 10, 10, 850, 250, "TAB-demos", #PB_Window_ScreenCentered | #PB_Window_SystemMenu))
+  widget::Open(0, 10, 10, 850, 250, "TAB-demos", #PB_Window_ScreenCentered | #PB_Window_SystemMenu)
   
  
   
@@ -55,12 +55,12 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*s_3, 5);250/2)
   SetState(*s_4, 1);10)
   
-  Debug "-"
-  Debug ""+*s_1\FocusedTab( )+" "+*s_1\FocusedTab( )\index+" "+*s_1\FocusedTab( )\text\string
-  Debug ""+*s_2\FocusedTab( )+" "+*s_2\FocusedTab( )\index
-  Debug ""+*s_3\FocusedTab( )+" "+*s_3\FocusedTab( )\index
-  Debug ""+*s_4\FocusedTab( )+" "+*s_4\FocusedTab( )\index
-  Debug "-"
+;   Debug "-"
+;   Debug ""+*s_1\FocusedTab( )+" "+*s_1\FocusedTab( )\index+" "+*s_1\FocusedTab( )\text\string
+;   Debug ""+*s_2\FocusedTab( )+" "+*s_2\FocusedTab( )\index
+;   Debug ""+*s_3\FocusedTab( )+" "+*s_3\FocusedTab( )\index
+;   Debug ""+*s_4\FocusedTab( )+" "+*s_4\FocusedTab( )\index
+;   Debug "-"
   
   Define event
   Repeat
@@ -69,6 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 9
+; FirstLine = 38
 ; Folding = -
 ; EnableXP

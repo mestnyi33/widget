@@ -72,7 +72,7 @@ SetColor(*Object4, #__color_back, RGBA(64, 128, 192, alpha))
 SetColor(*Object4, #__color_Frame, RGB(64, 128, 192))
 ;;SetColor(*Object4, #__color_frame, RGBa(64, 128, 192, alpha))
 ;SetColor(widget()\tab\widget, #__color_back, RGBA(64, 128, 192, alpha))
-SetFrame(*Object4, 2)
+SetFrame(*Object4, 1)
 
 AddItem( *Object4, 0, "panel-item-0" )
 *Object5 = a_object( 50, 50, 140, 100, "parent-item-0", RGBA(0, 64, 128, alpha1));, #Object4, 0) ; Attach object 5 directly to object 1 into the first frame
@@ -290,8 +290,8 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 86
+; CursorPosition = 74
+; FirstLine = 58
 ; Folding = +
 ; EnableXP
 ; DPIAware

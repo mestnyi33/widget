@@ -1323,117 +1323,117 @@ Module EditorFactory
 		
 		*ObjectManager = *Frame\pObjectManager
 		ForEach *Frame\lpChildObject()
-			*Object = *Frame\lpChildObject()
-			With *Object
-				If \bHidden
-					Continue
-				EndIf
-				iX      = \iX
-				iY      = \iY
-				iWidth  = \iWidth
-				iHeight = \iHeight
-				;RotateCoordinates(iX, iY, Degree(\fRotation))
-				If \bSelected And *ObjectManager\iTransformationMode & \eHandle
-					Select *ObjectManager\iTransformationMode
-						Case #Handle_Position
-							If *ObjectManager\bMovement
-								iX = AdjustX(*Object, \iX+*ObjectManager\iMouseX-*ObjectManager\iAnchorMouseX, \iWidth)
-								iY = AdjustY(*Object, \iY+*ObjectManager\iMouseY-*ObjectManager\iAnchorMouseY, \iHeight)
-							EndIf
-						Case #Handle_BottomLeft
-							iWidth  = AdjustWidth(*Object, \iWidth-*ObjectManager\iMouseX+*ObjectManager\iAnchorMouseX)
-							iX      = AdjustX(*Object, \iX-iWidth+\iWidth, iWidth)
-							iHeight = AdjustHeight(*Object, \iHeight+*ObjectManager\iMouseY-*ObjectManager\iAnchorMouseY)
-							iY      = AdjustY(*Object, \iY, iHeight)
-						Case #Handle_Bottom
-							iHeight = AdjustHeight(*Object, \iHeight+*ObjectManager\iMouseY-*ObjectManager\iAnchorMouseY)
-							iY      = AdjustY(*Object, \iY, iHeight)
-						Case #Handle_BottomRight
-							iWidth  = AdjustWidth(*Object, \iWidth+*ObjectManager\iMouseX-*ObjectManager\iAnchorMouseX)
-							iX      = AdjustX(*Object, \iX, iWidth)
-							iHeight = AdjustHeight(*Object, \iHeight+*ObjectManager\iMouseY-*ObjectManager\iAnchorMouseY)
-							iY      = AdjustY(*Object, \iY, iHeight)
-						Case #Handle_Left
-							iWidth  = AdjustWidth(*Object, \iWidth-*ObjectManager\iMouseX+*ObjectManager\iAnchorMouseX)
-							iX      = AdjustX(*Object, \iX-iWidth+\iWidth, iWidth)
-						Case #Handle_Right
-							iWidth  = AdjustWidth(*Object, \iWidth+*ObjectManager\iMouseX-*ObjectManager\iAnchorMouseX)
-							iX      = AdjustX(*Object, \iX, iWidth)
-						Case #Handle_TopLeft
-							iWidth  = AdjustWidth(*Object, \iWidth-*ObjectManager\iMouseX+*ObjectManager\iAnchorMouseX)
-							iX      = AdjustX(*Object, \iX-iWidth+\iWidth, iWidth)
-							iHeight = AdjustHeight(*Object, \iHeight-*ObjectManager\iMouseY+*ObjectManager\iAnchorMouseY)
-							iY      = AdjustY(*Object, \iY-iHeight+\iHeight, iHeight)
-						Case #Handle_Top
-							iHeight = AdjustHeight(*Object, \iHeight-*ObjectManager\iMouseY+*ObjectManager\iAnchorMouseY)
-							iY      = AdjustY(*Object, \iY-iHeight+\iHeight, iHeight)
-						Case #Handle_TopRight
-							iWidth  = AdjustWidth(*Object, \iWidth+*ObjectManager\iMouseX-*ObjectManager\iAnchorMouseX)
-							iX      = AdjustX(*Object, \iX, iWidth)
-							iHeight = AdjustHeight(*Object, \iHeight-*ObjectManager\iMouseY+*ObjectManager\iAnchorMouseY)
-							iY      = AdjustY(*Object, \iY-iHeight+\iHeight, iHeight)
-					EndSelect
-				EndIf
-				iX + Bool(\eAttachmentMode & #Attachment_X) * iParentX
-				iY + Bool(\eAttachmentMode & #Attachment_Y) * iParentY
-				; Object and Frame
-				If \pDrawingCallback
-					SaveVectorState()
-					TranslateCoordinates(iX, iY)
-					\pDrawingCallback(\iObject, iWidth, iHeight, \iCallbackData)
-					RestoreVectorState()
-				Else
-					AddPathBox(iX, iY, iWidth, iHeight)
-					VectorSourceColor($FFC0C0C0)
-					FillPath()
-				EndIf
-				If \bSelected
-					If \pSelectionStyle\eType <> #SelectionStyle_None
-						AddPathBox(iX-\pSelectionStyle\dDistance, iY-\pSelectionStyle\dDistance, iWidth+\pSelectionStyle\dDistance*2, iHeight+\pSelectionStyle\dDistance*2)
-						VectorSourceColor(\pSelectionStyle\iColor)
-						Select \pSelectionStyle\eType
-							Case #SelectionStyle_Solid  : StrokePath(\pSelectionStyle\dThickness)
-							Case #SelectionStyle_Dashed : DashPath(\pSelectionStyle\dThickness, \pSelectionStyle\dThickness*3)
-							Case #SelectionStyle_Dotted : DotPath(\pSelectionStyle\dThickness, \pSelectionStyle\dThickness*2)
-						EndSelect
-					EndIf
-				EndIf
-				; Handles
-				If (\eHandleDisplayMode = #Handle_ShowAlways Or 
-				    (\eHandleDisplayMode & #Handle_ShowIfHovered And *Object = *ObjectManager\pHoveredObject) Or
-				    (\eHandleDisplayMode & #Handle_ShowIfSelected And \bSelected) ) And *ObjectManager\bMovement = #False
-					For iIndex = 0 To #LastHandle
-						If iIndex = 0 And \aHandle(0)\iImage = EditorFactory\iDefaultHandleImage : Continue : EndIf
-						If \eHandle & (1<<iIndex)
-							Swap \iX, iX
-							Swap \iY, iY
-							Swap \iWidth, iWidth
-							Swap \iHeight, iHeight
-							HandlePosition(*Object, \aHandle(iIndex), @iHandleX, @iHandleY)
-							MovePathCursor(iHandleX-Int(\aHandle(iIndex)\iWidth/2), iHandleY-Int(\aHandle(iIndex)\iHeight/2))
-							DrawVectorImage(\aHandle(iIndex)\iImageID)
-							Swap \iX, iX
-							Swap \iY, iY
-							Swap \iWidth, iWidth
-							Swap \iHeight, iHeight
-						EndIf
-					Next
-				EndIf
-				If \pNoFrame
-					ObjectDrawing_Frame(\pNoFrame, iX, iY)
-				EndIf
-				If \pVisibleFrame
-					If \pVisibleFrame\ViewBox\bEnabled
-						SaveVectorState()
-						AddPathBox(iX+\pVisibleFrame\ViewBox\iX, iY+\pVisibleFrame\ViewBox\iY, DecodeParentSize(\pVisibleFrame\ViewBox\iWidth, iWidth), DecodeParentSize(\pVisibleFrame\ViewBox\iHeight, iHeight))
-						ClipPath()
-						ObjectDrawing_Frame(\pVisibleFrame, iX+\pVisibleFrame\ViewBox\iX-\pVisibleFrame\InnerArea\iX, iY+\pVisibleFrame\ViewBox\iY-\pVisibleFrame\InnerArea\iY)
-						RestoreVectorState()
-					Else
-						ObjectDrawing_Frame(\pVisibleFrame, iX+\pVisibleFrame\ViewBox\iX-\pVisibleFrame\InnerArea\iX, iY+\pVisibleFrame\ViewBox\iY-\pVisibleFrame\InnerArea\iY)
-					EndIf
-				EndIf
-			EndWith
+		   *Object = *Frame\lpChildObject()
+		   With *Object
+		      If \bHidden
+		         Continue
+		      EndIf
+		      iX      = \iX
+		      iY      = \iY
+		      iWidth  = \iWidth
+		      iHeight = \iHeight
+		      ;RotateCoordinates(iX, iY, Degree(\fRotation))
+		      If \bSelected And *ObjectManager\iTransformationMode & \eHandle
+		         Select *ObjectManager\iTransformationMode
+		            Case #Handle_Position
+		               If *ObjectManager\bMovement
+		                  iX = AdjustX(*Object, \iX+*ObjectManager\iMouseX-*ObjectManager\iAnchorMouseX, \iWidth)
+		                  iY = AdjustY(*Object, \iY+*ObjectManager\iMouseY-*ObjectManager\iAnchorMouseY, \iHeight)
+		               EndIf
+		            Case #Handle_BottomLeft
+		               iWidth  = AdjustWidth(*Object, \iWidth-*ObjectManager\iMouseX+*ObjectManager\iAnchorMouseX)
+		               iX      = AdjustX(*Object, \iX-iWidth+\iWidth, iWidth)
+		               iHeight = AdjustHeight(*Object, \iHeight+*ObjectManager\iMouseY-*ObjectManager\iAnchorMouseY)
+		               iY      = AdjustY(*Object, \iY, iHeight)
+		            Case #Handle_Bottom
+		               iHeight = AdjustHeight(*Object, \iHeight+*ObjectManager\iMouseY-*ObjectManager\iAnchorMouseY)
+		               iY      = AdjustY(*Object, \iY, iHeight)
+		            Case #Handle_BottomRight
+		               iWidth  = AdjustWidth(*Object, \iWidth+*ObjectManager\iMouseX-*ObjectManager\iAnchorMouseX)
+		               iX      = AdjustX(*Object, \iX, iWidth)
+		               iHeight = AdjustHeight(*Object, \iHeight+*ObjectManager\iMouseY-*ObjectManager\iAnchorMouseY)
+		               iY      = AdjustY(*Object, \iY, iHeight)
+		            Case #Handle_Left
+		               iWidth  = AdjustWidth(*Object, \iWidth-*ObjectManager\iMouseX+*ObjectManager\iAnchorMouseX)
+		               iX      = AdjustX(*Object, \iX-iWidth+\iWidth, iWidth)
+		            Case #Handle_Right
+		               iWidth  = AdjustWidth(*Object, \iWidth+*ObjectManager\iMouseX-*ObjectManager\iAnchorMouseX)
+		               iX      = AdjustX(*Object, \iX, iWidth)
+		            Case #Handle_TopLeft
+		               iWidth  = AdjustWidth(*Object, \iWidth-*ObjectManager\iMouseX+*ObjectManager\iAnchorMouseX)
+		               iX      = AdjustX(*Object, \iX-iWidth+\iWidth, iWidth)
+		               iHeight = AdjustHeight(*Object, \iHeight-*ObjectManager\iMouseY+*ObjectManager\iAnchorMouseY)
+		               iY      = AdjustY(*Object, \iY-iHeight+\iHeight, iHeight)
+		            Case #Handle_Top
+		               iHeight = AdjustHeight(*Object, \iHeight-*ObjectManager\iMouseY+*ObjectManager\iAnchorMouseY)
+		               iY      = AdjustY(*Object, \iY-iHeight+\iHeight, iHeight)
+		            Case #Handle_TopRight
+		               iWidth  = AdjustWidth(*Object, \iWidth+*ObjectManager\iMouseX-*ObjectManager\iAnchorMouseX)
+		               iX      = AdjustX(*Object, \iX, iWidth)
+		               iHeight = AdjustHeight(*Object, \iHeight-*ObjectManager\iMouseY+*ObjectManager\iAnchorMouseY)
+		               iY      = AdjustY(*Object, \iY-iHeight+\iHeight, iHeight)
+		         EndSelect
+		      EndIf
+		      iX + Bool(\eAttachmentMode & #Attachment_X) * iParentX
+		      iY + Bool(\eAttachmentMode & #Attachment_Y) * iParentY
+		      ; Object and Frame
+		      If \pDrawingCallback
+		         SaveVectorState()
+		         TranslateCoordinates(iX, iY)
+		         \pDrawingCallback(\iObject, iWidth, iHeight, \iCallbackData)
+		         RestoreVectorState()
+		      Else
+		         AddPathBox(iX, iY, iWidth, iHeight)
+		         VectorSourceColor($FFC0C0C0)
+		         FillPath()
+		      EndIf
+		      If \bSelected
+		         If \pSelectionStyle\eType <> #SelectionStyle_None
+		            AddPathBox(iX-\pSelectionStyle\dDistance, iY-\pSelectionStyle\dDistance, iWidth+\pSelectionStyle\dDistance*2, iHeight+\pSelectionStyle\dDistance*2)
+		            VectorSourceColor(\pSelectionStyle\iColor)
+		            Select \pSelectionStyle\eType
+		               Case #SelectionStyle_Solid  : StrokePath(\pSelectionStyle\dThickness)
+		               Case #SelectionStyle_Dashed : DashPath(\pSelectionStyle\dThickness, \pSelectionStyle\dThickness*3)
+		               Case #SelectionStyle_Dotted : DotPath(\pSelectionStyle\dThickness, \pSelectionStyle\dThickness*2)
+		            EndSelect
+		         EndIf
+		      EndIf
+		      ; Handles
+		      If (\eHandleDisplayMode = #Handle_ShowAlways Or 
+		          (\eHandleDisplayMode & #Handle_ShowIfHovered And *Object = *ObjectManager\pHoveredObject) Or
+		          (\eHandleDisplayMode & #Handle_ShowIfSelected And \bSelected) ) And *ObjectManager\bMovement = #False
+		         For iIndex = 0 To #LastHandle
+		            If iIndex = 0 And \aHandle(0)\iImage = EditorFactory\iDefaultHandleImage : Continue : EndIf
+		            If \eHandle & (1<<iIndex)
+		               Swap \iX, iX
+		               Swap \iY, iY
+		               Swap \iWidth, iWidth
+		               Swap \iHeight, iHeight
+		               HandlePosition(*Object, \aHandle(iIndex), @iHandleX, @iHandleY)
+		               MovePathCursor(iHandleX-Int(\aHandle(iIndex)\iWidth/2), iHandleY-Int(\aHandle(iIndex)\iHeight/2))
+		               DrawVectorImage(\aHandle(iIndex)\iImageID)
+		               Swap \iX, iX
+		               Swap \iY, iY
+		               Swap \iWidth, iWidth
+		               Swap \iHeight, iHeight
+		            EndIf
+		         Next
+		      EndIf
+		      If \pNoFrame
+		         ObjectDrawing_Frame(\pNoFrame, iX, iY)
+		      EndIf
+		      If \pVisibleFrame
+		         If \pVisibleFrame\ViewBox\bEnabled
+		            SaveVectorState()
+		            AddPathBox(iX+\pVisibleFrame\ViewBox\iX, iY+\pVisibleFrame\ViewBox\iY, DecodeParentSize(\pVisibleFrame\ViewBox\iWidth, iWidth), DecodeParentSize(\pVisibleFrame\ViewBox\iHeight, iHeight))
+		            ClipPath()
+		            ObjectDrawing_Frame(\pVisibleFrame, iX+\pVisibleFrame\ViewBox\iX-\pVisibleFrame\InnerArea\iX, iY+\pVisibleFrame\ViewBox\iY-\pVisibleFrame\InnerArea\iY)
+		            RestoreVectorState()
+		         Else
+		            ObjectDrawing_Frame(\pVisibleFrame, iX+\pVisibleFrame\ViewBox\iX-\pVisibleFrame\InnerArea\iX, iY+\pVisibleFrame\ViewBox\iY-\pVisibleFrame\InnerArea\iY)
+		         EndIf
+		      EndIf
+		   EndWith
 		Next
 		
 	EndProcedure
@@ -5112,9 +5112,10 @@ EndModule
 
 
 
-; IDE Options = PureBasic 6.00 Alpha 4 (Windows - x64)
-; CursorPosition = 44
-; Folding = DIE9-gCbIrR0LJJ9whkBAADPQSAAAABAAkByAEASIAAAAAAAAA9
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 2362
+; FirstLine = 1066
+; Folding = DIF9-gCbQrR0LJJ9whlBAADPQy---PBJAk-yA1ASIAAAAAAAgA9---------------------------------------------
 ; EnableXP
 ; EnableCompileCount = 212
 ; EnableBuildCount = 0

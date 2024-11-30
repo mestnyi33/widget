@@ -258,26 +258,26 @@ CompilerIf #PB_Compiler_IsMainFile
          *g_NoTabMoving = CheckBox(10, 240, 130, 20, "no tab moving")
          *g_BottomLine = CheckBox(10, 260, 130, 20, "bottom line")
          Text(10, 285, 90, 20, "tab text alignment:")
-         *g_TabTextAlignment = Spin(100, 280, 60, 20, -1, 1, #PB_Spin_Numeric)
+         *g_TabTextAlignment = Spin(100, 285, 60, 20, -1, 1, #PB_Spin_Numeric)
          SetState(*g_TabTextAlignment, GetAttribute(*g_tab1, #__tab_TabTextAlignment))
          Text(10, 305, 90, 20, "tab rounding:")
-         *g_TabRounding = Spin(100, 300, 60, 20, 0, 20, #PB_Spin_Numeric)
+         *g_TabRounding = Spin(100, 305, 60, 20, 0, 20, #PB_Spin_Numeric)
          SetState(*g_TabRounding, GetAttribute(*g_tab1, #__tab_TabRounding))
          Text(10, 325, 90, 20, "min tab length:")
-         *g_MinTabLength = Spin(100, 320, 60, 20, 0, 1000, #PB_Spin_Numeric)
+         *g_MinTabLength = Spin(100, 325, 60, 20, 0, 1000, #PB_Spin_Numeric)
          SetState(*g_MinTabLength, GetAttribute(*g_tab1, #__tab_MinTabLength))
          Text(10, 345, 90, 20, "max tab length:")
-         *g_MaxTabLength = Spin(100, 340, 60, 20, 0, 1000, #PB_Spin_Numeric)
+         *g_MaxTabLength = Spin(100, 345, 60, 20, 0, 1000, #PB_Spin_Numeric)
          SetState(*g_MaxTabLength, GetAttribute(*g_tab1, #__tab_MaxTabLength))
          CloseList()
       EndIf
       
       If Border(180, 5, 375, 195, "Tabs")
-         Text(10, 28, 50, 20, "Position:")
+         Text(10, 25, 50, 20, "Position:")
          *g_Item = ComboBox(60, 25, 100, 20)
          *g_ItemBackColor = Button(10, 50, 100, 20, "background color")
          *g_ItemFrontColor = Button(115, 50, 100, 20, "text color")
-         Text(10, 78, 30, 20, "Text:")
+         Text(10, 75, 30, 20, "Text:")
          *g_ItemText = String(40, 75, 175, 20, GetText(*g_tab1))
          *g_ItemDisabled = CheckBox(10, 100, 100, 20, "disabled")
          *g_ItemSelected = CheckBox(10, 120, 100, 20, "seleced")
@@ -865,7 +865,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 721
-; FirstLine = 718
+; CursorPosition = 269
+; FirstLine = 246
 ; Folding = --------
 ; EnableXP

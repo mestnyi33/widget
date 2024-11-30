@@ -45,6 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
             TabViewType( *panel, 0 )
       EndSelect
       
+      SetActive( *panel )
    EndProcedure
    
    Procedure GadgetTabViewType( gadget, position.i )
@@ -126,8 +127,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 88
+; CursorPosition = 47
+; FirstLine = 22
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -305,7 +305,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     TRANSFORM
       Structure _s_TRANSFORM
-         index.a                             ; a_index( )
+         Index.a                             ; a_index( )
          *main._s_WIDGET                     ; a_main( )
          *entered._s_WIDGET                  ; a_entered( )
          *focused._s_WIDGET                  ; a_focused( )
@@ -355,11 +355,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          itemindex.i
          StructureUnion
             position.i
-            index.i
+            Index.i
             _index.i
          EndStructureUnion
          change.b
-         drawing.b
+         Drawing.b
          
          
          
@@ -435,7 +435,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TAB
       Structure _s_TAB
          state.c
-         index.c
+         Index.c
          
          ; tab
          *entered._s_ITEMS
@@ -550,7 +550,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          
          ;--TEMP---
-         drawing.b
+         Drawing.b
          Hide.b
          state.b
          
@@ -612,7 +612,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Resize.RESIZEINFO                 
          
          
-         index.i         ; index widget
+         Index.i         ; index widget
          
          ; placing layout
          ;place\index
@@ -632,10 +632,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Width.l[constants::#__c]
          ;
          Type.w
-         level.c
+         Level.c
          class.s
          ;
-         create.b
+         Create.b
          change.b
                                   ; transporent.b
                                   ; dragged.b              ;
@@ -661,7 +661,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;
          *bar._s_BAR
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
-         tab._s_TAB               ; 
+         Tab._s_TAB               ; 
                                   ;
          *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
          *combobutton._s_BUTTONS  ; combobox
@@ -784,8 +784,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 675
-; FirstLine = 630
+; CursorPosition = 37
+; FirstLine = 15
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

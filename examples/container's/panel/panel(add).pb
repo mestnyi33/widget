@@ -105,7 +105,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       EndIf   
    CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9
+; CursorPosition = 79
+; FirstLine = 63
 ; Folding = -
 ; EnableXP
 ; DPIAware
