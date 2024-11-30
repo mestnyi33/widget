@@ -9,12 +9,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
    
    Procedure Events( )
       Select EventWidget( ) 
-         Case *item1
-            SetState( *panel, 0)
-         Case *item2
-            SetState( *panel, 1)
-         Case *item3
-            SetState( *panel, 2)
+         Case *item1 : SetState( *panel, 0)
+         Case *item2 : SetState( *panel, 1)
+         Case *item3 : SetState( *panel, 2)
             
          Case *enable
             Debug "enable"
@@ -52,14 +49,20 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       *item1 = Button( 10, 160, 50, 25, "item-1") : SetClass( *item1, "button-item-1" )
       *item2 = Button( 60, 160, 50, 25, "item-2") : SetClass( *item2, "button-item-2" )
       *item3 = Button( 110, 160, 50, 25, "item-3") : SetClass( *item3, "button-item-3" )
-      Bind( *item1, @events( ), event )
-      Bind( *item2, @events( ), event )
-      Bind( *item3, @events( ), event )
       
       *disable = Button( 180, 160, 50, 25, "disable") : SetClass( *disable, "button-disable" )
       *enable = Button( 240, 160, 50, 25, "enable") : SetClass( *enable, "button-enable" )
       
-      Disable(*disable, 1)
+      If Disable(*panel)
+         Disable(*disable, 1)
+      Else
+         Disable(*enable, 1)
+      EndIf
+      
+      ;\\
+      Bind( *item1, @events( ), event )
+      Bind( *item2, @events( ), event )
+      Bind( *item3, @events( ), event )
       
       Bind( *enable, @events( ), event )
       Bind( *disable, @events( ), event )
@@ -68,8 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 33
+; CursorPosition = 15
+; FirstLine = 6
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -4680,8 +4680,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ if the integral tab bar
          If *this\__Tab( )
-            *this\inner_x( ) = X
-            *this\inner_y( ) = Y
+            ;If *this\fs[1] Or *this\fs[3]
+               *this\inner_x( ) = X
+            ;EndIf
+            ;If *this\fs[2] Or *this\fs[4]
+               *this\inner_y( ) = Y
+            ;EndIf
             
             ;\\
             If *this\__Tab( )\autosize
@@ -4696,8 +4700,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                Else
                   If *this\fs[2]
-                     Debug ""+ *this\class +" "+ *this\MenuBarHeight ;= 40
-                     
                      Resize( *this\__Tab( ), *this\fs, *this\fs + *this\TitleBarHeight + *this\MenuBarHeight, *this\inner_width( ), *this\fs[2] - *this\TitleBarHeight - *this\MenuBarHeight )
                   EndIf
                   If *this\fs[4]
@@ -4706,8 +4708,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            *this\inner_x( ) + *this\fs + *this\fs[1]
-            *this\inner_y( ) + *this\fs + *this\fs[2]
+            ;If *this\fs[1] Or *this\fs[3]
+               *this\inner_x( ) + *this\fs + *this\fs[1]
+            ;EndIf
+            ;If *this\fs[2] Or *this\fs[4]
+               *this\inner_y( ) + *this\fs + *this\fs[2]
+            ;EndIf
          EndIf
          
          ;\\
@@ -8849,11 +8855,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Global toogleline = 3
+      Global toogleline = DPIScaled(1);DPIScaled(3)
       Procedure.b bar_tab_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
          With *this
             Protected Index
-            Protected typ = 0
             Protected pos = (1)
             
             
@@ -8864,19 +8869,19 @@ CompilerIf Not Defined( widget, #PB_Module )
             *BB2 = *bar\button[2]
             
             If *this\parent And *this\parent\type = #__type_Panel
-               pos = (2)
+               pos = toogleline
             EndIf
-            
-            pos + Bool(typ) * 2
             
             Protected layout = pos * 2
             Protected text_pos = DPIScaled(6)
             Protected image_pos = 3
-            Protected separator_step = (1)
+            Protected separator_step 
             
             If *this\type = #__type_Tool Or
                *this\type = #__type_PopupMenu Or
                *this\type = #__type_Menu
+               ;
+               separator_step = DPIScaled(1)
                pos = separator_step 
             EndIf
             
@@ -8945,8 +8950,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *tabs( )\x        = - Bool( *this\parent\fs[3] )
                               *tabs( )\width    = *this\width
                            Else
-                              *tabs( )\x       = Bool( *this\parent\fs[3] ) + Bool( *this\parent\fs[1] ) * DPIScaled(toogleline)
-                              *tabs( )\width  = *this\width - DPIScaled(toogleline) - DPIScaled(1) - 1
+                              *tabs( )\x       = Bool( *this\parent\fs[3] ) + Bool( *this\parent\fs[1] ) * toogleline
+                              *tabs( )\width  = *this\width - toogleline - DPIScaled(1) - 1
                            EndIf
                            
                         Else
@@ -9011,7 +9016,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         ;
                         If *this\type = #__type_Tab
-                           *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) - Bool(typ) * 2 + Bool( Index = *this\countitems - 1 ) * layout
+                           *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
                         Else
                            *bar\max + *tabs( )\height + pos + Bool( Index = *this\countitems - 1 )
                         EndIf
@@ -9023,8 +9028,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *tabs( )\y       = - (Bool( *this\parent\fs[4] ))
                               *tabs( )\height  = *this\height
                            Else
-                              *tabs( )\y       = Bool( *this\parent\fs[4] ) + Bool( *this\parent\fs[2] ) * DPIScaled(toogleline)
-                              *tabs( )\height  = *this\height - DPIScaled(toogleline) - DPIScaled(1) - 1
+                              *tabs( )\y       = Bool( *this\parent\fs[4] ) + Bool( *this\parent\fs[2] ) * toogleline
+                              *tabs( )\height  = *this\height - toogleline - DPIScaled(1) - 1
                            EndIf
                            
                         Else
@@ -9057,7 +9062,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                           
                            ;
                            If *this\type = #__type_Tab
-                              *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) - Bool(typ) * 2 + Bool( Index = *this\countitems - 1 ) * layout
+                              *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
                               ;*bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
                            Else
                               If Not constants::BinaryFlag( *this\flag, #PB_ToolBar_InlineText )
@@ -9108,6 +9113,73 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Macro draw_navigator_buttons( _this_ )
+         ; background buttons draw
+         If Not _this_\bar\button[1]\hide
+            If _this_\bar\button[1]\color\fore <> - 1
+               draw_mode_alpha_( #PB_2DDrawing_Gradient )
+               draw_gradient_(_this_\bar\vertical, _this_\bar\button[1], _this_\bar\button[1]\color\fore[_this_\bar\button[1]\ColorState( )], _this_\bar\button[1]\color\back[_this_\bar\button[1]\ColorState( )] )
+            Else
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               draw_box(_this_\bar\button[1], color\back)
+               ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
+            EndIf
+         EndIf
+         If Not _this_\bar\button[2]\hide
+            If _this_\bar\button[2]\color\fore <> - 1
+               draw_mode_alpha_( #PB_2DDrawing_Gradient )
+               draw_gradient_(_this_\bar\vertical, _this_\bar\button[2], _this_\bar\button[2]\color\fore[_this_\bar\button[2]\ColorState( )], _this_\bar\button[2]\color\back[_this_\bar\button[2]\ColorState( )] )
+            Else
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               draw_box(_this_\bar\button[2], color\back)
+              ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
+            EndIf
+         EndIf
+         
+         draw_mode_alpha_( #PB_2DDrawing_Outlined )
+         
+         ;
+         If _this_\type = #__type_Scroll
+            If _this_\bar\vertical
+               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\width / 4 )) = _this_\frame_height( )
+                  Line(_this_\frame_x( ), _this_\frame_y( ), 1, _this_\bar\page\len + 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               Else
+                  Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\button[1]\round, 1, _this_\height - _this_\bar\button[1]\round - _this_\bar\button[2]\round, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               EndIf
+            Else
+               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\height / 4 )) = _this_\frame_width( )
+                  Line(_this_\frame_x( ), _this_\frame_y( ), _this_\bar\page\len + 1, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF0000ff ) ;
+               Else
+                  Line(_this_\frame_x( ) + _this_\bar\button[1]\round, _this_\frame_y( ), _this_\frame_width( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               EndIf
+            EndIf
+         EndIf
+         
+         ; frame buttons draw
+         If Not _this_\bar\button[1]\hide
+            If _this_\bar\button[1]\arrow\size
+               If _this_\flag & #__spin_Plus 
+                  draw_plus( _this_\bar\button[1], Bool( _this_\bar\invert ) )
+               Else
+                  draw_arrows( _this_\bar\button[1], Bool(_this_\bar\vertical ) + (Bool(_this_\type <> #__type_Scroll)*2))
+               EndIf
+            EndIf
+            draw_box(_this_\bar\button[1], color\frame)
+            ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
+         EndIf
+         If Not _this_\bar\button[2]\hide
+            If _this_\bar\button[2]\arrow\size
+               If _this_\flag & #__spin_Plus 
+                  draw_plus( _this_\bar\button[2], Bool( Not _this_\bar\invert ) )
+               Else
+                  draw_arrows( _this_\bar\button[2], Bool(_this_\bar\vertical ) + (Bool(_this_\type = #__type_Scroll)*2) )
+               EndIf
+            EndIf
+            draw_box(_this_\bar\button[2], color\frame)
+            ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
+         EndIf
+      EndMacro     
+      
       Macro bar_draw_item_( _vertical_, _address_, _x_, _y_, _round_, _mode_, _flag_ = 1 )
          ; Draw back
          If _flag_ = 1
@@ -9267,9 +9339,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *activeTAB\visible
                      ; frame on the selected item
                      If *this\parent\fs[1]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y, DPIScaled(toogleline), *activeTAB\height, color)
+                        Box(X + *activeTAB\x, Y + *activeTAB\y, toogleline, *activeTAB\height, color)
                      ElseIf *this\parent\fs[3]
-                        Box(X + *activeTAB\x + *activeTAB\width-DPIScaled(toogleline), Y + *activeTAB\y, DPIScaled(toogleline), *activeTAB\height, color)
+                        Box(X + *activeTAB\x + *activeTAB\width-toogleline, Y + *activeTAB\y, toogleline, *activeTAB\height, color)
                      EndIf
                      Line( X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
                      Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
@@ -9317,9 +9389,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *activeTAB\visible
                      ; frame on the selected item
                      If *this\parent\fs[2]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width, DPIScaled(toogleline), color)
+                        Box(X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width, toogleline, color)
                      ElseIf *this\parent\fs[4]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height-DPIScaled(toogleline), *activeTAB\width, DPIScaled(toogleline), color)
+                        Box(X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height-toogleline, *activeTAB\width, toogleline, color)
                      EndIf
                      Line( X + *activeTAB\x, Y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4]), color )
                      Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4]), color )
@@ -9441,102 +9513,65 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\type = #__type_Tab
                   
                   ; Navigation
-                  ;Protected fabe_pos, fabe_out, button_size = DPIScaled(20), round = 0, Size = DPIScaled(60)
-                  Protected fabe_pos, fabe_out, button_size = 20, round = 0, Size = 60
-                  backcolor = $ffffffff;\parent\parent\color\back[\parent\parent\ColorState( )]
-                  If Not backcolor
-                     backcolor = *this\parent\color\back[\parent\ColorState( )]
-                  EndIf
-                  If Not backcolor
-                     backcolor = *BB2\color\back[\ColorState( )]
+                  Protected pf
+                  If is_integral_( *this )
+                     pf = *this\parent\bs
+                     If *this\parent\parent
+                        backcolor = *this\parent\parent\color\back[\parent\ColorState( )]
+                     Else
+                        backcolor = *this\parent\color\back[\parent\ColorState( )]
+                     EndIf
+                     If Not backcolor
+                       backcolor = *BB2\color\back[\ColorState( )]
+                     EndIf
                   EndIf
                   
+                  Protected fabe_pos, round = 0, button_size = 20, Size = 60+pf, fabe_out = Size - button_size
+                  ;backcolor = RGBA(64, 128, 192, 64)
+                  ;backcolor = backcolor & $FFFFFF | 160 << 24 ;$ff00ff00
                   
                   draw_mode_alpha_( #PB_2DDrawing_Gradient )
                   ResetGradientColors( )
                   GradientColor( 0.0, backcolor & $FFFFFF )
-                  GradientColor( 0.5, backcolor & $FFFFFF | $A0 << 24 )
-                  GradientColor( 1.0, backcolor & $FFFFFF | 245 << 24 )
+                  GradientColor( 0.5, backcolor & $FFFFFF | 160 << 24 )
+                  GradientColor( 1.0, backcolor & $FFFFFF | 255 << 24 )
                   
-                  fabe_out = Size - button_size
                   ;
                   If *bar\vertical
                      ; to top
                      If Not *BB2\hide
-                        fabe_pos = *this\y + ( size ) - *this\fs
-                        LinearGradient( *this\x + *this\bs, fabe_pos, *this\x + *this\bs, fabe_pos - fabe_out )
-                        draw_roundbox_( *this\x + *this\bs, fabe_pos, *this\width - *this\bs - 1, - Size, round, round )
+                        fabe_pos = *this\frame_y( ) + ( size ) - pf
+                        LinearGradient( *this\frame_x( ) - pf, fabe_pos, *this\frame_x( ) - pf, fabe_pos - fabe_out )
+                        draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, *this\frame_width( ) + pf - 1, - Size, round, round )
                      EndIf
                      
                      ; to bottom
                      If Not *BB1\hide
-                        fabe_pos = *this\y + *this\height - ( size ) + *this\fs * 2
-                        LinearGradient( *this\x + *this\bs, fabe_pos, *this\x + *this\bs, fabe_pos + fabe_out )
-                        draw_roundbox_( *this\x + *this\bs, fabe_pos, *this\width - *this\bs - 1 , Size, round, round )
+                        fabe_pos = *this\frame_y( ) + *this\frame_height( ) - ( size ) + pf
+                        LinearGradient( *this\frame_x( ) - pf, fabe_pos, *this\frame_x( ) - pf, fabe_pos + fabe_out )
+                        draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, *this\frame_width( ) + pf - 1 , Size, round, round )
                      EndIf
                   Else
                      ; to left
                      If Not *BB2\hide
-                        fabe_pos = *this\x + ( size ) - *this\fs
-                        LinearGradient( fabe_pos, *this\y + *this\bs, fabe_pos - fabe_out, *this\y + *this\bs )
-                        draw_roundbox_( fabe_pos, *this\y + *this\bs, - Size, *this\height - *this\bs - 1, round, round )
+                        fabe_pos = *this\frame_x( ) + ( size ) - pf
+                        LinearGradient( fabe_pos, *this\frame_y( ) - pf, fabe_pos - fabe_out, *this\frame_y( ) - pf )
+                        draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, - Size, *this\frame_height( ) + pf - 1, round, round )
                      EndIf
                      
                      ; to right
                      If Not *BB1\hide
-                        fabe_pos = *this\x + *this\width - ( size ) + *this\fs * 2
-                        LinearGradient( fabe_pos, *this\y + *this\bs, fabe_pos + fabe_out, *this\y + *this\bs )
-                        draw_roundbox_( fabe_pos, *this\y + *this\bs, Size, *this\height - *this\bs - 1 , round, round )
+                        fabe_pos = *this\frame_x( ) + *this\frame_width( ) - ( size ) + pf
+                        LinearGradient( fabe_pos, *this\frame_y( ) - pf, fabe_pos + fabe_out, *this\frame_y( ) - pf )
+                        draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, Size, *this\frame_height( ) + pf - 1 , round, round )
                      EndIf
                   EndIf
                   
                   ResetGradientColors( )
                EndIf
                
-               
-               ; Draw navigator
-               ; Draw buttons back
-               If Not *BB2\hide
-                  ; Draw buttons
-                  If *BB2\color\fore <> - 1
-                     draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_( *bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
-                  Else
-                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\ColorState( )] & $FFFFFF | *BB2\AlphaState24( ) )
-                  EndIf
-               EndIf
-               If Not *BB1\hide
-                  ; Draw buttons
-                  If *BB1\color\fore <> - 1
-                     draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_( *bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
-                  Else
-                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\ColorState( )] & $FFFFFF | *BB1\AlphaState24( ) )
-                  EndIf
-               EndIf
-               
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               
-               ; Draw buttons frame
-               If Not *BB1\hide
-                  draw_roundbox_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\round, *BB1\round, *BB1\color\frame[*BB1\ColorState( )] & $FFFFFF | *BB1\AlphaState24( ) )
-                  
-                  ; Draw arrows
-                  If Not *BB1\hide And *BB1\arrow\size
-                     draw_arrows( *BB1, Bool( *bar\vertical ) + 2 )
-                  EndIf
-               EndIf
-               If Not *BB2\hide
-                  draw_roundbox_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\round, *BB2\round, *BB2\color\frame[*BB2\ColorState( )] & $FFFFFF | *BB2\AlphaState24( ) )
-                  
-                  ; Draw arrows
-                  If *BB2\arrow\size
-                     draw_arrows( *BB2, Bool( *bar\vertical ))
-                  EndIf
-               EndIf
-               
+               ;\\
+               draw_navigator_buttons( *this )
                
             EndIf
             
@@ -9575,58 +9610,60 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;
-               ; background buttons draw
-               If Not *BB1\hide
-                  If *BB1\color\fore <> - 1
-                     draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
-                  Else
-                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_box(*BB1, color\back)
-                  EndIf
-               EndIf
-               If Not *BB2\hide
-                  If *BB2\color\fore <> - 1
-                     draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
-                  Else
-                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_box(*BB2, color\back)
-                  EndIf
-               EndIf
-               
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               
-               If *this\type = #__type_Scroll
-                  If *bar\vertical
-                     If (*bar\page\len + Bool(*this\round ) * (*this\width / 4 )) = *this\frame_height( )
-                        Line(*this\frame_x( ), *this\frame_y( ), 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-                     Else
-                        Line(*this\frame_x( ), *this\frame_y( ) + *BB1\round, 1, *this\height - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-                     EndIf
-                  Else
-                     If (*bar\page\len + Bool(*this\round ) * (*this\height / 4 )) = *this\frame_width( )
-                        Line(*this\frame_x( ), *this\frame_y( ), *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-                     Else
-                        Line(*this\frame_x( ) + *BB1\round, *this\frame_y( ), *this\frame_width( ) - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ; frame buttons draw
-               If Not *BB1\hide
-                  If *BB1\arrow\size
-                     draw_arrows( *BB1, Bool(*bar\vertical ))
-                  EndIf
-                  draw_box(*BB1, color\frame)
-               EndIf
-               If Not *BB2\hide
-                  If *BB2\arrow\size
-                     draw_arrows( *BB2, Bool(*bar\vertical ) + 2 )
-                  EndIf
-                  draw_box(*BB2, color\frame)
-               EndIf
-               
+;                ; background buttons draw
+;                If Not *BB1\hide
+;                   If *BB1\color\fore <> - 1
+;                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
+;                      draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
+;                   Else
+;                      draw_mode_alpha_( #PB_2DDrawing_Default )
+;                      draw_box(*BB1, color\back)
+;                   EndIf
+;                EndIf
+;                If Not *BB2\hide
+;                   If *BB2\color\fore <> - 1
+;                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
+;                      draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
+;                   Else
+;                      draw_mode_alpha_( #PB_2DDrawing_Default )
+;                      draw_box(*BB2, color\back)
+;                   EndIf
+;                EndIf
+;                
+;                draw_mode_alpha_( #PB_2DDrawing_Outlined )
+;                
+;                ;
+;                If *this\type = #__type_Scroll
+;                   If *bar\vertical
+;                      If (*bar\page\len + Bool(*this\round ) * (*this\width / 4 )) = *this\frame_height( )
+;                         Line(*this\frame_x( ), *this\frame_y( ), 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+;                      Else
+;                         Line(*this\frame_x( ), *this\frame_y( ) + *BB1\round, 1, *this\height - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+;                      EndIf
+;                   Else
+;                      If (*bar\page\len + Bool(*this\round ) * (*this\height / 4 )) = *this\frame_width( )
+;                         Line(*this\frame_x( ), *this\frame_y( ), *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF0000ff ) ;
+;                      Else
+;                         Line(*this\frame_x( ) + *BB1\round, *this\frame_y( ), *this\frame_width( ) - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+;                      EndIf
+;                   EndIf
+;                EndIf
+;                
+;                ; frame buttons draw
+;                If Not *BB1\hide
+;                   If *BB1\arrow\size
+;                      draw_arrows( *BB1, Bool(*bar\vertical ))
+;                   EndIf
+;                   draw_box(*BB1, color\frame)
+;                EndIf
+;                If Not *BB2\hide
+;                   If *BB2\arrow\size
+;                      draw_arrows( *BB2, Bool(*bar\vertical ) + 2 )
+;                   EndIf
+;                   draw_box(*BB2, color\frame)
+;                EndIf
+;                
+               draw_navigator_buttons( *this )
                
                If *bar\thumb\len And *this\type <> #__type_Progress
                   ; Draw thumb
@@ -9914,6 +9951,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
          
+;          draw_navigator_buttons( *this )
+;          ProcedureReturn  
+         
+         
          draw_mode_( #PB_2DDrawing_Default )
          ;          ; draw split-string back
          ;          ;          draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\color\back )
@@ -9932,7 +9973,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;          If *this\fs[4] ; bottom
          ;             draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - 1, *this\frame_width( ), *this\fs[4] + 1, *this\color\back[0] )
          ;          EndIf
-         
          
          ;\\ draw spin-buttons back
          draw_mode_alpha_( #PB_2DDrawing_Gradient )
@@ -17055,8 +17095,10 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                      ;EndIf
 ;                   EndIf
 ;                   If *this\type = #__type_Container
+                  If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-;                   EndIf
+                  EndIf
+                  ;                   EndIf
                   
                ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
                       constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
@@ -24017,9 +24059,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9355
-; FirstLine = 8666
-; Folding = ---------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------v---------------------nt8---------------------------8---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------------------------------------------8d---
+; CursorPosition = 17097
+; FirstLine = 17080
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

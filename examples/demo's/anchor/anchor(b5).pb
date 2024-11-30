@@ -290,8 +290,8 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 58
+; CursorPosition = 49
+; FirstLine = 33
 ; Folding = +
 ; EnableXP
 ; DPIAware
