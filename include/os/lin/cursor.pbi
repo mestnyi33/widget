@@ -337,11 +337,12 @@ Module Cursor
       
       ; set
       If state = 1 
+        gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), 0) ; bug
         gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), *cursor\hcursor)
       EndIf
       
-      CompilerIf #PB_Compiler_IsMainFile
-        Debug "changeCursor"
+      CompilerIf #test_cursor
+        Debug " ::changeCursor"
       CompilerEndIf
     EndIf
   EndProcedure
@@ -469,8 +470,8 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 319
-; FirstLine = 307
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 342
+; FirstLine = 323
 ; Folding = --------
 ; EnableXP
