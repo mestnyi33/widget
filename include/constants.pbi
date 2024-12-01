@@ -175,7 +175,6 @@
     #__Resize_Minimize = 1<<2 
     #__Resize_Maximize = 1<<3 
     
-    ;-
     ;-\\ event-type
     Enumeration #PB_EventType_FirstCustomValue
       #PB_EventType_Drop
@@ -691,8 +690,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 13
+; CursorPosition = 177
+; FirstLine = 165
 ; Folding = ----
 ; Optimizer
 ; EnableXP

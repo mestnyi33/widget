@@ -4,6 +4,9 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   test_docursor = 1
+   test_changecursor = 1
+   test_setcursor = 1
    
    Global object, object1, object2, parent
    Declare CustomEvents( )
@@ -92,8 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 35
+; CursorPosition = 9
 ; Folding = --
 ; EnableXP
 ; DPIAware

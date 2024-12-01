@@ -151,12 +151,59 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_startdrawing      = 0
       Global test_clip              = 0
       Global test_buttons_draw      = 0
+      
+      Global test_docursor, test_changecursor,test_setcursor
+      
       Global DrawingDC = 0
       
       EnableExplicit
       UseModule constants
       UseModule structures
       
+      ;-\\ cursor
+      #__cursor_Default         = Cursor::#__cursor_Default
+      #__cursor_Cross           = Cursor::#__cursor_Cross
+      #__cursor_IBeam           = Cursor::#__cursor_IBeam
+      #__cursor_Hand            = Cursor::#__cursor_Hand
+      #__cursor_Busy            = Cursor::#__cursor_Busy
+      #__cursor_Denied          = Cursor::#__cursor_Denied
+      #__cursor_Arrows          = Cursor::#__cursor_Arrows
+      
+      #__cursor_UpDown          = Cursor::#__cursor_UpDown
+      #__cursor_LeftRight       = Cursor::#__cursor_LeftRight
+      #__cursor_Diagonal1       = Cursor::#__cursor_Diagonal1
+      #__cursor_Diagonal2       = Cursor::#__cursor_Diagonal2
+      
+      #__cursor_Invisible       = Cursor::#__cursor_Invisible
+      
+      #__cursor_SplitUp         = Cursor::#__cursor_SplitUp
+      #__cursor_SplitDown       = Cursor::#__cursor_SplitDown         
+      #__cursor_SplitLeft       = Cursor::#__cursor_SplitLeft
+      #__cursor_SplitRight      = Cursor::#__cursor_SplitRight       
+      #__cursor_SplitUpDown     = Cursor::#__cursor_SplitUpDown  
+      #__cursor_SplitLeftRight  = Cursor::#__cursor_SplitLeftRight
+      
+      #__cursor_LeftUp          = Cursor::#__cursor_LeftUp
+      #__cursor_RightUp         = Cursor::#__cursor_RightUp
+      #__cursor_LeftDown        = Cursor::#__cursor_LeftDown
+      #__cursor_RightDown       = Cursor::#__cursor_RightDown
+      
+      #__cursor_Drag            = Cursor::#__cursor_Drag
+      #__cursor_Drop            = Cursor::#__cursor_Drop
+      
+      #__cursor_Grab            = Cursor::#__cursor_Grab      
+      #__cursor_Grabbing        = Cursor::#__cursor_Grabbing
+      #__cursor_VIBeam          = Cursor::#__cursor_VIBeam
+      ;#__cursor_Arrow          = Cursor::#__cursor_Arrow
+      
+      #__cursor_Up              = Cursor::#__cursor_Up
+      #__cursor_Down            = Cursor::#__cursor_Down      
+      #__cursor_Left            = Cursor::#__cursor_Left
+      #__cursor_Right           = Cursor::#__cursor_Right       
+      #__cursor_LeftUpRightDown = Cursor::#__cursor_LeftUpRightDown
+      #__cursor_LeftDownRightUp = Cursor::#__cursor_LeftDownRightUp
+      
+    
       CompilerIf #PB_Compiler_Version =< 546
          Global DPISCALEDX.a = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
          Global DPISCALEDY.a = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
@@ -586,23 +633,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          _this_\mouseenter = _mode_
       EndMacro
       
-      
-      ;-
-      Macro Cursor( _this_ )
-         _this_\cursor[3]
-      EndMacro
-      
-      Macro DoCurrentCursor( _this_, _cursor_, _data_=0 )
-         If CurrentCursor( ) <> _cursor_
-            CurrentCursor( ) = _cursor_
-           ; Debug " DoCurrentCursor( "+ _cursor_ +" ) " + _data_
-            DoEvents( _this_, #__event_Cursor, #PB_All, _data_ )
-         EndIf
-      EndMacro
-      
       Macro CurrentCursor( )
          mouse( )\cursor
       EndMacro
+      
+      
       
       
       ;-
@@ -1517,6 +1552,7 @@ CompilerIf Not Defined( widget, #PB_Module )
    
    Module widget
       Global NewMap typeCount( )
+      Global cursor_change_widget
       
       ;-
       ;-\\ DECLARE PRIVATEs
@@ -3020,7 +3056,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\anchors\id[a_index] And 
                *this\anchors\state = #__s_0
                *this\anchors\state = #__s_1
-               DoCurrentCursor( *this, a_anchors( )\cursor[a_index], *data )
+               ChangeCursor( *this, a_anchors( )\cursor[a_index] )
                *this\root\repaint = #True
                *this\root\contex = 0
             EndIf
@@ -7068,12 +7104,22 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure.i ChangeCursor( *this._s_WIDGET, *cursor )
          Protected result.i
-         
-         If Cursor( *this ) <> *cursor
-            Debug "changeCURSOR ( "+ *cursor +" ) "
-            result = Cursor( *this )
-            DoCurrentCursor( *this, *cursor, 123456789 )
-            Cursor( *this ) = *cursor
+           
+         If CurrentCursor( ) <> *cursor
+            If test_changecursor
+               Debug "  changeCURSOR ( "+ *cursor +" ) " +" reset "+ CurrentCursor( )
+            EndIf
+            
+            CurrentCursor( ) = *cursor
+            
+            If *cursor
+               *this\cursor[3] = *cursor
+               cursor_change_widget = *this
+               DoEvents( *this, #__event_cursor, CurrentCursor( ) ) 
+            Else
+               DoEvents( cursor_change_widget, #__event_cursor, CurrentCursor( ) ) 
+               cursor_change_widget = 0
+            EndIf
          EndIf
          
          ProcedureReturn result
@@ -7086,10 +7132,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.i SetCursor( *this._s_WIDGET, *cursor, Index = 0 )
          If *this > 0
             If *this\cursor <> *cursor
-               ; Debug "setCURSOR( " + *cursor +" )"
+               If test_setcursor
+                  Debug "setCURSOR( " + *cursor +" )"
+               EndIf
                
-               ChangeCursor( *this, *cursor )
+               ;ChangeCursor( *this, *cursor )
                *this\cursor = *cursor
+               *this\cursor[3] = *cursor
                ProcedureReturn 1
             EndIf
          Else
@@ -15472,25 +15521,25 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ cursor init
          If *this\type = #__type_Splitter
             If *this\bar\vertical
-               *this\cursor = cursor::#__cursor_SplitUpDown
+               *this\cursor[3] = cursor::#__cursor_SplitUpDown
                *this\cursor[1] = cursor::#__cursor_SplitUp
                *this\cursor[2] = cursor::#__cursor_SplitDown
             Else
-               *this\cursor = cursor::#__cursor_SplitLeftRight
+               *this\cursor[3] = cursor::#__cursor_SplitLeftRight
                *this\cursor[1] = cursor::#__cursor_SplitLeft
                *this\cursor[2] = cursor::#__cursor_SplitRight
             EndIf
             
          ElseIf *this\type = #__type_HyperLink
-            *this\cursor = cursor::#__cursor_Hand
+            *this\cursor[3] = cursor::#__cursor_Hand
             *this\cursor[1] = cursor::#__cursor_IBeam
             
          ElseIf *this\type = #__type_Editor Or
                 *this\type = #__type_String
-            *this\cursor = cursor::#__cursor_IBeam
+            *this\cursor[3] = cursor::#__cursor_IBeam
          EndIf
-         If *this\cursor
-            Cursor( *this ) = *this\cursor
+         If *this\cursor[3]
+            *this\cursor = *this\cursor[3]
          EndIf
          
          ;\\
@@ -20479,13 +20528,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             result = Send( *this, eventtype, #PB_All, *data )
             If result > 0
-               cursor = result
-            Else
-               cursor = CurrentCursor( )
+               If CurrentCursor( )
+                  CurrentCursor( ) = result
+                  *this\cursor[3] = CurrentCursor( )
+               EndIf
             EndIf
             
             ;Debug " DO CURSOR "+*this\class +" "+ cursor +" TYPE "+ *data
-            Cursor::Set( *this\root\canvas\gadget, cursor ) 
+            Cursor::Set( *this\root\canvas\gadget, CurrentCursor( ) ) 
          Else
             If eventtype = #__event_Change
                If *this\row
@@ -20501,8 +20551,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          a_events( *this, eventtype )
          
          If Not *this\disable
-         
-         ;\\ repaint state
+            
+            ;\\ repaint state
             Select eventtype
                Case #__event_ScrollChange,
                     #__event_StatusChange
@@ -20556,9 +20606,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             
             ;\\
-                 If DoEvent_Bar( *this, eventtype )
-                     *this\root\repaint = #True
-                  EndIf
+            If DoEvent_Bar( *this, eventtype )
+               *this\root\repaint = #True
+            EndIf
             
             
             ;\\ widgets events
@@ -20651,7 +20701,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                         Case #__event_Up
                            If CanvasMouseButton( ) & #PB_Canvas_LeftButton
-                              If Not *this\disable And *this\mouseenter
+                              If *this\mouseenter
                                  *this\ColorState( ) = #__s_1
                               Else
                                  *this\ColorState( ) = #__s_0
@@ -20696,7 +20746,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ChangeCursor( *this, *this\cursor[1] )
                   EndIf
                   If eventtype = #__event_Up
-                     ChangeCursor( *this, *this\cursor )
+                     ChangeCursor( *this, *this\cursor[3] )
                   EndIf
                   If eventtype = #__event_MouseMove Or
                      eventtype = #__event_MouseEnter Or
@@ -20717,109 +20767,108 @@ CompilerIf Not Defined( widget, #PB_Module )
                Case #__type_Tree, #__type_ListView, #__type_ListIcon
                   DoEvent_Tree( *this, eventtype, mouse( )\x, mouse( )\y )
                   
-               
-           EndSelect
+                  
+            EndSelect
             
             ;\\
             ; If Popup( )
-           If eventtype = #__event_Down
-              If CanvasMouseButton( ) & #PB_Canvas_LeftButton
-                 If *this\type = #__type_combobox
-                    If *this\__Popup( )
-                       DisplayPopupBar( *this\__Popup( ), *this )
-                    EndIf
-                 Else
-                    If *this\root\parent And
-                       ( *this\root\parent\type = #__type_ComboBox Or
-                       *this\root\parent\type = #__type_Menu )
-                      ; Debug 777
-                       ;
-                       If IsWindow( *this\root\parent\root\canvas\window )
-                          DisableWindow( *this\root\canvas\window, #True )
-                          SetActiveWindow( *this\root\parent\root\canvas\window )
-                       EndIf
-                    EndIf
-                 EndIf
-              EndIf
-           EndIf
-           ;
-           If eventtype = #__event_up
-              If *this <> *this\root\parent
-                 If *this\root\parent 
-                    If *this\root\parent\type = #__type_ComboBox 
-                       SetText( *this\root\parent, GetItemText( *this, GetState( *this ) ) )
-                       DisplayPopupBar( *this, *this\root\parent )
-                       PostRepaint( *this\root\parent\root )
-                    EndIf
-                    
-;                     If *this\root\parent\type = #__type_Menu 
-;                        Debug *this\__Popup( )\class
-;                         _HidePopupBar( *this\__Popup( ) )
-;                       ;HidePopupBar( *this ) 
-;                     EndIf
-                 EndIf
-              EndIf
-           EndIf
-           
-           ; EndIf
-            
-         
-         ;\\ before post-widget-events drop
-         ;\\
-         If *this\row And
-            *this\RowEntered( ) And
-            *this\RowEntered( )\_enter
-            
-            If eventtype = #__event_Drop
-               If *this\RowEntered( )\_enter < 0
-                  *button = *this\RowEntered( )\position
-                  *data   = mouse( )\x | mouse( )\y << 16
-               Else
-                  *button = *this\RowEntered( )\position + 1
-                  *data   = mouse( )\x | mouse( )\y << 16
+            If eventtype = #__event_Down
+               If CanvasMouseButton( ) & #PB_Canvas_LeftButton
+                  If *this\type = #__type_combobox
+                     If *this\__Popup( )
+                        DisplayPopupBar( *this\__Popup( ), *this )
+                     EndIf
+                  Else
+                     If *this\root\parent And
+                        ( *this\root\parent\type = #__type_ComboBox Or
+                          *this\root\parent\type = #__type_Menu )
+                        ; Debug 777
+                        ;
+                        If IsWindow( *this\root\parent\root\canvas\window )
+                           DisableWindow( *this\root\canvas\window, #True )
+                           SetActiveWindow( *this\root\parent\root\canvas\window )
+                        EndIf
+                     EndIf
+                  EndIf
                EndIf
+            EndIf
+            ;
+            If eventtype = #__event_up
+               If *this <> *this\root\parent
+                  If *this\root\parent 
+                     If *this\root\parent\type = #__type_ComboBox 
+                        SetText( *this\root\parent, GetItemText( *this, GetState( *this ) ) )
+                        DisplayPopupBar( *this, *this\root\parent )
+                        PostRepaint( *this\root\parent\root )
+                     EndIf
+                     
+                     ;                     If *this\root\parent\type = #__type_Menu 
+                     ;                        Debug *this\__Popup( )\class
+                     ;                         _HidePopupBar( *this\__Popup( ) )
+                     ;                       ;HidePopupBar( *this ) 
+                     ;                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ; EndIf
+            
+            
+            ;\\ before post-widget-events drop
+            ;\\
+            If *this\row And
+               *this\RowEntered( ) And
+               *this\RowEntered( )\_enter
                
-            ElseIf eventtype = #__event_MouseMove Or
-                   eventtype = #__event_MouseEnter
-               *button = *this\RowEntered( )\position
-               *data   = *this\RowEntered( )
+               If eventtype = #__event_Drop
+                  If *this\RowEntered( )\_enter < 0
+                     *button = *this\RowEntered( )\position
+                     *data   = mouse( )\x | mouse( )\y << 16
+                  Else
+                     *button = *this\RowEntered( )\position + 1
+                     *data   = mouse( )\x | mouse( )\y << 16
+                  EndIf
+                  
+               ElseIf eventtype = #__event_MouseMove Or
+                      eventtype = #__event_MouseEnter
+                  *button = *this\RowEntered( )\position
+                  *data   = *this\RowEntered( )
+               EndIf
             EndIf
-         EndIf
-         
-         ;\\ mouse wheel horizontal
-         If eventtype = #__event_MouseWheelX
-            ; Debug "wheelX " + *data
-            If *this\scroll And *this\scroll\h And
-               bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
-               *this\root\repaint = #True
-            ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-               *this\root\repaint = #True
+            
+            ;\\ mouse wheel horizontal
+            If eventtype = #__event_MouseWheelX
+               ; Debug "wheelX " + *data
+               If *this\scroll And *this\scroll\h And
+                  bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
+                  *this\root\repaint = #True
+               ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+                  *this\root\repaint = #True
+               EndIf
             EndIf
-         EndIf
-         
-         ;\\ mouse wheel verticl
-         If eventtype = #__event_MouseWheelY
-            ; Debug "wheelY " + *data
-            If *this\scroll And *this\scroll\v And 
-               bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
-               *this\root\repaint = #True
-            ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-               *this\root\repaint = #True
+            
+            ;\\ mouse wheel verticl
+            If eventtype = #__event_MouseWheelY
+               ; Debug "wheelY " + *data
+               If *this\scroll And *this\scroll\v And 
+                  bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
+                  *this\root\repaint = #True
+               ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+                  *this\root\repaint = #True
+               EndIf
             EndIf
-         EndIf
-         
-         ;          ;\\ mouse wheel 
-         ;          If eventtype = #__event_MouseWheelX Or eventtype = #__event_MouseWheelY
-         ;             ;
-         ;             If *this\bar And
-         ;                bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-         ;                Debug "wheel " + *data
-         ;                *this\root\repaint = #True
-         ;             EndIf
-         ;          EndIf
-         
-         ;\\ send-widget-events
-         ;If Not *this\disable
+            
+            ;          ;\\ mouse wheel 
+            ;          If eventtype = #__event_MouseWheelX Or eventtype = #__event_MouseWheelY
+            ;             ;
+            ;             If *this\bar And
+            ;                bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+            ;                Debug "wheel " + *data
+            ;                *this\root\repaint = #True
+            ;             EndIf
+            ;          EndIf
+            
+            ;\\ send-widget-events
             If eventtype = #__event_Cursor
             ElseIf eventtype = #__event_Create
             ElseIf eventtype = #__event_Focus
@@ -20839,139 +20888,86 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-         
-         ;\\ enabled mouse behavior
-         If eventtype = #__event_Down
             
-            ;             If *this\type = #__type_Splitter
-            ;                If EnteredButton( ) And
-            ;                   EnteredButton( )\_enter
-            ;                EndIf
-            ;             EndIf
-         EndIf
-         
-         ;\\ after post-widget-events then drop if create new widget
-         If eventtype = #__event_Drop
-            If *this <> widgets( )
-               If widgets( )\resize\clip <> 0
-                  widgets( )\resize\clip = 0
-                  Reclip( widgets( ) )
-               EndIf
-            EndIf
-         EndIf
-         EndIf
-         
-         ;\\ cursor update
-         Select eventtype
-            Case #__event_MouseEnter,
-                 #__event_DragStart,
-                 #__event_MouseMove, 
-                 #__event_MouseLeave, 
-                 #__event_Down,
-                 #__event_Up
+            ;\\ enabled mouse behavior
+            If eventtype = #__event_Down
                
-               If Not a_index( )
-                  ;\\ after post&send drag-start-event
-                  If mouse( )\drop
-                     If *this\drop And MouseEnter( *this ) And 
-                        *this\drop\format = mouse( )\drop\format And
-                        *this\drop\actions & mouse( )\drop\actions And
-                        ( *this\drop\private = mouse( )\drop\private Or
-                          *this\drop\private & mouse( )\drop\private )
-                        ;
-                        If mouse( )\drag <> #PB_Drag_Enter
-                           mouse( )\drag = #PB_Drag_Enter
-                           ;Debug "#PB_Drag_Enter"
-                           
-                           If Cursor( PressedWidget( ) ) = cursor::#__cursor_Drag
-                              ChangeCursor( PressedWidget( ), cursor::#__cursor_Drop )
-                           EndIf
-                        EndIf
-                     Else
-                        If *this\press
-                           If Cursor( *this ) <> CurrentCursor( )
-                              Cursor( *this ) = CurrentCursor( )
-                              DoEvents( *this, #__event_Cursor, #PB_All, 299 )
-                           EndIf
-                        Else
-                           If mouse( )\drag = #PB_Drag_Enter
-                              mouse( )\drag = #PB_Drag_Leave
-                              ;Debug "#PB_Drag_Leave"
-                              
-                              If Cursor( PressedWidget( ) ) = cursor::#__cursor_Drop
-                                 ChangeCursor( PressedWidget( ), cursor::#__cursor_Drag )
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                  Else
-                     If eventtype = #__event_DragStart
-                        CurrentCursor( ) = Cursor( *this ) 
-                     EndIf    
+               ;             If *this\type = #__type_Splitter
+               ;                If EnteredButton( ) And
+               ;                   EnteredButton( )\_enter
+               ;                EndIf
+               ;             EndIf
+            EndIf
+            
+            ;\\ after post-widget-events then drop if create new widget
+            If eventtype = #__event_Drop
+               If *this <> widgets( )
+                  If widgets( )\resize\clip <> 0
+                     widgets( )\resize\clip = 0
+                     Reclip( widgets( ) )
                   EndIf
+               EndIf
+            EndIf
+            
+             ;\\ key events
+            If eventtype = #__event_Input Or
+               eventtype = #__event_KeyDown Or
+               eventtype = #__event_KeyUp
+               
+               If *this\type = #__type_listview
+                  DoKeyEvents_ListView( *this, *this\__rows( ), eventtype )
+               Else
+                  DoKeyEvents_Tree( *this, *this\__rows( ), eventtype )
+               EndIf
+            EndIf
+            ;\\ post repaint canvas
+            If *this\root\repaint = 1
+               ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(eventtype)
+               PostEventRepaint( *this\root )
+               *this\root\repaint = 0
+            EndIf
+         EndIf
+         
+         ; cursor change
+         If eventtype = #__event_MouseEnter Or
+            eventtype = #__event_Up Or
+            eventtype = #__event_MouseMove
+            ;
+            If Not CanvasMouseButtonPress( )
+               If a_index( )
                   
-                  If PressedWidget( ) And PressedWidget( )\press 
-                     If CurrentCursor( ) <> Cursor( PressedWidget( ) )
-                        Debug "change pressed cursor"
-                        DoCurrentCursor( PressedWidget( ), Cursor( PressedWidget( ) ), 2 )
-                     EndIf
-                  Else
-                     If MouseEnter( *this )
-                        DoCurrentCursor( *this, Cursor( *this ), 1 )
+               Else
+                  If *this\cursor[3]
+                     If *this\disable
+                        If CurrentCursor( )
+                           ChangeCursor( *this, 0 )
+                        EndIf
                      Else
-                        If EnteredWidget( ) And
-                           MouseEnter( EnteredWidget( ) )
-                           ;
-                           If PressedWidget( ) And
-                              PressedWidget( )\root <> EnteredWidget( )\root
-                              DoCurrentCursor( PressedWidget( )\root, Cursor( PressedWidget( )\root ), 8 )
+                        If MouseEnter( *this )
+                           If cursor_change_widget <> *this
+                              cursor_change_widget = *this
                            EndIf
-                           ;
-                           DoCurrentCursor( EnteredWidget( ), Cursor( EnteredWidget( ) ), 3 )
-                        Else
-                           ; если внутри виджета покинули область где надо менять курсор
-                           If EnteredWidget( )
-                              If EnteredWidget( )\mouseenter > 0
-                                 DoCurrentCursor( EnteredWidget( ), cursor::#__cursor_Default, 5 )
-                              Else
-                                 ;Debug *this\mouseenter
-                                 
-                                 ; from button to splitter
-                                 If Not *this\mouseenter
-                                    ;                         If EnteredWidget( )\mouseenterframe =- 1 ; ???
-                                    ;                           DoCurrentCursor( EnteredWidget( ), Cursor( EnteredWidget( ) ), 4 )
-                                    ;                         EndIf
-                                 EndIf
-                              EndIf
-                           Else
-                              DoCurrentCursor( *this, cursor::#__cursor_Default, 7 )
+                           
+                           If CurrentCursor( ) <> *this\cursor[3]
+                              ChangeCursor( *this, *this\cursor[3] )
+                           EndIf
+                        ElseIf *this\fs <> 1
+                           ;Debug ""+*this\bs +" "+ *this\fs
+                           
+                           If CurrentCursor( )
+                              ChangeCursor( *this, 0 )
                            EndIf
                         EndIf
+                     EndIf
+                  Else
+                     If CurrentCursor( )
+                        ChangeCursor( *this, 0 )
                      EndIf
                   EndIf
                EndIf
-         EndSelect
-         
-         If Not *this\disable
-           ;\\ key events
-         If eventtype = #__event_Input Or
-            eventtype = #__event_KeyDown Or
-            eventtype = #__event_KeyUp
-            
-            If *this\type = #__type_listview
-               DoKeyEvents_ListView( *this, *this\__rows( ), eventtype )
-            Else
-               DoKeyEvents_Tree( *this, *this\__rows( ), eventtype )
             EndIf
          EndIf
-         ;\\ post repaint canvas
-         If *this\root\repaint = 1
-            ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(eventtype)
-            PostEventRepaint( *this\root )
-            *this\root\repaint = 0
-         EndIf
-      EndIf
-         EndProcedure
+      EndProcedure
       
       ;-
       Procedure EventResize( )
@@ -21556,11 +21552,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     ;\\ reset dragged cursor
-                     If Cursor( PressedWidget( ) ) <> PressedWidget( )\cursor
-                        Debug "free drop CURSOR "
-                        Cursor( PressedWidget( ) ) = PressedWidget( )\cursor 
-                     EndIf
+;                      ;\\ reset dragged cursor
+;                      If Cursor( PressedWidget( ) ) <> PressedWidget( )\cursor[3]
+;                         Debug "free drop CURSOR "
+;                         Cursor( PressedWidget( ) ) = PressedWidget( )\cursor[3] 
+;                      EndIf
                      
                      ;\\ reset
                      FreeStructure( mouse( )\drop )
@@ -24059,9 +24055,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17097
-; FirstLine = 17080
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 7115
+; FirstLine = 7103
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---4--4--ZOz-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
