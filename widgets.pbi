@@ -152,6 +152,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_clip              = 0
       Global test_buttons_draw      = 0
       
+      Global test_anchors
       Global test_docursor, test_changecursor,test_setcursor
       
       Global DrawingDC = 0
@@ -1380,10 +1381,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color = $ff000000 )
       Declare   Draw_Button( *this )
       Declare.b Draw( *this )
-      Declare   ReDraw( *this._s_WIDGET )
+      Declare   ReDraw( *this )
       Declare   Drawing( *root = 0 )
       
+      Declare.b HideItem( *this, item.l, state.b )
       Declare.b Hide( *this, State.b = #PB_Default, flags.q = 0 )
+      Declare.b DisableItem( *this, item.l, state.b )
       Declare.b Disable( *this, State.b = #PB_Default )
       Declare.i Address( *this )
       Declare.l Type( *this )
@@ -2990,24 +2993,23 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          i = 0
          ;
-         ; reset last entered anchors index state
          If a_entered( ) And 
-            a_entered( )\anchors  
+            a_entered( )\anchors 
             ;
-            For i = 1 To #__a_moved
-               If i <> a_index
-                  If a_entered( )\anchors\id[i] And 
-                     a_entered( )\anchors\state <> #__s_0
-                     a_entered( )\anchors\state = #__s_0
-                     ;
-                     a_entered( )\root\repaint = #True
+            ; reset last entered anchors index state
+            If a_index( ) <> a_index
+               If a_entered( )\anchors\state <> #__s_0
+                  a_entered( )\anchors\state = #__s_0
+                  If a_entered( )\cursor[3] <> a_entered( )\cursor
+                     ; leave from anchor 
+                     a_entered( )\cursor[3] = a_entered( )\cursor
                   EndIf
+                  ;
+                  a_entered( )\root\repaint = #True
                EndIf
-            Next 
-         EndIf
-         ;
-         If a_index( ) 
-            If a_entered( )
+            EndIf
+            ;
+            If a_index( ) 
                If a_entered( )\anchors\id[a_index( )] 
                   If Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
                      ;
@@ -3016,9 +3018,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                              is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] ))
                            ;
                            If is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_inner] )
-                             a_entered( )\mouseenter = 2
+                              a_entered( )\mouseenter = 2
                            Else
-                             a_entered( )\mouseenter = 1
+                              a_entered( )\mouseenter = 1
                            EndIf
                            ;
                            DoEvents( a_entered( ), #__event_MouseEnter, #PB_All, 111111111111 )
@@ -3028,7 +3030,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      a_index( ) = 0
-                   EndIf
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -3053,12 +3055,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                DoEvents( *this, #__event_MouseLeave, #PB_All, -111111111111  )
             EndIf
             ;
-            If *this\anchors\id[a_index] And 
-               *this\anchors\state = #__s_0
-               *this\anchors\state = #__s_1
-               ChangeCursor( *this, a_anchors( )\cursor[a_index] )
-               *this\root\repaint = #True
-               *this\root\contex = 0
+            If *this\anchors\id[a_index]  
+               If *this\anchors\state = #__s_0
+                  *this\anchors\state = #__s_1
+                  ChangeCursor( *this, a_anchors( )\cursor[a_index] )
+                  *this\root\repaint = #True
+                  *this\root\contex = 0
+               EndIf
             EndIf
             ; 
             result = *this
@@ -3167,7 +3170,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             a_entered( ) <> *this
             ;
             If *this\anchors And *this\anchors\mode
-               Debug " a_show "+*this\class
+               If test_anchors
+                  Debug " a_show "+*this\class
+               EndIf
                ;
                a_add( *this )
                ;
@@ -3899,6 +3904,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
        
       ;-
+      Procedure.b HideItem( *this._s_widget, item.l, state.b )
+         If *this\type = #__type_panel
+            If *this\tab
+               SelectElement( *this\__Tab( )\__tabs( ), item )
+               *this\__Tab( )\__tabs( )\hide = state
+               ;*this\state\repaint = #True
+            EndIf
+         EndIf
+      EndProcedure
+      
       Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default, flags.q = 0 )
          If State = #PB_Default : ProcedureReturn *this\hide : EndIf
          
@@ -3915,6 +3930,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             ProcedureReturn 1
+         EndIf
+      EndProcedure
+      
+      Procedure.b DisableItem( *this._s_widget, item.l, state.b )
+         If *this\type = #__type_panel
+            If *this\tab
+               SelectElement( *this\__Tab( )\__tabs( ), item )
+               *this\__Tab( )\__tabs( )\disable = state
+               ;*this\state\repaint = #True
+            EndIf
          EndIf
       EndProcedure
       
@@ -7113,7 +7138,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             CurrentCursor( ) = *cursor
             
             If *cursor
-               *this\cursor[3] = *cursor
+               ;If Not a_index( )
+                  *this\cursor[3] = *cursor
+               ;EndIf
                cursor_change_widget = *this
                DoEvents( *this, #__event_cursor, CurrentCursor( ) ) 
             Else
@@ -20530,7 +20557,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If result > 0
                If CurrentCursor( )
                   CurrentCursor( ) = result
-                  *this\cursor[3] = CurrentCursor( )
+                  ;If Not a_index( )
+                     *this\cursor[3] = CurrentCursor( )
+                  ;EndIf
                EndIf
             EndIf
             
@@ -24055,9 +24084,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7115
-; FirstLine = 7103
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---4--4--ZOz-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3941
+; FirstLine = 3850
+; Folding = ------------------------------------------------------------v+-----4-------------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---f--f--n6M-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -242,7 +242,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndSelect    
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
     
     Define *cont = Container(15,15,100,100)
@@ -355,7 +355,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 307
+; CursorPosition = 244
+; FirstLine = 215
 ; Folding = 8V-
 ; EnableXP
