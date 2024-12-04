@@ -3640,6 +3640,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;Debug " " + mw + " " + mh
                   *pressed\noscale = 1
                   Resize( *pressed, mouse_x, mouse_y, mw, mh )
+                  *pressed\noscale = 0
                   
                Else
                   ;                   If a_main( )
@@ -3752,6 +3753,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      *this\noscale = 1
                      Resize( *this, mx, my, mw, mh )
+                     *this\noscale = 0
                      
                   Case (#PB_Canvas_Shift | #PB_Canvas_Control), #PB_Canvas_Alt ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control | #PB_Canvas_Command
                      Select keyboard( )\Key
@@ -3764,6 +3766,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      *this\noscale = 1
                      Resize( *this, mx, my, mw, mh )
+                     *this\noscale = 0
                      
                   Default
                      ;\\ tab focus
@@ -3869,7 +3872,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Macro DisableState( _this_, _parent_ )
-         _this_\disable = Bool( _this_\disable[1] Or ( _parent_ And ( _parent_\disable Or ( _parent_\__Tab( ) And _this_\TabIndex( ) <> _parent_\__Tab( )\TabState( ) ))))
+         _this_\disable = Bool( _this_\disable[1] Or ( _parent_ And _parent_\disable ))
          
          If _this_\__Tab( )
             If _this_\disable
@@ -4338,7 +4341,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         If *this\autosize
+         If *this\autosize 
             If *this\parent And 
                *this\parent <> *this 
                
@@ -7062,6 +7065,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   *this\noscale = 1
                   Resize( *this, X - *parent\scroll_x( ), Y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+                  ;;*this\noscale = 0 ; 
                EndIf
                
                ;\\
@@ -11320,6 +11324,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     Else
                                        Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
                                     EndIf
+                                    widget( )\noscale = 0
                                  EndIf
                               EndIf
                               StopEnum( )
@@ -11349,8 +11354,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     Else
                                        Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
                                     EndIf
+                                    widget( )\noscale = 0
                                  EndIf
-                              EndIf
+                              EndIf    
                               StopEnum( )
                            EndIf
                         EndIf
@@ -21105,9 +21111,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;PushMapPosition( roots( ) )
             If Not ( root( ) And root( )\canvas\gadget = eventgadget )
                ChangeCurrentCanvas( GadgetID( eventgadget ) )
-            EndIf   
-            Resize( root( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
-            
+            EndIf 
+            Resize( root( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )) )
             ;PopMapPosition( roots( ) )
             ; ; ;                ;root( ) = *root
             ProcedureReturn #PB_Event_Gadget
@@ -24106,8 +24111,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5277
-; FirstLine = 5190
+; CursorPosition = 22199
+; FirstLine = 21757
 ; Folding = ------------------------------------------------------------v+-----4-------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---8--8--Mn6-------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP

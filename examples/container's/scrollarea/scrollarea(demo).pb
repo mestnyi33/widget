@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
       
       ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b), #PB_Ignore, #PB_Ignore)
-      Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)- Height(*b), #PB_Ignore, #PB_Ignore)
+      Resize(*b, #PB_Ignore, (GetAttribute(*g, #PB_ScrollArea_InnerHeight)- Height(*b)), #PB_Ignore, #PB_Ignore)
       
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
       SetAttribute(*g, #PB_ScrollArea_Y, 0)
@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 56
+; CursorPosition = 79
+; FirstLine = 46
 ; Folding = v-
 ; Optimizer
 ; EnableXP

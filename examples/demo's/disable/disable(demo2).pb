@@ -36,8 +36,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       *panel = Panel(10,10,280,145)
          Disable(*panel, 1)
          AddItem(*panel, -1, "item-1")
+         Container(10,10,95,80)
          Button( 10, 10, 70, 25, "enable-[0]") 
          Button( 10, 40, 70, 25, "disable-[1]") 
+         CloseList( )
          Disable( widget( ), 1 )
          AddItem(*panel, -1, "item-2")
          Button( 10, 10, 70, 25, "disable-[2]") 
@@ -71,8 +73,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 40
+; CursorPosition = 38
+; FirstLine = 30
 ; Folding = --
 ; EnableXP
 ; DPIAware
