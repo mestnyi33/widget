@@ -9613,17 +9613,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If is_integral_( *this )
                      pf = *this\parent\bs
                      If *this\parent\parent
-                        backcolor = *this\parent\parent\color\back[\parent\ColorState( )]
+                        If is_root_( *this\parent\parent )
+                           backcolor = $FFf0f0f0
+                        Else
+                           backcolor = *this\parent\parent\color\back[\parent\ColorState( )]
+                        EndIf
                      Else
                         backcolor = *this\parent\color\back[\parent\ColorState( )]
                      EndIf
                      If Not backcolor
-                       backcolor = *BB2\color\back[\ColorState( )]
+                        backcolor = *BB2\color\back[\ColorState( )]
                      EndIf
+                  Else
+                     backcolor = *this\parent\color\back[\parent\ColorState( )]
                   EndIf
                   
                   Protected fabe_pos, round = 0, button_size = 20, Size = 60+pf, fabe_out = Size - button_size
-                  ;backcolor = RGBA(64, 128, 192, 64)
+                  ;;backcolor = RGBA(64, 128, 192, 64)
                   ;backcolor = backcolor & $FFFFFF | 160 << 24 ;$ff00ff00
                   
                   draw_mode_alpha_( #PB_2DDrawing_Gradient )
@@ -11422,7 +11428,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                   ; PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
                   SetWindowPos_( GadgetID(*this\split_1( )), #HWND_TOP, *BB1\x, *BB1\y, *BB1\width, *BB1\height, #SWP_NOACTIVATE )
-                  UpdateWindow_(GadgetID(*this\split_1( )))
+                  UpdateWindow_( GadgetID(*this\root\canvas\gadget))
+                  ;UpdateWindow_( GadgetID(*this\split_1( )))
                CompilerElse
                   PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
                CompilerEndIf
@@ -11464,7 +11471,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                   ; PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
                   SetWindowPos_( GadgetID(*this\split_2( )), #HWND_TOP, *BB2\x, *BB2\y, *BB2\width, *BB2\height, #SWP_NOACTIVATE )
-                  UpdateWindow_(GadgetID(*this\split_2( )))
+                  UpdateWindow_( GadgetID(*this\root\canvas\gadget))
+                  ;UpdateWindow_( GadgetID(*this\split_2( )))
                CompilerElse
                   PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
                CompilerEndIf
@@ -24111,9 +24119,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22199
-; FirstLine = 21757
-; Folding = ------------------------------------------------------------v+-----4-------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---8--8--Mn6-------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 11474
+; FirstLine = 11055
+; Folding = ------------------------------------------------------------v+-----4-------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---4--4--ZOz-------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
