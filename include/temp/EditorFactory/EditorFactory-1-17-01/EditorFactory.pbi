@@ -2348,10 +2348,11 @@ Module EditorFactory
 			*Object\eAttachmentMode              = #Attachment_Position
 		EndIf
 		*Object\Boundaries                     = EditorFactory\DefaultObject\Boundaries
-		*Object\iWidth                         = AdjustWidth(*Object, iWidth)
-		*Object\iHeight                        = AdjustHeight(*Object, iHeight)
-		*Object\iX                             = AdjustX(*Object, iX, *Object\iWidth)
-		*Object\iY                             = AdjustY(*Object, iY, *Object\iHeight)
+		*Object\iWidth                         = AdjustWidth(*Object, DesktopScaledX(iWidth))
+		*Object\iHeight                        = AdjustHeight(*Object, DesktopScaledY(iHeight))
+		*Object\iX                             = AdjustX(*Object, DesktopScaledX(iX), *Object\iWidth)
+		*Object\iY                             = AdjustY(*Object, DesktopScaledY(iY), *Object\iHeight)
+		
 		*Object\eCursor                        = EditorFactory\DefaultObject\eCursor
 		*Object\hCursorHandle                  = EditorFactory\DefaultObject\hCursorHandle
 		*Object\eHandleDisplayMode             = EditorFactory\DefaultObject\eHandleDisplayMode
@@ -2531,10 +2532,10 @@ Module EditorFactory
 			\ViewBox\iY        = iViewBoxY
 			\ViewBox\iWidth    = iViewBoxWidth
 			\ViewBox\iHeight   = iViewBoxHeight
-			\InnerArea\iWidth  = iInnerWidth
-			\InnerArea\iHeight = iInnerHeight
-			\InnerArea\iX      = iInnerOffsetX
-			\InnerArea\iY      = iInnerOffsetY
+			\InnerArea\iWidth  = DesktopScaledX(iInnerWidth)
+			\InnerArea\iHeight = DesktopScaledY(iInnerHeight)
+			\InnerArea\iX      = DesktopScaledX(iInnerOffsetX)
+			\InnerArea\iY      = DesktopScaledY(iInnerOffsetY)
 		EndWith
 		
 		ProcedureReturn iResult
@@ -5113,10 +5114,10 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2362
-; FirstLine = 1066
-; Folding = DIF9-gCbQrR0LJJ9whlBAADPQy---PBJAk-yA1ASIAAAAAAAgA9---------------------------------------------
+; CursorPosition = 2536
+; FirstLine = 1305
+; Folding = DIF0-gCbQ8X0LJL9whlBAADPQy---PBJek-yA9YSIAAAQIAAgA9---------------------------------------------
 ; EnableXP
-; EnableCompileCount = 212
+; EnableCompileCount = 213
 ; EnableBuildCount = 0
 ; EnableExeConstant

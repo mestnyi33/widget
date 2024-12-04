@@ -95,9 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Open(0, 270, 100, 600, 310, "Change tab location")
-   ;a_init(root(),0)
-   SetColor(root(), #__color_back, $FFF2F2F2)
+   OpenWindow(0, 270, 100, 600, 310, "Change tab location")
    
    PanelGadget(0, 10, 10, 300 - 20, 180)
    AddGadgetItem (0, -1, "Tab 1", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
@@ -122,7 +120,10 @@ CompilerIf #PB_Compiler_IsMainFile
    BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
    
    
-   *panel = Panel(300+10, 10, 300 - 20, 180)
+   Open(0, 270)
+   ;a_init(root(),0)
+   ;SetColor(root(), #__color_back, $FFF2F2F2)
+   *panel = Panel(10, 10, 300 - 20, 180)
    AddItem (*panel, -1, "Tab 1", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
    AddItem (*panel, -1, "Tab 2", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
    Button( 0,0,50,50,"Button" )
@@ -160,6 +161,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 117
 ; Folding = ---
 ; EnableXP
 ; DPIAware

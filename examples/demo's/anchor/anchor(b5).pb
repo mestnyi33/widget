@@ -47,7 +47,8 @@ UsePNGImageDecoder()
 ; Определите свойства объектов по умолчанию:
 ;AddObjectHandle(#Object_Default, #Handle_Position | #Handle_Size)
 a_init(root(), 0)
-SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
+SetColor(root(), #__color_back, $ffffffff)
+;SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
   
 
 
@@ -85,6 +86,15 @@ AddItem( *Object4, 2, "panel-item-2" )
 SetBounds(*Object7)
 CloseList( )
 SetState(*Object4, 2)
+
+SetItemColor(*Object4, #PB_All, #__color_fore, RGBA(64, 128, 192, alpha))
+SetItemColor(*Object4, #PB_All, #__color_back, RGBA(64, 128, 192, alpha))
+
+SetItemColor(*Object4, #PB_All, #__color_fore, RGBA(64, 128, 192, alpha),1)
+SetItemColor(*Object4, #PB_All, #__color_back, RGBA(64, 128, 192, alpha),1)
+
+SetItemColor(*Object4, #PB_All, #__color_fore, RGBA(64, 128, 192, alpha),2)
+SetItemColor(*Object4, #PB_All, #__color_back, RGBA(64, 128, 192, alpha),2)
 
 
 ; --- Scroll area ---
@@ -291,7 +301,7 @@ DataSection
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 49
-; FirstLine = 33
+; FirstLine = 36
 ; Folding = +
 ; EnableXP
 ; DPIAware

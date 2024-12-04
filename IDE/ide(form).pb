@@ -295,8 +295,8 @@ Procedure CreateProperties( X,Y,Width,Height, flag=0 )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    ;SetState(*splitter, width-position )
    
-   *splitter\bar\button\size = DPIScaled(5)
-   *splitter\bar\button\round = DPIScaled(1)
+   *splitter\bar\button\size = DPIScaled(2)
+   *splitter\bar\button\round = 0;  DPIScaled(1)
    
    SetClass(*first\scroll\v, "first_v")
    SetClass(*first\scroll\h, "first_h")
@@ -1647,8 +1647,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1596
-; FirstLine = 1572
+; CursorPosition = 297
+; FirstLine = 280
 ; Folding = ---f0------------------------
 ; EnableXP
 ; DPIAware

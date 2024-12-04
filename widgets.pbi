@@ -5264,6 +5264,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
+         If *this\type = #__type_Panel
+            *this = *this\__tab( )
+            If Item = #PB_All
+               PushListPosition( *this\__tabs( ))
+               ForEach *this\__tabs( )
+                  add_color( result, *this\__tabs( )\color, ColorType, Color, alpha, [Column] )
+               Next
+               PopListPosition( *this\__tabs( ))
+               
+            Else
+               If is_item_( *this, item ) And SelectElement( *this\__tabs( ), Item )
+                  add_color( result, *this\__tabs( )\color, ColorType, Color, alpha, [Column] )
+               EndIf
+            EndIf
+         EndIf
+         
          ProcedureReturn result
       EndProcedure
       
@@ -17111,13 +17127,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\ backcolor
-            draw_mode_alpha_( #PB_2DDrawing_Default )
-            If *this\fs
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-            Else
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+            If *this\color\back <> - 1
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               If *this\fs
+                  draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+               Else
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+               EndIf
             EndIf
-            
+         
             ;\\
             If *this\image\id Or
                *this\image[#__image_background]\id
@@ -17532,20 +17550,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;\\
                If *root\drawmode & 1<<2
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     ; good transparent canvas
-                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
-                     ;             CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                     ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
-                  CompilerElse
-                     ;               Protected *style.GtkStyle, *color.GdkColor
-                     ;               *style = gtk_widget_get_style_(WindowID(*root\canvas\window))
-                     ;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
-                     ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
-                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
-                  CompilerEndIf
-                  ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
+                  ; If *root\color\back = - 1 ; test example anchor(b5)
+                     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                        ; good transparent canvas
+                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
+                     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
+                     CompilerElse
+                        ;               Protected *style.GtkStyle, *color.GdkColor
+                        ;               *style = gtk_widget_get_style_(WindowID(*root\canvas\window))
+                        ;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
+                        ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
+                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
+                     CompilerEndIf
+                     ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
+                  ; EndIf
                EndIf
+               
                ;\\
                Draw( *root )
             EndIf
@@ -22102,6 +22123,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;
             *root\color       = _get_colors_( )
+            *root\color\back  = - 1
             SetFontID( *root, PB_( GetGadgetFont )( #PB_Default ))
             
             ;
@@ -24084,9 +24106,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3941
-; FirstLine = 3850
-; Folding = ------------------------------------------------------------v+-----4-------------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---f--f--n6M-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 5277
+; FirstLine = 5190
+; Folding = ------------------------------------------------------------v+-----4-------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---8--8--Mn6-------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
