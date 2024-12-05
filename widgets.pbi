@@ -332,14 +332,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;     Macro DPIResolutionX( ): Bool(1=0): EndMacro
       ;     Macro DPIResolutionY( ): Bool(1=0): EndMacro
       
-      Macro DPIResolutionX( ): DesktopResolutionX( ): EndMacro
-      Macro DPIResolutionY( ): DesktopResolutionY( ): EndMacro
       Macro DPIScaledX( _x_ ): DesktopScaledX( _x_ ): EndMacro
       Macro DPIUnScaledX( _x_ ): DesktopUnscaledX( _x_ ): EndMacro
       Macro DPIScaledY( _y_ ): DesktopScaledY( _y_ ): EndMacro
       Macro DPIUnScaledY( _y_ ): DesktopUnscaledY( _y_ ): EndMacro
       Macro DPIScaled( _value_ ): DesktopScaledX( _value_ ): EndMacro
       Macro DPIUnScaled( _value_ ): DesktopUnscaledX( _value_ ): EndMacro
+      Macro DPIResolutionX( ): DesktopResolutionX( ): EndMacro
+      Macro DPIResolutionY( ): DesktopResolutionY( ): EndMacro
       Macro DPIResolution( ): DesktopResolutionX( ): EndMacro
       
       ;     Macro BoxedGradient(_x_, _y_, _width_, _height_)
@@ -21113,7 +21113,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If eventtype = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            ; Debug "resize - canvas ["+eventgadget+"]"
+             Debug "resize - canvas ["+eventgadget+"]"
             
             ; ;               *root = root( )
             ;PushMapPosition( roots( ) )
@@ -24118,11 +24118,11 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11474
-; FirstLine = 11055
-; Folding = ------------------------------------------------------------v+-----4-------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---4--4--ZOz-------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-; Optimizer
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 21115
+; FirstLine = 20989
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------8-4------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
+; Optimizer

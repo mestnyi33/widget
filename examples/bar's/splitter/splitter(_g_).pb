@@ -228,10 +228,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Repeat 
     Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 225
-; FirstLine = 200
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 92
+; FirstLine = 77
 ; Folding = ----
 ; EnableXP
 ; DPIAware
