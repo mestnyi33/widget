@@ -204,7 +204,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       #__cursor_LeftUpRightDown = Cursor::#__cursor_LeftUpRightDown
       #__cursor_LeftDownRightUp = Cursor::#__cursor_LeftDownRightUp
       
-    
       CompilerIf #PB_Compiler_Version =< 546
          Global DPISCALEDX.a = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
          Global DPISCALEDY.a = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
@@ -4339,7 +4338,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\autosize And *this\parent And *this\parent\type = #__type_Splitter
             *this\autosize = 0
          EndIf
-         
+                       
          ;\\
          If *this\autosize 
             If *this\parent And 
@@ -4352,7 +4351,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          Else
             ;
-            CompilerIf #PB_Compiler_DPIAware
+            ;CompilerIf #PB_Compiler_DPIAware
                If Not *this\noscale
                   If Not is_integral_( *this )
                      If X <> #PB_Ignore
@@ -4369,7 +4368,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-            CompilerEndIf
+            ;CompilerEndIf
             
             ;\\ move & size steps
             If *this\anchors And *this\anchors\mode And mouse( )\steps > 1
@@ -8430,7 +8429,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure AddItem( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, flag.q = 0 )
          Protected result
          ;          
-         CompilerIf #PB_Compiler_DPIAware
+         ;CompilerIf #PB_Compiler_DPIAware
             If IsImage( Image )
                If ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
                   ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
@@ -8439,7 +8438,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;             ResizeImage(Image, 32, 32, #PB_Image_Raw )
                ;           EndIf
             EndIf
-         CompilerEndIf
+         ;CompilerEndIf
          
          If *this\type = #__type_MDI
             *this\countitems + 1 ;?
@@ -21120,7 +21119,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not ( root( ) And root( )\canvas\gadget = eventgadget )
                ChangeCurrentCanvas( GadgetID( eventgadget ) )
             EndIf 
-            Resize( root( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )) )
+            If Resize( root( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )) )
+               ReDraw( root( ) )
+            EndIf
             ;PopMapPosition( roots( ) )
             ; ; ;                ;root( ) = *root
             ProcedureReturn #PB_Event_Gadget
@@ -24118,11 +24119,11 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 21115
-; FirstLine = 20989
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------4-v------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 8440
+; FirstLine = 8326
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------8-4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Optimizer
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
-; Optimizer

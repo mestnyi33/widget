@@ -15,6 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MinimizeGadget |
                                             #PB_Window_MaximizeGadget | 
                                             #PB_Window_ScreenCentered )
+      SetBackgroundColor( widget(), $fff000f0)
       
 ;        Button(0,0,0,0,"auto-resize-root-size" )
 ;        SetAlign( widget( ), #__align_full )
@@ -22,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitEvent( @resize_events( ), #__event_resize )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 17
 ; Folding = -
 ; EnableXP
