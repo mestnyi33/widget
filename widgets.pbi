@@ -1399,7 +1399,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Declare   IsChild( *this, *parent )
       Declare.b IsContainer( *this )
-      Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l )
+      Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l, scale = 1 )
       Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
       Declare.i SetAttach( *this, *parent, mode.a )
       Declare   SetChildrenBounds( *this, state.b )
@@ -3638,7 +3638,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;Debug " " + mw + " " + mh
                   *pressed\noscale = 1
-                  Resize( *pressed, mouse_x, mouse_y, mw, mh )
+                  Resize( *pressed, mouse_x, mouse_y, mw, mh,0 )
                   *pressed\noscale = 0
                   
                Else
@@ -3751,7 +3751,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndSelect
                      
                      *this\noscale = 1
-                     Resize( *this, mx, my, mw, mh )
+                     Resize( *this, mx, my, mw, mh,0 )
                      *this\noscale = 0
                      
                   Case (#PB_Canvas_Shift | #PB_Canvas_Control), #PB_Canvas_Alt ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control | #PB_Canvas_Command
@@ -3764,7 +3764,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndSelect
                      
                      *this\noscale = 1
-                     Resize( *this, mx, my, mw, mh )
+                     Resize( *this, mx, my, mw, mh,0 )
                      *this\noscale = 0
                      
                   Default
@@ -4305,7 +4305,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn Bool( *this\draw_width( ) > 0 And *this\draw_height( ) > 0 )
       EndProcedure
       
-      Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
+      Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale = 1 )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          If test_event_resize
@@ -4352,22 +4352,27 @@ CompilerIf Not Defined( widget, #PB_Module )
          Else
             ;
             ;CompilerIf #PB_Compiler_DPIAware
-               If Not *this\noscale
-                  If Not is_integral_( *this )
-                     If X <> #PB_Ignore
-                        X = DPIScaledX( X )
-                     EndIf
-                     If Width <> #PB_Ignore
-                        Width = DPIScaledX( Width )
-                     EndIf
-                     If Y <> #PB_Ignore
-                        Y = DPIScaledY( Y )
-                     EndIf
-                     If Height <> #PB_Ignore
-                        Height = DPIScaledY( Height )
-                     EndIf
+            If scale = 1
+               If ( *this\parent And *this\parent\type = #__type_Splitter )
+                  Debug "resize no scale "+*this\class
+               EndIf
+            EndIf
+            If scale = 1 ;And Not( *this\parent And *this\parent\type = #__type_Splitter ) ;And *this\noscale = 0 
+               If Not is_integral_( *this )
+                  If X <> #PB_Ignore
+                     X = DPIScaledX( X )
+                  EndIf
+                  If Width <> #PB_Ignore
+                     Width = DPIScaledX( Width )
+                  EndIf
+                  If Y <> #PB_Ignore
+                     Y = DPIScaledY( Y )
+                  EndIf
+                  If Height <> #PB_Ignore
+                     Height = DPIScaledY( Height )
                   EndIf
                EndIf
+            EndIf
             ;CompilerEndIf
             
             ;\\ move & size steps
@@ -4909,7 +4914,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;-\\ children's resize
          ;\\ then move and size parent
          ;\\ resize all children's
-         If Not *this\resize\nochildren 
+         If Not *this\resize\nochildren  
             If *this\type <> #__type_Splitter
                If *this\haschildren 
                   ;Debug *this\class
@@ -7063,8 +7068,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   *this\noscale = 1
-                  Resize( *this, X - *parent\scroll_x( ), Y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
-                  ;;*this\noscale = 0 ; 
+                  Resize( *this, X - *parent\scroll_x( ), Y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore, 0 )
                EndIf
                
                ;\\
@@ -11325,9 +11329,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     ;
                                     widget( )\noscale = 1
                                     If widget( )\child < 0
-                                       Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore )
+                                       Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore,0 )
                                     Else
-                                       Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore )
+                                       Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore,0 )
                                     EndIf
                                     widget( )\noscale = 0
                                  EndIf
@@ -11355,9 +11359,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     ;
                                     widget( )\noscale = 1
                                     If widget( )\child < 0
-                                       Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                                       Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore,0 )
                                     Else
-                                       Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                                       Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore,0 )
                                     EndIf
                                     widget( )\noscale = 0
                                  EndIf
@@ -11452,12 +11456,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                                 *BB1\x - *this\frame_x( ),
                                 *BB1\y - *this\frame_y( ),
                                 *BB1\width - *this\split_1( )\fs * 2,
-                                *BB1\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2])
+                                *BB1\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2], 0 )
                      Else
                         Resize( *this\split_1( ),
                                 *BB1\x - *this\frame_x( ),
                                 *BB1\y - *this\frame_y( ),
-                                *BB1\width, *BB1\height )
+                                *BB1\width, *BB1\height, 0 )
                      EndIf
                      
                   EndIf
@@ -11495,12 +11499,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                                 *BB2\x - *this\frame_x( ),
                                 *BB2\y - *this\frame_y( ),
                                 *BB2\width - *this\split_1( )\fs * 2,
-                                *BB2\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] )
+                                *BB2\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2], 0 )
                      Else
                         Resize( *this\split_2( ),
                                 *BB2\x - *this\frame_x( ),
                                 *BB2\y - *this\frame_y( ),
-                                *BB2\width, *BB2\height )
+                                *BB2\width, *BB2\height, 0 )
                      EndIf
                      
                   EndIf
@@ -21035,7 +21039,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure EventResize( )
          Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
-         Debug "- resize - os - window -"
+         ;Debug "- resize - os - window -"
          ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
          PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( Canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( Canvas ) * 2 ) ; bug
       EndProcedure
@@ -24119,10 +24123,10 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 8440
-; FirstLine = 8326
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------8-4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 4359
+; FirstLine = 4347
+; Folding = ------------------------------------------------------------------------------------------------------fv--0-----------------------------------------------v-f-----------------------------------------------------------------------------------------------------------------------------------------------------f--f--------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
