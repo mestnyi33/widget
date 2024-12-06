@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
   ;       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
   ;       
-  ;       Separator( )
+  ;       BarSeparator( )
   ;       
   ;       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
   ;       ; ToolTip(*toolbar, 3, "Cut")
@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
   ;       ; ToolTip(*toolbar, 5, "Paste")
   ;       
-  ;       Separator( )
+  ;       BarSeparator( )
   ;       
   ;       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
   ;       ; ToolTip(*toolbar, 6, "Find a document")
@@ -147,7 +147,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
 ;     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
 ;     
-;     Separator( )
+;     BarSeparator( )
 ;     
 ;     BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
 ;     ; ToolTip(*toolbar, 3, "Cut")
@@ -158,7 +158,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
 ;     ; ToolTip(*toolbar, 5, "Paste")
 ;     
-;     Separator( )
+;     BarSeparator( )
 ;     
 ;     BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
 ;     ; ToolTip(*toolbar, 6, "Find a document")
@@ -175,7 +175,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
     
-    Separator( )
+    BarSeparator( )
     
     BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
     ; ToolTip(*toolbar, 3, "Cut")
@@ -186,7 +186,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
     ; ToolTip(*toolbar, 5, "Paste")
     
-    Separator( )
+    BarSeparator( )
     
     BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
     ; ToolTip(*toolbar, 6, "Find a document")
@@ -228,7 +228,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\ Open Root0
   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
   ;BindWidgetEvent( *root2, @HandlerEvents( ) )
-  Global *menu._S_WIDGET = CreateBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
+  Global *menu._S_WIDGET = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
   
   SetColor( *menu, #__color_back, $FFC8ECF0 )
   
@@ -295,8 +295,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ReDraw(root( ))
    
    Define *open = Opened( )
-   DisplayPopupBar( *combobox\PopupBar( ), *menu, 10, 190 )
-   ;DisplayPopupBar( *combobox\PopupBar( ), *combobox, 10, 150 )
+   DisplayPopupBar( *combobox\__Popup( ), *menu, 10, 190 )
+   ;DisplayPopupBar( *combobox\__Popup( ), *combobox, 10, 150 )
    OpenList( *open ) 
    Debug ""+*open+" "+*root0
   
@@ -602,7 +602,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    ;       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
    ;       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
    ;       
-   ;       Separator( )
+   ;       BarSeparator( )
    ;       
    ;       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
    ;       ; ToolTip(*toolbar, 3, "Cut")
@@ -613,7 +613,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    ;       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
    ;       ; ToolTip(*toolbar, 5, "Paste")
    ;       
-   ;       Separator( )
+   ;       BarSeparator( )
    ;       
    ;       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
    ;       ; ToolTip(*toolbar, 6, "Find a document")
@@ -625,7 +625,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
    ;a_init( view, 8 )
    
    
-   Global *menu = CreateBar( view ) : SetClass(*menu, "*root_MenuBar" )
+   Global *menu = CreateMenuBar( view ) : SetClass(*menu, "*root_MenuBar" )
    SetColor( *menu, #__color_back, $FFC8ECF0 )
    
    BarTitle("Title-1")
@@ -687,7 +687,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
       
-      Separator( )
+      BarSeparator( )
       
       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
       ; ToolTip(*toolbar, 3, "Cut")
@@ -698,7 +698,7 @@ CompilerIf #PB_Compiler_IsMainFile = 555
       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
       ; ToolTip(*toolbar, 5, "Paste")
       
-      Separator( )
+      BarSeparator( )
       
       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
       ; ToolTip(*toolbar, 6, "Find a document")
@@ -709,8 +709,8 @@ CompilerIf #PB_Compiler_IsMainFile = 555
 CompilerEndIf
    
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 663
-; FirstLine = 477
+; CursorPosition = 682
+; FirstLine = 677
 ; Folding = -------
 ; EnableXP
 ; DPIAware

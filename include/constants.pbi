@@ -281,10 +281,10 @@
     #__type_Root          = - 1
     #__type_Window        = - 2
     #__type_Message       = - 3
-    #__type_PopupMenu     = - 4
-    #__type_Menu          = - 5
-    #__type_Tool          = - 6
-    #__type_Tab           = - 7
+    #__type_PopupBar      = - 4
+    #__type_MenuBar       = - 5
+    #__type_ToolBar       = - 6
+    #__type_TabBar        = - 7
     #__type_StatusBar     = - 8
     #__type_Properties    = - 9
     
@@ -309,10 +309,10 @@
       #__type_Container     = #PB_GadgetType_Container     ; 11
       #__type_ListIcon      = #PB_GadgetType_ListIcon      ; 12
       #__type_IPAddress     = #PB_GadgetType_IPAddress     ; 13
-      #__type_Progress      = #PB_GadgetType_ProgressBar   ; 14
-      #__type_Scroll        = #PB_GadgetType_ScrollBar     ; 15
+      #__type_Progress      = #PB_GadgetType_ProgressBar   ; 14   ;
+      #__type_Scroll        = #PB_GadgetType_ScrollBar     ; 15   ;
       #__type_ScrollArea    = #PB_GadgetType_ScrollArea    ; 16
-      #__type_Track         = #PB_GadgetType_TrackBar      ; 17
+      #__type_Track         = #PB_GadgetType_TrackBar      ; 17   ;
       #__type_Web           = #PB_GadgetType_Web           ; 18
       #__type_ButtonImage   = #PB_GadgetType_ButtonImage   ; 19
       #__type_Calendar      = #PB_GadgetType_Calendar      ; 20
@@ -690,8 +690,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 165
+; CursorPosition = 314
+; FirstLine = 297
 ; Folding = ----
 ; Optimizer
 ; EnableXP

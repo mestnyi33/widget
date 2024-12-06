@@ -1,5 +1,5 @@
 ﻿;                                                       - PB
-;                               Separator( [*address] ) - ToolBarSeparator( )
+;                               BarSeparator( [*address] ) - ToolBarSeparator( )
 ;                                                         ToolBarID( #ToolBar )
 ;                                                         IsToolBar( #ToolBar )
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
@@ -177,7 +177,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 105
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

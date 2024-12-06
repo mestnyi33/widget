@@ -1,6 +1,10 @@
 UseWidgets
 
+IsBar
+CreateBar
 ToolBar
+CreateMenuBar
+CreatePopupBar
 OpenSubBar
 CloseSubBar
 BarTitle
@@ -23,9 +27,7 @@ UnbindBarEvent
 BarBar
 BarSeparator
 BarPosition
-CreateBar
 HideBar
-CreatePopupBar
 HidePopupBar
 DisplayPopupBar
 

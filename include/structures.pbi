@@ -596,7 +596,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;          Map *eventshook._s_HOOK( )
          ;         
          List __lines._s_rows( )
-         noscale.b
          deffocus.b ; default focus
          
          haseventhook.b
@@ -784,8 +783,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 322
+; CursorPosition = 598
+; FirstLine = 596
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

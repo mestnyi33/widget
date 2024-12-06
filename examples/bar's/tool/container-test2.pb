@@ -41,24 +41,24 @@ CompilerIf #PB_Compiler_IsMainFile
     ToolBar( widget( ) );, #PB_ToolBar_Small )
     BarButton( #_tb_file_open, -1, 0, "Open" )
     BarButton( #_tb_file_save, -1, 0, "Save" )
-    Separator( )
+    BarSeparator( )
     BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) 
-    Separator( )
+    BarSeparator( )
     BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
     BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
-    Separator( )
+    BarSeparator( )
     BarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
     BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
-    Separator( )
+    BarSeparator( )
     BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
     BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
     
-    Separator( )
+    BarSeparator( )
     BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
     BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
     BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
     BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
-    Separator( )
+    BarSeparator( )
     BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
     BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
     BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
@@ -94,7 +94,7 @@ DataSection
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 44
+; CursorPosition = 50
+; FirstLine = 30
 ; Folding = -
 ; EnableXP

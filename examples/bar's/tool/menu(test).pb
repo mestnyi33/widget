@@ -18,7 +18,7 @@
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
-;                                             Separator( [*address] ) - MenuBar( )
+;                                             BarBar( [*address] ) - MenuBar( )
 ;                                                  Height( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define WindowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
    ;\\
    ; Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
-   *menu = CreateBar( root( ) ) 
+   *menu = CreateMenuBar( root( ) ) 
    SetClass(widget( )\root, "mainroot" )
    
    ;\\
@@ -123,8 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 49
+; CursorPosition = 26
+; FirstLine = 16
 ; Folding = -
 ; EnableXP
 ; DPIAware

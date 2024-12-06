@@ -63,41 +63,41 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure CreateWidget( *type )
-      Protected result, x=50, y=50, width = 400, height = 300, flags ;= #__flag_autosize
+      Protected result, X=50, Y=50, Width = 400, Height = 300, flags ;= #__flag_autosize
       
       Select *type
-         Case  1: result = Button(x,y,width,height,"Button", flags) 
-         Case  2: result = String(x,y,width,height,"String", flags) 
-         Case  3: result = Text(x,y,width,height,"Text", #PB_Text_Border|flags) 
-         Case  4: result = Option(x,y,width,height,"Option", flags) 
-         Case  5: result = CheckBox(x,y,width,height,"CheckBox", flags) 
-         Case  6: result = ListView(x,y,width,height, flags) 
-         Case  7: result = Frame(x,y,width,height,"Frame", flags) 
-         Case  8: result = ComboBox(x,y,width,height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
-         Case  9: result = Image(x,y,width,height,0,#PB_Image_Border|flags) 
-         Case 10: result = HyperLink(x,y,width,height,"HyperLink",0, flags) 
-         Case 11: result = Container(x,y,width,height,#PB_Container_Flat|flags): Button(0,0,80,y,"Button1"):SetClass(widget(),GetText(widget())): Button(10,50,80,y,"Button2"):SetClass(widget(),GetText(widget())): CloseList() ; Container
-         Case 12: result = ListIcon(x,y,width,height,"",88, flags) 
+         Case  1: result = Button(X,Y,Width,Height,"Button", flags) 
+         Case  2: result = String(X,Y,Width,Height,"String", flags) 
+         Case  3: result = Text(X,Y,Width,Height,"Text", #PB_Text_Border|flags) 
+         Case  4: result = Option(X,Y,Width,Height,"Option", flags) 
+         Case  5: result = CheckBox(X,Y,Width,Height,"CheckBox", flags) 
+         Case  6: result = ListView(X,Y,Width,Height, flags) 
+         Case  7: result = Frame(X,Y,Width,Height,"Frame", flags) 
+         Case  8: result = ComboBox(X,Y,Width,Height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
+         Case  9: result = Image(X,Y,Width,Height,0,#PB_Image_Border|flags) 
+         Case 10: result = HyperLink(X,Y,Width,Height,"HyperLink",0, flags) 
+         Case 11: result = Container(X,Y,Width,Height,#PB_Container_Flat|flags): Button(0,0,80,Y,"Button1"):SetClass(widget(),GetText(widget())): Button(10,50,80,Y,"Button2"):SetClass(widget(),GetText(widget())): CloseList() ; Container
+         Case 12: result = ListIcon(X,Y,Width,Height,"",88, flags) 
             ;Case 13: result = IPAddress(x,y,width,height) 
             ;Case 14: result = ProgressBar(x,y,width,height,0,5)
             ;Case 15: result = ScrollBar(x,y,width,height,5,335,9)
-         Case 16: result = ScrollArea(x,y,width,height,width*2,height*2,9,#PB_ScrollArea_Flat|flags): Button(0,0,80,30,"Button"): CloseList()
+         Case 16: result = ScrollArea(X,Y,Width,Height,Width*2,Height*2,9,#PB_ScrollArea_Flat|flags): Button(0,0,80,30,"Button"): CloseList()
             ;Case 17: result = TrackBar(x,y,width,height,0,5)
             ;Case 18: result = Web(x,y,width,height,"") ; bug 531 linux
-         Case 19: result = ButtonImage(x,y,width,height,0, flags)
+         Case 19: result = ButtonImage(X,Y,Width,Height,0, flags)
             ;Case 20: result = Calendar(x,y,width,height) 
             ;Case 21: result = Date(x,y,width,height)
-         Case 22: result = Editor(x,y,width,height, flags):  AddItem(result,-1,"Editor")
+         Case 22: result = Editor(X,Y,Width,Height, flags):  AddItem(result,-1,"Editor")
             ;Case 23: result = ExplorerList(x,y,width,height,"")
             ;Case 24: result = ExplorerTree(x,y,width,height,"")
             ;Case 25: result = ExplorerCombo(x,y,width,height,"")
-         Case 26: result = Spin(x,y,width,height,0,5,#PB_Spin_Numeric|flags)
-         Case 27: result = Tree(x,y,width,height, flags) :  AddItem(result,-1,"Tree"):  AddItem(result,-1,"SubLavel",0,1)
-         Case 28: result = Panel(x,y,width,height, flags): AddItem(result,-1,"Panel"): CloseList()
+         Case 26: result = Spin(X,Y,Width,Height,0,5,#PB_Spin_Numeric|flags)
+         Case 27: result = Tree(X,Y,Width,Height, flags) :  AddItem(result,-1,"Tree"):  AddItem(result,-1,"SubLavel",0,1)
+         Case 28: result = Panel(X,Y,Width,Height, flags): AddItem(result,-1,"Panel"): CloseList()
          Case 29 
-            result = Splitter(x,y,width,height,Button(0,0,0,0,"1"),Button(0,0,0,0,"2"), flags)
+            result = Splitter(X,Y,Width,Height,Button(0,0,0,0,"1"),Button(0,0,0,0,"2"), flags)
             
-         Case height: result = MDI(x,y,width,height, flags)
+         Case Height: result = MDI(X,Y,Width,Height, flags)
             ; Case 31: result = Scintilla(x,y,width,height,0, flags)
             ; Case 32: result = Shortcut(x,y,width,height,0, flags)
             ; Case 33: result = Canvas(x,y,width,height, flags) 
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;a_init( root())
       
 ; ;       ;\\
-;       *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+;       *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
 ;       SetColor( *menu, #__color_back, $FFF7FEE2 )
 ;       
 ;       BarTitle("Title-1")
@@ -187,8 +187,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 10
+; CursorPosition = 114
+; FirstLine = 72
 ; Folding = -8
 ; EnableXP
 ; DPIAware

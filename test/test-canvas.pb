@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\ Open Root0
    Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
    
-;    Global *menu = CreateBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
+;    Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
 ;    SetColor( *menu, #__color_back, $FFC8ECF0 )
 ;    
 ;    BarTitle("Title-1")
@@ -129,8 +129,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 94
-; FirstLine = 90
+; CursorPosition = 39
+; FirstLine = 35
 ; Folding = -
 ; EnableXP
 ; DPIAware

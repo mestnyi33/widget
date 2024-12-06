@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Open(0, 50,50,400,250)
    
    ;\\
-   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -109,8 +109,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 80
+; CursorPosition = 25
+; FirstLine = 9
 ; Folding = --
 ; EnableXP
 ; DPIAware

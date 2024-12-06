@@ -104,12 +104,12 @@ Global group_select,
 Procedure ide_events( )
 EndProcedure
 
-Procedure ide_open( x=100,y=100,width=800,height=600 )
+Procedure ide_open( X=100,Y=100,Width=800,Height=600 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
    
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-   Define root = widget::Open( 1, x,y,width,height, "ide", flag ) 
+   Define root = widget::Open( 1, X,Y,Width,Height, "ide", flag ) 
    window_ide = widget::GetCanvasWindow( root )
    canvas_ide = widget::GetCanvasGadget( root )
    
@@ -236,8 +236,8 @@ DataSection
 EndDataSection
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 201
-; FirstLine = 197
+; CursorPosition = 116
+; FirstLine = 93
 ; Folding = -
 ; Optimizer
 ; EnableXP

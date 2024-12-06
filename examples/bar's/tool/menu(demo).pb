@@ -3,12 +3,12 @@
 ;                                                                     - MenuID( #Menu )
 ;                                                 FreeBar( *address ) - FreeMenu( #Menu )
 ;                                                 HideBar( *address ) - HideMenu( #Menu, State )
-;                                               BarHeight( *address ) - MenuHeight( )
+;                                           MenuBarHeight( *address ) - MenuHeight( )
 ; 
 ;                                           CreatePopupBar( [flags] ) - CreatePopupMenu( #Menu )
 ;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
 ;
-;                                      CreateBar( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
+;                                  CreateMenuBar( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
 ;                                                                       CreateImageMenu( #Menu, WindowID [, Flags] )
 ; 
 ;                     DisplayPopupBar( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
@@ -130,7 +130,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(Button( 10, 220, 80, 35, "-777-" ), @HandlerEvents( ), #__event_LeftClick)  : SetClass(widget(), "-777-" )
    
    ;\\
-   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    SetColor( *menu, #__color_back, $FFF7FEE2 )
    
    BarTitle("Title-1")
@@ -187,7 +187,7 @@ CompilerIf #PB_Compiler_IsMainFile
    String( 10, 100, 80, 35, "String1" )
    String( 10, 140, 80, 35, "String2" )
    
-   *menu = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
+   *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
    SetColor( *menu, #__color_back, $FFDFDFDF )
    
    BarTitle("Title-1")
@@ -246,8 +246,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 204
-; FirstLine = 201
+; CursorPosition = 10
+; FirstLine = 15
 ; Folding = --
 ; EnableXP
 ; DPIAware

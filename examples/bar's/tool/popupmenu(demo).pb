@@ -80,37 +80,37 @@ CompilerIf #PB_Compiler_IsMainFile
    *menu = CreatePopupBar( )
    BarItem(1, "test")      ; You can use all commands for creating a menu
    BarItem(2, "Save")      ; just like in a normal menu...
-   BarSeparator( )
+   BarBar( )
    ;
    OpenSubBar("open sub item 1")
    BarItem(5, "5 sub item")
    BarItem(6, "6 sub item")
    CloseSubBar()
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(3, "Before")
    BarItem(4, "After")
-   BarSeparator( )
+   BarBar( )
    ;
    OpenSubBar("open sub item 2")
    BarItem(10, "10 sub item")
    BarItem(11, "11 sub item")
-   BarSeparator( )
+   BarBar( )
    ;
    OpenSubBar("open sub item 3")
    BarItem(12, "12 sub item")
    BarItem(13, "13 sub item")
    CloseSubBar()
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(14, "14 sub item")
    BarItem(15, "15 sub item")
-   BarSeparator( )
+   BarBar( )
    BarItem(16, "16 sub item")
    BarItem(17, "17 sub item")
    CloseSubBar( )
    ;
-   BarSeparator( )
+   BarBar( )
    BarItem(7, "exit")
    
    If *menu                  ; creation of the pop-up menu begins...
@@ -118,7 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
       BarItem(2, "Save")     ; just like in a normal menu...
       BarItem(3, "Save as")
       BarItem(4, "Quit")
-      BarSeparator( )
+      BarBar( )
       OpenSubBar("Recent files")
       BarItem(5, "PureBasic.exe")
       BarItem(6, "Test.txt")
@@ -138,8 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 15
+; CursorPosition = 82
+; FirstLine = 67
 ; Folding = --
 ; EnableXP
 ; DPIAware

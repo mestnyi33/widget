@@ -13,9 +13,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure GadgetTypeFromClass(Class.s) ;Returns gadget type from gadget name
     
     ;   ElseIf     FindString(Class.S, LCase("Desktop")       ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Desktop
-    ;   ElseIf FindString(Class.S, LCase("PopupMenu")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_PopupMenu
-    ;   ElseIf FindString(Class.S, LCase("Toolbar")       ,-1,#PB_String_NoCase) :ProcedureReturn #__type_Tool
-    ;   ElseIf FindString(Class.S, LCase("Menu")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Menu
+    ;   ElseIf FindString(Class.S, LCase("PopupMenu")     ,-1,#PB_String_NoCase) :ProcedureReturn #__type_PopupBar
+    ;   ElseIf FindString(Class.S, LCase("Toolbar")       ,-1,#PB_String_NoCase) :ProcedureReturn #__type_ToolBar
+    ;   ElseIf FindString(Class.S, LCase("Menu")          ,-1,#PB_String_NoCase) :ProcedureReturn #__type_MenuBar
     ;   ElseIf FindString(Class.S, LCase("Status")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_StatusBar
     If FindString(Class.S, LCase("Window")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Window
     ElseIf FindString(Class.S, LCase("ButtonImage")   ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ButtonImage

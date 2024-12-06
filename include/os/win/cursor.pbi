@@ -2,8 +2,11 @@
 XIncludeFile "../cursors.pbi"
 
 Module Cursor 
-  #test_cursor = 0
-  CompilerIf #PB_Compiler_Version =< 546
+   #test_cursor = 0
+   #SM_CXCURSOR = 13
+   #SM_CYCURSOR = 14 
+   
+   CompilerIf #PB_Compiler_Version =< 546
     #CURSOR_SHOWING = 1
     
     Macro DesktopResolutionX( )
@@ -63,6 +66,10 @@ Module Cursor
     Protected Height = (size)
     Protected fcolor = $ffFFFFFF
     Protected bcolor = $ff000000
+    
+    ; https://rusproject.narod.ru/winapi/g/getsystemmetrics.html
+;     Width = GetSystemMetrics_( #SM_CXCURSOR )
+;     Height = GetSystemMetrics_( #SM_CYCURSOR )
     
     ;\\
     Image = CreateImage(#PB_Any, Width, Height, 32, #PB_Image_Transparent)
@@ -143,11 +150,11 @@ Module Cursor
       StopDrawing( )
     EndIf
     
-    If DesktopResolutionX( ) >= 2.0 And 
-       DesktopResolutionY( ) >= 2.0
+    If Width <> GetSystemMetrics_( #SM_CXCURSOR ) And 
+       Height <> GetSystemMetrics_( #SM_CYCURSOR)
        ;
-       Width = DesktopScaledY(Width)
-       Height =  DesktopScaledY(Height)
+       Width = 32;GetSystemMetrics_( #SM_CXCURSOR )
+       Height = 32;GetSystemMetrics_( #SM_CYCURSOR )
        ResizeImage(Image, Width, Height, #PB_Image_Raw )
     EndIf
     
@@ -252,12 +259,12 @@ Module Cursor
     ;     
     ;   EndDataSection
     
-    ProcedureReturn image
+    ProcedureReturn Image
   EndProcedure
   
-  Procedure New( type.a, ImageID.i )
-    If Not FindMapElement(images( ), Str(type))
-      AddMapElement(images( ), Str(type))
+  Procedure New( Type.a, ImageID.i )
+    If Not FindMapElement(images( ), Str(Type))
+      AddMapElement(images( ), Str(Type))
       images( ) = ImageID
     EndIf
     
@@ -295,18 +302,18 @@ Module Cursor
     ProcedureReturn ShowCursor_(state)
   EndProcedure
   
-  Procedure   Clip( x.l,y.l,width.l,height.l )
+  Procedure   Clip( X.l,Y.l,Width.l,Height.l )
     Protected rect.RECT
     ;GetWindowRect_(GadgetID,rect.RECT)
-    SetRect_(rect,x,y,x+width,y+height)
+    SetRect_(rect,X,Y,X+Width,Y+Height)
     ProcedureReturn ClipCursor_(rect)
   EndProcedure
   
-  Procedure.i Create(ImageID.i, x.l = 0, y.l = 0)
+  Procedure.i Create(ImageID.i, X.l = 0, Y.l = 0)
     Protected *create_icon, cursor_info.ICONINFO
     cursor_info\fIcon = 0
-    cursor_info\xHotspot = x 
-    cursor_info\yHotspot = y 
+    cursor_info\xHotspot = X 
+    cursor_info\yHotspot = Y 
     cursor_info\hbmMask = ImageID
     cursor_info\hbmColor = ImageID
     *create_icon = CreateIconIndirect_( @cursor_info ) 
@@ -475,8 +482,8 @@ Module Cursor
   EndProcedure
 EndModule   
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 140
+; CursorPosition = 155
+; FirstLine = 144
 ; Folding = -----------
 ; Optimizer
 ; EnableXP

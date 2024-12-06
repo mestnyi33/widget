@@ -3,14 +3,14 @@
 ;                                                       - IsToolBar( #ToolBar )
 ;
 ;                                      Free( *address ) - FreeToolBar( #ToolBar )
-;                                 BarHeight( *address ) - ToolBarHeight( #ToolBar )
+;                                    Height( *address ) - ToolBarHeight( #ToolBar )
 ;
 ;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                            BarSeparator( [*address] ) - ToolBarSeparator( )
-;             DisableBarButton( *address, item, state ) - DisableBarButton( #ToolBar, Button, State )
-;                   GetBarButtonState( *address, item ) - GetBarButtonState( #ToolBar, Button )
-;            SetBarButtonState( *address, item, state ) - SetBarButtonState( #ToolBar, Button, State )
-;               BarButtonText( *address, item, text.s ) - BarButtonText( #ToolBar, Button, Text$ )
+;             DisableBarButton( *address, item, state ) - DisableToolBarButton( #ToolBar, Button, State )
+;                   GetBarButtonState( *address, item ) - GetToolBarButtonState( #ToolBar, Button )
+;            SetBarButtonState( *address, item, state ) - SetToolBarButtonState( #ToolBar, Button, State )
+;               BarButtonText( *address, item, text.s ) - ToolBarButtonText( #ToolBar, Button, Text$ )
 ;              BarButton( button, image, mode, text.s ) - ToolBarImageButton( #Button, ImageID [, Mode [, Text$]] )
 ;               BarButton( button, icon, mode, text.s ) - ToolBarStandardButton( #Button, #ButtonIcon [, Mode [, Text$]] )
 ;                BarToolTip( *address, button, text.s ) - ToolBarToolTip( #ToolBar, Button, Text$ )
@@ -127,8 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 63
+; CursorPosition = 8
 ; Folding = --
 ; EnableXP
 ; DPIAware

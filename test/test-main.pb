@@ -113,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
    ;       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
    ;       
-   ;       Separator( )
+   ;       BarSeparator( )
    ;       
    ;       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
    ;       ; ToolTip(*toolbar, 3, "Cut")
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
    ;       ; ToolTip(*toolbar, 5, "Paste")
    ;       
-   ;       Separator( )
+   ;       BarSeparator( )
    ;       
    ;       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
    ;       ; ToolTip(*toolbar, 6, "Find a document")
@@ -142,7 +142,7 @@ CompilerIf #PB_Compiler_IsMainFile
       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
       
-      Separator( )
+      BarSeparator( )
       
       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
       ; ToolTip(*toolbar, 3, "Cut")
@@ -153,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
       ; ToolTip(*toolbar, 5, "Paste")
       
-      Separator( )
+      BarSeparator( )
       
       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
       ; ToolTip(*toolbar, 6, "Find a document")
@@ -197,7 +197,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\ Open Root0
    Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-   Define *menu = CreateBar( *root0 ) : SetClass(*menu, "*root0_MenuBar" )
+   Define *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root0_MenuBar" )
    SetColor( *menu, #__color_back, $FFC8ECF0 )
    
    BarTitle("Title-1")
@@ -648,10 +648,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Define *window._s_WIDGET
-   Define i, y = 5
+   Define i, Y = 5
    OpenList( *root4 )
    For i = 1 To 4
-      Window(5, y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
+      Window(5, Y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
       ;Container(5, y, 150, 95 + 2)
       If i = 2
          Disable( widget( ), 1)
@@ -679,7 +679,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       CloseList( )
       ;CloseList( )
-      y + 130
+      Y + 130
    Next
    
    WaitClose( )
@@ -690,8 +690,8 @@ CompilerEndIf
 ; EnableXP
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 677
-; FirstLine = 614
+; CursorPosition = 137
+; FirstLine = 67
 ; Folding = NA+----
 ; EnableXP
 ; DPIAware

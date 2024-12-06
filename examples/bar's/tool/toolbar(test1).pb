@@ -162,8 +162,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 62
+; CursorPosition = 75
+; FirstLine = 47
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -77,7 +77,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     EndMacro
     
     Macro ToolBar( _parent_, _flags_ = 0 )
-      CreateBar( #__type_ToolBar, _parent_, _flags_ )
+      CreateBar( #__type_ToolBarBar, _parent_, _flags_ )
     EndMacro
     Macro ToolBarButton( _button_, _image_, _mode_ = 0, _text_ = #Null$ )
       BarButton( _button_, _image_, _mode_, _text_ )
@@ -494,7 +494,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
     Macro is_item_( _this_, _item_ ) : Bool( _item_ >= 0 And _item_ < _this_\countitems ) : EndMacro
     Macro is_root_(_this_ ) : Bool( _this_ >= 65536 And _this_ = _this_\root ): EndMacro
     Macro is_widget_( _this_ ) : Bool( _this_ >= 65536 And _this_\address ) : EndMacro
-    Macro is_menu_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_menu ) : EndMacro
+    Macro is_menu_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_MenuBar ) : EndMacro
     ; Macro is_gadget_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type > 0 ) : EndMacro
     Macro is_window_( _this_ ) : Bool( is_widget_( _this_ ) And _this_\type = constants::#__type_window ) : EndMacro
     
@@ -1679,9 +1679,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           If *this\child And Not *this\bounds\attach
-            If *this\type = #__type_ToolBar Or
-               *this\type = #__type_TabBar Or
-               *this\type = #__type_Menu Or
+            If *this\type = #__type_ToolBarBar Or
+               *this\type = #__type_TabBarBar Or
+               *this\type = #__type_MenuBar Or
                *this\type = #__type_ScrollBar
               ;
               _p_x2_ = *parent\inner_x( ) + *parent\container_width( )
@@ -2891,9 +2891,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *bar\area\pos  = ( *BB1\size + *bar\min[1] )
             *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size )
             ;
-            If *this\type = #__type_ToolBar Or 
-               *this\type = #__type_TabBar Or
-               *this\type = #__type_Menu 
+            If *this\type = #__type_ToolBarBar Or 
+               *this\type = #__type_TabBarBar Or
+               *this\type = #__type_MenuBar 
               ;
               If *bar\max
                 *bar\thumb\len = *bar\thumb\end - ( *bar\max - *bar\area\len )
@@ -2983,9 +2983,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;\\
       ;\\ get thumb pos
       If Not ( *bar\fixed And Not *bar\PageChange( ) )
-        If *this\type = #__type_ToolBar Or
-           *this\type = #__type_TabBar Or
-           *this\type = #__type_Menu
+        If *this\type = #__type_ToolBarBar Or
+           *this\type = #__type_TabBarBar Or
+           *this\type = #__type_MenuBar
           ;                ;
           ;                If *bar\page\pos < *bar\min
           ;                   ; If *bar\max > *bar\page\len
@@ -3142,9 +3142,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\
-          If *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar Or
-             *this\type = #__type_Menu
+          If *this\type = #__type_ToolBarBar Or
+             *this\type = #__type_TabBarBar Or
+             *this\type = #__type_MenuBar
             ;
             *BB1\hide = 1
             *BB1\ColorState( ) = #__s_3
@@ -3168,9 +3168,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\
-          If *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar Or
-             *this\type = #__type_Menu
+          If *this\type = #__type_ToolBarBar Or
+             *this\type = #__type_TabBarBar Or
+             *this\type = #__type_MenuBar
             ;
             *BB1\hide = 0
             *BB1\ColorState( ) = #__s_0
@@ -3197,9 +3197,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\
-          If *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar Or
-             *this\type = #__type_Menu
+          If *this\type = #__type_ToolBarBar Or
+             *this\type = #__type_TabBarBar Or
+             *this\type = #__type_MenuBar
             ;
             *BB2\hide = 1
             *BB2\ColorState( ) = #__s_3
@@ -3222,9 +3222,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
           EndIf
           
           ;\\
-          If *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar Or
-             *this\type = #__type_Menu
+          If *this\type = #__type_ToolBarBar Or
+             *this\type = #__type_TabBarBar Or
+             *this\type = #__type_MenuBar
             ;
             *BB2\hide = 0
             *BB2\ColorState( ) = #__s_0
@@ -3635,9 +3635,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndIf
       
       ;\\
-      If *this\type = #__type_ToolBar Or
-         *this\type = #__type_TabBar Or
-         *this\type = #__type_Menu
+      If *this\type = #__type_ToolBarBar Or
+         *this\type = #__type_TabBarBar Or
+         *this\type = #__type_MenuBar
         ;
         ; inner coordinate
         If *bar\vertical
@@ -4038,9 +4038,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                 Else
                   ; to reset the button size to default
-                  If *this\type = #__type_ToolBar Or
-                     *this\type = #__type_TabBar Or
-                     *this\type = #__type_Menu Or
+                  If *this\type = #__type_ToolBarBar Or
+                     *this\type = #__type_TabBarBar Or
+                     *this\type = #__type_MenuBar Or
                      *this\type = #__type_ScrollBar
                     ;
                     If *value
@@ -4672,7 +4672,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Protected result.i
       
       Select Trim( LCase( class.s ))
-        Case "popupmenu" : result = #__type_popupmenu
+        Case "popupmenu" : result = #__type_PopupBar
           ;case "property"       : result = #__type_property
         Case "window" : result = #__type_window
           
@@ -4722,10 +4722,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Select type
         Case #__type_root : result.s = "root"
         Case #__type_statusbar : result.s = "status"
-        Case #__type_popupmenu : result.s = "popupmenu"
-        Case #__type_toolbar : result.s = "tool"
-        Case #__type_tabbar : result.s = "tab"
-        Case #__type_menu : result.s = "menu"
+        Case #__type_PopupBar : result.s = "popupmenu"
+        Case #__type_ToolBarbar : result.s = "tool"
+        Case #__type_TabBarbar : result.s = "tab"
+        Case #__type_MenuBar : result.s = "menu"
           
         Case #__type_window : result.s = "window"
         Case #__type_Unknown : result.s = "create"
@@ -6812,7 +6812,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
           Else
             ;\\ 
             
-            If *this\type = #__type_Menu Or *this\type = #__type_ToolBar
+            If *this\type = #__type_MenuBar Or *this\type = #__type_ToolBarBar
               ;
               If eventtype = #__event_LeftClick Or
                  eventtype = #__event_Change
@@ -6839,7 +6839,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             WidgetEventData( ) = *data
             
             ;\\ menu send bind event
-            If *this\type = #__type_Menu Or *this\type = #__type_ToolBar
+            If *this\type = #__type_MenuBar Or *this\type = #__type_ToolBarBar
               If *this\PopupBar( )
                 While *this\PopupBar( )
                   *this = *this\PopupBar( )
@@ -8053,7 +8053,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
         
         ; add 
         If *this\TabBox( ) And 
-           *this\TabBox( )\type = #__type_TabBar
+           *this\TabBox( )\type = #__type_TabBarBar
           *this\TabAddIndex( ) = item
         EndIf
         

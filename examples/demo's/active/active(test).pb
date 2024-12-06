@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure OpenMenu( parent )
-      Protected *menu = CreateBar( parent ) 
+      Protected *menu = CreateMenuBar( parent ) 
       ;SetClass(widget( )\root, "mainroot" )
       
       ;\\
@@ -147,8 +147,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 1
+; CursorPosition = 11
+; FirstLine = 7
 ; Folding = --
 ; EnableXP
 ; DPIAware

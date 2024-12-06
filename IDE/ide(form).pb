@@ -1036,7 +1036,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
    
    Select BarButton
       Case 1
-         If Type( *e_widget ) = #__type_Tool
+         If Type( *e_widget ) = #__type_ToolBar
             If GetItemState( *e_widget, BarButton )  
                ; group
                group_select = *e_widget
@@ -1270,7 +1270,7 @@ Procedure ide_events( )
       Case #__event_LeftClick
          ; ide_menu_events( *e_widget, WidgetEventItem( ) )
          
-         If Type( *e_widget ) = #__type_Tool
+         If Type( *e_widget ) = #__type_ToolBar
             If *e_widget\TabEntered( )
                ide_menu_events( *e_widget, *e_widget\TabEntered( )\itemindex )
             EndIf
@@ -1300,11 +1300,11 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    SetColor(ide_toolbar, #__color_back, $FFD8DBDB )
    
    OpenSubBar("Menu")
-   BarItem(#_tb_file_open, "Open" + Chr(9) + "Ctrl+O")
-   BarItem(#_tb_file_save, "Save" + Chr(9) + "Ctrl+S")
-   BarItem(#_tb_file_save_as, "Save as...")
+   BarItem( #_tb_file_open, "Open" + Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_save, "Save" + Chr(9) + "Ctrl+S")
+   BarItem( #_tb_file_save_as, "Save as...")
    BarSeparator( )
-   BarItem(#_tb_file_quit, "Quit" + Chr(9) + "Ctrl+Q")
+   BarItem( #_tb_file_quit, "Quit" + Chr(9) + "Ctrl+Q")
    CloseSubBar( )
    ;
    BarSeparator( )
@@ -1474,7 +1474,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;
    ;\\\ ide events binds
    ;
-   If Type( ide_toolbar ) = #__type_Tool
+   If Type( ide_toolbar ) = #__type_ToolBar
       Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
    EndIf
    Bind( ide_inspector_view, @ide_events( ) )
@@ -1647,8 +1647,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 297
-; FirstLine = 280
+; CursorPosition = 1298
+; FirstLine = 1290
 ; Folding = ---f0------------------------
 ; EnableXP
 ; DPIAware

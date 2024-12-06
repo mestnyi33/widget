@@ -13,11 +13,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Global *current=#False
    Global currentItemXOffset.i, currentItemYOffset.i
    Global Event.i, drag.i, hole.i
-   Global x=200,y=150, Width=320, Height=320
+   Global X=200,Y=150, Width=320, Height=320
    
    Global *this.allocate( widget )
    Global NewList Images.IMAGES( )
-   Declare Canvas_Draw( canvas.i, List Images.IMAGES( ) )
+   Declare Canvas_Draw( Canvas.i, List Images.IMAGES( ) )
    
    Macro Area_Draw( _this_ )
       widget::bar_mdi_resize( _this_,
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       UnclipOutput( )
       DrawingMode( #PB_2DDrawing_Outlined )
-      Box( x, y, Width, Height, RGB( 0,255,0 ) )
+      Box( X, Y, Width, Height, RGB( 0,255,0 ) )
       Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 0,0,255 ) )
       
       ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
@@ -52,8 +52,8 @@ CompilerIf #PB_Compiler_IsMainFile
       _parent_\class = "Area"
       _parent_\fs = _frame_size_
       
-      _parent_\scroll\v = widget::scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
-      _parent_\scroll\h = widget::scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
+      _parent_\scroll\v = widget::Scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
+      _parent_\scroll\h = widget::Scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
    EndMacro                                                  
    
    Macro Area_Bind( _parent_, _callback_)
@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   EndProcedure
    ;   
    ;-
-   Procedure Canvas_Draw( canvas.i, List Images.IMAGES( ) )
+   Procedure Canvas_Draw( Canvas.i, List Images.IMAGES( ) )
       Protected round
       
       ;\\ Debug Images( )\x
@@ -187,11 +187,11 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn *current
    EndProcedure
    
-   Procedure Canvas_AddImage( List Images.IMAGES( ), x, y, img, alphatest=0 )
+   Procedure Canvas_AddImage( List Images.IMAGES( ), X, Y, img, alphatest=0 )
       If AddElement( Images( ) )
          Images( )\img       = img
-         Images( )\x         = x
-         Images( )\y         = y
+         Images( )\x         = X
+         Images( )\y         = Y
          Images( )\width     = ImageWidth( img )
          Images( )\height    = ImageHeight( img )
          Images( )\alphatest = alphatest
@@ -204,8 +204,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected Canvas = EventGadget( )
       Protected MouseX ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseX )
       Protected MouseY ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseY )
-      Width = GadgetWidth( Canvas ) - x*2
-      Height = GadgetHeight( Canvas ) - y*2
+      Width = GadgetWidth( Canvas ) - X*2
+      Height = GadgetHeight( Canvas ) - Y*2
       
       widget::EventHandler( Canvas, Event )
       
@@ -233,12 +233,12 @@ CompilerIf #PB_Compiler_IsMainFile
                If LastElement( Images( ) )
                   If Images( )\x <> Mousex - currentItemXOffset
                      Images( )\x = Mousex - currentItemXOffset
-                     Repaint = #True
+                   ; Repaint = #True
                   EndIf
                   
                   If Images( )\y <> Mousey - currentItemYOffset
                      Images( )\y = Mousey - currentItemYOffset
-                     Repaint = #True
+                    ; Repaint = #True
                   EndIf
                EndIf
             Else 
@@ -248,13 +248,13 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #PB_EventType_Resize 
             ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) ; Bug ( 562 )
             
-            widget::bar_area_resize( *this, x+*this\fs, y+*this\fs, width-*this\fs*2, height-*this\fs*2 )
+            widget::bar_area_resize( *this, X+*this\fs, Y+*this\fs, Width-*this\fs*2, Height-*this\fs*2 )
             
             Repaint = #True
       EndSelect
       
       If Repaint
-         Redraw( root( ))
+         ReDraw( root( ))
 ;          If StartDraw( Root( ) )
 ;             Drawing( )
 ;             Canvas_Draw( MyCanvas, Images( ) ) 
@@ -281,7 +281,7 @@ CompilerIf #PB_Compiler_IsMainFile
       StopDrawing( )
    EndIf
    
-   If Not OpenWindow( 0, 0, 0, Width+x*2+20+xx, Height+y*2+20+yy, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
+   If Not OpenWindow( 0, 0, 0, Width+X*2+20+xx, Height+Y*2+20+yy, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
       MessageRequester( "Fatal error", "Program terminated." )
       End
    EndIf
@@ -312,23 +312,23 @@ CompilerIf #PB_Compiler_IsMainFile
       StopDrawing() ; This is absolutely needed when the drawing operations are finished !!! Never forget it !
       
    EndIf
-   ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
+   ImageGadget(#PB_Any, Width+X*2+20-210,10,200,80, ImageID(0) )
    
    ;
-   MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+x*2, Height+y*2, #PB_Canvas_Keyboard ) 
+   MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+X*2, Height+Y*2, #PB_Canvas_Keyboard ) 
    Area_Use( 0, @Canvas_Events(), MyCanvas) 
    
    ; add new images
-   Canvas_AddImage( Images( ), x-80, y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
-   Canvas_AddImage( Images( ), x+100,y+100, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
-   Canvas_AddImage( Images( ), x+210,y+250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
-   Canvas_AddImage( Images( ), x+180,y+180,hole,#True )
+   Canvas_AddImage( Images( ), X-80, Y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
+   Canvas_AddImage( Images( ), X+100,Y+100, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
+   Canvas_AddImage( Images( ), X+210,Y+250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+   Canvas_AddImage( Images( ), X+180,Y+180,hole,#True )
    
-   Width = GadgetWidth( MyCanvas ) - x*2
-   Height = GadgetHeight( MyCanvas ) - y*2
+   Width = GadgetWidth( MyCanvas ) - X*2
+   Height = GadgetHeight( MyCanvas ) - Y*2
    
    ;
-   Area_Create( *this, x,y,width,height, 2,20 )
+   Area_Create( *this, X,Y,Width,Height, 2,20 )
    Area_Bind( *this, @Area_Events( ) ) 
    
    Define vButton = GetAttribute(*this\Scroll\v, #__bar_buttonsize)
@@ -393,7 +393,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 256
-; FirstLine = 240
+; CursorPosition = 67
+; FirstLine = 64
 ; Folding = --------
 ; EnableXP

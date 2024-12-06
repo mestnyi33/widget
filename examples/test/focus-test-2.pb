@@ -18,7 +18,7 @@
 ;                                      GetItemState( *address, item ) - GetMenuItemState( #Menu, MenuItem )
 ;                                       GetItemText( *address, item ) - GetMenuItemText( #Menu, Item )
 ;                                                    Hide( *address ) - HideMenu( #Menu, State )
-;                                             Separator( [*address] ) - MenuBar( )
+;                                             BarSeparator( [*address] ) - MenuBar( )
 ;                                                  Height( *address ) - MenuHeight( )
 ;                            AddItem( *address, item, text.s, image ) - MenuItem( MenuItemID, Text$ [, ImageID]) )
 ;
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;\\
-   *menu = CreateBar( root( ) ) : SetClass(widget(), "root_MenuBar" )
+   *menu = CreateMenuBar( root( ) ) : SetClass(widget(), "root_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
    String( 10, 100, 80, 35, "String1" )
    String( 10, 140, 80, 35, "String2" )
    
-   *menu = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
+   *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -213,7 +213,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 104
+; CursorPosition = 20
+; FirstLine = 16
 ; Folding = -
 ; EnableXP
