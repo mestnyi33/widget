@@ -150,12 +150,13 @@ Module Cursor
       StopDrawing( )
     EndIf
     
-    If Width <> GetSystemMetrics_( #SM_CXCURSOR ) And 
-       Height <> GetSystemMetrics_( #SM_CYCURSOR)
-       ;
-       Width = 32;GetSystemMetrics_( #SM_CXCURSOR )
-       Height = 32;GetSystemMetrics_( #SM_CYCURSOR )
-       ResizeImage(Image, Width, Height, #PB_Image_Raw )
+    If DesktopScaledX(Width) <> GetSystemMetrics_( #SM_CXCURSOR ) And 
+       DesktopScaledY(Height) <> GetSystemMetrics_( #SM_CYCURSOR) 
+       If DesktopScaledY(Height) => 32;
+          Width = 32                  ;GetSystemMetrics_( #SM_CXCURSOR )
+          Height = 32                 ;GetSystemMetrics_( #SM_CYCURSOR )
+          ResizeImage(Image, Width, Height, #PB_Image_Raw )
+       EndIf
     EndIf
     
     If Type = #__cursor_Arrows
@@ -482,9 +483,9 @@ Module Cursor
   EndProcedure
 EndModule   
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 155
+; CursorPosition = 154
 ; FirstLine = 144
-; Folding = -----------
+; Folding = ------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

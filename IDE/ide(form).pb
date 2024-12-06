@@ -132,12 +132,11 @@ Procedure ShowButtonBox( *second._S_WIDGET, item.i )
                   SetState( *this, Val(*second\__rows( )\text\string) )
             EndSelect
             
-            *this\noscale = 1
             Resize(*this,
                    *second\__rows( )\x,;+30, 
                    *second\__rows( )\y+*second\scroll_y( ), 
                    *second\__rows( )\width,;-30, 
-                   *second\__rows( )\height )
+                   *second\__rows( )\height, 0 )
             Hide( *this, 0 )
             ; SetActive( *this )
             PopListPosition(*second\__rows( ))
@@ -1647,8 +1646,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1298
-; FirstLine = 1290
+; CursorPosition = 134
+; FirstLine = 118
 ; Folding = ---f0------------------------
 ; EnableXP
 ; DPIAware
