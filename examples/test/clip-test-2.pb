@@ -114,7 +114,7 @@ Procedure ide_open( X=100,Y=100,Width=800,Height=600 )
    canvas_ide = widget::GetCanvasGadget( root )
    
    
-   toolbar_design = ToolBar( toolbar_design )
+ ;  toolbar_design = ToolBar( toolbar_design )
 ;    BarButton(1,-1,0,"open" )
 ;    BarButton( )
 ;    BarButton( )
@@ -135,7 +135,7 @@ Procedure ide_open( X=100,Y=100,Width=800,Height=600 )
 ;    BarButton( )
 ;    BarButton( )
 ;    BarButton( )
-   CloseList( )
+  ; CloseList( )
    
    ; gadgets
    
@@ -176,7 +176,6 @@ Procedure ide_open( X=100,Y=100,Width=800,Height=600 )
    ;\\ id_inspector_help_text
    id_i_help_text  = Button( 0,0,0,0, "help for the inspector" )
    ;\\ close inspector gadgets 
-   
    ;
    ;\\ ide splitters
    Splitter_design = widget::Splitter( 0,0,0,0, toolbar_design,id_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator )
@@ -236,8 +235,9 @@ DataSection
 EndDataSection
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 93
+; CursorPosition = 178
+; FirstLine = 173
 ; Folding = -
 ; Optimizer
 ; EnableXP
+; DPIAware

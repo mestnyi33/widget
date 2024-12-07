@@ -675,6 +675,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;                           
          TitleBarHeight.w
          MenuBarHeight.w
+         ToolBarHeight.w
          StatusBarHeight.w
          ;
          
@@ -783,8 +784,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 598
-; FirstLine = 596
+; CursorPosition = 677
+; FirstLine = 662
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

@@ -1473,9 +1473,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   GetPositionLast( *this, tabindex.l = #PB_Default )
       
       ; menu
+      Declare.b IsBar( *this._s_widget )
+      Declare   CreateBar( Type.w, *parent, flag.q = #Null )
       Declare.i DisplayPopupBar( *this, *display, X.l = #PB_Ignore, Y.l = #PB_Ignore )
       Declare   BarPosition( *this, position.i, size.i = #PB_Default )
-      Declare   CreateBar( Type.w, *parent, flag.q = #Null )
       Declare   BarTitle( title.s, Image = - 1 )
       Declare   BarItem( item, Text.s, Image = - 1 )
       Declare   BarButton( Button.i, Image.i, mode.i = 0, Text.s = #Null$ )
@@ -2678,8 +2679,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                _address_[#__a_right_bottom]\y = _y_ + _height_ - _address_[#__a_right_bottom]\height
             EndIf
          EndIf
-         
-         If a_focused( ) And a_focused( )\anchors And
+      EndMacro
+      
+      Macro a_line( _this_ )
+         If a_anchors( ) And _this_\parent And 
             a_anchors( )\line[#__a_line_left] And
             a_anchors( )\line[#__a_line_right] And
             a_anchors( )\line[#__a_line_top] And
@@ -2687,95 +2690,92 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ line default size&pos
             a_anchors( )\line[#__a_line_left]\width  = 1
-            a_anchors( )\line[#__a_line_left]\height = 0 ; a_focused( )\frame_height( )
-            a_anchors( )\line[#__a_line_left]\x      = a_focused( )\frame_x( )
-            a_anchors( )\line[#__a_line_left]\y      = a_focused( )\frame_y( )
+            a_anchors( )\line[#__a_line_left]\height = 0 ; _this_\frame_height( )
+            a_anchors( )\line[#__a_line_left]\x      = _this_\frame_x( )
+            a_anchors( )\line[#__a_line_left]\y      = _this_\frame_y( )
             
             a_anchors( )\line[#__a_line_top]\height = 1
-            a_anchors( )\line[#__a_line_top]\width  = 0 ; a_focused( )\frame_width( )
-            a_anchors( )\line[#__a_line_top]\x      = a_focused( )\frame_x( )
-            a_anchors( )\line[#__a_line_top]\y      = a_focused( )\frame_y( )
+            a_anchors( )\line[#__a_line_top]\width  = 0 ; _this_\frame_width( )
+            a_anchors( )\line[#__a_line_top]\x      = _this_\frame_x( )
+            a_anchors( )\line[#__a_line_top]\y      = _this_\frame_y( )
             
             a_anchors( )\line[#__a_line_right]\width  = 1
-            a_anchors( )\line[#__a_line_right]\height = 0 ; a_focused( )\frame_height( )
-            a_anchors( )\line[#__a_line_right]\x      = ( a_focused( )\frame_x( ) + a_focused( )\frame_width( ) ) - a_anchors( )\line[#__a_line_right]\width
-            a_anchors( )\line[#__a_line_right]\y      = a_focused( )\frame_y( )
+            a_anchors( )\line[#__a_line_right]\height = 0 ; _this_\frame_height( )
+            a_anchors( )\line[#__a_line_right]\x      = ( _this_\frame_x( ) + _this_\frame_width( ) ) - a_anchors( )\line[#__a_line_right]\width
+            a_anchors( )\line[#__a_line_right]\y      = _this_\frame_y( )
             
             a_anchors( )\line[#__a_line_bottom]\height = 1
-            a_anchors( )\line[#__a_line_bottom]\width  = 0 ; a_focused( )\frame_width( )
-            a_anchors( )\line[#__a_line_bottom]\x      = a_focused( )\frame_x( )
-            a_anchors( )\line[#__a_line_bottom]\y      = ( a_focused( )\frame_y( ) + a_focused( )\frame_height( ) ) - a_anchors( )\line[#__a_line_bottom]\height
+            a_anchors( )\line[#__a_line_bottom]\width  = 0 ; _this_\frame_width( )
+            a_anchors( )\line[#__a_line_bottom]\x      = _this_\frame_x( )
+            a_anchors( )\line[#__a_line_bottom]\y      = ( _this_\frame_y( ) + _this_\frame_height( ) ) - a_anchors( )\line[#__a_line_bottom]\height
             
             ;\\
-            If StartEnum( a_focused( )\parent )
-               
-               If widgets( )\anchors And Not widgets( )\hide And widgets( ) <> a_focused( ) And widgets( )\level = a_focused( )\level
-                  ; If is_level_( widgets( ), a_focused( ) )
-                  ;
+            If StartEnum( _this_\parent )
+               ;
+               If widgets( )\anchors And Not widgets( )\hide And widgets( ) <> _this_ And widgets( )\level = _this_\level
                   ;\\ left-line
-                  If a_focused( )\frame_x( ) = widgets( )\frame_x( )
+                  If _this_\frame_x( ) = widgets( )\frame_x( )
                      If a_anchors( )\line[#__a_line_left]\y > widgets( )\frame_y( )
                         a_anchors( )\line[#__a_line_left]\y = widgets( )\frame_y( )
                      EndIf
-                     If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
+                     If _this_\frame_y( ) + _this_\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
                         If a_anchors( )\line[#__a_line_left]\height < widgets( )\frame_y( ) + widgets( )\frame_height( ) 
                            a_anchors( )\line[#__a_line_left]\height = widgets( )\frame_y( ) + widgets( )\frame_height( )
                         EndIf
                      Else
-                        If a_anchors( )\line[#__a_line_left]\height < a_focused( )\frame_y( ) + a_focused( )\frame_height( ) 
-                           a_anchors( )\line[#__a_line_left]\height = a_focused( )\frame_y( ) + a_focused( )\frame_height( )
+                        If a_anchors( )\line[#__a_line_left]\height < _this_\frame_y( ) + _this_\frame_height( ) 
+                           a_anchors( )\line[#__a_line_left]\height = _this_\frame_y( ) + _this_\frame_height( )
                         EndIf
                      EndIf
                   EndIf
                   ;
                   ;\\ top-line
-                  If a_focused( )\frame_y( ) = widgets( )\frame_y( )
+                  If _this_\frame_y( ) = widgets( )\frame_y( )
                      If a_anchors( )\line[#__a_line_top]\x > widgets( )\frame_x( )
                         a_anchors( )\line[#__a_line_top]\x = widgets( )\frame_x( )
                      EndIf
-                     If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) <= widgets( )\frame_x( ) + widgets( )\frame_width( ) 
+                     If _this_\frame_x( ) + _this_\frame_width( ) <= widgets( )\frame_x( ) + widgets( )\frame_width( ) 
                         If a_anchors( )\line[#__a_line_top]\width < widgets( )\frame_x( ) + widgets( )\frame_width( ) 
                            a_anchors( )\line[#__a_line_top]\width = widgets( )\frame_x( ) + widgets( )\frame_width( )
                         EndIf
                      Else
-                        If a_anchors( )\line[#__a_line_top]\width < a_focused( )\frame_x( ) + a_focused( )\frame_width( ) 
-                           a_anchors( )\line[#__a_line_top]\width = a_focused( )\frame_x( ) + a_focused( )\frame_width( )
+                        If a_anchors( )\line[#__a_line_top]\width < _this_\frame_x( ) + _this_\frame_width( ) 
+                           a_anchors( )\line[#__a_line_top]\width = _this_\frame_x( ) + _this_\frame_width( )
                         EndIf
                      EndIf
                   EndIf
                   ;
                   ;\\ right-line
-                  If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) = widgets( )\frame_x( ) + widgets( )\frame_width( )
+                  If _this_\frame_x( ) + _this_\frame_width( ) = widgets( )\frame_x( ) + widgets( )\frame_width( )
                      If a_anchors( )\line[#__a_line_right]\y > widgets( )\frame_y( )
                         a_anchors( )\line[#__a_line_right]\y = widgets( )\frame_y( )
                      EndIf
-                     If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
+                     If _this_\frame_y( ) + _this_\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
                         If a_anchors( )\line[#__a_line_right]\height < widgets( )\frame_y( ) + widgets( )\frame_height( ) 
                            a_anchors( )\line[#__a_line_right]\height = widgets( )\frame_y( ) + widgets( )\frame_height( )
                         EndIf
                      Else
-                        If a_anchors( )\line[#__a_line_right]\height < a_focused( )\frame_y( ) + a_focused( )\frame_height( ) 
-                           a_anchors( )\line[#__a_line_right]\height = a_focused( )\frame_y( ) + a_focused( )\frame_height( )
+                        If a_anchors( )\line[#__a_line_right]\height < _this_\frame_y( ) + _this_\frame_height( ) 
+                           a_anchors( )\line[#__a_line_right]\height = _this_\frame_y( ) + _this_\frame_height( )
                         EndIf
                      EndIf
                   EndIf
                   ;
                   ;\\ bottom-line
-                  If a_focused( )\frame_y( ) + a_focused( )\frame_height( ) = widgets( )\frame_y( ) + widgets( )\frame_height( )
+                  If _this_\frame_y( ) + _this_\frame_height( ) = widgets( )\frame_y( ) + widgets( )\frame_height( )
                      If a_anchors( )\line[#__a_line_bottom]\x > widgets( )\frame_x( )
                         a_anchors( )\line[#__a_line_bottom]\x = widgets( )\frame_x( )
                      EndIf
-                     If a_focused( )\frame_x( ) + a_focused( )\frame_width( ) < widgets( )\frame_x( ) + widgets( )\frame_width( )
+                     If _this_\frame_x( ) + _this_\frame_width( ) < widgets( )\frame_x( ) + widgets( )\frame_width( )
                         If a_anchors( )\line[#__a_line_bottom]\width < widgets( )\frame_x( ) + widgets( )\frame_width( ) 
                            a_anchors( )\line[#__a_line_bottom]\width = widgets( )\frame_x( ) + widgets( )\frame_width( )
                         EndIf
                      Else
-                        If a_anchors( )\line[#__a_line_bottom]\width < a_focused( )\frame_x( ) + a_focused( )\frame_width( ) 
-                           a_anchors( )\line[#__a_line_bottom]\width = a_focused( )\frame_x( ) + a_focused( )\frame_width( )
+                        If a_anchors( )\line[#__a_line_bottom]\width < _this_\frame_x( ) + _this_\frame_width( ) 
+                           a_anchors( )\line[#__a_line_bottom]\width = _this_\frame_x( ) + _this_\frame_width( )
                         EndIf
                      EndIf
                   EndIf
-                  ; EndIf
                EndIf
                ;
                StopEnum( )
@@ -2796,7 +2796,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
       EndMacro
-      
       
       Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
          If mouse()\steps < 2
@@ -3230,7 +3229,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ; Debug "a_set focus " + *this\class 
                      ;
                      If a_anchors( )\grid_image
-                        If a_focused( ) And a_focused( )\parent <> *this\parent 
+                        If a_focused( ) And a_focused( )\parent And a_focused( )\parent <> *this\parent 
                            SetBackgroundImage( a_focused( )\parent, 0 )
                         EndIf  
                         If *this\parent
@@ -3245,6 +3244,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\root\repaint = #True
                      EndIf
                      a_focused( ) = *this
+                     a_line( *this )
                      ;
                      result = *this
                   EndIf
@@ -4635,6 +4635,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                     *this\screen_y( ),
                     *this\screen_width( ),
                     *this\screen_height( ) )
+            
+            a_line( *this )
          EndIf
          
          ;\\ if the widgets is composite
@@ -4722,7 +4724,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                Else
                   If *this\fs[2]
-                     Resize( *this\__Menu( ), *this\fs, *this\fs + *this\TitleBarHeight, *this\inner_width( ), *this\MenuBarHeight )
+                     Resize( *this\__Menu( ), *this\fs, *this\fs + *this\TitleBarHeight+1, *this\inner_width( ), *this\MenuBarHeight )
                   EndIf
                   If *this\fs[4]
                      Resize( *this\__Menu( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
@@ -4756,7 +4758,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                Else
                   If *this\fs[2]
-                     Resize( *this\__Tab( ), *this\fs, *this\fs + *this\TitleBarHeight + *this\MenuBarHeight, *this\inner_width( ), *this\fs[2] - *this\TitleBarHeight - *this\MenuBarHeight )
+                     Resize( *this\__Tab( ), *this\fs, *this\fs + *this\TitleBarHeight + *this\MenuBarHeight+1, *this\inner_width( ), *this\ToolBarHeight ) ;, *this\fs[2] - *this\TitleBarHeight - *this\MenuBarHeight ) ; 
                   EndIf
                   If *this\fs[4]
                      Resize( *this\__Tab( ), *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
@@ -8961,12 +8963,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             Protected image_pos = 3
             Protected separator_step 
             
-            If *this\type = #__type_ToolBar Or
-               *this\type = #__type_PopupBar Or
-               *this\type = #__type_MenuBar
-               ;
-               separator_step = DPIScaled(1)
-               pos = separator_step 
+            If IsBar( *this )
+               separator_step = 0
+               pos = DPIScaled(1) 
             EndIf
             
             ;pos = ( pos )
@@ -9008,10 +9007,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                         Next
                      Else
-                        *this\scroll_width( ) = *this\width - pos
+                        *this\scroll_width( ) = *this\width 
                      EndIf
                   Else
-                     *this\scroll_height( ) = *this\height - pos
+                     *this\scroll_height( ) = *this\height
                   EndIf
                   
                   ;Debug  "scroll width="+*this\width;*this\scroll_width( )
@@ -12096,10 +12095,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          root\canvas\menu
       EndMacro
       
-      Procedure   IsBar( *this._s_widget )
+      Procedure.b IsBar( *this._s_widget )
          ProcedureReturn Bool( *this\type = #__type_MenuBar Or 
                                *this\type = #__type_PopupBar Or 
-                               *this\type = #__type_TabBar Or 
+                               ;*this\type = #__type_TabBar Or 
                                *this\type = #__type_ToolBar )
       EndProcedure
       
@@ -12125,7 +12124,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If size = #PB_Default
                If constants::BinaryFlag( *box\flag, #PB_ToolBar_Small )
-                  size = 20+Bool(*box\type = #__type_TabBar)*4
+                  size = 21
                ElseIf constants::BinaryFlag( *box\flag, #PB_ToolBar_Large )
                   size = 40
                Else ; If constants::BinaryFlag( *this\flag, #PB_Toolbar_Normal )
@@ -12142,7 +12141,16 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf   
             
             size = DPIScaled( size )
-            size + *this\TitleBarHeight + *this\MenuBarHeight
+            
+            If *this  
+               If *this\type = #__type_Panel Or *box\Type = #__type_ToolBar
+                  *this\ToolBarHeight = size
+               Else
+                  *this\MenuBarHeight = size
+               EndIf
+            EndIf
+            
+            size = *this\TitleBarHeight + *this\MenuBarHeight + *this\ToolBarHeight
             
             If position = 0
                *box\hide = 1
@@ -12250,6 +12258,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             SetColor( *this, #__color_back, $FFF2F2F2)
             Hide( *this, #True ) 
          Else
+            If Not *parent
+               *parent = root( )
+            EndIf
             ;
             If constants::BinaryFlag( Flag, #PB_Toolbar_Left ) Or 
                constants::BinaryFlag( Flag, #PB_Toolbar_Right )
@@ -12265,9 +12276,10 @@ CompilerIf Not Defined( widget, #PB_Module )
               If *parent\MenuBarHeight
                  Debug "--- "+*parent\MenuBarHeight;*parent\class
               EndIf
-           Else
+             ; *parent\ToolBarHeight = DPIScaled(24)
+            Else
                *parent\__Menu( ) = *this  
-               *parent\MenuBarHeight = DPIScaled(24)
+             ;  *parent\MenuBarHeight = DPIScaled(24)
             EndIf
            
             If constants::BinaryFlag( Flag, #PB_Toolbar_Left ) 
@@ -24094,9 +24106,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11438
-; FirstLine = 11166
-; Folding = ------------------------------------------------------------------------------------------------------48-f------------------------------------------------8-4--------------------------------------------------------------------------------------------------------------------------------------------------------4------------------v-fc7--------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 12263
+; FirstLine = 11933
+; Folding = ------------------------------------------------------------------------------------------------------v4--+-----------------------------------------------4-v--------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------jT---------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

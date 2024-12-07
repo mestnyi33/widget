@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Define windowID = Open( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
-   ContainerGadget( #PB_Any, 10, 35, 80, 80, #PB_Container_Flat ) 
+   ContainerGadget( #PB_Any, 10, 10+MenuHeight( ), 80, 80, #PB_Container_Flat ) 
    StringGadget( #PB_Any, 10, 10, 80, 35, "String1" )
    StringGadget( #PB_Any, 10, 50, 80, 35, "String2" )
    CloseGadgetList( )
@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Button( 415, 180, 80, 35, "Button1" ) : SetClass(widget(), "Button1" )
    Bind(Button( 415, 220, 80, 35, "Button2" ), @HandlerEvents( ), #__event_MouseEnter)  : SetClass(widget(), "Button2" )
    Define *window._s_widget = Window(100, 50, 300, 200, "menu click test", #PB_Window_SystemMenu)
-   Container( 10, 10, 80, 80, #PB_Container_Flat )
+   Container( 1, 1, 80, 80, #PB_Container_Flat )
    String( 10, 10, 80, 35, "String1" )
    String( 10, 50, 80, 35, "String2" )
    CloseList( )
@@ -246,8 +246,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 15
+; CursorPosition = 182
+; FirstLine = 170
 ; Folding = --
 ; EnableXP
 ; DPIAware
