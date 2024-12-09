@@ -1,6 +1,7 @@
 UseWidgets
 
 IsBar
+IsMenuBar
 CreateBar
 ToolBar
 CreateMenuBar
@@ -167,6 +168,21 @@ GadgetMouseX
 GadgetMouseY
 GetMouseX
 GetMouseY
+MouseEnter
+MouseButtons
+MouseButtonPress
+MouseData
+MouseWheelX
+MouseWheelY
+
+SetCursor
+GetCursor
+ResetCursor
+ChangeCursor
+CurrentCursor
+UpdateCurrentCursor
+ChangeCurrentCursor
+
 SetBackgroundImage
 SetBackgroundColor
 GetCanvasWindow
@@ -177,6 +193,7 @@ widget
 root
 mouse
 keyboard
+
 
 Events
 EventsData
@@ -212,27 +229,25 @@ SetChildrenBounds
 
 SetFrame
 GetFrame
+
 SetClass
 GetClass
+
 SetItemFont
 GetItemFont
+
 SetParent
 GetParent
-SetCursor
-GetCursor
-ChangeCursor
 
 Draw
 ReDraw
-StartDraw
 Drawing
+StartDraw
 StopDraw
+
 StartEnum
 StopEnum
 
-ActiveWindow
-ActiveGadget
-ActiveBar
 WaitEvent
 
 AddColumn
@@ -271,6 +286,12 @@ Width
 Height
 
 GetActive
+SetActive
+Active
+ActiveBar
+ActiveWindow
+ActiveGadget
+
 GetAttribute
 GetColor
 GetData
@@ -299,7 +320,7 @@ RemoveItem
 Resize
 ScrollArea
 Scroll
-SetActive
+
 SetAttribute
 SetColor
 SetData

@@ -155,7 +155,8 @@
     #__color_Frame      = 7
     #__color_Fore       = 8
     
-    ;-\\ Color (state)
+    ;-
+    ;-\\ color-state
     Enumeration
       #__s_0
       #__s_1
@@ -163,18 +164,31 @@
       #__s_3
     EndEnumeration
     
-    ;-\\ Attribute
-    #__DisplayMode = 1<<13
-;     #PB_Image      = 1<<13
-;     #PB_text       = 1<<14
-;     #PB_Flag       = 1<<15
-;     #PB_State      = 1<<16
+    ;-\\ mouse-state
+    ;#__MouseEnter_Child = - 2
+    ;#__MouseEnter_Out = - 1
+    ;#__MouseEnter_None = 0
+    ;#__MouseEnter_In = 1
+    ;#__MouseEnter_Inner = 2
+    
+    #__mouse_leave    = - 1    ; leave
+    #__mouse_enter    = 1 << 0 ; 1   enter
+    #__mouse_left     = 1 << 1 ; 2   move to left
+    #__mouse_top      = 1 << 2 ; 4   move to top
+    #__mouse_right    = 1 << 3 ; 8   move to right
+    #__mouse_bottom   = 1 << 4 ; 16  move to bottom
+    #__mouse_press    = 1 << 5 ; 32  button press
+    #__mouse_release  = 1 << 6 ; 64  button release
+    #__mouse_update   = 1 << 7 ; 128 enter inner
+;     #__mouse_move     = 1 << 8 ; 256 enter frame
+;     #__mouse_wheel    = 1 << 9 ; 512 wheel
     
     ;-\\ resize-state
-    #__Resize_Restore  = 1<<1 
-    #__Resize_Minimize = 1<<2 
-    #__Resize_Maximize = 1<<3 
+    #__resize_Restore  = 1<<1 
+    #__resize_Minimize = 1<<2 
+    #__resize_Maximize = 1<<3 
     
+    ;-
     ;-\\ event-type
     Enumeration #PB_EventType_FirstCustomValue
       #PB_EventType_Drop
@@ -232,49 +246,49 @@
       #__event
     EndEnumeration
     
-    #__eventmask_Create       = 1<<#__event_Create
-    #__eventmask_enter        = 1<<#__event_MouseEnter
-    #__eventmask_Focus        = 1<<#__event_Focus
-    #__eventmask_Down         = 1<<#__event_Down
-    #__eventmask_MiddleDown   = 1<<#__event_MiddleDown
-    #__eventmask_LeftDown     = 1<<#__event_LeftDown
-    #__eventmask_RightDown    = 1<<#__event_RightDown
-    #__eventmask_Dragstart    = 1<<#__event_Dragstart
-    #__eventmask_Mousemove    = 1<<#__event_MouseMove
-    #__eventmask_wheel        = 1<<#__event_MouseWheel
-    #__eventmask_wheelx       = 1<<#__event_MouseWheelX
-    #__eventmask_wheely       = 1<<#__event_MouseWheelY
-    #__eventmask_Leave        = 1<<#__event_MouseLeave
-    #__eventmask_Drop         = 1<<#__event_Drop
-    #__eventmask_Up           = 1<<#__event_Up
-    #__eventmask_MiddleUp     = 1<<#__event_MiddleUp
-    #__eventmask_LeftUp       = 1<<#__event_LeftUp
-    #__eventmask_RightUp      = 1<<#__event_RightUp
-    #__eventmask_LeftClick    = 1<<#__event_LeftClick
-    #__eventmask_RightClick   = 1<<#__event_RightClick
-    #__eventmask_Left2Click   = 1<<#__event_Left2Click
-    #__eventmask_Right2Click  = 1<<#__event_Right2Click
-    #__eventmask_Left3Click   = 1<<#__event_Left3Click
-    #__eventmask_Right3Click  = 1<<#__event_Right3Click
-    #__eventmask_Lostfocus    = 1<<#__event_LostFocus
-    #__eventmask_Change       = 1<<#__event_Change
-    #__eventmask_StatusChange = 1<<#__event_StatusChange
-    #__eventmask_ScrollChange = 1<<#__event_ScrollChange
-    #__eventmask_CursorChange = 1<<#__event_Cursor
-    #__eventmask_KeyDown      = 1<<#__event_KeyDown
-    #__eventmask_Input        = 1<<#__event_Input
-    #__eventmask_Return       = 1<<#__event_Return
-    #__eventmask_KeyUp        = 1<<#__event_KeyUp
-    #__eventmask_Draw         = 1<<#__event_Draw
-    #__eventmask_Repaint      = 1<<#__event_Repaint
-    #__eventmask_Maximize     = 1<<#__event_Maximize
-    #__eventmask_Minimize     = 1<<#__event_Minimize
-    #__eventmask_Restore      = 1<<#__event_Restore
-    #__eventmask_Resizebegin  = 1<<#__event_ResizeBegin
-    #__eventmask_Resize       = 1<<#__event_Resize
-    #__eventmask_Resizeend    = 1<<#__event_ResizeEnd
-    #__eventmask_Close        = 1<<#__event_Close
-    #__eventmask_Free         = 1<<#__event_Free  ; Destroy
+;     #__eventmask_Create       = 1<<#__event_Create
+;     #__eventmask_enter        = 1<<#__event_MouseEnter
+;     #__eventmask_Focus        = 1<<#__event_Focus
+;     #__eventmask_Down         = 1<<#__event_Down
+;     #__eventmask_MiddleDown   = 1<<#__event_MiddleDown
+;     #__eventmask_LeftDown     = 1<<#__event_LeftDown
+;     #__eventmask_RightDown    = 1<<#__event_RightDown
+;     #__eventmask_Dragstart    = 1<<#__event_Dragstart
+;     #__eventmask_Mousemove    = 1<<#__event_MouseMove
+;     #__eventmask_wheel        = 1<<#__event_MouseWheel
+;     #__eventmask_wheelx       = 1<<#__event_MouseWheelX
+;     #__eventmask_wheely       = 1<<#__event_MouseWheelY
+;     #__eventmask_Leave        = 1<<#__event_MouseLeave
+;     #__eventmask_Drop         = 1<<#__event_Drop
+;     #__eventmask_Up           = 1<<#__event_Up
+;     #__eventmask_MiddleUp     = 1<<#__event_MiddleUp
+;     #__eventmask_LeftUp       = 1<<#__event_LeftUp
+;     #__eventmask_RightUp      = 1<<#__event_RightUp
+;     #__eventmask_LeftClick    = 1<<#__event_LeftClick
+;     #__eventmask_RightClick   = 1<<#__event_RightClick
+;     #__eventmask_Left2Click   = 1<<#__event_Left2Click
+;     #__eventmask_Right2Click  = 1<<#__event_Right2Click
+;     #__eventmask_Left3Click   = 1<<#__event_Left3Click
+;     #__eventmask_Right3Click  = 1<<#__event_Right3Click
+;     #__eventmask_Lostfocus    = 1<<#__event_LostFocus
+;     #__eventmask_Change       = 1<<#__event_Change
+;     #__eventmask_StatusChange = 1<<#__event_StatusChange
+;     #__eventmask_ScrollChange = 1<<#__event_ScrollChange
+;     #__eventmask_CursorChange = 1<<#__event_Cursor
+;     #__eventmask_KeyDown      = 1<<#__event_KeyDown
+;     #__eventmask_Input        = 1<<#__event_Input
+;     #__eventmask_Return       = 1<<#__event_Return
+;     #__eventmask_KeyUp        = 1<<#__event_KeyUp
+;     #__eventmask_Draw         = 1<<#__event_Draw
+;     #__eventmask_Repaint      = 1<<#__event_Repaint
+;     #__eventmask_Maximize     = 1<<#__event_Maximize
+;     #__eventmask_Minimize     = 1<<#__event_Minimize
+;     #__eventmask_Restore      = 1<<#__event_Restore
+;     #__eventmask_Resizebegin  = 1<<#__event_ResizeBegin
+;     #__eventmask_Resize       = 1<<#__event_Resize
+;     #__eventmask_Resizeend    = 1<<#__event_ResizeEnd
+;     #__eventmask_Close        = 1<<#__event_Close
+;     #__eventmask_Free         = 1<<#__event_Free  ; Destroy
     
     
     ;-\\ create-type
@@ -682,6 +696,13 @@
     #__Message_Yes = #PB_MessageRequester_Yes                 ; 6
     #__Message_No = #PB_MessageRequester_No                   ; 7
     
+    ;-\\ Attribute
+    #__DisplayMode = 1<<13
+;     #PB_Image      = 1<<13
+;     #PB_text       = 1<<14
+;     #PB_Flag       = 1<<15
+;     #PB_State      = 1<<16
+    
     
   EndDeclareModule
   Module Constants
@@ -690,8 +711,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 314
-; FirstLine = 297
+; CursorPosition = 186
+; FirstLine = 172
 ; Folding = ----
 ; Optimizer
 ; EnableXP

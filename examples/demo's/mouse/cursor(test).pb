@@ -92,7 +92,7 @@ CompilerSelect #PB_Compiler_OS
    CompilerCase #PB_OS_Linux
       #path = ""
    CompilerCase #PB_OS_Windows
-      #path = ""
+      #path = "../../../"
 CompilerEndSelect
 
 IncludePath #path
@@ -926,9 +926,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro MouseEnter( _this_, _mode_ = 2 ) : _this_\enter = _mode_ : EndMacro
       Macro MouseButtonPress( ): mouse( )\press: EndMacro ; Returns mouse x
       Macro MouseButtons( ): mouse( )\buttons: EndMacro    ; Returns mouse x
-      Macro MouseWheelX( ): mouse( )\wheel\x: EndMacro    ; Returns mouse x
-      Macro MouseWheelY( ): mouse( )\wheel\y: EndMacro    ; Returns mouse x
-      Macro MouseData( ): mouse( )\data: EndMacro    ; Returns mouse x
       Macro GetMouseX( ): DPIUnScaledX( mouse( )\x ): EndMacro ; Returns mouse x
       Macro GetMouseY( ): DPIUnScaledY( mouse( )\y ): EndMacro ; Returns mouse y
       
@@ -1443,7 +1440,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro     CurrentCursor( ) : mouse( )\cursor : EndMacro
       Declare.i GetCursor( *this, Type.a = 0 )
       Declare   SetCursor( *this, *cursor, Type.a = 0 )
-      Declare.b ResetCursor( *this )
       Declare   ChangeCursor( *this, *cursor )
       Declare   ChangeCurrentCursor( *this, *cursor )
       
@@ -5137,18 +5133,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             *this\cursor[Type] = *cursor
-            If Type = 1
-               ChangeCursor( *this, *cursor )
-            Else
+            If Type <> 1
                *this\cursor[1] = *cursor
             EndIf
-            ProcedureReturn 1
-         EndIf
-      EndProcedure
-      
-      Procedure.b ResetCursor( *this._s_WIDGET )
-         If *this\cursor[1] <> *this\cursor
-            *this\cursor[1] = *this\cursor 
             ProcedureReturn 1
          EndIf
       EndProcedure
@@ -20528,12 +20515,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                If *this\enter = 1
                   MouseEnter( *this )
-                  MouseData( ) | #__mouse_update
                EndIf
             Else
                If *this\enter <> 1
                   *this\enter = 1
-                  MouseData( ) | #__mouse_update
                EndIf
             EndIf
          EndIf
@@ -20564,32 +20549,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
             
-         ;          ;
-;          If MouseData( ) & #__mouse_left
-;             Debug "#__mouse_left"
-;          EndIf
-;          If MouseData( ) & #__mouse_top
-;             Debug "#__mouse_top"
-;          EndIf
-;          If MouseData( ) & #__mouse_right
-;             Debug "#__mouse_right"
-;          EndIf
-;          If MouseData( ) & #__mouse_bottom
-;             Debug "#__mouse_bottom"
-;          EndIf
-;          If MouseData( ) & #__mouse_press
-;             Debug "#__mouse_press"
-;          EndIf
-;          If MouseData( ) & #__mouse_release
-;             Debug "#__mouse_release"
-;          EndIf
-;          If MouseData( ) & #__mouse_update
-;             Debug "#__mouse_update"
-;          EndIf
-;          If MouseData( ) = #__mouse_leave
-;             
-;          EndIf
-;          ;Debug "DoEvents( "+*this\class +" "+ ClassFromEvent(eventtype)
+         Debug "DoEvents( "+*this\class +" "+ ClassFromEvent(eventtype)
          
          ;\\
          If test_event_entered
@@ -21115,10 +21075,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not ( root( ) And root( )\canvas\gadgetID = EnteredCanvasID )
                ChangeCurrentCanvas( EnteredCanvasID )
             EndIf
-            ;
-            MouseData( ) = #__mouse_enter
-            MouseData( ) | #__mouse_update
-            ;
+            
+            mouse( )\change = 1 << 0
             mouse( )\x      = GadgetMouseX( eventgadget )
             mouse( )\y      = GadgetMouseY( eventgadget )
          EndIf
@@ -21131,8 +21089,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                ChangeCurrentCanvas( GadgetID( eventgadget ) )
             EndIf
             EnteredCanvasID = #Null
-            ;
-            MouseData( ) = #__mouse_leave
+            
+            mouse( )\change = - 1
             mouse( )\x      = - 1
             mouse( )\y      = - 1
          EndIf
@@ -21152,6 +21110,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ClickTime = ElapsedMilliseconds
             
             ;
+            mouse( )\change = 1 << 5
+            ;
             mouse( )\delta.allocate( POINT )
             mouse( )\delta\x = mouse( )\x
             mouse( )\delta\y = mouse( )\y
@@ -21169,8 +21129,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            ;
-            MouseData( ) | #__mouse_press
             ;  
             If eventtype = #PB_EventType_LeftButtonDown 
                event            = #__event_LeftDown
@@ -21249,9 +21207,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   If mouse( )\x < mouse_x
-                     MouseData( ) | #__mouse_right
-                  ElseIf mouse( )\x > mouse_x
-                     MouseData( ) | #__mouse_left
+                     mouse( )\change | 1 << 3
+                  Else
+                     mouse( )\change | 1 << 1
                   EndIf
                   mouse( )\x = mouse_x
                EndIf
@@ -21285,9 +21243,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   If mouse( )\y < mouse_y
-                     MouseData( ) | #__mouse_bottom
-                  ElseIf mouse( )\y > mouse_y
-                     MouseData( ) | #__mouse_top
+                     mouse( )\change | 1 << 4
+                  Else
+                     mouse( )\change | 1 << 2
                   EndIf
                   mouse( )\y = mouse_y
                EndIf
@@ -21312,10 +21270,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             If eventtype = #PB_EventType_RightButtonUp : event = #__event_RightUp : EndIf
             ;
             mouse( )\press = 0
-            MouseData( ) | #__mouse_release
-            If MouseData( ) & #__mouse_press
-               MouseData( ) &~ #__mouse_press
-            EndIf
+            mouse( )\change = 1 << 6
+            
             ;
             If root( ) And
                root( )\canvas\gadget = eventgadget
@@ -21387,7 +21343,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          
          ;\\ get enter&leave widget address
-         If MouseData( )
+         If mouse( )\change 
             If root( ) And root( )\canvas\gadget = eventgadget
                ;                      If root( )
                ;                          Debug "    "+root( )\class +" "+ ClassFromEvent(event)
@@ -21426,7 +21382,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ do all events
          ;
          If event = #__event_MouseMove
-             If MouseData( ) > 1
+            If mouse( )\change > 1
                ;\\ mouse-pressed-widget move event
                If mouse( )\drag And 
                   PressedWidget( ) And 
@@ -21569,6 +21525,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                      
+                     ;\\ reset dragged cursor
+                     If CurrentCursor( ) 
+                        Debug "free drop CURSOR "
+                       ; ChangeCurrentCursor( PressedWidget( ), 0 )
+                     EndIf
+                     
                      ;\\ reset
                      FreeStructure( mouse( )\drop )
                      mouse( )\drop = #Null
@@ -21646,28 +21608,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         If MouseData( ) & #__mouse_left
-            MouseData( ) &~ #__mouse_left
+         If mouse( )\change <> 0
+            mouse( )\change = 0
          EndIf
-         If MouseData( ) & #__mouse_top
-            MouseData( ) &~ #__mouse_top
-         EndIf
-         If MouseData( ) & #__mouse_right
-            MouseData( ) &~ #__mouse_right
-         EndIf
-         If MouseData( ) & #__mouse_bottom
-            MouseData( ) &~ #__mouse_bottom
-         EndIf
-         If MouseData( ) & #__mouse_release
-            MouseData( ) &~ #__mouse_release
-         EndIf
-         If MouseData( ) & #__mouse_update
-            MouseData( ) &~ #__mouse_update
-         EndIf
-         If MouseData( ) = #__mouse_leave
-            MouseData( ) = 0
-         EndIf
-         
          ProcedureReturn #PB_Event_Gadget
          
       EndProcedure
@@ -23246,846 +23189,100 @@ EndMacro
 ;- <<<
 
 
-
-;-
-
-;-
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
+   test_docursor = 1
+   test_changecursor = 1
+   test_setcursor = 1
+   #_DD_reParent = 1<<2
    
-   Global MDI, MDI_splitter, Splitter
+   Global btn1, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
-   If Open(0, 0, 0, 700, 280, "MDI", #__window_SystemMenu | #__window_ScreenCentered)
-      
-      MDI        = MDI(10, 10, 680, 260) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
-      Define *g0 = AddItem(MDI, -1, "form_0")
-      ; 		Button(10,10,80,80,"button_0")
-      ; 		
-      ; 		Define *g1 = AddItem(MDI, -1, "form_1")
-      ; 		Button(10,10,80,80,"button_1")
-      ; 		
-      ; 		Define *g2 = AddItem(MDI, -1, "form_2")
-      ; 		Button(10,10,80,80,"button_2")
-      Resize(*g0, 190, 190, #PB_Ignore, #PB_Ignore)
-      
-      Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
-   EndIf
-   
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile 
-   
-   EnableExplicit
-   UseWidgets( )
-   
-   Enumeration
-      #window_0
-      #window
-   EndEnumeration
-   
-   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      LoadFont(6, "Arial", 21)
-      
-   CompilerElse
-      LoadFont(6, "Arial", 17)
-      
-   CompilerEndIf
-   
-   ;-\\ ANCHORS
-   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
-   
-   Procedure anchor_events( )
-      Protected change
-      Protected *this._s_widget = EventWidget( )
+   Procedure events_widgets( )
+      Protected drop, source, selectedIndex, selectedText$
       
       Select WidgetEvent( )
-         Case #__event_LeftClick
-            Select *this
-               Case frame_color
+         Case #__event_DragStart      
+            
+            Select EventWidget( )         
+               Case btn1, Button_0    
+                  Debug "event( DRAGSTART )"
                   
-               Case back_color
-                  
+                  If EventWidget( ) = btn1
+                     If DDragPrivate( #_DD_reParent )
+                        ChangeCurrentCursor( btn1, #PB_Cursor_Hand ) 
+                     EndIf
+                  Else
+                     selectedIndex = GetState(EventWidget())           
+                     selectedText$ = GetItemText(EventWidget(), selectedIndex)
+                     DDragText(selectedText$)                                           
+                  EndIf
             EndSelect
             
-         Case #__event_Focus
-            If *this\anchors
-               Debug "a_FocusStatusChange"
-               If size_value
-                  SetState(size_value, a_getsize(*this) )
-               EndIf
-               
-               If pos_value
-                  SetState(pos_value, a_getpos(*this) )
-               EndIf
-               
-               If grid_value
-                  SetState(grid_value, DPIUnScaled(mouse( )\steps) )
-               EndIf
-               
-               change = 1
-            EndIf
+         Case #__event_Drop   
+            Debug "event( DROP )"
             
-         Case #__event_Change
-            Select *this
-               Case size_value
-                  If GetState(*this) <> a_getsize(a_focused( ))
-                     a_set( a_focused( ), #__a_full, GetState(*this), a_getpos(a_focused( )) )
-                  EndIf
-                  
-               Case pos_value
-                  If GetState(*this) <> a_getpos(a_focused( ))
-                     a_set( a_focused( ), #__a_full, a_getsize(a_focused( )), GetState(*this))
-                  EndIf
-                  
-               Case grid_value
-                  mouse( )\steps = DPIScaled(GetState(grid_value))
-                  
-            EndSelect
-            
-            change = 1
-            
+         Case #__event_Cursor      
+            Debug Index(EventWidget( ))
+            ProcedureReturn #__cursor_Hand
       EndSelect
       
-      If change
-         If a_focused( )
-            ; SetState(grid_value, DPIUnScaled(mouse( )\steps))
-            ; SetState(size_value, a_getsize(a_focused( )) )
-            ; SetState(pos_value, a_getpos(a_focused( )) )
-            
-            SetText(grid_text, Str(GetState(grid_value)) )
-            SetText(size_text, Str(GetState(size_value)) )
-            SetText(pos_text, Str(GetState(pos_value)) )
-         EndIf
-      EndIf
-      
    EndProcedure
    
-   OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #__window_SystemMenu )
-   
-   Define i
-   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
-   Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
-   
-   ;    
-   ;    
-   ;    Define *toolbar = ToolBar( *root )
-   ;     
-   ;     If *toolbar
-   ;       BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-   ;       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
-   ;       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
-   ;       
-   ;       BarSeparator( )
-   ;       
-   ;       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-   ;       ; ToolTip(*toolbar, 3, "Cut")
-   ;       
-   ;       BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-   ;       ; ToolTip(*toolbar, 4, "Copy")
-   ;       
-   ;       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-   ;       ; ToolTip(*toolbar, 5, "Paste")
-   ;       
-   ;       BarSeparator( )
-   ;       
-   ;       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-   ;       ; ToolTip(*toolbar, 6, "Find a document")
-   ;    EndIf
-   
-   ;BindWidgetEvent( *root, @HandlerEvents( ) )
-   view = Container(10, 10, 406, 238, #PB_Container_Flat)
-   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
-   a_init( view, 10 )
-   
-   Procedure ToolBarEvents( )
-      Debug WidgetEventItem( )
-   EndProcedure
-  
-   Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
-   
-   If *toolbar
-   OpenSubBar("Menu")
-         BarItem(11, "Open")
-         BarItem(12, "Save")
-         ; BarItem(13, "Save as...")
-         OpenSubBar("Save as...")
-            BarItem(15, "Save as BMP")
-            BarItem(16, "Save as PNG")
-            BarItem(17, "Save as JPG")
-         CloseSubBar( )
-         BarSeparator( )
-         BarItem(14, "Quit")
-      CloseSubBar( )
+   If Open(0, 0, 0, 430, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      SetBackgroundColor(widget(), $FFAC97DB)
       
-      OpenSubBar("-Menu-")
-      CloseSubBar( )
-      
-      OpenSubBar("2Menu")
-         BarItem(21, "2Open")
-         BarItem(22, "2Save")
-         BarItem(23, "2Save as...")
-         BarSeparator( )
-         BarItem(24, "2Quit")
-      CloseSubBar( )
-      
-      BarSeparator( )
-      ;BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New") ;: Debug widget( )\class
-      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
-      ;BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
-      BarSeparator( )
-      
-      OpenSubBar("3Menu")
-         BarItem(31, "3Open")
-         BarItem(32, "3Save")
-         BarItem(33, "3Save as...")
-         BarSeparator( )
-         BarItem(34, "3Quit")
-      CloseSubBar( )
-      
-      BarSeparator( )
-      BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-      BarToolTip(*toolbar, 5, "Paste")
-      
-      BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-      BarToolTip(*toolbar, 4, "Copy")
-      
-      BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-      BarToolTip(*toolbar, 3, "Cut")
-      
-      BarSeparator( )
-      
-      BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-      BarToolTip(*toolbar, 6, "Find a document")
-      
-      DisableBarButton(*toolbar, 2, 1) ; Disable the button '2'
-      Bind( *toolbar, @ToolBarEvents( ) )
-   EndIf
-   
-   Define *a0._s_WIDGET = Button( 10, 10, 60, 60, "Button" )
-   Define *a1._s_WIDGET = Panel( 5 + 170, 5 + 140, 160, 160, #__flag_nogadgets )
-   ;Define *a2._s_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
-   Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, 1, #__flag_nogadgets )
-   Define *a3._s_WIDGET = Image( 150, 110, 60, 60, -1 )
-   
-   a_set( *a3, -1, (10))
-   
-   CloseList( )
-   size_value  = Track(56, 262, 240, 26, 0, 30, #PB_TrackBar_Ticks)
-   pos_value   = Track(56, 292, 240, 26, 0, 30, #PB_TrackBar_Ticks)
-   grid_value  = Track(56, 320, 240, 26, 5, 15, #PB_TrackBar_Ticks)
-   back_color  = Button(304, 264, 112, 32, "BackColor")
-   frame_color = Button(304, 304, 112, 32, "FrameColor")
-   size_text   = Text(8, 256, 40, 24, "0")
-   pos_text    = Text(8, 288, 40, 24, "0")
-   grid_text   = Text(8, 320, 40, 24, "0")
-   
-   If a_focused( )
-      SetState(grid_value, DPIUnScaled(mouse( )\steps) )
-      SetState(size_value, a_getsize(a_focused( )) )
-      SetState(pos_value, a_getpos(a_focused( )) )
-   EndIf
-   
-   
-   Bind( root( ), @anchor_events( ) )
-   
-   ;\\Close( )
-   
-   
-   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #__window_SystemMenu | #__window_ScreenCentered)
-   
-   ;\\ Open root0
-   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
-   ;BindWidgetEvent( *root2, @HandlerEvents( ) )
-   Procedure TestHandler()
-      Debug "Test menu event"
-   EndProcedure
-   
-   Procedure QuitHandler()
-      Debug "Quit menu event"
-      ; End
-   EndProcedure
-   
-   Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
-   If *menu
-      SetColor( *menu, #__color_back, $FFC8F0EC )
-      
-      BarTitle("Title-1")
-      BarItem(1, "title-1-item-1")
-      BarSeparator( )   
-      ;
-      OpenSubBar("title-1-sub-item")
-         BarItem(3, "title-1-item")
-         BarSeparator( )
-         ;
-         OpenSubBar("title-2-sub-item")   
-            BarItem(13, "title-2-item")
-            BarSeparator( )
-            ;
-            OpenSubBar("title-3-sub-item")   
-               BarItem(23, "title-3-item")
-            CloseSubBar( ) 
-            ;
-            BarSeparator( )
-            BarItem(14, "title-2-item")
-         CloseSubBar( ) 
-         ;
-         BarSeparator( )
-         BarItem(4, "title-1-item")
-      CloseSubBar( ) 
-      ;
-      BarSeparator( )
-      BarItem(2, "title-1-item-2")
-      
-      BarTitle("Title-2")
-      ;    BarItem(5, "title-2-item-1")
-      ;    BarItem(6, "title-2-item-2")
-      
-      BarTitle("Title-event-test")
-      BarItem(7, "test")
-      BarSeparator( )
-      BarItem(8, "quit")
-      
-      BarTitle("Title-4")
-      BarItem(9, "title-4-item-1")
-      BarItem(10, "title-4-item-2")
-      
-      Bind(*menu, @TestHandler(), -1, 7)
-      Bind(*menu, @QuitHandler(), -1, 8)
-   EndIf
-
-   *toolbar = ToolBar( *root0, #PB_ToolBar_Small|#PB_ToolBar_Text |#PB_ToolBar_InlineText)
-   If *toolbar
-      SetColor( *toolbar, #__color_back, $FFC8ECF0 )
-      
-      BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
-      BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
-      
-      BarSeparator( )
-      
-      BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-      ; ToolTip(*toolbar, 3, "Cut")
-      
-      BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-      ; ToolTip(*toolbar, 4, "Copy")
-      
-      BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-      ; ToolTip(*toolbar, 5, "Paste")
-      
-      BarSeparator( )
-      
-      BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-      ; ToolTip(*toolbar, 6, "Find a document")
-   
-   EndIf
-   
-   
-   Global *popupmenu = CreatePopupBar( )
-   If *popupmenu                  ; creation of the pop-up menu begins...
-      BarItem(1, "Open")     ; You can use all commands for creating a menu
-      BarItem(2, "Save")     ; just like in a normal menu...
-      BarItem(3, "Save as")
-      BarItem(4, "event-Quit")
-      BarSeparator( )
-      OpenSubBar("Recent files")
-         BarItem(5, "PureBasic.exe")
-         BarItem(6, "event-Test")
-      CloseSubBar( )
-   EndIf
-   
-   Bind(*popupmenu, @TestHandler(), #__event_LeftClick, 6)
-   Bind(*popupmenu, @QuitHandler(), #__event_LeftClick, 4)
-   
-   
-   ;\\
-   Global *button_panel = Panel(10, 10, 200 + 60, 180)
-   Define Text.s, m.s   = #LF$, a
-   AddItem(*button_panel, -1, "1")
-   *g = Editor(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
-   ;*g                 = Editor(10, 10, 200 + 60, 200, #__flag_gridlines);, #__flag_autosize)
-   Text.s = "This is a long line." + m.s +
-            "Who should show." + m.s +
-            m.s +
-            m.s +
-            m.s +
-            "I have to write the text in the box or not." + m.s +
-            m.s +
-            m.s +
-            m.s +
-            "The string must be very long." + m.s +
-            "Otherwise it will not work."
-   
-   SetText(*g, Text.s)
-   For a = 0 To 2
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   AddItem(*g, 7 + a, "_")
-   For a = 4 To 6
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   
-   ;\\
-   AddItem(*button_panel, -1, "2")
-   *g = Tree(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
-   a  = - 1
-   AddItem(*g, a, "This is a long line.")
-   AddItem(*g, a, "Who should show.")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "I have to write the text in the box or not.")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "")
-   AddItem(*g, a, "The string must be very long.")
-   AddItem(*g, a, "Otherwise it will not work.")
-   For a = 0 To 2
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   AddItem(*g, 7 + a, "_")
-   For a = 4 To 6
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
-   Next
-   ;\\
-   AddItem(*button_panel, -1, "3")
-   *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__flag_RowFullSelect | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
-   For a = 1 To 2
-      AddColumn(*g, a, "Column_" + Str(a + 1), 90)
-   Next
-   For a = 0 To 15
-      AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
-   Next
-   
-   SetState(*button_panel, 2)
-   CloseList( ) ; close panel lists
-   
-   *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__flag_Textright)
-   
-   ;\\
-   Global *button_item1, *button_item2, *button_menu
-   Procedure button_tab_events( )
-      Select GetText( EventWidget( ) )
-         Case "popup menu"
-            DisplayPopupBar( *popupmenu, EventWidget( ) );, CanvasMouseX( ), CanvasMouseY( ) )
-            
-         Case "1"
-            SetState(*button_panel, 0)
-            SetState(*button_item2, 0)
-         Case "2"
-            SetState(*button_panel, 1)
-            SetState(*button_item1, 0)
-      EndSelect
-   EndProcedure 
-   
-   *button_menu = Button( 120, 5, 150, 25, "popup menu")
-   Bind(*button_menu, @button_tab_events( ), #__event_Down )
-   *button_item1 = Button( 220, 200, 25, 50, "1", #__flag_ButtonToggle)
-   *button_item2 = Button( 220 + 25, 200, 25, 50, "2", #__flag_ButtonToggle)
-   Bind(*button_item1, @button_tab_events( ), #__event_Down )
-   Bind(*button_item2, @button_tab_events( ), #__event_Down )
-   ;\\Close( )
-   
-   ;\\
-   Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
-   ;BindWidgetEvent( *root1, @HandlerEvents( ) )
-    Define *ToolBar = ToolBar( *root1, #PB_ToolBar_Small )
-      If *toolbar
-         OpenSubBar("Title-1")
-            BarItem(1, "title-1-item-1")
-            BarSeparator( )   
-            OpenSubBar("title-1-sub-item")
-               BarItem(3, "title-1-item")
-               BarSeparator( )
-               OpenSubBar("title-2-sub-item")   
-                  BarItem(13, "title-2-item")
-                  BarSeparator( )
-                  OpenSubBar("title-3-sub-item")   
-                     BarItem(23, "title-3-item")
-                  CloseSubBar( ) 
-                  BarSeparator( )
-                  BarItem(14, "title-2-item")
-               CloseSubBar( ) 
-               BarSeparator( )
-               BarItem(4, "title-1-item")
-            CloseSubBar( ) 
-            BarSeparator( )
-            BarItem(2, "title-1-item-2")
-         CloseSubBar( )
-         
-         ;
-         BarSeparator( )
-         OpenSubBar("Title-2")
-         CloseSubBar( )
-         BarSeparator( )
-         
-         ;
-         OpenSubBar("Title-event-test")
-            BarItem(7, "test")
-            BarSeparator( )
-            BarItem(8, "quit")
-         CloseSubBar( )
-         
-         ;
-         OpenSubBar("Title-4")
-            BarItem(9, "title-4-item-1")
-            BarItem(10, "title-4-item-2")
-         CloseSubBar( )
-         
-         Bind(*ToolBar, @TestHandler(), -1, 7)
-         Bind(*ToolBar, @QuitHandler(), -1, 8)
-      EndIf
-      
-   ;\\Close( )
-   
-   Define *root2._s_WIDGET = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
-   ;BindWidgetEvent( *root2, @HandlerEvents( ) )
-   
-   HyperLink( 10, 10, 80, 40, "HyperLink", RGB(105, 245, 44) )
-   String( 60, 20, 60, 40, "String" )
-   *w = ComboBox( 108, 30, 152, 40, #PB_ComboBox_Editable )
-   For i = 1 To 100;0000
-      AddItem(*w, i, "text-" + Str(i))
-   Next
-   SetState( *w, 3 )
-   ;\\Close( )
-   
-   
-   Define *root3._s_WIDGET = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
-   ;BindWidgetEvent( *root3, @HandlerEvents( ) )
-   ;\\Close( )
-   
-   Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
-   ;BindWidgetEvent( *root4, @HandlerEvents( ) )
-   ;\\Close( )
-   
-   
-   
-   Define count = 2;0000
-   #st          = 1
-   Global mx    = #st, my = #st
-   
-   Define time = ElapsedMilliseconds( )
-   
-   Global *c, *p, *panel._s_WIDGET
-   Procedure hide_show_panel_events( )
-      Select WidgetEvent( )
-         Case #__event_LeftClick
-            
-            Select GetText( EventWidget( ) )
-               Case "hide_children"
-                  Hide(*p, 1)
-                  ; Disable(*c, 1)
-                  
-               Case "show_children"
-                  Hide(*p, 0)
-                  
-               Case "hide_parent"
-                  Hide(*c, GetState( EventWidget( ) ))
-                  
-            EndSelect
-            
-            ;         ;Case #__event_LeftUp
-            ;         ClearDebugOutput( )
-            ;         If StartEnum(*panel);root( ))
-            ;           If Not Hide(widget( )) ;And GetParent(widget( )) = *panel
-            ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
-            ;           EndIf
-            ;           StopEnum( )
-            ;         EndIf
-            
-            
-      EndSelect
-   EndProcedure
-   
-   OpenList( *root1 )
-   *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
-   AddItem( *panel, -1, "item_1" )
-   ;Button( 20,20, 80,80, "item_1")
-   *g = Editor(0, 0, 0, 0, #__flag_autosize)
-   For a = 0 To 2
-      AddItem(*g, a, "Line " + Str(a))
-   Next
-   AddItem(*g, 3 + a, "")
-   AddItem(*g, 4 + a, ~"define W_0 = Window( 282, \"Window_0\" )")
-   AddItem(*g, 5 + a, "")
-   For a = 6 To 8
-      AddItem(*g, a, "Line " + Str(a))
-   Next
-   
-   AddItem( *panel, -1, "(hide&show)-test" ) : SetItemFont(*panel, 1, 6)
-   ; Button( 10,10, 80,80, "item_2")
-   Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
-   Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
-   Bind(Option( 5, 55, 95, 22, "show_children", #__flag_ButtonToggle ), @hide_show_panel_events( ))
-   ;SetState(widget( ), 1)
-   
-   *c = Panel(110, 5, 150, 155)
-   AddItem(*c, -1, "0")
-   *p = Panel(10, 5, 150, 65)
-   AddItem(*p, -1, "item-1")
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 25, "butt1")
-   CloseList( )
-   CloseList( )
-   AddItem(*p, -1, "item-2")
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 25, "butt2")
-   CloseList( )
-   CloseList( )
-   AddItem(*c, -1, "1")
-   CloseList( )
-   
-   Container(10, 75, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 45, "butt1")
-   CloseList( )
-   CloseList( )
-   CloseList( )
-   CloseList( )
-   
-   AddItem( *panel, -1, "(enter&leave)-test" )
-   
-   Procedure enter_leave_containers_events( )
-      Protected repaint
-      Protected colorback = colors::*this\blue\fore,
-                colorframe = colors::*this\blue\frame,
-                colorback1 = $ff00ff00,
-                colorframe1 = $ff0000ff
-      
-      Select WidgetEvent( )
-         Case #__event_MouseEnter,
-              #__event_MouseLeave,
-              #__event_MouseMove
-            
-            If EventWidget( ) <> root( )
-               If EventWidget( )\enter
-                  If EventWidget( )\color\frame <> colorframe1
-                     repaint                    = 1
-                     EventWidget( )\color\frame = colorframe1
-                  EndIf
-                  If EventWidget( )\color\back <> colorback1
-                     repaint                   = 1
-                     EventWidget( )\color\back = colorback1
-                  EndIf
-               Else
-                  If EventWidget( )\color\back = colorback1
-                     repaint                   = 1
-                     EventWidget( )\color\back = colorback
-                  EndIf
-                  If EventWidget( )\color\frame = colorframe1
-                     repaint                    = 1
-                     EventWidget( )\color\frame = colorframe
-                  EndIf
-               EndIf
-            EndIf
-            
-      EndSelect
-      
-      If repaint
-         ; Debug "change state"
-      EndIf
-   EndProcedure
-   
-   SetText(ScrollArea(5, 5, 210, 210, 500, 500, 1, editable), "4")
-   SetText(Container(70, 10, 70, 180, #__Flag_NoGadgets | editable), "5")
-   SetText(Container(40, 20, 180, 180, editable), "6")
-   Define seven = Container(20, 20, 180, 180, editable)
-   SetText(seven, "      7")
-   
-   SetText(Container(5, 30, 180, 30, #__Flag_NoGadgets | editable), "     8")
-   SetText(Container(5, 45, 180, 30, #__Flag_NoGadgets | editable), "     9")
-   SetText(Container(5, 60, 180, 30, #__Flag_NoGadgets | editable), "     10")
-   
-   CloseList( ) ; 7
-   CloseList( ) ; 6
-   SetText(Container(10, 45, 70, 180, editable), "11")
-   SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets | editable), "12")
-   SetText(Container(10, 20, 70, 30, #__Flag_NoGadgets | editable), "13")
-   SetText(Container(10, 30, 170, 130, #__Flag_NoGadgets | editable), "14")
-   
-   SetText(Container(10, 45, 70, 180, editable), "15")
-   SetText(Container(10, 5, 70, 180, editable), "16")
-   SetText(Container(10, 5, 70, 180, editable), "17")
-   SetText(Container(10, 10, 70, 30, #__Flag_NoGadgets | editable), "18")
-   CloseList( ) ; 17
-   CloseList( ) ; 16
-   CloseList( ) ; 15
-   CloseList( ) ; 11
-   CloseList( ) ; 1
-   
-   ;\\
-   OpenList( seven )
-   ;   Define split_1 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   Define split_2 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   Define split_3 = Splitter(5, 80, 180, 50,split_1,split_2,editable)
-   ;   Define split_4 = Container(0,0,0,0, #__Flag_NoGadgets|editable)
-   ;   SetText(Splitter(5, 80, 180, 50,split_3,split_4,#PB_Splitter_Vertical|editable), "10-1")
-   SetText(Container( - 5, 80, 180, 50, #__Flag_NoGadgets | editable), "container-7")
-   CloseList( ) ; 7
-   
-   ;\\
-   If *panel\root
-      If StartEnum( *panel, 2 )
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseEnter)
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseMove)
-         Bind(widget( ), @enter_leave_containers_events( ), #__event_MouseLeave)
-         StopEnum( )
-      EndIf
-   EndIf
-   
-   ;\\
-   ;OpenList( *panel )
-   AddItem( *panel, -1, "item_4" )
-   Button( 30, 30, 80, 80, "item_4")
-   AddItem( *panel, -1, "item_5" )
-   Button( 40, 40, 80, 80, "item_5")
-   CloseList( ) ; *panel
-   CloseList( ) ; *root1
-   
-   ; SetState( *panel, 2 )
-   
-   ;\\\
-   OpenList( *root2 )
-   SetText(*root2, "*root2" )
-   ;   ;Define *p3._s_WIDGET = Container( 80,80, 150,150 )
-   ;   Define *p3._s_WIDGET = ScrollArea( 80,80, 150+30,150+30, 300,300 )
-   ;   SetText(*p3, "12" )
-   ;   SetText(Container( 40,-30, 50,50, #__Flag_NoGadgets ), "13" )
-   ;
-   ;   Define *p2._s_WIDGET = Container( 40,40, 70,70 ) : SetText(*p2, "4" )
-   ;   SetText(Container( 5,5, 70,70 ), "5" )
-   ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "6")
-   ;   CloseList( )
-   ;   Define *c1._s_WIDGET = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetText(*c1, "3" )
-   ;   CloseList( )
-   ;
-   ;   SetText(Container( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
-   ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
-   ;   SetText(Container( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
-   ;   CloseList( )
-   ;   CloseList( )
-   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
-   ;   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-   ;   Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-   Splitter_0 = Progress(0, 0, 0, 0, 0, 100, #__bar_vertical) : SetState(Splitter_0, 50);widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-   
-   
-   Button_2 = ComboBox( 20, 20, 150, 40)
-   For i = 1 To 100;0000
-      AddItem(Button_2, i, "text-" + Str(i))
-   Next
-   SetState( Button_2, 3 )
-   
-   ;Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-   Button_3   = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-   Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-   widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-   widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-   ;Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-   Button_4   = Progress(0, 0, 0, 0, 0, 100, #__bar_invert) : SetState(Button_4, 50) ; No need to specify size or coordinates
-   Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
-   Button_5   = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_5, 50) ; as they will be sized automatically
-   Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
-   Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-   Button_0 = Progress(0, 0, 0, 0, 0, 100, #__bar_invert|#__bar_vertical) : SetState(Button_0, 50)
-   Splitter_5 = widget::Splitter(10, 80, 250, 120, Button_0, Splitter_4, #PB_Splitter_Vertical)
-   SetState(Splitter_5, 50)
-   SetState(Splitter_4, 50)
-   SetState(Splitter_3, 40)
-   SetState(Splitter_1, 50)
-   
-   Spin(10, 210, 250, 25, 25, 30, #__flag_Textright )
-   Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
-   
-   ;\\
-   OpenList( *root3 )
-   Define *tree = Tree( 10, 20, 150, 200, #__tree_checkboxes)
-   For i = 1 To 100;0000
-      AddItem(*tree, i, "text-" + Str(i))
-   Next
-   SetState(*tree, 5 - 1)
-   Container( 70, 180, 80, 80): CloseList( )
-   SetItemFont(*tree, 1, 6)
-   SetItemFont(*tree, 4, 6)
-   
-   ;\\
-   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_RowMultiSelect) ; |#__flag_gridlines
-   SetColor( *w, #__color_back, $FF07EAF6 )
-   For i = 1 To 10;00000
-      AddItem(*w, i, "text-" + Str(i))
-   Next
-   SetState(*w, i - 1 )
-   SetItemFont(*w, 4, 6)
-   SetItemFont(*w, 5, 6)
-   
-   ;\\
-   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_RowClickSelect )
-   For i = 1 To 100;0000
-      If (i & 5)
-         AddItem(*w, i, "text-" + Str(i), -1, 1 )
-      Else
-         AddItem(*w, i, "text-" + Str(i))
-      EndIf
-   Next
-   SetFont(*w, 6)
-   
-   Debug "--------  time --------- " + Str(ElapsedMilliseconds( ) - time)
-   
-   
-   ;\\
-   Define *window._s_WIDGET
-   Define i, Y = 5
-   OpenList( *root4 )
-   For i = 1 To 4
-      Window(5, Y, 150, 95 + 2, "Window_" + Trim(Str(i)), #__window_SystemMenu | #__window_MaximizeGadget)
-      ;Container(5, y, 150, 95 + 2)
-      If i = 2
-         Disable( widget( ), 1)
-      EndIf
-      Container(5, 5, 120 + 2, 85 + 2) ;, #PB_Container_Flat)
-      If i = 3
-         CheckBox(10, 10, 100, 30, "CheckBox_" + Trim(Str(i + 10)))
-         SetState( widget( ), 1 )
-      ElseIf i = 4
-         Option(10, 10, 100, 30, "Option_" + Trim(Str(i + 10)))
-      Else
-         Button(10, 10, 100, 30, "Button_" + Trim(Str(i + 10)))
-      EndIf
-      If i = 3
-         Disable( widget( ), 1)
-      EndIf
-      If i = 4 Or i = 3
-         Option(10, 45, 100, 30, "Option_" + Trim(Str(i + 20)))
-         SetState( widget( ), 1 )
-      Else
-         Button(10, 45, 100, 30, "Button_" + Trim(Str(i + 20)))
-      EndIf
-      If i = 3
-         Disable( widget( ), 1)
-      EndIf
+      ;\\
+      a_init(root( ))
+      Window(230,10,180,100,"form1")
+         btn1 = Button(10,10,110,80, "btn1") 
       CloseList( )
-      ;CloseList( )
-      Y + 130
-   Next
-   
-   WaitClose( )
+      
+      ;\\
+      Splitter_1 = Splitter(30, 10, 180, 100, -1, -1, #PB_Splitter_Vertical)
+      SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 60)
+      SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 60)
+      Splitter_2 = Splitter(30, 10, 180, 100, Splitter_1, -1)
+      ;SetFrame( Splitter_1, 20)
+      
+      Button_0 = Button(30,120,110,80, "Button 0") 
+      Button_1 = Button(80,130,80,40, "Button 1")
+      Button_2 = Button(120,120,110,80, "Button 2") 
+      Button_3 = String(180,120,110,80, "String") 
+      SetFrame( Button_3, 20)
+      Button_4 = String(250,120,110,80, "String") 
+      Button_5 = Button(320,120,110,80, "Button 3") 
+      
+      Disable( Button_1, 1 )
+      
+      SetCursor( Button_0, #__cursor_Hand )
+      SetCursor( Button_1, #__cursor_Cross )
+      SetCursor( Button_2, #__cursor_IBeam )
+      
+      EnableDDrop(Button_1, #PB_Drop_Text, #PB_Drag_Copy)
+      EnableDDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
+      EnableDDrop(Button_5, #PB_Drop_Text, #PB_Drag_Copy)
+      Bind( #PB_All, @events_widgets( ), #__event_DragStart )
+      Bind( #PB_All, @events_widgets( ), #__event_Drop )
+      
+      SetMoveBounds( btn1, -1,-1,-1,-1 )
+      SetMoveBounds( Button_0, -1,-1,-1,-1 )
+      SetMoveBounds( Button_1, -1,-1,-1,-1 )
+      SetMoveBounds( Button_2, -1,-1,-1,-1 )
+      SetMoveBounds( Button_3, -1,-1,-1,-1 )
+      SetMoveBounds( Button_4, -1,-1,-1,-1 )
+      
+      ;\\ change current cursor
+      ; Bind( #PB_All, @events_widgets( ), #__event_Cursor )
+      
+      WaitClose( )
+   EndIf
    
 CompilerEndIf
+
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14267
-; FirstLine = 14253
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------8-------------+---00--------------8---------------------------------------------------------------------8---------------8---------f+-----4---v--f9---------------------------------------
+; CursorPosition = 20540
+; FirstLine = 20530
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = widgets2.app
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5141
-; FirstLine = 5008
-; Folding = ------------------------------------------------------------------------------------------------------e--8-------------------------4----------4------------------f--------------------------------------------------------------------------------------------9----------------------------------------------------------0--------------------Pu0--------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------------------04-------f----0-+---------------------------------------------------
-; Optimizer
-; EnableXP
-; DPIAware
-; Executable = widgets-.app.exe

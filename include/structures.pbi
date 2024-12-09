@@ -168,9 +168,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          StructureUnion
             _enter.b ;
             enter.b  ;
-            mouseenter.b ;
-            mouseenterframe.b
-            mouseenterinner.b
+            ;MouseEnter.b ;
+            ;mouseenterframe.b
+            ;mouseenterinner.b
          EndStructureUnion
          StructureUnion
             focus.b
@@ -328,7 +328,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *drop._s_DRAG           ;
          
          click.a                 ; mouse clicked count
-         change.b                ; mouse moved state
+         Data.w                ; mouse moved state
          buttons.a               ; mouse clicked button
          
          steps.a
@@ -701,11 +701,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
                           ; \gadget[1] - splitter( ) first gadget
                           ; \gadget[2] - splitter( ) second gadget
                           ;
-         *cursor[4]                 
-         ; \cursor[0] 
-         ; \cursor[1]
-         ; \cursor[2]
-         ; \cursor[3]
+         *cursor[4]  
+         ; \cursor[0]     ; this cursor
+         ; \cursor[1]     ; current cursor
+         ; \cursor[2]     ; change cursor 1
+         ; \cursor[3]     ; change cursor 2
          Image._s_image[4]
          ; \image[0] - draw image
          ; \image[1] - released image
@@ -784,8 +784,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 677
-; FirstLine = 662
+; CursorPosition = 331
+; FirstLine = 322
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

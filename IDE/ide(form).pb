@@ -6,6 +6,9 @@ EnableExplicit
 ;
 UseWidgets( )
 UsePNGImageDecoder( )
+; test_docursor = 1
+; test_changecursor = 1
+; test_setcursor = 1
 ;
 ;- ENUMs
 #_DD_CreateNew = 1<<1
@@ -100,7 +103,6 @@ Global ide_help_splitter,
 Global group_select
 Global group_drag
 
-;Macro ChangeCursor( a,b ) : EndMacro
 
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
 
@@ -790,7 +792,7 @@ Procedure widget_events( )
       Case #__event_DragStart
          If is_drag_move( )
             If DDragPrivate( #_DD_reParent )
-               ; ChangeCursor( *e_widget, #PB_Cursor_Arrows )
+               ChangeCurrentCursor( *e_widget, #PB_Cursor_Arrows )
             EndIf
          Else
             If IsContainer( *e_widget ) 
@@ -798,11 +800,11 @@ Procedure widget_events( )
                   If Not a_index( )
                      If GetState( ide_inspector_elements) > 0 
                         If DDragPrivate( #_DD_CreateNew )
-                           ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                           ChangeCurrentCursor( *e_widget, #PB_Cursor_Cross )
                         EndIf
                      Else
                         If DDragPrivate( #_DD_Group )
-                           ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                           ChangeCurrentCursor( *e_widget, #PB_Cursor_Cross )
                         EndIf
                      EndIf
                   EndIf
@@ -882,13 +884,13 @@ Procedure widget_events( )
             If IsContainer( *e_widget ) 
                If GetState( ide_inspector_elements ) > 0 
                   If eventtype = #__event_MouseLeave
-                     If CurrentCursor( ) <> #PB_Cursor_Default
-                        ChangeCursor( *e_widget, #PB_Cursor_Default )
+                     If ResetCursor( *e_widget ) 
+                        Debug "reset cursor"
                      EndIf
-                     
-                  ElseIf *e_widget\enter = 2
-                     If CurrentCursor( ) <> #PB_Cursor_Cross
-                        ChangeCursor( *e_widget, #PB_Cursor_Cross )
+                  EndIf
+                  If eventtype = #__event_MouseEnter
+                     If SetCursor( *e_widget, #PB_Cursor_Cross, 1 )
+                        Debug "update cursor"
                      EndIf
                   EndIf
                EndIf
@@ -896,6 +898,11 @@ Procedure widget_events( )
          EndIf
    EndSelect
    
+;    If eventtype = #__event_Cursor
+;       Debug CurrentCursor( )
+;       ProcedureReturn #PB_Cursor_Default
+;    EndIf
+;    
    ;\\
    If eventtype = #__event_Drop Or 
       eventtype = #__event_LeftUp Or 
@@ -904,8 +911,10 @@ Procedure widget_events( )
       ; end new create
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
-         ChangeCursor( *e_widget, #PB_Cursor_Default )
-      EndIf
+         ;Debug 67898765
+         ; ChangeCursor( *e_widget, GetCursor( *e_widget ))
+         ;ChangeCurrentCursor( *e_widget, #PB_Cursor_Default )
+       EndIf
    EndIf
 EndProcedure
 
@@ -1160,7 +1169,7 @@ Procedure ide_events( )
          If *e_widget = ide_inspector_elements
             Debug " ------ drag ide_events() ----- "
             If DDragPrivate( #_DD_CreateNew )
-               ChangeCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, GetState( *e_widget ) ) ) ) )
+               ChangeCurrentCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, GetState( *e_widget ) ) ) ) )
             EndIf
          EndIf
          
@@ -1507,7 +1516,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState( ide_inspector_panel, 1 )
    
    ;   ;OpenList(ide_design_MDI)
-   Define result, example = 3
+   Define result, btn2, example = 3
    
    
    ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
@@ -1534,7 +1543,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Resize(ide_design_form, 30, 30, 500, 250)
       Disable(widget_add(ide_design_form, "button", 15, 25, 50, 30),1)
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
-      widget_add(ide_design_form, "button", 35, 65+40, 50, 30)
+      btn2 = widget_add(ide_design_form, "button", 35, 65+40, 50, 30)
       widget_add(ide_design_form, "text", 45, 65+40*2, 50, 30)
       
       Define *scrollarea = widget_add(ide_design_form, "scrollarea", 120, 25, 165, 175)
@@ -1593,6 +1602,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
    ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
    ;SetSizeBounds( *scrollarea )
+   SetMoveBounds( btn2, -1,-1,-1,-1 )
    SetMoveBounds( ide_design_form, -1,-1,-1,-1 )
    ;SetChildrenBounds( ide_design_MDI )
    
@@ -1646,9 +1656,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 134
-; FirstLine = 118
-; Folding = ---f0------------------------
+; CursorPosition = 10
+; Folding = ---f0-------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

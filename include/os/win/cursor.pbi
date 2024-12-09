@@ -150,6 +150,18 @@ Module Cursor
       StopDrawing( )
     EndIf
     
+    ;\\ https://www.purebasic.fr/english/viewtopic.php?t=78093
+;     Define dimensions.bitmap,icon.iconinfo
+;     If Not GetObject_(Image,SizeOf(dimensions),@dimensions)
+;        GetIconInfo_(Image,icon)
+;        GetObject_(icon\hbmMask,SizeOf(dimensions),@dimensions)
+;     EndIf
+; GetIconInfo_(hIcon, iconinfo.ICONINFO)
+; GetObject_(iconinfo\hbmMask, SizeOf(BITMAP), bitmap.BITMAP)
+; 
+; Width = bitmap\bmWidth
+; Height = bitmap\bmHeight
+    
     If DesktopScaledX(Width) <> GetSystemMetrics_( #SM_CXCURSOR ) And 
        DesktopScaledY(Height) <> GetSystemMetrics_( #SM_CYCURSOR) 
           Width = 32                  ;GetSystemMetrics_( #SM_CXCURSOR )
@@ -157,36 +169,42 @@ Module Cursor
           ResizeImage(Image, Width, Height, #PB_Image_Raw )
     EndIf
     
-    If Type = #__cursor_Arrows
+    If Type = #__cursor_Arrows Or
+       Type = #__cursor_UpDown Or
+       Type = #__cursor_LeftRight Or
+       Type = #__cursor_SplitUpDown Or
+       Type = #__cursor_SplitLeftRight 
        X = Width/2
        Y = Height/2
     EndIf
       
       ;\\
-    If Type = #__cursor_LeftUp Or
+    If Type = #__cursor_LeftDown Or
+       Type = #__cursor_LeftUp Or
        Type = #__cursor_RightDown Or
-       Type = #__cursor_Diagonal1 Or
-       Type = #__cursor_LeftDown Or
        Type = #__cursor_RightUp Or
+       Type = #__cursor_Diagonal1 Or
        Type = #__cursor_Diagonal2 
        X = Width/2 - 1
        Y = Height/2 - 1
     EndIf
-    
+      
     ;\\
-    If Type = #__cursor_SplitUp Or
-       Type = #__cursor_UpDown Or
-       Type = #__cursor_SplitUpDown Or
-       Type = #__cursor_SplitDown 
-       X = Width/2-2
+    If Type = #__cursor_SplitUp  
+       X = Width/2 
+       Y = Height/2 - 1
+    EndIf
+    If Type = #__cursor_SplitDown 
+       X = Width/2 
+       Y = 1
+    EndIf
+    If Type = #__cursor_SplitLeft 
+       X = Width/2 - 1
        Y = Height/2
     EndIf
-    If Type = #__cursor_SplitLeft Or
-       Type = #__cursor_LeftRight Or
-       Type = #__cursor_SplitLeftRight Or
-       Type = #__cursor_SplitRight
-       X = Width/2
-       Y = Height/2-2
+    If Type = #__cursor_SplitRight
+       X = 1
+       Y = Height/2
     EndIf
       
     ProcedureReturn Create( ImageID( Image ), X, Y )
@@ -481,9 +499,9 @@ Module Cursor
   EndProcedure
 EndModule   
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 144
-; Folding = -----------
+; CursorPosition = 198
+; FirstLine = 192
+; Folding = ------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

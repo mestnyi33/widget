@@ -36,6 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(tab_4, 1)
       
       ;
+      
       Debug " - "
       Debug ""+widget( )\bar\page\pos +" - page\pos"
       Debug ""+widget( )\bar\page\len +" - page\len"
@@ -55,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 2
+; CursorPosition = 38
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
