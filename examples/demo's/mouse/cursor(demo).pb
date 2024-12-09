@@ -7,28 +7,32 @@ CompilerIf #PB_Compiler_IsMainFile
    test_setcursor = 1
    #_DD_reParent = 1<<2
    
-   Global btn1, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+   Global form1, btn1, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
    Procedure events_widgets( )
       Protected drop, source, selectedIndex, selectedText$
       
       Select WidgetEvent( )
          Case #__event_DragStart      
+            If EventWidget( ) = form1
+               ChangeCurrentCursor( form1, #PB_Cursor_Cross ) 
+            EndIf
             
-            Select EventWidget( )         
-               Case btn1, Button_0    
-                  Debug "event( DRAGSTART )"
-                  
-                  If EventWidget( ) = btn1
-                     If DDragPrivate( #_DD_reParent )
-                        ChangeCurrentCursor( btn1, #PB_Cursor_Arrows ) 
-                     EndIf
-                  Else
-                     selectedIndex = GetState(EventWidget())           
-                     selectedText$ = GetItemText(EventWidget(), selectedIndex)
-                     DDragText(selectedText$)                                           
-                  EndIf
-            EndSelect
+            If EventWidget( ) = btn1
+               If DDragPrivate( #_DD_reParent )
+                  ChangeCurrentCursor( btn1, #PB_Cursor_Arrows ) 
+               EndIf
+            EndIf
+            
+            If EventWidget( ) = Button_0    
+               Debug "event( DRAGSTART )"
+               
+               selectedIndex = GetState(EventWidget())           
+               selectedText$ = GetItemText(EventWidget(), selectedIndex)
+               DDragText(selectedText$)   
+               ;CurrentCursor( ) = GetCursor( Button_0 )
+               ;ChangeCurrentCursor( Button_0, #PB_Cursor_Hand ) 
+            EndIf
             
          Case #__event_Drop   
             Debug "event( DROP )"
@@ -40,29 +44,30 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   If Open(0, 0, 0, 430, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetBackgroundColor(widget(), $FFAC97DB)
       
       ;\\
-      a_init(root( ))
-      Window(230,10,180,100,"form1")
+      form1 = Window(200,10,200,110,"form1")
+         a_init(widget( ))
          btn1 = Button(10,10,110,80, "btn1") 
+         SetMoveBounds( btn1, -1,-1,-1,-1 )
       CloseList( )
       
       ;\\
-      Splitter_1 = Splitter(30, 10, 180, 100, -1, -1, #PB_Splitter_Vertical)
+      Splitter_1 = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical)
       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 60)
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 60)
-      Splitter_2 = Splitter(30, 10, 180, 100, Splitter_1, -1)
+      Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1)
       ;SetFrame( Splitter_1, 20)
       
-      Button_0 = Button(30,120,110,80, "Button 0") 
-      Button_1 = Button(80,130,80,40, "Button 1")
-      Button_2 = Button(120,120,110,80, "Button 2") 
-      Button_3 = String(180,120,110,80, "String") 
+      Button_0 = Button(10,140,110,80, "drag", #__flag_textleft) 
+      Button_1 = Button(60,150,80,40, "Button 1")
+      Button_2 = Button(100,140,110,80, "Button 2") 
+      Button_3 = String(160,140,110,80, "String") 
       SetFrame( Button_3, 20)
-      Button_4 = String(250,120,110,80, "String") 
-      Button_5 = Button(320,120,110,80, "Button 3") 
+      Button_4 = String(230,140,110,80, "String") 
+      Button_5 = Button(300,140,110,80, "drop", #__flag_textright) 
       
       Disable( Button_1, 1 )
       
@@ -76,9 +81,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind( #PB_All, @events_widgets( ), #__event_DragStart )
       Bind( #PB_All, @events_widgets( ), #__event_Drop )
       
-      SetMoveBounds( btn1, -1,-1,-1,-1 )
-      SetMoveBounds( Button_0, -1,-1,-1,-1 )
-      
       ;\\ change current cursor
       ; Bind( #PB_All, @events_widgets( ), #__event_Cursor )
       
@@ -87,6 +89,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; Folding = +-
+; CursorPosition = 32
+; FirstLine = 19
+; Folding = --
 ; EnableXP
 ; DPIAware

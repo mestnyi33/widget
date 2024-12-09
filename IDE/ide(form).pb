@@ -6,9 +6,9 @@ EnableExplicit
 ;
 UseWidgets( )
 UsePNGImageDecoder( )
-; test_docursor = 1
-; test_changecursor = 1
-; test_setcursor = 1
+;test_docursor = 1
+test_changecursor = 1
+;test_setcursor = 1
 ;
 ;- ENUMs
 #_DD_CreateNew = 1<<1
@@ -884,13 +884,14 @@ Procedure widget_events( )
             If IsContainer( *e_widget ) 
                If GetState( ide_inspector_elements ) > 0 
                   If eventtype = #__event_MouseLeave
+                     ;ChangeCursor( *e_widget, GetCursor( *e_widget ))
                      If ResetCursor( *e_widget ) 
-                        Debug "reset cursor"
+                       ; Debug "reset cursor"
                      EndIf
                   EndIf
                   If eventtype = #__event_MouseEnter
-                     If SetCursor( *e_widget, #PB_Cursor_Cross, 1 )
-                        Debug "update cursor"
+                     If SetCursor( *e_widget, #__Cursor_Cross, 1 )
+                       ; Debug "update cursor"
                      EndIf
                   EndIf
                EndIf
@@ -898,11 +899,6 @@ Procedure widget_events( )
          EndIf
    EndSelect
    
-;    If eventtype = #__event_Cursor
-;       Debug CurrentCursor( )
-;       ProcedureReturn #PB_Cursor_Default
-;    EndIf
-;    
    ;\\
    If eventtype = #__event_Drop Or 
       eventtype = #__event_LeftUp Or 
@@ -911,10 +907,11 @@ Procedure widget_events( )
       ; end new create
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
-         ;Debug 67898765
+         
          ; ChangeCursor( *e_widget, GetCursor( *e_widget ))
-         ;ChangeCurrentCursor( *e_widget, #PB_Cursor_Default )
-       EndIf
+         If ResetCursor( *e_widget ) 
+         EndIf
+      EndIf
    EndIf
 EndProcedure
 
@@ -1656,8 +1653,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; Folding = ---f0-------------------------
+; CursorPosition = 910
+; FirstLine = 865
+; Folding = ---f0------------+------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

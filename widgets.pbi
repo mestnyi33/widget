@@ -2405,8 +2405,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          mouse( )\drop\actions = Actions
          mouse( )\drop\string  = Text
          
-         ;
-         ChangeCurrentCursor( PressedWidget( ), cursor::#__cursor_Drag )
+         CurrentCursor( ) = cursor::#__cursor_Drag
          ProcedureReturn mouse( )\drop
       EndProcedure
       
@@ -2425,8 +2424,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             mouse( )\drop\height  = ImageHeight( Image )
          EndIf
          
-         ;
-         ChangeCurrentCursor( PressedWidget( ), cursor::#__cursor_Drag )
+         CurrentCursor( ) = cursor::#__cursor_Drag
          ProcedureReturn mouse( )\drop
       EndProcedure
       
@@ -2440,8 +2438,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;         mouse( )\drop\actions = Actions
          ;         mouse( )\drop\files  = Files
          
-         ;
-         ChangeCurrentCursor( PressedWidget( ), cursor::#__cursor_Drag )
+         CurrentCursor( ) = cursor::#__cursor_Drag
          ProcedureReturn mouse( )\drop
       EndProcedure
       
@@ -2454,10 +2451,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          mouse( )\drop\format  = #PB_Drop_Private
          mouse( )\drop\actions = Actions
          mouse( )\drop\private = PrivateType
-         CurrentCursor( ) = cursor::#__cursor_Drag
          
-         ;
-         ChangeCurrentCursor( PressedWidget( ), cursor::#__cursor_Drag )
+         CurrentCursor( ) = cursor::#__cursor_Drag
          ProcedureReturn mouse( )\drop
       EndProcedure
       
@@ -5137,10 +5132,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             *this\cursor[Type] = *cursor
-            If Type = 1
-               ChangeCursor( *this, *cursor )
-            Else
-               *this\cursor[1] = *cursor
+            If Type <> 1
+              *this\cursor[1] = *cursor
             EndIf
             ProcedureReturn 1
          EndIf
@@ -5154,8 +5147,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i ChangeCursor( *this._s_WIDGET, *cursor )
-         If ChangeCurrentCursor( *this, *cursor )
+         If *this\cursor[1] <> *cursor
             *this\cursor[1] = *cursor
+            ProcedureReturn ChangeCurrentCursor( *this, *cursor )
          EndIf
       EndProcedure
       
@@ -5202,17 +5196,29 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   If mouse( )\drag <> #PB_Drag_Enter
                      mouse( )\drag = #PB_Drag_Enter
-                     ; Debug "#PB_Drag_Enter"
+                      Debug "#PB_Drag_Enter"
                      
                      If CurrentCursor( ) = cursor::#__cursor_Drag
                         ChangeCurrentCursor( PressedWidget( ), cursor::#__cursor_Drop )
                      EndIf
                   EndIf
                Else
-                  If Not *this\press
+                  If *this\press
+                     If *this\enter
+                        If mouse( )\drag <> #PB_Drag_Leave
+                           mouse( )\drag = #PB_Drag_Leave
+                           Debug "press #PB_Drag_Leave"
+                           
+                           If CurrentCursor( ) = cursor::#__cursor_Drag
+                              CurrentCursor( ) = 0
+                              ChangeCurrentCursor( *this, cursor::#__cursor_Drag )
+                           EndIf
+                        EndIf
+                     EndIf
+                  Else
                      If mouse( )\drag = #PB_Drag_Enter
                         mouse( )\drag = #PB_Drag_Leave
-                        ; Debug "#PB_Drag_Leave"
+                        Debug "#PB_Drag_Leave"
                         
                         If CurrentCursor( ) = cursor::#__cursor_Drop
                            ChangeCurrentCursor( PressedWidget( ), cursor::#__cursor_Drag )
@@ -20988,6 +20994,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\root\repaint = 0
             EndIf
          EndIf
+         
       EndProcedure
       
       ;-
@@ -24082,9 +24089,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5141
-; FirstLine = 5008
-; Folding = ------------------------------------------------------------------------------------------------------e--8-------------------------4----------4------------------f--------------------------------------------------------------------------------------------9----------------------------------------------------------0--------------------Pu0--------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------------------04-------f----0-+---------------------------------------------------
+; CursorPosition = 20555
+; FirstLine = 20186
+; Folding = ------------------------------------------------------b-----------------------------------------------e--8-------------------------4-----------+------------------8-------------------------------------------------------------------------------------------n----------------------------------------------------------v---------------------xt---------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------------------------------------------v---------------v-+-------8---v-4----------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
