@@ -14,9 +14,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;Button(10,5,50,35, "butt")
+   Container(20,28,8,203)
+   CloseList()
    
-   *w = Panel     (28, 28, 356, 203)
-      AddItem (*w, -1, "Панель 1")
+   *w = Panel(28, 28, 356, 203);, #__flag_borderless)
+      AddItem(*w, -1, "Панель 1")
       Button(5, 5, 80, 22,"кнопка 1")
       
       Procedure events_butt()
@@ -58,7 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 25
+; CursorPosition = 20
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
+; DPIAware

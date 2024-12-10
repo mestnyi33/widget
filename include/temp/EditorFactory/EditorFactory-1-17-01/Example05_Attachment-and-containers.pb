@@ -349,6 +349,6 @@ EndDataSection
 ; EnableThread
 ; EnableXP
 ; DPIAware
-; EnableCompileCount = 512
+; EnableCompileCount = 514
 ; EnableBuildCount = 0
 ; EnableExeConstant

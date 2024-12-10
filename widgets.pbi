@@ -205,26 +205,26 @@ CompilerIf Not Defined( widget, #PB_Module )
       #__cursor_LeftDownRightUp = Cursor::#__cursor_LeftDownRightUp
       
       CompilerIf #PB_Compiler_Version =< 546
-         Global DPISCALEDX.a = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
-         Global DPISCALEDY.a = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
+         Global DPISCALEDX.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
+         Global DPISCALEDY.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
          
          Macro DesktopResolutionX( )
-            DPISCALEDX;(GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96)
+            DPISCALEDX
          EndMacro
          Macro DesktopResolutionY( )
-            DPISCALEDY;(GetDeviceCaps_(GetDC_(0),#LOGPIXELSY) / 96)
+            DPISCALEDY
          EndMacro
          Macro DesktopScaledX( _x_ )
-            ((_x_) * DesktopResolutionX( )) ; DesktopScaledX(_x_) ; 
+            ((_x_) * DesktopResolutionX( ))
          EndMacro
          Macro DesktopScaledY( _y_ )
-            ((_y_) * DesktopResolutionY( )) ; DesktopScaledY(_y_) ; 
+            ((_y_) * DesktopResolutionY( ))
          EndMacro
          Macro DesktopUnscaledX( _x_ )
-            ((_x_) / DesktopResolutionX( )) ; DesktopUnscaledX(_x_) ; 
+            ((_x_) / DesktopResolutionX( ))
          EndMacro
          Macro DesktopUnscaledY( _y_ )
-            ((_y_) / DesktopResolutionY( )) ; DesktopUnscaledY(_y_) ; 
+            ((_y_) / DesktopResolutionY( ))
          EndMacro
          ;     CompilerEndIf
          ;     
@@ -632,7 +632,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro ActiveWindow( ): keyboard( )\window: EndMacro      ; Returns activeed window
       Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro  ; Returns activeed gadget
       Macro ActiveBar( ): ActiveWindow( )\gadget\bar\gadget: EndMacro ; Returns activeed gadget
-      Macro GetActive( ): keyboard( )\widget: EndMacro         ; Returns actived object
+      Macro GetActive( ): keyboard( )\widget: EndMacro                ; Returns actived object
       
       
       ;-
@@ -884,14 +884,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          Bool( _mouse_ > _position_ And _mouse_ <= ( _position_ + _size_ ) And ( _position_ + _size_ ) > 0 )
       EndMacro
       
-;       Macro is_atbox_( _x_, _y_, _width_, _height_, _mouse_x_, _mouse_y_ )
-;          Bool( is_inside_( _x_, _width_, _mouse_x_ ) And
-;                is_inside_( _y_, _height_, _mouse_y_ ) )
-;       EndMacro
-;       
-;       Macro is_atcircle_( _position_x_, _position_y_, _mouse_x_, _mouse_y_, _circle_radius_ )
-;          Bool( Sqr( Pow((( _position_x_ + _circle_radius_ ) - _mouse_x_ ), 2 ) + Pow((( _position_y_ + _circle_radius_ ) - _mouse_y_ ), 2 )) <= _circle_radius_ )
-;       EndMacro
+      ;       Macro is_atbox_( _x_, _y_, _width_, _height_, _mouse_x_, _mouse_y_ )
+      ;          Bool( is_inside_( _x_, _width_, _mouse_x_ ) And
+      ;                is_inside_( _y_, _height_, _mouse_y_ ) )
+      ;       EndMacro
+      ;       
+      ;       Macro is_atcircle_( _position_x_, _position_y_, _mouse_x_, _mouse_y_, _circle_radius_ )
+      ;          Bool( Sqr( Pow((( _position_x_ + _circle_radius_ ) - _mouse_x_ ), 2 ) + Pow((( _position_y_ + _circle_radius_ ) - _mouse_y_ ), 2 )) <= _circle_radius_ )
+      ;       EndMacro
       
       Macro is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ = )
          Bool( is_inside_( _address_\x#_mode_, _address_\width#_mode_, _mouse_x_ ) And
@@ -899,13 +899,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       
-     
-;       Macro is_interrect_( _address_1_x_, _address_1_y_, _address_1_width_, _address_1_height_,
-;                            _address_2_x_, _address_2_y_, _address_2_width_, _address_2_height_ )
-;          
-;          Bool(( _address_1_x_ + _address_1_width_ ) > _address_2_x_ And _address_1_x_ < ( _address_2_x_ + _address_2_width_ ) And
-;               ( _address_1_y_ + _address_1_height_ ) > _address_2_y_ And _address_1_y_ < ( _address_2_y_ + _address_2_height_ ))
-;       EndMacro
+      
+      ;       Macro is_interrect_( _address_1_x_, _address_1_y_, _address_1_width_, _address_1_height_,
+      ;                            _address_2_x_, _address_2_y_, _address_2_width_, _address_2_height_ )
+      ;          
+      ;          Bool(( _address_1_x_ + _address_1_width_ ) > _address_2_x_ And _address_1_x_ < ( _address_2_x_ + _address_2_width_ ) And
+      ;               ( _address_1_y_ + _address_1_height_ ) > _address_2_y_ And _address_1_y_ < ( _address_2_y_ + _address_2_height_ ))
+      ;       EndMacro
       
       Macro is_intersect_( _address_1_, _address_2_, _address_1_mode_ = )
          Bool(( _address_1_\x#_address_1_mode_ + _address_1_\width#_address_1_mode_ ) > _address_2_\x And _address_1_\x#_address_1_mode_ < ( _address_2_\x + _address_2_\width ) And
@@ -917,36 +917,36 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
-;       Macro MouseInner( _this_, _mouse_x_, _mouse_y_ )
-;          Bool( is_atpoint_( _this_, _mouse_x_, _mouse_y_, [#__c_draw] ) And
-;                is_atpoint_( _this_, _mouse_x_, _mouse_y_, [#__c_inner] ) And
-;                Not ( _this_\type = #__type_Splitter And is_atpoint_( _this_\bar\button, _mouse_x_, _mouse_y_ ) = 0 ) And
-;                Not ( _this_\type = #__type_HyperLink And is_atpoint_( _this_, _mouse_x_ - _this_\frame_x( ), _mouse_y_ - _this_\frame_y( ), [#__c_Required] ) = 0 ))
-;       EndMacro
+      ;       Macro MouseInner( _this_, _mouse_x_, _mouse_y_ )
+      ;          Bool( is_atpoint_( _this_, _mouse_x_, _mouse_y_, [#__c_draw] ) And
+      ;                is_atpoint_( _this_, _mouse_x_, _mouse_y_, [#__c_inner] ) And
+      ;                Not ( _this_\type = #__type_Splitter And is_atpoint_( _this_\bar\button, _mouse_x_, _mouse_y_ ) = 0 ) And
+      ;                Not ( _this_\type = #__type_HyperLink And is_atpoint_( _this_, _mouse_x_ - _this_\frame_x( ), _mouse_y_ - _this_\frame_y( ), [#__c_Required] ) = 0 ))
+      ;       EndMacro
       Macro MouseEnter( _this_, _mode_ = 2 ) : _this_\enter = _mode_ : EndMacro
       Macro MouseButtonPress( ): mouse( )\press: EndMacro ; Returns mouse x
-      Macro MouseButtons( ): mouse( )\buttons: EndMacro    ; Returns mouse x
+      Macro MouseButtons( ): mouse( )\buttons: EndMacro   ; Returns mouse x
       Macro MouseWheelX( ): mouse( )\wheel\x: EndMacro    ; Returns mouse x
       Macro MouseWheelY( ): mouse( )\wheel\y: EndMacro    ; Returns mouse x
-      Macro MouseData( ): mouse( )\data: EndMacro    ; Returns mouse x
+      Macro MouseData( ): mouse( )\data: EndMacro         ; Returns mouse x
       Macro GetMouseX( ): DPIUnScaledX( mouse( )\x ): EndMacro ; Returns mouse x
       Macro GetMouseY( ): DPIUnScaledY( mouse( )\y ): EndMacro ; Returns mouse y
       
       ;-
       
-;       ;-
-;       Macro ImageIDWidth( _image_id_ )
-;          func::GetImageWidth( _image_id_ )
-;       EndMacro
-;       
-;       Macro ImageIDHeight( _image_id_ )
-;          func::GetImageHeight( _image_id_ )
-;       EndMacro
-;       
-;       Macro ResizeImageID( _image_id_, _width_, _height_ )
-;          func::SetImageWidth( _image_id_, _width_ )
-;          func::SetImageHeight( _image_id_, _height_ )
-;       EndMacro
+      ;       ;-
+      ;       Macro ImageIDWidth( _image_id_ )
+      ;          func::GetImageWidth( _image_id_ )
+      ;       EndMacro
+      ;       
+      ;       Macro ImageIDHeight( _image_id_ )
+      ;          func::GetImageHeight( _image_id_ )
+      ;       EndMacro
+      ;       
+      ;       Macro ResizeImageID( _image_id_, _width_, _height_ )
+      ;          func::SetImageWidth( _image_id_, _width_ )
+      ;          func::SetImageHeight( _image_id_, _height_ )
+      ;       EndMacro
       
       
       ;-
@@ -1537,9 +1537,21 @@ CompilerIf Not Defined( widget, #PB_Module )
    EndDeclareModule
    
    Module widget
+      Global DPISCALED.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96) - 1.0
+      
+      Procedure DPIScaled( _value_ )
+         ;ProcedureReturn DPIScaledX(_value_)
+         ProcedureReturn _value_ + Bool(DPISCALED) * (_value_ * DPISCALED)
+      EndProcedure
+      
       Global NewMap typeCount( )
       Global cursor_change_widget
-      Global toogleline = DPIScaled(1);DPIScaled(3)
+      
+      
+      Global bar_toggle_line_size = DPIScaled(#__bar_toggle_line_size)
+      Global bar_splitter_size = DPIScaled(#__bar_splitter_size)
+      Global dpi_scale_two = DPIScaled(2)
+      
       
       ;-
       ;-\\ DECLARE PRIVATEs
@@ -1572,12 +1584,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
       Declare   edit_RemoveItem( *this._s_WIDGET, item )
       Declare   edit_ClearItems( *this._s_WIDGET )
-      
-      Global DPISCALED.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96) - 1.0
-      
-      Procedure DPIScaled( _value_ )
-         ProcedureReturn _value_ + Bool(DPISCALED) * (_value_ * DPISCALED)
-      EndProcedure
       
       ;\\
       Macro Leaved( _address_ )
@@ -2802,7 +2808,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ProcedureReturn 0
          EndIf
          
-            ;\\
+         ;\\
          ;Steps = DPIScaled(Steps)
          Protected hDC, X, Y
          ExamineDesktops( )
@@ -3824,7 +3830,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Macro HideState( _this_, _parent_ )
          _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\__Tab( ) And _this_\TabIndex( ) <> _parent_\__Tab( )\TabState( ) ))))
-
+         
          If _this_\__Tab( )
             If _this_\hide
                _this_\__Tab( )\hide = - 1
@@ -3851,7 +3857,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If _this_\hide Or _this_\scroll\h\bar\max <= _this_\scroll\h\bar\page\len
                   _this_\scroll\h\hide = - 1
                Else
-                 _this_\scroll\h\hide = _this_\scroll\h\hide[1]
+                  _this_\scroll\h\hide = _this_\scroll\h\hide[1]
                EndIf
             EndIf
          EndIf
@@ -3894,7 +3900,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
       EndMacro
-       
+      
       ;-
       Procedure.b HideItem( *this._s_widget, item.l, state.b )
          If *this\type = #__type_panel
@@ -3917,7 +3923,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\haschildren
                ; hide all children's except those whose parent-item is selected
                If StartEnum( *this )
-                   HideState( widgets( ), widgets( )\parent )
+                  HideState( widgets( ), widgets( )\parent )
                   StopEnum( )
                EndIf
             EndIf
@@ -4326,7 +4332,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\autosize And *this\parent And *this\parent\type = #__type_Splitter
             *this\autosize = 0
          EndIf
-                       
+         
          ;\\
          If *this\autosize 
             If *this\parent And 
@@ -4741,10 +4747,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ if the integral tab bar
          If *this\__Tab( )
             ;If *this\fs[1] Or *this\fs[3]
-               *this\inner_x( ) = X
+            *this\inner_x( ) = X
             ;EndIf
             ;If *this\fs[2] Or *this\fs[4]
-               *this\inner_y( ) = Y
+            *this\inner_y( ) = Y
             ;EndIf
             
             ;\\
@@ -4769,10 +4775,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;If *this\fs[1] Or *this\fs[3]
-               *this\inner_x( ) + *this\fs + *this\fs[1]
+            *this\inner_x( ) + *this\fs + *this\fs[1]
             ;EndIf
             ;If *this\fs[2] Or *this\fs[4]
-               *this\inner_y( ) + *this\fs + *this\fs[2]
+            *this\inner_y( ) + *this\fs + *this\fs[2]
             ;EndIf
          EndIf
          
@@ -5139,7 +5145,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\cursor[Type] = *cursor
             If Type <> 1
-              *this\cursor[1] = *cursor
+               *this\cursor[1] = *cursor
             EndIf
             ProcedureReturn 1
          EndIf
@@ -5161,7 +5167,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i ChangeCurrentCursor( *this._s_WIDGET, *cursor )
          Protected result.i
-           
+         
          If CurrentCursor( ) <> *cursor
             If *cursor 
                cursor_change_widget = *this
@@ -5202,7 +5208,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   If mouse( )\drag <> #PB_Drag_Enter
                      mouse( )\drag = #PB_Drag_Enter
-                      Debug "#PB_Drag_Enter"
+                     Debug "#PB_Drag_Enter"
                      
                      If CurrentCursor( ) = cursor::#__cursor_Drag
                         ChangeCurrentCursor( PressedWidget( ), cursor::#__cursor_Drop )
@@ -6123,7 +6129,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result.i
          
          If *this\type = #__type_Panel
-           Select Attribute
+            Select Attribute
                Case #PB_Panel_ItemWidth : result = DPIUnScaledX(*this\inner_width( ))                           
                Case #PB_Panel_ItemHeight : result = DPIUnScaledY(*this\inner_height( ))                        
                Case #PB_Panel_TabHeight : result = *this\fs[1]+*this\fs[2]+*this\fs[3]+*this\fs[4] 
@@ -6785,7 +6791,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If is_level_( *this, *widget )
-         ; If *this <> *widget And *this\TabIndex( ) = *widget\TabIndex( )
+            ; If *this <> *widget And *this\TabIndex( ) = *widget\TabIndex( )
             
             If Position = #PB_List_First Or
                Position = #PB_List_Before
@@ -7315,7 +7321,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     If widgets( )\focus = 2
                                        widgets( )\focus = 3
                                        If test_focus_set
-                                         Debug "Deactive canvas&widget( ) "+widgets( )\class
+                                          Debug "Deactive canvas&widget( ) "+widgets( )\class
                                        EndIf
                                        ;
                                        DoFocus( widgets( ), #__event_LostFocus )
@@ -7331,9 +7337,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *deactiveWindow\focus = 2
                      *deactiveWindow\focus = 3
                      If test_focus_set
-                     Debug "Deactive canvas&widgetwindow "+*deactiveWindow\class
-                  EndIf
-                  ;
+                        Debug "Deactive canvas&widgetwindow "+*deactiveWindow\class
+                     EndIf
+                     ;
                      DoFocus( *deactiveWindow, #__event_LostFocus )
                   EndIf
                   
@@ -7341,9 +7347,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *deactiveGadget\focus = 2
                      *deactiveGadget\focus = 3
                      If test_focus_set
-                     Debug "Deactive canvas&widgetgadget "+*deactiveGadget\class
-                  EndIf
-                  ;
+                        Debug "Deactive canvas&widgetgadget "+*deactiveGadget\class
+                     EndIf
+                     ;
                      DoFocus( *deactiveGadget, #__event_LostFocus )
                   EndIf
                EndIf
@@ -7358,7 +7364,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Else
                   *active = *this
                EndIf
-            
+               
                ;\\ set active all parents
                If ActiveWindow( )\root\focus = 3
                   ActiveWindow( )\root\focus = 2
@@ -7381,9 +7387,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  If widgets( )\focus = 3
                                     widgets( )\focus = 2
                                     If test_focus_set
-                     Debug "Active widget( ) "+widget( )\class
-                  EndIf
-                  ;
+                                       Debug "Active widget( ) "+widget( )\class
+                                    EndIf
+                                    ;
                                     DoFocus( widgets( ), #__event_Focus )
                                  EndIf
                               EndIf
@@ -7398,9 +7404,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If ActiveWindow( )\focus = 3
                      ActiveWindow( )\focus = 2
                      If test_focus_set
-                     Debug "Active canvas&widgetwindow "+ActiveWindow( )\class
-                  EndIf
-                  ;
+                        Debug "Active canvas&widgetwindow "+ActiveWindow( )\class
+                     EndIf
+                     ;
                      DoFocus( ActiveWindow( ), #__event_Focus )
                   EndIf
                   
@@ -7408,18 +7414,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ActiveGadget( )\focus = 3
                      ActiveGadget( )\focus = 2
                      If test_focus_set
-                     Debug "Active canvas&widgetgadget "+ActiveGadget( )\class
-                  EndIf
-                  ;
+                        Debug "Active canvas&widgetgadget "+ActiveGadget( )\class
+                     EndIf
+                     ;
                      DoFocus( ActiveGadget( ), #__event_Focus )
                   EndIf
                Else
                   If *this\focus = 3
                      *this\focus = 2
                      If test_focus_set
-                     Debug "Active canvas&widget "+*this\class
-                  EndIf
-                  ;
+                        Debug "Active canvas&widget "+*this\class
+                     EndIf
+                     ;
                      DoFocus( *this, #__event_Focus )
                   EndIf 
                EndIf
@@ -7517,7 +7523,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                           widget( )\focus = 3
                                           
                                           If test_focus_set
-                     Debug "Deactive widget( ) "+widget( )\class
+                                             Debug "Deactive widget( ) "+widget( )\class
                                           EndIf
                                           DoFocus( widget( ), #__event_LostFocus )
                                        EndIf
@@ -7534,9 +7540,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                            If *deactiveWindow\focus <> 3 
                               *deactiveWindow\focus = 3
                               If test_focus_set
-                     Debug "Deactive widgetwindow "+*deactiveWindow\class
-                  EndIf
-                  ;
+                                 Debug "Deactive widgetwindow "+*deactiveWindow\class
+                              EndIf
+                              ;
                               DoFocus( *deactiveWindow, #__event_LostFocus )
                            EndIf
                         EndIf
@@ -7544,10 +7550,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *deactiveGadget And *deactiveGadget <> *active
                            If *deactiveGadget\focus <> 3
                               *deactiveGadget\focus = 3
-                             If test_focus_set
-                      Debug "Deactive widgetgadget "+*deactiveGadget\class
-                   EndIf
-                   ;
+                              If test_focus_set
+                                 Debug "Deactive widgetgadget "+*deactiveGadget\class
+                              EndIf
+                              ;
                               DoFocus( *deactiveGadget, #__event_LostFocus )
                            EndIf
                         EndIf
@@ -7560,9 +7566,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If ActiveWindow( )\root\focus = 3
                         ActiveWindow( )\root\focus = 2
                         If test_focus_set
-                     Debug "Active widgetroot "+ActiveWindow( )\root\class
-                  EndIf
-                  ;
+                           Debug "Active widgetroot "+ActiveWindow( )\root\class
+                        EndIf
+                        ;
                         DoFocus( ActiveWindow( )\root, #__event_Focus )
                      EndIf
                      If *active\address
@@ -7578,9 +7584,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                        If widgets( )\focus = 3
                                           widgets( )\focus = 2
                                           If test_focus_set
-                     Debug "Active widget( ) "+widget( )\class
-                  EndIf
-                  ;
+                                             Debug "Active widget( ) "+widget( )\class
+                                          EndIf
+                                          ;
                                           DoFocus( widgets( ), #__event_Focus )
                                        EndIf
                                     EndIf
@@ -7595,9 +7601,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If ActiveWindow( )\focus <> 2
                         ActiveWindow( )\focus = 2
                         If test_focus_set
-                     Debug "Active widgetwindow "+ActiveWindow( )\class
-                  EndIf
-                  ;
+                           Debug "Active widgetwindow "+ActiveWindow( )\class
+                        EndIf
+                        ;
                         DoFocus( ActiveWindow( ), #__event_Focus )
                      EndIf
                      
@@ -7605,9 +7611,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ActiveGadget( )\focus <> 2
                         ActiveGadget( )\focus = 2
                         If test_focus_set
-                     Debug "Active widgetgadget "+ActiveGadget( )\class
-                  EndIf
-                  ;
+                           Debug "Active widgetgadget "+ActiveGadget( )\class
+                        EndIf
+                        ;
                         DoFocus( ActiveGadget( ), #__event_Focus )
                      EndIf
                   EndIf
@@ -8092,7 +8098,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected.l X = #PB_Ignore, Y = #PB_Ignore, Width = #PB_Ignore, Height = #PB_Ignore
          
          *this\bounds\move.allocate(BOUNDMOVE)
-                  
+         
          If MinimumX = #PB_Ignore
             If Not *this\bounds\move\min\x
                *this\bounds\move\min\x = *this\parent\scroll_x( ) 
@@ -8498,7 +8504,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If IsImage( Image )
             ;Debug ""+ImageWidth(Image)+""+DPIResolutionX( )
             If ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
-               ResizeImage(Image, DPIScaled(ImageWidth(Image)), DPIScaled(ImageHeight(Image)), #PB_Image_Raw )
+               ResizeImage(Image, DPIScaledx(ImageWidth(Image)), DPIScaledy(ImageHeight(Image)), #PB_Image_Raw )
             EndIf
          EndIf
          ;CompilerEndIf
@@ -9016,7 +9022,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                pos = DPIScaled(1) 
             EndIf
             If *this\parent And *this\parent\type = #__type_Panel
-               pos = toogleline
+               pos = bar_toggle_line_size
             EndIf
             
             Protected layout = pos * 2
@@ -9089,8 +9095,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *tabs( )\x        = - Bool( *this\parent\fs[3] )
                               *tabs( )\width    = *this\width
                            Else
-                              *tabs( )\x       = Bool( *this\parent\fs[3] ) + Bool( *this\parent\fs[1] ) * toogleline
-                              *tabs( )\width  = *this\width - toogleline - DPIScaled(1) - 1
+                              *tabs( )\x       = Bool( *this\parent\fs[3] ) + Bool( *this\parent\fs[1] ) * bar_toggle_line_size
+                              *tabs( )\width  = *this\width - bar_toggle_line_size - DPIScaled(1) - 1
                            EndIf
                            
                         Else
@@ -9167,8 +9173,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *tabs( )\y       = - (Bool( *this\parent\fs[4] ))
                               *tabs( )\height  = *this\height
                            Else
-                              *tabs( )\y       = Bool( *this\parent\fs[4] ) + Bool( *this\parent\fs[2] ) * toogleline
-                              *tabs( )\height  = *this\height - toogleline - DPIScaled(1) - 1
+                              *tabs( )\y       = Bool( *this\parent\fs[4] ) + Bool( *this\parent\fs[2] ) * bar_toggle_line_size
+                              *tabs( )\height  = *this\height - bar_toggle_line_size - DPIScaled(1) - 1
                            EndIf
                            
                         Else
@@ -9197,8 +9203,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                            ;
                            *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
-                                            Bool( *tabs( )\image\width ) * ( image_pos * 2 ) + *tabs( )\image\width) - Bool( *tabs( )\image\width And *tabs( )\text\width ) * ( text_pos )
-                          
+                                             Bool( *tabs( )\image\width ) * ( image_pos * 2 ) + *tabs( )\image\width) - Bool( *tabs( )\image\width And *tabs( )\text\width ) * ( text_pos )
+                           
                            ;
                            If *this\type = #__type_TabBar
                               *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
@@ -9271,7 +9277,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Else
                draw_mode_alpha_( #PB_2DDrawing_Default )
                draw_box(_this_\bar\button[2], color\back)
-              ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
+               ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
             EndIf
          EndIf
          
@@ -9439,7 +9445,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\TabFocused( )\itemindex <> #PB_Ignore
                draw_font( *this\TabFocused( ) )
                ;
-               If *this\child 
+               If is_integral_( *this )
                   If *this\parent
                      If Not *this\TabFocused( )\press
                         draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -9465,21 +9471,23 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\child
             If *this\parent
                Protected color = *this\parent\color\frame
-               If *this\parent\focus >= 0 
-                  color = *this\parent\color\frame[*this\parent\focus]
-               EndIf
+               ;If *this\parent\focus = 2
+                  color = *this\parent\color\frame[2]
+               ;EndIf
                
                If *bar\vertical
                   If *activeTAB And 
                      *activeTAB\visible
-                     ; frame on the selected item
-                     If *this\parent\fs[1]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y, toogleline, *activeTAB\height, color)
-                     ElseIf *this\parent\fs[3]
-                        Box(X + *activeTAB\x + *activeTAB\width-toogleline, Y + *activeTAB\y, toogleline, *activeTAB\height, color)
+                     If *this\parent\fs
+                        Line( X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, *this\parent\color\frame )
+                        Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, *this\parent\color\frame )
                      EndIf
-                     Line( X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
-                     Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
+                     ; line on the selected item
+                     If *this\parent\fs[1]
+                        Box(X + *activeTAB\x, Y + *activeTAB\y, bar_toggle_line_size, *activeTAB\height, color)
+                     ElseIf *this\parent\fs[3]
+                        Box(X + *activeTAB\x + *activeTAB\width-bar_toggle_line_size, Y + *activeTAB\y, bar_toggle_line_size, *activeTAB\height, color)
+                     EndIf
                      ;
                      If is_menu_( *this )
                         Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, *activeTAB\height, color )
@@ -9487,48 +9495,52 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   If *this\type = #__type_TabBar
-                     color = *this\parent\color\frame
-                     ;
-                     If *this\parent\fs[1]
-                        If *activeTAB
-                           ; horizontal tab bottom line
-                           Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                           Line( *this\frame_x( ) + *this\frame_width( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                     If *this\parent\fs
+                        color = *this\parent\color\frame
+                        ;
+                        If *this\parent\fs[1]
+                           If *activeTAB
+                              ; horizontal tab bottom line
+                              Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
+                              Line( *this\frame_x( ) + *this\frame_width( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                           Else
+                              Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                           EndIf
                         Else
-                           Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                           Line( *this\parent\frame_x( ), *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
                         EndIf
-                     Else
-                        Line( *this\parent\frame_x( ), *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
-                     EndIf
-                     
-                     ;
-                     Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
-                     Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
-                     
-                     If *this\parent\fs[3]
-                        If *activeTAB 
-                           ; horizontal tab bottom line
-                           Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                           Line( *this\frame_x( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                        
+                        ;
+                        Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
+                        Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
+                        
+                        If *this\parent\fs[3]
+                           If *activeTAB 
+                              ; horizontal tab bottom line
+                              Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
+                              Line( *this\frame_x( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                           Else
+                              Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                           EndIf
                         Else
-                           Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                           Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
                         EndIf
-                     Else
-                        Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
                      EndIf
                   EndIf
                   
                Else
                   If *activeTAB And 
                      *activeTAB\visible
-                     ; frame on the selected item
-                     If *this\parent\fs[2]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width, toogleline, color)
-                     ElseIf *this\parent\fs[4]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height-toogleline, *activeTAB\width, toogleline, color)
+                     If *this\parent\fs
+                        Line( X + *activeTAB\x, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), *this\parent\color\frame )
+                        Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), *this\parent\color\frame )
                      EndIf
-                     Line( X + *activeTAB\x, Y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4]), color )
-                     Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, *activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4]), color )
+                     ; line on the selected item
+                     If *this\parent\fs[2]
+                        Box(X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width, bar_toggle_line_size, color)
+                     ElseIf *this\parent\fs[4]
+                        Box(X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height-bar_toggle_line_size, *activeTAB\width, bar_toggle_line_size, color)
+                     EndIf
                      ;
                      If is_menu_( *this )
                         Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width, 1, color )
@@ -9536,41 +9548,43 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   If *this\type = #__type_TabBar
-                     color = *this\parent\color\frame
-                     ;
-                    ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
-                     If *this\parent\fs[2]
-                        If *activeTAB 
-                           ; horizontal tab bottom line
-                           Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                           Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
+                     If *this\parent\fs
+                        color = *this\parent\color\frame
+                        ;
+                        ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
+                        If *this\parent\fs[2]
+                           If *activeTAB 
+                              ; horizontal tab bottom line
+                              Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                              Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
+                           Else
+                              Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
+                           EndIf
                         Else
-                           Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
+                           Line( *this\parent\inner_x( ), *this\parent\inner_y( ), *this\parent\inner_width( ), 1, color )
                         EndIf
-                     Else
-                        Line( *this\parent\inner_x( ), *this\parent\inner_y( ), *this\parent\inner_width( ), 1, color )
-                     EndIf
-                     
-                     ;
-                     Line( *this\parent\inner_x( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                    ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ) - 1, 1, *this\parent\frame_height( ) + 2, color )
-                     
-                     Line( *this\parent\inner_x( ) + *this\parent\inner_width( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                    ; Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ) - 1, 1, *this\parent\frame_height( ) + 2, color )
-                     
-                     ;
-                     If *this\parent\fs[4]
-                        If *activeTAB 
-                           ; horizontal tab bottom line
-                           Line( *this\frame_x( ), *this\frame_y( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                           Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
+                        
+                        ;
+                        Line( *this\parent\inner_x( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+                        ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ) - 1, 1, *this\parent\frame_height( ) + 2, color )
+                        
+                        Line( *this\parent\inner_x( ) + *this\parent\inner_width( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
+                        ; Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ) - 1, 1, *this\parent\frame_height( ) + 2, color )
+                        
+                        ;
+                        If *this\parent\fs[4]
+                           If *activeTAB 
+                              ; horizontal tab bottom line
+                              Line( *this\frame_x( ), *this\frame_y( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                              Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
+                           Else
+                              Line( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), 1, color )
+                           EndIf
                         Else
-                           Line( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), 1, color )
+                           Line( *this\parent\inner_x( ), *this\parent\inner_y( ) + *this\parent\inner_height( ), *this\parent\inner_width( ), 1, color )
                         EndIf
-                     Else
-                        Line( *this\parent\inner_x( ), *this\parent\inner_y( ) + *this\parent\inner_height( ), *this\parent\inner_width( ), 1, color )
+                        ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
                      EndIf
-                    ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
                   EndIf
                   
                EndIf
@@ -9749,59 +9763,59 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;
-;                ; background buttons draw
-;                If Not *BB1\hide
-;                   If *BB1\color\fore <> - 1
-;                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
-;                      draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
-;                   Else
-;                      draw_mode_alpha_( #PB_2DDrawing_Default )
-;                      draw_box(*BB1, color\back)
-;                   EndIf
-;                EndIf
-;                If Not *BB2\hide
-;                   If *BB2\color\fore <> - 1
-;                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
-;                      draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
-;                   Else
-;                      draw_mode_alpha_( #PB_2DDrawing_Default )
-;                      draw_box(*BB2, color\back)
-;                   EndIf
-;                EndIf
-;                
-;                draw_mode_alpha_( #PB_2DDrawing_Outlined )
-;                
-;                ;
-;                If *this\type = #__type_Scroll
-;                   If *bar\vertical
-;                      If (*bar\page\len + Bool(*this\round ) * (*this\width / 4 )) = *this\frame_height( )
-;                         Line(*this\frame_x( ), *this\frame_y( ), 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-;                      Else
-;                         Line(*this\frame_x( ), *this\frame_y( ) + *BB1\round, 1, *this\height - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-;                      EndIf
-;                   Else
-;                      If (*bar\page\len + Bool(*this\round ) * (*this\height / 4 )) = *this\frame_width( )
-;                         Line(*this\frame_x( ), *this\frame_y( ), *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF0000ff ) ;
-;                      Else
-;                         Line(*this\frame_x( ) + *BB1\round, *this\frame_y( ), *this\frame_width( ) - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-;                      EndIf
-;                   EndIf
-;                EndIf
-;                
-;                ; frame buttons draw
-;                If Not *BB1\hide
-;                   If *BB1\arrow\size
-;                      draw_arrows( *BB1, Bool(*bar\vertical ))
-;                   EndIf
-;                   draw_box(*BB1, color\frame)
-;                EndIf
-;                If Not *BB2\hide
-;                   If *BB2\arrow\size
-;                      draw_arrows( *BB2, Bool(*bar\vertical ) + 2 )
-;                   EndIf
-;                   draw_box(*BB2, color\frame)
-;                EndIf
-;                
+               ;                ; background buttons draw
+               ;                If Not *BB1\hide
+               ;                   If *BB1\color\fore <> - 1
+               ;                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
+               ;                      draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
+               ;                   Else
+               ;                      draw_mode_alpha_( #PB_2DDrawing_Default )
+               ;                      draw_box(*BB1, color\back)
+               ;                   EndIf
+               ;                EndIf
+               ;                If Not *BB2\hide
+               ;                   If *BB2\color\fore <> - 1
+               ;                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
+               ;                      draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
+               ;                   Else
+               ;                      draw_mode_alpha_( #PB_2DDrawing_Default )
+               ;                      draw_box(*BB2, color\back)
+               ;                   EndIf
+               ;                EndIf
+               ;                
+               ;                draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               ;                
+               ;                ;
+               ;                If *this\type = #__type_Scroll
+               ;                   If *bar\vertical
+               ;                      If (*bar\page\len + Bool(*this\round ) * (*this\width / 4 )) = *this\frame_height( )
+               ;                         Line(*this\frame_x( ), *this\frame_y( ), 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+               ;                      Else
+               ;                         Line(*this\frame_x( ), *this\frame_y( ) + *BB1\round, 1, *this\height - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+               ;                      EndIf
+               ;                   Else
+               ;                      If (*bar\page\len + Bool(*this\round ) * (*this\height / 4 )) = *this\frame_width( )
+               ;                         Line(*this\frame_x( ), *this\frame_y( ), *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF0000ff ) ;
+               ;                      Else
+               ;                         Line(*this\frame_x( ) + *BB1\round, *this\frame_y( ), *this\frame_width( ) - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
+               ;                      EndIf
+               ;                   EndIf
+               ;                EndIf
+               ;                
+               ;                ; frame buttons draw
+               ;                If Not *BB1\hide
+               ;                   If *BB1\arrow\size
+               ;                      draw_arrows( *BB1, Bool(*bar\vertical ))
+               ;                   EndIf
+               ;                   draw_box(*BB1, color\frame)
+               ;                EndIf
+               ;                If Not *BB2\hide
+               ;                   If *BB2\arrow\size
+               ;                      draw_arrows( *BB2, Bool(*bar\vertical ) + 2 )
+               ;                   EndIf
+               ;                   draw_box(*BB2, color\frame)
+               ;                EndIf
+               ;                
                draw_navigator_buttons( *this )
                
                If *bar\thumb\len And *this\type <> #__type_Progress
@@ -10090,8 +10104,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
          
-;          draw_navigator_buttons( *this )
-;          ProcedureReturn  
+         ;          draw_navigator_buttons( *this )
+         ;          ProcedureReturn  
          
          
          draw_mode_( #PB_2DDrawing_Default )
@@ -10189,7 +10203,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      For i = *bar\min To *bar\max
                         If i <> *bar\min And 
                            i <> *bar\max
-                           Line( X + DPIScaled(2), Y + bar_thumb_pos_( *bar, i ), DPIScaled(3), 1, *SB\color\frame )
+                           Line( X + dpi_scale_two, Y + bar_thumb_pos_( *bar, i ), DPIScaled(3), 1, *SB\color\frame )
                         EndIf
                      Next
                   EndIf
@@ -10204,7 +10218,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      For i = *bar\min To *bar\max
                         If i <> *bar\min And
                            i <> *bar\max
-                           Line( X + bar_thumb_pos_( *bar, i ), Y + DPIScaled(2), 1, DPIScaled(3), *SB\color\frame )
+                           Line( X + bar_thumb_pos_( *bar, i ), Y + dpi_scale_two, 1, DPIScaled(3), *SB\color\frame )
                         EndIf
                      Next
                   EndIf
@@ -10240,29 +10254,29 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;
          If *bar\thumb\len
-            If *bar\vertical
-               circle_y = ( *SB\y + *SB\height / 2 )
+            If *bar\vertical ; horizontal circle
+               circle_y = ( *SB\y + *SB\height / 2 ) - 1
                circle_x = *this\frame_x( ) + ( *this\frame_width( ) - *SB\round ) / 2 + Bool( *this\width % 2 )
             Else
-               circle_x = ( *SB\x + *SB\width / 2 ) ; - *this\x
+               circle_x = ( *SB\x + *SB\width / 2 ) - 1
                circle_y = *this\frame_y( ) + ( *this\frame_height( ) - *SB\round ) / 2 + Bool( *this\height % 2 )
             EndIf
             
             If *bar\vertical ; horisontal line
-               If *SB\width > 35
+               If DPIUnScaledX(*SB\width) > 35
                   Circle( circle_x - ( *SB\round * 2 + 2 ) * 2 - 2, circle_y, *SB\round, *SB\color\frame[#__s_2] )
                   Circle( circle_x + ( *SB\round * 2 + 2 ) * 2 + 2, circle_y, *SB\round, *SB\color\frame[#__s_2] )
                EndIf
-               If *SB\width > 20
+               If DPIUnScaledX(*SB\width) > 20
                   Circle( circle_x - ( *SB\round * 2 + 2 ), circle_y, *SB\round, *SB\color\frame[#__s_2] )
                   Circle( circle_x + ( *SB\round * 2 + 2 ), circle_y, *SB\round, *SB\color\frame[#__s_2] )
                EndIf
             Else
-               If *SB\height > 35
+               If DPIUnScaledY(*SB\height) > 35
                   Circle( circle_x, circle_y - ( *SB\round * 2 + 2 ) * 2 - 2, *SB\round, *SB\color\frame[#__s_2] )
                   Circle( circle_x, circle_y + ( *SB\round * 2 + 2 ) * 2 + 2, *SB\round, *SB\color\frame[#__s_2] )
                EndIf
-               If *SB\height > 20
+               If DPIUnScaledY(*SB\height) > 20
                   Circle( circle_x, circle_y - ( *SB\round * 2 + 2 ), *SB\round, *SB\color\frame[#__s_2] )
                   Circle( circle_x, circle_y + ( *SB\round * 2 + 2 ), *SB\round, *SB\color\frame[#__s_2] )
                EndIf
@@ -10277,8 +10291,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro bar_area_create( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _scrollbar_size_, _mode_ = #True )
          If Not _parent_\scroll\bars
             _parent_\scroll\bars = 1
-            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\placingindex + "]", #__type_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, ( _scrollbar_size_), #__buttonround, _scroll_step_ )
-            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\placingindex + "]", #__type_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_), #__buttonround, _scroll_step_ )
+            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\placingindex + "]", #__type_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, ( _scrollbar_size_), _scrollbar_size_/2, _scroll_step_ )
+            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\placingindex + "]", #__type_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_),  _scrollbar_size_/2, _scroll_step_ )
          EndIf
       EndMacro
       
@@ -12123,13 +12137,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
-         Protected fs = 2, *box._s_WIDGET
+         Protected fs = 0, *box._s_WIDGET
          
          If *this\type = #__type_Panel
             *box = *this\__Tab( )  
          Else
-             *box = *this
-             *this = *this\parent
+            *box = *this
+            *this = *this\parent
          EndIf
          
          ; reset position
@@ -12138,13 +12152,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\fs[3] = 0
          *this\fs[4] = 0
          
-          
+         
          If  *box
             *box\TabChange( ) = 1
             
             If size = #PB_Default
                If constants::BinaryFlag( *box\flag, #PB_ToolBar_Small )
-                  size = 21
+                  If *box\type = #__type_TabBar
+                     size = 21 + bar_toggle_line_size
+                  Else
+                     size = 21
+                  EndIf
                ElseIf constants::BinaryFlag( *box\flag, #PB_ToolBar_Large )
                   size = 40
                Else ; If constants::BinaryFlag( *this\flag, #PB_Toolbar_Normal )
@@ -12292,16 +12310,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                             0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
             
             If *parent\type = #__type_Panel Or Type = #__type_ToolBar
-              *parent\__Tab( ) = *this  
-              If *parent\MenuBarHeight
-                 Debug "--- "+*parent\MenuBarHeight;*parent\class
-              EndIf
-             ; *parent\ToolBarHeight = DPIScaled(24)
+               *parent\__Tab( ) = *this  
+               If *parent\MenuBarHeight
+                  Debug "--- "+*parent\MenuBarHeight;*parent\class
+               EndIf
+               ; *parent\ToolBarHeight = DPIScaled(24)
             Else
                *parent\__Menu( ) = *this  
-             ;  *parent\MenuBarHeight = DPIScaled(24)
+               ;  *parent\MenuBarHeight = DPIScaled(24)
             EndIf
-           
+            
             If constants::BinaryFlag( Flag, #PB_Toolbar_Left ) 
                BarPosition( *this, 1 )
             ElseIf constants::BinaryFlag( Flag, #PB_Toolbar_Right )
@@ -12311,7 +12329,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Else
                BarPosition( *this, 2 )
             EndIf
-           EndIf
+         EndIf
          
          widget( ) = *this ;?
          ProcedureReturn *this
@@ -12349,7 +12367,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             HideBar( *this )
          Else
             If *this\parent\parent ;And *this\parent\parent\type = #__type_ComboBox
-               ;
+                                   ;
                DisplayPopupBar( *this, *this\parent\parent )
             EndIf
          EndIf
@@ -14964,15 +14982,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          If *this\type = #__type_CheckBox 
             *this\togglebox.allocate( BOX )
-            *this\togglebox\round  = DPIScaled( 2 )
-            *this\togglebox\width = DPIScaled( #__buttonsize ) 
+            *this\togglebox\round  = dpi_scale_two
+            *this\togglebox\width = size
             *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
             *this\togglebox\height = *this\togglebox\width
          EndIf
          If *this\type = #__type_Option
             *this\togglebox.allocate( BOX )
-            *this\togglebox\round  = DPIScaled( #__buttonround )
-            *this\togglebox\width  = DPIScaled( #__buttonsize ) 
+            *this\togglebox\round  = size/2
+            *this\togglebox\width  = size
             *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
             *this\togglebox\height = *this\togglebox\width
          EndIf
@@ -15039,7 +15057,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Else
             If is_bar_( *this ) Or *this\type = #__type_TabBar
                If is_integral_( *this )
-                  *this\fs = *parent\fs
+                  *this\fs = 0
                Else
                   *this\fs = 1
                EndIf
@@ -15104,8 +15122,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ - Create Editor
             If *this\type = #__type_Editor
-               *this\mode\fullselection = constants::BinaryFlag( *this\flag, #__flag_RowFullSelect, #False ) * DPIScaledX(7)
-               *this\mode\gridlines     = constants::BinaryFlag( *this\flag, #__flag_gridlines ) * DPIScaledX(10)
+               *this\mode\fullselection = constants::BinaryFlag( *this\flag, #__flag_RowFullSelect, #False ) * DPIScaled(7)
+               *this\mode\gridlines     = constants::BinaryFlag( *this\flag, #__flag_gridlines ) * DPIScaled(10)
                
                *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_TextNumeric, #False )
                *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
@@ -15198,8 +15216,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\WidgetChange( ) = 1
             *this\text\TextChange( ) = 1
             
-            *this\image\padding\x = DPIScaled( 2 )
-            *this\text\padding\x  = DPIScaled( 4 )
+            *this\image\padding\x = dpi_scale_two
+            *this\text\padding\x  = DPIScaled(4)
             
             If constants::BinaryFlag( Flag, #__tree_nolines )
                flag & ~ #__tree_nolines
@@ -15276,15 +15294,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
                *this\__String( ) = Create( *this, "ComboString", #__type_String,
-                                                  0, 0, 0, 0, #Null$, #__flag_child | #__flag_borderless )
+                                           0, 0, 0, 0, #Null$, #__flag_child | #__flag_borderless )
                
-               *this\fs[3] = DPIScaled( #__buttonsize ) 
+               *this\fs[3] = size
                *this\fs[3] + Bool( Not *this\fs[3] % 2)
             EndIf
             
             ;\\
             *this\__Popup( ) = Create( *this, "ComboListView", #__type_ListView,
-                                             0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
+                                       0, 0, 0, 0, #Null$, #__flag_child | #__flag_nobuttons | #__flag_nolines ) ;| #__flag_borderless
             
             *this\__Popup( )\fs = 2
             Hide( *this\__Popup( ), #True )
@@ -15387,8 +15405,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\
                *this\__String( ) = Create( *this, "SpinString",
-                                                  #__type_String, 0, 0, 0, 0, #Null$,
-                                                  #__flag_child | #__flag_Textnumeric | #__flag_borderless | *this\flag )
+                                           #__type_String, 0, 0, 0, 0, #Null$,
+                                           #__flag_child | #__flag_Textnumeric | #__flag_borderless | *this\flag )
                
                
             EndIf
@@ -15416,14 +15434,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                *SB\arrow\size = DPIScaled( #__arrow_size )
                *SB\arrow\type = #__arrow_type
                
-               *BB1\round = DPIScaled(2)
-               *BB2\round = *BB2\round
+               *BB1\round = dpi_scale_two
+               *BB2\round = *BB1\round
                *SB\round  = *this\round
                
                If *this\round < DPIScaled(7)
                   *SB\size = DPIScaled(9)
                Else
-                  *SB\size = DPIScaled( #__buttonsize ) 
+                  *SB\size = size
                   *SB\size - Bool( Not *SB\size % 2)
                EndIf
                
@@ -15453,12 +15471,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If constants::BinaryFlag( Flag, #__bar_buttonsize, #False )
                   *SB\size  = size
-                  *BB1\size = DPIScaled( #__buttonsize ) 
+                  *BB1\size = DPIScaled( #__bar_button_size )
                   *BB1\size - Bool( Not *BB1\size % 2) 
                   *BB2\size = *BB1\size
                EndIf
                
-               *BB1\round = DPIScaled( #__buttonround )
+               *BB1\round = *BB1\size/2
                *BB2\round = *BB1\round
                *SB\round  = *this\round
                
@@ -15492,7 +15510,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\bar\invert   = constants::BinaryFlag( Flag, #__bar_invert )
                *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__bar_vertical ) And 
                                           Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
-               
+               ;
                If constants::BinaryFlag( Flag, #PB_Splitter_FirstFixed )
                   *this\bar\fixed = 1
                ElseIf constants::BinaryFlag( Flag, #PB_Splitter_SecondFixed )
@@ -15506,9 +15524,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
                *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
                
-               *SB\size                 = DPIScaled( #__splittersize ) 
-               *SB\size                 + Bool( Not *SB\size % 2)
-               *SB\round                = DPIScaled( #__splitterround )
+               *SB\size                 = bar_splitter_size 
+               *SB\round                = dpi_scale_two
                
                ;\\
                ; If *this\type = #__type_Splitter
@@ -15625,7 +15642,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If constants::BinaryFlag( Flag, #__flag_NoScrollBars, #False )
             If *this\type = #__type_String
                
-               bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize, 0)
+               bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size, 0)
                
                *this\scroll\v\hide  = 1
                *this\scroll\h\hide  = 1
@@ -15645,13 +15662,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                    *this\type = #__type_ExplorerList Or
                    *this\type = #__type_Properties
                
-               bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__buttonsize )
+               bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
             ElseIf *this\type = #__type_MDI Or
                    *this\type = #__type_ScrollArea
                
-               bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__buttonsize )
+               bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
             ElseIf *this\type = #__type_Image
-               bar_area_create( *this, 1, *this\image\width, *this\image\height, *this\inner_width( ), *this\inner_height( ), #__buttonsize )
+               bar_area_create( *this, 1, *this\image\width, *this\image\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
             EndIf
          EndIf
          
@@ -15688,11 +15705,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i Scroll( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Scroll, X, Y, Width, Height, #Null$, flag, min, max, pagelength, #__buttonsize, round, 1 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Scroll, X, Y, Width, Height, #Null$, flag, min, max, pagelength, #__bar_button_size, round, 1 )
       EndProcedure
       
       Procedure.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = #__buttonround )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Track, X, Y, Width, Height, #Null$, flag, min, max, 0, 0, round, 1 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Track, X, Y, Width, Height, #Null$, flag, min, max, 0, #__bar_button_size, round, 1 )
       EndProcedure
       
       Procedure.i Progress( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
@@ -15704,7 +15721,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, Increment.f = 1.0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Spin, X, Y, Width, Height, #Null$, flag, min, max, 0, #__buttonsize, round, Increment )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Spin, X, Y, Width, Height, #Null$, flag, min, max, 0, #__bar_button_size, round, Increment )
       EndProcedure
       
       Procedure.i Tab( X.l, Y.l, Width.l, Height.l, flag.q = 0, round.l = 0 )
@@ -15797,31 +15814,31 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i Option( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Option, X, Y, Width, Height, Text, flag, 0, 0, 0, 0, 0, 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Option, X, Y, Width, Height, Text, flag, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
       Procedure.i CheckBox( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_CheckBox, X, Y, Width, Height, Text, flag, 0, 0, 0, 0, 0, 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_CheckBox, X, Y, Width, Height, Text, flag, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
       Procedure.i ComboBox( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ComboBox, X, Y, Width, Height, "", flag, 0, 0, 0, 0, 0, 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ComboBox, X, Y, Width, Height, "", flag, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
       Procedure.i MDI( X.l, Y.l, Width.l, Height.l, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, flag | #__flag_nogadgets, 0, 0, 0, #__buttonsize, 0, 1 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, flag | #__flag_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
       EndProcedure
       
       Procedure.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__buttonsize, 0, 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
       Procedure.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__buttonsize, 0, 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
       Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, flag, ScrollAreaWidth, ScrollAreaHeight, 0, #__buttonsize, 0, ScrollStep )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, flag, ScrollAreaWidth, ScrollAreaHeight, 0, #__bar_button_size, 0, ScrollStep )
       EndProcedure
       
       Procedure.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = #__flag_nogadgets )
@@ -15829,7 +15846,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i Image( X.l, Y.l, Width.l, Height.l, Image.i, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Image, X, Y, Width, Height, #Null$, flag, Image, 0, 0, #__buttonsize, 0, 1 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Image, X, Y, Width, Height, #Null$, flag, Image, 0, 0, #__bar_button_size, 0, 1 )
       EndProcedure
       
       ;-
@@ -16073,7 +16090,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      ; for the tree horizontal line
                      If Not (*this\mode\Buttons And *rows( )\childrens)
-                        Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (ys + *rows( )\height / 2), DPIScaledX(7), 1, *rows( )\color\line )
+                        Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (ys + *rows( )\height / 2), DPIScaled(7), 1, *rows( )\color\line )
                      Else
                         If *this\row\sublevelsize = DPIScaled(6)
                            If Bool( Not *rows( )\ItemButtonState( ))
@@ -16521,7 +16538,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          With *this
             ; чтобы закруглять только у окна с титлебаром
             Protected gradient = 1
-            Protected r = 9
+            Protected r = DPIScaled(13)
             
             draw_mode_alpha_( #PB_2DDrawing_Default )
             
@@ -17128,13 +17145,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\ backcolor
             If *this\color\back <> - 1
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               If *this\fs
+;                If *this\fs
                   draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-               Else
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-               EndIf
+;                Else
+;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+;                EndIf
             EndIf
-         
+            
             ;\\
             If *this\image\id Or
                *this\image[#__image_background]\id
@@ -17181,13 +17198,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;               EndIf
                
                If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
-;                   If *this\inner_width( ) And 
-;                      *this\inner_height( ) 
-;                      ;If *this\type <> #__type_Panel
-;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
-;                      ;EndIf
-;                   EndIf
-;                   If *this\type = #__type_Container
+                  ;                   If *this\inner_width( ) And 
+                  ;                      *this\inner_height( ) 
+                  ;                      ;If *this\type <> #__type_Panel
+                  ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
+                  ;                      ;EndIf
+                  ;                   EndIf
+                  ;                   If *this\type = #__type_Container
                   If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
                   EndIf
@@ -17549,19 +17566,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\
                If *root\drawmode & 1<<2
                   ; If *root\color\back = - 1 ; test example anchor(b5)
-                     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                        ; good transparent canvas
-                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
-                     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
-                     CompilerElse
-                        ;               Protected *style.GtkStyle, *color.GdkColor
-                        ;               *style = gtk_widget_get_style_(WindowID(*root\canvas\window))
-                        ;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
-                        ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
-                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
-                     CompilerEndIf
-                     ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                     ; good transparent canvas
+                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
+                  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
+                  CompilerElse
+                     ;               Protected *style.GtkStyle, *color.GdkColor
+                     ;               *style = gtk_widget_get_style_(WindowID(*root\canvas\window))
+                     ;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
+                     ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
+                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
+                  CompilerEndIf
+                  ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
                   ; EndIf
                EndIf
                
@@ -17895,7 +17912,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Protected buttonpos = DPIScaled(6)
                   Protected buttonsize = DPIScaled(9)
                   Protected boxpos = DPIScaled(4)
-                  Protected boxsize = buttonsize + DPIScaled(2)
+                  Protected boxsize = buttonsize + dpi_scale_two
                   Protected bs = Bool( *this\fs )
                   Protected scroll_width
                   
@@ -17954,7 +17971,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         ;\\ expanded & collapsed box position
                         If ( *this\mode\Lines Or *this\mode\Buttons ) 
-                           *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - DPIScaled(2)
+                           *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - dpi_scale_two
                            *rows( )\buttonbox\y = ( *rows( )\height ) - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
                         EndIf
                         
@@ -17972,7 +17989,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *rows( )\image\id
                            If *this\mode\check
                               ; If Not ( *this\mode\Buttons And *this\mode\Lines )
-                              *this\row\sublevelpos + DPIScaled( 2 )
+                              *this\row\sublevelpos + dpi_scale_two
                               ; EndIf
                            EndIf
                            
@@ -18046,8 +18063,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ForEach *rows( )
             *rows( )\visible = Bool( Not *rows( )\hide And
-                                      (( *rows( )\y - scroll_y ) < visible_y + visible_height ) And
-                                      ( *rows( )\y + *rows( )\height - scroll_y ) > visible_y )
+                                     (( *rows( )\y - scroll_y ) < visible_y + visible_height ) And
+                                     ( *rows( )\y + *rows( )\height - scroll_y ) > visible_y )
             
             ;;Debug ""+*this\class +" "+ visible_height  +" "+ *rows( )\height
             
@@ -18135,9 +18152,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                Else
                   LastElement( *list( ))
                EndIf
-;                If MouseButtons( ) And Not MouseButtonPress( )
-;                   Debug *root\class
-;                EndIf
+               ;                If MouseButtons( ) And Not MouseButtonPress( )
+               ;                   Debug *root\class
+               ;                EndIf
                Repeat
                   If *list( )\address And
                      *list( )\hide = 0 And
@@ -18294,9 +18311,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                LeavedWidget( )\enter = 0
                ;
                If is_integral_( LeavedWidget( ) )
-                 If LeavedWidget( )\parent And
-                   LeavedWidget( )\parent\enter
-                  
+                  If LeavedWidget( )\parent And
+                     LeavedWidget( )\parent\enter
+                     
                      If LeavedWidget( )\parent = *this
                         If is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
                            is_atpoint_( LeavedWidget( )\parent, mouse_x, mouse_y, [#__c_draw] )
@@ -19607,8 +19624,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ change enter/leave state  And *this\press = 0
             If *this\RowEntered( ) <> *row; ;And Not ( ( *this\press And Not mouse( )\drop ) And Not *row );And Not *this\mode\multiSelect )
-                                           ;
-                                           ;\\ leave state
+                                          ;
+                                          ;\\ leave state
                If *this\RowEntered( )
                   If *this\RowEntered( )\_enter
                      *this\RowEntered( )\_enter = 0
@@ -20115,107 +20132,108 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *tab._s_ROWS, mode_type = 0
          Static *tabmenu._s_ROWS
          
-          
+         
          If *bar
             *SB  = *bar\button
             *BB1 = *bar\button[1]
             *BB2 = *bar\button[2]
          EndIf
          
-        If Not MouseButtonPress( )
-          If *this\tab
-            If *this\bar
-               Protected mouse_bar_x = mouse( )\x - *this\bar\button\x
-               Protected mouse_bar_y = mouse( )\y - *this\bar\button\y
-               
-               ;\\ get at point tab 
-               If MouseEnter( *this )
-                  If ListSize( *this\__tabs( ) )
-                     If *this\TabEntered( ) And
-                        *this\TabEntered( )\visible And
-                        *this\TabEntered( )\hide = 0 And
-                        is_atpoint_( *this\TabEntered( ), mouse_bar_x, mouse_bar_y )
-                        
-                        *tab = *this\TabEntered( )
-                     Else
-                        ; search entered item
-                        LastElement( *this\__tabs( ))
-                        Repeat
-                           If *this\__tabs( )\visible And
-                              *this\__tabs( )\hide = 0 And
-                              is_atpoint_( *this\__tabs( ), mouse_bar_x, mouse_bar_y )
-                              *tab = *this\__tabs( )
-                              Break
-                           EndIf
-                        Until Not PreviousElement( *this\__tabs( ))
+         If Not MouseButtonPress( )
+            If *this\tab
+               If *this\bar
+                  Protected mouse_bar_x = mouse( )\x - *this\bar\button\x
+                  Protected mouse_bar_y = mouse( )\y - *this\bar\button\y
+                  
+                  ;\\ get at point tab 
+                  If MouseEnter( *this )
+                     If ListSize( *this\__tabs( ) )
+                        If *this\TabEntered( ) And
+                           *this\TabEntered( )\visible And
+                           *this\TabEntered( )\hide = 0 And
+                           is_atpoint_( *this\TabEntered( ), mouse_bar_x, mouse_bar_y )
+                           
+                           *tab = *this\TabEntered( )
+                        Else
+                           ; search entered item
+                           LastElement( *this\__tabs( ))
+                           Repeat
+                              If *this\__tabs( )\visible And
+                                 *this\__tabs( )\hide = 0 And
+                                 is_atpoint_( *this\__tabs( ), mouse_bar_x, mouse_bar_y )
+                                 *tab = *this\__tabs( )
+                                 Break
+                              EndIf
+                           Until Not PreviousElement( *this\__tabs( ))
+                        EndIf
                      EndIf
                   EndIf
-               EndIf
-               
-               ; change enter/leave state
-               If *this\TabEntered( ) <> *tab 
-                  *this\redraw = 1
-                  *this\root\contex = 0
                   
-                  ;\\ leaved tabs
-                  If *this\TabEntered( ) And
-                     Leaved( *this\TabEntered( ) )
-                     *this\root\repaint = #True
-                  EndIf
-                  ;
-                  *this\TabEntered( ) = *tab
-                  ;
-                  If *tab 
-                     If *this\enter 
-                        ;\\ entered tabs
-                        If Entered( *tab )
-                           *this\root\repaint = #True
-                           
-                           ;\\ show popup bar
-                           If is_bar_( *this )
-                              ;
-                              If *this\PopupBar( ) And 
-                                 *this\PopupBar( )\hide = 0 And 
-                                 *this\PopupBar( ) <> *tab\Row__Menu( )
-                                 HideBar( *this\PopupBar( ) )
-                              EndIf
-                              ;
-                              ;\\ change focused tab
-                              If is_menu_( *this )
-                                 If *this\TabFocused( )
-                                    *this\TabFocused( )\_focus = 0
-                                    
-                                    *this\TabFocused( ) = *tab
-                                    *this\TabFocused( )\_focus = 1
+                  ; change enter/leave state
+                  If *this\TabEntered( ) <> *tab 
+                     *this\redraw = 1
+                     *this\root\contex = 0
+                     
+                     ;\\ leaved tabs
+                     If *this\TabEntered( ) And
+                        Leaved( *this\TabEntered( ) )
+                        *this\root\repaint = #True
+                     EndIf
+                     ;
+                     *this\TabEntered( ) = *tab
+                     ;
+                     If *tab 
+                        If *this\enter 
+                           ;\\ entered tabs
+                           If Entered( *tab )
+                              *this\root\repaint = #True
+                              
+                              ;\\ show popup bar
+                              If is_bar_( *this )
+                                 ;
+                                 If *this\PopupBar( ) And 
+                                    *this\PopupBar( )\hide = 0 And 
+                                    *this\PopupBar( ) <> *tab\Row__Menu( )
+                                    HideBar( *this\PopupBar( ) )
                                  EndIf
-                              EndIf
-                              ;
-                              ;\\ change toggle state
-                              If *tabmenu
-                                 If *tabmenu\TabItemState( )
-                                    *tabmenu\TabItemState( ) = 0
-                                 EndIf
-                                 If *tab\childrens
-                                    If *tab\TabItemState( ) = 0
-                                       *tab\TabItemState( ) = 1
-                                       *tabmenu = *tab
+                                 ;
+                                 ;\\ change focused tab
+                                 If is_menu_( *this )
+                                    If *this\TabFocused( )
+                                       *this\TabFocused( )\_focus = 0
+                                       
+                                       *this\TabFocused( ) = *tab
+                                       *this\TabFocused( )\_focus = 1
                                     EndIf
                                  EndIf
-                              EndIf
-                              ;
-                              If *tab\Row__Menu( ) And *tab\Row__Menu( )\hide
-                                 If *this\bar\vertical
-                                    ;Debug "  show POPUPMENUBARS "+ClassFromEvent(eventtype)
-                                    DisplayPopupBar( *tab\Row__Menu( ), *this )
-                                 Else
-                                    If *tab\_focus Or 
-                                       *tab\TabItemState( )
-                                       ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
+                                 ;
+                                 ;\\ change toggle state
+                                 If *tabmenu
+                                    If *tabmenu\TabItemState( )
+                                       *tabmenu\TabItemState( ) = 0
+                                    EndIf
+                                    If *tab\childrens
+                                       If *tab\TabItemState( ) = 0
+                                          *tab\TabItemState( ) = 1
+                                          *tabmenu = *tab
+                                       EndIf
+                                    EndIf
+                                 EndIf
+                                 ;
+                                 If *tab\Row__Menu( ) And *tab\Row__Menu( )\hide
+                                    If *this\bar\vertical
+                                       ;Debug "  show POPUPMENUBARS "+ClassFromEvent(eventtype)
                                        DisplayPopupBar( *tab\Row__Menu( ), *this )
+                                    Else
+                                       If *tab\_focus Or 
+                                          *tab\TabItemState( )
+                                          ;Debug "  show TOOLBAR "+ClassFromEvent(eventtype)
+                                          DisplayPopupBar( *tab\Row__Menu( ), *this )
+                                       EndIf
                                     EndIf
                                  EndIf
+                                 ;
                               EndIf
-                              ;
                            EndIf
                         EndIf
                      EndIf
@@ -20223,9 +20241,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-      EndIf
-            
-        ;
+         
+         ;
          If eventtype = #__event_LostFocus
             If *this\tab
                If *this\PopupBar( )
@@ -20236,11 +20253,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-            
-          ;\\
+         
+         ;\\
          If eventtype = #__event_Down
-                If MouseButtons( ) & #PB_Canvas_LeftButton
-                  If *this\tab
+            If MouseButtons( ) & #PB_Canvas_LeftButton
+               If *this\tab
                   *tab = *this\TabEntered( )
                   
                   If *this\displaypopup ; *this\type = #__type_PopupBar
@@ -20307,46 +20324,46 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                If *bar
-                    If EnteredButton( ) And
-                  EnteredButton( )\press = #False And
-                  EnteredButton( )\disable = #False And
-                  EnteredButton( )\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
-                       
-                  PressedButton( )       = EnteredButton( )
-                  PressedButton( )\press = #True
-                  
-                  If Not ( *this\type = #__type_Track Or
-                           ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
-                     PressedButton( )\ColorState( ) = #__s_2
-                  EndIf
-                  
-                  ;
-                  If ( *BB2\press And *bar\invert ) Or
-                     ( *BB1\press And Not *bar\invert )
+                  If EnteredButton( ) And
+                     EnteredButton( )\press = #False And
+                     EnteredButton( )\disable = #False And
+                     EnteredButton( )\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
                      
-                     If *this\type = #__type_spin
-                        If bar_PageChange( *this, *bar\page\pos - *this\scroll\increment )
-                           result = #True
+                     PressedButton( )       = EnteredButton( )
+                     PressedButton( )\press = #True
+                     
+                     If Not ( *this\type = #__type_Track Or
+                              ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
+                        PressedButton( )\ColorState( ) = #__s_2
+                     EndIf
+                     
+                     ;
+                     If ( *BB2\press And *bar\invert ) Or
+                        ( *BB1\press And Not *bar\invert )
+                        
+                        If *this\type = #__type_spin
+                           If bar_PageChange( *this, *bar\page\pos - *this\scroll\increment )
+                              result = #True
+                           EndIf
+                        Else
+                           If bar_ThumbChange( *this, *bar\thumb\pos - *this\scroll\increment )
+                              result = #True
+                           EndIf
                         EndIf
-                     Else
-                        If bar_ThumbChange( *this, *bar\thumb\pos - *this\scroll\increment )
-                           result = #True
+                     ElseIf ( *BB1\press And *bar\invert ) Or
+                            ( *BB2\press And Not *bar\invert )
+                        
+                        If *this\type = #__type_spin
+                           If bar_PageChange( *this, *bar\page\pos + *this\scroll\increment )
+                              result = #True
+                           EndIf
+                        Else
+                           If bar_ThumbChange( *this, *bar\thumb\pos + *this\scroll\increment )
+                              result = #True
+                           EndIf
                         EndIf
                      EndIf
-                  ElseIf ( *BB1\press And *bar\invert ) Or
-                         ( *BB2\press And Not *bar\invert )
-                     
-                     If *this\type = #__type_spin
-                        If bar_PageChange( *this, *bar\page\pos + *this\scroll\increment )
-                           result = #True
-                        EndIf
-                     Else
-                        If bar_ThumbChange( *this, *bar\thumb\pos + *this\scroll\increment )
-                           result = #True
-                        EndIf
-                     EndIf
                   EndIf
-               EndIf
                EndIf
             EndIf
          EndIf
@@ -20373,42 +20390,42 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If *bar
                   If PressedButton( ) And
-                  PressedButton( )\press = #True
-                  PressedButton( )\press = #False
-                  
-                  If PressedButton( )\disable = #False And
-                     PressedButton( )\ColorState( ) <> #__s_3
+                     PressedButton( )\press = #True
+                     PressedButton( )\press = #False
                      
-                     ; change color state
-                     If PressedButton( )\ColorState( ) = #__s_2 And
-                        Not ( *this\type = #__type_Track Or
-                              ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
+                     If PressedButton( )\disable = #False And
+                        PressedButton( )\ColorState( ) <> #__s_3
                         
-                        If PressedButton( )\_enter
-                           PressedButton( )\ColorState( ) = #__s_1
-                        Else
-                           PressedButton( )\ColorState( ) = #__s_0
+                        ; change color state
+                        If PressedButton( )\ColorState( ) = #__s_2 And
+                           Not ( *this\type = #__type_Track Or
+                                 ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
+                           
+                           If PressedButton( )\_enter
+                              PressedButton( )\ColorState( ) = #__s_1
+                           Else
+                              PressedButton( )\ColorState( ) = #__s_0
+                           EndIf
                         EndIf
+                        
+                        result = #True
                      EndIf
-                     
-                     result = #True
                   EndIf
-               EndIf
-               
-               ;\\
-               If *this\TabPressed( )
-                  If *this\TabPressed( )\press = #True
-                     *this\TabPressed( )\press = #False
-                     
-                     If *this\TabPressed( )\_enter
-                        *this\TabPressed( )\ColorState( ) = #__s_1
-                     Else
-                        *this\TabPressed( )\ColorState( ) = #__s_0
+                  
+                  ;\\
+                  If *this\TabPressed( )
+                     If *this\TabPressed( )\press = #True
+                        *this\TabPressed( )\press = #False
+                        
+                        If *this\TabPressed( )\_enter
+                           *this\TabPressed( )\ColorState( ) = #__s_1
+                        Else
+                           *this\TabPressed( )\ColorState( ) = #__s_0
+                        EndIf
                      EndIf
                   EndIf
                EndIf
             EndIf
-         EndIf
          EndIf
          
          ;\\
@@ -20575,33 +20592,33 @@ CompilerIf Not Defined( widget, #PB_Module )
                UpdateCurrentCursor( *this )
             EndIf
          EndIf
-            
+         
          ;          ;
-;          If MouseData( ) & #__mouse_left
-;             Debug "#__mouse_left"
-;          EndIf
-;          If MouseData( ) & #__mouse_top
-;             Debug "#__mouse_top"
-;          EndIf
-;          If MouseData( ) & #__mouse_right
-;             Debug "#__mouse_right"
-;          EndIf
-;          If MouseData( ) & #__mouse_bottom
-;             Debug "#__mouse_bottom"
-;          EndIf
-;          If MouseData( ) & #__mouse_press
-;             Debug "#__mouse_press"
-;          EndIf
-;          If MouseData( ) & #__mouse_release
-;             Debug "#__mouse_release"
-;          EndIf
-;          If MouseData( ) & #__mouse_update
-;             Debug "#__mouse_update"
-;          EndIf
-;          If MouseData( ) = #__mouse_leave
-;             
-;          EndIf
-;          ;Debug "DoEvents( "+*this\class +" "+ ClassFromEvent(eventtype)
+         ;          If MouseData( ) & #__mouse_left
+         ;             Debug "#__mouse_left"
+         ;          EndIf
+         ;          If MouseData( ) & #__mouse_top
+         ;             Debug "#__mouse_top"
+         ;          EndIf
+         ;          If MouseData( ) & #__mouse_right
+         ;             Debug "#__mouse_right"
+         ;          EndIf
+         ;          If MouseData( ) & #__mouse_bottom
+         ;             Debug "#__mouse_bottom"
+         ;          EndIf
+         ;          If MouseData( ) & #__mouse_press
+         ;             Debug "#__mouse_press"
+         ;          EndIf
+         ;          If MouseData( ) & #__mouse_release
+         ;             Debug "#__mouse_release"
+         ;          EndIf
+         ;          If MouseData( ) & #__mouse_update
+         ;             Debug "#__mouse_update"
+         ;          EndIf
+         ;          If MouseData( ) = #__mouse_leave
+         ;             
+         ;          EndIf
+         ;          ;Debug "DoEvents( "+*this\class +" "+ ClassFromEvent(eventtype)
          
          ;\\
          If test_event_entered
@@ -20614,12 +20631,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-            If eventtype = #__event_Change
-               If *this\row
-                  ; Debug "#__event_Change "+*this\RowFocusedIndex( ) +" "+ *this\RowFocused( )\position +" "+ *button ;+" "+ *data
-                  *this\RowFocusedIndex( ) = *button
-               EndIf
+         If eventtype = #__event_Change
+            If *this\row
+               ; Debug "#__event_Change "+*this\RowFocusedIndex( ) +" "+ *this\RowFocused( )\position +" "+ *button ;+" "+ *data
+               *this\RowFocusedIndex( ) = *button
             EndIf
+         EndIf
          
          ;          
          ;\\ DoEvents_Anchors( )
@@ -20982,7 +20999,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-             ;\\ key events
+            ;\\ key events
             If eventtype = #__event_Input Or
                eventtype = #__event_KeyDown Or
                eventtype = #__event_KeyUp
@@ -21048,7 +21065,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If EnteredWidget( ) And EnteredWidget( )\press
                   If EnteredWidget( )\root\canvas\gadget = eventgadget
                      If test_focus_set
-                     Debug "canvas - eFocus " + EnteredWidget( )\root\canvas\gadget + " " + eventgadget
+                        Debug "canvas - eFocus " + EnteredWidget( )\root\canvas\gadget + " " + eventgadget
                      EndIf
                      SetActive( EnteredWidget( ))
                   EndIf
@@ -21058,7 +21075,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If roots( )\canvas\gadget = eventgadget
                         If roots( )\active 
                            If test_focus_set
-                     Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                              Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                            EndIf
                            SetActive( roots( )\active )
                         EndIf
@@ -21075,7 +21092,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If GetActive( ) And
                GetActive( )\root\canvas\gadget = eventgadget
                If test_focus_set
-                     Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                  Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                EndIf
                SetActive( 0 )
             EndIf
@@ -21083,7 +21100,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If eventtype = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            ; Debug "resize - canvas ["+eventgadget+"]"
+                                             ; Debug "resize - canvas ["+eventgadget+"]"
             
             ; ;               *root = root( )
             ;PushMapPosition( roots( ) )
@@ -21439,7 +21456,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ do all events
          ;
          If event = #__event_MouseMove
-             If MouseData( ) > 1
+            If MouseData( ) > 1
                ;\\ mouse-pressed-widget move event
                If mouse( )\drag And 
                   PressedWidget( ) And 
@@ -21495,27 +21512,27 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                ;\\ set active widget
-;                If EnteredWidget( )\disable
-;                   If event = #__event_LeftDown
-;                      If GetActive( ) <> EnteredWidget( )\parent
-;                         If EnteredButton( )
-;                            ;
-;                         Else
-;                            If Not EnteredWidget( )\parent\disable
-;                               SetActive( EnteredWidget( )\parent)
-;                            EndIf
-;                         EndIf
-;                      EndIf
-;                   EndIf
-;                Else
-                  PressedWidget( )       = EnteredWidget( )
-                  PressedWidget( )\press = #True
-                  ;
-                  If event = #__event_LeftDown
-                     If GetActive( ) <> EnteredWidget( )
-                        SetActive( EnteredWidget( ))
-                     EndIf
+               ;                If EnteredWidget( )\disable
+               ;                   If event = #__event_LeftDown
+               ;                      If GetActive( ) <> EnteredWidget( )\parent
+               ;                         If EnteredButton( )
+               ;                            ;
+               ;                         Else
+               ;                            If Not EnteredWidget( )\parent\disable
+               ;                               SetActive( EnteredWidget( )\parent)
+               ;                            EndIf
+               ;                         EndIf
+               ;                      EndIf
+               ;                   EndIf
+               ;                Else
+               PressedWidget( )       = EnteredWidget( )
+               PressedWidget( )\press = #True
+               ;
+               If event = #__event_LeftDown
+                  If GetActive( ) <> EnteredWidget( )
+                     SetActive( EnteredWidget( ))
                   EndIf
+               EndIf
                ;EndIf
                ;
                ;\\
@@ -21603,7 +21620,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   PressedWidget( )\press = #False
                   ;\\
                   DoEvents( PressedWidget( ), #__event_Up )
-            
+                  
                   ;\\ do up events
                   If mouse( )\click = 1
                      DoEvents( PressedWidget( ), event )
@@ -22300,8 +22317,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\color\back = - 1
             EndIf
             
-            *this\caption\round    = 4
-            *this\caption\_padding = *this\caption\round
+            *this\caption\_padding = 4
             *this\caption\color    = _get_colors_( )
             
             ; border frame size
@@ -22329,7 +22345,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             Else
                *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_borderless, #False ) * barHeight
                *this\TitleBarHeight = *this\fs[2]
-               *this\round     = DPIScaled( #__buttonround )
                
                *this\TitleText( )\padding\x = 5
                *this\TitleText( )\string    = Text
@@ -22343,22 +22358,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\MaximizeButton( )\ColorState( ) = 1
             *this\MinimizeButton( )\ColorState( ) = 1
             
-            *this\CloseButton( )\round    = DPIScaled( #__buttonround )
-            *this\MaximizeButton( )\round = *this\CloseButton( )\round
-            *this\MinimizeButton( )\round = *this\CloseButton( )\round
-            *this\HelpButton( )\round     = *this\CloseButton( )\round
             
-            *this\CloseButton( )\width    = DPIScaled( #__buttonsize - 2 )
+            *this\CloseButton( )\width    = DPIScaled( #__bar_button_size - 2 )
             *this\CloseButton( )\height   = *this\CloseButton( )\width
+            *this\CloseButton( )\round    = *this\CloseButton( )\width / 2
             
             *this\MaximizeButton( )\width  = *this\CloseButton( )\width
             *this\MaximizeButton( )\height = *this\CloseButton( )\height
+            *this\MaximizeButton( )\round = *this\CloseButton( )\round
             
             *this\MinimizeButton( )\width  = *this\CloseButton( )\width
             *this\MinimizeButton( )\height = *this\CloseButton( )\height
+            *this\MinimizeButton( )\round = *this\CloseButton( )\round
             
             *this\HelpButton( )\width  = *this\CloseButton( )\width * 2
             *this\HelpButton( )\height = *this\CloseButton( )\height
+            *this\HelpButton( )\round     = *this\CloseButton( )\round
             
             
             
@@ -23259,10 +23274,7 @@ EndMacro
 ;- <<<
 
 
-
-;-
-
-;-
+;-\\ EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
    
@@ -23293,7 +23305,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Enumeration
       #window_0
-      #window
+      #window_1
    EndEnumeration
    
    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -23304,8 +23316,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    CompilerEndIf
    
-   ;-\\ ANCHORS
    Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
+   Define i
+   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
    
    Procedure anchor_events( )
       Protected change
@@ -23373,37 +23386,35 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
+   ;-\\ OPENWINDOW_0
    OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #__window_SystemMenu )
-   
-   Define i
-   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
    Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
    
-   ;    
-   ;    
-   ;    Define *toolbar = ToolBar( *root )
-   ;     
-   ;     If *toolbar
-   ;       BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-   ;       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_Toolbar_Normal, "open")
-   ;       BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
-   ;       
-   ;       BarSeparator( )
-   ;       
-   ;       BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
-   ;       ; ToolTip(*toolbar, 3, "Cut")
-   ;       
-   ;       BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
-   ;       ; ToolTip(*toolbar, 4, "Copy")
-   ;       
-   ;       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
-   ;       ; ToolTip(*toolbar, 5, "Paste")
-   ;       
-   ;       BarSeparator( )
-   ;       
-   ;       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
-   ;       ; ToolTip(*toolbar, 6, "Find a document")
-   ;    EndIf
+   
+   
+   Define *toolbar = ToolBar( *root )
+   
+   If *toolbar
+      BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
+      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
+      BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #PB_Toolbar_Normal, "save")
+      
+      BarSeparator( )
+      
+      BarButton(3, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png"))
+      ; ToolTip(*toolbar, 3, "Cut")
+      
+      BarButton(4, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+      ; ToolTip(*toolbar, 4, "Copy")
+      
+      BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
+      ; ToolTip(*toolbar, 5, "Paste")
+      
+      BarSeparator( )
+      
+      BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
+      ; ToolTip(*toolbar, 6, "Find a document")
+   EndIf
    
    ;BindWidgetEvent( *root, @HandlerEvents( ) )
    view = Container(10, 10, 406, 238, #PB_Container_Flat)
@@ -23413,32 +23424,32 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure ToolBarEvents( )
       Debug WidgetEventItem( )
    EndProcedure
-  
+   
    Define *toolbar = ToolBar( view, #PB_ToolBar_Small|#PB_ToolBar_InlineText )
    
    If *toolbar
-   OpenSubBar("Menu")
-         BarItem(11, "Open")
-         BarItem(12, "Save")
-         ; BarItem(13, "Save as...")
-         OpenSubBar("Save as...")
-            BarItem(15, "Save as BMP")
-            BarItem(16, "Save as PNG")
-            BarItem(17, "Save as JPG")
-         CloseSubBar( )
-         BarSeparator( )
-         BarItem(14, "Quit")
+      OpenSubBar("Menu")
+      BarItem(11, "Open")
+      BarItem(12, "Save")
+      ; BarItem(13, "Save as...")
+      OpenSubBar("Save as...")
+      BarItem(15, "Save as BMP")
+      BarItem(16, "Save as PNG")
+      BarItem(17, "Save as JPG")
+      CloseSubBar( )
+      BarSeparator( )
+      BarItem(14, "Quit")
       CloseSubBar( )
       
       OpenSubBar("-Menu-")
       CloseSubBar( )
       
       OpenSubBar("2Menu")
-         BarItem(21, "2Open")
-         BarItem(22, "2Save")
-         BarItem(23, "2Save as...")
-         BarSeparator( )
-         BarItem(24, "2Quit")
+      BarItem(21, "2Open")
+      BarItem(22, "2Save")
+      BarItem(23, "2Save as...")
+      BarSeparator( )
+      BarItem(24, "2Quit")
       CloseSubBar( )
       
       BarSeparator( )
@@ -23448,11 +23459,11 @@ CompilerIf #PB_Compiler_IsMainFile
       BarSeparator( )
       
       OpenSubBar("3Menu")
-         BarItem(31, "3Open")
-         BarItem(32, "3Save")
-         BarItem(33, "3Save as...")
-         BarSeparator( )
-         BarItem(34, "3Quit")
+      BarItem(31, "3Open")
+      BarItem(32, "3Save")
+      BarItem(33, "3Save as...")
+      BarSeparator( )
+      BarItem(34, "3Quit")
       CloseSubBar( )
       
       BarSeparator( )
@@ -23504,10 +23515,11 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\Close( )
    
    
-   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #__window_SystemMenu | #__window_ScreenCentered)
+   ;-\\ OPENWINDOW_1
+   OpenWindow(#window_1, 0, 0, 800, 600, "PanelGadget", #__window_SystemMenu | #__window_ScreenCentered, WindowID(#window_0))
    
    ;\\ Open root0
-   Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
+   Define *root0._s_WIDGET = Open(#window_1, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
    ;BindWidgetEvent( *root2, @HandlerEvents( ) )
    Procedure TestHandler()
       Debug "Test menu event"
@@ -23527,23 +23539,23 @@ CompilerIf #PB_Compiler_IsMainFile
       BarSeparator( )   
       ;
       OpenSubBar("title-1-sub-item")
-         BarItem(3, "title-1-item")
-         BarSeparator( )
-         ;
-         OpenSubBar("title-2-sub-item")   
-            BarItem(13, "title-2-item")
-            BarSeparator( )
-            ;
-            OpenSubBar("title-3-sub-item")   
-               BarItem(23, "title-3-item")
-            CloseSubBar( ) 
-            ;
-            BarSeparator( )
-            BarItem(14, "title-2-item")
-         CloseSubBar( ) 
-         ;
-         BarSeparator( )
-         BarItem(4, "title-1-item")
+      BarItem(3, "title-1-item")
+      BarSeparator( )
+      ;
+      OpenSubBar("title-2-sub-item")   
+      BarItem(13, "title-2-item")
+      BarSeparator( )
+      ;
+      OpenSubBar("title-3-sub-item")   
+      BarItem(23, "title-3-item")
+      CloseSubBar( ) 
+      ;
+      BarSeparator( )
+      BarItem(14, "title-2-item")
+      CloseSubBar( ) 
+      ;
+      BarSeparator( )
+      BarItem(4, "title-1-item")
       CloseSubBar( ) 
       ;
       BarSeparator( )
@@ -23565,7 +23577,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*menu, @TestHandler(), -1, 7)
       Bind(*menu, @QuitHandler(), -1, 8)
    EndIf
-
+   
    *toolbar = ToolBar( *root0, #PB_ToolBar_Small|#PB_ToolBar_Text |#PB_ToolBar_InlineText)
    If *toolbar
       SetColor( *toolbar, #__color_back, $FFC8ECF0 )
@@ -23589,20 +23601,20 @@ CompilerIf #PB_Compiler_IsMainFile
       
       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
       ; ToolTip(*toolbar, 6, "Find a document")
-   
+      
    EndIf
    
    
    Global *popupmenu = CreatePopupBar( )
    If *popupmenu                  ; creation of the pop-up menu begins...
-      BarItem(1, "Open")     ; You can use all commands for creating a menu
-      BarItem(2, "Save")     ; just like in a normal menu...
+      BarItem(1, "Open")          ; You can use all commands for creating a menu
+      BarItem(2, "Save")          ; just like in a normal menu...
       BarItem(3, "Save as")
       BarItem(4, "event-Quit")
       BarSeparator( )
       OpenSubBar("Recent files")
-         BarItem(5, "PureBasic.exe")
-         BarItem(6, "event-Test")
+      BarItem(5, "PureBasic.exe")
+      BarItem(6, "event-Test")
       CloseSubBar( )
    EndIf
    
@@ -23699,58 +23711,58 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\Close( )
    
    ;\\
-   Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
+   Define *root1._s_WIDGET = Open(#window_1, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
    ;BindWidgetEvent( *root1, @HandlerEvents( ) )
-    Define *ToolBar = ToolBar( *root1, #PB_ToolBar_Small )
-      If *toolbar
-         OpenSubBar("Title-1")
-            BarItem(1, "title-1-item-1")
-            BarSeparator( )   
-            OpenSubBar("title-1-sub-item")
-               BarItem(3, "title-1-item")
-               BarSeparator( )
-               OpenSubBar("title-2-sub-item")   
-                  BarItem(13, "title-2-item")
-                  BarSeparator( )
-                  OpenSubBar("title-3-sub-item")   
-                     BarItem(23, "title-3-item")
-                  CloseSubBar( ) 
-                  BarSeparator( )
-                  BarItem(14, "title-2-item")
-               CloseSubBar( ) 
-               BarSeparator( )
-               BarItem(4, "title-1-item")
-            CloseSubBar( ) 
-            BarSeparator( )
-            BarItem(2, "title-1-item-2")
-         CloseSubBar( )
-         
-         ;
-         BarSeparator( )
-         OpenSubBar("Title-2")
-         CloseSubBar( )
-         BarSeparator( )
-         
-         ;
-         OpenSubBar("Title-event-test")
-            BarItem(7, "test")
-            BarSeparator( )
-            BarItem(8, "quit")
-         CloseSubBar( )
-         
-         ;
-         OpenSubBar("Title-4")
-            BarItem(9, "title-4-item-1")
-            BarItem(10, "title-4-item-2")
-         CloseSubBar( )
-         
-         Bind(*ToolBar, @TestHandler(), -1, 7)
-         Bind(*ToolBar, @QuitHandler(), -1, 8)
-      EndIf
+   Define *ToolBar = ToolBar( *root1, #PB_ToolBar_Small )
+   If *toolbar
+      OpenSubBar("Title-1")
+      BarItem(1, "title-1-item-1")
+      BarSeparator( )   
+      OpenSubBar("title-1-sub-item")
+      BarItem(3, "title-1-item")
+      BarSeparator( )
+      OpenSubBar("title-2-sub-item")   
+      BarItem(13, "title-2-item")
+      BarSeparator( )
+      OpenSubBar("title-3-sub-item")   
+      BarItem(23, "title-3-item")
+      CloseSubBar( ) 
+      BarSeparator( )
+      BarItem(14, "title-2-item")
+      CloseSubBar( ) 
+      BarSeparator( )
+      BarItem(4, "title-1-item")
+      CloseSubBar( ) 
+      BarSeparator( )
+      BarItem(2, "title-1-item-2")
+      CloseSubBar( )
       
+      ;
+      BarSeparator( )
+      OpenSubBar("Title-2")
+      CloseSubBar( )
+      BarSeparator( )
+      
+      ;
+      OpenSubBar("Title-event-test")
+      BarItem(7, "test")
+      BarSeparator( )
+      BarItem(8, "quit")
+      CloseSubBar( )
+      
+      ;
+      OpenSubBar("Title-4")
+      BarItem(9, "title-4-item-1")
+      BarItem(10, "title-4-item-2")
+      CloseSubBar( )
+      
+      Bind(*ToolBar, @TestHandler(), -1, 7)
+      Bind(*ToolBar, @QuitHandler(), -1, 8)
+   EndIf
+   
    ;\\Close( )
    
-   Define *root2._s_WIDGET = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
+   Define *root2._s_WIDGET = Open(#window_1, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
    ;BindWidgetEvent( *root2, @HandlerEvents( ) )
    
    HyperLink( 10, 10, 80, 40, "HyperLink", RGB(105, 245, 44) )
@@ -23763,11 +23775,11 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\Close( )
    
    
-   Define *root3._s_WIDGET = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
+   Define *root3._s_WIDGET = Open(#window_1, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
    ;BindWidgetEvent( *root3, @HandlerEvents( ) )
    ;\\Close( )
    
-   Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
+   Define *root4._s_WIDGET = Open(#window_1, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
    ;BindWidgetEvent( *root4, @HandlerEvents( ) )
    ;\\Close( )
    
@@ -24095,9 +24107,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1579
-; FirstLine = 1569
-; Folding = ------------------------------------------------------b-----------------------------------------------e--8-------------------------4-----------+------------------8-------------------------------------------------------------------------------------------n----------------------------------------------------------v---------------------xt---------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------------------------------------------v---------------v-+-------8---v-4----------------------------------------------------
+; CursorPosition = 16540
+; FirstLine = 16349
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6----+v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
