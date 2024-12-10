@@ -265,7 +265,7 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    
    Select Type
       Case #__type_Spin
-         *this = Create( *second, #PB_Compiler_Procedure, #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__buttonsize, 0, 1 )
+         *this = Create( *second, #PB_Compiler_Procedure, #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__bar_button_size, 0, 1 )
          SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_String
          *this = Create( *second, #PB_Compiler_Procedure, #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
@@ -1653,8 +1653,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 910
-; FirstLine = 865
+; CursorPosition = 267
+; FirstLine = 247
 ; Folding = ---f0------------+------------
 ; EnableXP
 ; DPIAware
