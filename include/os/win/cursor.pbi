@@ -164,9 +164,11 @@ Module Cursor
     
     If DesktopScaledX(Width) <> GetSystemMetrics_( #SM_CXCURSOR ) And 
        DesktopScaledY(Height) <> GetSystemMetrics_( #SM_CYCURSOR) 
+       If DesktopResolutionX( ) = 2.0 And DesktopResolutionY( ) = 2.0
           Width = 32                  ;GetSystemMetrics_( #SM_CXCURSOR )
           Height = 32                 ;GetSystemMetrics_( #SM_CYCURSOR )
           ResizeImage(Image, Width, Height, #PB_Image_Raw )
+       EndIf
     EndIf
     
     If Type = #__cursor_Arrows Or
@@ -499,8 +501,8 @@ Module Cursor
   EndProcedure
 EndModule   
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 198
-; FirstLine = 192
+; CursorPosition = 168
+; FirstLine = 156
 ; Folding = ------------
 ; Optimizer
 ; EnableXP

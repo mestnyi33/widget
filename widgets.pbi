@@ -335,12 +335,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro DPIUnScaledX( _x_ ): DesktopUnscaledX( _x_ ): EndMacro
       Macro DPIScaledY( _y_ ): DesktopScaledY( _y_ ): EndMacro
       Macro DPIUnScaledY( _y_ ): DesktopUnscaledY( _y_ ): EndMacro
-      Macro DPIScaled( _value_ ): DesktopScaledX( _value_ ): EndMacro
+      ;Macro DPIScaled( _value_ ): DesktopScaledX( _value_ ): EndMacro
       Macro DPIUnScaled( _value_ ): DesktopUnscaledX( _value_ ): EndMacro
       Macro DPIResolutionX( ): DesktopResolutionX( ): EndMacro
       Macro DPIResolutionY( ): DesktopResolutionY( ): EndMacro
       Macro DPIResolution( ): DesktopResolutionX( ): EndMacro
-      
+      Declare DPIScaled( _value_ )
       ;     Macro BoxedGradient(_x_, _y_, _width_, _height_)
       ;       Debug 555
       ;       ; PB(BoxedGradient)(DesktopScaledX(_x_), DesktopScaledY(_y_), DesktopScaledX(_width_), DesktopScaledY(_height_))
@@ -1572,6 +1572,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
       Declare   edit_RemoveItem( *this._s_WIDGET, item )
       Declare   edit_ClearItems( *this._s_WIDGET )
+      
+      Global DPISCALED.d = (GetDeviceCaps_(GetDC_(0),#LOGPIXELSX) / 96) - 1.0
+      
+      Procedure DPIScaled( _value_ )
+         ProcedureReturn _value_ + Bool(DPISCALED) * (_value_ * DPISCALED)
+      EndProcedure
       
       ;\\
       Macro Leaved( _address_ )
@@ -24089,8 +24095,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20555
-; FirstLine = 20186
+; CursorPosition = 1579
+; FirstLine = 1569
 ; Folding = ------------------------------------------------------b-----------------------------------------------e--8-------------------------4-----------+------------------8-------------------------------------------------------------------------------------------n----------------------------------------------------------v---------------------xt---------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------------------------------------------v---------------v-+-------8---v-4----------------------------------------------------
 ; Optimizer
 ; EnableXP

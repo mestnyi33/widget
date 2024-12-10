@@ -16,15 +16,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;End
    EndProcedure
    
-   Procedure ClickHandler( )
-      DisplayPopupBar( *menu, EventWidget( ) )
-   EndProcedure
-   
    ;\\
    OpenWindow( 1, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu)
-   Bind(Open( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
-   
-   ;\\
    menu = CreatePopupMenu( #PB_Any )
    MenuItem(1, "Open")      ; You can use all commands for creating a menu
    MenuItem(2, "Save")      ; just like in a normal menu...
@@ -77,6 +70,11 @@ CompilerIf #PB_Compiler_IsMainFile
    BindMenuEvent(menu, 4, @QuitHandler())
    
    ;\\
+   Procedure ClickHandler( )
+      DisplayPopupBar( *menu, EventWidget( ) )
+   EndProcedure
+   
+   Bind(Open( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
    *menu = CreatePopupBar( )
    BarItem(1, "test")      ; You can use all commands for creating a menu
    BarItem(2, "Save")      ; just like in a normal menu...
@@ -113,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
    BarBar( )
    BarItem(7, "exit")
    
-   If *menu                  ; creation of the pop-up menu begins...
+   If is_menu_( *menu )                 ; creation of the pop-up menu begins...
       BarItem(1, "Open")     ; You can use all commands for creating a menu
       BarItem(2, "Save")     ; just like in a normal menu...
       BarItem(3, "Save as")
@@ -138,8 +136,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 67
+; CursorPosition = 113
+; FirstLine = 84
 ; Folding = --
 ; EnableXP
 ; DPIAware
