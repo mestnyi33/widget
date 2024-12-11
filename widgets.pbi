@@ -21048,16 +21048,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                If test_draw_repaint
-                  ;  Debug "   REPAINT " + root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+                    Debug "   REPAINT " + root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                EndIf
                
                ReDraw( root( ) )
                root( )\canvas\postrepaint = 0
             EndIf
             
-            If test_draw_repaint
-               Debug "   REPAINT " + root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
-            EndIf
+;             If test_draw_repaint
+;                Debug "   REPAINT " + root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+;             EndIf
          EndIf
       EndProcedure
       
@@ -22944,7 +22944,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure WaitQuit( *root._s_root = #Null )
-         
          __gui\eventloop + 1
          
          ;\\ send posted events
@@ -22973,11 +22972,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                
          CompilerEndSelect
          
-         Debug "  event( QUIT ) ";+*window\class
+         Debug "    ( QUIT ) "
       EndProcedure
       
       Procedure PostQuit( *root._s_root = #Null )
-         Debug "post( QUIT)"
+         Debug "post( QUIT )"
          
          __gui\eventloop = 0
          
@@ -23010,7 +23009,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure MessageEvents( )
          
          Select WidgetEvent( )
-            Case #__event_Repaint
+            Case #__event_Draw
                Debug "repaint - message " + EventWidget( )\class
                
             Case #__event_Focus
@@ -24113,9 +24112,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11084
-; FirstLine = 10917
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6----+v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------
+; CursorPosition = 23011
+; FirstLine = 22793
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6----+v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------
 ; Optimizer
 ; EnableXP
 ; DPIAware
