@@ -15042,18 +15042,18 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\ Border & Frame size
-         If *this\type = #__type_Container Or
-            *this\type = #__type_ScrollArea Or
-            *this\type = #__type_Panel Or
+         If *this\type = #__type_ScrollArea Or
             *this\type = #__type_MDI Or
-            *this\type = #__type_String Or
             *this\type = #__type_Editor Or
-            *this\type = #__type_Text Or
-            *this\type = #__type_Tree Or
             *this\type = #__type_ListView Or
             *this\type = #__type_ListIcon Or
             *this\type = #__type_ExplorerList Or
             *this\type = #__type_Properties Or
+            *this\type = #__type_Tree Or
+            *this\type = #__type_Container Or
+            *this\type = #__type_Panel Or
+            *this\type = #__type_String Or
+            *this\type = #__type_Text Or
             *this\type = #__type_ComboBox Or
             *this\type = #__type_Spin Or
             *this\type = #__type_Button Or
@@ -15070,14 +15070,31 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\fs = 1
             EndIf
          Else
-            If is_bar_( *this ) Or *this\type = #__type_TabBar
-               If is_integral_( *this )
-                  *this\fs = 0
+            ;If is_bar_( *this ) Or *this\type = #__type_TabBar
+            If is_integral_( *this )
+               If *this\type = #__type_Scroll
+                  *this\fs = 0;10
                Else
-                  *this\fs = 1
+                  *this\fs = 0
                EndIf
+            Else
+               *this\fs = 1
             EndIf
+            ;EndIf
          EndIf
+;          If *this\type = #__type_ScrollArea Or
+;             *this\type = #__type_MDI Or
+;             *this\type = #__type_Editor Or
+;             *this\type = #__type_ListView Or
+;             *this\type = #__type_ListIcon Or
+;             *this\type = #__type_ExplorerList Or
+;             *this\type = #__type_Properties Or
+;             *this\type = #__type_Tree 
+;             ;
+;             If *this\fs
+;                *this\fs + 1
+;             EndIf
+;          EndIf   
          *this\bs = *this\fs
          
          ;\\
@@ -24138,8 +24155,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21135
-; FirstLine = 20558
+; CursorPosition = 15075
+; FirstLine = 14556
 ; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-4++---------------------------------------------------av-f-v-------------------------------------------------------------------------------------------------------------------------------------f7-8-----------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------+--Y3---
 ; Optimizer
 ; EnableXP
