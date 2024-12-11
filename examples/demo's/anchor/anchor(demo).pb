@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Frame( 0,0,230,210, " preferences " )
     
     Y = 20
-    Text( 10,10+Y,100,18, "grid size", #PB_Text_Border )
+    Text( 10,10+Y,100,18, "grid size");, #PB_Text_Border )
     *grid = Spin( 10,30+Y,100,30, 0,100 )
     
     Text( 10,70+Y,100,18, "anchor size", #PB_Text_Border )
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 49
+; CursorPosition = 88
+; FirstLine = 76
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../../widgets.pbi" 
 UseWidgets( )
 
 Global i, *w._s_widget, *p1,*p2._s_widget, *ch
@@ -11,16 +11,16 @@ Global i, *w._s_widget, *p1,*p2._s_widget, *ch
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -82,8 +82,6 @@ EndProcedure
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 38
 ; Folding = --
 ; EnableXP
 ; DPIAware

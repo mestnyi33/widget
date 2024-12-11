@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../../widgets.pbi" 
 UseWidgets( )
 
 Global i, *w, *p1,*p2, *ch, *b, *bb._s_widget
@@ -51,36 +51,36 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
   Define parentfirst.s = "  "
   
   ;ChangeCurrentRoot( Root( )\canvas\address )
-  Debug "after " + *bb\after\widget
+  Debug "after " + *bb\AfterWidget( )
   
   Debug ""
   ForEach widgets( )
     If widgets( )\parent
-      If widgets( )\before\widget
-        before = Str( widgets( )\before\widget\data )
+      If widgets( )\BeforeWidget( )
+        before = Str( widgets( )\BeforeWidget( )\data )
       EndIf
-      If widgets( )\after\widget
-        after = Str( widgets( )\after\widget\data )
+      If widgets( )\AfterWidget( )
+        after = Str( widgets( )\AfterWidget( )\data )
       Else
         after = "  "
       EndIf
       
-      If widgets( )\last\widget
-        last = Str( widgets( )\last\widget\data )
+      If widgets( )\LastWidget( )
+        last = Str( widgets( )\LastWidget( )\data )
       Else
         last = "  "
       EndIf
       
       parent = Str( widgets( )\parent\data )
-      If widgets( )\parent\first\widget
-        parentfirst = Str( widgets( )\parent\first\widget\data )
+      If widgets( )\parent\FirstWidget( )
+        parentfirst = Str( widgets( )\parent\FirstWidget( )\data )
       EndIf
-      If widgets( )\parent\last\widget
-        parentlast = Str( widgets( )\parent\last\widget\data )
+      If widgets( )\parent\LastWidget( )
+        parentlast = Str( widgets( )\parent\LastWidget( )\data )
       EndIf
     
-    If widgets( )\first\widget
-      first = Str( widgets( )\first\widget\data )
+    If widgets( )\FirstWidget( )
+      first = Str( widgets( )\FirstWidget( )\data )
     EndIf
     
     Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ root()\data +" - "+ parent
@@ -104,36 +104,36 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
   Define parentfirst.s = "  "
   
  ; ChangeCurrentRoot( Root( )\canvas\address )
-  Debug "after " + *bb\after\widget
+  Debug "after " + *bb\AfterWidget( )
   
   Debug ""
   ForEach widgets( )
     If widgets( )\parent
-      If widgets( )\before\widget
-        before = Str( widgets( )\before\widget\data )
+      If widgets( )\BeforeWidget( )
+        before = Str( widgets( )\BeforeWidget( )\data )
       EndIf
-      If widgets( )\after\widget
-        after = Str( widgets( )\after\widget\data )
+      If widgets( )\AfterWidget( )
+        after = Str( widgets( )\AfterWidget( )\data )
       Else
         after = "  "
       EndIf
       
-      If widgets( )\last\widget
-        last = Str( widgets( )\last\widget\data )
+      If widgets( )\LastWidget( )
+        last = Str( widgets( )\LastWidget( )\data )
       Else
         last = "  "
       EndIf
       
       parent = Str( widgets( )\parent\data )
-      If widgets( )\parent\first\widget
-      parentfirst = Str( widgets( )\parent\first\widget\data )
+      If widgets( )\parent\FirstWidget( )
+      parentfirst = Str( widgets( )\parent\FirstWidget( )\data )
     EndIf
-    If widgets( )\parent\last\widget
-      parentlast = Str( widgets( )\parent\last\widget\data )
+    If widgets( )\parent\LastWidget( )
+      parentlast = Str( widgets( )\parent\LastWidget( )\data )
     EndIf 
     
-    If widgets( )\first\widget
-      first = Str( widgets( )\first\widget\data )
+    If widgets( )\FirstWidget( )
+      first = Str( widgets( )\FirstWidget( )\data )
     EndIf
     
     Debug  " "+ parentfirst +" ||<< "+ first + " |<< " + before +" << "+ widgets( )\data +" >> "+ after +" >>| "+ last +" >>|| "+ parentlast +" - "+ root()\data +" - "+ parent
@@ -149,8 +149,8 @@ If Open(0, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_S
   ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15
-; FirstLine = 11
+; CursorPosition = 135
+; FirstLine = 108
 ; Folding = ----
 ; EnableXP
 ; DPIAware

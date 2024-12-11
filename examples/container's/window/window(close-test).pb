@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;    *root\haschildren + 1
 ;   SetParent2(*widget, *root)
   
-  ;Debug Root()\last\widget
+  ;Debug Root()\LastWidget( )
   *window = Button(10, 10, 90,30,"button")
   
   Debug " >> "
@@ -44,7 +44,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 19
 ; Folding = -
 ; EnableXP

@@ -1,5 +1,5 @@
 ﻿
-XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    
@@ -43,16 +43,16 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -77,8 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\ test 2
      *PARENT = Splitter( 10, 60, 150, 150, *CHILD1, *CHILD2 )
       
-      Debug ""+*PARENT\first\widget\class
-      Debug ""+*PARENT\last\widget\class
+      Debug ""+*PARENT\FirstWidget( )\class
+      Debug ""+*PARENT\LastWidget( )\class
       
       Show_DEBUG()
       
@@ -87,8 +87,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 37
+; CursorPosition = 79
+; FirstLine = 59
 ; Folding = --
 ; EnableXP
 ; DPIAware

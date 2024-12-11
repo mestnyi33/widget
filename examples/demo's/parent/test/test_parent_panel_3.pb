@@ -93,7 +93,7 @@
 ;       Debug "<<----"
 ;       
 ;       
-;       Debug ""+*panel\FirstWidget( )\class +" <<<< "+ *panel\class +" >>>> "+ *panel\last\widget\class
+;       Debug ""+*panel\FirstWidget( )\class +" <<<< "+ *panel\class +" >>>> "+ *panel\LastWidget( )\class
 ;       
 ;       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
 ;          ClipGadgets( UseGadgetList(0) )
@@ -105,7 +105,7 @@
 
 
 
-IncludePath "../../../"
+IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -153,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug "----all childrens-----"
       ForEach widgets( )
-         Debug  ""+widgets( )\class ;+" "+ widgets( )\FirstWidget( ) +" "+ widgets( )\BeforeWidget( ) +" "+ widgets( )\AfterWidget( ) +" "+ widgets( )\last\widget
+         Debug  ""+widgets( )\class ;+" "+ widgets( )\FirstWidget( ) +" "+ widgets( )\BeforeWidget( ) +" "+ widgets( )\AfterWidget( ) +" "+ widgets( )\LastWidget( )
       Next
       
       ;\\ 
@@ -189,7 +189,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 164
+; CursorPosition = 107
+; FirstLine = 99
 ; Folding = -
 ; EnableXP

@@ -152,6 +152,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_clip              = 0
       Global test_buttons_draw      = 0
       
+      Global test_area
       Global test_anchors
       Global test_docursor, test_changecursor,test_setcursor
       
@@ -1598,7 +1599,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       Macro Entered( _address_ )
          Bool( Not _address_\_enter )
-         If Not _address_\_enter
+         If Not _address_\_enter And Not _address_\disable
             _address_\_enter = 1
             
             If _address_\ColorState( ) = #__s_0
@@ -3933,10 +3934,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.b DisableItem( *this._s_widget, item.l, state.b )
          If *this\type = #__type_panel
-            If *this\tab
+            If *this\__Tab( )
                SelectElement( *this\__Tab( )\__tabs( ), item )
                *this\__Tab( )\__tabs( )\disable = state
-               ;*this\state\repaint = #True
+             ; Debug *this\__Tab( )\__tabs( )\disable ;*this\state\repaint = #True
             EndIf
          EndIf
       EndProcedure
@@ -3946,13 +3947,21 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If *this\disable[1] <> State
             *this\disable[1] = State
-            ;
-            ; reset color state
-            If *this\press
-               If *this\ColorState( ) 
-                  *this\ColorState( ) = #__s_0
+            
+            If *this\disable[1]
+               If *this\enter
+                  If *this\ColorState( ) 
+                     *this\ColorState( ) = #__s_0
+                  EndIf
                EndIf
             EndIf
+;             ;
+;             ; reset color state
+;             If *this\press
+;                If *this\ColorState( ) 
+;                   *this\ColorState( ) = #__s_0
+;                EndIf
+;             EndIf
             ;
             DisableState( *this, *this\parent )
             ;
@@ -9356,6 +9365,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             draw_mode_alpha_( #PB_2DDrawing_Outlined )
             draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
          EndIf
+         
+         ;\\ draw disable state
+         If _address_\disable
+            ; Debug "disable item"
+            draw_mode_alpha_( #PB_2DDrawing_Default )
+            draw_box_(  _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, $AAE4E4E4 )
+         EndIf
       EndMacro
       
       Procedure bar_draw_tabitems( *this._s_WIDGET, vertical, X,Y, round, List *tabs._s_ITEMS( ) )
@@ -9472,22 +9488,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\child
             If *this\parent
                Protected color = *this\parent\color\frame
-               ;If *this\parent\focus = 2
+               If *this\parent\focus = 2
                   color = *this\parent\color\frame[2]
-               ;EndIf
+               EndIf
                
                If *bar\vertical
                   If *activeTAB And 
                      *activeTAB\visible
                      If *this\parent\fs
-                        Line( X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, *this\parent\color\frame )
-                        Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, *this\parent\color\frame )
+                        Line( X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
+                        Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
                      EndIf
                      ; line on the selected item
                      If *this\parent\fs[1]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y, bar_toggle_line_size, *activeTAB\height, color)
+                        Box(X + *activeTAB\x, Y + *activeTAB\y, bar_toggle_line_size, *activeTAB\height, *this\parent\color\frame[2])
                      ElseIf *this\parent\fs[3]
-                        Box(X + *activeTAB\x + *activeTAB\width-bar_toggle_line_size, Y + *activeTAB\y, bar_toggle_line_size, *activeTAB\height, color)
+                        Box(X + *activeTAB\x + *activeTAB\width-bar_toggle_line_size, Y + *activeTAB\y, bar_toggle_line_size, *activeTAB\height, *this\parent\color\frame[2])
                      EndIf
                      ;
                      If is_menu_( *this )
@@ -9497,7 +9513,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   If *this\type = #__type_TabBar
                      If *this\parent\fs
-                        color = *this\parent\color\frame
                         ;
                         If *this\parent\fs[1]
                            If *activeTAB
@@ -9533,14 +9548,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *activeTAB And 
                      *activeTAB\visible
                      If *this\parent\fs
-                        Line( X + *activeTAB\x, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), *this\parent\color\frame )
-                        Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), *this\parent\color\frame )
+                        Line( X + *activeTAB\x, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), color )
+                        Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), color )
                      EndIf
                      ; line on the selected item
                      If *this\parent\fs[2]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width, bar_toggle_line_size, color)
+                        Box(X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width, bar_toggle_line_size, *this\parent\color\frame[2])
                      ElseIf *this\parent\fs[4]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height-bar_toggle_line_size, *activeTAB\width, bar_toggle_line_size, color)
+                        Box(X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height-bar_toggle_line_size, *activeTAB\width, bar_toggle_line_size, *this\parent\color\frame[2])
                      EndIf
                      ;
                      If is_menu_( *this )
@@ -9550,7 +9565,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   If *this\type = #__type_TabBar
                      If *this\parent\fs
-                        color = *this\parent\color\frame
                         ;
                         ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
                         If *this\parent\fs[2]
@@ -9591,7 +9605,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         
       EndProcedure
       
       Procedure.b bar_draw_tab( *this._s_WIDGET )
@@ -10311,24 +10324,26 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\
-            If Not _this_\haschildren
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               
-               ; ;                ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), RGB( 255,0,0 ) )
-               ; ;                Box( _this_\scroll\h\bar\page\pos, _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-               
-               ;\\ Scroll area coordinate
-               draw_box_( _this_\inner_x( ) + _this_\scroll_x( ) + _this_\text\padding\x, _this_\inner_y( ) + _this_\scroll_y( ) + _this_\text\padding\y, _this_\scroll_width( ) - _this_\text\padding\x * 2, _this_\scroll_height( ) - _this_\text\padding\y * 2, $FFFF0000 )
-               draw_box_( _this_\inner_x( ) + _this_\scroll_x( ), _this_\inner_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
-               
-               If _this_\scroll\v And _this_\scroll\h
-                  draw_box_( _this_\scroll\h\frame_x( ) + _this_\scroll_x( ), _this_\scroll\v\frame_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
+            If test_area
+               If Not _this_\haschildren
+                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
                   
-                  ; Debug "" +  _this_\scroll_x( )  + " " +  _this_\scroll_y( )  + " " +  _this_\scroll_width( )  + " " +  _this_\scroll_height( )
-                  ;draw_box_( _this_\scroll\h\frame_x( ) - _this_\scroll\h\bar\page\pos, _this_\scroll\v\frame_y( ) - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FF0000FF )
+                  ; ;                ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), RGB( 255,0,0 ) )
+                  ; ;                Box( _this_\scroll\h\bar\page\pos, _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
                   
-                  ;\\ page coordinate
-                  draw_box_( _this_\scroll\h\frame_x( ), _this_\scroll\v\frame_y( ), _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00 )
+                  ;\\ Scroll area coordinate
+                  draw_box_( _this_\inner_x( ) + _this_\scroll_x( ) + _this_\text\padding\x, _this_\inner_y( ) + _this_\scroll_y( ) + _this_\text\padding\y, _this_\scroll_width( ) - _this_\text\padding\x * 2, _this_\scroll_height( ) - _this_\text\padding\y * 2, $FFFF0000 )
+                  draw_box_( _this_\inner_x( ) + _this_\scroll_x( ), _this_\inner_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
+                  
+                  If _this_\scroll\v And _this_\scroll\h
+                     draw_box_( _this_\scroll\h\frame_x( ) + _this_\scroll_x( ), _this_\scroll\v\frame_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
+                     
+                     ; Debug "" +  _this_\scroll_x( )  + " " +  _this_\scroll_y( )  + " " +  _this_\scroll_width( )  + " " +  _this_\scroll_height( )
+                     ;draw_box_( _this_\scroll\h\frame_x( ) - _this_\scroll\h\bar\page\pos, _this_\scroll\v\frame_y( ) - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FF0000FF )
+                     
+                     ;\\ page coordinate
+                     draw_box_( _this_\scroll\h\frame_x( ), _this_\scroll\v\frame_y( ), _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00 )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -11082,7 +11097,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             Else
                If *bar\fixed = 1
-                  If *bar\fixed[1] > *bar\area\end
+                  If *bar\fixed[1] >= *bar\area\end
                      If *bar\min[1] < *bar\area\end
                         ThumbPos = *bar\area\end
                      Else
@@ -11459,7 +11474,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
                   SetWindowPos_( GadgetID(*this\split_1( )), #HWND_TOP, *BB1\x, *BB1\y, *BB1\width, *BB1\height, #SWP_NOACTIVATE )
                   UpdateWindow_( GadgetID(*this\root\canvas\gadget))
-                  ;UpdateWindow_( GadgetID(*this\split_1( )))
                CompilerElse
                   PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
                CompilerEndIf
@@ -11502,7 +11516,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
                   SetWindowPos_( GadgetID(*this\split_2( )), #HWND_TOP, *BB2\x, *BB2\y, *BB2\width, *BB2\height, #SWP_NOACTIVATE )
                   UpdateWindow_( GadgetID(*this\root\canvas\gadget))
-                  ;UpdateWindow_( GadgetID(*this\split_2( )))
                CompilerElse
                   PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
                CompilerEndIf
@@ -20184,7 +20197,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      *this\TabEntered( ) = *tab
                      ;
-                     If *tab 
+                     If *tab
                         If *this\enter 
                            ;\\ entered tabs
                            If Entered( *tab )
@@ -20261,67 +20274,69 @@ CompilerIf Not Defined( widget, #PB_Module )
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *this\tab
                   *tab = *this\TabEntered( )
-                  
-                  If *this\displaypopup ; *this\type = #__type_PopupBar
-                  Else
-                     ;\\
-                     If *tab And *tab\childrens 
-                        If *this\type <> #__type_PopupBar
-                           If Not HideBar( *this\PopupBar( ) )
-                              If *tab\Row__Menu( )\hide
-                                 DisplayPopupBar( *tab\Row__Menu( ), *this )
+                  If Not (*Tab And *Tab\disable )
+                        
+                        If *this\displaypopup ; *this\type = #__type_PopupBar
+                        Else
+                           ;\\
+                           If *tab And *tab\childrens 
+                              If *this\type <> #__type_PopupBar
+                                 If Not HideBar( *this\PopupBar( ) )
+                                    If *tab\Row__Menu( )\hide
+                                       DisplayPopupBar( *tab\Row__Menu( ), *this )
+                                    EndIf
+                                 EndIf
+                              EndIf
+                           Else
+                              If *this\PopupBar( ) 
+                                 If *this\PopupBar( ) <> *this\__Popup( )
+                                    ;
+                                    HidePopupBar( *this\PopupBar( ) )
+                                 EndIf
+                                 *this\PopupBar( ) = 0
+                              EndIf
+                           EndIf
+                           
+                           
+                           ;\\
+                           *this\TabPressed( ) = *tab
+                           
+                           ;                                              ;
+                           If Not ( EnteredButton( ) And 
+                                    EnteredButton( )\press And 
+                                    ( EnteredButton( ) = *this\bar\button[1] Or 
+                                      EnteredButton( ) = *this\bar\button[2] ) )
+                              ;
+                              If *tab And
+                                 *tab\press = #False
+                                 *tab\press = #True
+                                 
+                                 *tab\ColorState( ) = #__s_2
+                                 *this\root\repaint = #True
                               EndIf
                            EndIf
                         EndIf
-                     Else
-                        If *this\PopupBar( ) 
-                           If *this\PopupBar( ) <> *this\__Popup( )
+                        
+                        
+                        If *this\type = #__type_MenuBar Or
+                           *this\type = #__type_ToolBar
+                           
+                           If *tab
+                              If *this\TabFocused( )
+                                 *this\TabFocused( )\_focus = 0
+                                 *this\TabFocused( ) = 0
+                              EndIf
                               ;
-                              HidePopupBar( *this\PopupBar( ) )
+                              If *this\type = #__type_MenuBar
+                                 *this\TabFocused( ) = *tab
+                                 *this\TabFocused( )\_focus = 1
+                                 
+                              ElseIf *this\TabEntered( )\childrens 
+                                 *tab\TabItemState( ) ! 1
+                                 *tabmenu = *tab
+                              EndIf
                            EndIf
-                           *this\PopupBar( ) = 0
                         EndIf
-                     EndIf
-                     
-                     
-                     ;\\
-                     *this\TabPressed( ) = *tab
-                     
-                     ;                                              ;
-                     If Not ( EnteredButton( ) And 
-                              EnteredButton( )\press And 
-                              ( EnteredButton( ) = *this\bar\button[1] Or 
-                                EnteredButton( ) = *this\bar\button[2] ) )
-                        ;
-                        If *tab And
-                           *tab\press = #False
-                           *tab\press = #True
-                           
-                           *tab\ColorState( ) = #__s_2
-                           *this\root\repaint = #True
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-                  
-                  If *this\type = #__type_MenuBar Or
-                     *this\type = #__type_ToolBar
-                     
-                     If *tab
-                        If *this\TabFocused( )
-                           *this\TabFocused( )\_focus = 0
-                           *this\TabFocused( ) = 0
-                        EndIf
-                        ;
-                        If *this\type = #__type_MenuBar
-                           *this\TabFocused( ) = *tab
-                           *this\TabFocused( )\_focus = 1
-                           
-                        ElseIf *this\TabEntered( )\childrens 
-                           *tab\TabItemState( ) ! 1
-                           *tabmenu = *tab
-                        EndIf
-                     EndIf
                   EndIf
                EndIf
                
@@ -20433,11 +20448,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          If eventtype = #__event_LeftClick
             If *this\type = #__type_TabBar
-               Protected state = GetItemIndex( *this, *this\TabPressed( ) )
-               ;
-               If state >= 0 
-                  If bar_tab_SetState( *this, state ) 
-                     result = #True
+               If Not ( *this\TabPressed( ) And *this\TabPressed( )\disable )
+                  Protected state = GetItemIndex( *this, *this\TabPressed( ) )
+                  ;
+                  If state >= 0 
+                     If bar_tab_SetState( *this, state ) 
+                        result = #True
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -21106,7 +21123,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If eventtype = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                                             ; Debug "resize - canvas ["+eventgadget+"]"
+;                                               Debug "resize - canvas ["+eventgadget+"]"
             
             ; ;               *root = root( )
             ;PushMapPosition( roots( ) )
@@ -21114,6 +21131,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                ChangeCurrentCanvas( GadgetID( eventgadget ) )
             EndIf 
             If Resize( root( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )) )
+               ;Debug "resize - canvas ["+eventgadget+"]"
+               ;PostEventRepaint( root( ) )
                ReDraw( root( ) )
             EndIf
             ;PopMapPosition( roots( ) )
@@ -22469,6 +22488,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             g = GadgetID( Gadget )
          EndIf
          
+         Static count
+         SetClass( *this, GetClass(*this)+"_"+count); Index(*this))
+         count + 1
+         
          SetGadgetData( Gadget, *this )
          
          If IsGadget(Canvas)
@@ -23609,7 +23632,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
    
-   
    Global *popupmenu = CreatePopupBar( )
    If *popupmenu                  ; creation of the pop-up menu begins...
       BarItem(1, "Open")          ; You can use all commands for creating a menu
@@ -23715,7 +23737,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(*button_item2, @button_tab_events( ), #__event_Down )
    ;\\Close( )
    
-   ;\\
+   ;-\\ ROOT1
    Define *root1._s_WIDGET = Open(#window_1, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
    ;BindWidgetEvent( *root1, @HandlerEvents( ) )
    Define *ToolBar = ToolBar( *root1, #PB_ToolBar_Small )
@@ -23767,6 +23789,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\Close( )
    
+   ;-\\ ROOT2
    Define *root2._s_WIDGET = Open(#window_1, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
    ;BindWidgetEvent( *root2, @HandlerEvents( ) )
    
@@ -23780,10 +23803,12 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\Close( )
    
    
+   ;-\\ ROOT3
    Define *root3._s_WIDGET = Open(#window_1, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
    ;BindWidgetEvent( *root3, @HandlerEvents( ) )
    ;\\Close( )
    
+   ;-\\ ROOT4
    Define *root4._s_WIDGET = Open(#window_1, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
    ;BindWidgetEvent( *root4, @HandlerEvents( ) )
    ;\\Close( )
@@ -23827,11 +23852,12 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
+   ;-\\ OPENROOT1
    OpenList( *root1 )
    *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
    AddItem( *panel, -1, "item_1" )
    ;Button( 20,20, 80,80, "item_1")
-   *g = Editor(0, 0, 0, 0, #__flag_autosize)
+   *g = Editor(0, 0, 0, 0, #__flag_autosize|#__flag_borderless)
    For a = 0 To 2
       AddItem(*g, a, "Line " + Str(a))
    Next
@@ -23842,7 +23868,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*g, a, "Line " + Str(a))
    Next
    
-   AddItem( *panel, -1, "(hide&show)-test" ) : SetItemFont(*panel, 1, 6)
+   AddItem( *panel, -1, "(hide&show)-test" )
    ; Button( 10,10, 80,80, "item_2")
    Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
    Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
@@ -23876,7 +23902,7 @@ CompilerIf #PB_Compiler_IsMainFile
    CloseList( )
    CloseList( )
    
-   AddItem( *panel, -1, "(enter&leave)-test" )
+   AddItem( *panel, -1, "(enter&leave)-test" ) : SetItemFont(*panel, 2, 6)
    
    Procedure enter_leave_containers_events( )
       Protected repaint
@@ -23977,7 +24003,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ; SetState( *panel, 2 )
    
-   ;\\\
+   ;-\\ OPENROOT2
    OpenList( *root2 )
    SetText(*root2, "*root2" )
    ;   ;Define *p3._s_WIDGET = Container( 80,80, 150,150 )
@@ -24030,7 +24056,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Spin(10, 210, 250, 25, 25, 30, #__flag_Textright )
    Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
    
-   ;\\
+   ;-\\ OPENROOT3
    OpenList( *root3 )
    Define *tree = Tree( 10, 20, 150, 200, #__tree_checkboxes)
    For i = 1 To 100;0000
@@ -24065,7 +24091,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Debug "--------  time --------- " + Str(ElapsedMilliseconds( ) - time)
    
    
-   ;\\
+   ;-\\ OPENROOT4
    Define *window._s_WIDGET
    Define i, Y = 5
    OpenList( *root4 )
@@ -24112,9 +24138,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23011
-; FirstLine = 22793
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6----+v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------
+; CursorPosition = 21135
+; FirstLine = 20558
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-4++---------------------------------------------------av-f-v-------------------------------------------------------------------------------------------------------------------------------------f7-8-----------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------+--Y3---
 ; Optimizer
 ; EnableXP
 ; DPIAware

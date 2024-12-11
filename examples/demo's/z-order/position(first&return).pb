@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   Global Event.i, MyCanvas
-  Global x=100,y=100, Width=420, Height=420 , focus
+  Global X=100,Y=100, Width=420, Height=420 , focus
   Global after
   Global before
   Global before1, after1 
@@ -28,13 +28,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select Position
       Case #PB_List_First 
-        result = _SetPosition(*this, #PB_List_Before, *this\parent\first\widget)
+        result = _SetPosition(*this, #PB_List_Before, *this\parent\FirstWidget( ))
         
       Case #PB_List_Before 
         If *widget
           *after = *widget
         Else
-          *after = *this\before\widget
+          *after = *this\BeforeWidget( )
         EndIf
         
         If *after
@@ -48,32 +48,32 @@ CompilerIf #PB_Compiler_IsMainFile
           Wend
           
           ; if first element in parent list
-          If *this\parent\first\widget = *this
-            *this\parent\first\widget = *this\after\widget
+          If *this\parent\FirstWidget( ) = *this
+            *this\parent\FirstWidget( ) = *this\AfterWidget( )
           EndIf
           
           ; if last element in parent list
-          If *this\parent\last\widget = *this
-            *this\parent\last\widget = *this\before\widget
+          If *this\parent\LastWidget( ) = *this
+            *this\parent\LastWidget( ) = *this\BeforeWidget( )
           EndIf
           
-          If *this\before\widget
-            *this\before\widget\after\widget = *this\after\widget
+          If *this\BeforeWidget( )
+            *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
           EndIf
           
-          If *this\after\widget
-            *this\after\widget\before\widget = *this\before\widget
+          If *this\AfterWidget( )
+            *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
           EndIf
           
-          *this\after\widget = *after
-          *this\before\widget = *after\before\widget 
-          *after\before\widget = *this
+          *this\AfterWidget( ) = *after
+          *this\BeforeWidget( ) = *after\BeforeWidget( ) 
+          *after\BeforeWidget( ) = *this
           
-          If *this\before\widget
-            *this\before\widget\after\widget = *this
+          If *this\BeforeWidget( )
+            *this\BeforeWidget( )\AfterWidget( ) = *this
           Else
-            *this\parent\first\widget\before\widget = *this
-            *this\parent\first\widget = *this
+            *this\parent\FirstWidget( )\BeforeWidget( ) = *this
+            *this\parent\FirstWidget( ) = *this
           EndIf
           
           result = 1
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If *widget
           *before = *widget
         Else
-          *before = *this\after\widget
+          *before = *this\AfterWidget( )
         EndIf
         
         If *before
@@ -101,39 +101,39 @@ CompilerIf #PB_Compiler_IsMainFile
           Wend
           
           ; if first element in parent list
-          If *this\parent\first\widget = *this
-            *this\parent\first\widget = *this\after\widget
+          If *this\parent\FirstWidget( ) = *this
+            *this\parent\FirstWidget( ) = *this\AfterWidget( )
           EndIf
           
           ; if last element in parent list
-          If *this\parent\last\widget = *this
-            *this\parent\last\widget = *this\before\widget
+          If *this\parent\LastWidget( ) = *this
+            *this\parent\LastWidget( ) = *this\BeforeWidget( )
           EndIf
           
-          If *this\after\widget
-            *this\after\widget\before\widget = *this\before\widget
+          If *this\AfterWidget( )
+            *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
           EndIf
           
-          If *this\before\widget
-            *this\before\widget\after\widget = *this\after\widget
+          If *this\BeforeWidget( )
+            *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
           EndIf
           
-          *this\before\widget = *before
-          *this\after\widget = *before\after\widget 
-          *before\after\widget = *this
+          *this\BeforeWidget( ) = *before
+          *this\AfterWidget( ) = *before\AfterWidget( ) 
+          *before\AfterWidget( ) = *this
           
-          If *this\after\widget
-            *this\after\widget\before\widget = *this
+          If *this\AfterWidget( )
+            *this\AfterWidget( )\BeforeWidget( ) = *this
           Else
-            *this\parent\last\widget\after\widget = *this
-            *this\parent\last\widget = *this
+            *this\parent\LastWidget( )\AfterWidget( ) = *this
+            *this\parent\LastWidget( ) = *this
           EndIf
           
           result = 1
         EndIf
         
       Case #PB_List_Last 
-        result = _SetPosition(*this, #PB_List_After, *this\parent\last\widget)
+        result = _SetPosition(*this, #PB_List_After, *this\parent\LastWidget( ))
         
     EndSelect
     
@@ -144,7 +144,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure this_events()
     Select WidgetEvent( )
-      Case #PB_EventType_LeftButtonDown 
+      Case #__event_Down 
         before = GetPosition(EventWidget( ), #PB_List_Before)
         after = GetPosition(EventWidget( ), #PB_List_After)
         
@@ -157,7 +157,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         
-      Case #PB_EventType_LeftButtonUp
+      Case #__event_Up
         If before
           _SetPosition(EventWidget( ), #PB_List_After, before)
           
@@ -175,7 +175,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
@@ -191,8 +191,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ForEach widgets()
     If IsChild(widgets(), *g0)
-      Bind(widgets(), @this_events(), #PB_EventType_LeftButtonDown)
-      Bind(widgets(), @this_events(), #PB_EventType_LeftButtonUp)
+      Bind(widgets(), @this_events(), #__event_Down)
+      Bind(widgets(), @this_events(), #__event_Up)
     EndIf
   Next
 
@@ -208,8 +208,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 39
+; CursorPosition = 152
+; FirstLine = 150
 ; Folding = -----
 ; EnableXP
 ; DPIAware

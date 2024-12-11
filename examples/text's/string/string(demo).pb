@@ -5,6 +5,7 @@ IncludePath "../../../" : XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
+  test_area = 1
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -118,25 +119,25 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndIf
   EndProcedure
   
-  Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
+  Define Height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
-  Macro EString(x,y,width,height, Text, flag=0)
-    String(x,y,width,height, Text, flag)
+  Macro EString(X,Y,Width,Height, Text, flag=0)
+    String(X,Y,Width,Height, Text, flag)
     ; Editor(x,y,width,height, flag) : setText(widget(), text)
   EndMacro
   
   Define null$ = "" ;"00000 00000 00000 00000"
     
-  If Open(0, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    StringGadget(0, 8, 10, 290, height, "Read-only StringGadget..."+null$ + null$, #PB_String_ReadOnly)
-    StringGadget(1, 8, (height+5)*1+10, 290, height, null$ + " 123-only-4567 " + null$, #PB_String_Numeric)
-    StringGadget(2, 8, (height+5)*2+10, 290, height, null$ + null$ + " ...Right-text StringGadget")
-    StringGadget(3, 8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
-    StringGadget(4, 8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
-    StringGadget(5, 8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
-    StringGadget(6, 8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
-    StringGadget(7, 8, (height+5)*7+10, 290, height, "")
-    StringGadget(8, 8, (height+5)*8+10, 290, 90, Text)
+  If Open(0, 0, 0, 615, (Height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    StringGadget(0, 8, 10, 290, Height, "Read-only StringGadget..."+null$ + null$, #PB_String_ReadOnly)
+    StringGadget(1, 8, (Height+5)*1+10, 290, Height, null$ + " 123-only-4567 " + null$, #PB_String_Numeric)
+    StringGadget(2, 8, (Height+5)*2+10, 290, Height, null$ + null$ + " ...Right-text StringGadget")
+    StringGadget(3, 8, (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
+    StringGadget(4, 8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
+    StringGadget(5, 8, (Height+5)*5+10, 290, Height, "Borderless StringGadget", #PB_String_BorderLess)
+    StringGadget(6, 8, (Height+5)*6+10, 290, Height, "Password", #PB_String_Password)
+    StringGadget(7, 8, (Height+5)*7+10, 290, Height, "")
+    StringGadget(8, 8, (Height+5)*8+10, 290, 90, Text)
     
     Define i
     For i=0 To 8
@@ -148,15 +149,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetText(6, "pas")
     Debug GetGadgetText(6)+" - get gadget text"
     
-    EString(305+8, 10, 290, height, "Read-only StringGadget..." + null$ + null$, #PB_String_ReadOnly)
-    EString(305+8, (height+5)*1+10, 290, height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__flag_Textcenter)
-    EString(305+8, (height+5)*2+10, 290, height, null$ + null$ + " ...Right-text StringGadget", #__flag_Textright)
-    EString(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
-    EString(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
-    EString(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
-    EString(305+8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
-    EString(305+8, (height+5)*7+10, 290, height, "")
-    EString(305+8, (height+5)*8+10, 290, 90, Text)
+    EString(305+8, 10, 290, Height, "Read-only StringGadget..." + null$ + null$, #PB_String_ReadOnly)
+    EString(305+8, (Height+5)*1+10, 290, Height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__flag_Textcenter)
+    EString(305+8, (Height+5)*2+10, 290, Height, null$ + null$ + " ...Right-text StringGadget", #__flag_Textright)
+    EString(305+8, (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
+    EString(305+8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
+    EString(305+8, (Height+5)*5+10, 290, Height, "Borderless StringGadget", #PB_String_BorderLess)
+    EString(305+8, (Height+5)*6+10, 290, Height, "Password", #PB_String_Password)
+    EString(305+8, (Height+5)*7+10, 290, Height, "")
+    EString(305+8, (Height+5)*8+10, 290, 90, Text)
     
     ;SetText(ID(6+1), "pas")
     Debug GetText(ID(6+1))+"- get widget text"
@@ -170,8 +171,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 143
+; CursorPosition = 7
 ; Folding = ---
 ; EnableXP
 ; DPIAware

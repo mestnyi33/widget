@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../../widgets.pbi" 
 UseWidgets( )
 
 Global i, *CHILD._s_widget, *CONT2,*CONT1._s_widget, *root1._s_widget, *root2._s_widget
@@ -12,16 +12,16 @@ Procedure show_DEBUG( )
       If widgets( )\root = *root1
          line = "  ";+ widgets( )\class +" "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -37,16 +37,16 @@ Procedure show_DEBUG( )
       If widgets( )\root = *root2
          line = "  ";+ widgets( )\class +" "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -98,8 +98,6 @@ If Open(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCen
    WaitEvent( @events_widgets() )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 27
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -1,5 +1,5 @@
 ﻿
-XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    
@@ -32,9 +32,9 @@ CompilerIf #PB_Compiler_IsMainFile
          *last = GetPositionLast( *after, tabindex )
       EndIf
       
-;       Debug "*this - "+*CHILD+" before "+ *CHILD\before\widget +" after "+ *CHILD\after\widget
-;       Debug "*after - "+*after+" before "+ *after\before\widget +" after "+ *after\after\widget
-;       Debug "*last - "+*last+" before "+ *last\before\widget +" after "+ *last\after\widget
+;       Debug "*this - "+*CHILD+" before "+ *CHILD\BeforeWidget( ) +" after "+ *CHILD\AfterWidget( )
+;       Debug "*after - "+*after+" before "+ *after\BeforeWidget( ) +" after "+ *after\AfterWidget( )
+;       Debug "*last - "+*last+" before "+ *last\BeforeWidget( ) +" after "+ *last\AfterWidget( )
        Debug "     *after "+ *after\class +" - "+ *last\class +" *last"
    EndProcedure
    
@@ -46,16 +46,16 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -65,10 +65,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-   Procedure OpenGadget( x,y,width,height )
+   Procedure OpenGadget( X,Y,Width,Height )
       Protected *PARENT 
       ;*PARENT = Panel( x,y,width,height*2 ) : AddItem(*PARENT, - 1, "item_0" )
-      *PARENT = Container( x,y,width,height ) 
+      *PARENT = Container( X,Y,Width,Height ) 
       ProcedureReturn *PARENT
    EndProcedure
    
@@ -159,8 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 40
+; CursorPosition = 1
 ; Folding = --
 ; EnableXP
 ; DPIAware

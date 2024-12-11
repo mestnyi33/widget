@@ -8,6 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global *c, *s
    Global *butt1, *butt2
+   Global *butt3, *butt4
    Global ._s_widget *w,*w1,*w2 ;
    
    Open(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -32,6 +33,16 @@ CompilerIf #PB_Compiler_IsMainFile
                HideItem(*w, 2, 0)
                Disable(*butt1,0)
                Disable(*butt2,1)
+               
+            Case *butt3	
+               DisableItem(*w, 2, 1)
+               Disable(*butt3,1)
+               Disable(*butt4,0)
+               
+            Case *butt4
+               DisableItem(*w, 2, 0)
+               Disable(*butt3,0)
+               Disable(*butt4,1)
          EndSelect
       EndProcedure
       
@@ -40,6 +51,10 @@ CompilerIf #PB_Compiler_IsMainFile
       *butt2 = Button(95, 15, 80, 24,"show item3")
       Bind(*butt1, @events_butt(), #__event_LeftClick)
       Bind(*butt2, @events_butt(), #__event_LeftClick)
+      *butt3 = Button(10, 44, 80, 24,"disable item3")
+      *butt4 = Button(95, 44, 80, 24,"enable item3")
+      Bind(*butt3, @events_butt(), #__event_LeftClick)
+      Bind(*butt4, @events_butt(), #__event_LeftClick)
       
       AddItem (*w, -1,"Панель 3")
       Button(10, 15, 80, 24,"Кнопка 4")
@@ -48,20 +63,24 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem (*w, -1,"Панель 4")
    CloseList()
    
+   ; 
    SetState(*w,1)
+   
+   ;
    HideItem(*w, 2, 1)
-   ; HideItem(*w, 1, 0)
+   DisableItem(*w, 2, 1)
    
-   DisableItem(*w, 0, 1)
-   
+   ;
    Disable(*butt1,1)
-   WaitClose( )
+   Disable(*butt3,1)
    
+   ;
+   WaitClose( )
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 12
+; CursorPosition = 73
+; FirstLine = 48
 ; Folding = -
 ; EnableXP
 ; DPIAware

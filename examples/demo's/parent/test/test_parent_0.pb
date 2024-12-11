@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -353,7 +353,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 ;       Show_DEBUG()
 ;       
 ;       
-;       ;Debug "^"+root()\FirstWidget( )\class +" "+ root()\last\widget\class +" "+ root()\last\widget\last\widget\class
+;       ;Debug "^"+root()\FirstWidget( )\class +" "+ root()\LastWidget( )\class +" "+ root()\LastWidget( )\LastWidget( )\class
 ;       OpenList( root( ), 0 )
 ;       *CHILD = Button(pos_x,10,160,70,"(CHILD4)") : SetClass(*CHILD, "CHILD4") 
 ;       CloseList( )
@@ -447,8 +447,6 @@ CompilerEndIf
 ;    EndIf   
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 63
 ; Folding = ------
 ; EnableXP
 ; DPIAware

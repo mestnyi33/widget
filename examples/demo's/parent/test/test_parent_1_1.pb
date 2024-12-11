@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -15,16 +15,16 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Debug widgets( )\class
          line = "  "
          
-         If widgets( )\before\widget
-            line + widgets( )\before\widget\class +" <<  "    ;  +"_"+widgets( )\before\widget\text\string
+         If widgets( )\BeforeWidget( )
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
          line + widgets( )\class ; widgets( )\text\string
          
-         If widgets( )\after\widget
-            line +"  >> "+ widgets( )\after\widget\class ;+"_"+widgets( )\after\widget\text\string
+         If widgets( )\AfterWidget( )
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -34,22 +34,24 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-   If Open( 0, 100, 100, 470, 200, " CONT1 create in CONT2", #PB_Window_SystemMenu )
+   If Open( 0, 100, 100, 470, 200, " CONT1 set in CONT2", #PB_Window_SystemMenu )
       a_init(root())
       ;
       *CONT2 = Container( 220, 10, 200, 150) : SetClass(widget( ), "CONT2" ) 
       Button( 10,5,80,25, "*btn2_1" )  : SetClass(widget( ), "btn2_1" ) 
       Button( 10,35,80,25, "*btn2_2" )  : SetClass(widget( ), "btn2_2" ) 
       Button( 10,65,80,25, "*btn2_3" )  : SetClass(widget( ), "btn2_3" ) 
+      CloseList()
       ;
       *CONT1 = Container( 10, 10, 200, 150) : SetClass(widget( ), "CONT1" ) 
       Button( 10,5,80,25, "*btn1_1" )  : SetClass(widget( ), "btn1_1" ) 
       Button( 10,35,80,25, "*btn1_2" )  : SetClass(widget( ), "btn1_2" ) 
       Button( 10,65,80,25, "*btn1_3" )  : SetClass(widget( ), "btn1_3" ) 
       CloseList()
-      CloseList()
-      ;
-     
+      
+      ;\\
+      SetParent( *CONT1, *CONT2 )
+      
       ;\\
       show_DEBUG( )
       
@@ -69,7 +71,5 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 13
 ; Folding = -
 ; EnableXP
