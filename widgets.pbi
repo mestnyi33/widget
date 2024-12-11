@@ -8809,7 +8809,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;       EndMacro
       
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
-         ( _bar_\min + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+         ;( _bar_\min + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest )) ; 
+         ( _bar_\min + Round(((( _thumb_pos_ ) + _bar_\min[2] ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
       Macro bar_thumb_pos_( _bar_, _scroll_pos_ )
@@ -11101,8 +11102,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                If *bar\fixed = 2
-                  If *bar\min[1] > *bar\area\end - *bar\fixed[2] 
-                     If *bar\min[1] > *bar\area\end + *bar\min[2] 
+                  If *bar\min[1] >= *bar\area\end - *bar\fixed[2] 
+                    If *bar\min[1] > *bar\area\end + *bar\min[2] 
                         ThumbPos = *bar\area\end + *bar\min[2]
                      Else
                         If *bar\min[1] > *bar\area\len - *bar\thumb\len
@@ -11822,7 +11823,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
          Protected result.b, *bar._s_BAR = *this\bar
-         
+                
          If *bar\area\len
             If Not *bar\max
                *bar\page\end = *bar\area\len - *bar\thumb\len
@@ -11865,7 +11866,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                *bar\PageChange( ) = *bar\page\pos - ScrollPos
                *bar\page\pos      = ScrollPos
-               
+                             
                ; Debug ""+*this +" "+ ScrollPos +" "+ *bar\page\end +" "+ *bar\thumb\len +" "+ *bar\thumb\end +" "+ *bar\page\pos +" "+ Str(*bar\page\end-*bar\min[2])
                
                result = *bar\PageChange( )
@@ -11904,6 +11905,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ScrollPos = bar_page_pos_( *bar, ThumbPos )
             ScrollPos = bar_invert_page_pos_( *bar, ScrollPos )
+            
             bar_PageChange( *this, ScrollPos, 2 ) ; and post change event 
             ProcedureReturn #True
          EndIf
@@ -20579,8 +20581,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                      a_enter( *this, 9999999 )
                      ChangeCurrentCursor( *this, a_anchors( )\cursor[a_index( )] )
                   Else
-                     If CurrentCursor( ) <> *this\cursor
-                        ChangeCurrentCursor( *this, *this\cursor )
+                     If *this\enter = 2
+                        If CurrentCursor( ) <> *this\cursor[1]
+                           ChangeCurrentCursor( *this, *this\cursor[1] )
+                        EndIf
+                     Else
+                        ChangeCurrentCursor( *this, 0 )
                      EndIf
                   EndIf
                Else
@@ -24107,9 +24113,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23389
-; FirstLine = 23113
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6----+v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------
+; CursorPosition = 11084
+; FirstLine = 10917
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6----+v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------
 ; Optimizer
 ; EnableXP
 ; DPIAware
