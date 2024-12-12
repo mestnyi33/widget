@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetColor(root(), #__color_back, $FFE8E8E6)
       
       *PANEL_1 = Panel( 30, 30, 340, 240 )
-      BarPosition( *PANEL_1\__Tab( ), 1, 100 )
+      BarPosition( *PANEL_1\tabbar, 1, 100 )
       
       ;\\
       AddItem( *PANEL_1, 1, "*PANEL_0 - 1", img )
@@ -108,8 +108,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 42
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; DPIAware

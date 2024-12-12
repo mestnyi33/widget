@@ -29,7 +29,7 @@
    
    Define *root._s_WIDGET = Open(#window_0, 0, 0, 424, 352): *root\class = "root": SetText(*root, "root")
    *w = Panel( 10, 10, 424 - 20, 352 - 20) ; , #__flag_autosize )
-   BarPosition( *w\__Tab( ), 1, 100 )
+   BarPosition( *w\tabbar, 1, 100 )
    For i = 1 To 100;0000
       If (i & 2) 
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -53,7 +53,7 @@
    ;\\ 
    Define *root0._s_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
    *w = Panel( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
-   BarPosition( *w\__Tab( ), 1, 100 )
+   BarPosition( *w\tabbar, 1, 100 )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -67,7 +67,7 @@
    ;\\ 
    Define *root1._s_WIDGET = Open(#window, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
    *w = Panel( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
-   BarPosition( *w\__Tab( ), 1, 100 )
+   BarPosition( *w\tabbar, 1, 100 )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -79,7 +79,7 @@
    
    Define *root2._s_WIDGET = Open(#window, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
    *w = Panel( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
-   BarPosition( *w\__Tab( ), 1, 100 )
+   BarPosition( *w\tabbar, 1, 100 )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -93,7 +93,7 @@
    
    Define *root3._s_WIDGET = Open(#window, 300, 300, 300 - 20, 300 - 20): *root3\class = "root3": SetText(*root3, "root3")
    *w = Panel( 10, 10, 300 - 20, 300 - 20) ; , #__flag_autosize )
-   BarPosition( *w\__Tab( ), 1, 100 )
+   BarPosition( *w\tabbar, 1, 100 )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -106,7 +106,7 @@
    
    Define *root4._s_WIDGET = Open(#window, 590, 10, 200, 600 - 20): *root4\class = "root4": SetText(*root4, "root4")
    *w = Panel( 10, 10, 200 - 20, 600 - 20) ; , #__flag_autosize )
-   BarPosition( *w\__Tab( ), 1, 100 )
+   BarPosition( *w\tabbar, 1, 100 )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -123,6 +123,6 @@
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 108
-; FirstLine = 76
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

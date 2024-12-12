@@ -374,13 +374,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMoveMin.i
          OffsetMoveMax.i
          
-         ;*root._s_WIDGET
+         *_menubar._s_WIDGET
          *_parent._s_ROWS
+         
          childrens.w ; Row( )\ ; rows( )\ ; row\
          sublevel.w
          
          *data  ; set/get item data
-         *rowmenu._s_WIDGET
       EndStructure
       
       ;--     ROWS
@@ -396,7 +396,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
          
-         *_option_group_parent._s_rows ; option group row
+         *_groupbar._s_rows ; option group row
          
          ; edit
          margin._s_edit
@@ -662,14 +662,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          Tab._s_TAB               ; 
                                   ;
-         *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
-         *combobutton._s_BUTTONS  ; combobox
-                                  ;
-         *tabbox._s_WIDGET
-         *menubox._s_WIDGET
-         *optionbox._s_WIDGET         ; = Option( ) group widget
-         *stringbox._s_WIDGET                   ; = SpinBar( ) string box
-         *popupbox._s_WIDGET
+         *tabbar._s_WIDGET
+         *menubar._s_WIDGET
+         *popupbar._s_WIDGET
+         *groupbar._s_WIDGET      ; = Option( ) group widget
+         *stringbar._s_WIDGET     ; = SpinBar( ) string box widget
+         
+         StructureUnion
+            *togglebox._s_BOX     ; checkbox; optionbox, ToggleButton
+            *button._s_BUTTONS    ; combobox button
+         EndStructureUnion
          
          displaypopup.b
          ;                           
@@ -784,8 +786,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 331
-; FirstLine = 322
+; CursorPosition = 385
+; FirstLine = 362
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

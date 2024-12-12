@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global SelectedGadget
    
    Procedure TabViewType( *this._s_widget, position.i, size.i = #PB_Default )
-      ProcedureReturn BarPosition(*this\__Tab( ), position, size)
+      ProcedureReturn BarPosition(*this\tabbar, position, size)
    EndProcedure
    
    Procedure events_widget( )
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 97
+; CursorPosition = 29
+; FirstLine = 25
 ; Folding = --
 ; EnableXP
 ; DPIAware
