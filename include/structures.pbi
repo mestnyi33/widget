@@ -166,15 +166,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          EndStructureUnion
          
          StructureUnion
-            _enter.b ;
-            enter.b  ;
-            ;MouseEnter.b ;
-            ;mouseenterframe.b
-            ;mouseenterinner.b
+            _enter.b 
+            enter.b  
          EndStructureUnion
          StructureUnion
-            focus.b
             _focus.b  
+            focus.b
          EndStructureUnion
          press.b
          
@@ -191,7 +188,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_BOX
-         ;noFocus.a ; без него при наведении на кнопку трии итем, теряется итем
          size.w
          color._s_color
          arrow._s_arrow
@@ -630,7 +626,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Height.l[constants::#__c]
          Width.l[constants::#__c]
          ;
-         Type.w
+         Type.w[2]                
+         ; type[0] = createtype
+         ; type[1] = grouptype
+         ;
          Level.c
          class.s
          ;
@@ -668,10 +667,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *groupbar._s_WIDGET      ; = Option( ) group widget
          *stringbar._s_WIDGET     ; = SpinBar( ) string box widget
          
-         StructureUnion
+        ; StructureUnion
             *togglebox._s_BOX     ; checkbox; optionbox, ToggleButton
             *button._s_BUTTONS    ; combobox button
-         EndStructureUnion
+        ; EndStructureUnion
          
          displaypopup.b
          ;                           
@@ -786,8 +785,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 385
-; FirstLine = 362
+; CursorPosition = 635
+; FirstLine = 610
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

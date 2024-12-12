@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    test_setcursor = 1
    #_DD_reParent = 1<<2
    
-   Global form1, btn1, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+   Global form1, btn1, btn2, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
    Procedure events_widgets( )
       Protected drop, source, selectedIndex, selectedText$
@@ -50,24 +50,26 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       form1 = Window(200,10,200,110,"form1")
          a_init(widget( ))
-         btn1 = Button(10,10,110,80, "btn1") 
+         btn1 = Button(10,10,80,50, "btn1") 
+         btn2 = Button(60,40,80,50, "btn2") 
+         Disable( btn2, 1 )
          SetMoveBounds( btn1, -1,-1,-1,-1 )
       CloseList( )
       
       ;\\
-      Splitter_1 = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical)
+      Splitter_1 = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical) : SetClass( widget(), "1")
       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 60)
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 60)
-      Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1)
+      Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1) : SetClass( widget(), "2")
       ;SetFrame( Splitter_1, 20)
       
-      Button_0 = Button(10,140,110,80, "drag", #__flag_textleft) 
-      Button_1 = Button(60,150,80,40, "Button 1")
-      Button_2 = Button(100,140,110,80, "Button 2") 
-      Button_3 = String(160,140,110,80, "String") 
+      Button_0 = Button(10,140,110,80, "drag", #__flag_textleft) : SetClass( widget(), GetText(widget()))
+      Button_1 = Button(60,150,80,40, "disable") : SetClass( widget(), GetText(widget()))
+      Button_2 = Button(100,140,110,80, "Ibeam") : SetClass( widget(), GetText(widget())) 
+      Button_3 = String(160,140,110,80, "framestring") : SetClass( widget(), GetText(widget())) 
       SetFrame( Button_3, 20)
-      Button_4 = String(230,140,110,80, "String") 
-      Button_5 = Button(300,140,110,80, "drop", #__flag_textright) 
+      Button_4 = String(230,140,110,80, "string") : SetClass( widget(), GetText(widget())) 
+      Button_5 = Button(300,140,110,80, "drop", #__flag_textright) : SetClass( widget(), GetText(widget())) 
       
       Disable( Button_1, 1 )
       
@@ -89,8 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 19
+; CursorPosition = 54
+; FirstLine = 42
 ; Folding = --
 ; EnableXP
 ; DPIAware

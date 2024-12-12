@@ -289,6 +289,13 @@
 ;     #__eventmask_Close        = 1<<#__event_Close
 ;     #__eventmask_Free         = 1<<#__event_Free  ; Destroy
     
+    Enumeration 
+       #__grouptype_bar
+       #__grouptype_button
+       #__grouptype_container
+       #__grouptype_list
+       #__grouptype_text
+    EndEnumeration
     
     ;-\\ create-type
     #__type_Root          = - 1
@@ -300,7 +307,7 @@
     #__type_TabBar        = - 7
     #__type_StatusBar     = - 8
     #__type_Properties    = - 9
-    
+     
 ;     #__type_toggled
 ;     
 ;     #__type_ImageButton
@@ -664,6 +671,15 @@
     ;       Debug #PB_ToolBar_Normal
     ;       Debug #PB_ToolBar_Toggle
     
+    #__flag_BarNormal     = #PB_ToolBar_Normal
+    #__flag_BarSmall      = #PB_ToolBar_Small
+    #__flag_BarLarge      = #PB_ToolBar_Large
+    #__flag_BarText       = #PB_ToolBar_Text
+    #__flag_BarInLineText = #PB_ToolBar_InlineText
+    #__flag_BarButtons    = #PB_ToolBar_Buttons
+    #__flag_BarLeft       = #PB_ToolBar_Left
+    #__flag_BarRight      = #PB_ToolBar_Right
+    #__flag_BarBottom     = #PB_ToolBar_Bottom
     
     
     
@@ -710,8 +726,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 55
+; CursorPosition = 673
+; FirstLine = 669
 ; Folding = ----
 ; Optimizer
 ; EnableXP
