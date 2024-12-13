@@ -208,8 +208,6 @@
       #__event_DragStart
       #__event_MouseMove
       #__event_MouseWheel
-      #__event_MouseWheelX
-      #__event_MouseWheelY
       #__event_MouseLeave
       #__event_Drop
       #__event_Up
@@ -255,8 +253,6 @@
 ;     #__eventmask_Dragstart    = 1<<#__event_Dragstart
 ;     #__eventmask_Mousemove    = 1<<#__event_MouseMove
 ;     #__eventmask_wheel        = 1<<#__event_MouseWheel
-;     #__eventmask_wheelx       = 1<<#__event_MouseWheelX
-;     #__eventmask_wheely       = 1<<#__event_MouseWheelY
 ;     #__eventmask_Leave        = 1<<#__event_MouseLeave
 ;     #__eventmask_Drop         = 1<<#__event_Drop
 ;     #__eventmask_Up           = 1<<#__event_Up
@@ -726,8 +722,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 673
-; FirstLine = 669
+; CursorPosition = 255
+; FirstLine = 250
 ; Folding = ----
 ; Optimizer
 ; EnableXP

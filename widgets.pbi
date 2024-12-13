@@ -909,16 +909,15 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;                Not ( _this_\type = #__type_HyperLink And is_atpoint_( _this_, _mouse_x_ - _this_\frame_x( ), _mouse_y_ - _this_\frame_y( ), [#__c_Required] ) = 0 ))
       ;       EndMacro
       Macro MouseEnter( _this_, _mode_ = 2 ) : _this_\enter = _mode_ : EndMacro
-      Macro MouseButtonPress( ): mouse( )\press: EndMacro ; Returns mouse x
       Macro MouseButtons( ): mouse( )\buttons: EndMacro   ; Returns mouse x
-      Macro MouseWheelX( ): mouse( )\wheel\x: EndMacro    ; Returns mouse x
-      Macro MouseWheelY( ): mouse( )\wheel\y: EndMacro    ; Returns mouse x
+      Macro MouseButtonPress( ): mouse( )\press: EndMacro ; Returns mouse x
+      Macro MouseWheelData( ): mouse( )\wheeldata: EndMacro    ; Returns mouse x
+      Macro MouseWheelDirection( ): mouse( )\wheeldirection: EndMacro    ; Returns mouse x
       Macro MouseData( ): mouse( )\data: EndMacro         ; Returns mouse x
       Macro GetMouseX( ): DPIUnScaledX( mouse( )\x ): EndMacro ; Returns mouse x
       Macro GetMouseY( ): DPIUnScaledY( mouse( )\y ): EndMacro ; Returns mouse y
       
       ;-
-      
       ;       ;-
       ;       Macro ImageIDWidth( _image_id_ )
       ;          func::GetImageWidth( _image_id_ )
@@ -14855,9 +14854,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                
             Case #__event_Down            : result$ = "Down"
             Case #__event_Up              : result$ = "Up"
-               
-            Case #__event_MouseWheelX     : result$ = "MouseWheelX"
-            Case #__event_MouseWheelY     : result$ = "MouseWheelY"
          EndSelect
          
          ProcedureReturn result$
@@ -20946,25 +20942,26 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; EndIf
             
             
-            ;\\ mouse wheel horizontal
-            If event = #__event_MouseWheelX
-               ; Debug "wheelX " + *data
-               If *this\scroll And *this\scroll\h And
-                  bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
-                  *this\root\repaint = #True
-               ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                  *this\root\repaint = #True
-               EndIf
-            EndIf
-            
-            ;\\ mouse wheel verticl
-            If event = #__event_MouseWheelY
-               ; Debug "wheelY " + *data
-               If *this\scroll And *this\scroll\v And 
-                  bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
-                  *this\root\repaint = #True
-               ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                  *this\root\repaint = #True
+            If event = #__event_MouseWheel
+               ;\\ mouse wheel horizontal
+               If MouseWheelDirection( ) < 0
+                  ; Debug "wheelX " + *data
+                  If *this\scroll And *this\scroll\h And
+                     bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
+                     *this\root\repaint = #True
+                  ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+                     *this\root\repaint = #True
+                  EndIf
+                  
+                  ;\\ mouse wheel verticl
+               Else
+                  ; Debug "wheelY " + *data
+                  If *this\scroll And *this\scroll\v And 
+                     bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
+                     *this\root\repaint = #True
+                  ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+                     *this\root\repaint = #True
+                  EndIf
                EndIf
             EndIf
             
@@ -20988,25 +20985,25 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\ enabled mouse behavior
-            If event = #__event_Down
-               
-               ;             If *this\type = #__type_Splitter
-               ;                If EnteredButton( ) And
-               ;                   EnteredButton( )\_enter
-               ;                EndIf
-               ;             EndIf
-            EndIf
-            
-            ;\\ after post-widget-events then drop if create new widget
-            If event = #__event_Drop
-               If *this <> widgets( )
-                  If widgets( )\resize\clip <> 0
-                     widgets( )\resize\clip = 0
-                     Reclip( widgets( ) )
-                  EndIf
-               EndIf
-            EndIf
+;             ;\\ enabled mouse behavior
+;             If event = #__event_Down
+;                
+;                ;             If *this\type = #__type_Splitter
+;                ;                If EnteredButton( ) And
+;                ;                   EnteredButton( )\_enter
+;                ;                EndIf
+;                ;             EndIf
+;             EndIf
+;             
+;             ;\\ after post-widget-events then drop if create new widget
+;             If event = #__event_Drop
+;                If *this <> widgets( )
+;                   If widgets( )\resize\clip <> 0
+;                      widgets( )\resize\clip = 0
+;                      Reclip( widgets( ) )
+;                   EndIf
+;                EndIf
+;             EndIf
             
             ;\\ key events
             If event = #__event_Input Or
@@ -21026,6 +21023,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\root\repaint = 1
                ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(event)
                If event = #__event_Focus Or
+                  event = #__event_Drop Or
                   event = #__event_LostFocus
                   ;
                   ReDraw( *this\root )
@@ -21138,11 +21136,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          If eventtype = #PB_EventType_MouseWheelX
             If EnteredWidget( )
-               mouse( )\wheel\x = eventdata
+               mouse( )\wheeldirection = - 1
+               mouse( )\wheeldata = eventdata
+               If mouse( )\wheeldata < 0
+                  mouse( )\data | #__mouse_left
+               ElseIf mouse( )\wheeldata > 0
+                  mouse( )\data | #__mouse_right
+               EndIf
                If is_integral_( EnteredWidget( ) )
-                  DoEvents( EnteredWidget( )\parent, #__event_MouseWheelX, -1, eventdata )
+                  DoEvents( EnteredWidget( )\parent, #__event_MouseWheel, mouse( )\wheeldirection, mouse( )\wheeldata )
                Else
-                  DoEvents( EnteredWidget( ), #__event_MouseWheelX, -1, eventdata )
+                  DoEvents( EnteredWidget( ), #__event_MouseWheel, mouse( )\wheeldirection, mouse( )\wheeldata )
                EndIf
             EndIf
          EndIf
@@ -21150,11 +21154,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          If eventtype = #PB_EventType_MouseWheelY
             If EnteredWidget( )
-               mouse( )\wheel\y = eventdata
+               mouse( )\wheeldirection = 1
+               mouse( )\wheeldata = eventdata
+               If mouse( )\wheeldata < 0
+                  mouse( )\data | #__mouse_top
+               ElseIf mouse( )\wheeldata > 0
+                  mouse( )\data | #__mouse_bottom
+               EndIf
                If is_integral_( EnteredWidget( ) )
-                  DoEvents( EnteredWidget( )\parent, #__event_MouseWheelY, -1, eventdata )
+                  DoEvents( EnteredWidget( )\parent, #__event_MouseWheel, mouse( )\wheeldirection, eventdata )
                Else
-                  DoEvents( EnteredWidget( ), #__event_MouseWheelY, -1, eventdata )
+                  DoEvents( EnteredWidget( ), #__event_MouseWheel, mouse( )\wheeldirection, mouse( )\wheeldata )
                EndIf
             EndIf
          EndIf
@@ -24133,9 +24143,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21030
-; FirstLine = 20133
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------0-f---6----------------------------------------------------------4-v00---------------------------------------------------2e--+f-----------------------------------------------------------------------------------------tX-------------------------------------------p-v-------------------------------------------------------------------------------------------------------0-4-------------+-----------------------------------------------------------8--rZ---
+; CursorPosition = 20959
+; FirstLine = 20036
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------0-f---6----------------------------------------------------------4-v00---------------------------------------------------2e--+f-----------------------------------------------------------------------------------------tX-------------------------------------------p-v-------------------------------------------------------------------------------------------------------dv--------------------------------------------------------------------------+--a3---
 ; Optimizer
 ; EnableXP
 ; DPIAware

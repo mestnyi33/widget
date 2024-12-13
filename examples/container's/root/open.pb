@@ -18,8 +18,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select eventtype
         ;       Case #__event_Draw          : Debug "draw"         
-      Case #__event_MouseWheelX     : Debug  " - "+ *this +" - wheel-x"
-      Case #__event_MouseWheelY     : Debug  " - "+ *this +" - wheel-y"
       Case #__event_Input           : Debug  " - "+ *this +" - input"
       Case #__event_KeyDown         : Debug  " - "+ *this +" - key-down"
       Case #__event_KeyUp           : Debug  " - "+ *this +" - key-up"
@@ -27,12 +25,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LostFocus       : Debug  " - "+ *this +" - lfocus"
       Case #__event_MouseEnter      : Debug  " - "+ *this +" - enter"
       Case #__event_MouseLeave      : Debug  " - "+ *this +" - leave"
-      Case #__event_LeftDown  : Debug  " - "+ *this +" - down"
+      Case #__event_LeftDown        : Debug  " - "+ *this +" - down"
       Case #__event_DragStart       : Debug  " - "+ *this +" - drag"
       Case #__event_Drop            : Debug  " - "+ *this +" - drop"
-      Case #__event_LeftUp    : Debug  " - "+ *this +" - up"
+      Case #__event_LeftUp          : Debug  " - "+ *this +" - up"
       Case #__event_LeftClick       : Debug  " - "+ *this +" - click"
-      Case #__event_Left2Click : Debug  " - "+ *this +" - 2_click"
+      Case #__event_Left2Click      : Debug  " - "+ *this +" - 2_click"
     EndSelect
   EndProcedure
   
@@ -42,6 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define i
   Define *w._S_widget, *g._S_widget, editable
   Define *root._S_widget = Open(#window_0,0,0,424, 352): *root\class = "root": SetText(*root, "root")
+  Bind(#PB_All, @HandlerEvents())
   
   ;BindWidgetEvent( *root, @HandlerEvents( ) )
   Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
@@ -50,9 +49,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;a_enable( widget( ), 15 )
   a_init( view, 15 )
   
-  Define *a1._s_widget = image( 5+170,5+140,60,60, -1 )
+  Define *a1._s_widget = Image( 5+170,5+140,60,60, -1 )
   Define *a2._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-  Define *a3._s_widget = image( 150,110,60,60, -1 )
+  Define *a3._s_widget = Image( 150,110,60,60, -1 )
   
   ; a_init( *a, 15 )
   a_set( *a1 )
@@ -66,7 +65,6 @@ CompilerIf #PB_Compiler_IsMainFile
   size_text = Text(8, 256, 40, 24, "0")
   pos_text = Text(8, 288, 40, 24, "0")
   grid_text = Text(8, 320, 40, 24, "0")
-  
   
   OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
@@ -225,23 +223,23 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;
   Define *window._S_widget
-  Define i,y = 5
+  Define i,Y = 5
   OpenList( *root4 )
   For i = 1 To 4
-    Window(5, y, 150, 95+2, "Window_" + Trim(Str(i)));, #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
+    Window(5, Y, 150, 95+2, "Window_" + Trim(Str(i)));, #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  ; Open  i, 
     Container(5, 5, 120+2,85+2)                      ;, #PB_Container_Flat)                                                                         ; Gadget(i, 
     Button(10,10,100,30,"Button_" + Trim(Str(i+10))) ; Gadget(i+10,
     Button(10,45,100,30,"Button_" + Trim(Str(i+20))) ; Gadget(i+20,
     CloseList( )                                     ; Gadget
-    y + 130
+    Y + 130
   Next
   
   ; 
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 60
+; CursorPosition = 20
+; FirstLine = 16
 ; Folding = -
 ; EnableXP
 ; DPIAware

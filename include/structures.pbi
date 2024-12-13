@@ -323,16 +323,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
          drag.b
          *drop._s_DRAG           ;
          
+         Data.w                  ; mouse moved state
+         steps.a
+         press.b                 ; mouse buttons state
          click.a                 ; mouse clicked count
-         Data.w                ; mouse moved state
          buttons.a               ; mouse clicked button
          
-         steps.a
          anchors._s_TRANSFORM    ; a_anchors( )
          *selector._s_SELECTOR   ; mouse select frame
          
-         press.b                 ; mouse buttons state
-         wheel._s_POINT          ;
+         wheeldata.w
+         wheeldirection.b
+         
          *delta._s_POINT         ; 
          
          *button._s_BUTTONS[3]   ;
@@ -785,8 +787,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 635
-; FirstLine = 610
+; CursorPosition = 337
+; FirstLine = 320
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

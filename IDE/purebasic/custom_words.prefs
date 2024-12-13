@@ -172,8 +172,8 @@ MouseEnter
 MouseButtons
 MouseButtonPress
 MouseData
-MouseWheelX
-MouseWheelY
+MouseWheelData
+MouseWheelDirection
 
 SetCursor
 GetCursor
