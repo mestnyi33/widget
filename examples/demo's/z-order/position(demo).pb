@@ -61,11 +61,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ first container
     Container(55, 95, 30, 45)                     ; Gadget(9,   
-    SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
+    SetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     SetClass(widget(), "first_0")
     
     Container(3, 20, 24-4, 25+6)   
-    SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
+    SetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     SetClass(widget(), "first_1")
     
     ;     Container(3, 4, 17-8, 25+6)   
@@ -86,11 +86,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ current container
     *this = Container(10, 50, 60, 80)              ; Gadget(10, 
-    SEtColor(widget(), #PB_Gadget_BackColor, $ffff00)
+    SetColor(widget(), #PB_Gadget_BackColor, $ffff00)
     SetClass(widget(), "this_container")
     
     Container(10, 4, 60, 74-4)   
-    SEtColor(widget(), #PB_Gadget_BackColor, $ffff00)
+    SetColor(widget(), #PB_Gadget_BackColor, $ffff00)
     Button(10, 4, 60, 68-8, "5", #__flag_TextLeft) : SetClass(widget(), GetText(widget())) 
     CloseList()
     
@@ -105,11 +105,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ last container
     Container(55, 40, 30, 43)                     ; Gadget(1,
-    SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
+    SetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     SetClass(widget(), "last_0")
     
     Container(3, -3, 24-4, 25+8)   
-    SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
+    SetColor(widget(), #PB_Gadget_BackColor, $ff00ff)
     SetClass(widget(), "last_1")
     
     ;     Container(3, -3, 17-8, 25+6)   
@@ -142,6 +142,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define gEvent, gQuit, after, before
   
+  before = GetPosition( *this, #PB_List_Before )
+  after = GetPosition(*this, #PB_List_After)
+  Debug " "+GetClass(before) +"<<< "+ GetClass(*this) +" >>>"+ GetClass(after)
+  
   Repeat
     gEvent= WaitWindowEvent()
     
@@ -153,7 +157,6 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select EventGadget()
               Case #first
-                before = GetPosition(*this, #PB_List_Before)
                 SetPosition(*this, #PB_List_First)
                 
               Case #before
@@ -163,7 +166,6 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetPosition(*this, #PB_List_After)
                 
               Case #last
-                after = GetPosition(*this, #PB_List_After)
                 SetPosition(*this, #PB_List_Last)
                 
               Case #return
@@ -174,6 +176,8 @@ CompilerIf #PB_Compiler_IsMainFile
                   SetPosition(*this, #PB_List_After, before)
                 EndIf
             EndSelect
+            
+            ReDraw( root( ) )
             
             ;             ClearDebugOutput()
             ;             ForEach widget()
@@ -194,8 +198,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 120
+; CursorPosition = 173
+; FirstLine = 137
 ; Folding = ---
 ; EnableXP
 ; DPIAware

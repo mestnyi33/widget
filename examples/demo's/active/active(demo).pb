@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0()
-    w_list(Hex(110)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(110)), 110)
+    w_list(Hex(110)) = Open(0, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
     ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
     ;       w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
@@ -74,10 +74,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_1()
-    w_list(Hex(110)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(110)), 110)
-    SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
-    ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
-    ;       w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+;     w_list(Hex(110)) = Open(110, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+;     SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
+     Open(110, 100, 100, 200+(#__window_FrameSize*2), 200+(#__window_CaptionHeight+#__window_FrameSize*2), "", #PB_Window_BorderLess)
+     w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
     w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
     
@@ -85,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
     ;       
-    w_list(Hex(120)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu)) : SetData(w_list(Hex(120)), 120)
+    w_list(Hex(120)) = Open(120, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
     ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
     ;       w_list(Hex(120)) = Window(0, 0, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
     w_list(Hex(121)) = String(10, 10, 180, 85, "String_121") : SetData(w_list(Hex(121)), 121)
@@ -95,7 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     Bind(#PB_All, @Widget_Handler())
     
-    w_list(Hex(130)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_130")) : SetData(w_list(Hex(130)), 130)
+    w_list(Hex(130)) = Open(130, 220, 140, 200, 200, "Window_130") : SetData(w_list(Hex(130)), 130)
     ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
     ;       w_list(Hex(130)) = Window(0, 0, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(130)), 130)
     w_list(Hex(131)) = String(10, 10, 180, 85, "String_131") : SetData(w_list(Hex(131)), 131)
@@ -107,10 +107,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_2()
-    If OpenWindow(0, 0, 0, 830, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+    If OpenWindow(2, 0, 0, 830, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   565, 890,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      w_list(Hex(10)) = Open(OpenWindow(0, 10,10, 400, 550, "", #__flag_BorderLess)) : SetData(w_list(Hex(10)), 10)
+      w_list(Hex(10)) = Open(21, 10,10, 400, 550, "", #__flag_BorderLess) : SetData(w_list(Hex(10)), 10)
       If w_list(Hex(10))
         w_list(Hex(110)) = Window(100, 100, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
         w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -132,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug ""
       
-      w_list(Hex(20)) = Open(OpenWindow(0, 420,10, 400, 550, "", #__flag_BorderLess)) : SetData(w_list(Hex(20)), 20)
+      w_list(Hex(20)) = Open(22, 420,10, 400, 550, "", #__flag_BorderLess) : SetData(w_list(Hex(20)), 20)
       If w_list(Hex(20))
         w_list(Hex(140)) = Window(100, 100, 200, 200, "Window_140", #PB_Window_SystemMenu) : SetData(w_list(Hex(140)), 140)
         w_list(Hex(141)) = String(10, 10, 180, 85, "String_141") : SetData(w_list(Hex(141)), 141)
@@ -152,7 +152,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Bind(#PB_All, @Widget_Handler())
       EndIf
       
-      w_list(Hex(210)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(210)), 210)
+      w_list(Hex(210)) = Open(23, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 210)
       SetWindowTitle(GetCanvasWindow(root()), "Window_210") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(210)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 110)
@@ -161,7 +161,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Bind(#PB_All, @Widget_Handler())
       
-      w_list(Hex(220)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_220", #PB_Window_SystemMenu)) : SetData(w_list(Hex(220)), 220)
+      w_list(Hex(220)) = Open(7, 160, 120, 200, 200, "Window_220", #PB_Window_SystemMenu) : SetData(w_list(Hex(220)), 220)
       ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(220)) = Window(0, 0, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(220)), 120)
       w_list(Hex(221)) = String(10, 10, 180, 85, "String_221") : SetData(w_list(Hex(221)), 221)
@@ -169,7 +169,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Bind(#PB_All, @Widget_Handler())
       
-      w_list(Hex(230)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_230")) : SetData(w_list(Hex(230)), 230)
+      w_list(Hex(230)) = Open(24, 220, 140, 200, 200, "Window_230") : SetData(w_list(Hex(230)), 230)
       ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(230)) = Window(0, 0, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(230)), 130)
       w_list(Hex(231)) = String(10, 10, 180, 85, "String_231") : SetData(w_list(Hex(231)), 231)
@@ -181,10 +181,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_3()
-    If OpenWindow(0, 0, 0, 900, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+    If OpenWindow(3, 0, 0, 900, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   565, 890,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      w_list(Hex(-1)) = Open(OpenWindow(0, 10,10, 880, 550, "")) : SetData(w_list(Hex(-1)), -1)
+      w_list(Hex(-1)) = Open(31, 10,10, 880, 550, "") : SetData(w_list(Hex(-1)), -1)
       
       If w_list(Hex(-1))
         w_list(Hex(100)) = Window(520, 140, 200+2, 260+26+2, "Window_100", #PB_Window_ScreenCentered) : SetData(w_list(Hex(100)), 100)
@@ -224,7 +224,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug "-----"
       
-      w_list(Hex(110)) = Open(OpenWindow(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu)) : SetData(w_list(Hex(110)), 110)
+      w_list(Hex(110)) = Open(32, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
       SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
@@ -235,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
       ;       
-      w_list(Hex(120)) = Open(OpenWindow(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu)) : SetData(w_list(Hex(120)), 120)
+      w_list(Hex(120)) = Open(33, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
       ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(120)) = Window(0, 0, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
       w_list(Hex(121)) = String(10, 10, 180, 85, "String_121") : SetData(w_list(Hex(121)), 121)
@@ -245,7 +245,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       Bind(#PB_All, @Widget_Handler())
       
-      w_list(Hex(130)) = Open(OpenWindow(#PB_Any, 220, 140, 200, 200, "Window_130")) : SetData(w_list(Hex(130)), 130)
+      w_list(Hex(130)) = Open(34, 220, 140, 200, 200, "Window_130") : SetData(w_list(Hex(130)), 130)
       ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(130)) = Window(0, 0, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(130)), 130)
       w_list(Hex(131)) = String(10, 10, 180, 85, "String_131") : SetData(w_list(Hex(131)), 131)
@@ -315,8 +315,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 254
-; FirstLine = 230
+; CursorPosition = 78
+; FirstLine = 74
 ; Folding = ----
 ; EnableXP
 ; DPIAware

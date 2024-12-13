@@ -252,13 +252,12 @@ Procedure PropertiesEvents( )
 EndProcedure
 
 Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
+   Protected *this._s_WIDGET
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    
    AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
    AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
-   
-   Protected *this._s_WIDGET
    
    item = CountItems( *first ) - 1
    Protected flag ;= #__flag_child
@@ -275,7 +274,6 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
          AddItem(*this, -1, "True")
          SetState(*this, 1)
    EndSelect
-   
    
    If *this
       SetData(*this, item)
@@ -1653,8 +1651,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 267
-; FirstLine = 247
+; CursorPosition = 260
+; FirstLine = 238
 ; Folding = ---f0------------+------------
 ; EnableXP
 ; DPIAware

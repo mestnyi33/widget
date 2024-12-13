@@ -189,6 +189,9 @@ GetCanvasWindow
 GetCanvasGadget
 GetRoot
 
+SetPosition
+GetPosition
+
 widget
 root
 mouse

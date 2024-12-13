@@ -7247,12 +7247,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure DoFocus( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
+         If is_window_( *this )
+            SetForeground( *this )
+         EndIf
          ProcedureReturn DoEvents( *this, event, *button, *data )
       EndProcedure
       
       Procedure SetForeground( *this._s_WIDGET )
          While is_window_( *this )
-            ; SetPosition( *this, #PB_List_Last )
+            ; Debug *this\class
+            SetPosition( *this, #PB_List_Last )
             *this = *this\window
          Wend
          
@@ -20670,6 +20674,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
+;          If event = #__event_Focus
+;           ;  Debug " focus "+ *this\class
+;          EndIf
+         
          ;          
          ;\\ Do anchors events
          a_doevents( *this, event )
@@ -21017,7 +21025,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          If Not (*this\disable And Not *this\anchors)
             If *this\root\repaint = 1
                ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(event)
-               PostEventRepaint( *this\root )
+               If event = #__event_Focus Or
+                  event = #__event_LostFocus
+                  ;
+                  ReDraw( *this\root )
+               Else
+                  PostEventRepaint( *this\root )
+               EndIf
                *this\root\repaint = 0
             EndIf
          EndIf
@@ -24119,9 +24133,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21061
-; FirstLine = 20350
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------8-4++---------------------------------------------------av-f-v-----------------------------------------------------------------------------------------3r-------------------------------------------1-4-------------------------------------------------------------------------------------------------------+--------------v------------------------------------------------------------+--a3---
+; CursorPosition = 21030
+; FirstLine = 20133
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------0-f---6----------------------------------------------------------4-v00---------------------------------------------------2e--+f-----------------------------------------------------------------------------------------tX-------------------------------------------p-v-------------------------------------------------------------------------------------------------------0-4-------------+-----------------------------------------------------------8--rZ---
 ; Optimizer
 ; EnableXP
 ; DPIAware
