@@ -10,11 +10,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Global binded
    
    Procedure events_1()
-      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 1event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
+      Debug " "+Str(Index( EventWidget( ) ))+ " - 1event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
    EndProcedure
    
    Procedure events_2()
-      Debug " "+Str(GetIndex( EventWidget( ) ))+ " - 2event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
+      Debug " "+Str(Index( EventWidget( ) ))+ " - 2event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
    EndProcedure
    
    
@@ -81,8 +81,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 51
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = --
 ; EnableXP
 ; DPIAware

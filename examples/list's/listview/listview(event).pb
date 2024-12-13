@@ -23,8 +23,8 @@ XIncludeFile "../../../widgets.pbi"
 ;XIncludeFile "../empty.pb"
 UseWidgets( )
  
- Procedure ListViewGadget_(gadget, x,y,width,height,flag=0)
-  Protected g = ListViewGadget(gadget, x,y,width,height,flag)
+ Procedure ListViewGadget_(gadget, X,Y,Width,Height,flag=0)
+  Protected g = ListViewGadget(gadget, X,Y,Width,Height,flag)
   If gadget =- 1 : gadget = g : EndIf
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -65,31 +65,31 @@ EndProcedure
 Procedure events_widgets()
   Select WidgetEvent( )
     Case #__event_DragStart
-      Debug  ""+GetIndex(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+Index(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_Change
-      Debug  ""+GetIndex(EventWidget( ))+" - widget Change "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+Index(EventWidget( ))+" - widget Change "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_LeftClick
-      Debug  ""+GetIndex(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+Index(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_Left2Click
-      Debug  ""+GetIndex(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+Index(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_RightClick
-      Debug  ""+GetIndex(EventWidget( ))+" - widget RightClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      Debug  ""+Index(EventWidget( ))+" - widget RightClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
 ;       
 ;     Case #__event_Up
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
+;       Debug  ""+Index(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
 ;       
 ;     Case #__event_Down
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
+;       Debug  ""+Index(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
 ;       
 ;     Case #__event_ScrollChange
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+;       Debug  ""+Index(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
 ;       
 ;     Case #__event_StatusChange
-;       Debug  ""+GetIndex(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+;       Debug  ""+Index(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
   EndSelect
 EndProcedure
@@ -178,8 +178,8 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 174
-; FirstLine = 149
+; CursorPosition = 91
+; FirstLine = 67
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ; 
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               ReDraw( Root( ) )
+               ReDraw( root( ) )
             CompilerEndIf
       EndSelect
    EndProcedure
@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_widgets()
       Select WidgetEvent( )
          Case #__event_LeftClick, #__event_Change
-            Debug  ""+GetIndex(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
+            Debug  ""+Index(EventWidget( ))+" - widget change " + GetState(EventWidget( ))
             
             Select EventWidget( )
                Case w_0 : SetGadgetState(0, GetState(EventWidget( )))
@@ -95,8 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 18
+; CursorPosition = 29
+; FirstLine = 25
 ; Folding = --
 ; EnableXP
 ; DPIAware

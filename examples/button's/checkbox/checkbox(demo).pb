@@ -22,8 +22,8 @@ Procedure events_widgets( )
   
   Select WidgetEvent( )
     Case #__event_Change
-      SetGadgetState( GetIndex( EventWidget( ) ), GetState( EventWidget( ) ) )
-      Debug  Str( GetIndex( EventWidget( ) ) )+" - widget change state " + GetState( EventWidget( ) )
+      SetGadgetState( Index( EventWidget( ) ), GetState( EventWidget( ) ) )
+      Debug  Str( Index( EventWidget( ) ) )+" - widget change state " + GetState( EventWidget( ) )
       
   EndSelect
 EndProcedure
@@ -55,8 +55,8 @@ If Open( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Wi
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 27
+; CursorPosition = 25
+; FirstLine = 20
 ; Folding = -
 ; EnableXP
 ; DPIAware

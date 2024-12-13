@@ -90,12 +90,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   ;widget::Resize(Splitter_ide, 0,0,820,620)
   
-  SetText(s_tbar, "size: ("+Str(Width(s_tbar))+"x"+Str(Height(s_tbar))+") - " );+ Str(GetIndex( widget::GetParent( s_tbar ))) )
-  SetText(s_desi, "size: ("+Str(Width(s_desi))+"x"+Str(Height(s_desi))+") - " );+ Str(GetIndex( widget::GetParent( s_desi ))))
-  SetText(s_view, "size: ("+Str(Width(s_view))+"x"+Str(Height(s_view))+") - " );+ Str(GetIndex( widget::GetParent( s_view ))))
-  SetText(s_list, "size: ("+Str(Width(s_list))+"x"+Str(Height(s_list))+") - " );+ Str(GetIndex( widget::GetParent( s_list ))))
-  SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(GetIndex( widget::GetParent( s_insp ))))
-  SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(GetIndex( widget::GetParent( s_help ))))
+  SetText(s_tbar, "size: ("+Str(Width(s_tbar))+"x"+Str(Height(s_tbar))+") - " );+ Str(Index( widget::GetParent( s_tbar ))) )
+  SetText(s_desi, "size: ("+Str(Width(s_desi))+"x"+Str(Height(s_desi))+") - " );+ Str(Index( widget::GetParent( s_desi ))))
+  SetText(s_view, "size: ("+Str(Width(s_view))+"x"+Str(Height(s_view))+") - " );+ Str(Index( widget::GetParent( s_view ))))
+  SetText(s_list, "size: ("+Str(Width(s_list))+"x"+Str(Height(s_list))+") - " );+ Str(Index( widget::GetParent( s_list ))))
+  SetText(s_insp, "size: ("+Str(Width(s_insp))+"x"+Str(Height(s_insp))+") - " );+ Str(Index( widget::GetParent( s_insp ))))
+  SetText(s_help, "size: ("+Str(Width(s_help))+"x"+Str(Height(s_help))+") - " );+ Str(Index( widget::GetParent( s_help ))))
   
   ;WaitClose( )
   Define event
@@ -104,8 +104,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 80
+; CursorPosition = 97
+; FirstLine = 75
 ; Folding = -
 ; Optimizer
 ; EnableXP

@@ -48,7 +48,7 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-	Debug ""+Str(GetIndex(EventWidget( )))+ " - widget  event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(EventWidget( )) ; 
+	Debug ""+Str(Index(EventWidget( )))+ " - widget  event - " +WidgetEvent( )+ "  item - " +WidgetEventItem( ) ; GetState(EventWidget( )) ; 
 EndProcedure
 
 Procedure events_gbuttons()
@@ -73,7 +73,7 @@ Procedure events_gbuttons()
 					Debug GetGadgetItemText(1, sub) + " - get item text"
 					CloseGadgetList()
 					
-					; SetGadgetItemFont(1, sub, 5 + Bool(GetIndex(EventWidget( )) = 4))
+					; SetGadgetItemFont(1, sub, 5 + Bool(Index(EventWidget( )) = 4))
 					SetGadgetItemState(1, sub, 1)
 					; SetState(1, 1)
 					
@@ -84,7 +84,7 @@ EndProcedure
 Procedure events_wbuttons()
 	Select WidgetEvent( )
 		Case #PB_EventType_LeftClick
-			Select GetIndex(EventWidget( ))
+			Select Index(EventWidget( ))
 				Case 2 
 					If CountItems(ID(1)) > 1
 						RemoveItem(ID(1), 1)
@@ -103,7 +103,7 @@ Procedure events_wbuttons()
 					Debug GetItemText(ID(1), sub) + " - get item text"
 					;CloseList()
 					
-					SetItemFont(ID(1), sub, 5 + Bool(GetIndex(EventWidget( )) = 4))
+					SetItemFont(ID(1), sub, 5 + Bool(Index(EventWidget( )) = 4))
 					SetItemState(ID(1), sub, 1)
 					; SetState(ID(1), 1)
 			EndSelect
@@ -278,8 +278,8 @@ If Open(0, 322+50, 0, 322+50, 220)
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 266
-; FirstLine = 242
+; CursorPosition = 105
+; FirstLine = 76
 ; Folding = ----
 ; EnableXP
 ; DPIAware

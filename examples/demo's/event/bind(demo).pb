@@ -12,10 +12,10 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (gadget)"
+            Debug ""+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (gadget)"
          EndIf
          
-         If GetIndex(EventWidget()) = 1
+         If Index(EventWidget()) = 1
             ProcedureReturn #PB_Ignore ; no send to (window & root) - event
          EndIf
       EndIf
@@ -27,10 +27,10 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
+            Debug "  "+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
          EndIf
          
-         If GetIndex(EventWidget()) = 2
+         If Index(EventWidget()) = 2
             ProcedureReturn #PB_Ignore ; no send to (root) - event
          EndIf
       EndIf
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
          WidgetEvent() <> #__event_StatusChange
          
          If EventWidget( )\type = #__Type_Button
-            Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
+            Debug "    "+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
          EndIf
       EndIf
    EndProcedure
@@ -62,8 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 44
+; FirstLine = 15
 ; Folding = ---
 ; EnableXP
 ; DPIAware

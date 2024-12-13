@@ -2,30 +2,6 @@
 
 UseWidgets( )
 
-
-
-; Procedure events_gadgets()
-;   ClearDebugOutput()
-;   ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
-;   
-;   Select EventType()
-;     Case #PB_EventType_LeftClick
-;       ;SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
-;       Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
-;   EndSelect
-; EndProcedure
-; 
-; Procedure events_widgets()
-;   ClearDebugOutput()
-;   ; Debug ""+Str(EventWidget( )\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetState(EventWidget( )) ; 
-;   
-;   Select WidgetEvent( )
-;     Case #PB_EventType_Change
-;       SetGadgetState(GetIndex(EventWidget( )), GetState(EventWidget( )))
-;       Debug  Str(GetIndex(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
-;   EndSelect
-; EndProcedure
-
 OpenWindow(0, 0, 0, 500+500, 340, "disable - state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 
 If Open(0, 500,0, 500);,140)
@@ -68,8 +44,7 @@ If Open(0, 500,0, 500);,140)
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; CursorPosition = 4
 ; Folding = -
 ; EnableXP
 ; DPIAware

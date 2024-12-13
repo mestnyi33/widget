@@ -14,46 +14,44 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "deactive - "+ EventObject
             
          Case #PB_Event_Gadget
-            Select EventType
-;                Case #__event_MouseWheel
-;                   Debug "wheel - "+EventObject
-                  
+          Protected class.s = GetText(EventObject)
+          Select EventType
                Case #__event_MouseWheel
                   If MouseWheelDirection( ) > 0
-                     Debug "wheelvertical - "+EventObject +" "+ EventData +" "+ MouseWheelData( ) +" "+ MouseData( )
+                     Debug "wheelvertical - "+class +" "+ EventData +" "+ MouseWheelData( ) +" "+ MouseData( )
                   Else
-                     Debug "wheelhorizontal - "+EventObject +" "+ EventData +" "+ MouseWheelData( ) +" "+ MouseData( )
+                     Debug "wheelhorizontal - "+class +" "+ EventData +" "+ MouseWheelData( ) +" "+ MouseData( )
                   EndIf
                   
                Case #__event_Focus
-                  Debug "focus - "+EventObject +" "+ EventData
+                  Debug "focus - "+class +" "+ EventData
                   
                Case #__event_LostFocus
-                  Debug "lostfocus - "+EventObject +" "+ EventData
+                  Debug "lostfocus - "+class +" "+ EventData
                   
                Case #__event_LeftDown
-                  Debug "down - "+EventObject
+                  Debug "down - "+class
                   
                Case #__event_LeftUp
-                  Debug "up - "+EventObject
+                  Debug "up - "+class
                   
                Case #__event_MouseEnter
-                  Debug "enter - "+EventObject
+                  Debug "enter - "+class
                   
                Case #__event_MouseLeave
-                  Debug "leave - "+EventObject
+                  Debug "leave - "+class
                   
                Case #__event_DragStart
-                  Debug "drag - "+EventObject
+                  Debug "drag - "+class
                   
                Case #__event_LeftClick
-                  Debug "click - "+EventObject
+                  Debug "click - "+class
                   
                Case #__event_Left2Click
-                  Debug "2click - "+EventObject
+                  Debug "2click - "+class
                   
                Case #__event_Left3Click
-                  Debug "3click - "+EventObject
+                  Debug "3click - "+class
                   
             EndSelect
             
@@ -95,8 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 14
+; CursorPosition = 16
+; FirstLine = 3
 ; Folding = --
 ; EnableXP
 ; DPIAware

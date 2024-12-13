@@ -5,13 +5,13 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
   
-  Procedure StringGadget_( gadget,x,y,width,height,Text.s, flag=0 )
+  Procedure StringGadget_( gadget,X,Y,Width,Height,Text.s, flag=0 )
     Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
       Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
       Text.s = ReplaceString( Text.s, #CR$, #LF$ )
        Text.s = RemoveString( Text.s, #LF$ )
        
-    Protected g = EditorGadget( gadget,x,y,width,height);, flag )
+    Protected g = EditorGadget( gadget,X,Y,Width,Height);, flag )
     If gadget =- 1
       gadget = g
     EndIf
@@ -20,8 +20,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn g
   EndProcedure
   
-  Macro StringGadget( gadget,x,y,width,height,Text, flag=0 )
-    StringGadget_( gadget,x,y,width,height, Text, flag )
+  Macro StringGadget( gadget,X,Y,Width,Height,Text, flag=0 )
+    StringGadget_( gadget,X,Y,Width,Height, Text, flag )
   EndMacro
   
   UsePNGImageDecoder()
@@ -54,11 +54,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select eventtype
       Case #__event_Focus
-        String.s = "focus "+Str(GetIndex(EventWidget( )))+" "+eventtype
+        String.s = "focus "+Str(Index(EventWidget( )))+" "+eventtype
       Case #__event_LostFocus
-        String.s = "lostfocus "+Str(GetIndex(EventWidget( )))+" "+eventtype
+        String.s = "lostfocus "+Str(Index(EventWidget( )))+" "+eventtype
       Case #__event_Change
-        String.s = "change "+Str(GetIndex(EventWidget( )))+" "+eventtype
+        String.s = "change "+Str(Index(EventWidget( )))+" "+eventtype
     EndSelect
     
     If eventtype = #__event_Focus
@@ -130,18 +130,18 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndIf
   EndProcedure
   
-  Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
+  Define Height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
-  If Open(0, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    StringGadget(0, 8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
-    StringGadget(1, 8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric)
-    StringGadget(2, 8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget")
-    StringGadget(3, 8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
-    StringGadget(4, 8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
-    StringGadget(5, 8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
-    StringGadget(6, 8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
-    StringGadget(7, 8, (height+5)*7+10, 290, height, "")
-    StringGadget(8, 8, (height+5)*8+10, 290, 90, Text)
+  If Open(0, 0, 0, 615, (Height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    StringGadget(0, 8, 10, 290, Height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
+    StringGadget(1, 8, (Height+5)*1+10, 290, Height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric)
+    StringGadget(2, 8, (Height+5)*2+10, 290, Height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget")
+    StringGadget(3, 8, (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
+    StringGadget(4, 8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
+    StringGadget(5, 8, (Height+5)*5+10, 290, Height, "Borderless StringGadget", #PB_String_BorderLess)
+    StringGadget(6, 8, (Height+5)*6+10, 290, Height, "Password", #PB_String_Password)
+    StringGadget(7, 8, (Height+5)*7+10, 290, Height, "")
+    StringGadget(8, 8, (Height+5)*8+10, 290, 90, Text)
     
     Define i
     For i=0 To 8
@@ -153,15 +153,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetText(6, "pas")
     Debug GetGadgetText(6)+" - get gadget text"
     
-    String(305+8, 10, 290, height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
-    String(305+8, (height+5)*1+10, 290, height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_Textcenter)
-    String(305+8, (height+5)*2+10, 290, height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_Textright)
-    String(305+8, (height+5)*3+10, 290, height, "LOWERCASE...", #PB_String_LowerCase)
-    String(305+8, (height+5)*4+10, 290, height, "uppercase...", #PB_String_UpperCase)
-    String(305+8, (height+5)*5+10, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
-    String(305+8, (height+5)*6+10, 290, height, "Password", #PB_String_Password)
-    String(305+8, (height+5)*7+10, 290, height, "")
-    String(305+8, (height+5)*8+10, 290, 90, Text)
+    String(305+8, 10, 290, Height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
+    String(305+8, (Height+5)*1+10, 290, Height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_Textcenter)
+    String(305+8, (Height+5)*2+10, 290, Height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_Textright)
+    String(305+8, (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
+    String(305+8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
+    String(305+8, (Height+5)*5+10, 290, Height, "Borderless StringGadget", #PB_String_BorderLess)
+    String(305+8, (Height+5)*6+10, 290, Height, "Password", #PB_String_Password)
+    String(305+8, (Height+5)*7+10, 290, Height, "")
+    String(305+8, (Height+5)*8+10, 290, 90, Text)
     
     ;SetText(ID(6+1), "pas")
     Debug GetText(ID(6+1))+"- get widget text"
@@ -175,8 +175,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 169
-; FirstLine = 148
+; CursorPosition = 60
+; FirstLine = 56
 ; Folding = ---
 ; EnableXP
 ; DPIAware

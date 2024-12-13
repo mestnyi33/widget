@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Events()
       Protected event = WidgetEvent()
       If event =  #__Event_MouseEnter
-         Select GetIndex(EventWidget())
+         Select Index(EventWidget())
             Case 2 : SetActive(ID(0))   ; Activate StringGadget
             Case 3 : SetActive(ID(1))   ; Activate ComboBoxGadget
          EndSelect
@@ -21,14 +21,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select event
          Case #__Event_Focus
-            Debug "focus ["+GetIndex(EventWidget()) +"]eventgadget ["+ GetIndex(GetActive()) +"]getactivegadget"
+            Debug "focus ["+Index(EventWidget()) +"]eventgadget ["+ Index(GetActive()) +"]getactivegadget"
             
             If GetActiveGadget( ) <> EventWidget( )\root\canvas\gadget
                SetActiveGadget( EventWidget( )\root\canvas\gadget )
             EndIf
             
          Case #__Event_LostFocus
-            Debug "lostfocus ["+GetIndex(EventWidget()) +"]eventgadget ["+ GetIndex(GetActive()) +"]getactivegadget"
+            Debug "lostfocus ["+Index(EventWidget()) +"]eventgadget ["+ Index(GetActive()) +"]getactivegadget"
             Debug EventWidget()\focus
       EndSelect
    EndProcedure
@@ -78,8 +78,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 4
+; CursorPosition = 30
+; FirstLine = 11
 ; Folding = ---
 ; EnableXP
 ; DPIAware

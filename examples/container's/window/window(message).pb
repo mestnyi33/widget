@@ -4,6 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    test_draw_repaint = 1
+   
    Global Tree
    
    Procedure ShowMessage(  )
@@ -35,13 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( ) 
          Case #__event_Down
             ShowMessage( )
-            
-;          Case #__event_LeftClick
-;             Debug "error"
-;             AddItem(tree, -1, "add_item")
-;             SetState(tree, 10);countitems(tree) - 1)
-            
-      EndSelect
+       EndSelect
    EndProcedure
    
    If Open( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
@@ -106,6 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
+; CursorPosition = 38
+; FirstLine = 26
 ; Folding = -+-
 ; EnableXP

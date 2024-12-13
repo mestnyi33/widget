@@ -16,10 +16,10 @@ CompilerIf #PB_Compiler_IsMainFile
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
-				Debug ""+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ ClassFromEvent( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
+				Debug ""+Index(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ ClassFromEvent( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
 			EndIf
 			
-			If GetIndex(EventWidget()) = 1
+			If Index(EventWidget()) = 1
 				If WidgetEvent() = #__event_MouseEnter
 					Resize( EventWidget(), #PB_Ignore, #PB_Ignore, 280, #PB_Ignore)
 				EndIf
@@ -37,10 +37,10 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEvent() <> #__event_StatusChange
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
-				Debug "  "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
+				Debug "  "+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
 			EndIf
 			
-			If GetIndex(EventWidget()) = 2
+			If Index(EventWidget()) = 2
 				ProcedureReturn #PB_Ignore ; no send to (root) - event
 			EndIf
 		EndIf
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		   WidgetEvent() <> #__event_StatusChange
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
-				Debug "    "+GetIndex(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
+				Debug "    "+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
 			EndIf
 		EndIf
 	EndProcedure
@@ -154,8 +154,8 @@ CompilerEndIf
 ; CompilerEndIf
 ; End  
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 32
+; CursorPosition = 54
+; FirstLine = 26
 ; Folding = ----
 ; EnableXP
 ; DPIAware

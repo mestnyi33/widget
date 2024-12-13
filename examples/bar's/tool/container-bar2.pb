@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    ;Debug ""+Str(GetIndex(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
+    ;Debug ""+Str(Index(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
    Procedure TabViewType( *this._s_widget, position.i, size.i = #PB_Default )
@@ -144,8 +144,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 64
+; CursorPosition = 11
+; FirstLine = 7
 ; Folding = -
 ; Optimizer
 ; EnableXP

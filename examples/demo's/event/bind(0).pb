@@ -12,12 +12,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_roots( )
     If WidgetEvent( ) <> #__event_MouseMove
-      Debug "  "+ GetIndex(EventWidget()) +" - widget event - "+ WidgetEvent() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEvent()
+      Debug "  "+ Index(EventWidget()) +" - widget event - "+ WidgetEvent() +" item - "+ WidgetEventItem() ;;+ " event - " + WidgetEvent()
     EndIf
   EndProcedure
   
   Procedure Window_0( )
-    If Open(OpenWindow(#PB_Any, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
+    If Open(0, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       
       Define *butt0 = Button(50, 50, 280, 35, "test-button-events") 
       Bind( *butt0, @events_roots( ) )
@@ -83,8 +83,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 46
+; CursorPosition = 19
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
 ; DPIAware

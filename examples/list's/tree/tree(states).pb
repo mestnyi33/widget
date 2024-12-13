@@ -7,10 +7,10 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   #PB_Tree_ClickSelect = #__flag_RowClickSelect
-  #PB_Tree_MultiSelect = #__flag_multiline
+  #PB_Tree_MultiSelect = #__flag_RowMultiSelect
   
   
-  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, countitems=5; количесвто итемов 
+  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, CountItems=5; количесвто итемов 
   Global itext.s = " long & long line"
   
   ;\\
@@ -44,8 +44,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  Procedure AddGadgetItem_(gadget, position, text.s, imageID=0, flags=0)
-    AddGadgetItem(gadget, position, text, imageID, flags)
+  Procedure AddGadgetItem_(gadget, position, Text.s, imageID=0, flags=0)
+    AddGadgetItem(gadget, position, Text, imageID, flags)
     
     ;     CompilerSelect #PB_Compiler_OS
     ;       CompilerCase #PB_OS_MacOS
@@ -56,8 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
-    Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
+    Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
     ;Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
     ;Protected g = PB(ListIconGadget)(gadget, x,y,width,height,"title",width, flag)
     If gadget =- 1 : gadget = g : EndIf
@@ -103,46 +103,46 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Select WidgetEvent()
 ;       Case #__event_Focus
-;         Debug  ""+GetIndex(EventWidget())+" - widget focus "+GetState(EventWidget())
+;         Debug  ""+Index(EventWidget())+" - widget focus "+GetState(EventWidget())
 ;       Case #__event_LostFocus
-;         Debug  ""+GetIndex(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
+;         Debug  ""+Index(EventWidget())+" - widget lost-focus "+GetState(EventWidget())
 ;         
 ;       Case #__event_Up
-;         Debug  ""+GetIndex(EventWidget())+" - widget Up "+GetState(EventWidget())
+;         Debug  ""+Index(EventWidget())+" - widget Up "+GetState(EventWidget())
 ;         
 ;       Case #__event_Down
-;         Debug  ""+GetIndex(EventWidget())+" - widget Down "+GetState(EventWidget())
+;         Debug  ""+Index(EventWidget())+" - widget Down "+GetState(EventWidget())
 ;         
 ;       Case #__event_ScrollChange
-;         Debug  ""+GetIndex(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+Index(EventWidget())+" - widget ScrollChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
 ;       Case #__event_StatusChange
-;         ; Debug  ""+GetIndex(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         ; Debug  ""+Index(EventWidget())+" - widget StatusChange "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
 ;       Case #__event_DragStart
-;         Debug  ""+GetIndex(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+Index(EventWidget())+" - widget DragStart "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
       Case #__event_Change
-        Debug  ""+GetIndex(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+Index(EventWidget())+" - widget Change "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
       Case #__event_LeftClick
-        Debug  ""+GetIndex(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        Debug  ""+Index(EventWidget())+" - widget LeftClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
 ;       Case #__event_Left2Click
-;         Debug  ""+GetIndex(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;         Debug  ""+Index(EventWidget())+" - widget LeftDoubleClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
 ;         
       Case #__event_RightClick
-        ; Debug  ""+GetIndex(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
+        ; Debug  ""+Index(EventWidget())+" - widget RightClick "+GetState(EventWidget()) +" "+ WidgetEventItem()
       	Protected a
-      	If GetData( eventWidget()) = Bool(itext)
-      		SetData( eventWidget(), Bool(itext)!1)
-      		For a = 0 To CountItems(eventWidget()) - 1
-      			SetItemText(eventWidget(), a, "Item "+Str(a) +" long & long line")
+      	If GetData( EventWidget()) = Bool(itext)
+      		SetData( EventWidget(), Bool(itext)!1)
+      		For a = 0 To CountItems(EventWidget()) - 1
+      			SetItemText(EventWidget(), a, "Item "+Str(a) +" long & long line")
       		Next
       	Else
-      		SetData( eventWidget(), Bool(itext))
-      		For a = 0 To CountItems(eventWidget()) - 1
-      			SetItemText(eventWidget(), a, "Item "+Str(a))
+      		SetData( EventWidget(), Bool(itext))
+      		For a = 0 To CountItems(EventWidget()) - 1
+      			SetItemText(EventWidget(), a, "Item "+Str(a))
       		Next
       	EndIf
    EndSelect
@@ -246,8 +246,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 126
+; CursorPosition = 9
+; FirstLine = 5
 ; Folding = ---
 ; EnableXP
 ; DPIAware
