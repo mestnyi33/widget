@@ -116,6 +116,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Splitter::Bind(Splitter_3, @event_resize( ), #PB_EventType_Resize )
     
+    
+    
+    
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
@@ -243,9 +246,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   Repeat 
     Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 95
-; Folding = ---8-
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 59
+; FirstLine = 58
+; Folding = -----
 ; EnableXP
 ; DPIAware

@@ -416,8 +416,8 @@ EndProcedure
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 144
-; FirstLine = 130
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 129
+; FirstLine = 115
 ; Folding = --------
 ; EnableXP
