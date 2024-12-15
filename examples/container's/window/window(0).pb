@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "ww "+ WidgetEvent( ) +" "+ EventWidget( )\index
   EndProcedure
   
-  Open(OpenWindow(#PB_Any, 100, 100, 600, 600, "demo", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
+  Open(0, 100, 100, 600, 600, "demo", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
   
   Window(100, 100, 200, 200, "window_0", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
   Button(0,0,80,20,"button")
@@ -34,11 +34,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
   
-  Bind(Root(), @Events_widgets(), #PB_EventType_LeftClick)
+  Bind(root(), @Events_widgets(), #PB_EventType_LeftClick)
   WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 9
+; CursorPosition = 16
+; FirstLine = 7
 ; Folding = -
 ; EnableXP

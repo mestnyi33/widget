@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(#PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *g1 = Editor(     30, 30, 200, h)
+    *g1 = Editor( 30, 30, 200, h)
     SetText(*g1, "left 00000000000000000000000000000000000")
     AddItem(*g1, -1, "left 00000000000000000000000000000000000")
     
@@ -26,13 +26,14 @@ CompilerIf #PB_Compiler_IsMainFile
     *g6 = Splitter( 30,30,620,h, *g5,#Null)
     
     SetState(*g4, 200)
-    SetState(*g5, 200*2+#__splittersize)
+    SetState(*g5, 200*2+#__bar_splitter_size)
     ;SetState(*g6, h)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 28
+; FirstLine = 1
 ; Folding = -
 ; EnableXP

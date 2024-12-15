@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     Define *g._S_WIDGET = Editor(20,20,200,100);, #__flag_autosize);|#__flag_transparent)
-    AddItem(*g, -1, ~"define W_0 = Window( 282, \"Window_0\" )")
+    AddItem(*g, -1, ~"define W_0 = form( 282, \"Window_0\" )")
     
     
     Debug *g\scroll\h\bar\button[1]\size
@@ -61,6 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 15
+; FirstLine = 29
 ; Folding = --
 ; EnableXP

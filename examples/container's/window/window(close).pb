@@ -2,6 +2,9 @@
 IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
+Macro Message( title, Text, flag=0, parentID=0 )
+   MessageRequester( title, Text, flag, parentID )
+EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -62,41 +65,32 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
                                          #PB_Window_ScreenCentered )
      ;\\
-     Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
-                                           #PB_Window_SizeGadget |
-                                           #PB_Window_MinimizeGadget |
-                                           #PB_Window_MaximizeGadget )
+     Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu )
      
      SetClass(widget( ), "window_0" )
      Button(10,10,200,50,"Button_0_close")
      SetClass(widget( ), "Button_0_close" )
      
      ;\\
-     Window( 230, 130, 300, 200, "window_1", #PB_Window_SystemMenu |
-                                             #PB_Window_SizeGadget |
-                                             #PB_Window_MinimizeGadget |
-                                             #PB_Window_MaximizeGadget )
+     Window( 230, 130, 300, 200, "window_1", #PB_Window_SystemMenu )
      
      SetClass(widget( ), "window_1" )
      Button(10,10,200,50,"Button_1_close")
      SetClass(widget( ), "Button_1_close" )
      
      ;\\
-     Window( 430, 230, 300, 200, "window_2", #PB_Window_SystemMenu |
-                                             #PB_Window_SizeGadget |
-                                             #PB_Window_MinimizeGadget |
-                                             #PB_Window_MaximizeGadget )
+     Window( 430, 230, 300, 200, "window_2", #PB_Window_SystemMenu )
      
      SetClass(widget( ), "window_2" )
      Button(10,10,200,50,"Button_2_close")
      SetClass(widget( ), "Button_2_close" )
      
-     WaitEvent( #PB_All, @CallBack( ) )
+     Bind( #PB_All, @CallBack( ) )
+     WaitClose( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 32
-; Folding = --
+; CursorPosition = 4
+; Folding = -
 ; EnableXP
 ; DPIAware

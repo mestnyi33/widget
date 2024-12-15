@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeImage(4, 16, 16)
   CompilerEndIf
 
-  Global  *combo1, *combo2, *combo3, a,x,h = 50
+  Global  *combo1, *combo2, *combo3, a,X,h = 50
   
   If Open(0, 0, 0, 530, 350, "ComboBoxGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ComboBoxGadget(0, 10, 10, 250, h, #PB_ComboBox_Editable)
@@ -50,20 +50,20 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(1, 0)
     SetGadgetState(2, 3)    ; set (beginning with 0) the third item as active one
     
-    x = 260
+    X = 260
     ;\\
-    *combo1 = ComboBox(10+x, 10, 250, h, #PB_ComboBox_Editable)
+    *combo1 = ComboBox(10+X, 10, 250, h, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase)
     AddItem(widget( ), -1, "ComboBox editable...")
     For a = 1 To 15
       AddItem(widget( ), -1,"ComboBox item " + Str(a))
     Next
     
-    *combo2 = ComboBox(10+x, 20+h*1, 250, h, #PB_ComboBox_Image)
+    *combo2 = ComboBox(10+X, 20+h*1, 250, h, #PB_ComboBox_Image)
     For a = 0 To 4
       AddItem(widget( ), -1,"ComboBox item with image" + Str(a), a)
     Next
     
-    *combo3 = ComboBox( 10+x, 30+h*2, 250, h)
+    *combo3 = ComboBox( 10+X, 30+h*2, 250, h, #PB_ComboBox_UpperCase)
     For a = 0 To 5
       AddItem(widget( ), -1,"ComboBox item " + Str(a))
     Next
@@ -107,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7
-; FirstLine = 3
+; CursorPosition = 54
+; FirstLine = 36
 ; Folding = -
 ; EnableXP

@@ -46,51 +46,51 @@ CompilerIf #PB_Compiler_IsMainFile
   
   LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4-Bool(#PB_Compiler_OS=#PB_OS_Linux)*4)
   
-  If Open(0, 0, 0, 720+45, 405, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, 720+45, 405, "form on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Define._s_widget *f_0, *f_1, *f_2, *f_3, *f_4, *f_5, *f_6, *f_7, *f_8, *f_9, *f_10, *f_11, *sp_0, *sp_1, *sc_0
     ;a_init( root( ) )
     
     *f_0 = window(10, 10, 180,  90, "form_0", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(10, -10, 80, 40, "Butt_0")
+    Button(10, -10, 80, 40, "Butt_0")
     ;*f_0\fs = 10
     
     ; set_border_size()
     *f_0\bs = 10
     Resize(*f_0, 0, 0, #PB_Ignore, #PB_Ignore)
     
-    button(10, 40, 80, 40, "Butt_0")
-    closelist()
+    Button(10, 40, 80, 40, "Butt_0")
+    CloseList()
     
     *f_1 = window(10, 10, 180,  90, "form_1", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(10, -10, 80, 40, "Butt_1")
-    closelist()
+    Button(10, -10, 80, 40, "Butt_1")
+    CloseList()
     
     *f_2 = window(10, 10, 180,  90, "form_2", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
     *f_3 = ScrollArea(10, 10, 180,  90, 250, 250, 1)
     ;*f_3 = window(10, 10, 180,  90, "form_3", *f_2)
-    button(10, 0, 80, 40, "Butt_3")
-    closelist()
-    closelist()
+    Button(10, 0, 80, 40, "Butt_3")
+    CloseList()
+    CloseList()
     
-    *sp_0 = splitter(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
-    *sp_1 = splitter(10, 10, 360, 360+25, *f_2, *sp_0)
+    *sp_0 = Splitter(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
+    *sp_1 = Splitter(10, 10, 360, 360+25, *f_2, *sp_0)
     
     *f_4 = window(370+10, 10, 180,  70, "form_4 BorderLess", #__flag_BorderLess)
-    button(5, 5, 80, 20, "Butt_4_0")
+    Button(5, 5, 80, 20, "Butt_4_0")
     *f_5 = window(370+10, 130+10, 180,  70, "form_6 SizeGadget", #PB_Window_SizeGadget)
-    button(5, 5, 80, 20, "Butt_6_0")
+    Button(5, 5, 80, 20, "Butt_6_0")
     
     *f_6 = window(370+10, 130+10+130, 180,  70, "form_8 TitleBar", #PB_Window_TitleBar)
-    button(5, 5, 80, 20, "Butt_8_0")
+    Button(5, 5, 80, 20, "Butt_8_0")
     
     *f_7 = window(370+10+190, 10, 180,  70, "form_5 SystemMenu", #PB_Window_SystemMenu)
-    button(5, 5, 80, 20, "Butt_5_0")
+    Button(5, 5, 80, 20, "Butt_5_0")
     
     *f_8 = window(370+10+190, 130+10, 180,  70, "form_7 Minimize", #PB_Window_MinimizeGadget)
-    button(5, 5, 80, 20, "Butt_7_0")
+    Button(5, 5, 80, 20, "Butt_7_0")
     
     *f_9 = window(370+10+190, 130+10+130, 180,  70, "form_9 Maximize", #PB_Window_MaximizeGadget)
-    button(5, 5, 80, 20, "Butt_9_0")
+    Button(5, 5, 80, 20, "Butt_9_0")
     
   
     SetColor(*f_4, #__color_back, $CA00D7FF)
@@ -100,8 +100,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 63
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 48
+; FirstLine = 31
 ; Folding = -
 ; EnableXP

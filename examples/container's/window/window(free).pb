@@ -42,11 +42,12 @@ CompilerIf #PB_Compiler_IsMainFile
               Button(10, 10, 90,30,"button")
               Button(10, 50, 90,30,"button")
               ;*window = Button(Random(100,10), 10, 90,30,"button")
-              Bind( *window, @events_() )
+              ;Bind( *window, @events_() )
             EndIf
             
           Case *buttonClose
             Free( *window )
+            ReDraw( root())
             *window = 0
             
           Case *buttonTest
@@ -57,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  Open(#PB_Any, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
+  Open(0, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
   *buttonTest = ButtonGadget(#PB_Any, 500-100, 400-120, 90,30,"test")
   *buttonClose = ButtonGadget(#PB_Any, 500-100, 400-80, 90,30,"close")
   *buttonOpen = ButtonGadget(#PB_Any, 500-100, 400-40, 90,30,"open")
@@ -67,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10, 50, 90,30,"button")
   ;*window = Button(10, 10, 90,30,"button")
 
-  Bind( *window, @events_() )
+  ;Bind( *window, @events_() )
   BindGadgetEvent( *buttonTest, @events_gadgets() )
   BindGadgetEvent( *buttonOpen, @events_gadgets() )
   BindGadgetEvent( *buttonClose, @events_gadgets() )
@@ -75,8 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 49
+; CursorPosition = 49
+; FirstLine = 32
 ; Folding = --
 ; EnableXP
 ; DPIAware

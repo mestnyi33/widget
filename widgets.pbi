@@ -134,7 +134,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_canvas_events
       Global test_atpoint
       Global test_event_entered
-      
+      Global test_display
+                  
       Global test_focus_set = 0
       Global test_focus_show = 0
       
@@ -5180,14 +5181,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                Debug ""+*this\class + "  ChangeCurrentCursor( "+ *cursor +" ) " +" reset "+ CurrentCursor( )
             EndIf
             
-            result = Send( *this, #__event_cursor, #PB_All, CurrentCursor( ) )
-            
-            If *cursor
-               If result > 0
-                  *cursor = result
-               EndIf
-            EndIf
             CurrentCursor( ) = *cursor
+            result = Send( *this, #__event_cursor, #PB_All, CurrentCursor( ) )
+            If result > 0
+               *cursor = result
+               CurrentCursor( ) = *cursor
+            EndIf
             
             Cursor::Set( *this\root\canvas\gadget, *cursor ) 
          EndIf
@@ -5768,7 +5767,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                           *this\x[#__c_restore],
                           *this\y[#__c_restore],
                           *this\width[#__c_restore],
-                          *this\height[#__c_restore] )
+                          *this\height[#__c_restore], 0 )
                   
                   ;                If is_root_( *this )
                   ;                   PostEvent( #PB_Event_RestoreWindow, *this\root\canvas\window, *this )
@@ -5797,7 +5796,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   Resize( *this, *this\bs - *this\fs, *this\bs - *this\fs,
                           *this\parent\container_width( ) - *this\bs * 2,
-                          *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2] )
+                          *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2], 0 )
                   
                   ;                If is_root_( *this )
                   ;                   PostEvent( #PB_Event_MaximizeWindow, *this\root\canvas\window, *this )
@@ -5829,7 +5828,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                           *this\x[#__c_restore],
                           *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2] + (*this\bs - *this\fs),
                           *this\width[#__c_restore],
-                          *this\bs * 2 - *this\fs[2] )
+                          *this\bs * 2 - *this\fs[2], 0 )
                   
                   ;                If is_root_( *this )
                   ;                   PostEvent( #PB_Event_MinimizeWindow, *this\root\canvas\window, *this )
@@ -6763,10 +6762,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure SetPosition( *this._s_WIDGET, position.l, *widget._s_WIDGET = #Null ) ; Ok
          If *widget = #Null
             Select Position
-               Case #PB_List_First : *widget = *this\parent\FirstWidget( )
+               Case #PB_List_First 
+                  If *this\parent
+                     *widget = *this\parent\FirstWidget( )
+                  EndIf
                Case #PB_List_Before : *widget = *this\BeforeWidget( )
                Case #PB_List_After : *widget = *this\AfterWidget( )
-               Case #PB_List_Last : *widget = *this\parent\LastWidget( )
+               Case #PB_List_Last 
+                  If *this\parent
+                     *widget = *this\parent\LastWidget( )
+                  EndIf
             EndSelect
          EndIf
          
@@ -7252,8 +7257,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure DoFocus( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
-         If is_window_( *this )
-            SetForeground( *this )
+         If MouseButtonPress( )
+            If is_window_( *this )
+               SetForeground( *this )
+            EndIf
          EndIf
          ProcedureReturn DoEvents( *this, event, *button, *data )
       EndProcedure
@@ -12409,7 +12416,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                Hide( *this, *this\hide ! 1 )
                
                If *this\hide
-                  Debug "comboBar - hide "+*this\class +" "+ *this\hide
+                  If test_display
+                     Debug "comboBar - hide "+*this\class +" "+ *this\hide
+                  EndIf
                   ;
                   
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
@@ -12423,12 +12432,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;             Popup( ) = #Null 
                   ProcedureReturn - 1
                Else
+                  If test_display
                   Debug "comboBar - show"
                EndIf
+            EndIf
             Else
                If *this\hide
+                  If test_display
                   Debug "menuBar - show "+*this\class
-                  Hide( *this, #False )
+               EndIf
+               Hide( *this, #False )
                EndIf
             EndIf
             
@@ -12446,7 +12459,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   parentID = WindowID( *display\root\canvas\window )
                EndIf
                
-               Debug "displayBar - create " + *this\class +" "+ *this\root ;
+               If test_display
+                  Debug "displayBar - create " + *this\class +" "+ *this\root ;
+               EndIf
                *displayroot = Open( #PB_Any, 0, 0, 1, 1, "", #__window_NoActivate | #__window_NoGadgets | #__window_BorderLess | #__window_Invisible | #__window_Tool,  parentID )
                *displayroot\parent = *display
                *displayroot\class = "["+*this\class+"]"+"-root" ; "root_"+
@@ -17456,13 +17471,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   ; post event re draw
-                  If is_root_( *this )
-                     Send( *this, #__event_ReDraw );, #PB_All, *this )
-                                                   ; PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint )
-                  Else
-                     Send( *this, #__event_Draw )
+                  If __gui\eventexit > 0
+                     If is_root_( *this )
+                        Send( *this, #__event_ReDraw );, #PB_All, *this )
+                                                      ; PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint )
+                     Else
+                        Send( *this, #__event_Draw )
+                     EndIf
                   EndIf
-                  ;
+                 ;
                   ;
                   If *this\root\drawmode & 1<<2
                      ;\\
@@ -20783,9 +20800,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                               If is_root_( *this )
                                  PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, *this )
                               Else
-                                 Post( *this, #__event_close )
+                                 send( *this, #__event_close )
                               EndIf
-                              
+                             
                               ; maximize button
                            Case *this\MaximizeButton( )
                               If Not *this\resize\flag & #__resize_maximize
@@ -21028,9 +21045,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          If Not (*this\disable And Not *this\anchors)
             If *this\root\repaint = 1
                ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(event)
-               If event = #__event_Focus Or
+               If MouseButtonPress( ) And
+                  ( event = #__event_Focus Or
                   event = #__event_Drop Or
-                  event = #__event_LostFocus
+                  event = #__event_LostFocus )
                   ;
                   ReDraw( *this\root )
                Else
@@ -24150,11 +24168,11 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; Executable = widgets2.app
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 23309
-; FirstLine = 112
-; Folding = +0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 20802
+; FirstLine = 20655
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v80u--------------------------------------------------------------------------------
+; Optimizer
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
-; Optimizer

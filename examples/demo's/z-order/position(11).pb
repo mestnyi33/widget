@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../-widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
 ; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -6,9 +6,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   Global Event.i, MyCanvas
-  Global x=100,y=100, Width=420, Height=420 , focus
+  Global X=100,Y=100, Width=420, Height=420 , focus
   
-  If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
@@ -39,8 +39,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Resize(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
 ;   Resize(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   Debug "---->>"
-  ForEach widget()
-    Debug "  "+ widget()\class
+  ForEach widgets()
+    Debug "  "+ widgets()\class
   Next
   Debug "<<----"
   
@@ -49,6 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 23
 ; Folding = -
 ; EnableXP

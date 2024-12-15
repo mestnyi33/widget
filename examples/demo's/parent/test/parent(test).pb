@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../../../widgets.pbi" 
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -107,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
-  Open(10) : SetText(Root(), "*root1" )
+  Open(10) : SetText(root(), "*root1" )
   ;*window_10 = Window(0, 0, 425, 350,"demo set gadget new parent", Flags)
   *window_10 = Container(0, 0, 425, 350) : SetText(*window_10, "*window_10" )
   
@@ -138,7 +138,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;
   Flags = #PB_Window_Invisible | #PB_Window_TitleBar
   OpenWindow(20, WindowX(10)-210-35, WindowY(10), 240, 350, "old parent", Flags, WindowID(10))
-  Open(20) : SetText(Root(), "*root2" )
+  Open(20) : SetText(root(), "*root2" )
   ;*window_20 = Window(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
   *window_20 = Container(0,0, 425, 350) : SetText(*window_20, "*window_20" )
   
@@ -207,8 +207,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 23
 ; Folding = --
 ; EnableXP
 ; DPIAware

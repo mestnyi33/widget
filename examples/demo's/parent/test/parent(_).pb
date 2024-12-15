@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../../widgets.pbi"
 ; надо исправить Reclip()
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -6,9 +6,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   Global Event.i, MyCanvas
-  Global x=100,y=100, Width=350, Height=350 , focus
+  Global X=100,Y=100, Width=350, Height=350 , focus
   
-  If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "form", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "form", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
@@ -56,7 +56,5 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 39
 ; Folding = -
 ; EnableXP
