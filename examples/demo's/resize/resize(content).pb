@@ -6,8 +6,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   
   Define bh = 140,h = bh*4 + 2
-  Define *g1, *g2, *g3, *g4, *g5, *g6
-  Define text.s = "line_1" + #LF$ + 
+  Define *g1=-1, *g2=-1, *g3=-1, *g4=-1, *g5=-1, *g6=-1
+  Define Text.s = "line_1" + #LF$ + 
                   "line_2" + #LF$ +
                   "line_3" + #LF$ +
                   "line_4" + #LF$ +
@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     Button( 0,   0,0,bh, text, #__flag_Textright) : SetAlign( widget( ), #__align_left|#__align_right)
 ;     String( 0,bh*1,0,bh, text, #__flag_Textright) : SetAlign( widget( ), #__align_left|#__align_right)
 ;     Text( 0,bh*2,0,bh, text, #__flag_Textright) : SetAlign( widget( ), #__align_left|#__align_right)
-     Editor( 0,bh*3,0,bh, #__flag_Textright) : SetText( widget( ), text) ;: SetAlignmentFlag( widget( ), #__align_left|#__align_right)
+     Editor( 0,bh*3,10,bh, #__flag_Textright) : SetText( widget( ), Text) ;: SetAlignmentFlag( widget( ), #__align_left|#__align_right)
     ;Button( 0,bh*4,0,bh, text, #__flag_Textright) : SetAlign( widget( ), #__align_left|#__align_right)
     
     CloseList( )
@@ -39,6 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 25
+; FirstLine = 11
 ; Folding = -
 ; EnableXP

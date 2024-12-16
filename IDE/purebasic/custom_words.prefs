@@ -187,6 +187,7 @@ SetBackgroundImage
 SetBackgroundColor
 GetCanvasWindow
 GetCanvasGadget
+GetWindow
 GetRoot
 
 SetPosition

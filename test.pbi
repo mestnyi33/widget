@@ -134,7 +134,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_canvas_events
       Global test_atpoint
       Global test_event_entered
-      
+      Global test_display
+                  
       Global test_focus_set = 0
       Global test_focus_show = 0
       
@@ -1379,6 +1380,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       Declare.i GetRoot( *this )
+      Declare.i GetWindow( *this )
       Declare.i GetCanvasGadget( *this = #Null )
       Declare.i GetCanvasWindow( *this = #Null )
       
@@ -4064,7 +4066,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Macro clip_output_( _address_, _mode_ = [#__c_draw] )
          CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( Draw, #PB_Module ))
-           ; ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+            ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
          CompilerEndIf
       EndMacro
       
@@ -4096,7 +4098,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             clip_h = *this\draw_height( )
          EndIf
          
-        ; PB(ClipOutput)( clip_x, clip_y, clip_w, clip_h )
+         PB(ClipOutput)( clip_x, clip_y, clip_w, clip_h )
       EndProcedure
       
       Procedure Reclip( *this._s_WIDGET )
@@ -4914,6 +4916,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\haschildren 
                   ;Debug *this\class
                   Protected pw, ph
+                  Protected piw, pih
                   
                   If StartEnum( *this )
                      If widget( )\parent <> *this
@@ -4923,10 +4926,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      If Not is_scrollbars_( widget( ))
                         If widget( )\align
-                           ;\\
+;                            If is_root_( widget( )\parent )
+;                               piw = DPIUnScaledX(widget( )\parent\inner_width( ))
+;                               pih = DPIUnScaledY(widget( )\parent\inner_height( ))
+;                            Else
+                              piw = (widget( )\parent\inner_width( ))
+                              pih = (widget( )\parent\inner_height( ))
+;                            EndIf
+                              
+                              ;\\
                            If widget( )\parent\align
-                              pw = ( widget( )\parent\inner_width( ) - widget( )\parent\align\width )
-                              ph = ( widget( )\parent\inner_height( ) - widget( )\parent\align\height )
+                              pw = ( piw - widget( )\parent\align\width )
+                              ph = ( pih - widget( )\parent\align\height )
                            EndIf
                            
                            ;\\
@@ -4968,14 +4979,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ;\\ horizontal proportional
                            If ( widget( )\align\left < 0 And widget( )\align\right <= 0 ) Or
                               ( widget( )\align\right < 0 And widget( )\align\left <= 0 )
-                              Protected ScaleX.f = widget( )\parent\inner_width( ) / widget( )\parent\align\width
+                              Protected ScaleX.f = piw / widget( )\parent\align\width
                               Width = ScaleX * widget( )\align\width
                               ;\\ center proportional
                               If widget( )\align\left < 0 And widget( )\align\right < 0
-                                 X = ( widget( )\parent\inner_width( ) - Width ) / 2
+                                 X = ( piw - Width ) / 2
                               ElseIf widget( )\align\left < 0 And widget( )\align\right = 0
                                  ;\\ right proportional
-                                 X = widget( )\parent\inner_width( ) - ( widget( )\parent\align\width - widget( )\align\x - widget( )\align\width ) - Width
+                                 X = piw - ( widget( )\parent\align\width - widget( )\align\x - widget( )\align\width ) - Width
                               ElseIf ( widget( )\align\right < 0 And widget( )\align\left = 0 )
                                  ;\\ left proportional
                                  X = widget( )\align\x
@@ -5021,21 +5032,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ;\\ vertical proportional
                            If ( widget( )\align\top < 0 And widget( )\align\bottom <= 0 ) Or
                               ( widget( )\align\bottom < 0 And widget( )\align\top <= 0 )
-                              Protected ScaleY.f = widget( )\parent\inner_height( ) / widget( )\parent\align\height
+                              Protected ScaleY.f = pih / widget( )\parent\align\height
                               Height = ScaleY * widget( )\align\height
                               ;\\ center proportional
                               If widget( )\align\top < 0 And widget( )\align\bottom < 0
-                                 Y = ( widget( )\parent\inner_height( ) - Height ) / 2
+                                 Y = ( pih - Height ) / 2
                               ElseIf widget( )\align\top < 0 And widget( )\align\bottom = 0
                                  ;\\ bottom proportional
-                                 Y = widget( )\parent\inner_height( ) - ( widget( )\parent\align\height - widget( )\align\y - widget( )\align\height ) - Height
+                                 Y = pih - ( widget( )\parent\align\height - widget( )\align\y - widget( )\align\height ) - Height
                               ElseIf ( widget( )\align\bottom < 0 And widget( )\align\top = 0 )
                                  ;\\ top proportional
                                  Y = widget( )\align\y
                               EndIf
                            EndIf
                            
-                           Resize( widget( ), DPIUnScaled(X), DPIUnScaled(Y), DPIUnScaled(Width), DPIUnScaled(Height) )
+                           Resize( widget( ), (X), (Y), (Width), (Height), 0 )
                         Else
                            Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         EndIf
@@ -5080,6 +5091,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          ProcedureReturn result
+      EndProcedure
+      
+      Procedure.i GetWindow( *this._s_WIDGET ) ; Returns window widget
+         ProcedureReturn *this\window
       EndProcedure
       
       Procedure.i GetRoot( *this._s_WIDGET ) ; Returns root widget
@@ -5180,14 +5195,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                Debug ""+*this\class + "  ChangeCurrentCursor( "+ *cursor +" ) " +" reset "+ CurrentCursor( )
             EndIf
             
-            result = Send( *this, #__event_cursor, #PB_All, CurrentCursor( ) )
-            
-            If *cursor
-               If result > 0
-                  *cursor = result
-               EndIf
-            EndIf
             CurrentCursor( ) = *cursor
+            result = Send( *this, #__event_cursor, #PB_All, CurrentCursor( ) )
+            If result > 0
+               *cursor = result
+               CurrentCursor( ) = *cursor
+            EndIf
             
             Cursor::Set( *this\root\canvas\gadget, *cursor ) 
          EndIf
@@ -5768,7 +5781,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                           *this\x[#__c_restore],
                           *this\y[#__c_restore],
                           *this\width[#__c_restore],
-                          *this\height[#__c_restore] )
+                          *this\height[#__c_restore], 0 )
                   
                   ;                If is_root_( *this )
                   ;                   PostEvent( #PB_Event_RestoreWindow, *this\root\canvas\window, *this )
@@ -5797,7 +5810,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   Resize( *this, *this\bs - *this\fs, *this\bs - *this\fs,
                           *this\parent\container_width( ) - *this\bs * 2,
-                          *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2] )
+                          *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2], 0 )
                   
                   ;                If is_root_( *this )
                   ;                   PostEvent( #PB_Event_MaximizeWindow, *this\root\canvas\window, *this )
@@ -5829,7 +5842,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                           *this\x[#__c_restore],
                           *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2] + (*this\bs - *this\fs),
                           *this\width[#__c_restore],
-                          *this\bs * 2 - *this\fs[2] )
+                          *this\bs * 2 - *this\fs[2], 0 )
                   
                   ;                If is_root_( *this )
                   ;                   PostEvent( #PB_Event_MinimizeWindow, *this\root\canvas\window, *this )
@@ -6763,10 +6776,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure SetPosition( *this._s_WIDGET, position.l, *widget._s_WIDGET = #Null ) ; Ok
          If *widget = #Null
             Select Position
-               Case #PB_List_First : *widget = *this\parent\FirstWidget( )
+               Case #PB_List_First 
+                  If *this\parent
+                     *widget = *this\parent\FirstWidget( )
+                  EndIf
                Case #PB_List_Before : *widget = *this\BeforeWidget( )
                Case #PB_List_After : *widget = *this\AfterWidget( )
-               Case #PB_List_Last : *widget = *this\parent\LastWidget( )
+               Case #PB_List_Last 
+                  If *this\parent
+                     *widget = *this\parent\LastWidget( )
+                  EndIf
             EndSelect
          EndIf
          
@@ -7252,8 +7271,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure DoFocus( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
-         If is_window_( *this )
-            SetForeground( *this )
+         If MouseButtonPress( )
+            If is_window_( *this )
+               SetForeground( *this )
+            EndIf
          EndIf
          ProcedureReturn DoEvents( *this, event, *button, *data )
       EndProcedure
@@ -7266,7 +7287,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Wend
          
          If PopupWindow( )
-            ; SetPosition( PopupWindow( ), #PB_List_Last )
+            SetPosition( PopupWindow( ), #PB_List_Last )
          EndIf
       EndProcedure
       
@@ -7905,7 +7926,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\ ?-надо тестировать
                If Not *this\parent\align\width
                   *this\parent\align\x     = *this\parent\container_x( )
-                  *this\parent\align\width = *this\parent\frame_width( )
+                  *this\parent\align\width = (*this\parent\inner_width( ))
                   If *this\parent\type = #__type_window
                      *this\parent\align\x + *this\parent\fs
                      *this\parent\align\width - *this\parent\fs * 2 - ( *this\parent\fs[1] + *this\parent\fs[3] )
@@ -7913,7 +7934,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                If Not *this\parent\align\height
                   *this\parent\align\y      = *this\parent\container_y( )
-                  *this\parent\align\height = *this\parent\frame_height( )
+                  *this\parent\align\height = *this\parent\inner_height( )
                   If *this\parent\type = #__type_window
                      *this\parent\align\y + *this\parent\fs
                      *this\parent\align\height - *this\parent\fs * 2 - ( *this\parent\fs[2] + *this\parent\fs[4] )
@@ -7930,7 +7951,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\align\width  = *this\inner_width( )
                      *this\align\height = *this\inner_height( )
                   Else
-                     *this\align\width  = *this\frame_width( )
+                     *this\align\width  = (*this\frame_width( ))
                      *this\align\height = *this\frame_height( )
                   EndIf
                   
@@ -7938,7 +7959,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\ full horizontal
                   If *this\align\right And *this\align\left
                      *this\align\x     = 0
-                     *this\align\width = *this\parent\align\width
+                     *this\align\width = (*this\parent\align\width)
                      If *this\type = #__type_window
                         *this\align\width - *this\fs * 2
                      EndIf
@@ -8031,7 +8052,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                   If Not *this\align\left And *this\align\right
-                     *this\parent\align\autodock\width = *this\parent\inner_width( ) - *this\align\x
+                     *this\parent\align\autodock\width = (*this\parent\inner_width( )) - *this\align\x
                   EndIf
                   If Not *this\align\top And *this\align\bottom
                      *this\parent\align\autodock\height = *this\parent\inner_height( ) - *this\align\y
@@ -8053,7 +8074,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  
                                  If widget( )\align\left And widget( )\align\right
                                     widget( )\align\x     = widget( )\parent\align\autodock\x
-                                    widget( )\align\width = widget( )\parent\inner_width( ) - ( widget( )\parent\align\autodock\x + widget( )\parent\align\autodock\width )
+                                    widget( )\align\width = (widget( )\parent\inner_width( )) - ( widget( )\parent\align\autodock\x + widget( )\parent\align\autodock\width )
                                     
                                     If widget( )\type = #__type_window
                                        widget( )\align\width - widget( )\fs * 2
@@ -9103,7 +9124,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *bar\max         + separator_step * 2
                         Else
                            ;
-                           Debug "why "+*tabs( )\height +" ?"
+                          ; Debug "why "+*tabs( )\height +" ?"
                            *tabs( )\height = 0
                            ;
                            If *tabs( )\image\height
@@ -12386,7 +12407,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If *display\TabEntered( )
-               DoEvents( *display, #__event_StatusChange )
+             ;  DoEvents( *display, #__event_StatusChange )
             EndIf
             
             ;\\ ComboBox
@@ -12409,7 +12430,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                Hide( *this, *this\hide ! 1 )
                
                If *this\hide
-                  Debug "comboBar - hide "+*this\class +" "+ *this\hide
+                  If test_display
+                     Debug "comboBar - hide "+*this\class +" "+ *this\hide
+                  EndIf
                   ;
                   
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
@@ -12423,12 +12446,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;             Popup( ) = #Null 
                   ProcedureReturn - 1
                Else
+                  If test_display
                   Debug "comboBar - show"
                EndIf
+               PostRepaint( *this\root )
+            EndIf
             Else
                If *this\hide
+                  If test_display
                   Debug "menuBar - show "+*this\class
-                  Hide( *this, #False )
+               EndIf
+               Hide( *this, #False )
                EndIf
             EndIf
             
@@ -12446,7 +12474,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   parentID = WindowID( *display\root\canvas\window )
                EndIf
                
-               Debug "displayBar - create " + *this\class +" "+ *this\root ;
+               If test_display
+                  Debug "displayBar - create " + *this\class +" "+ *this\root ;
+               EndIf
                *displayroot = Open( #PB_Any, 0, 0, 1, 1, "", #__window_NoActivate | #__window_NoGadgets | #__window_BorderLess | #__window_Invisible | #__window_Tool,  parentID )
                *displayroot\parent = *display
                *displayroot\class = "["+*this\class+"]"+"-root" ; "root_"+
@@ -12625,12 +12655,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                HideWindow( *this\root\canvas\window, #False, #__window_NoActivate )
                DisableWindow( *this\root\canvas\window, #False)
                
-               PostRepaint( *this\root )
-               If *display\root\canvas\postrepaint 
-                  *display\root\canvas\postrepaint = 0
-                  PostEventRepaint( *display\root )
-               EndIf
-               
+;                ;
+;                If *display\root\canvas\postrepaint 
+;                   *display\root\canvas\postrepaint = 0
+;                  ; PostEventRepaint( *display\root )
+;                EndIf
+               If Not ( root( ) And root( )\canvas\gadget = *display\root\canvas\gadget )
+                  ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ) )
+               EndIf 
+               ; root( ) = *display\root
+               Debug roots()\class
                ProcedureReturn #True
             EndIf
             
@@ -17268,6 +17302,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Macro draw_focus_frame( _address_, _color_ )
          draw_roundbox_( _address_\inner_x( ), _address_\inner_y( ), _address_\inner_width( ), _address_\inner_height( ), _address_\round, _address_\round, _color_ )
+         draw_roundbox_( _address_\inner_x( )+1, _address_\inner_y( )+1, _address_\inner_width( )-2, _address_\inner_height( )-2, _address_\round, _address_\round, _color_ )
+         draw_roundbox_( _address_\inner_x( )+2, _address_\inner_y( )+2, _address_\inner_width( )-4, _address_\inner_height( )-4, _address_\round, _address_\round, _color_ )
          ;draw_roundbox_( _address_\frame_x( ), _address_\frame_y( ), _address_\frame_width( ), _address_\frame_height( ), _address_\round, _address_\round, _color_ )
          ;draw_roundbox_( _address_\frame_x( ) + 1, _address_\frame_y( ) + 1, _address_\frame_width( ) - 2, _address_\frame_height( ) - 2, _address_\round, _address_\round, _color_ )
          ; draw_roundbox_( _address_\frame_x( ) + 2, _address_\frame_y( ) + 2, _address_\frame_width( ) - 4, _address_\frame_height( ) - 4, _address_\round, _address_\round, _color_ )
@@ -17456,13 +17492,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   ; post event re draw
-                  If is_root_( *this )
-                     Send( *this, #__event_ReDraw );, #PB_All, *this )
-                                                   ; PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint )
-                  Else
-                     Send( *this, #__event_Draw )
+                  If __gui\eventexit > 0
+                     If is_root_( *this )
+                        Send( *this, #__event_ReDraw );, #PB_All, *this )
+                                                      ; PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint )
+                     Else
+                        Send( *this, #__event_Draw )
+                     EndIf
                   EndIf
-                  ;
+                 ;
                   ;
                   If *this\root\drawmode & 1<<2
                      ;\\
@@ -20776,6 +20814,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                      
+                     ;
                      If event = #__event_LeftClick
                         Select EnteredButton( )
                               ; close button
@@ -20783,9 +20822,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                               If is_root_( *this )
                                  PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, *this )
                               Else
-                                 Post( *this, #__event_close )
+                                 Send( *this, #__event_close )
                               EndIf
-                              
+                             
                               ; maximize button
                            Case *this\MaximizeButton( )
                               If Not *this\resize\flag & #__resize_maximize
@@ -21028,9 +21067,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          If Not (*this\disable And Not *this\anchors)
             If *this\root\repaint = 1
                ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(event)
-               If event = #__event_Focus Or
+               If MouseButtonPress( ) And
+                  ( event = #__event_Focus Or
                   event = #__event_Drop Or
-                  event = #__event_LostFocus
+                  event = #__event_LostFocus )
                   ;
                   ReDraw( *this\root )
                Else
@@ -21052,33 +21092,29 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure EventRepaint( )
          If EventData( )
-            Protected eventdata = EventData( )
-            
-            If eventdata <> root( )\canvas\gadgetID
-               ChangeCurrentCanvas( eventdata )
+            PushMapPosition(roots())
+            If EventData( ) <> roots( )\canvas\gadgetID
+               ChangeCurrentCanvas( EventData( ), 0 )
+              ; root( ) = roots( )
             EndIf
             
-            If root( )\canvas\postrepaint = 1
+            If roots( )\canvas\postrepaint = 1
                If __gui\eventexit <> 1
                   Repost( )
                EndIf
                
                If test_draw_repaint
-                    Debug "   REPAINT " + root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+                    Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                EndIf
                
-               ReDraw( root( ) )
-               root( )\canvas\postrepaint = 0
+               ReDraw( roots( ) )
+               roots( )\canvas\postrepaint = 0
             EndIf
-            
-;             If test_draw_repaint
-;                Debug "   REPAINT " + root( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
-;             EndIf
+            PopMapPosition(roots())
          EndIf
       EndProcedure
       
       Procedure EventHandler( eventgadget = - 1, eventtype = - 1, eventdata = 0 )
-         Static EnteredCanvasID
          Protected *root._s_root, repaint, event, mouse_x , mouse_y
          
          ;\\
@@ -21129,7 +21165,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not ( root( ) And root( )\canvas\gadget = eventgadget )
                ChangeCurrentCanvas( GadgetID( eventgadget ) )
             EndIf 
-            If Resize( root( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )) )
+            ;If Resize( root( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )) )
+            If Resize( root( ), 0, 0, (PB(GadgetWidth)( eventgadget )), (PB(GadgetHeight)( eventgadget )) )
                ;Debug "resize - canvas ["+eventgadget+"]"
                ;PostEventRepaint( root( ) )
                ReDraw( root( ) )
@@ -21177,9 +21214,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If eventtype = #PB_EventType_MouseEnter
-            EnteredCanvasID = GadgetID( eventgadget )
-            If Not ( root( ) And root( )\canvas\gadgetID = EnteredCanvasID )
-               ChangeCurrentCanvas( EnteredCanvasID )
+            If Not ( root( ) And root( )\canvas\gadget = eventgadget )
+               ChangeCurrentCanvas( GadgetID( eventgadget ) )
             EndIf
             ;
             MouseData( ) = #__mouse_enter
@@ -21193,10 +21229,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          If eventtype = #PB_EventType_MouseLeave
             If PressedWidget( ) And
                root( ) <> PressedWidget( )\root
-               eventgadget = PressedWidget( )\root\canvas\gadget
-               ChangeCurrentCanvas( GadgetID( eventgadget ) )
+               ChangeCurrentCanvas( GadgetID( PressedWidget( )\root\canvas\gadget ) )
             EndIf
-            EnteredCanvasID = #Null
             ;
             MouseData( ) = #__mouse_leave
             mouse( )\x      = - 1
@@ -21852,7 +21886,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If event = #__event_Close
                      If result <> #PB_Ignore
                         Select result
-                           Case - 1
+                           Case #PB_All
                               If is_root_( *this ) Or
                                  is_window_( *this )
                                  Close( #PB_All )
@@ -22025,7 +22059,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\root\Beforeroot( ) = Opened( )\root
                   
                   If is_root_( *this )
-                     ChangeCurrentCanvas(*this\root\canvas\GadgetID )
+                     ChangeCurrentCanvas( GadgetID( *this\root\canvas\gadget ) )
                   EndIf
                EndIf
             EndIf
@@ -22479,8 +22513,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Protected Canvas = root( )\canvas\gadget
          EndIf
          ;
-         ;Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container, #Null, Gadget )
-         Open( Window, X, Y, Width, Height, "", 0, #Null, Gadget )
+         Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container, #Null, Gadget )
          ;
          Select Type
             Case #__type_Tree : *this = Tree( 0, 0, Width, Height, flag )
@@ -22492,7 +22525,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #__type_Splitter : *this = Splitter( 0, 0, Width, Height, *param1, *param2, flag )
          EndSelect
          ;
-         ;CloseGadgetList( )
+         CloseGadgetList( )
          ;
          If Gadget = - 1
             Gadget = GetCanvasGadget( root( ))
@@ -22557,12 +22590,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                Canvas  = root( )\canvas\gadget
                
                ;\\
-               If #PB_All <> *window
-                  If window <> *window
-                     Continue
-                  EndIf
-               EndIf
-               
                If *window = #PB_All
                   If root( )\haschildren
                      LastElement( widgets( ) )
@@ -22588,6 +22615,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   __gui\eventquit = - 1
+               Else
+                  If *window <> window
+                     Continue
+                  EndIf
                EndIf
                
                ;\\
@@ -22617,9 +22648,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             Next
          EndIf
-         
-         ;\\
-         ;ChangeCurrentroot( )
          
          ProcedureReturn window
       EndProcedure
@@ -22828,23 +22856,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                   __data   = __gui\eventqueue( )\data
                   DeleteElement( __gui\eventqueue( ) )
                   
-                  ;\\
-                  If *root <> root( )
-                     If *repaint
-                        If ChangeCurrentCanvas( *repaint\canvas\gadgetID )
-                           *repaint\canvas\postrepaint = 0
-                           PostEventRepaint( *repaint )
-                        EndIf
-                     EndIf
-                     If ChangeCurrentCanvas( *root\canvas\gadgetID )
-                        *repaint = root( )
-                        ; Debug "    change canvas "
-                     EndIf
-                  EndIf
+;                   ;\\
+;                   If *root <> root( )
+;                      If *repaint
+;                         If ChangeCurrentCanvas( *repaint\canvas\gadgetID )
+;                            *repaint\canvas\postrepaint = 0
+;                            PostEventRepaint( *repaint )
+;                         EndIf
+;                      EndIf
+;                      If ChangeCurrentCanvas( *root\canvas\gadgetID )
+;                         *repaint = root( )
+;                         ; Debug "    change canvas "
+;                      EndIf
+;                   EndIf
                   
                   ;\\
                   If #__event_Repaint = __type
-                     Debug "#__event_Repaint"
+                     Debug "#__event_Repaint "+root( )\class
                      
                   ElseIf #__event_Close = __type
                      Debug "Post close...."
@@ -22865,21 +22893,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                Next
             EndIf
             
-            ;\\
-            If *repaint
-               *repaint\canvas\postrepaint = 0
-               PostEventRepaint( *repaint )
-               *repaint = 0
-            EndIf
+;             ;\\
+;             If *repaint
+;                *repaint\canvas\postrepaint = 0
+;                PostEventRepaint( *repaint )
+;                *repaint = 0
+;             EndIf
+;             
+;             ;\\ call message
+;             If EnteredWidget( ) And
+;                EnteredWidget( )\root <> root( )
+;                ; Debug " Change Current Canvas "
+;                ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
+;             EndIf
             
-            ;\\ call message
-            If EnteredWidget( ) And
-               EnteredWidget( )\root <> root( )
-               ; Debug " Change Current Canvas "
-               ChangeCurrentCanvas( EnteredWidget( )\root\canvas\gadgetID )
-            EndIf
-            
-            Debug "     -     "
+;             Debug "     -     "
          EndIf
       EndProcedure
       
@@ -22908,16 +22936,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             Repeat
                
                Select WaitWindowEvent( waittime )
-                     ;                   Case #PB_Event_ActivateWindow
-                     ;                      EventActivate( )
-                     ;                   Case #PB_Event_DeactivateWindow
-                     ;                      EventDeactive( )
-                     ;                   Case #PB_Event_Repaint
-                     ;                      EventRepaint( )
-                     
-                  Case #PB_Event_CloseWindow : __gui\eventquit = - 1
+                  Case #PB_Event_CloseWindow
                      Protected window = PB(EventWindow)( )
                      Protected Canvas = PB(GetWindowData)( window )
+                     
+                     __gui\eventquit = - 1
                      
                      If ChangeCurrentCanvas( PB(GadgetID)(Canvas))
                         Debug "Wait close.... " + root( )\address + " " + root( )\canvas\window + " " + window + " - " + EventGadget( ) + " " + EventData( )
@@ -23317,141 +23340,560 @@ EndMacro
 
 
 ;-\\ EXAMPLE
-
-CompilerIf Not Defined(Splitter, #PB_Module)
-  DeclareModule Splitter
-    EnableExplicit
-    UseModule constants
-    UseModule structures
-    
-    
-    ;- DECLARE
-    Declare GetState(Gadget.i)
-    Declare SetState(Gadget.i, State.i)
-    Declare GetAttribute(Gadget.i, Attribute.i)
-    Declare SetAttribute(Gadget.i, Attribute.i, Value.i)
-    Declare Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.i=0)
-    Declare Bind(Gadget.i, *callBack, eventtype.i)
-  EndDeclareModule
-  
-  Module Splitter
-     widget::test_draw_repaint = 1
-     
-    ;- PUBLIC
-    Procedure GetState(Gadget.i)
-      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        ProcedureReturn widget::GetState( widget::root( ) )
-      EndIf
-    EndProcedure
-    
-    Procedure GetAttribute(Gadget.i, Attribute.i)
-      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        ProcedureReturn widget::GetAttribute( widget::root( ), Attribute )
-      EndIf
-    EndProcedure
-    
-    Procedure SetState(Gadget.i, State.i)
-      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        If widget::SetState( widget::root( ), State) 
-          widget::PostEventRepaint( widget::root( ) )
-        EndIf
-      EndIf
-    EndProcedure
-    
-    Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
-      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        If widget::SetAttribute( widget::root( ), Attribute, Value)
-          widget::PostEventRepaint( widget::root( ) )
-        EndIf
-      EndIf
-    EndProcedure
-    
-    Procedure Bind(Gadget.i, *callBack, eventtype.i)
-      If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-        If widget::Bind( widget::root( ), *callBack, eventtype)
-          widget::PostEventRepaint( widget::root( ) )
-        EndIf
-      EndIf
-    EndProcedure
-    
-    Procedure Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.i=0)
-      ProcedureReturn widget::Gadget(#PB_GadgetType_Splitter, Gadget, X, Y, Width, Height, "", First, Second, #Null, Flag)
-    EndProcedure
-  EndModule
-CompilerEndIf
-
-; good
 CompilerIf #PB_Compiler_IsMainFile
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  UseWidgets( )
+  EnableExplicit
+  test_draw_repaint = 1
+ ; test_event_entered = 1
   
-  Procedure event_resize()
-    ; Debug 88
+  Global tree_view
+  Global *this._s_widget
+  Global *root._S_widget
+  Global NewMap wlist.i()
+  Global.i Window_0, Canvas_0, gEvent, gQuit, X=10,Y=10
+  
+  Procedure Events()
+    Protected *eventWidget._s_widget = EventWidget()
+    Select WidgetEvent()
+      Case #__event_mouseenter ; leftclick
+        If tree_view
+          ; Debug root()\class
+          ClearItems(tree_view)
+          If *eventWidget And *eventWidget\align
+            ;Debug AnchorLeft(*eventWidget)
+            If GetText(*eventWidget) = "parent stretch"
+              ; *eventWidget = *eventWidget\parent
+            EndIf
+            
+            If *eventWidget And *eventWidget\align
+              If *eventWidget\align\left > 0
+                AddItem(tree_view, -1, "LEFT")
+              ElseIf *eventWidget\align\left < 0
+                AddItem(tree_view, -1, "LEFT-PROPORTIONAL")
+              EndIf
+              
+              If *eventWidget\align\right > 0
+                AddItem(tree_view, -1, "RIGHT")
+              ElseIf *eventWidget\align\right < 0
+                AddItem(tree_view, -1, "RIGHT-PROPORTIONAL")
+              EndIf
+              
+              If *eventWidget\align\top > 0
+                AddItem(tree_view, -1, "TOP")
+              ElseIf *eventWidget\align\top < 0
+                AddItem(tree_view, -1, "TOP-PROPORTIONAL")
+              EndIf
+              
+              If *eventWidget\align\bottom > 0
+                AddItem(tree_view, -1, "BOTTOM")
+              ElseIf *eventWidget\align\bottom < 0
+                AddItem(tree_view, -1, "BOTTOM-PROPORTIONAL")
+              EndIf
+              
+              ;               If CountItems(tree_view) = 0
+              ;                 AddItem(tree_view, -1, "CENTER")
+              ;               EndIf
+              ;               
+              ;               ; SetItemState(tree_view, CountItems(tree_view), 1)
+              
+            EndIf
+          EndIf
+          
+          ;Debug root()\class
+          
+       EndIf
+    EndSelect
   EndProcedure
   
-  If OpenWindow(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-    Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-    
-    Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-    Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-    Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-    
-    Splitter_0 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Button_0, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-    Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-    ; bug purebasic
-    SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
-    SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
-    
-    SetGadgetState(Splitter_1, 20)
-    
-    TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
-    
-    Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-    Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-    
-    Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-    Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-    Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-    
-    Splitter_0 = Splitter::Gadget(0, 0, 0, 40, 210, Button_0, Button_1, #PB_Splitter_FirstFixed)
-    Splitter_1 = Splitter::Gadget(1, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-    Splitter_1 = 1
-;     Splitter::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-;     Splitter::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-    Splitter_2 = Splitter::Gadget(2, 0, 0, 0, 0, Splitter_1, Button_5)
-    Splitter_2 = 2
-    Splitter_3 = Splitter::Gadget(3, 0, 0, 0, 0, Button_2, Splitter_2)
-    Splitter_3 = 3
-    Splitter_0 = 0
-    Splitter_4 = Splitter::Gadget(4, 430, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-    Splitter_4 = 4
-    Splitter::SetState(Splitter_1, 20)
-    
-    TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
-    
-    Splitter::Bind(Splitter_3, @event_resize( ), #PB_EventType_Resize )
-    
-    Define *this.structures::_S_WIDGET = GetGadgetData(0)
-    Debug ""+*this\width[constants::#__c_Draw] +" "+ *this\root\width +" "+ GadgetWidth(0)
-    ResizeGadget(0, #PB_Ignore, #PB_Ignore, 30, #PB_Ignore)
-    
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-    ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  EndIf
+  #__flag_TextLeft = #__flag_Textleft
+  #__flag_TextRight = #__flag_Textright
   
+  Procedure example_1( )
+    *root = Open( 1, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
+    SetColor(*root, #__color_back, $FFACE3FF )
+    
+    wlist(Hex(2)) = Button(55, 5, 80, 20, "center")   ; center \2     align_proportional_horizontal
+    wlist(Hex(3)) = Button(55, 25, 80, 20, "right")   ; right         #right
+    wlist(Hex(4)) = Container(55, 45, 80, 20)         ; stretch       #stretch 
+    wlist(Hex(44)) = Button(0, 5, 80, 20, "parent stretch")
+    CloseList()
+    
+    wlist(Hex(5)) = Button(55, 65, 80, 20, ">>|<<")    ; proportional  #proportion
+    
+    wlist(Hex(6)) = Button(10, 90, 80, 20, ">>|", #__flag_TextRight) ; proportional
+    wlist(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__flag_TextLeft) ; proportional
+    
+    wlist(Hex(8)) = Button(10, 115, 50, 20, ">>|", #__flag_TextRight) ; proportional
+    wlist(Hex(9)) = Button(60, 115, 20, 20, "|")                    ; proportional
+    wlist(Hex(10)) = Button(80, 115, 30, 20, "<<>>")                ; proportional
+    wlist(Hex(11)) = Button(110, 115, 20, 20, "|")                  ; proportional
+    wlist(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__flag_TextLeft); proportional
+    
+    
+    SetAlign(wlist(Hex(2)), 0, 0,1,0,#__align_proportional )    
+    SetAlign(wlist(Hex(3)), 0, 0,0,1,0 )
+    SetAlign(wlist(Hex(4)), 0, 1,#__align_proportional,1,1 )
+    
+    SetAlign(wlist(Hex(44)), 0, 0,1,0,0 )
+    SetAlign(wlist(Hex(5)), 0, #__align_proportional,0,#__align_proportional,1 )
+    
+    SetAlign(wlist(Hex(6)), 0, 1,0,#__align_proportional,1 )
+    SetAlign(wlist(Hex(7)), 0, #__align_proportional,0,1,1 )
+    
+    SetAlign(wlist(Hex(8)), 0, 1,0,0,1 )
+    SetAlign(wlist(Hex(9)), 0, 1,0,0,1 )
+    SetAlign(wlist(Hex(10)), 0, 1,0,1,1 )
+    SetAlign(wlist(Hex(11)), 0, 0,0,1,1 )
+    SetAlign(wlist(Hex(12)), 0, 0,0,1,1 )
+    
+    Bind(root(), @events())
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
+  EndProcedure
+  
+  Procedure example_2( )
+    *root = Open( 2, 310, 30, 190, 200, #PB_Compiler_Procedure+"(alignment-auto-indent)", #PB_Window_SizeGadget)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
+    
+    wlist(Hex(10)) = Button(0, 0, 90, 50, "left&center&right")      
+    wlist(Hex(11)) = Button(0, 0, 90, 50, "top&center&bottom")      
+    
+    wlist(Hex(1)) = Button(0, 0, 80, 40, "left")        ; center \2     align_proportional_horizontal
+    wlist(Hex(2)) = Button(0, 0, 80, 40, "top")         ; center \2     align_proportional_horizontal
+    wlist(Hex(3)) = Button(0, 0, 80, 40, "right")       ; right         #right
+    wlist(Hex(4)) = Button(0, 0, 80, 40, "bottom")      ; right         #right
+    
+    wlist(Hex(5)) = Button(0, 0, 80, 40, "center")      ; center \2     align_proportional_horizontal
+    
+    wlist(Hex(6)) = Button(0, 0, 80, 40, "left&top")    ; right         #right
+    wlist(Hex(7)) = Button(0, 0, 80, 40, "right&top")   ; right         #right
+    wlist(Hex(8)) = Button(0, 0, 80, 40, "left&bottom") ; right         #right
+    wlist(Hex(9)) = Button(0, 0, 80, 40, "right&bottom"); right         #right
+    
+    Define position = 1;#__align_auto
+    Define mode = #__align_auto
+    SetAlign( wlist(Hex(1)), mode, position,0,0,0 )
+    SetAlign( wlist(Hex(2)), mode, 0,position,0,0 )
+    SetAlign( wlist(Hex(3)), mode, 0,0,position,0 )
+    SetAlign( wlist(Hex(4)), mode, 0,0,0,position )
+    
+    SetAlign( wlist(Hex(6)), mode, position,position,0,0 )
+    SetAlign( wlist(Hex(7)), mode, 0,position,position,0 )
+    SetAlign( wlist(Hex(8)), mode, position,0,0,position )
+    SetAlign( wlist(Hex(9)), mode, 0,0,position,position )
+    
+    SetAlign( wlist(Hex(10)), mode, position,0,position,0 )
+    SetAlign( wlist(Hex(11)), mode, 0,position,0,position )
+    
+    SetAlign( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
+    
+    
+    Bind(root(), @events())
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,260)
+  EndProcedure
+  
+   Procedure TestHandler()
+      Debug "Test menu event"
+   EndProcedure
+   
+   Procedure QuitHandler()
+      Debug "Quit menu event"
+      ; End
+   EndProcedure
+  Procedure example_3( )
+    *root = Open( 3, 250, 330, 390, 200, #PB_Compiler_Procedure+"(gadget-auto-dock)", #PB_Window_SizeGadget)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
+    SetClass(*root,"_3")
+    
+    
+   Global *menu = CreateMenuBar( *root ) : SetClass(*menu, "*root_MenuBar" )
+   If *menu
+      SetColor( *menu, #__color_back, $FFC8F0EC )
+      
+      BarTitle("Title-1")
+      BarItem(1, "title-1-item-1")
+      BarSeparator( )   
+      ;
+      OpenSubBar("title-1-sub-item")
+      BarItem(3, "title-1-item")
+      BarSeparator( )
+      ;
+      OpenSubBar("title-2-sub-item")   
+      BarItem(13, "title-2-item")
+      BarSeparator( )
+      ;
+      OpenSubBar("title-3-sub-item")   
+      BarItem(23, "title-3-item")
+      CloseSubBar( ) 
+      ;
+      BarSeparator( )
+      BarItem(14, "title-2-item")
+      CloseSubBar( ) 
+      ;
+      BarSeparator( )
+      BarItem(4, "title-1-item")
+      CloseSubBar( ) 
+      ;
+      BarSeparator( )
+      BarItem(2, "title-1-item-2")
+      
+      BarTitle("Title-2")
+      ;    BarItem(5, "title-2-item-1")
+      ;    BarItem(6, "title-2-item-2")
+      
+      BarTitle("Title-event-test")
+      BarItem(7, "test")
+      BarSeparator( )
+      BarItem(8, "quit")
+      
+      BarTitle("Title-4")
+      BarItem(9, "title-4-item-1")
+      BarItem(10, "title-4-item-2")
+      
+      Bind(*menu, @TestHandler(), -1, 7)
+      Bind(*menu, @QuitHandler(), -1, 8)
+   EndIf
+   
+    wlist(Hex(1)) = Button(0, 0, 60, 20, "left1")  
+    wlist(Hex(2)) = Button(0, 0, 80, 40, "top1")   
+    wlist(Hex(3)) = Button(0, 0, 40, 20, "right1")    
+    wlist(Hex(4)) = Button(0, 0, 80, 20, "bottom1")   
+    
+    wlist(Hex(11)) = Button(0, 0, 40, 20, "left2")   
+    wlist(Hex(33)) = Button(0, 0, 60, 40, "right2")   
+    wlist(Hex(22)) = Button(0, 0, 80, 20, "top2")   
+    wlist(Hex(44)) = Button(0, 0, 80, 40, "bottom2")   
+    
+    ;wlist(Hex(5)) = Window(0, 0, 80, 20, "")   
+    ;wlist(Hex(5)) = Container(0, 0, 80, 20)   
+    wlist(Hex(5)) = ScrollArea(0, 0, 80, 20, 500,500,1)   
+    ;SetFrame(wlist(Hex(5)), 1 )
+    
+    wlist(Hex(51)) = Button(0, 0, 60, 20, "left3")  
+    wlist(Hex(52)) = Button(0, 0, 80, 40, "top3")   
+    wlist(Hex(53)) = Button(0, 0, 60, 20, "right3")    
+    wlist(Hex(54)) = Button(0, 0, 80, 20, "bottom3")   
+    
+    wlist(Hex(55)) = Button(0, 0, 80, 20, "center")   
+    
+    CloseList()
+    
+    
+    SetAlign(wlist(Hex(1)), #__align_full|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_full|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_full|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_full|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
+    
+    SetAlign(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
+    
+    SetAlign(wlist(Hex(5)), #__align_full )
+    
+    SetAlign(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
+    
+    SetAlign(wlist(Hex(55)), #__align_full )
+    
+    Bind(root(), @events())
+    
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
+  EndProcedure
+  
+  Procedure example_4( )
+    ;ProcedureReturn 
+    *root = Open( 4, 450, 460, 390, 200, #PB_Compiler_Procedure+"(window-auto-dock)", #PB_Window_SizeGadget)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
+    
+    wlist(Hex(1)) = Window(0, 0, 60, 20, "left1", #__flag_nogadgets)  
+    wlist(Hex(2)) = Window(0, 0, 80, 40, "top1", #__flag_nogadgets)   
+    wlist(Hex(3)) = Window(0, 0, 40, 20, "right1", #__flag_nogadgets)    
+    wlist(Hex(4)) = Window(0, 0, 80, 20, "bottom1", #__flag_nogadgets)   
+    
+    wlist(Hex(11)) = Window(0, 0, 40, 20, "left2", #__flag_nogadgets)   
+    wlist(Hex(33)) = Window(0, 0, 60, 40, "right2", #__flag_nogadgets)   
+    wlist(Hex(22)) = Window(0, 0, 80, 20, "top2", #__flag_nogadgets)   
+    wlist(Hex(44)) = Window(0, 0, 80, 40, "bottom2", #__flag_nogadgets)   
+    
+    wlist(Hex(5)) = Window(0, 0, 80, 20, "")   
+    ;wlist(Hex(5)) = Container(0, 0, 80, 20)   
+    wlist(Hex(51)) = Window(0, 0, 60, 20, "left3", #__flag_nogadgets, wlist(Hex(5)))  
+    wlist(Hex(52)) = Window(0, 0, 80, 40, "top3", #__flag_nogadgets, wlist(Hex(5)))   
+    wlist(Hex(53)) = Window(0, 0, 60, 20, "right3", #__flag_nogadgets, wlist(Hex(5)))    
+    wlist(Hex(54)) = Window(0, 0, 80, 20, "bottom3", #__flag_nogadgets, wlist(Hex(5)))   
+    
+    wlist(Hex(55)) = Window(0, 0, 80, 20, "center", #__flag_nogadgets, wlist(Hex(5)))   
+    
+    CloseList()
+    ;     SetFrame(wlist(Hex(5)), 10 )
+    ;     SetFrame(wlist(Hex(1)), 10 )
+    ;     SetFrame(wlist(Hex(55)), 1 )
+    
+    SetAlign(wlist(Hex(1)), #__align_full|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_full|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_full|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_full|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_full, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_full, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_full, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_full, 0,0,0,1 )      
+    
+    SetAlign(wlist(Hex(11)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_full, 0,0,0,1 )      
+    
+    SetAlign(wlist(Hex(5)), #__align_full )
+    
+    SetAlign(wlist(Hex(51)), #__align_full, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_full, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_full, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_full, 0,0,0,1 )      
+    
+    SetAlign(wlist(Hex(55)), #__align_full )
+    
+    Bind(root(), @events())
+    
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
+  EndProcedure
+  
+  Procedure example_5( )
+    *root = Open( 5, 850, 460, 390, 200, #PB_Compiler_Procedure+"(auto-alignment)", #PB_Window_SizeGadget)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
+    
+    wlist(Hex(1)) = Button(0, 0, 60, 20, "left1")  
+    wlist(Hex(2)) = Button(0, 0, 80, 40, "top1")   
+    wlist(Hex(3)) = Button(0, 0, 60, 20, "right1")    
+    wlist(Hex(4)) = Button(0, 0, 80, 20, "bottom1")   
+    
+    wlist(Hex(11)) = Button(0, 0, 40, 20, "left2")   
+    wlist(Hex(33)) = Button(0, 0, 40, 40, "right2")   
+    wlist(Hex(22)) = Button(0, 0, 80, 20, "top2")   
+    wlist(Hex(44)) = Button(0, 0, 80, 40, "bottom2")   
+    
+    wlist(Hex(5)) = Window(0, 0, 80, 20, "")   
+    ;wlist(Hex(5)) = Container(0, 0, 80, 20)   
+    wlist(Hex(51)) = Button(0, 0, 60, 20, "left3")  
+    wlist(Hex(52)) = Button(0, 0, 80, 40, "top3")   
+    wlist(Hex(53)) = Button(0, 0, 60, 20, "right3")    
+    wlist(Hex(54)) = Button(0, 0, 80, 20, "bottom3")   
+    
+    wlist(Hex(55)) = Button(0, 0, 80, 20, "center")   
+    
+    CloseList()
+    
+    SetAlign(wlist(Hex(1)), #__align_auto|#__align_left ) 
+    SetAlign(wlist(Hex(2)), #__align_auto|#__align_top ) 
+    SetAlign(wlist(Hex(3)), #__align_auto|#__align_right )              
+    SetAlign(wlist(Hex(4)), #__align_auto|#__align_bottom )      
+    ;     SetAlign(wlist(Hex(1)), #__align_auto, 1,0,0,0 ) 
+    ;     SetAlign(wlist(Hex(2)), #__align_auto, 0,1,0,0 ) 
+    ;     SetAlign(wlist(Hex(3)), #__align_auto, 0,0,1,0 )              
+    ;     SetAlign(wlist(Hex(4)), #__align_auto, 0,0,0,1 )      
+    
+    SetAlign(wlist(Hex(11)), #__align_auto, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(22)), #__align_auto, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(33)), #__align_auto, 0,0,1,0 )              
+    SetAlign(wlist(Hex(44)), #__align_auto, 0,0,0,1 )      
+    
+    
+    SetAlign(wlist(Hex(5)), #__align_auto )
+    
+    SetAlign(wlist(Hex(51)), #__align_auto, 1,0,0,0 ) 
+    SetAlign(wlist(Hex(52)), #__align_auto, 0,1,0,0 ) 
+    SetAlign(wlist(Hex(53)), #__align_auto, 0,0,1,0 )              
+    SetAlign(wlist(Hex(54)), #__align_auto, 0,0,0,1 )      
+    ;     
+    SetAlign(wlist(Hex(55)), #__align_auto )
+    
+    Bind(root(), @events())
+    
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
+  EndProcedure
+  
+  Procedure example_6( )
+    Protected Width = 460
+    Protected Height = 200
+    
+    *root = Open( 6, 620, 30, Width, Height, #PB_Compiler_Procedure+"(Proportional)", #PB_Window_SizeGadget)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
+    
+    ;\\
+    wlist(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
+    wlist(Hex(2)) = Button((Width-120)/2, 10, 120, 40, "top")
+    wlist(Hex(7)) = Button(Width-130, 10, 120, 40, "top&right") 
+    
+    wlist(Hex(1)) = Button(10, (Height-40)/2, 120, 40, "left") 
+    wlist(Hex(5)) = Button((Width-120)/2, (Height-40)/2, 120, 40, "center")
+    wlist(Hex(3)) = Button(Width-130, (Height-40)/2, 120, 40, "right")
+    
+    wlist(Hex(8)) = Button(10, Height-50, 120, 40, "left&bottom")
+    wlist(Hex(4)) = Button((Width-120)/2, Height-50, 120, 40, "bottom")
+    wlist(Hex(9)) = Button(Width-130, Height-50, 120, 40, "bottom&right")
+    
+    ;\\ OK example - 1
+    SetAlign( wlist(Hex(6)), #__align_proportional, 1,1,0,0 )
+    SetAlign( wlist(Hex(2)), #__align_proportional, 0,1,0,0 )
+    SetAlign( wlist(Hex(7)), #__align_proportional, 0,1,1,0 )
+    
+    SetAlign( wlist(Hex(1)), #__align_proportional, 1,0,0,0 )
+    SetAlign( wlist(Hex(5)), #__align_proportional ) ; , 0,0,0,0 )
+    SetAlign( wlist(Hex(3)), #__align_proportional, 0,0,1,0 )
+    
+    SetAlign( wlist(Hex(8)), #__align_proportional, 1,0,0,1 )
+    SetAlign( wlist(Hex(4)), #__align_proportional, 0,0,0,1 )
+    SetAlign( wlist(Hex(9)), #__align_proportional, 0,0,1,1 )
+    
+    ;      ;\\ Ok example - 2
+    ;     SetAlign( wlist(Hex(6)), #__align_proportional|#__align_top|#__align_left )
+    ;     SetAlign( wlist(Hex(2)), #__align_proportional|#__align_top )
+    ;     SetAlign( wlist(Hex(7)), #__align_proportional|#__align_top|#__align_right )
+    ;     
+    ;     SetAlign( wlist(Hex(1)), #__align_proportional|#__align_left )
+    ;     SetAlign( wlist(Hex(5)), #__align_proportional )
+    ;     SetAlign( wlist(Hex(3)), #__align_proportional|#__align_right )
+    ;     
+    ;     SetAlign( wlist(Hex(8)), #__align_proportional|#__align_bottom|#__align_left )
+    ;     SetAlign( wlist(Hex(4)), #__align_proportional|#__align_bottom )
+    ;     SetAlign( wlist(Hex(9)), #__align_proportional|#__align_bottom|#__align_right )
+    ;    
+    ;     ;\\ OK example - 3
+    ;     SetAlign( wlist(Hex(6)), 0, 0                    ,0                    ,#__align_proportional,#__align_proportional )
+    ;     SetAlign( wlist(Hex(2)), 0, #__align_proportional,0                    ,#__align_proportional,#__align_proportional )
+    ;     SetAlign( wlist(Hex(7)), 0, #__align_proportional,0                    ,0                    ,#__align_proportional )
+    ;     
+    ;     SetAlign( wlist(Hex(1)), 0, 0                    ,#__align_proportional,#__align_proportional,#__align_proportional )
+    ;     SetAlign( wlist(Hex(5)), 0, #__align_proportional,#__align_proportional,#__align_proportional,#__align_proportional )
+    ;     SetAlign( wlist(Hex(3)), 0, #__align_proportional,#__align_proportional,0                    ,#__align_proportional )
+    ;     
+    ;     SetAlign( wlist(Hex(8)), 0, 0                    ,#__align_proportional,#__align_proportional,0 )
+    ;     SetAlign( wlist(Hex(4)), 0, #__align_proportional,#__align_proportional,#__align_proportional,0 )
+    ;     SetAlign( wlist(Hex(9)), 0, #__align_proportional,#__align_proportional,0                    ,0 )
+    
+    ;     ;\\ example - 4
+    ;     SetAlign( wlist(Hex(6)), #__align_proportional, -5,-5,0,0 )
+    ;     SetAlign( wlist(Hex(2)), #__align_proportional, 0,-5,0,0 )
+    ;     SetAlign( wlist(Hex(7)), #__align_proportional, 0,-5,-5,0 )
+    ;     
+    ;     SetAlign( wlist(Hex(1)), #__align_proportional, -5,0,0,0 )
+    ;     SetAlign( wlist(Hex(5)), #__align_proportional ) ; , 0,0,0,0 )
+    ;     SetAlign( wlist(Hex(3)), #__align_proportional, 0,0,-5,0 )
+    ;     
+    ;     SetAlign( wlist(hex(8)), #__align_proportional, -5,0,0,-5 )
+    ;     SetAlign( wlist(Hex(4)), #__align_proportional, 0,0,0,-5 )
+    ;     SetAlign( wlist(Hex(9)), #__align_proportional, 0,0,-5,-5 )
+    
+    Bind(root(), @events())
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 490,390)
+  EndProcedure
+  
+  Procedure example_7( )
+    Protected Width = 384
+    Protected Height = 144
+    
+    *root = Open( 7, 320, 130, Width, Height, #PB_Compiler_Procedure+"(indent-auto-alignment (example_2))", #PB_Window_SizeGadget)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
+    
+    ;\\
+    wlist(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
+    wlist(Hex(2)) = Button((Width-120)/2, 10, 120, 40, "top")
+    wlist(Hex(7)) = Button(Width-130, 10, 120, 40, "top&right") 
+    
+    wlist(Hex(1)) = Button(10, (Height-40)/2, 120, 40, "left") 
+    wlist(Hex(5)) = Button((Width-120)/2, (Height-40)/2, 120, 40, "center")
+    wlist(Hex(3)) = Button(Width-130, (Height-40)/2, 120, 40, "right")
+    
+    wlist(Hex(8)) = Button(10, Height-50, 120, 40, "left&bottom")
+    wlist(Hex(4)) = Button((Width-120)/2, Height-50, 120, 40, "bottom")
+    wlist(Hex(9)) = Button(Width-130, Height-50, 120, 40, "bottom&right")
+    
+    ;      ;\\ Ok example - 1
+    ;     SetAlign( wlist(Hex(2)), #__align_center|#__align_proportional|#__align_top )
+    ;     SetAlign( wlist(Hex(1)), #__align_center|#__align_proportional|#__align_left )
+    ;     SetAlign( wlist(Hex(5)), #__align_center )
+    ;     SetAlign( wlist(Hex(3)), #__align_center|#__align_proportional|#__align_right )
+    ;     SetAlign( wlist(Hex(4)), #__align_center|#__align_proportional|#__align_bottom )
+    
+    ;\\ OK example - 3
+    SetAlign( wlist(Hex(6)), 0, 1,1,#__align_proportional,#__align_proportional )
+    SetAlign( wlist(Hex(2)), 0, 0,1,0,#__align_proportional )
+    SetAlign( wlist(Hex(7)), 0, #__align_proportional,1,1,#__align_proportional )
+    
+    SetAlign( wlist(Hex(1)), 0, 1,0,#__align_proportional,0 )
+    SetAlign( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
+    SetAlign( wlist(Hex(3)), 0, #__align_proportional,0,1,0 )
+    
+    SetAlign( wlist(Hex(8)), 0, 1,#__align_proportional,#__align_proportional,1 )
+    SetAlign( wlist(Hex(4)), 0, 0,#__align_proportional,0,1 )
+    SetAlign( wlist(Hex(9)), 0, #__align_proportional,#__align_proportional,1,1 )
+    
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 690,490)
+  EndProcedure
+  
+  ;
+  Procedure example_demo()
+    *root = Open( 8, 20, 540, 250, 410, "test", #PB_Window_SizeGadget)
+    Canvas_0 = GetCanvasGadget(*root)
+    Window_0 = GetCanvasWindow(*root)
+    
+    ;     ;\\
+    ;     tree_view = Tree(0, 0, 0, 0, #__flag_autosize)   
+    
+    ;\\
+    Define tree_button1 = Button( 5,   345, 240,  25, "")
+    Define tree_button2 = Button( 5,   345+30, 240, 30,"")
+    Define tree_container = Window( 10, 10, 230-#__window_FrameSize*2,  325-#__window_FrameSize*2-#__window_CaptionHeight, "", #PB_Window_SystemMenu)
+    tree_view = Tree(10, 10, 230-20-#__window_FrameSize*2,  325-20-#__window_FrameSize*2-#__window_CaptionHeight)  : CloseList( )
+    
+    SetAlign(tree_container, 0, 1,1,1,1 )
+    SetAlign(tree_view, 0, 1,1,1,1 )
+    
+    SetAlign(tree_button1, 0, 1,0,1,1 )
+    SetAlign(tree_button2, 0, 1,0,1,1 )
+    
+    Bind(root(), @events())
+    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,400)
+  EndProcedure
+  
+  ;example_1()
+  ;;example_2()
+  example_3()
+  ;example_4()
+  ;example_5()
+  ;example_6()
+  ;example_7()
+  
+  example_demo( )
+  
+  WaitClose( )
+  ;   Repeat
+  ;     gEvent= WaitWindowEvent()
+  ;     
+  ;     Select gEvent
+  ;       Case #PB_Event_CloseWindow
+  ;         gQuit= #True
+  ;         
+  ;     EndSelect
+  ;     
+  ;   Until gQuit
 CompilerEndIf
-
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 22494
-; FirstLine = 22473
-; Folding = +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 12452
+; FirstLine = 12445
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-P9
 ; EnableXP
 ; DPIAware

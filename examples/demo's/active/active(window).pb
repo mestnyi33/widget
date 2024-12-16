@@ -16,48 +16,42 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       EndSelect
    EndProcedure
    
-   If Open(0, 0, 0, 800, 600, " focus demo ", #PB_Window_SystemMenu |
+   If Open(0, 0, 0, 600, 400, " focus demo ", #PB_Window_SystemMenu |
                                               #PB_Window_ScreenCentered )
       
       ;\\
-      Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
-                                            #PB_Window_MaximizeGadget |
-                                            #PB_Window_MinimizeGadget )
+      Window( 30, 30, 200, 150, "window_0", #PB_Window_TitleBar )
       
       SetClass(widget( ), "window_0" )
-      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_0" )
+      Panel( 15,15,170,110 ) : SetClass(widget( ), "panel_1_window_0" )
       AddItem(widget(), -1, "item_0" )
-      Button(10,10,200,50,"window_0_button_1")
+      Button(10,10,150,30,"window_0_button_1")
       SetClass(widget( ), "window_0_button_1" )
-      Button(10,65,200,50,"window_0_button_2")
+      Button(10,45,150,30,"window_0_button_2")
       SetClass(widget( ), "window_0_button_2" )
       CloseList( )
       
       ;\\
-      Window( 230, 130, 300, 200, "window_1", #PB_Window_SystemMenu |
-                                              #PB_Window_MaximizeGadget |
-                                              #PB_Window_MinimizeGadget )
+      Window( 180, 80, 200, 150, "window_1", #PB_Window_TitleBar )
       
       SetClass(widget( ), "window_1" )
-      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_1" )
+      Panel( 15,15,170,110 ) : SetClass(widget( ), "panel_1_window_1" )
       AddItem(widget(), -1, "item_0" )
-      Button(10,10,200,50,"window_1_button_1")
+      Button(10,10,150,30,"window_1_button_1")
       SetClass(widget( ), "window_1_button_1" )
-      Button(10,65,200,50,"window_1_button_2")
+      Button(10,45,150,30,"window_1_button_2")
       SetClass(widget( ), "window_1_button_2" )
       CloseList( )
       
       ;\\
-      Window( 430, 230, 300, 200, "window_2", #PB_Window_SystemMenu |
-                                              #PB_Window_MaximizeGadget |
-                                              #PB_Window_MinimizeGadget )
+      Window( 330, 130, 200, 150, "window_2", #PB_Window_TitleBar )
       
       SetClass(widget( ), "window_2" )
-      Panel( 30,30,240,140 ) : SetClass(widget( ), "panel_1_window_2" )
+      Panel( 15,15,170,110 ) : SetClass(widget( ), "panel_1_window_2" )
       AddItem(widget(), -1, "item_0" )
-      Button(10,10,200,50,"window_2_button_1")
+      Button(10,10,150,30,"window_2_button_1")
       SetClass(widget( ), "window_2_button_1" )
-      Button(10,65,200,50,"window_2_button_2")
+      Button(10,45,150,30,"window_2_button_2")
       SetClass(widget( ), "window_2_button_2" )
       CloseList( )
       
@@ -65,7 +59,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
+; CursorPosition = 49
+; FirstLine = 31
 ; Folding = -
 ; EnableXP
 ; DPIAware

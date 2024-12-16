@@ -4,6 +4,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
+  test_event_resize = 1
   
   Global Button_1, Button_2, Button_3, Splitter_1, Splitter_2
   
@@ -24,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -1,6 +1,5 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
-XIncludeFile "widget-events.pbi"
+XIncludeFile "widgets.pbi"
 
 ;- 
 ;- example
@@ -13,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global Button_1, Button_2, Button_3, Splitter_1, Splitter_2
   
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 380, 400, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 380, 400, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ; gadgets
     Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "button_1")
     Button_2 = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, 150, 150, 1) : CloseGadgetList() 
@@ -71,6 +70,8 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
+; DPIAware

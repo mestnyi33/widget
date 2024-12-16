@@ -136,8 +136,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 84
+; CursorPosition = 73
+; FirstLine = 63
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -7,6 +7,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global Tree
    
+;    Macro Message( title, Text, flag=0, parentID=0 ) : MessageRequester( title, Text, flag, parentID ) : EndMacro
+   
    Procedure ShowMessage(  )
       
       Debug "open - Title"
@@ -49,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *showButton = Button( 600-100, 300-40, 90,30, "show" )
       Bind( *showButton, @ButtonEvents( ) )
       
-     ; ShowMessage( )
+      ShowMessage( )
       
       WaitClose( )
    EndIf
@@ -101,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 26
+; CursorPosition = 53
+; FirstLine = 31
 ; Folding = -+-
 ; EnableXP
