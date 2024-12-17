@@ -190,6 +190,7 @@ GetCanvasGadget
 GetWindow
 GetRoot
 
+GetLast
 SetPosition
 GetPosition
 
@@ -198,7 +199,7 @@ root
 mouse
 keyboard
 
-
+PostReDraw
 Events
 EventsData
 EventsItem

@@ -19,23 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   Procedure Last( *parent._s_WIDGET, tabindex )
-      Define._s_WIDGET *last, *after
-      
-      *after = GetPositionAfter( *parent, tabindex )
-      ;*last = GetPositionLast( *after, tabindex )
-      
-      If *after\parent <> *parent And *after\LastWidget( )\TabIndex( ) > tabindex
-         *last = *after
-      Else
-         *last = GetPositionLast( *after, tabindex )
-      EndIf
-      
-      Debug "after "+ *after\class
-      ; Debug "*last "+ *last\class
-   EndProcedure
-   
-   Procedure Show_DEBUG( )
+    Procedure Show_DEBUG( )
       Define line.s
       ;\\
       Debug "---->>"
@@ -87,8 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 59
+; CursorPosition = 21
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
 ; DPIAware

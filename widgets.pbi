@@ -283,35 +283,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          ForEach _root_\children( )
             If _root_\children( ) <> _root_\children( )\root
                If _root_\children( )\BeforeWidget( ) And _root_\children( )\AfterWidget( )
-                  Debug " - " + Str(ListIndex( _root_\children( ))) + " " + _root_\children( )\placingindex + " ( " + _root_\children( )\BeforeWidget( )\class + " " + _root_\children( )\class + " " + _root_\children( )\AfterWidget( )\class + " )"
+                  Debug " - " + Str(ListIndex( _root_\children( ))) + " " + _root_\children( )\index + " ( " + _root_\children( )\BeforeWidget( )\class + " " + _root_\children( )\class + " " + _root_\children( )\AfterWidget( )\class + " )"
                ElseIf _root_\children( )\AfterWidget( )
-                  Debug " - " + Str(ListIndex( _root_\children( ))) + " " + _root_\children( )\placingindex + " ( -- " + _root_\children( )\class + " " + _root_\children( )\AfterWidget( )\class + " )"
+                  Debug " - " + Str(ListIndex( _root_\children( ))) + " " + _root_\children( )\index + " ( -- " + _root_\children( )\class + " " + _root_\children( )\AfterWidget( )\class + " )"
                ElseIf _root_\children( )\BeforeWidget( )
-                  Debug " - " + Str(ListIndex( _root_\children( ))) + " " + _root_\children( )\placingindex + " ( " + _root_\children( )\BeforeWidget( )\class + " " + _root_\children( )\class + " -- )"
+                  Debug " - " + Str(ListIndex( _root_\children( ))) + " " + _root_\children( )\index + " ( " + _root_\children( )\BeforeWidget( )\class + " " + _root_\children( )\class + " -- )"
                Else
-                  Debug " - " + Str(ListIndex( _root_\children( ))) + " " + _root_\children( )\placingindex + " ( -- " + _root_\children( )\class + " -- ) "
+                  Debug " - " + Str(ListIndex( _root_\children( ))) + " " + _root_\children( )\index + " ( -- " + _root_\children( )\class + " -- ) "
                EndIf
-               
-               ;           If _root_\children( )\BeforeWidget( ) And _root_\children( )\AfterWidget( )
-               ;             Debug " - "+ Str(ListIndex( _root_\children( ))) +" "+ _root_\children( )\placingindex +" "+ _root_\children( )\BeforeWidget( )\class +"-"+ _root_\children( )\BeforeWidget( )\placingindex +" "+ _root_\children( )\class +"-"+ _root_\children( )\placingindex +" "+ _root_\children( )\AfterWidget( )\class +"-"+ _root_\children( )\AfterWidget( )\placingindex
-               ;           ElseIf _root_\children( )\AfterWidget( )
-               ;             Debug " - "+ Str(ListIndex( _root_\children( ))) +" "+ _root_\children( )\placingindex +" none "+ _root_\children( )\class +"-"+ _root_\children( )\placingindex +" "+ _root_\children( )\AfterWidget( )\class +"-"+ _root_\children( )\AfterWidget( )\placingindex
-               ;           ElseIf _root_\children( )\BeforeWidget( )
-               ;             Debug " - "+ Str(ListIndex( _root_\children( ))) +" "+ _root_\children( )\placingindex +" "+ _root_\children( )\BeforeWidget( )\class +"-"+ _root_\children( )\BeforeWidget( )\placingindex +" "+ _root_\children( )\class +"-"+ _root_\children( )\placingindex +" none"
-               ;           Else
-               ;             Debug " - "+ Str(ListIndex( _root_\children( ))) +" "+ _root_\children( )\placingindex +" none "+ _root_\children( )\class +"-"+ _root_\children( )\placingindex + " none "
-               ;           EndIf
-               ;
-               ;           ;         If _root_\children( )\BeforeWidget( ) And _root_\children( )\AfterWidget( )
-               ;           ;           Debug " - "+ Str(ListIndex( _root_\children( ))) +" "+ _root_\children( )\placingindex +" "+ _root_\children( )\BeforeWidget( )\class +" "+ _root_\children( )\class +" "+ _root_\children( )\AfterWidget( )\class
-               ;           ;         ElseIf _root_\children( )\AfterWidget( )
-               ;           ;           Debug " - "+ Str(ListIndex( _root_\children( ))) +" "+ _root_\children( )\placingindex +" none "+ _root_\children( )\class +" "+ _root_\children( )\AfterWidget( )\class
-               ;           ;         ElseIf _root_\children( )\BeforeWidget( )
-               ;           ;           Debug " - "+ Str(ListIndex( _root_\children( ))) +" "+ _root_\children( )\placingindex +" "+ _root_\children( )\BeforeWidget( )\class +" "+ _root_\children( )\class +" none"
-               ;           ;         Else
-               ;           ;           Debug " - "+ Str(ListIndex( _root_\children( ))) +" "+ _root_\children( )\placingindex +" none "+ _root_\children( )\class + " none "
-               ;           ;         EndIf
-            EndIf
+          EndIf
          Next
          Debug ""
       EndMacro
@@ -739,12 +719,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
-      Macro PostEventRepaint( _root_ )
+      Macro PostReDraw( _root_ )
          If _root_
             ; Debug #PB_Compiler_Procedure
             If widget::__gui\eventloop
                If Not widget::Send( _root_, constants::#__event_Repaint )
-                  ; Debug "PostEventRepaint - ReDraw"
+                  ; Debug "post - ReDraw"
                   widget::ReDraw( _root_ )
                EndIf
             Else
@@ -757,9 +737,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
       EndMacro
+      Macro PostEventRepaint( _root_ )
+         ;PostReDraw( _root_ )
+      EndMacro
       Macro PostRepaint( _root_ )
          ;Debug #PB_Compiler_Procedure
-         PostEventRepaint( _root_ )
+         ;PostReDraw( _root_ )
       EndMacro
       
       ;-
@@ -1442,12 +1425,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i GetParent( *this )
       Declare   SetParent( *this, *parent, tabindex.l = #PB_Default )
       
-      Declare   GetLast( *last, tabindex.l )
-      Declare   GetPosition( *this, position.l )
+      Declare   GetLast( *this, tabindex.l = #PB_Default )
+      Declare   GetPosition( *this, position.l, tabindex.l = #PB_Default )
       Declare   SetPosition( *this, position.l, *widget = #Null )
-      Declare   GetPositionAfter( *this, tabindex.l )
-      Declare   GetPositionLast( *this, tabindex.l = #PB_Default )
-      
+       
       ; menu
       ;Declare.b IsBar( *this._s_widget )
       Declare   CreateBar( Type.w, *parent, flag.q = #Null )
@@ -1500,7 +1481,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i MDI( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
       
       ;
-      Declare   Message( Title.s, Text.s, flag.q = #Null )
+      Declare   Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
       Declare   PostQuit( *root = #Null )
       Declare   WaitQuit( *root = #Null )
       ;
@@ -3862,10 +3843,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          _this_\disable = Bool( _this_\disable[1] Or ( _parent_ And _parent_\disable ))
          
          ; reset color state
-         If _this_\disable
-            If _this_\enter
-               If _this_\ColorState( ) 
+         If _this_\enter
+            If _this_\disable
+               If _this_\ColorState( ) <> #__s_0
                   _this_\ColorState( ) = #__s_0
+               EndIf
+            Else
+               If _this_\ColorState( ) <> #__s_1
+                  _this_\ColorState( ) = #__s_1
                EndIf
             EndIf
          EndIf
@@ -3979,7 +3964,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l Index( *this._s_WIDGET )
-         ProcedureReturn *this\placingindex
+         ProcedureReturn *this\index
       EndProcedure
       
       Procedure.l Level( *this._s_WIDGET )
@@ -5064,7 +5049,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         ;;;PostRepaint( *this\root )
          ProcedureReturn *this\root\repaint
       EndProcedure
       
@@ -6121,7 +6105,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             
          EndIf
          
-         ;PostRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -6604,120 +6587,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure GetLast( *this._s_WIDGET, tabindex.l )
-         Protected result, *after._s_WIDGET, *parent._s_WIDGET
-         
-         If *this\LastWidget( )
-            If *this\haschildren
-               If tabindex = - 1
-                  
-                  Protected *root._s_root
-                  If *this\root
-                     *root = *this\root
-                  Else
-                     *root = *this
-                  EndIf
-                  
-                  ;\\
-                  LastElement( widgets( ) )
-                  result = widgets( )\LastWidget( )
-                  
-                  ; get after widget
-                  If *this\AfterWidget( )
-                     *after = *this\AfterWidget( )
-                  Else
-                     *parent = *this
-                     Repeat
-                        *parent = *parent\parent
-                        If Not *parent
-                           ProcedureReturn 0
-                        EndIf
-                        If *parent\AfterWidget( )
-                           *after = *parent\AfterWidget( )
-                           Break
-                        EndIf
-                     Until is_root_( *parent )
-                  EndIf
-                  
-                  If *after
-                     PushListPosition( widgets( ) )
-                     ChangeCurrentElement( widgets( ), *after\address )
-                     While PreviousElement( widgets( ) )
-                        If widgets( )\TabIndex( ) = tabindex ;Or widgets( ) = *this
-                           Break
-                        EndIf
-                     Wend
-                     result = widgets( )\LastWidget( )
-                     PopListPosition( widgets( ) )
-                  EndIf
-               Else
-                  ;Debug ""+tabindex +" "+ *this\LastWidget( )\BeforeWidget( ) +" "+ *this\LastWidget( )\AfterWidget( )
-                  If tabindex = 0
-                     If is_root_(*this)
-                        result = *this\LastWidget( )
-                     Else
-                        result = *this 
-                     EndIf
-                  Else
-                     result = *this\LastWidget( )
-                  EndIf
-                  If tabindex >= 0 And 
-                     StartEnum( *this, tabindex )
-                     ;
-                     If widget( )\TabIndex( ) = tabindex
-                        result = widget( ) 
-                     EndIf
-                     ;
-                     StopEnum( )
-                  EndIf
-                  
-                  ;             If *this\LastWidget( )\TabIndex( ) = tabindex
-                  ;                result = *this\LastWidget( )
-                  ;             Else
-                  ;                If tabindex = 0
-                  ;                   result = *this;\parent\FirstWidget( )
-                  ;                Else
-                  ;                   Debug tabindex;*this\LastWidget( )\text\string
-                  ; result = *this\LastWidget( )
-                  ;                EndIf
-                  ;             EndIf
-                  *this = result
-                  If *this\LastWidget( )
-                     result = *this\LastWidget( )
-                  EndIf
-                  
-               EndIf
-            Else
-               result = *this\LastWidget( )
-            EndIf
-            
-            ProcedureReturn result
-         EndIf
-      EndProcedure
-      
-      Procedure GetPositionFirst( *this._s_WIDGET, tabindex.l )
-         Protected *result._s_WIDGET
-         
-         If *this\haschildren
-            PushListPosition( widgets( ) )
-            ChangeCurrentElement( widgets( ), *this\address )
-            While NextElement( widgets( ) )
-               If widgets( ) = *this\LastWidget( ) Or widgets( )\TabIndex( ) = tabindex
-                  *result = widgets( )
-                  Break
-               EndIf
-            Wend
-            PopListPosition( widgets( ) )
-         Else
-            *result = *this
-         EndIf
-         
-         ; Debug "   "+*result\class
-         
-         ProcedureReturn *result
-      EndProcedure
-      
-      Procedure GetPositionLast( *this._s_WIDGET, tabindex.l = #PB_Default )
+      Procedure   GetLast( *this._s_WIDGET, tabindex.l = #PB_Default )
          Protected *last._s_WIDGET = *this;\LastWidget( )
          If StartEnum( *this )
             *last = widgets( )
@@ -6726,24 +6596,146 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn *last
       EndProcedure
       
-      Procedure GetPositionAfter( *this._s_WIDGET, tabindex.l )
-         Protected *after._s_WIDGET = *this\LastWidget( ) 
-         Protected *last._s_WIDGET = *this\LastWidget( ) 
+      Procedure   RePosition( *this._s_WIDGET, *parent._s_WIDGET, *after._s_WIDGET )
          ;
-         If *this\haschildren
-            If *this\tabbar 
-               If tabindex >= *last\TabIndex( )
-                  *after = *last
+         If *this\parent 
+            If *this\parent\FirstWidget( ) = *this
+               *this\parent\FirstWidget( ) = *this\AfterWidget( )
+            EndIf
+            ;
+            If *this\parent\LastWidget( ) = *this
+               *this\parent\LastWidget( ) = *this\BeforeWidget( )
+            EndIf
+         Else
+            *this\LastWidget( ) = *this 
+         EndIf
+         ;
+         If *parent
+            If *parent\tabbar
+               If *this\TabIndex( ) = *parent\tabbar\countitems - 1
+                  *parent\LastWidget( ) = *this
+               EndIf
+            Else
+               *parent\LastWidget( ) = *this
+            EndIf
+            ;
+            If *this\BeforeWidget( )
+               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
+            EndIf
+            ;
+            If *this\AfterWidget( )
+               *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
+            EndIf
+            ;
+            If *after
+               If *after\parent = *parent
+                  If *after\AfterWidget( )
+                     *after\AfterWidget( )\BeforeWidget( ) = *this
+                  EndIf
+                     ;
+                  If *this <> *after
+                     *this\AfterWidget( ) = *after\AfterWidget( )
+                     *this\BeforeWidget( ) = *after
+                     *after\AfterWidget( ) = *this
+                  EndIf
                Else
-                  *after = *this
+                  *this\AfterWidget( ) = *parent\FirstWidget( )
+                  If *parent\FirstWidget( )
+                     *this\AfterWidget( )\BeforeWidget( ) = *this
+                  EndIf
                   ;
-                  If *last 
+                  *this\BeforeWidget( ) = #Null
+                  *parent\FirstWidget( ) = *this
+               EndIf
+            EndIf
+            ;
+            If *parent\FirstWidget( ) = #Null
+               *parent\FirstWidget( ) = *this
+            EndIf
+         EndIf
+         ;
+      EndProcedure   
+      
+      Procedure   ChangePosition( *this._s_WIDGET, position.l, *widget._s_WIDGET )
+         ;
+            If *this\BeforeWidget( )
+               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
+            EndIf
+            If *this\AfterWidget( )
+               *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
+            EndIf
+            If *this\parent\FirstWidget( ) = *this
+               *this\parent\FirstWidget( ) = *this\AfterWidget( )
+            EndIf
+            If *this\parent\LastWidget( ) = *this
+               *this\parent\LastWidget( ) = *this\BeforeWidget( )
+            EndIf
+            
+            ;
+            If Position = #PB_List_First Or
+               Position = #PB_List_Before
+               
+               *this\AfterWidget( )    = *widget
+               *this\BeforeWidget( )   = *widget\BeforeWidget( )
+               *widget\BeforeWidget( ) = *this
+               
+               If *this\BeforeWidget( )
+                  *this\BeforeWidget( )\AfterWidget( ) = *this
+               Else
+                  If *this\parent\FirstWidget( )
+                     *this\parent\FirstWidget( )\BeforeWidget( ) = *this
+                  EndIf
+                  *this\parent\FirstWidget( ) = *this
+               EndIf
+            EndIf
+            
+            If Position = #PB_List_Last Or
+               Position = #PB_List_After
+               
+               *this\BeforeWidget( )  = *widget
+               *this\AfterWidget( )   = *widget\AfterWidget( )
+               *widget\AfterWidget( ) = *this
+               
+               If *this\AfterWidget( )
+                  *this\AfterWidget( )\BeforeWidget( ) = *this
+               Else
+                  If *this\parent\LastWidget( )
+                     *this\parent\LastWidget( )\AfterWidget( ) = *this
+                  EndIf
+                  *this\parent\LastWidget( ) = *this
+               EndIf
+            EndIf
+            
+      EndProcedure
+      
+      Procedure.i GetPosition( *this._s_WIDGET, position.l, tabindex.l = #PB_Default )
+         If tabindex = #PB_Default
+            Select position
+               Case #PB_List_Before   : ProcedureReturn*this\BeforeWidget( )
+               Case #PB_List_After    : ProcedureReturn*this\AfterWidget( )
+            EndSelect
+            
+            If *this\parent
+               Select position
+                  Case #PB_List_First : ProcedureReturn *this\parent\FirstWidget( )
+                  Case #PB_List_Last  : ProcedureReturn*this\parent\LastWidget( )
+               EndSelect
+            EndIf
+            
+         Else
+            Protected._s_WIDGET *first, *last
+            If position = #PB_List_First
+               *first = *this\FirstWidget( ) 
+               ;
+               If *this\tabbar And *this\haschildren
+                  If *first And *first\TabIndex( ) < tabindex
                      PushListPosition( widgets( ) )
-                     ChangeCurrentElement( widgets( ), *last\address )
-                     While PreviousElement( widgets( ) )
+                     ChangeCurrentElement( widgets( ), *first\address )
+                     *first = *this
+                     While NextElement( widgets( ) )
                         If widgets( )\parent = *this 
-                           If widgets( )\TabIndex( ) = TabIndex
-                              *after = widgets( )
+                           If widgets( )\TabIndex( ) >= tabindex
+                              *first = widgets( )
                               Break
                            EndIf
                         EndIf
@@ -6751,33 +6743,114 @@ CompilerIf Not Defined( widget, #PB_Module )
                      PopListPosition( widgets( ) )
                   EndIf
                EndIf
+               ;
+               ProcedureReturn *first
             EndIf
+            
+            If position = #PB_List_Last
+               *last = *this\LastWidget( ) 
+               ;
+               If *this\tabbar 
+                  If *this\haschildren
+                     If *last And *last\TabIndex( ) > tabindex
+                        PushListPosition( widgets( ) )
+                        ChangeCurrentElement( widgets( ), *last\address )
+                        *last = *this
+                        While PreviousElement( widgets( ) )
+                           If widgets( )\parent = *this 
+                              If widgets( )\TabIndex( ) =< tabindex
+                                 *last = widgets( )
+                                 Break
+                              EndIf
+                           EndIf
+                        Wend
+                        PopListPosition( widgets( ) )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ProcedureReturn *last
          EndIf
-         ;
-         If is_root_( *after )
-            *after = *after\LastWidget( )
-         EndIf
-         ProcedureReturn *after
-      EndProcedure
-      
-      Procedure.i GetPosition( *this._s_WIDGET, position.l )
-         Protected result
-         
-         Select position
-            Case #PB_List_First
-               result = *this\parent\FirstWidget( ) ; GetPositionFirst( *this\parent, *this\TabIndex( ) )
-            Case #PB_List_Before
-               result = *this\BeforeWidget( )
-            Case #PB_List_After
-               result = *this\AfterWidget( )
-            Case #PB_List_Last
-               result = *this\parent\LastWidget( ) ; GetLast( *this\parent, *this\TabIndex( ) )
-         EndSelect
-         
-         ProcedureReturn result
       EndProcedure
       
       Procedure SetPosition( *this._s_WIDGET, position.l, *widget._s_WIDGET = #Null ) ; Ok
+         Protected *last._s_WIDGET
+         ;
+         If *widget = #Null
+            Select Position
+               Case #PB_List_Before : *widget = *this\BeforeWidget( )
+               Case #PB_List_After  : *widget = *this\AfterWidget( )
+               Case #PB_List_First 
+                  If *this\parent
+                     *widget = GetPosition( *this\parent, Position, *this\TabIndex( ) )
+                  EndIf
+               Case #PB_List_Last 
+                  If *this\parent
+                     *widget = GetPosition( *this\parent, Position, *this\TabIndex( ) )
+                  EndIf
+            EndSelect
+         EndIf
+         ;
+         If *widget
+            If is_level_( *this, *widget )
+               If Position = #PB_List_First Or
+                  Position = #PB_List_Before
+                  
+                  PushListPosition( widgets( ))
+                  ChangeCurrentElement( widgets( ), *this\address )
+                  MoveElement( widgets( ), #PB_List_Before, *widget\address )
+                  
+                  If *this\haschildren
+                     While PreviousElement( widgets( ))
+                        If IsChild( widgets( ), *this )
+                           MoveElement( widgets( ), #PB_List_After, *widget\address )
+                        EndIf
+                     Wend
+                     
+                     While NextElement( widgets( ))
+                        If IsChild( widgets( ), *this )
+                           MoveElement( widgets( ), #PB_List_Before, *widget\address )
+                        EndIf
+                     Wend
+                  EndIf
+                  PopListPosition( widgets( ))
+               EndIf
+               
+               If Position = #PB_List_Last Or
+                  Position = #PB_List_After
+                  
+                  *last = GetLast( *widget, *widget\TabIndex( ) )
+                  If *last
+                     PushListPosition( widgets( ))
+                     ChangeCurrentElement( widgets( ), *this\address )
+                     MoveElement( widgets( ), #PB_List_After, *last\address )
+                     
+                     If *this\haschildren
+                        While NextElement( widgets( ))
+                           If IsChild( widgets( ), *this )
+                              MoveElement( widgets( ), #PB_List_Before, *last\address )
+                           EndIf
+                        Wend
+                        
+                        While PreviousElement( widgets( ))
+                           If IsChild( widgets( ), *this )
+                              MoveElement( widgets( ), #PB_List_After, *this\address )
+                           EndIf
+                        Wend
+                     EndIf
+                     PopListPosition( widgets( ))
+                  EndIf
+               EndIf
+               
+               ChangePosition( *this, position, *widget )
+               ProcedureReturn #True
+            EndIf
+         EndIf
+         
+      EndProcedure
+      
+      Procedure ___SetPosition( *this._s_WIDGET, position.l, *widget._s_WIDGET = #Null ) ; Ok
          If *widget = #Null
             Select Position
                Case #PB_List_First 
@@ -6901,7 +6974,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
       EndProcedure
-      
       ;-
       Procedure.i GetParent( *this._s_WIDGET )
          ProcedureReturn *this\parent
@@ -6938,10 +7010,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             ;\\ get the last widget to add it after it
             If *parent\LastWidget( )
-               *after = GetPositionAfter( *parent, tabindex )
+               *after = GetPosition( *parent, #PB_List_Last, tabindex )
+               If *after = *this
+                  *after = *this\beforeWidget( )
+               EndIf
                ;
                If *after\parent = *parent
-                  *last = GetPositionLast( *after, tabindex )
+                  *last = GetLast( *after, tabindex )
                   
                   ;                   *last = *after 
                   ;                   If StartEnum( *after )
@@ -6950,7 +7025,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;                   EndIf
                   ;
                   If *this = *after Or IsChild( *last, *this )
-                     *last = GetPositionLast( *this\BeforeWidget( ), tabindex )
+                     *last = GetLast( *this\BeforeWidget( ), tabindex )
                      
                      ;                      *last = *this\BeforeWidget( )
                      ;                      If StartEnum( *this\BeforeWidget( ) )
@@ -7070,63 +7145,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                AddElement( widgets( ) )
                widgets( )  = *this
-               *this\placingindex     = ListIndex( widgets( ) )
+               *this\index     = ListIndex( widgets( ) )
                *this\address = @widgets( )
             EndIf
             ;
             ;\\
-            ;
-            If *this\parent 
-               If *this\parent\FirstWidget( ) = *this
-                  *this\parent\FirstWidget( ) = *this\AfterWidget( )
-               EndIf
-               ;
-               If *this\parent\LastWidget( ) = *this
-                  *this\parent\LastWidget( ) = *this\BeforeWidget( )
-               EndIf
-            Else
-               *this\LastWidget( ) = *this 
-            EndIf
-            ;
-            If *parent\tabbar
-               If *this\TabIndex( ) = *parent\tabbar\countitems - 1
-                  *parent\LastWidget( ) = *this
-               EndIf
-            Else
-               *parent\LastWidget( ) = *this
-            EndIf
-            ;
-            If *this\BeforeWidget( )
-               *this\BeforeWidget( )\AfterWidget( ) = *this\AfterWidget( )
-            EndIf
-            ;
-            If *this\AfterWidget( )
-               *this\AfterWidget( )\BeforeWidget( ) = *this\BeforeWidget( )
-            EndIf
-            ;
-            If *after
-               If *after\parent = *parent
-                  If *after\AfterWidget( )
-                     *after\AfterWidget( )\BeforeWidget( ) = *this
-                  EndIf
-                  *this\AfterWidget( ) = *after\AfterWidget( )
-                  ;
-                  *this\BeforeWidget( ) = *after
-                  *after\AfterWidget( ) = *this
-               Else
-                  *this\AfterWidget( ) = *parent\FirstWidget( )
-                  If *parent\FirstWidget( )
-                     *this\AfterWidget( )\BeforeWidget( ) = *this
-                  EndIf
-                  ;
-                  *this\BeforeWidget( ) = #Null
-                  *parent\FirstWidget( ) = *this
-               EndIf
-            EndIf
-            ;
-            If *parent\FirstWidget( ) = #Null
-               *parent\FirstWidget( ) = *this
-            EndIf
+            RePosition( *this, *parent, *after )
             ;
             ;\\
             ReParent( *this, *parent )
@@ -10309,8 +10333,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro bar_area_create( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _scrollbar_size_, _mode_ = #True )
          If Not _parent_\scroll\bars
             _parent_\scroll\bars = 1
-            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\placingindex + "]", #__type_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, ( _scrollbar_size_), _scrollbar_size_/2, _scroll_step_ )
-            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\placingindex + "]", #__type_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_),  _scrollbar_size_/2, _scroll_step_ )
+            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__bar_vertical, 0, _area_height_, _height_, ( _scrollbar_size_), _scrollbar_size_/2, _scroll_step_ )
+            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_),  _scrollbar_size_/2, _scroll_step_ )
          EndIf
       EndMacro
       
@@ -13592,7 +13616,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\LineEnteredIndex( ) = 0
          EndIf
          
-         PostRepaint( *this\root ) ;?
          ProcedureReturn 1
       EndProcedure
       
@@ -15127,7 +15150,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If *this\child
-               *this\placingindex   =- 1
+               *this\index   =- 1
                *this\address = *parent\address
                ReParent( *this, *parent )
             Else
@@ -17743,7 +17766,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            GetActive( )\haschildren 
                            ;
                            If Not GetActive( )\AfterWidget( ) 
-                              If widgets( ) = GetPositionLast( GetActive( ) )
+                              If widgets( ) = GetLast( GetActive( ) )
                                  clip_output_( GetActive( ), [#__c_draw] )
                                  draw_mode_(#PB_2DDrawing_Outlined)
                                  draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
@@ -17758,7 +17781,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               ActiveWindow( ) <> GetActive( ) 
                               ;
                               If Not ActiveWindow( )\AfterWidget( ) 
-                                 If widgets( ) = GetPositionLast( ActiveWindow( ) )
+                                 If widgets( ) = GetLast( ActiveWindow( ) )
                                     clip_output_( ActiveWindow( ), [#__c_draw] )
                                     draw_mode_(#PB_2DDrawing_Outlined)
                                     draw_focus_frame( ActiveWindow( ), $ff00ff00)
@@ -17773,7 +17796,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               ActiveGadget( ) <> GetActive( ) 
                               
                               If Not ActiveGadget( )\AfterWidget( ) 
-                                 If widgets( ) = GetPositionLast( ActiveGadget( ) )
+                                 If widgets( ) = GetLast( ActiveGadget( ) )
                                     clip_output_( ActiveGadget( ), [#__c_draw] )
                                     draw_mode_(#PB_2DDrawing_Outlined)
                                     draw_focus_frame( ActiveGadget( ), $ff00ff00)
@@ -17793,7 +17816,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
                         
                         If Not a_entered( )\AfterWidget( ) 
-                           If widgets( ) = GetPositionLast( a_entered( ) )
+                           If widgets( ) = GetLast( a_entered( ) )
                               ; Debug ""+widgets( )\parent\class +" "+ widgets( )\class +" "+ a_entered( )\class +" ("+ widgets( )\text\string +") "+ IsChild( widgets( ), a_entered( ) )
                               
                               ; If IsChild( widgets( ), a_entered( ) )
@@ -18309,7 +18332,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   If a_enter( a_entered( ), - 3 )
                      If a_entered( )
-                        If ( *this And a_entered( )\placingindex < *this\placingindex ) And 
+                        If ( *this And a_entered( )\index < *this\index ) And 
                            a_entered( ) <> a_focused( ) 
                            ;
                            a_index( ) = 0
@@ -21076,7 +21099,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   ReDraw( *this\root )
                Else
-                  PostEventRepaint( *this\root )
+                  PostReDraw( *this\root )
                EndIf
                *this\root\repaint = 0
             EndIf
@@ -21094,24 +21117,26 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure EventRepaint( )
          If EventData( )
-            PushMapPosition(roots( ))
-           ; Debug "MapKey "+MapKey(roots( ))
-            If EventData( ) <> roots( )\canvas\gadgetID
-               ChangeCurrentCanvas( EventData( ), 0 )
-               ; root( ) = roots( )
-            EndIf
-            
-            If roots( )\canvas\postrepaint = 1
-               Repost( )
-               
-               If test_draw_repaint
-                  Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+            If MapKey(roots( ))
+               PushMapPosition(roots( ))
+               ; Debug "MapKey "+MapKey(roots( ))
+               If EventData( ) <> roots( )\canvas\gadgetID
+                  ChangeCurrentCanvas( EventData( ), 0 )
+                  ; root( ) = roots( )
                EndIf
                
-               ReDraw( roots( ) )
-               roots( )\canvas\postrepaint = 0
+               If roots( )\canvas\postrepaint = 1
+                  Repost( )
+                  
+                  If test_draw_repaint
+                     Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+                  EndIf
+                  
+                  ReDraw( roots( ) )
+                  roots( )\canvas\postrepaint = 0
+               EndIf
+               PopMapPosition(roots())
             EndIf
-            PopMapPosition(roots())
          EndIf
       EndProcedure
       
@@ -21159,21 +21184,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If eventtype = #PB_EventType_Resize ;: PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                                             ;                                               Debug "resize - canvas ["+eventgadget+"]"
-            
-            ; ;               *root = root( )
-            ;PushMapPosition( roots( ) )
+            PushMapPosition( roots( ) )
             If Not ( root( ) And root( )\canvas\gadget = eventgadget )
-               ChangeCurrentCanvas( GadgetID( eventgadget ) )
+               ChangeCurrentCanvas( GadgetID( eventgadget ), 0 )
             EndIf 
-            ;If Resize( root( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )) )
-            If Resize( root( ), 0, 0, (PB(GadgetWidth)( eventgadget )), (PB(GadgetHeight)( eventgadget )) )
-               ;Debug "resize - canvas ["+eventgadget+"]"
-               ;PostEventRepaint( root( ) )
-               ReDraw( root( ) )
+            If Resize( roots( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
+               ; Debug "resize - canvas ["+eventgadget+"]"
+               ReDraw( roots( ) )
             EndIf
-            ;PopMapPosition( roots( ) )
-            ; ; ;                ;root( ) = *root
+            PopMapPosition( roots( ) )
             ProcedureReturn #PB_Event_Gadget
          EndIf
          
@@ -22292,7 +22311,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          widget( ) = *root
-         PostEventRepaint( *root )
+         ;PostReDraw( *root )
          ProcedureReturn *root
       EndProcedure
       
@@ -22653,31 +22672,114 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.i Free( *this._s_WIDGET )
          If *this
             If Not Send( *this, #__event_free )
-               ; еще не проверял
-               ;                If  *this\haseventhook
-               ;                   Define i
-               ;                   For i = 0 To #__event_free
-               ;                      If *this\eventhook[i]
-               ;                         ; Debug "free-events " + *this\eventhook[i]
-               ;                         Unbind( *this, *this\eventhook[i]\function, i, *this\eventhook[i]\item )
-               ;                      EndIf
-               ;                   Next
-               ;                EndIf
-               
-               ;\\
-               If Not *this\parent
-                  *this\parent = *this
-               EndIf
-               
-               If PopupWindow( ) = *this
-                  PopupWindow( ) = #Null
-               EndIf
-               
-               ;\\
                If Opened( ) = *this
                   OpenList( *this\parent )
                EndIf
                
+               If *this\parent
+                  If *this\parent\FirstWidget( ) = *this
+                     *this\parent\FirstWidget( ) = *this\AfterWidget( )
+                  EndIf
+                  
+                  If *this\parent\LastWidget( ) = *this
+                     *this\parent\LastWidget( ) = *this\BeforeWidget( )
+                  EndIf
+               EndIf
+               
+               ; delete all childrens
+               ;If *this\haschildren
+               LastElement(widgets( ))
+               Repeat
+                  If widgets( ) = *this Or 
+                     IsChild( widgets( ), *this )
+                     ;
+                     If widgets( )\root\haschildren > 0
+                        widgets( )\root\haschildren - 1
+                        
+                        If widgets( )\parent <> widgets( )\root
+                           widgets( )\parent\haschildren - 1
+                        EndIf
+                        
+                        If widgets( )\tabbar
+                           If widgets( )\tabbar = widgets( )
+                              Debug "   free - tab " + widgets( )\tabbar\class
+                              FreeStructure( widgets( )\tabbar )
+                              widgets( )\tabbar = 0
+                           EndIf
+                           widgets( )\tabbar = #Null
+                        EndIf
+                        
+                        If widgets( )\scroll
+                           If widgets( )\scroll\v
+                              Debug "   free - scroll-v " + widgets( )\scroll\v\class
+                              FreeStructure( widgets( )\scroll\v )
+                              widgets( )\scroll\v = 0
+                           EndIf
+                           If widgets( )\scroll\h
+                              Debug "   free scroll-h - " + widgets( )\scroll\h\class
+                              FreeStructure( widgets( )\scroll\h )
+                              widgets( )\scroll\h = 0
+                           EndIf
+                           ; widgets( )\scroll = #Null
+                        EndIf
+                        
+                        If widgets( )\type = #__type_Splitter
+                           If widgets( )\split_1( )
+                              Debug "   free - splitter - first " + widgets( )\split_1( )\class
+                              FreeStructure( widgets( )\split_1( ) )
+                              widgets( )\split_1( ) = 0
+                           EndIf
+                           If widgets( )\split_2( )
+                              Debug "   free - splitter - second " + widgets( )\split_2( )\class
+                              FreeStructure( widgets( )\split_2( ) )
+                              widgets( )\split_2( ) = 0
+                           EndIf
+                        EndIf
+                        
+                        If widgets( )\bounds\attach
+                           ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
+                           widgets( )\bounds\attach\parent = 0
+                           FreeStructure( widgets( )\bounds\attach )
+                           widgets( )\bounds\attach = #Null
+                        EndIf
+                        
+                        If PressedWidget( ) = widgets( )
+                           PressedWidget( ) = #Null
+                        EndIf
+                        If GetActive( ) = widgets( )
+                           GetActive( ) = #Null
+                        EndIf
+                        
+                        Debug " free - " + widgets( )\class
+                        If widgets( )\BeforeWidget( )
+                           widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
+                        EndIf
+                        If widgets( )\AfterWidget( )
+                           widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
+                        EndIf
+                        
+                        widgets( )\parent  = #Null
+                        widgets( )\address = #Null
+                        
+                        DeleteElement( widgets( ), 1 )
+                     EndIf
+                     
+                     If *this\root\haschildren = 0
+                        Break
+                     EndIf
+                  ElseIf PreviousElement( widgets( )) = 0
+                     Break
+                  EndIf
+               ForEver
+               ;EndIf
+               
+               ;\\
+               If PopupWindow( ) = *this
+                  PopupWindow( ) = #Null
+               EndIf
+               If PressedWidget( ) = *this
+                  PressedWidget( ) = #Null
+               EndIf
                If GetActive( ) = *this
                   If *this <> *this\parent
                      GetActive( ) = *this\parent
@@ -22686,136 +22788,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               If *this\parent\FirstWidget( ) = *this
-                  *this\parent\FirstWidget( ) = *this\AfterWidget( )
-               EndIf
                
-               If *this\parent\LastWidget( ) = *this
-                  *this\parent\LastWidget( ) = *this\BeforeWidget( )
-               EndIf
-               
-               If *this\parent\tabbar
-                  If *this\parent\tabbar = *this
-                     FreeStructure( *this\parent\tabbar )
-                     *this\parent\tabbar = 0
-                  EndIf
-                  *this\parent\tabbar = #Null
-               EndIf
-               
-               If *this\parent\scroll
-                  If *this\parent\scroll\v = *this
-                     FreeStructure( *this\parent\scroll\v )
-                     *this\parent\scroll\v = 0
-                  EndIf
-                  If *this\parent\scroll\h = *this
-                     FreeStructure( *this\parent\scroll\h )
-                     *this\parent\scroll\h = 0
-                  EndIf
-                  ; *this\parent\scroll = #Null
-               EndIf
-               
-               If *this\parent\type = #__type_Splitter
-                  If *this\parent\split_1( ) = *this
-                     FreeStructure( *this\parent\split_1( ) )
-                     *this\parent\split_1( ) = 0
-                  EndIf
-                  If *this\parent\split_2( ) = *this
-                     FreeStructure( *this\parent\split_2( ) )
-                     *this\parent\split_2( ) = 0
-                  EndIf
-               EndIf
-               
-               ;
-               If *this\parent\haschildren
-                  ; With *this\root
-                  LastElement(widgets( ))
-                  Repeat
-                     If widgets( ) = *this Or IsChild( widgets( ), *this )
-                        If widgets( )\root\haschildren > 0
-                           widgets( )\root\haschildren - 1
-                           
-                           If widgets( )\parent <> widgets( )\root
-                              widgets( )\parent\haschildren - 1
-                           EndIf
-                           
-                           If widgets( )\tabbar
-                              If widgets( )\tabbar = widgets( )
-                                 Debug "   free - tab " + widgets( )\tabbar\class
-                                 FreeStructure( widgets( )\tabbar )
-                                 widgets( )\tabbar = 0
-                              EndIf
-                              widgets( )\tabbar = #Null
-                           EndIf
-                           
-                           If widgets( )\scroll
-                              If widgets( )\scroll\v
-                                 Debug "   free - scroll-v " + widgets( )\scroll\v\class
-                                 FreeStructure( widgets( )\scroll\v )
-                                 widgets( )\scroll\v = 0
-                              EndIf
-                              If widgets( )\scroll\h
-                                 Debug "   free scroll-h - " + widgets( )\scroll\h\class
-                                 FreeStructure( widgets( )\scroll\h )
-                                 widgets( )\scroll\h = 0
-                              EndIf
-                              ; widgets( )\scroll = #Null
-                           EndIf
-                           
-                           If widgets( )\type = #__type_Splitter
-                              If widgets( )\split_1( )
-                                 Debug "   free - splitter - first " + widgets( )\split_1( )\class
-                                 FreeStructure( widgets( )\split_1( ) )
-                                 widgets( )\split_1( ) = 0
-                              EndIf
-                              If widgets( )\split_2( )
-                                 Debug "   free - splitter - second " + widgets( )\split_2( )\class
-                                 FreeStructure( widgets( )\split_2( ) )
-                                 widgets( )\split_2( ) = 0
-                              EndIf
-                           EndIf
-                           
-                           If widgets( )\bounds\attach
-                              ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
-                              widgets( )\bounds\attach\parent = 0
-                              FreeStructure( widgets( )\bounds\attach )
-                              widgets( )\bounds\attach = #Null
-                           EndIf
-                           
-                           If PressedWidget( ) = widgets( )
-                              PressedWidget( ) = #Null
-                           EndIf
-                           If GetActive( ) = widgets( )
-                              GetActive( ) = #Null
-                           EndIf
-                           
-                           Debug " free - " + widgets( )\class
-                           If widgets( )\BeforeWidget( )
-                              widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
-                           EndIf
-                           If widgets( )\AfterWidget( )
-                              widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
-                           EndIf
-                           
-                           widgets( )\parent  = #Null
-                           widgets( )\address = #Null
-                           
-                           DeleteElement( widgets( ), 1 )
-                        EndIf
-                        
-                        If *this\root\haschildren = 0
-                           Break
-                        EndIf
-                     ElseIf PreviousElement( widgets( )) = 0
-                        Break
-                     EndIf
-                  ForEver
-                  ; EndWith
-               EndIf
-               
-               ;\\
-               If PressedWidget( ) = *this
-                  PressedWidget( ) = #Null
-               EndIf
+               PostReDraw( roots( ) )
                
                ;\\
                If roots( ) = *this
@@ -22902,11 +22876,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If MapSize( roots( ) )
-            ;\\
-            ;ChangeCurrentroot( )
-            
             Repeat
-               
                Select WaitWindowEvent( waittime )
                   Case #PB_Event_CloseWindow
                      Protected window = PB(EventWindow)( )
@@ -23053,16 +23023,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Protected *message._s_WIDGET = *ew\window
                   
                   Select GetText( *ew )
-                     Case "No" : SetData( *message, #__message_No )     ; no
-                     Case "Yes" : SetData( *message, #__message_Yes )   ; yes
+                     Case "No"     : SetData( *message, #__message_No )     ; no
+                     Case "Yes"    : SetData( *message, #__message_Yes )    ; yes
                      Case "Cancel" : SetData( *message, #__message_Cancel ) ; cancel
                   EndSelect
                   
                   ;\\
+                  Unbind( *message, @MessageEvents( ), #__event_Focus )
                   Unbind( *message, @MessageEvents( ), #__event_LeftClick )
-;                   ;root( ) = *message\parent
-;                   ChangeCurrentCanvas( *message\parent\root\canvas\gadgetID )
-;                   Debug root( )\class
+                  
+                  ;\\
                   PostQuit( *message )
                EndIf
                
@@ -23071,7 +23041,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
-      Procedure Message( Title.s, Text.s, flag.q = #Null )
+      Procedure Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
          If __gui\eventloop > 3
             ProcedureReturn 0
          EndIf
@@ -23116,7 +23086,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If constants::BinaryFlag( Flag, #__message_Info )
-            img = -1;CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
+            img = CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'APPL'")
                ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'caut'")
@@ -23124,8 +23094,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'stop'")
             CompilerEndIf
             DataSection
-               img_info:
-               ; size : 1404 bytes
+               img_info: ; size : 1404 bytes
                Data.q $0A1A0A0D474E5089, $524448490D000000, $2800000028000000, $B8FE8C0000000608, $474B62060000006D
                Data.q $A0FF00FF00FF0044, $493105000093A7BD, $5F98CD8558544144, $3B3BBFC71C47144C, $54C0F03D7F7BB707
                Data.q $14DA0D5AD0348C10, $7C1A6360A90B6D6D, $6D03CAADF49898D3, $D1A87D7AD262545F, $B69B5F469AA9349A
@@ -23135,7 +23104,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Data.q $4D30000CA9417358, $1A3033484098DD06, $2C671601A343EB08, $EDD3F547A138B820, $DAFB560A82C89ABE
                Data.q $2E1D2C863E5562A8, $3CD50AAB359173CC, $8D8C00262FCE6397, $83FB0DA43FD7D187, $DDAAFF5D74F85C02
                Data.q $B3A477582D666357, $45754E5D9B42C73C, $16732AAEDD894565, $41FBABA3A6B0899B, $3FAB16311F45A424
-               Data.q $8FDB82C66F4B707F, $1595D6EF9001DD5F, $69B32B24BD2B2529, $EA0DEEB7E6181FDC, $9D9F369A5BB6326
+               Data.q $8FDB82C66F4B707F, $1595D6EF9001DD5F, $69B32B24BD2B2529, $EA0DEEB7E6181FDC, $9D9F369A5BBB6326
                Data.q $A94FBDAEC7BBE0B7, $A732EAE5951BF5F4, $5C114204D2DD216D, $6B9C344C651BD9B9, $5F8FDB82CE66FAAA
                Data.q $5F57EDFEF90841DD, $8469F486ECB61D52, $C2634777AE971D35, $2A9E9FF5E072D5DC, $8DE85A9CB3A47758
                Data.q $4DCF559EDB963737, $0D1DD74741182C67, $C9DDD550E5F86C71, $E68DAFB555E65365, $79E522B2BAF36858
@@ -23169,8 +23138,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             img = CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
             
             DataSection
-               img_error:
-               ; size : 1642 bytes
+               img_error: ; size : 1642 bytes
                Data.q $0A1A0A0D474E5089, $524448490D000000, $3000000030000000, $F902570000000608, $474B620600000087
                Data.q $A0FF00FF00FF0044, $491F06000093A7BD, $41D9ED8168544144, $CCEFF1C71DC7546C, $F6A06C4218C6ED7A
                Data.q $E448A410E515497A, $2070C40BB121A4E0, $46DC512B241A4E54, $124BD29004AB2039, $5150F4DA060B2630
@@ -23213,8 +23181,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                Data.q $DDC7F71DC8CBF889, $35C804BCEC3342D1, $388C1EF7C0FABD81, $AA70FBA106B9CB35, $887D7214F8B2AA07
                Data.q $FB5D3D9D6F3A4E8B, $B6859B67A164B9D9, $FEEC7FED695A16D0, $00006B709A860323, $42AE444E45490000
                Data.b $60, $82
-               
-               
                end_img_error:
             EndDataSection
          EndIf
@@ -23222,8 +23188,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             img = CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
             
             DataSection
-               img_warning:
-               ; size : 1015 bytes
+               img_warning: ; size : 1015 bytes
                Data.q $0A1A0A0D474E5089, $524448490D000000, $2800000028000000, $B8FE8C0000000608, $474B62060000006D
                Data.q $A0FF00FF00FF0044, $49AC03000093A7BD, $DD98ED8558544144, $67339F8718551C6B, $6BA934DBB3B3B267
                Data.q $60255624DDDB3493, $785E2A42F0458295, $068C4AF69BDA17E3, $030B4150FDBB362A, $D9AC514B49409622
@@ -23258,9 +23223,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
          SetClass( widget( ), "message_CONT" )
-         Image( f2, f2, iw, iw, img, #PB_Image_Border | #__image_center )
+         Image( f2, f2, iw, iw, img, #__image_center | #__flag_transparent | #__flag_borderflat )
          SetClass( widget( ), "message_IMG" )
-         Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_Textcenter | #__flag_Textleft )
+         Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_Textcenter | #__flag_Textleft | #__flag_transparent );| #__flag_borderless )
          SetClass( widget( ), "message_TXT" )
          CloseList( )
          
@@ -23287,11 +23252,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If Disable( *parent, 1 )
-           PostRepaint( *parent )
+           PostReDraw( *parent )
          EndIf
         
          ;ReDraw( *message )
-         PostRepaint( *message )
+         PostReDraw( *message )
          ;\\
          WaitQuit( *message )
          
@@ -23302,7 +23267,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          FreeImage( img )
          Sticky( *message, #False )
          result = GetData( *message )
-         
          ;\\ close
          Close( *message )
          If IsWindow(*message\canvas\window)
@@ -23314,7 +23278,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ChangeCurrentCanvas( canvasID )
          
          If Disable( root( ), 0 )
-         ;  PostRepaint( root( ) )
+            ReDraw( root( ) )
          EndIf
         
          ;\\
@@ -24170,9 +24134,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23316
-; FirstLine = 23100
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------87b-------------------------------47---------
+; CursorPosition = 6736
+; FirstLine = 6610
+; Folding = +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fXf8-------0---v-----------------f2---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -2,9 +2,7 @@
 IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
-Macro Message( title, Text, flag=0, parentID=0 )
-   MessageRequester( title, Text, flag, parentID )
-EndMacro
+;Macro Message( title, Text, flag=0, parentID=0 ) : MessageRequester( title, Text, flag, parentID ) : EndMacro
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -90,8 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 36
+; CursorPosition = 15
+; FirstLine = 6
 ; Folding = --
 ; EnableXP
 ; DPIAware

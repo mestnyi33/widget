@@ -20,166 +20,104 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   Procedure Last( *parent._s_WIDGET, tabindex )
-      Define._s_WIDGET *last, *after
-      
-      *after = GetPositionAfter( *parent, tabindex )
-      ;*last = GetPositionLast( *after, tabindex )
-      
-      If *after\parent <> *parent ;And *after\LastWidget( )\AddedTabIndex( ) > tabindex
-         *last = *after
-      Else
-         *last = GetPositionLast( *after, tabindex )
-      EndIf
-      
-      ;       Debug "*this - "+*CHILD+" before "+ *CHILD\BeforeWidget( ) +" after "+ *CHILD\AfterWidget( )
-      ;       Debug "*after - "+*after+" before "+ *after\BeforeWidget( ) +" after "+ *after\AfterWidget( )
-      ;       Debug "*last - "+*last+" before "+ *last\BeforeWidget( ) +" after "+ *last\AfterWidget( )
-      Debug "     *after "+ *after\class +" - "+ *last\class +" *last"
-   EndProcedure
-   
-   Procedure Show_DEBUG( )
-      Define line.s
-      ;\\
-      Debug "---->>"
-      ForEach widgets( )
-         ;Debug widgets( )\class
-         line = "  "
-         
-         If widgets( )\beforeWidget( )
-            line + widgets( )\beforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
-         Else
-            line + "-------- <<  " 
-         EndIf
-         
-         line + widgets( )\class ; widgets( )\text\string
-         
-         If widgets( )\afterWidget( )
-            line +"  >> "+ widgets( )\afterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
-         Else
-            line + "  >> --------" 
-         EndIf
-         
-         Debug line
-      Next
-      Debug "<<----"
-   EndProcedure
-   
-   Procedure OpenGadget( X,Y,Width,Height )
+   Procedure OpenGadget( X,Y,Width,Height, Text.s )
       Protected *PARENT 
-      ;*PARENT = Panel( x,y,width,height*2 ) : AddItem(*PARENT, - 1, "item_0" )
       *PARENT = Container( X,Y,Width,Height ) 
+      SetClass(*PARENT, Text )
+      SetText(*PARENT, Text )
       ProcedureReturn *PARENT
    EndProcedure
    
-   
-   
-   Macro StartEnum2( _parent_, _item_ = #PB_All )
-         Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
-         PushListPosition( widgets( ) )
-         ;
-         If _parent_\FirstWidget( )\address
-            ChangeCurrentElement( widgets( ), _parent_\FirstWidget( )\address )
-         Else
-            ResetList( widgets( ) )
-         EndIf
-         ;
-;          ;\\
-;          If _item_ > 0
-;             Repeat
-;                If widgets( ) = _parent_\AfterWidget( ) 
-;                   Break
-;                EndIf
-;                If widgets( )\root <> _parent_\root
-;                   Break    
-;                EndIf
-;                If widgets( )\parent = _parent_  
-;                   If widgets( )\TabIndex( ) = _item_
-;                      Break
-;                   EndIf
-;                EndIf
-;             Until Not NextElement( widgets( ) ) 
-;          EndIf
-;          ;
-         ;\\
-         If widgets( )\parent = _parent_
-            Repeat
-               If widgets( ) = _parent_\AfterWidget( ) 
-                  Debug 666
-                  Break
-               EndIf
-               If widgets( )\root <> _parent_\root
-                  Debug 777
-                  Break    
-               EndIf
-               
-               If  widgets( )\level < _parent_\level
-                  Debug 111
-                  Break
-               EndIf
-               
-               If _item_ >= 0 And 
-                  widgets( )\parent = _parent_ And 
-                  _item_ <> widgets( )\TabIndex( )
-                  Debug 888
-                  Break
-               EndIf
-               ;
-               widget( ) = widgets( )
-            EndMacro
-            ;
-            Macro AbortEnumerate2( )
-               Break
-            EndMacro
-            ;
-            Macro StopEnum2( )
-            Until Not NextElement( widgets( ) )
-         EndIf
-         PopListPosition( widgets( ) )
-      EndMacro
-      
-   If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      OpenGadget(10,10,160,30) : SetClass(widget(), "(Window)")
-      Button(5,5,70,30,"Button1") : SetClass(widget(), "(w>0)")  
-;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(w>1)")  
-;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(w>2)")  
-      
-      *PARENT = OpenGadget(10,10,160,30) : SetClass(widget(), "(ScrollArea)")
-      Button(5,5,70,30,"Button1") : SetClass(widget(), "(s>0)")  
-;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(s>1)")  
-;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(s>2)")  
+   If Open(10, 0, 0, 260, 270, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+      *PARENT = Panel(10,10,240,160)  : SetClass(*PARENT, "PANEL") 
+      AddItem(*PARENT, -1, "item (0)")
+      ;              ;
+      ;              OpenGadget(10,20,220,80, "(Panel(0))")
+      ;              OpenGadget(10,20,220,80, "((0>))")
+      ;              OpenGadget(10,20,220,80, "((0>>))") : CloseList( )
+      ;              CloseList( )
+      ;              CloseList( )
+      ;              ;
+      AddItem(*PARENT, -1, "item (1)")
+      ;       ;
+      ;       OpenGadget(10,20,220,80, "(Panel(1))")
+      ;       OpenGadget(10,20,220,80, "((1>))")
+      ;       OpenGadget(10,20,220,80, "((1>>))") : CloseList( )
+      ;       CloseList( )
+      ;       CloseList( )
+      ;       ;
+      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = Button(20,90,220,60,"(Panel(2))") : SetClass(*PARENT_2, GetText(*PARENT_2)) 
+                                       ;
+      OpenGadget(10,20,220,80, "(Panel(2))")
+      OpenGadget(10,20,220,80, "((2>))")
+      OpenGadget(10,20,220,80, "((2>>))") : CloseList( )
+      CloseList( )
       CloseList( )
       
       CloseList()
       
-      Button(5,5,70,30,"Button1") : SetClass(widget(), "(r>0)")  
-;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(r>1)")  
-;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(r>2)")  
-;       ;  
+      ;
+      Debug ">"
+      OpenList( *PARENT, 0 )
+      OpenGadget(10,20,220,80, "(Panel(0))")
+      OpenGadget(10,20,220,80, "((0>))")
+      OpenGadget(10,20,220,80, "((0>>))") : CloseList( )
+      CloseList( )
+      CloseList( )
+      CloseList( )
+      Debug "<"
+      
+      ;\\
+      *CHILD = OpenGadget(10,180,240,80, "CHILD") 
+      OpenGadget(10,20,240,80, "(CH>)") 
+      OpenGadget(10,20,240,80, "(CH>>)") 
+      Button(5,20,60,20,"(CH>>>0)") : SetClass(widget(), "(CH>>>0)")  
+      Button(70,20,60,20,"(CH>>>1)") : SetClass(widget(), "(CH>>>1)")  
+      Button(135,20,60,20,"(CH>>>2)") : SetClass(widget(), "(CH>>>2)")  
+      CloseList( )
+      CloseList( )
+      CloseList( )
+      ;  
       
       
       Debug "--- enumerate all gadgets ---"
       If StartEnum( root( ) )
          If Not is_window_( widget(  ) )
-         Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
-      EndIf
+            Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         EndIf
          StopEnum( )
       EndIf
       
-      Debug "--- enumerate2 all gadgets PANEL ---"
-      If StartEnum2( *PARENT )
-         Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
-         StopEnum2( )
+      Debug "--- enumerate all gadgets PANEL ---"
+      If StartEnum( *PARENT )
+         Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         StopEnum( )
       EndIf
       
-      Show_DEBUG()
+      Debug "--- enumerate all (item 0) PANEL ---"
+      If StartEnum( *PARENT, 0 )
+         Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         StopEnum( )
+      EndIf
+      
+      Debug "--- enumerate all (item 1) PANEL ---"
+      If StartEnum( *PARENT, 1 )
+         Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         StopEnum( )
+      EndIf
+      
+      Debug "--- enumerate all (item 2) PANEL ---"
+      If StartEnum( *PARENT, 2 )
+         Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         StopEnum( )
+      EndIf
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 29
-; Folding = ---
+; CursorPosition = 85
+; FirstLine = 87
+; Folding = --
 ; EnableXP
 ; DPIAware

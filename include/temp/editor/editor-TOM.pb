@@ -1314,11 +1314,11 @@ If OpenWindow(0, 200, 200, 600, 400, "TOM Example")
   
   AddGadgetItem(EGadget, -1, "This is a sample text.")
 
-  ; Apply styles (bold, italic, underline, size: 15, position on line: 4, Times font) to characters from 10 to 15
-  TOM_SetFontStyles(EGadget, 10, 16, "Size(15), Bold, Italic, Underline(), Name(Times), position(4)")
-  ;
   ; Apply Wave underline to characters from 0 to 4
   TOM_SetFontStyles(EGadget, 0, 5, "Underline(Wave)")
+  ;
+  ; Apply styles (bold, italic, underline, size: 15, position on line: 4, Times font) to characters from 10 to 15
+  TOM_SetFontStyles(EGadget, 10, 16, "Size(15), Bold, Italic, Underline(), Name(Times), position(4)")
   ;
   ; Center first line:
   TOM_SetParaStyles(EGadget, 10, 16, "Align(Center)")
@@ -1382,7 +1382,8 @@ DataSection
 EndDataSection
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 1323
+; FirstLine = 1306
 ; Folding = -------------------------
 ; EnableXP
 ; DPIAware

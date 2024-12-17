@@ -59,14 +59,24 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
+   Procedure buttonEvent( )
+      If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+         Close( #PB_All )
+      EndIf
+   EndProcedure
+   
    ;\\
-   Open(0, 400, 200, 300, 200, "window_0", #PB_Window_SystemMenu |
+   Open(0, 400, 200, 510, 200, "window_0", #PB_Window_SystemMenu |
                                            #PB_Window_SizeGadget |
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
    
-   SetClass(Root( ), "root_0" )
-   Define window = Window(10,10,300-20-8,200-20-32,"window_0", #PB_Window_SystemMenu |
+   SetClass(root( ), "root_0" )
+   ButtonGadget(1, 10,10,200,50, "Button_2_close")
+   BindGadgetEvent(1, @buttonEvent( ))
+   
+   
+   Define window = Window(220,10,300-20-8,200-20-32,"window_0", #PB_Window_SystemMenu |
                                            #PB_Window_SizeGadget |
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
@@ -74,15 +84,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define gadget = Button(10,10,200,50,"Button_0_close")
    SetClass(widget( ), "Button_0_close" )
-   
-   Procedure buttonEvent( )
-      If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-         Close( #PB_All )
-      EndIf
-   EndProcedure
-   ButtonGadget(1, 10,70,200,50, "Button_2_close")
-   BindGadgetEvent(1, @buttonEvent( ))
-   
    
    
    Bind(#PB_All, @root_CallBack())
@@ -97,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 17
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = --
 ; EnableXP

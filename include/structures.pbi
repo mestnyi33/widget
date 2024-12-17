@@ -613,7 +613,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ; placing layout
          ;place\index
-         placingindex.i  ; z-oreder position
+         ;placingindex.i  ; z-oreder position
          *afterroot._s_ROOT
          *beforeroot._s_ROOT
          *lastroot._s_ROOT
@@ -786,9 +786,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 325
-; FirstLine = 319
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 615
+; FirstLine = 597
 ; Folding = ----------
-; EnableXP
 ; Optimizer
+; EnableXP

@@ -31,9 +31,9 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    Debug "--- enumerate all widgets ---"
    If StartEnum( root( ) )
       If is_window_( widget( ) )
-         Debug "     window "+ widget( )\index
+         Debug "     window "+ Index( widget( ) )
       Else
-         Debug "       gadget - "+ widget( )\index
+         Debug "       gadget - "+ Index( widget( ) )
       EndIf
       StopEnum( )
    EndIf
@@ -41,7 +41,7 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    Debug "--- enumerate all gadgets ---"
    If StartEnum( root( ) )
       If Not is_window_( widget(  ) )
-         Debug "     gadget - "+widget(  )\index
+         Debug "     gadget - "+Index( widget( ) )
       EndIf
       StopEnum( )
    EndIf
@@ -49,27 +49,27 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    Debug "--- enumerate all windows ---"
    If StartEnum( root( ) )
       If is_window_( widget(  ) )
-         Debug "     window " + widget(  )\index
+         Debug "     window " + Index( widget( ) )
       EndIf
       StopEnum( )
    EndIf
    
-   Define index = 12
-   *parent = ID( index )
+   Define Index = 12
+   *parent = ID( Index )
    
-   Debug "--- enumerate all (window="+ Str(index) +") gadgets ---"
+   Debug "--- enumerate all (window="+ Str(Index) +") gadgets ---"
    If StartEnum( *parent )
-      Debug "     gadget - "+ widget(  )\index
+      Debug "     gadget - "+ Index( widget( ) )
       StopEnum( )
    EndIf
    
-   index = 13
-   *parent = ID( index )
+   Index = 13
+   *parent = ID( Index )
    Define item = 1
    
-   Debug "--- enumerate all (gadget="+ Str(index) +") (item="+Str(item)+") gadgets ---"
+   Debug "--- enumerate all (gadget="+ Str(Index) +") (item="+Str(item)+") gadgets ---"
    If StartEnum( *parent, item )
-      Debug "     gadget - "+ widget(  )\index
+      Debug "     gadget - "+ Index( widget( ) )
       StopEnum( )
    EndIf
    
@@ -77,8 +77,8 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 53
+; CursorPosition = 35
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware

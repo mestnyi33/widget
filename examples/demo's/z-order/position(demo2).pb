@@ -157,9 +157,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Static before
     
     Select WidgetEvent( )
-      Case #PB_EventType_LeftButtonDown 
-        after = GetPosition(eventwidget( ), #PB_List_After)
-        before = GetPosition(eventwidget( ), #PB_List_Before)
+      Case #__Event_LeftDown 
+        after = GetPosition(EventWidget( ), #PB_List_After)
+        before = GetPosition(EventWidget( ), #PB_List_Before)
         
         If after
           Debug "After - "+GetClass(after)
@@ -168,15 +168,15 @@ CompilerIf #PB_Compiler_IsMainFile
           Debug "Before - "+GetClass(before)
         EndIf
         
-        _SetPosition(eventwidget( ), #PB_List_First)
+        _SetPosition(EventWidget( ), #PB_List_First)
         
 ;         Debug ">>"
 ;         ForEach widget()
 ;           Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
 ;         Next
         
-      Case #PB_EventType_LeftButtonUp
-        _SetPosition(eventwidget( ), #PB_List_After)
+      Case #__Event_LeftUp
+        _SetPosition(EventWidget( ), #PB_List_After)
         
         If after 
           Debug "<<"
@@ -198,11 +198,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ first container
     Container(55, 95, 30, 45)                     ; Gadget(9,   
-    SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
+    SetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     SetClass(widget(), "first_0")
     
     Container(3, 20, 24-4, 25+6)   
-    SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
+    SetColor(widget(), #PB_Gadget_BackColor, $00ffff)
     SetClass(widget(), "first_1")
     
 ;     Container(3, 4, 17-8, 25+6)   
@@ -223,17 +223,17 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ current container
     *this = Container(10, 50, 60, 80)              ; Gadget(10, 
-    SEtColor(widget(), #PB_Gadget_BackColor, $ffff00)
+    SetColor(widget(), #PB_Gadget_BackColor, $ffff00)
     SetClass(widget(), "this_container")
     
     Container(10, 4, 60, 74-4)   
-    SEtColor(widget(), #PB_Gadget_BackColor, $ffff00)
+    SetColor(widget(), #PB_Gadget_BackColor, $ffff00)
     Button(10, 4, 60, 68-8, "5", #__flag_TextLeft) : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     CloseList()
-    Bind(*this, @this_events(), #PB_EventType_LeftButtonDown)
-    Bind(*this, @this_events(), #PB_EventType_LeftButtonUp)
+    Bind(*this, @this_events(), #__Event_LeftDown)
+    Bind(*this, @this_events(), #__Event_LeftUp)
     ;}
     
     Button(55, 70, 90, 25, "6",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(4, 
@@ -242,7 +242,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ last container
     *c0 = Panel(35, 10, 50, 73) : SetClass(widget(), "last_0")                           ; Gadget(1,
-    SEtColor(widget(), #PB_Gadget_BackColor, $ffff00ff)
+    SetColor(widget(), #PB_Gadget_BackColor, $ffff00ff)
     
     AddItem(*c0, -1, "1")
     Button( 5,  5, 50, 30,"101") : SetClass(widget(), GetText(widget()))  
@@ -333,8 +333,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 48
+; CursorPosition = 235
+; FirstLine = 77
 ; Folding = 0--
 ; Optimizer
 ; EnableXP

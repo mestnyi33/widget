@@ -20,24 +20,6 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   Procedure Last( *parent._s_WIDGET, tabindex )
-      Define._s_WIDGET *last, *after
-      
-      *after = GetPositionAfter( *parent, tabindex )
-      ;*last = GetPositionLast( *after, tabindex )
-      
-      If *after\parent <> *parent ;And *after\LastWidget( )\AddedTabIndex( ) > tabindex
-         *last = *after
-      Else
-         *last = GetPositionLast( *after, tabindex )
-      EndIf
-      
-;       Debug "*this - "+*CHILD+" before "+ *CHILD\BeforeWidget( ) +" after "+ *CHILD\AfterWidget( )
-;       Debug "*after - "+*after+" before "+ *after\BeforeWidget( ) +" after "+ *after\AfterWidget( )
-;       Debug "*last - "+*last+" before "+ *last\BeforeWidget( ) +" after "+ *last\AfterWidget( )
-       Debug "     *after "+ *after\class +" - "+ *last\class +" *last"
-   EndProcedure
-   
    Procedure Show_DEBUG( )
       Define line.s
       ;\\
@@ -65,36 +47,37 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "<<----"
    EndProcedure
    
-   Procedure OpenGadget( X,Y,Width,Height )
+   Procedure OpenGadget( X,Y,Width,Height, Text.s )
       Protected *PARENT 
-      ;*PARENT = Panel( x,y,width,height*2 ) : AddItem(*PARENT, - 1, "item_0" )
       *PARENT = Container( X,Y,Width,Height ) 
+      SetClass(*PARENT, Text )
+      SetText(*PARENT, Text )
       ProcedureReturn *PARENT
    EndProcedure
    
-   If Open(10, 0, 0, 220, 620, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      *PARENT = Panel(10,145,200,160)  : SetClass(*PARENT, "PANEL") 
+   If Open(10, 0, 0, 260, 270, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+      *PARENT = Panel(10,10,240,160)  : SetClass(*PARENT, "PANEL") 
       AddItem(*PARENT, -1, "item (0)")
       ;              ;
-      ;              OpenGadget(10,90,160,30) : SetClass(widget(), "(Panel(0))")
-      ;              OpenGadget(10,90,160,30) : SetClass(widget(), "((0>))")
-      ;              OpenGadget(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
+      ;              OpenGadget(10,20,220,80, "(Panel(0))")
+      ;              OpenGadget(10,20,220,80, "((0>))")
+      ;              OpenGadget(10,20,220,80, "((0>>))") : CloseList( )
       ;              CloseList( )
       ;              CloseList( )
       ;              ;
       AddItem(*PARENT, -1, "item (1)")
-      ;
-      OpenGadget(10,90,160,30) : SetClass(widget(), "(Panel(1))")
-      OpenGadget(10,90,160,30) : SetClass(widget(), "((1>))")
-      OpenGadget(10,90,160,30) : SetClass(widget(), "((1>>))") : CloseList( )
-      CloseList( )
-      CloseList( )
-      ;
-      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = Button(20,90,160,30,"(Panel(2))") : SetClass(*PARENT_2, GetText(*PARENT_2)) 
-                                      ;
-      OpenGadget(10,90,160,30) : SetClass(widget(), "(Panel(2))")
-      OpenGadget(10,90,160,30) : SetClass(widget(), "((2>))")
-      OpenGadget(10,90,160,30) : SetClass(widget(), "((2>>))") : CloseList( )
+      ;       ;
+      ;       OpenGadget(10,20,220,80, "(Panel(1))")
+      ;       OpenGadget(10,20,220,80, "((1>))")
+      ;       OpenGadget(10,20,220,80, "((1>>))") : CloseList( )
+      ;       CloseList( )
+      ;       CloseList( )
+      ;       ;
+      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = Button(20,90,220,60,"(Panel(2))") : SetClass(*PARENT_2, GetText(*PARENT_2)) 
+                                       ;
+      OpenGadget(10,20,220,80, "(Panel(2))")
+      OpenGadget(10,20,220,80, "((2>))")
+      OpenGadget(10,20,220,80, "((2>>))") : CloseList( )
       CloseList( )
       CloseList( )
       
@@ -103,47 +86,47 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       Debug ">"
       OpenList( *PARENT, 0 )
-      OpenGadget(10,90,160,30) : SetClass(widget(), "(Panel(0))")
-      OpenGadget(10,90,160,30) : SetClass(widget(), "((0>))")
-      OpenGadget(10,90,160,30) : SetClass(widget(), "((0>>))") : CloseList( )
+      OpenGadget(10,20,220,80, "(Panel(0))")
+      OpenGadget(10,20,220,80, "((0>))")
+      OpenGadget(10,20,220,80, "((0>>))") : CloseList( )
       CloseList( )
       CloseList( )
       CloseList( )
       Debug "<"
       
-      *CHILD = OpenGadget(10,10,160,70) : SetClass(*CHILD, "CHILD") 
-      OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>)") 
-      OpenGadget(10,10,160,70) : SetClass(widget(), "(CH>>)") 
-      Button(5,5,70,30,"Button1") : SetClass(widget(), "(CH>>>0)")  
-      ;       Button(15,15,70,30,"Button2") : SetClass(widget(), "(CH>>>1)")  
-      ;       Button(25,25,70,30,"Button3") : SetClass(widget(), "(CH>>>2)")  
+      ;\\
+      *CHILD = OpenGadget(10,180,240,80, "CHILD") 
+      OpenGadget(10,20,240,80, "(CH>)") 
+      OpenGadget(10,20,240,80, "(CH>>)") 
+      Button(5,20,60,20,"(CH>>>0)") : SetClass(widget(), "(CH>>>0)")  
+;       Button(70,20,60,20,"(CH>>>1)") : SetClass(widget(), "(CH>>>1)")  
+;       Button(135,20,60,20,"(CH>>>2)") : SetClass(widget(), "(CH>>>2)")  
       CloseList( )
       CloseList( )
       CloseList( )
-      ;  
+      
+;       ;  
+;        Show_DEBUG()
+;        
+;        SetParent(*CHILD, *PARENT, 0) : Show_DEBUG()
+;        
+;        SetParent(*CHILD, *PARENT, 1) : Show_DEBUG()
+;        
+;        SetParent(*CHILD, *PARENT, 2) : Show_DEBUG()
+;        
+;        SetParent(*CHILD, *PARENT, 1) : Show_DEBUG()
+;        
+;        SetParent(*CHILD, *PARENT, 0) : Show_DEBUG()
+;        
+;        SetParent(*CHILD, root( )) : Show_DEBUG()
       
       
-      Show_DEBUG()
       
+;      
+      ; test - 1 bug - fixed
       SetParent(*CHILD, *PARENT, 0) : Show_DEBUG()
-      
       SetParent(*CHILD, *PARENT, 1) : Show_DEBUG()
-      
-      SetParent(*CHILD, *PARENT, 2) : Show_DEBUG()
-      
-      SetParent(*CHILD, *PARENT, 1) : Show_DEBUG()
-      
       SetParent(*CHILD, *PARENT, 0) : Show_DEBUG()
-      
-      SetParent(*CHILD, root( )) : Show_DEBUG()
-      
-      
-      
-     
-;       ; test - 1 bug - fixed
-;       SetParent(*CHILD, *PARENT, 0) : Show_DEBUG()
-;       SetParent(*CHILD, *PARENT, 1) : Show_DEBUG()
-;       SetParent(*CHILD, *PARENT, 0) : Show_DEBUG()
 ;     
 ;       ; test - 2 good
 ;       SetParent(*CHILD, *PARENT, 0) : Show_DEBUG()
@@ -151,15 +134,57 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       SetParent(*CHILD, *PARENT, 2) : Show_DEBUG()
 ;       SetParent(*CHILD, *PARENT, 0) : Show_DEBUG()
 ;     
-;       ; test - 3 bug
+;       ; test - 3 bug - fixed
 ;       SetParent(*CHILD, *PARENT, 2) : Show_DEBUG()
 ;       SetParent(*CHILD, root( )) : Show_DEBUG()
+       Define  item = 1
+      Define *last._s_WIDGET = GetLast( *PARENT, 1 )
+      Debug "   GetLast --- "+ *last\class
+      *last._s_WIDGET = GetPosition( *PARENT, #PB_List_Last, item )
+      Debug "   GetPositionLast         --- "+ *last\class
+      
+               
+       
+       
+       
+      Debug "--- enumerate all gadgets ---"
+      If StartEnum( root( ) )
+         If Not is_window_( widget(  ) )
+            Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         EndIf
+         StopEnum( )
+      EndIf
+      
+      Debug "--- enumerate all gadgets PANEL ---"
+      If StartEnum( *PARENT )
+         Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         StopEnum( )
+      EndIf
+      
+      Debug "--- enumerate all (item 0) PANEL ---"
+      If StartEnum( *PARENT, 0 )
+         Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         StopEnum( )
+      EndIf
+      
+      Debug "--- enumerate all (item 1) PANEL ---"
+      If StartEnum( *PARENT, 1 )
+         Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         StopEnum( )
+      EndIf
+      
+      Debug "--- enumerate all (item 2) PANEL ---"
+      If StartEnum( *PARENT, 2 )
+         Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+         StopEnum( )
+      EndIf
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
-; Folding = --
+; CursorPosition = 128
+; FirstLine = 119
+; Folding = ---
 ; EnableXP
 ; DPIAware

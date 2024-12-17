@@ -52,13 +52,15 @@ CompilerIf #PB_Compiler_IsMainFile
          Debug "       gadget - "+ widget()\class
          StopEnum( )
       EndIf
+      
+      ;ReDraw( roots() )
    Next
-   
    
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 52
+; CursorPosition = 54
 ; FirstLine = 30
 ; Folding = -
 ; EnableXP
+; DPIAware
