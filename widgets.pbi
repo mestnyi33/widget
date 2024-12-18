@@ -236,11 +236,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             PB(ResizeGadget)(_event_gadget_,_x_,_y_,_width_,_height_)
             ;
             If PB(GadgetType)(_event_gadget_) = #PB_GadgetType_Canvas
-               ; PushMapPosition( roots( ) )
-               If widget::ChangeCurrentCanvas( GadgetID( _event_gadget_ ) )
-                  widget::Resize( widget::root( ), 0, 0, _width_, _height_)
+               PushMapPosition( roots( ) )
+               If widget::ChangeCurrentCanvas( GadgetID( _event_gadget_ ), 0 )
+                  widget::Resize( widget::roots( ), 0, 0, _width_, _height_)
                EndIf
-               ; PopMapPosition( roots( ) )
+               PopMapPosition( roots( ) )
             EndIf
          EndMacro
       CompilerEndIf
@@ -22675,12 +22675,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               
-               PostReDraw( roots( ) )
+               ;
+               PostReDraw( *this\root )
                
                ;\\
-               If roots( ) = *this
-                  roots( )\address = #Null
+               If is_root_( *this )
                   DeleteMapElement( roots( ) )
                   ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
                   ; ResetMap( roots( ) )
@@ -22755,11 +22754,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *root
             mainWindow = *root\canvas\window
          EndIf
-         
-;          ;\\ send posted events
-;          If Not Repost( )
-;             ReDraw( root( ) )
-;          EndIf
          
          ;\\
          If MapSize( roots( ) )
@@ -24021,8 +24015,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6727
-; FirstLine = 6616
+; CursorPosition = 22683
+; FirstLine = 22469
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d0t-------4----+-----------------V----------
 ; Optimizer
 ; EnableXP
