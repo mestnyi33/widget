@@ -5,6 +5,8 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   test_draw_repaint = 1
+   ;test_startdrawing = 1
    
    ;\\
    Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
@@ -43,23 +45,24 @@ CompilerIf #PB_Compiler_IsMainFile
    SetClass(widget( ), "window_2_root_butt_2" )
    
    
-   
-   ;\\
-   Debug "--- enumerate all widgets ---"
-   ForEach roots( )
-      Debug "     window "+ roots( )\class
-      If StartEnum( roots( ) )
-         Debug "       gadget - "+ widget()\class
-         StopEnum( )
-      EndIf
-      
-      ;ReDraw( roots() )
-   Next
-   
+;    
+;    ;\\
+;    Debug "--- enumerate all widgets ---"
+    ForEach roots( )
+;       Debug "     window "+ roots( )\class
+; ;       If StartEnum( roots( ) )
+; ;          Debug "       gadget - "+ widget()\class
+; ;          StopEnum( )
+; ;       EndIf
+;       
+;       ;ReDraw( roots() )
+    Next
+   ; Debug roots()
+    
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 54
+; CursorPosition = 59
 ; FirstLine = 30
 ; Folding = -
 ; EnableXP

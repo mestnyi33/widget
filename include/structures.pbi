@@ -723,11 +723,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CANVAS
       Structure _s_CANVAS
-         *menu._s_WIDGET
-         postrepaint.b
+         repaint.b
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
+         *menu._s_WIDGET
       EndStructure
       
       ;--     ROOT
@@ -787,8 +787,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 615
-; FirstLine = 597
+; CursorPosition = 728
+; FirstLine = 723
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

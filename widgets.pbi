@@ -728,8 +728,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   widget::ReDraw( _root_ )
                EndIf
             Else
-               If _root_\canvas\postrepaint = 0
-                  _root_\canvas\postrepaint = 1
+               If _root_\canvas\repaint = 0
+                  _root_\canvas\repaint = 1
                   If Not widget::Send( _root_, constants::#__event_Repaint )
                      PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
                   EndIf
@@ -6723,6 +6723,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i GetPosition( *this._s_WIDGET, position.l, tabindex.l = #PB_Default )
+         Protected._s_WIDGET *first, *last
+         
          If tabindex = #PB_Default
             Select position
                Case #PB_List_Before   : ProcedureReturn*this\BeforeWidget( )
@@ -6737,7 +6739,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
          Else
-            Protected._s_WIDGET *first, *last
             If position = #PB_List_First
                *first = *this\FirstWidget( ) 
                ;
@@ -12016,7 +12017,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If result ; And *this\width And *this\height ; есть проблемы с imagegadget и scrollareagadget
                       ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                
-               ;If *this\root ;And *this\root\canvas\postrepaintevent = #False
+               ;If *this\root ;And *this\root\canvas\repaintevent = #False
                If ( *bar\vertical And *this\height ) Or ( *bar\vertical = 0 And *this\width )
                   ; Debug "bar_SetAttribute - "+*this\height +" "+ *this\width +" "+ *bar\vertical
                   bar_Update( *this, #True ) ; ??????????????
@@ -12566,8 +12567,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                DisableWindow( *this\root\canvas\window, #False)
                
                ; PostRepaint( *this\root )
-               ;                If *display\root\canvas\postrepaint 
-               ;                   *display\root\canvas\postrepaint = 0
+               ;                If *display\root\canvas\repaint 
+               ;                   *display\root\canvas\repaint = 0
                ;                 ; PostRepaint( *display\root )
                ;                EndIf
                
@@ -20999,26 +21000,31 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure EventRepaint( )
          If EventData( )
-            If MapKey(roots( ))
-               PushMapPosition(roots( ))
-               ; Debug "MapKey "+MapKey(roots( ))
-               If EventData( ) <> roots( )\canvas\gadgetID
-                  ChangeCurrentCanvas( EventData( ), 0 )
-                  ; root( ) = roots( )
+            ; Debug "???? "+MapKey(roots( ))
+            
+            ; bug PB
+            If MapKey(roots( )) = ""
+               ResetMap(roots( ))
+               NextMapElement(roots( ))
+            EndIf
+            
+            PushMapPosition(roots( ))
+            If EventData( ) <> roots( )\canvas\gadgetID
+               ChangeCurrentCanvas( EventData( ), 0 )
+               ; root( ) = roots( )
+            EndIf
+            
+            If roots( )\canvas\repaint = 1
+               Repost( )
+               
+               If test_draw_repaint
+                  Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                EndIf
                
-               If roots( )\canvas\postrepaint = 1
-                  Repost( )
-                  
-                  If test_draw_repaint
-                     Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
-                  EndIf
-                  
-                  ReDraw( roots( ) )
-                  roots( )\canvas\postrepaint = 0
-               EndIf
-               PopMapPosition(roots())
+               ReDraw( roots( ) )
+               roots( )\canvas\repaint = 0
             EndIf
+            PopMapPosition(roots())
          EndIf
       EndProcedure
       
@@ -24015,9 +24021,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6594
-; FirstLine = 6580
-; Folding = +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d0t-------4----+-----------------V----------
+; CursorPosition = 6727
+; FirstLine = 6616
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d0t-------4----+-----------------V----------
 ; Optimizer
 ; EnableXP
 ; DPIAware
