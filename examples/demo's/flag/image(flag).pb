@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global f, f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8
   Global Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  Define y = 205, vert=100, horiz=100, width=460, height=460
+  Define Y = 205, vert=100, horiz=100, Width=460, Height=460
   
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
     End
@@ -89,12 +89,12 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(0, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, Width+180, Height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 ;     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget,1)
     *this = widget::Image(100, 100, 250, 250, get_image())
     
     ; flag
-    f = widget::Tree(width+20, 10, 150, y+10, #__Tree_NoLines|#__Tree_NoButtons|#__flag_OptionBoxes|#__tree_CheckBoxes|#__Tree_threestate)
+    f = widget::Tree(Width+20, 10, 150, Y+10, #__Tree_NoLines|#__Tree_NoButtons|#__flag_OptionBoxes|#__tree_CheckBoxes|#__Tree_threestate)
     ; AddItem(f, -1, "align", -1,0)
     AddItem(f, -1, "top", -1,1)
     AddItem(f, -1, "left", -1,1)
@@ -107,17 +107,17 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(f, -1, "vertical")
     AddItem(f, -1, "invert")
     
-    Button_type = widget::Button(width+20,   y, 150, 26, "gadget", #__flag_ButtonToggle) 
-    f_5 = widget::Button(width+20, y+30*1, 150, 26, "top", #__flag_ButtonToggle) 
-    f_2 = widget::Button(width+20, y+30*2, 73, 26, "left", #__flag_ButtonToggle) 
-    f_3 = widget::Button(width+20 + 21 + 55, y+30*2, 73, 26, "right", #__flag_ButtonToggle) 
-    f_6 = widget::Button(width+20, y+30*3, 150, 26, "bottom", #__flag_ButtonToggle) 
+    Button_type = widget::Button(Width+20,   Y, 150, 26, "gadget", #__flag_ButtonToggle) 
+    f_5 = widget::Button(Width+20, Y+30*1, 150, 26, "top", #__flag_ButtonToggle) 
+    f_2 = widget::Button(Width+20, Y+30*2, 73, 26, "left", #__flag_ButtonToggle) 
+    f_3 = widget::Button(Width+20 + 21 + 55, Y+30*2, 73, 26, "right", #__flag_ButtonToggle) 
+    f_6 = widget::Button(Width+20, Y+30*3, 150, 26, "bottom", #__flag_ButtonToggle) 
     
-    f_0 = widget::Button(width+20, y+30*4, 150, 26, "center", #__flag_ButtonToggle) 
-    f_1 = widget::Button(width+20, y+30*5, 150, 26, "strech", #__flag_ButtonToggle) 
-    f_4 = widget::Button(width+20, y+30*6, 150, 26, "proportional", #__flag_ButtonToggle) 
+    f_0 = widget::Button(Width+20, Y+30*4, 150, 26, "center", #__flag_ButtonToggle) 
+    f_1 = widget::Button(Width+20, Y+30*5, 150, 26, "strech", #__flag_ButtonToggle) 
+    f_4 = widget::Button(Width+20, Y+30*6, 150, 26, "proportional", #__flag_ButtonToggle) 
     
-    f_8 = widget::Button(width+20, y+30*7, 150, 26, "auto", #__flag_ButtonToggle) 
+    f_8 = widget::Button(Width+20, Y+30*7, 150, 26, "auto", #__flag_ButtonToggle) 
 ;     f_7 = widget::Button(width+20, y+30*8, 150, 26, "invert", #__flag_ButtonToggle) 
     Bind(#PB_All, @events_widgets())
     
@@ -135,20 +135,20 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
     Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
     Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-    Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+    Splitter_3 = widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
     Define pos = 80
     SetState(Splitter_0, pos)
     SetState(Splitter_1, pos)
-    SetState(Splitter_3, width-pos-#__splittersize)
-    SetState(Splitter_2, height-pos-#__splittersize)
+    SetState(Splitter_3, Width-pos-#__bar_splitter_size)
+    SetState(Splitter_2, Height-pos-#__bar_splitter_size)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 106
+; CursorPosition = 143
+; FirstLine = 119
 ; Folding = ---
 ; Optimizer
 ; EnableXP

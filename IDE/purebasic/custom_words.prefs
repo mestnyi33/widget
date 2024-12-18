@@ -194,6 +194,9 @@ GetLast
 SetPosition
 GetPosition
 
+GetRound
+SetRound
+
 widget
 root
 mouse

@@ -1373,6 +1373,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i CountType( *this, mode.b = #False )
       Declare.i SetActive( *this )
       
+      Declare.l GetRound( *this )
+      Declare   SetRound( *this, round.l )
+      
       Declare.a GetFrame( *this, mode.b = 0 )
       Declare   SetFrame( *this, size.a, mode.b = 0 )
       
@@ -4668,7 +4671,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         If *this\parent And
+           
+         If Change_width Or Change_height
+            If *this\parent And
             *this\parent\scroll And
             *this\parent\scroll\v And
             *this\parent\scroll\h
@@ -4700,6 +4705,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
+         EndIf
          EndIf
          
          ; if the integral menu bar
@@ -4887,6 +4893,99 @@ CompilerIf Not Defined( widget, #PB_Module )
                      UpdateWindow_(GadgetID(*this\scroll\gadget[1]))
                   CompilerEndIf
                EndIf
+            EndIf
+            
+            If *this\type = #__type_Splitter And (Change_width Or Change_height)
+;                Protected *bar._s_BAR = *this\bar
+;                Protected._s_BUTTONS *BB1, *BB2, *SB
+;                *SB  = *bar\button
+;                *BB1 = *bar\button[1]
+;                *BB2 = *bar\button[2]
+;                
+;                ; Splitter first-child auto resize
+;                If IsGadget( *this\split_1( ) )
+;                   ;             If is_root_container_( *this )
+;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;                      ; PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
+;                      SetWindowPos_( GadgetID(*this\split_1( )), #HWND_TOP, *BB1\x, *BB1\y, *BB1\width, *BB1\height, #SWP_NOACTIVATE )
+;                      UpdateWindow_( GadgetID(*this\root\canvas\gadget))
+;                   CompilerElse
+;                      PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
+;                   CompilerEndIf
+;                   ;             Else
+;                   ;               PB(ResizeGadget)( *this\split_1( ),
+;                   ;                                 *BB1\x + GadgetX( *this\root\canvas\gadget ),
+;                   ;                                 *BB1\y + GadgetY( *this\root\canvas\gadget ),
+;                   ;                                 *BB1\width, *BB1\height )
+;                   ;             EndIf
+;                   
+;                Else
+;                   If *this\split_1( ) > 0 And *this\split_1( ) <> *this
+;                      If *this\split_1( )\x <> *BB1\x Or
+;                         *this\split_1( )\y <> *BB1\y Or
+;                         *this\split_1( )\width <> *BB1\width Or
+;                         *this\split_1( )\height <> *BB1\height
+;                         ; Debug "splitter_1_resize " + *this\split_1( )
+;                         
+;                         If *this\split_1( )\type = #__type_window
+;                            Resize( *this\split_1( ),
+;                                    *BB1\x - *this\frame_x( ),
+;                                    *BB1\y - *this\frame_y( ),
+;                                    *BB1\width - *this\split_1( )\fs * 2 - *this\split_1( )\fs[1] - *this\split_1( )\fs[3],
+;                                    *BB1\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] - *this\split_1( )\fs[4], 0 )
+;                         Else
+;                            Resize( *this\split_1( ),
+;                                    *BB1\x - *this\frame_x( ),
+;                                    *BB1\y - *this\frame_y( ),
+;                                    *BB1\width, *BB1\height, 0 )
+;                         EndIf
+;                         
+;                      EndIf
+;                   EndIf
+;                EndIf
+;                
+;                ; Splitter second-child auto resize
+;                If IsGadget( *this\split_2( ) )
+;                   ;             If is_root_container_( *this )
+;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;                      ; PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
+;                      SetWindowPos_( GadgetID(*this\split_2( )), #HWND_TOP, *BB2\x, *BB2\y, *BB2\width, *BB2\height, #SWP_NOACTIVATE )
+;                      UpdateWindow_( GadgetID(*this\root\canvas\gadget))
+;                   CompilerElse
+;                      PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
+;                   CompilerEndIf
+;                   ;             Else
+;                   ;               PB(ResizeGadget)( *this\split_2( ),
+;                   ;                                 *BB2\x + GadgetX( *this\root\canvas\gadget ),
+;                   ;                                 *BB2\y + GadgetY( *this\root\canvas\gadget ),
+;                   ;                                 *BB2\width, *BB2\height )
+;                   ;             EndIf
+;                   
+;                Else
+;                   If *this\split_2( ) > 0 And *this\split_2( ) <> *this
+;                      If *this\split_2( )\x <> *BB2\x Or
+;                         *this\split_2( )\y <> *BB2\y Or
+;                         *this\split_2( )\width <> *BB2\width Or
+;                         *this\split_2( )\height <> *BB2\height
+;                         ; Debug "splitter_2_resize " + *this\split_2( )
+;                         
+;                         If *this\split_2( )\type = #__type_window
+;                            Resize( *this\split_2( ),
+;                                    *BB2\x - *this\frame_x( ),
+;                                    *BB2\y - *this\frame_y( ),
+;                                    *BB2\width - *this\split_1( )\fs * 2 - *this\split_1( )\fs[1] - *this\split_1( )\fs[3],
+;                                    *BB2\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] - *this\split_1( )\fs[4], 0 )
+;                         Else
+;                            Resize( *this\split_2( ),
+;                                    *BB2\x - *this\frame_x( ),
+;                                    *BB2\y - *this\frame_y( ),
+;                                    *BB2\width, *BB2\height, 0 )
+;                         EndIf
+;                         
+;                      EndIf
+;                   EndIf
+;                EndIf
+;                
             EndIf
             
             ;
@@ -5090,6 +5189,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure.l GetRound( *this._s_WIDGET )
+         ProcedureReturn DPIUnScaled(*this\round)
+      EndProcedure
+      
+      Procedure   SetRound( *this._s_WIDGET, round.l )
+        *this\round = DPIScaled(round)
+      EndProcedure
+      
       Procedure.a GetFrame( *this._s_WIDGET, mode.b = 0 )
          ProcedureReturn *this\fs[mode]
       EndProcedure
@@ -8738,7 +8845,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
          ;( _bar_\min + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest )) ; 
-         ( _bar_\min + Round(((( _thumb_pos_ ) + _bar_\min[2] ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+         ( _bar_\min + Round(((( _thumb_pos_ ) + (Bool( Not _bar_\fixed ) * _bar_\min[2]) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
       Macro bar_thumb_pos_( _bar_, _scroll_pos_ )
@@ -10274,7 +10381,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                \h\hide = #True
                ProcedureReturn 0
             EndIf
-            
             If X = #PB_Ignore
                X = \h\container_x( )
             EndIf
@@ -10817,7 +10923,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If *bar\area\len ; TODO - ?
                   *bar\area\pos  = ( *BB1\size + *bar\min[1] )
-                  *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size )
+                  *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size ) ; - ( *bar\min[1] + *bar\min[2] )
                   ;
                   If is_bar_( *this ) Or *this\type = #__type_TabBar
                      If *bar\max
@@ -11007,7 +11113,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *bar\fixed[2] = *bar\area\end - *bar\thumb\pos 
                EndIf
             Else
-               If *bar\fixed = 1
+              If *bar\fixed = 1
                   If *bar\fixed[1] >= *bar\area\end
                      If *bar\min[1] < *bar\area\end
                         ThumbPos = *bar\area\end
@@ -11378,7 +11484,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; Splitter first-child auto resize
-            ;If mode = 2;*bar\PageChange( ) Or *bar\ThumbChange( ) 
             If IsGadget( *this\split_1( ) )
                ;             If is_root_container_( *this )
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -11461,7 +11566,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            ;EndIf
+            
          EndIf
          
          ;\\
@@ -11729,6 +11834,94 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; scroll area change
                   Send( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
                EndIf  
+               
+               
+               If *this\type = #__type_Splitter
+;                   ; Splitter first-child auto resize
+;                     If IsGadget( *this\split_1( ) )
+;                         ;             If is_root_container_( *this )
+;                         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;                            ; PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
+;                            SetWindowPos_( GadgetID(*this\split_1( )), #HWND_TOP, *BB1\x, *BB1\y, *BB1\width, *BB1\height, #SWP_NOACTIVATE )
+;                            UpdateWindow_( GadgetID(*this\root\canvas\gadget))
+;                         CompilerElse
+;                            PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
+;                         CompilerEndIf
+;                         ;             Else
+;                         ;               PB(ResizeGadget)( *this\split_1( ),
+;                         ;                                 *BB1\x + GadgetX( *this\root\canvas\gadget ),
+;                         ;                                 *BB1\y + GadgetY( *this\root\canvas\gadget ),
+;                         ;                                 *BB1\width, *BB1\height )
+;                         ;             EndIf
+;                         
+;                      Else
+;                         If *this\split_1( ) > 0 And *this\split_1( ) <> *this
+;                            If *this\split_1( )\x <> *BB1\x Or
+;                               *this\split_1( )\y <> *BB1\y Or
+;                               *this\split_1( )\width <> *BB1\width Or
+;                               *this\split_1( )\height <> *BB1\height
+;                               ; Debug "splitter_1_resize " + *this\split_1( )
+;                               
+;                               If *this\split_1( )\type = #__type_window
+;                                  Resize( *this\split_1( ),
+;                                          *BB1\x - *this\frame_x( ),
+;                                          *BB1\y - *this\frame_y( ),
+;                                          *BB1\width - *this\split_1( )\fs * 2 - *this\split_1( )\fs[1] - *this\split_1( )\fs[3],
+;                                          *BB1\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] - *this\split_1( )\fs[4], 0 )
+;                               Else
+;                                  Resize( *this\split_1( ),
+;                                          *BB1\x - *this\frame_x( ),
+;                                          *BB1\y - *this\frame_y( ),
+;                                          *BB1\width, *BB1\height, 0 )
+;                               EndIf
+;                               
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                      
+;                      ; Splitter second-child auto resize
+;                      If IsGadget( *this\split_2( ) )
+;                         ;             If is_root_container_( *this )
+;                         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;                            ; PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
+;                            SetWindowPos_( GadgetID(*this\split_2( )), #HWND_TOP, *BB2\x, *BB2\y, *BB2\width, *BB2\height, #SWP_NOACTIVATE )
+;                            UpdateWindow_( GadgetID(*this\root\canvas\gadget))
+;                         CompilerElse
+;                            PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
+;                         CompilerEndIf
+;                         ;             Else
+;                         ;               PB(ResizeGadget)( *this\split_2( ),
+;                         ;                                 *BB2\x + GadgetX( *this\root\canvas\gadget ),
+;                         ;                                 *BB2\y + GadgetY( *this\root\canvas\gadget ),
+;                         ;                                 *BB2\width, *BB2\height )
+;                         ;             EndIf
+;                         
+;                      Else
+;                         If *this\split_2( ) > 0 And *this\split_2( ) <> *this
+;                            If *this\split_2( )\x <> *BB2\x Or
+;                               *this\split_2( )\y <> *BB2\y Or
+;                               *this\split_2( )\width <> *BB2\width Or
+;                               *this\split_2( )\height <> *BB2\height
+;                               ; Debug "splitter_2_resize " + *this\split_2( )
+;                               
+;                               If *this\split_2( )\type = #__type_window
+;                                  Resize( *this\split_2( ),
+;                                          *BB2\x - *this\frame_x( ),
+;                                          *BB2\y - *this\frame_y( ),
+;                                          *BB2\width - *this\split_1( )\fs * 2 - *this\split_1( )\fs[1] - *this\split_1( )\fs[3],
+;                                          *BB2\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] - *this\split_1( )\fs[4], 0 )
+;                               Else
+;                                  Resize( *this\split_2( ),
+;                                          *BB2\x - *this\frame_x( ),
+;                                          *BB2\y - *this\frame_y( ),
+;                                          *BB2\width, *BB2\height, 0 )
+;                               EndIf
+;                               
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                      
+                  EndIf
                
                ;               If *this\stringbar
                ;                 Debug 777
@@ -22225,6 +22418,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Height         = *root\height
                   *root\autosize = #True
                   *this          = *root
+                  
+;                   Protected w = WindowID(*root\canvas\window )
+;                   
+;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;                   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
+;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
+;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_SIZEBOX) 
+;                   CompilerElse
+;                      ;  
+;                   CompilerEndIf
                Else
                   *this.allocate( widget )
                EndIf
@@ -24015,9 +24219,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22683
-; FirstLine = 22469
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d0t-------4----+-----------------V----------
+; CursorPosition = 11568
+; FirstLine = 11103
+; Folding = -----------------------------------------------------------------------------------------------------------------------b--4-------------------------------------------------4--+--------------------------------------------------------------------------------------------------------------------------8--+-8f----------------8----4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u+3-----------f------------------q---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

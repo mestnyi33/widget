@@ -12,10 +12,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Global w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13,w_14,w_15
   
   Procedure resize_window_0()
-    Protected width = WindowWidth(EventWindow())
+    Protected Width = WindowWidth(EventWindow())
     ; ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
-    ResizeGadget(15, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-    Resize(w_15, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
+    ResizeGadget(15, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
+    Resize(w_15, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
   EndProcedure
   
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   SplitterGadget(30,125, 10, 250, 150, 15, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator | #PB_Splitter_Vertical)
   ;   SetGadgetState(30, 250)
   
-  SetGadgetState(15, 250-30-#__splittersize)
+  SetGadgetState(15, 250-30-#__bar_splitter_size)
   SetGadgetState(13, 30)
   
   
@@ -137,8 +137,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   widget::SetState(w_13, 30)
   ;Debug "max - "+*this\bar\max +" "+ *this\bar\page\pos +" "+ *this\bar\area\len +" "+ *this\bar\thumb\pos +" "+ Bool(*this\resize & #__resize_change)
-  ;widget::SetState(w_15, 250-30-#__splittersize)
-  widget::SetState(w_15, 250-30-#__splittersize)
+  ;widget::SetState(w_15, 250-30-#__bar_splitter_size)
+  widget::SetState(w_15, 250-30-#__bar_splitter_size)
   
   
   
@@ -162,8 +162,8 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 137
+; CursorPosition = 140
+; FirstLine = 110
 ; Folding = ---
 ; Optimizer
 ; EnableXP

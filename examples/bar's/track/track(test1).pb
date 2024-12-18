@@ -29,27 +29,33 @@ CompilerIf #PB_Compiler_IsMainFile
       Resize(Splitter_1, #PB_Ignore, #PB_Ignore, GetState(EventWidget()), #PB_Ignore)
    EndProcedure
    
+   Define w = 420-40, h = 280-40
+   
    If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
      ; a_init(root())
       
-      Splitter_1 = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+      Splitter_1 = Splitter(30, 30, 180, 120, -1, -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 60)
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 60)
-      Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1)
       
-      widget( ) = Splitter_1
-      Debug widget( )\bar\page\pos
+      ;h
+      Track( 30,5,w,20, 0, w )
+      SetBackgroundColor(widget(), $FF80BE8E)
+      SetState(widget(), 180)
+      Bind( widget(), @track_h_events( ), #__event_change )
+      ;v
+      Track( 5,30,20,h, 0, h, #PB_TrackBar_Vertical|#__bar_invert)
+      SetBackgroundColor(widget(), $FF80BE8E)
+      SetState(widget(), 120)
+      Bind( widget(), @track_v_events( ), #__event_change )
       
-      Bind( #PB_All, @events_widgets( ), #__event_down )
-      Bind( #PB_All, @events_widgets( ), #__event_up )
       WaitClose( )
    EndIf
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 18
+; CursorPosition = 46
+; FirstLine = 23
 ; Folding = -
-; Optimizer
 ; EnableXP
 ; DPIAware

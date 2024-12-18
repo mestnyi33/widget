@@ -11,15 +11,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Global b_0,b_1,b_2,b_2,b_3,s_0,s_1,s_2,s_3,s_4,s_5,s_6,s_7,s_8,s_9,s_10,s_11
   
   Procedure resize_window_0()
-    Protected width = WindowWidth(EventWindow())
+    Protected Width = WindowWidth(EventWindow())
     ; ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
 ;     ResizeGadget(3, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
 ;     ResizeGadget(6, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
-    ResizeGadget(7, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
+    ResizeGadget(7, #PB_Ignore, #PB_Ignore, Width - len, #PB_Ignore)
     
 ;     Resize(s_0, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
 ;     Resize(s_1, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
-    Resize(s_2, #PB_Ignore, #PB_Ignore, width - len, #PB_Ignore)
+    Resize(s_2, #PB_Ignore, #PB_Ignore, Width - len, #PB_Ignore)
   EndProcedure
   
   OpenWindow(0, 10, 10, 510, 340+140, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
@@ -70,11 +70,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   SetGadgetState(3, -50)
-  SetGadgetState(6, len-50-#__splittersize)
+  SetGadgetState(6, len-50-#__bar_splitter_size)
   SetGadgetState(31, 50)
   SetGadgetState(61, -50)
-  SetGadgetState(311, len/2- #__splittersize)
-  SetGadgetState(611, len/2- #__splittersize)
+  SetGadgetState(311, len/2- #__bar_splitter_size)
+  SetGadgetState(611, len/2- #__bar_splitter_size)
   
   
   ; first splitter
@@ -118,14 +118,14 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(s_10, len); -30)
   SetState(s_11, len)
   
-  SetState(s_0, -50) ; #__splittersize
-  SetState(s_1, len-50- #__splittersize)
+  SetState(s_0, -50) ; #__bar_splitter_size
+  SetState(s_1, len-50- #__bar_splitter_size)
   
   SetState(s_3, 50)
   SetState(s_4, -50)
   
-  SetState(s_6, len/2- #__splittersize)
-  SetState(s_7, len/2- #__splittersize)
+  SetState(s_6, len/2- #__bar_splitter_size)
+  SetState(s_7, len/2- #__bar_splitter_size)
   
   Debug GetState(s_0)
   Debug GetState(s_1)
@@ -137,8 +137,8 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
-; FirstLine = 4
+; CursorPosition = 127
+; FirstLine = 98
 ; Folding = -
 ; EnableXP
 ; DPIAware

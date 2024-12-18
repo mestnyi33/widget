@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Splitter_3,
          Splitter_4
   
-  Define width = 560, height = 560, pos = 60
+  Define Width = 560, Height = 560, pos = 60
   
   Procedure events_widgets()
     Protected flag, EventWidget = EventWidget( )
@@ -166,26 +166,26 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  If Open(0, 0, 0, width + 180, height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ComboBoxGadget(#PB_Any, 100, 100, 250, 200) : HideGadget(gadget, 1)
     *this  = widget::ComboBox(100, 100, 250, 200, #__flag_Textmultiline);|)
     AddItem( *this, -1, Text )
     
-    Define y  = 10
+    Define Y  = 10
     Define bh = 24
     Define p = bh+5
     ; flag
-    Button_type      = widget::Button(width + 45, y, 100, p, "gadget", #__flag_ButtonToggle)
-    button_default   = widget::Button(width + 45, y + p * 1, 100, bh, "default", #__flag_ButtonToggle)
-    button_multiline = widget::Button(width + 45, y + p * 2, 100, bh, "multiline", #__flag_ButtonToggle)
-    button_top       = widget::Button(width + 45, y + p * 3, 100, bh, "top", #__flag_ButtonToggle)
-    button_left      = widget::Button(width + 45, y + p * 4, 100, bh, "left", #__flag_ButtonToggle)
-    button_center    = widget::Button(width + 45, y + p * 5, 100, bh, "center", #__flag_ButtonToggle)
-    button_right     = widget::Button(width + 45, y + p * 6, 100, bh, "right", #__flag_ButtonToggle)
-    button_bottom    = widget::Button(width + 45, y + p * 7, 100, bh, "bottom", #__flag_ButtonToggle)
-    button_toggle    = widget::Button(width + 45, y + p * 8, 100, bh, "toggle", #__flag_ButtonToggle)
-    button_vertical  = widget::Button(width + 45, y + p * 9, 100, bh, "vertical", #__flag_ButtonToggle)
-    button_invert    = widget::Button(width + 45, y + p * 10, 100, bh, "invert", #__flag_ButtonToggle)
+    Button_type      = widget::Button(Width + 45, Y, 100, p, "gadget", #__flag_ButtonToggle)
+    button_default   = widget::Button(Width + 45, Y + p * 1, 100, bh, "default", #__flag_ButtonToggle)
+    button_multiline = widget::Button(Width + 45, Y + p * 2, 100, bh, "multiline", #__flag_ButtonToggle)
+    button_top       = widget::Button(Width + 45, Y + p * 3, 100, bh, "top", #__flag_ButtonToggle)
+    button_left      = widget::Button(Width + 45, Y + p * 4, 100, bh, "left", #__flag_ButtonToggle)
+    button_center    = widget::Button(Width + 45, Y + p * 5, 100, bh, "center", #__flag_ButtonToggle)
+    button_right     = widget::Button(Width + 45, Y + p * 6, 100, bh, "right", #__flag_ButtonToggle)
+    button_bottom    = widget::Button(Width + 45, Y + p * 7, 100, bh, "bottom", #__flag_ButtonToggle)
+    button_toggle    = widget::Button(Width + 45, Y + p * 8, 100, bh, "toggle", #__flag_ButtonToggle)
+    button_vertical  = widget::Button(Width + 45, Y + p * 9, 100, bh, "vertical", #__flag_ButtonToggle)
+    button_invert    = widget::Button(Width + 45, Y + p * 10, 100, bh, "invert", #__flag_ButtonToggle)
     
 ;     ; flag
 ;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__tree_ComboBoxBoxes | #__tree_ComboBoxes | #__Tree_threestate)
@@ -214,20 +214,20 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
     Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
     Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-    Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+    Splitter_3 = widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
     
     ;\\
     SetState(Splitter_0, pos)
     SetState(Splitter_1, pos)
-    SetState(Splitter_3, width - pos - #__splittersize)
-    SetState(Splitter_2, height - pos - #__splittersize)
+    SetState(Splitter_3, Width - pos - #__bar_splitter_size)
+    SetState(Splitter_2, Height - pos - #__bar_splitter_size)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 209
-; FirstLine = 182
+; CursorPosition = 222
+; FirstLine = 197
 ; Folding = ----
 ; Optimizer
 ; EnableXP

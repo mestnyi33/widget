@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MaximizeGadget )
       
       SetClass(widget( ), "window_0" )
-      Button(10,-10,200,50,"window_0_maximize")
+      Button(10,10,200,50,"window_0_maximize")
       SetClass(widget( ), "window_0_maximize" )
       Button(10,65,200,50,"window_0_minimize")
       SetClass(widget( ), "window_0_minimize" )
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
-; FirstLine = 4
+; CursorPosition = 60
+; FirstLine = 44
 ; Folding = --
 ; EnableXP

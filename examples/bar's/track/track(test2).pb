@@ -22,6 +22,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug " - "
    EndProcedure
    
+   Global v_bar, h_bar
+   Global  w = 420-40, h = 280-40
+   
    Procedure track_v_events( )
       Resize(Splitter_1, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(EventWidget()))
    EndProcedure
@@ -29,27 +32,38 @@ CompilerIf #PB_Compiler_IsMainFile
       Resize(Splitter_1, #PB_Ignore, #PB_Ignore, GetState(EventWidget()), #PB_Ignore)
    EndProcedure
    
+   Procedure track_vh_events( )
+      SetState(h_bar, w-10)
+      SetState(v_bar, h-10)
+   EndProcedure
+   
    If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-     ; a_init(root())
-      
       Splitter_1 = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 60)
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 60)
-      Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1)
       
-      widget( ) = Splitter_1
-      Debug widget( )\bar\page\pos
+      ;v
+      v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
+      SetBackgroundColor(widget(), $FF80BE8E)
+      SetState(widget(), 120)
+      Bind( widget(), @track_v_events( ), #__event_change )
+      ;h
+      h_bar=Track( 10,h+10,w,20, 0, w-10 )
+      SetBackgroundColor(widget(), $FF80BE8E)
+      SetState(widget(), 180)
+      Bind( widget(), @track_h_events( ), #__event_change )
       
-      Bind( #PB_All, @events_widgets( ), #__event_down )
-      Bind( #PB_All, @events_widgets( ), #__event_up )
+      Button(w+10,h+10,20,20,"")
+      SetRound( widget(), 10 )
+      Bind( widget(), @track_vh_events( ), #__event_Down )
+      
       WaitClose( )
    EndIf
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 18
-; Folding = -
-; Optimizer
+; CursorPosition = 40
+; FirstLine = 33
+; Folding = --
 ; EnableXP
 ; DPIAware
