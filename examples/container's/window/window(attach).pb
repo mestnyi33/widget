@@ -5,9 +5,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   Global Event.i, MyCanvas
-  Global x=10,y=10, Width=820, Height=620 , focus
+  Global X=10,Y=10, Width=820, Height=620 , focus
   
-  If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "Window Attachments", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Window Attachments", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   ;Define *mdi._s_widget = Container(x,y,Width, height)
-  Define *mdi._s_widget = MDI(x,y,Width, height)
+  Define *mdi._s_widget = MDI(X,Y,Width, Height)
   ;Define *mdi._s_widget = Window(x,y,Width, height, "container",0,*mdi) : SetClass(widget(), "container") 
   a_init( *mdi, 0 )
   OpenList(*mdi)
@@ -85,8 +85,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 62
+; CursorPosition = 64
+; FirstLine = 49
 ; Folding = -
 ; EnableXP
 ; DPIAware

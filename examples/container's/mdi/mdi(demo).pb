@@ -23,13 +23,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   Global Event.i, MyCanvas, *mdi._s_widget, *spl1,*spl2
-  Global x=100,y=100, width=420, height=420 , focus
+  Global X=100,Y=100, Width=420, Height=420 , focus
   
-  Procedure events()
+  Procedure Events()
      Debug *mdi\scroll\v\bar\page\pos
   EndProcedure
   
-  If Not OpenWindow(0, 0, 0, width+x*2+20, height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
@@ -41,8 +41,8 @@ CompilerIf #PB_Compiler_IsMainFile
         click = 1
         state1 = GetState(*spl1)
         state2 = GetState(*spl2)
-        SetState(*spl1, width)
-        SetState(*spl2, height)
+        SetState(*spl1, Width)
+        SetState(*spl2, Height)
      Else
         click = 0
         SetState(*spl1, state1)
@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  *mdi = MDI(x,y,width, height);, #__flag_autosize)
+  *mdi = MDI(X,Y,Width, Height);, #__flag_autosize)
   ; a_init( *mdi,1 )
   
   Define *g0 = AddItem(*mdi, -1, "form_0")
@@ -66,16 +66,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,80,80,"button_2")
   
   Define *g3 = AddItem(*mdi, -1, "form_3")
-  BinD(Button(10,10,80,80,"test"), @button_3_events(), #__event_LeftDown)
+  Bind(Button(10,10,80,80,"test"), @button_3_events(), #__event_LeftDown)
   
   ; use root list
-  OpenList(Root())
+  OpenList(root())
   
-  *spl1 = Splitter(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
-  *spl2 = Splitter(x,y,width,height, *spl1, #Null);, #__flag_autosize)
+  *spl1 = Splitter(X,Y,Width,Height, *mdi, #Null, #PB_Splitter_Vertical)
+  *spl2 = Splitter(X,Y,Width,Height, *spl1, #Null);, #__flag_autosize)
   
-  SetState(*spl1, width); - 150)
-  SetState(*spl2, height); - 150)
+  SetState(*spl1, Width); - 150)
+  SetState(*spl2, Height); - 150)
   
   Resize(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
   Resize(*g3, 10, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -88,8 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 56
+; CursorPosition = 56
+; FirstLine = 38
 ; Folding = -
 ; EnableXP
 ; DPIAware

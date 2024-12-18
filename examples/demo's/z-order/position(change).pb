@@ -59,10 +59,15 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If before
                Debug "Before - "+GetClass(before)
+               If GetState(*PARENT) = 2
+                  SetPosition( EventWidget( ), #PB_List_First)
+               EndIf
             EndIf
             If after
                Debug "After - "+GetClass(after)
-               SetPosition( EventWidget( ), #PB_List_Last)
+               If GetState(*PARENT) = 0
+                  SetPosition( EventWidget( ), #PB_List_Last)
+               EndIf
             EndIf
             
             Debug "--- enumerate all gadgets ---"
@@ -74,42 +79,48 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__Event_LeftUp
+            If before
+               If GetState(*PARENT) = 2
+                  SetPosition( EventWidget( ), #PB_List_After, before)
+               EndIf
+            EndIf
             If after
-               ClearDebugOutput( )
-               SetPosition( EventWidget( ), #PB_List_Before, after)
-               
-               Debug " --- up "
-               before = GetPosition(EventWidget( ), #PB_List_Before)
-               after = GetPosition(EventWidget( ), #PB_List_After)
-               
-               If before
-                  Debug "Before - "+GetClass(before)
+               If GetState(*PARENT) = 0
+                  SetPosition( EventWidget( ), #PB_List_Before, after)
                EndIf
-               If after
-                  Debug "After - "+GetClass(after)
+            EndIf
+            
+            ClearDebugOutput( )
+            before = GetPosition(EventWidget( ), #PB_List_Before)
+            after = GetPosition(EventWidget( ), #PB_List_After)
+            ; Debug " --- up "
+            
+            If before
+               Debug "Before - "+GetClass(before)
+            EndIf
+            If after
+               Debug "After - "+GetClass(after)
+            EndIf
+            
+            Debug "--- enumerate all gadgets ---"
+            If StartEnum( EventWidget( )\parent, EventWidget( )\tabindex( ) )
+               If Not is_window_( widget(  ) )
+                  Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
                EndIf
-               
-               Debug "--- enumerate all gadgets ---"
-               If StartEnum( EventWidget( )\parent, EventWidget( )\tabindex( ) )
-                  If Not is_window_( widget(  ) )
-                     Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
-                  EndIf
-                  StopEnum( )
-               EndIf
+               StopEnum( )
             EndIf
       EndSelect
    EndProcedure
    
    Procedure CreateWidget( X,Y,Width,Height, Text.s )
-      Protected *PARENT 
-      *PARENT = Button( X,Y,Width,Height, Text ) 
+      Protected *PARENT = Button( X,Y,Width,Height, Text ) 
       SetClass(*PARENT, Text )
       ProcedureReturn *PARENT
    EndProcedure
    
-   If Open( 10, 0, 0, 260, 270, "demo set  new parent", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If Open( 10, 0, 0, 260, 270, "demo change position", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       *PARENT = Panel(10,10,240,250)  : SetClass(*PARENT, "PANEL") 
-      AddItem(*PARENT, -1, "item (0)")
+      AddItem(*PARENT, -1, "last demo (0)")
       ;
       CreateWidget(10,10,100,90, "(Panel(0))")
       CreateWidget(30,30,100,90, "((0>))")
@@ -121,14 +132,15 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       CreateWidget(50,30,100,90, "((1>))")
       ;       CreateWidget(70,50,100,90, "((1>>))") 
       ;       ;
-      AddItem(*PARENT, -1, "item (2)") ;: *PARENT_2 = Button(20,90,220,60,"(Panel(2))") : SetClass(*PARENT_2, GetText(*PARENT_2)) 
-                                       ;
+      AddItem(*PARENT, -1, "first demo (2)") 
+      ;
       CreateWidget(50,10,100,90, "(Panel(2))")
       CreateWidget(70,30,100,90, "((2>))")
       CreateWidget(90,50,100,90, "((2>>))") 
       
-      CloseList()
+      CloseList( )
       
+      ;SetState( *PARENT, 2 )
       
       If StartEnum( *PARENT )
          Bind(widget( ), @widget_events( ), #__Event_LeftDown)
@@ -137,13 +149,12 @@ CompilerIf #PB_Compiler_IsMainFile
          StopEnum( )
       EndIf
       
-      
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 100
-; Folding = ----
-; Optimizer
+; CursorPosition = 120
+; FirstLine = 107
+; Folding = -----
 ; EnableXP
+; DPIAware

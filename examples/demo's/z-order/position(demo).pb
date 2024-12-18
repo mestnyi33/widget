@@ -15,47 +15,8 @@ CompilerIf #PB_Compiler_IsMainFile
    #last=102
    #return = 103
    
-   Procedure this_events()
-      Static after
-      Static before
-      
-      Select WidgetEvent( )
-         Case #PB_EventType_LeftButtonDown 
-            after = GetPosition(EventWidget( ), #PB_List_After)
-            before = GetPosition(EventWidget( ), #PB_List_Before)
-            
-            If after
-               Debug "After - "+GetClass(after)
-            EndIf
-            If before
-               Debug "Before - "+GetClass(before)
-            EndIf
-            
-            SetPosition(EventWidget( ), #PB_List_First)
-            
-            ;         Debug ">>"
-            ;         ForEach widget()
-            ;           Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
-            ;         Next
-            
-         Case #PB_EventType_LeftButtonUp
-            SetPosition(EventWidget( ), #PB_List_After)
-            
-            If after 
-               Debug "<<"
-               ;           _SetPosition(EventWidget( ), #PB_List_After, after)
-               ;           
-               ;           ForEach widget()
-               ;             Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
-               ;           Next
-               
-               after = 0
-            EndIf
-      EndSelect
-   EndProcedure
-   
    Procedure Demo()
-      Protected   ParentID = OpenWindow(0, 0, 0, 250, 180, "Demo z-order gadget", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
+      Protected   ParentID = OpenWindow(0, 0, 0, 250, 180, "Demo z-order position", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
       
       Open(0, 0, 0, 250, 180) 
       
@@ -95,8 +56,6 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList()
       
       CloseList()
-      Bind(*this, @this_events(), #PB_EventType_LeftButtonDown)
-      Bind(*this, @this_events(), #PB_EventType_LeftButtonUp)
       ;}
       
       Button(55, 70, 90, 25, "6",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(4, 
@@ -133,12 +92,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonGadget(#return, 5, 10, 120, 30, "return")
       
       ButtonGadget(#last, 5, 55, 120, 30, "last (top)")
-      ButtonGadget(#before, 5, 85, 120, 30, "before (prev)")
-      ButtonGadget(#after, 5, 115, 120, 30, "after (next)")
+      ButtonGadget(#after, 5, 85, 120, 30, "after (next)       ^")
+      ButtonGadget(#before, 5, 115, 120, 30, "before (prev)    v")
       ButtonGadget(#first, 5, 145, 120, 30, "first (bottom)")
    EndProcedure
    
-   Demo()
+   Demo( )
    
    Define gEvent, gQuit, after, before
    
@@ -153,20 +112,44 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #PB_Event_Gadget
             Select EventType()
                Case #PB_EventType_LeftClick
-                  
-                  
                   Select EventGadget()
                      Case #first
-                        SetPosition(*this, #PB_List_First)
+                        If SetPosition(*this, #PB_List_First)
+                           DisableGadget(#first,1)
+                           DisableGadget(#before,1)
+                           DisableGadget(#after,0)
+                           DisableGadget(#last,0)
+                        EndIf
                         
                      Case #before
-                        SetPosition(*this, #PB_List_Before)
+                        If SetPosition(*this, #PB_List_Before)
+                           If *this = GetPosition( *this, #PB_List_First )
+                              DisableGadget(#first,1)
+                              DisableGadget(#before,1)
+                           Else
+                              DisableGadget(#after,0)
+                              DisableGadget(#last,0)
+                           EndIf
+                        EndIf
                         
                      Case #after
-                        SetPosition(*this, #PB_List_After)
+                        If SetPosition(*this, #PB_List_After)
+                           If *this = GetPosition( *this, #PB_List_Last )
+                              DisableGadget(#after,1)
+                              DisableGadget(#last,1)
+                           Else
+                              DisableGadget(#first,0)
+                              DisableGadget(#before,0)
+                           EndIf
+                        EndIf
                         
                      Case #last
-                        SetPosition(*this, #PB_List_Last)
+                        If SetPosition(*this, #PB_List_Last)
+                           DisableGadget(#after,1)
+                           DisableGadget(#last,1)
+                           DisableGadget(#first,0)
+                           DisableGadget(#before,0)
+                        EndIf
                         
                      Case #return
                         If after
@@ -175,20 +158,24 @@ CompilerIf #PB_Compiler_IsMainFile
                         If before
                            SetPosition(*this, #PB_List_After, before)
                         EndIf
+                        
+                        DisableGadget(#after,0)
+                        DisableGadget(#last,0)
+                        DisableGadget(#first,0)
+                        DisableGadget(#before,0)
                   EndSelect
                   
+                  
+                  ClearDebugOutput()
+                  Debug "--- enumerate all gadgets ---"
+                  If StartEnum( root( ) )
+                     If Not is_window_( widget(  ) )
+                        Debug ""+ Index( widget( ) ) +" "+ widget( )\class
+                     EndIf
+                     StopEnum( )
+                  EndIf
+                  
                   ReDraw( root( ) )
-                  
-                  ;             ClearDebugOutput()
-                  ;             ForEach widget()
-                  ;               Debug ""+widget()\class +" "+ widget()\parent\first\class +" "+ widget()\parent\last\class
-                  ;             Next
-                  
-                  ;               Debug "first "+GetFirst(ParentID)
-                  ;               Debug "last "+GetLast(ParentID)
-                  ;               Debug "prev №1 < № "+GetPrev(1)
-                  ;               Debug "next №1 > № "+GetNext(1)
-                  
             EndSelect
             
          Case #PB_Event_CloseWindow
@@ -198,8 +185,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 198
-; FirstLine = 170
-; Folding = ---
+; CursorPosition = 95
+; FirstLine = 82
+; Folding = ----
 ; EnableXP
 ; DPIAware

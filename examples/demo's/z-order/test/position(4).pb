@@ -1,5 +1,5 @@
-﻿IncludePath "../../../"
-XIncludeFile "-widgets.pbi"
+﻿IncludePath "../../../../"
+XIncludeFile "widgets.pbi"
 
 
 
@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *s1, *s2, *p1, *b0,*b1,*b2,*b3, *b4, *b5
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *p1 = Panel (5, 30, 340, 266)
     AddItem(*p1, -1, "Под-Панель 1")
@@ -27,16 +27,16 @@ CompilerIf #PB_Compiler_IsMainFile
     *b5 = Button(5, 55+155, 80, 20,"кнопка_5") : SetClass(widget(), GetText(widget()))
     
     ;     - 
-    ;     - 0 0 none Panel кнопка_6
-    ;     - 1 1 none кнопка_0 кнопка_3
+    ;     - 0 0 --- Panel кнопка_6
+    ;     - 1 1 --- кнопка_0 кнопка_3
     ;     - 2 4 кнопка_0 кнопка_3 split_2
     ;     - 3 7 кнопка_3 split_2 кнопка_5
-    ;     - 4 5 none split_1 кнопка_4
-    ;     - 5 2 none кнопка_1 кнопка_2
-    ;     - 6 3 кнопка_1 кнопка_2 none
-    ;     - 7 6 split_1 кнопка_4 none
-    ;     - 8 8 split_2 кнопка_5 none
-    ;     - 9 9 Panel кнопка_6 none
+    ;     - 4 5 --- split_1 кнопка_4
+    ;     - 5 2 --- кнопка_1 кнопка_2
+    ;     - 6 3 кнопка_1 кнопка_2 ---
+    ;     - 7 6 split_1 кнопка_4 ---
+    ;     - 8 8 split_2 кнопка_5 ---
+    ;     - 9 9 Panel кнопка_6 ---
     ;     -
     
     CloseList()
@@ -50,6 +50,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
