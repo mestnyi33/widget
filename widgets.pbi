@@ -4322,7 +4322,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         If *this\autosize 
+         If *this\autosize And Not is_root_( *this )
             If *this\parent And 
                *this\parent <> *this 
                
@@ -21024,7 +21024,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure EventResize( )
          Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
-         ;Debug "- resize - os - window -"
+         ; Debug "- resize - os - window - "+PB(WindowWidth)( PB(EventWindow)( ))
          ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
          PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( Canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( Canvas ) * 2 ) ; bug
       EndProcedure
@@ -24057,8 +24057,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4660
-; FirstLine = 4547
+; CursorPosition = 11458
+; FirstLine = 10816
 ; Folding = -----------------------------------------------------------------------------------------------------vf-6f-------------b----------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------4---------8--+-8f---------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u+3-----------f------------------q---------
 ; Optimizer
 ; EnableXP
