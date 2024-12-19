@@ -4322,7 +4322,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         If *this\autosize And Not is_root_( *this )
+         If *this\autosize ;And not is_root_( *this )
             If *this\parent And 
                *this\parent <> *this 
                
@@ -21107,7 +21107,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not ( root( ) And root( )\canvas\gadget = eventgadget )
                ChangeCurrentCanvas( GadgetID( eventgadget ), 0 )
             EndIf 
-            If Resize( roots( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
+            If Resize( roots( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )), 0 )
+            ;If Resize( roots( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                ; Debug "resize - canvas ["+eventgadget+"]"
                ReDraw( roots( ) )
             EndIf
@@ -24057,8 +24058,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11458
-; FirstLine = 10816
+; CursorPosition = 21109
+; FirstLine = 20349
 ; Folding = -----------------------------------------------------------------------------------------------------vf-6f-------------b----------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------4---------8--+-8f---------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u+3-----------f------------------q---------
 ; Optimizer
 ; EnableXP

@@ -250,4 +250,3 @@ CompilerEndIf
 ; FirstLine = 101
 ; Folding = 8--0--
 ; EnableXP
-; DPIAware
