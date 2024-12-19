@@ -4652,7 +4652,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\ if the integral scroll bars
             If *this\type <> #__type_MDI
                If Change_width
+                  ;;Debug ">"
                   bar_area_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
+                  ;;Debug "<"
                EndIf
             EndIf
             
@@ -4701,7 +4703,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *this\parent\scroll\v\bar\max > *this\parent\scroll\v\bar\page\len Or
                         *this\parent\scroll\h\bar\max > *this\parent\scroll\h\bar\page\len
                         
-                        bar_area_resize( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
+                      ;  bar_area_resize( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
                      EndIf
                   EndIf
                EndIf
@@ -10357,6 +10359,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If \h\frame_y( ) <> Height - \h\height
                h1 = 1
                y1 = Height - \h\height
+               Debug \h\height
+               ; Debug ""+\h\frame_y( ) +" "+ y1
+              ; Debug Str(Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
             EndIf
             
             If \v\bar\max > \v\bar\page\len
@@ -10403,13 +10408,19 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             If v1 And (\v\frame_x( ) <> *this\inner_x( ) + x1 Or \v\frame_y( ) <> *this\inner_y( ) + Y Or \v\frame_height( ) <> Height)
-               Debug \v\container_x( ) 
+               test_event_resize = 1
+               If x1 = #PB_Ignore
+                 ; Debug *this\class
+                  ;x1 = \v\container_x( ) 
+               EndIf
+              ; Debug x1;\v\container_x( ) 
+               
 ;                If \v\container_x( ) <> 0
 ;                   Debug 44
-;                   Resize( \v, 0 , 30, 20, 100 )
+                 ;  Resize( \v, 0 , 30, 20, 100 )
 ;                   \v\container_x( ) = 0
 ;                EndIf
-               Resize( \v, x1 , Y, #PB_Ignore, Height )
+             ;  Resize( \v, x1 , Y, #PB_Ignore, Height )
             EndIf
             If h1 And (\h\frame_x( ) <> *this\inner_x( ) + X Or \h\frame_y( ) <> *this\inner_y( ) + y1 Or \h\frame_width( ) <> Width)
                Resize( \h, X, y1, Width, #PB_Ignore )
@@ -23271,8 +23282,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23239
-; FirstLine = 23225
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 10422
+; FirstLine = 10144
+; Folding = --------------------------------------------------------------------------------------------------------0--Xt+-f20c88nv---------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

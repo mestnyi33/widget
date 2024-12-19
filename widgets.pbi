@@ -140,7 +140,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_event_repost
       Global test_event_entered
       Global test_event_send = 0
-      Global test_event_resize
+      Global test_resize
       Global test_event_canvas
       
       Global test_redraw_items = 1
@@ -150,7 +150,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_startdrawing      = 0
       Global test_clip              = 0
       
-      Global test_scrollbars_resize = 0
+      Global test_resize_area = 0
       Global test_scrollbars_reclip = 0
       Global test_scrollbars_draw   = 0
       
@@ -4293,9 +4293,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
-         If test_event_resize
-            Debug "resize - "+*this\class +" ("+ X +" "+ Y +" "+ Width +" "+ Height +")"
-         EndIf
          
          ;\\
          *this\redraw = #True
@@ -4393,13 +4390,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                      X = *this\bounds\move\min\x
                   EndIf
                   If *this\bounds\move\max\x <> #PB_Ignore
-                     If Width <> #PB_Ignore
-                        If X > *this\bounds\move\max\x - Width
-                           X = *this\bounds\move\max\x - Width
-                        EndIf
-                     Else
+                     If Width = #PB_Ignore
                         If X > *this\bounds\move\max\x - *this\frame_width( )
                            X = *this\bounds\move\max\x - *this\frame_width( )
+                        EndIf
+                     Else
+                        If X > *this\bounds\move\max\x - Width
+                           X = *this\bounds\move\max\x - Width
                         EndIf
                      EndIf
                   EndIf
@@ -4413,13 +4410,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Y = *this\bounds\move\min\y
                   EndIf
                   If *this\bounds\move\max\y <> #PB_Ignore
-                     If Height <> #PB_Ignore
-                        If Y > *this\bounds\move\max\y - Height
-                           Y = *this\bounds\move\max\y - Height
-                        EndIf
-                     Else
+                     If Height = #PB_Ignore
                         If Y > *this\bounds\move\max\y - *this\frame_height( )
                            Y = *this\bounds\move\max\y - *this\frame_height( )
+                        EndIf
+                     Else
+                        If Y > *this\bounds\move\max\y - Height
+                           Y = *this\bounds\move\max\y - Height
                         EndIf
                      EndIf
                   EndIf
@@ -4451,13 +4448,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;\\
                   If *this\bounds\move
-                     If X <> #PB_Ignore
-                        If Width > *this\bounds\size\max\width - ( X - *this\bounds\move\min\x ) - h_frame
-                           Width = *this\bounds\size\max\width - ( X - *this\bounds\move\min\x ) - h_frame
-                        EndIf
-                     Else
+                     If X = #PB_Ignore
                         If Width > *this\bounds\size\max\width - ( *this\container_x( ) - *this\bounds\move\min\x ) - h_frame
                            Width = *this\bounds\size\max\width - ( *this\container_x( ) - *this\bounds\move\min\x ) - h_frame
+                        EndIf
+                     Else
+                        If Width > *this\bounds\size\max\width - ( X - *this\bounds\move\min\x ) - h_frame
+                           Width = *this\bounds\size\max\width - ( X - *this\bounds\move\min\x ) - h_frame
                         EndIf
                      EndIf
                   EndIf
@@ -4480,47 +4477,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;\\
                   If *this\bounds\move
-                     If Y <> #PB_Ignore
-                        If Height > *this\bounds\size\max\height - ( Y - *this\bounds\move\min\y ) - v_frame
-                           Height = *this\bounds\size\max\height - ( Y - *this\bounds\move\min\y ) - v_frame
-                        EndIf
-                     Else
+                     If Y = #PB_Ignore
                         If Height > *this\bounds\size\max\height - ( *this\container_y( ) - *this\bounds\move\min\y ) - v_frame
                            Height = *this\bounds\size\max\height - ( *this\container_y( ) - *this\bounds\move\min\y ) - v_frame
+                        EndIf
+                     Else
+                        If Height > *this\bounds\size\max\height - ( Y - *this\bounds\move\min\y ) - v_frame
+                           Height = *this\bounds\size\max\height - ( Y - *this\bounds\move\min\y ) - v_frame
                         EndIf
                      EndIf
                   EndIf
                EndIf
             EndIf
             
-            ;\\
-            If X = #PB_Ignore
-               X = *this\container_x( )
-            ElseIf *this\parent And *this\parent\container
-               If Not *this\child
-                  X + *this\parent\scroll_x( )
-               EndIf
-               *this\container_x( ) = X
-            EndIf
-            If Y = #PB_Ignore
-               Y = *this\container_y( )
-            ElseIf *this\parent And *this\parent\container
-               If Not *this\child
-                  Y + *this\parent\scroll_y( )
-               EndIf
-               *this\container_y( ) = Y
-            EndIf
-            
-            ;\\
-            If *this\parent And *this <> *this\parent And Not is_root_( *this )
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                  X + *this\parent\inner_x( )
-               EndIf
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                  Y + *this\parent\inner_y( )
-               EndIf
-            EndIf
-            
+                
             ;\\
             If Width = #PB_Ignore
                If is_window_( *this )
@@ -4550,7 +4520,42 @@ CompilerIf Not Defined( widget, #PB_Module )
                Width + ( *this\fs * 2 + *this\fs[1] + *this\fs[3] )
                Height + ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
             EndIf
+            
+            ;\\
+            If X = #PB_Ignore
+               X = *this\container_x( )
+            ElseIf *this\parent And *this\parent\container
+               If Not *this\child
+                  X + *this\parent\scroll_x( )
+               EndIf
+               *this\container_x( ) = X
+            EndIf
+            If Y = #PB_Ignore
+               Y = *this\container_y( )
+            ElseIf *this\parent And *this\parent\container
+               If Not *this\child
+                  Y + *this\parent\scroll_y( )
+               EndIf
+               *this\container_y( ) = Y
+            EndIf
+            
+            ; container coordinate
+            If test_resize
+               Debug "resize - "+*this\class +" ("+ X +" "+ Y +" "+ Width +" "+ Height +")"
+            EndIf
+            
+         
+            ; frame coordinate
+            If *this\parent And *this <> *this\parent And Not is_root_( *this )
+               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
+                  X + *this\parent\inner_x( )
+               EndIf
+               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
+                  Y + *this\parent\inner_y( )
+               EndIf
+            EndIf
          EndIf
+         
          
          ;\\ inner x&y position
          ix      = X + ( *this\fs + *this\fs[1] )
@@ -4643,6 +4648,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Resize( *this\stringbar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
          EndIf
          
+         If ( Change_x Or Change_y Or Change_width Or Change_height )
          ;\\ resize vertical&horizontal scrollbars
          If *this\scroll And
             *this\scroll\v And
@@ -4650,7 +4656,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ if the integral scroll bars
             If *this\type <> #__type_MDI
-               bar_area_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
+               ;If ( Change_x Or Change_y Or Change_width Or Change_height )
+                  bar_area_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
+              ; EndIf
             EndIf
             
             ;\\
@@ -4671,8 +4679,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-           
-         If Change_width Or Change_height
             If *this\parent And
             *this\parent\scroll And
             *this\parent\scroll\v And
@@ -4895,100 +4901,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            If *this\type = #__type_Splitter And (Change_width Or Change_height)
-;                Protected *bar._s_BAR = *this\bar
-;                Protected._s_BUTTONS *BB1, *BB2, *SB
-;                *SB  = *bar\button
-;                *BB1 = *bar\button[1]
-;                *BB2 = *bar\button[2]
-;                
-;                ; Splitter first-child auto resize
-;                If IsGadget( *this\split_1( ) )
-;                   ;             If is_root_container_( *this )
-;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-;                      ; PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
-;                      SetWindowPos_( GadgetID(*this\split_1( )), #HWND_TOP, *BB1\x, *BB1\y, *BB1\width, *BB1\height, #SWP_NOACTIVATE )
-;                      UpdateWindow_( GadgetID(*this\root\canvas\gadget))
-;                   CompilerElse
-;                      PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
-;                   CompilerEndIf
-;                   ;             Else
-;                   ;               PB(ResizeGadget)( *this\split_1( ),
-;                   ;                                 *BB1\x + GadgetX( *this\root\canvas\gadget ),
-;                   ;                                 *BB1\y + GadgetY( *this\root\canvas\gadget ),
-;                   ;                                 *BB1\width, *BB1\height )
-;                   ;             EndIf
-;                   
-;                Else
-;                   If *this\split_1( ) > 0 And *this\split_1( ) <> *this
-;                      If *this\split_1( )\x <> *BB1\x Or
-;                         *this\split_1( )\y <> *BB1\y Or
-;                         *this\split_1( )\width <> *BB1\width Or
-;                         *this\split_1( )\height <> *BB1\height
-;                         ; Debug "splitter_1_resize " + *this\split_1( )
-;                         
-;                         If *this\split_1( )\type = #__type_window
-;                            Resize( *this\split_1( ),
-;                                    *BB1\x - *this\frame_x( ),
-;                                    *BB1\y - *this\frame_y( ),
-;                                    *BB1\width - *this\split_1( )\fs * 2 - *this\split_1( )\fs[1] - *this\split_1( )\fs[3],
-;                                    *BB1\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] - *this\split_1( )\fs[4], 0 )
-;                         Else
-;                            Resize( *this\split_1( ),
-;                                    *BB1\x - *this\frame_x( ),
-;                                    *BB1\y - *this\frame_y( ),
-;                                    *BB1\width, *BB1\height, 0 )
-;                         EndIf
-;                         
-;                      EndIf
-;                   EndIf
-;                EndIf
-;                
-;                ; Splitter second-child auto resize
-;                If IsGadget( *this\split_2( ) )
-;                   ;             If is_root_container_( *this )
-;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-;                      ; PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
-;                      SetWindowPos_( GadgetID(*this\split_2( )), #HWND_TOP, *BB2\x, *BB2\y, *BB2\width, *BB2\height, #SWP_NOACTIVATE )
-;                      UpdateWindow_( GadgetID(*this\root\canvas\gadget))
-;                   CompilerElse
-;                      PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
-;                   CompilerEndIf
-;                   ;             Else
-;                   ;               PB(ResizeGadget)( *this\split_2( ),
-;                   ;                                 *BB2\x + GadgetX( *this\root\canvas\gadget ),
-;                   ;                                 *BB2\y + GadgetY( *this\root\canvas\gadget ),
-;                   ;                                 *BB2\width, *BB2\height )
-;                   ;             EndIf
-;                   
-;                Else
-;                   If *this\split_2( ) > 0 And *this\split_2( ) <> *this
-;                      If *this\split_2( )\x <> *BB2\x Or
-;                         *this\split_2( )\y <> *BB2\y Or
-;                         *this\split_2( )\width <> *BB2\width Or
-;                         *this\split_2( )\height <> *BB2\height
-;                         ; Debug "splitter_2_resize " + *this\split_2( )
-;                         
-;                         If *this\split_2( )\type = #__type_window
-;                            Resize( *this\split_2( ),
-;                                    *BB2\x - *this\frame_x( ),
-;                                    *BB2\y - *this\frame_y( ),
-;                                    *BB2\width - *this\split_1( )\fs * 2 - *this\split_1( )\fs[1] - *this\split_1( )\fs[3],
-;                                    *BB2\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] - *this\split_1( )\fs[4], 0 )
-;                         Else
-;                            Resize( *this\split_2( ),
-;                                    *BB2\x - *this\frame_x( ),
-;                                    *BB2\y - *this\frame_y( ),
-;                                    *BB2\width, *BB2\height, 0 )
-;                         EndIf
-;                         
-;                      EndIf
-;                   EndIf
-;                EndIf
-;                
-            EndIf
-            
-            ;
             ;\\ Post Event
             If *this\resize\send
                Send( *this, #__event_resize )
@@ -9771,7 +9683,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *BB2 = *bar\button[2]
          
          With *this
-            If test_scrollbars_resize
+            If test_resize_area
                ; Debug "  Draw scrolbar " + *this\class +" "+ *this\x +" "+ *this\y +" "+ *this\width +" "+ *this\height
             EndIf
             
@@ -10368,8 +10280,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Procedure bar_area_resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
-         Protected v1, h1, x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight, w, h
-         ;Protected v1, h1, x1 = *this\container_x( ), y1 = *this\container_y( ), width1 = *this\container_width( ), height1 = *this\container_height( ), iwidth, iheight, w, h
+         Protected resize_v, resize_h, x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight, w, h
+         ;Protected resize_v, resize_h, x1 = *this\container_x( ), y1 = *this\container_y( ), width1 = *this\container_width( ), height1 = *this\container_height( ), iwidth, iheight, w, h
          
          With *this\scroll
             If Not ( *this\scroll And ( \v Or \h ))
@@ -10441,18 +10353,25 @@ CompilerIf Not Defined( widget, #PB_Module )
             Width + X
             Height + Y
             
-            If \v\frame_x( ) <> Width - \v\width
-               v1 = 1
-               x1 = Width - \v\width
+            
+            If \v\frame_x( ) = *this\inner_x( ) + (Width - \v\width)
+               x1 = \v\frame_x( )
+            Else
+               resize_v = 1
+               x1 = *this\inner_x( ) + (Width - \v\width)
+               ; Debug "         v "+\v\frame_x( ) +" "+ x1
             EndIf
             
-            If \h\frame_y( ) <> Height - \h\height
-               h1 = 1
-               y1 = Height - \h\height
+            If \h\frame_y( ) = *this\inner_y( ) + (Height - \h\height)
+               y1 = \h\frame_y( )
+            Else
+               resize_h = 1
+               y1 = *this\inner_y( ) + (Height - \h\height)
+               ;Debug "         h "+\h\frame_y( ) +" "+ y1
             EndIf
             
             If \v\bar\max > \v\bar\page\len
-               v1     = 1
+               resize_v     = 1
                Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
                If \v\hide <> #False
                   \v\hide = #False
@@ -10471,7 +10390,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             If \h\bar\max > \h\bar\page\len
-               h1    = 1
+               resize_h    = 1
                Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\width / 4 ))
                If \h\hide <> #False
                   \h\hide = #False
@@ -10489,33 +10408,39 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            If test_scrollbars_resize
+            If test_resize_area
                Debug "  --- area_resize " + *this\class + " " + *this\inner_width( ) + " " + *this\inner_height( ) + " " + \v\bar\page\len + " " + \h\bar\page\len
-               Debug "  {"
             EndIf
             
-            If v1 And (\v\frame_x( ) <> *this\inner_x( ) + x1 Or \v\frame_y( ) <> *this\inner_y( ) + Y Or \v\frame_height( ) <> Height)
-               Resize( \v, x1 , Y, #PB_Ignore, Height )
+            If resize_v And (\v\frame_x( ) <> x1 Or 
+                       \v\frame_y( ) <> *this\inner_y( ) + Y Or
+                       \v\frame_height( ) <> Height)
+               If test_resize_area
+                  Debug "         v "+\v\frame_x( ) +" "+ x1
+               EndIf
+               Resize( \v, x1-*this\inner_x( ) , #PB_Ignore, #PB_Ignore, Height )
             EndIf
-            If h1 And (\h\frame_x( ) <> *this\inner_x( ) + X Or \h\frame_y( ) <> *this\inner_y( ) + y1 Or \h\frame_width( ) <> Width)
-               Resize( \h, X, y1, Width, #PB_Ignore )
+            If resize_h And (\h\frame_y( ) <> y1 Or
+                       \h\frame_x( ) <> *this\inner_x( ) + X Or
+                       \h\frame_width( ) <> Width)
+               If test_resize_area
+                  Debug "         h "+\h\frame_y( ) +" "+ y1
+               EndIf
+               Resize( \h, #PB_Ignore, y1-*this\inner_y( ), Width, #PB_Ignore )
             EndIf
             
-            If \v\bar\thumb\len = \v\bar\thumb\end
+            If \v\bar\page\len >= \v\bar\max ;Or \v\bar\thumb\len = \v\bar\thumb\end
                \v\hide = 1
             Else
                \v\hide = \v\hide[1]
             EndIf
             
-            If \h\bar\thumb\len = \h\bar\thumb\end
+            If \h\bar\page\len >= \h\bar\max ;Or \h\bar\thumb\len = \h\bar\thumb\end
                \h\hide = 1
             Else
                \h\hide = \h\hide[1]
             EndIf
             
-            If test_scrollbars_resize
-               Debug "  }"
-            EndIf
             
             ;\\ update scrollbars parent inner coordinate
             If *this\scroll_inner_width( ) <> \h\bar\page\len
@@ -10772,7 +10697,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\
-            If test_scrollbars_resize
+            If test_resize_area
                Debug "  --- mdi_resize " + *this\class + " " + *this\inner_width( ) + " " + *this\inner_height( )
             EndIf
             
@@ -11834,99 +11759,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; scroll area change
                   Send( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
                EndIf  
-               
-               
-               If *this\type = #__type_Splitter
-;                   ; Splitter first-child auto resize
-;                     If IsGadget( *this\split_1( ) )
-;                         ;             If is_root_container_( *this )
-;                         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-;                            ; PB(ResizeGadget)( *this\split_1( ), DPIUnScaledX(*BB1\x), DPIUnScaledY(*BB1\y), DPIUnScaledX(*BB1\width), DPIUnScaledY(*BB1\height) )
-;                            SetWindowPos_( GadgetID(*this\split_1( )), #HWND_TOP, *BB1\x, *BB1\y, *BB1\width, *BB1\height, #SWP_NOACTIVATE )
-;                            UpdateWindow_( GadgetID(*this\root\canvas\gadget))
-;                         CompilerElse
-;                            PB(ResizeGadget)( *this\split_1( ), *BB1\x, *BB1\y, *BB1\width, *BB1\height )
-;                         CompilerEndIf
-;                         ;             Else
-;                         ;               PB(ResizeGadget)( *this\split_1( ),
-;                         ;                                 *BB1\x + GadgetX( *this\root\canvas\gadget ),
-;                         ;                                 *BB1\y + GadgetY( *this\root\canvas\gadget ),
-;                         ;                                 *BB1\width, *BB1\height )
-;                         ;             EndIf
-;                         
-;                      Else
-;                         If *this\split_1( ) > 0 And *this\split_1( ) <> *this
-;                            If *this\split_1( )\x <> *BB1\x Or
-;                               *this\split_1( )\y <> *BB1\y Or
-;                               *this\split_1( )\width <> *BB1\width Or
-;                               *this\split_1( )\height <> *BB1\height
-;                               ; Debug "splitter_1_resize " + *this\split_1( )
-;                               
-;                               If *this\split_1( )\type = #__type_window
-;                                  Resize( *this\split_1( ),
-;                                          *BB1\x - *this\frame_x( ),
-;                                          *BB1\y - *this\frame_y( ),
-;                                          *BB1\width - *this\split_1( )\fs * 2 - *this\split_1( )\fs[1] - *this\split_1( )\fs[3],
-;                                          *BB1\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] - *this\split_1( )\fs[4], 0 )
-;                               Else
-;                                  Resize( *this\split_1( ),
-;                                          *BB1\x - *this\frame_x( ),
-;                                          *BB1\y - *this\frame_y( ),
-;                                          *BB1\width, *BB1\height, 0 )
-;                               EndIf
-;                               
-;                            EndIf
-;                         EndIf
-;                      EndIf
-;                      
-;                      ; Splitter second-child auto resize
-;                      If IsGadget( *this\split_2( ) )
-;                         ;             If is_root_container_( *this )
-;                         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-;                            ; PB(ResizeGadget)( *this\split_2( ), DPIUnScaledX(*BB2\x), DPIUnScaledY(*BB2\y), DPIUnScaledX(*BB2\width), DPIUnScaledY(*BB2\height) )
-;                            SetWindowPos_( GadgetID(*this\split_2( )), #HWND_TOP, *BB2\x, *BB2\y, *BB2\width, *BB2\height, #SWP_NOACTIVATE )
-;                            UpdateWindow_( GadgetID(*this\root\canvas\gadget))
-;                         CompilerElse
-;                            PB(ResizeGadget)( *this\split_2( ), *BB2\x, *BB2\y, *BB2\width, *BB2\height )
-;                         CompilerEndIf
-;                         ;             Else
-;                         ;               PB(ResizeGadget)( *this\split_2( ),
-;                         ;                                 *BB2\x + GadgetX( *this\root\canvas\gadget ),
-;                         ;                                 *BB2\y + GadgetY( *this\root\canvas\gadget ),
-;                         ;                                 *BB2\width, *BB2\height )
-;                         ;             EndIf
-;                         
-;                      Else
-;                         If *this\split_2( ) > 0 And *this\split_2( ) <> *this
-;                            If *this\split_2( )\x <> *BB2\x Or
-;                               *this\split_2( )\y <> *BB2\y Or
-;                               *this\split_2( )\width <> *BB2\width Or
-;                               *this\split_2( )\height <> *BB2\height
-;                               ; Debug "splitter_2_resize " + *this\split_2( )
-;                               
-;                               If *this\split_2( )\type = #__type_window
-;                                  Resize( *this\split_2( ),
-;                                          *BB2\x - *this\frame_x( ),
-;                                          *BB2\y - *this\frame_y( ),
-;                                          *BB2\width - *this\split_1( )\fs * 2 - *this\split_1( )\fs[1] - *this\split_1( )\fs[3],
-;                                          *BB2\height - *this\split_1( )\fs * 2 - *this\split_1( )\fs[2] - *this\split_1( )\fs[4], 0 )
-;                               Else
-;                                  Resize( *this\split_2( ),
-;                                          *BB2\x - *this\frame_x( ),
-;                                          *BB2\y - *this\frame_y( ),
-;                                          *BB2\width, *BB2\height, 0 )
-;                               EndIf
-;                               
-;                            EndIf
-;                         EndIf
-;                      EndIf
-;                      
-                  EndIf
-               
-               ;               If *this\stringbar
-               ;                 Debug 777
-               ;                 Send( *this\parent, #__event_ScrollChange, *this, *bar\PageChange( ) )
-               ;               EndIf
             EndIf
             
             *this\BarChange( ) = 0
@@ -15786,7 +15618,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                Debug " canvas gadget resize"
                ResizeGadget( *this\root\canvas\gadget, X, Y, Width, Height )
             Else
-               Resize( *this, X, Y, Width, Height )
+               ;If X Or Y Or Width Or Height
+                  Resize( *this, X, Y, Width, Height )
+               ;EndIf
             EndIf
          EndIf
          
@@ -20707,6 +20541,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure DoEvents( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
+         If Not *this
+            ProcedureReturn 0
+         EndIf
+         
          ;\\ update entered position state
          If *this\enter > 0
             If Bool( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
@@ -24219,9 +24057,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11568
-; FirstLine = 11103
-; Folding = -----------------------------------------------------------------------------------------------------------------------b--4-------------------------------------------------4--+--------------------------------------------------------------------------------------------------------------------------8--+-8f----------------8----4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u+3-----------f------------------q---------
+; CursorPosition = 4660
+; FirstLine = 4547
+; Folding = -----------------------------------------------------------------------------------------------------vf-6f-------------b----------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------4---------8--+-8f---------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u+3-----------f------------------q---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -44,26 +44,21 @@ CompilerIf #PB_Compiler_IsMainFile
    Button(10,65,200,50,"window_2_root_butt_2")
    SetClass(widget( ), "window_2_root_butt_2" )
    
+   ;\\
+   Debug "--- enumerate all widgets ---"
+   ForEach roots( )
+      Debug "     window "+ roots( )\class
+      If StartEnum( roots( ) )
+         Debug "       gadget - "+ widget()\class
+         StopEnum( )
+      EndIf
+   Next
    
-;    
-;    ;\\
-;    Debug "--- enumerate all widgets ---"
-    ForEach roots( )
-;       Debug "     window "+ roots( )\class
-; ;       If StartEnum( roots( ) )
-; ;          Debug "       gadget - "+ widget()\class
-; ;          StopEnum( )
-; ;       EndIf
-;       
-;       ;ReDraw( roots() )
-    Next
-   ; Debug roots()
-    
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 30
+; CursorPosition = 45
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
 ; DPIAware

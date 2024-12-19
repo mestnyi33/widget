@@ -4,7 +4,7 @@ XIncludeFile "../../../widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   test_event_resize = 1
+   test_resize = 1
   ; test_draw_repaint = 1
    
    Global *menu
@@ -76,7 +76,18 @@ CompilerIf #PB_Compiler_IsMainFile
          Case  8: result = ComboBox(X,Y,Width,Height, flags): AddItem(result,-1,"ComboBox"): SetState(result,0)
          Case  9: result = Image(X,Y,Width,Height,0,#PB_Image_Border|flags) 
          Case 10: result = HyperLink(X,Y,Width,Height,"HyperLink",0, flags) 
-         Case 11: result = Container(X,Y,Width,Height,#PB_Container_Flat|flags): Button(0,0,80,Y,"Button1"):SetClass(widget(),GetText(widget())): Button(10,50,80,Y,"Button2"):SetClass(widget(),GetText(widget())): CloseList() ; Container
+         Case 11: result = Container(X,Y,Width,Height,#PB_Container_Flat|flags)
+            Button(0,0,80,Y,"Button1"):SetClass(widget(),GetText(widget()))
+            ;Button(10,50,80,Y,"Button2"):SetClass(widget(),GetText(widget()))
+            Tree(10,50,80,Y)
+            Define i
+            AddItem(widget(), -1, Str(i)+"test item ")
+            For i=1 To 20
+               AddItem(widget(), -1, Str(i)+"test item test item test item ")
+            Next
+            
+            CloseList() ; Container
+            
          Case 12: result = ListIcon(X,Y,Width,Height,"",88, flags) 
             ;Case 13: result = IPAddress(x,y,width,height) 
             ;Case 14: result = ProgressBar(x,y,width,height,0,5)
@@ -187,8 +198,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 72
-; Folding = -8
+; CursorPosition = 85
+; FirstLine = 79
+; Folding = --
 ; EnableXP
 ; DPIAware

@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  Procedure LoadControls(Widget, Directory$)
+  Procedure LoadControls(widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
     If FileSize(ZipFile$) < 1
@@ -65,39 +65,39 @@ CompilerIf #PB_Compiler_IsMainFile
                       Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
                       PackEntryName.S = " "+Left.S+Right.S
                       
-                      If IsGadget(Widget)
+                      If IsGadget(widget)
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 0, ImageID(Image))
+                          AddGadgetItem(widget, 0, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, 0, ImageID(Image))
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
-                          AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 1, ImageID(Image))
+                          AddGadgetItem(widget, 1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, 1, ImageID(Image))
                           
                         Else
-                          AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
+                          AddGadgetItem(widget, -1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, CountGadgetItems(widget)-1, ImageID(Image))
                         EndIf
                         
                       Else
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddItem(Widget, 0, PackEntryName.S, Image)
+                          AddItem(widget, 0, PackEntryName.S, Image)
                           ;SetItemData(Widget, 0, Image)
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
-                          AddItem(Widget, 1, PackEntryName.S, Image)
+                          AddItem(widget, 1, PackEntryName.S, Image)
                           ;SetItemData(Widget, 1, Image)
                           
                         Else
-                          AddItem(Widget, -1, PackEntryName.S, Image)
+                          AddItem(widget, -1, PackEntryName.S, Image)
                           ;SetItemData(Widget, CountItems(Widget)-1, Image)
                         EndIf
                       EndIf
@@ -148,9 +148,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_tree_widget()
     ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = eventwidget()
+    Protected EventGadget = EventWidget()
     Protected EventType = WidgetEvent()
-    Protected EventData = widgeteventdata()
+    Protected EventData = WidgetEventData()
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
@@ -203,7 +203,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     g = Tree(0,0,0,0, #__flag_autosize)
     Gadget(#__type_Tree, #w_tree, 0, 0, 0, 0)
     g = GetGadgetData(#w_tree)
-    If Not g : g = Root( ) : EndIf
+    If Not g : g = root( ) : EndIf
     
     ;  3_example
     AddItem(g, 0, "Tree_0", -1 )
@@ -248,7 +248,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 151
-; FirstLine = 33
+; FirstLine = 44
 ; Folding = 8--0--
 ; EnableXP
-; DPIAware
