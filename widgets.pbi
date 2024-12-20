@@ -7864,19 +7864,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\ ?-надо тестировать
                If Not *this\parent\align\width
                   *this\parent\align\x     = *this\parent\container_x( )
-                  *this\parent\align\width = (*this\parent\inner_width( ))
-                  If *this\parent\type = #__type_window
-                     *this\parent\align\x + *this\parent\fs
-                     *this\parent\align\width - *this\parent\fs * 2 - ( *this\parent\fs[1] + *this\parent\fs[3] )
-                  EndIf
+                  *this\parent\align\width = *this\parent\inner_width( )
+;                   If *this\parent\type = #__type_window
+;                      *this\parent\align\x + *this\parent\fs
+;                      Debug *this\parent\align\width
+;                      *this\parent\align\width - *this\parent\fs * 2 - ( *this\parent\fs[1] + *this\parent\fs[3] )
+;                      Debug *this\parent\align\width
+;                   EndIf
                EndIf
                If Not *this\parent\align\height
                   *this\parent\align\y      = *this\parent\container_y( )
                   *this\parent\align\height = *this\parent\inner_height( )
-                  If *this\parent\type = #__type_window
-                     *this\parent\align\y + *this\parent\fs
-                     *this\parent\align\height - *this\parent\fs * 2 - ( *this\parent\fs[2] + *this\parent\fs[4] )
-                  EndIf
+;                   If *this\parent\type = #__type_window
+;                      *this\parent\align\y + *this\parent\fs
+;                      *this\parent\align\height - *this\parent\fs * 2 - ( *this\parent\fs[2] + *this\parent\fs[4] )
+;                   EndIf
                EndIf
                
                ;\\
@@ -7903,7 +7905,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   Else
                      *this\align\width = *this\frame_width( )
-                     If Not *this\align\right And *this\align\left
+                     If *this\align\left And Not *this\align\right
                         ; left
                         *this\align\x = 0
                      ElseIf Not *this\align\right And Not *this\align\left
@@ -7927,7 +7929,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   Else
                      *this\align\height = *this\frame_height( )
-                     If Not *this\align\bottom And *this\align\top
+                     If *this\align\top And Not *this\align\bottom
                         ; top
                         *this\align\y = 0
                      ElseIf Not *this\align\bottom And Not *this\align\top
@@ -7947,15 +7949,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\parent\align
                      If left = #__align_auto And *this\parent\align\autodock\x
                         left = - *this\parent\align\autodock\x
+                     Else
+                        left = DPIScaled(left)
                      EndIf
                      If right = #__align_auto And *this\parent\align\autodock\width
                         right = - *this\parent\align\autodock\width
+                     Else
+                        right = DPIScaled(right)
                      EndIf
                      If top = #__align_auto And *this\parent\align\autodock\y
                         top = - *this\parent\align\autodock\y
+                     Else
+                        top = DPIScaled(top)
                      EndIf
                      If bottom = #__align_auto And *this\parent\align\autodock\height
                         bottom = - *this\parent\align\autodock\height
+                     Else
+                        bottom = DPIScaled(bottom)
                      EndIf
                      ;
                      If left < 0 Or right < 0
@@ -7974,62 +7984,63 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\align\y - top + bottom
                         EndIf
                      EndIf
-                  EndIf
-                  
-                  ;\\ auto stick position
-                  If Not *this\align\right And *this\align\left
-                     *this\parent\align\autodock\x = *this\align\x + *this\align\width
-                     If *this\type = #__type_window
-                        *this\parent\align\autodock\x + *this\fs * 2
+                     
+                     ;\\ dock auto stick position
+                     If *this\align\left And Not *this\align\right 
+                        *this\parent\align\autodock\x = *this\align\x + *this\align\width
+                        If *this\type = #__type_window
+                           *this\parent\align\autodock\x + *this\fs * 2
+                        EndIf
                      EndIf
-                  EndIf
-                  If Not *this\align\bottom And *this\align\top
-                     *this\parent\align\autodock\y = *this\align\y + *this\align\height
-                     If *this\type = #__type_window
-                        *this\parent\align\autodock\y + *this\fs * 2
+                     If *this\align\top And Not *this\align\bottom
+                        *this\parent\align\autodock\y = *this\align\y + *this\align\height
+                        If *this\type = #__type_window
+                           *this\parent\align\autodock\y + *this\fs * 2
+                        EndIf
                      EndIf
-                  EndIf
-                  If Not *this\align\left And *this\align\right
-                     *this\parent\align\autodock\width = (*this\parent\inner_width( )) - *this\align\x
-                  EndIf
-                  If Not *this\align\top And *this\align\bottom
-                     *this\parent\align\autodock\height = *this\parent\inner_height( ) - *this\align\y
-                  EndIf
-                  
-                  ;\\ auto stick update
-                  If constants::BinaryFlag( Flag, #__align_full )
-                     If ( *this\parent\align\autodock\x Or
-                          *this\parent\align\autodock\y Or
-                          *this\parent\align\autodock\width Or
-                          *this\parent\align\autodock\height )
-                        
-                        ; loop enumerate widgets
-                        If StartEnum( *this\parent )
-                           If widget( )\align
-                              If widget( )\align\top And widget( )\align\bottom
-                                 widget( )\align\y      = widget( )\parent\align\autodock\y
-                                 widget( )\align\height = widget( )\parent\inner_height( ) - ( widget( )\parent\align\autodock\y + widget( )\parent\align\autodock\height )
-                                 
-                                 If widget( )\align\left And widget( )\align\right
-                                    widget( )\align\x     = widget( )\parent\align\autodock\x
-                                    widget( )\align\width = (widget( )\parent\inner_width( )) - ( widget( )\parent\align\autodock\x + widget( )\parent\align\autodock\width )
+                     If *this\align\right And Not *this\align\left
+                        *this\parent\align\autodock\width = *this\parent\inner_width( ) - *this\align\x
+                     EndIf
+                     If *this\align\bottom And Not *this\align\top
+                        *this\parent\align\autodock\height = *this\parent\inner_height( ) - *this\align\y
+                     EndIf
+                     
+                     ;\\ dock auto stick position update
+                     If constants::BinaryFlag( Flag, #__align_full )
+                        If ( *this\parent\align\autodock\x Or
+                             *this\parent\align\autodock\y Or
+                             *this\parent\align\autodock\width Or
+                             *this\parent\align\autodock\height )
+                           
+                           ; loop enum widgets
+                           If StartEnum( *this\parent )
+                              If widget( )\align
+                                 If widget( )\align\top And widget( )\align\bottom
+                                    widget( )\align\y      = widget( )\parent\align\autodock\y
+                                    widget( )\align\height = widget( )\parent\inner_height( ) - ( widget( )\parent\align\autodock\y + widget( )\parent\align\autodock\height )
+                                    
+                                    If widget( )\align\left And widget( )\align\right
+                                       widget( )\align\x     = widget( )\parent\align\autodock\x
+                                       widget( )\align\width = (widget( )\parent\inner_width( )) - ( widget( )\parent\align\autodock\x + widget( )\parent\align\autodock\width )
+                                       
+                                       If widget( )\type = #__type_window
+                                          widget( )\align\width - widget( )\fs * 2
+                                       EndIf
+                                    EndIf
                                     
                                     If widget( )\type = #__type_window
-                                       widget( )\align\width - widget( )\fs * 2
+                                       widget( )\align\height - widget( )\fs * 2
                                     EndIf
                                  EndIf
-                                 
-                                 If widget( )\type = #__type_window
-                                    widget( )\align\height - widget( )\fs * 2
-                                 EndIf
                               EndIf
+                              ;
+                              StopEnum( )
                            EndIf
-                           StopEnum( )
                         EndIf
                      EndIf
                   EndIf
                EndIf
-               
+                  
                ;\\
                ; update parent children's coordinate
                *this\parent\align\update = 1
@@ -17274,6 +17285,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Reclip( *this )
                EndIf
                
+               ;\\ draw clip out transform widgets frame
+               If *this\anchors Or test_clip
+                  ;If Not ( *this\draw_width( ) > 0 And *this\draw_height( ) > 0 )
+                  UnclipOutput( )
+                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ff00ffff )
+                  draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, $ff00ffff )
+                  ;EndIf
+               EndIf
+               
                ;\\
                If *this\draw_width( ) > 0 And
                   *this\draw_height( ) > 0
@@ -17645,24 +17666,27 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   Draw( widgets( ))
+                  
                   ;
                   ;\\ draw scroll area frames
-                  If widgets( )\parent
-                     If Not widgets( )\parent\hide
-                        If widgets( ) <> widgets( )\parent
-                           If widgets( ) = widgets( )\parent\LastWidget( ) 
-                              If widgets( )\parent\scroll\v And widgets( )\parent\scroll\h
-                                 clip_output_( widgets( )\parent, [#__c_draw] )
-                                 draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                                 
-                                 ;\\ Scroll area coordinate
-                                 draw_box_( widgets( )\parent\inner_x( ) + widgets( )\parent\scroll_x( ), widgets( )\parent\inner_y( ) + widgets( )\parent\scroll_y( ), widgets( )\parent\scroll_width( ), widgets( )\parent\scroll_height( ), $FF0000FF )
-                                 
-                                 ;\\
-                                 draw_box_( widgets( )\parent\scroll\h\frame_x( ) + widgets( )\parent\scroll_x( ), widgets( )\parent\scroll\v\frame_y( ) + widgets( )\parent\scroll_y( ), widgets( )\parent\scroll_width( ), widgets( )\parent\scroll_height( ), $FF0000FF )
-                                 
-                                 ;\\ page coordinate
-                                 draw_box_( widgets( )\parent\scroll\h\frame_x( ), widgets( )\parent\scroll\v\frame_y( ), widgets( )\parent\scroll\h\bar\page\len, widgets( )\parent\scroll\v\bar\page\len, $FF00FF00 )
+                  If test_scrollbars_draw
+                     If widgets( )\parent
+                        If Not widgets( )\parent\hide
+                           If widgets( ) <> widgets( )\parent
+                              If widgets( ) = widgets( )\parent\LastWidget( ) 
+                                 If widgets( )\parent\scroll\v And widgets( )\parent\scroll\h
+                                    clip_output_( widgets( )\parent, [#__c_draw] )
+                                    draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                                    
+                                    ;\\ Scroll area coordinate
+                                    draw_box_( widgets( )\parent\inner_x( ) + widgets( )\parent\scroll_x( ), widgets( )\parent\inner_y( ) + widgets( )\parent\scroll_y( ), widgets( )\parent\scroll_width( ), widgets( )\parent\scroll_height( ), $FF0000FF )
+                                    
+                                    ;\\
+                                    draw_box_( widgets( )\parent\scroll\h\frame_x( ) + widgets( )\parent\scroll_x( ), widgets( )\parent\scroll\v\frame_y( ) + widgets( )\parent\scroll_y( ), widgets( )\parent\scroll_width( ), widgets( )\parent\scroll_height( ), $FF0000FF )
+                                    
+                                    ;\\ page coordinate
+                                    draw_box_( widgets( )\parent\scroll\h\frame_x( ), widgets( )\parent\scroll\v\frame_y( ), widgets( )\parent\scroll\h\bar\page\len, widgets( )\parent\scroll\v\bar\page\len, $FF00FF00 )
+                                 EndIf
                               EndIf
                            EndIf
                         EndIf
@@ -17740,24 +17764,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;                       
                   StopEnum( )
-               EndIf
-               
-               ;\\ draw clip out transform widgets frame
-               If *root\drawmode & 1<<2
-                  UnclipOutput( )
-                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                  ;
-                  If StartEnum( *root )
-                     If Not widgets( )\parent\hide And
-                        Not ( Not widgets( )\hide And widgets( )\draw_width( ) > 0 And widgets( )\draw_height( ) > 0 )
-                        
-                        ; is child
-                        If Bool( Not ( widgets( )\parent\tabbar And widgets( )\TabIndex( ) <> widgets( )\parent\tabbar\TabState( ) ))
-                           draw_roundbox_( widgets( )\inner_x( ), widgets( )\inner_y( ), widgets( )\inner_width( ), widgets( )\inner_height( ), widgets( )\round, widgets( )\round, $ff00ffff )
-                        EndIf
-                     EndIf
-                     StopEnum( )
-                  EndIf
                EndIf
                ;
             EndIf
@@ -22440,7 +22446,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            If constants::BinaryFlag( *this\flag, #__window_SizeGadget )
+            If constants::BinaryFlag( *this\flag, #__window_SizeGadget&~#__window_TitleBar )
                a_create( *this, #__a_full | #__a_zoom | #__a_nodraw )
             EndIf
          EndWith
@@ -24058,9 +24064,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8759
-; FirstLine = 8481
-; Folding = -----------------------------------------------------------------------------------------------------vf-6f-------------b----------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------4---------8----8f---------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u+3-----------f------------------q---------
+; CursorPosition = 17288
+; FirstLine = 16657
+; Folding = -----------------------------------------------------------------------------------------------------vf-8f------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------0---------+----+4---------------------+----------------------------------------------------------------------------------------------------------------------------------8------v-+--+-------------------------------------------------------------------------------------------------------------------------------87b------------0-----------------r+---------
 ; Optimizer
 ; EnableXP
 ; DPIAware
