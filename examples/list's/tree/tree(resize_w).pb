@@ -13,8 +13,8 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
-    Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
+    Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
     If gadget =- 1 : gadget = g : EndIf
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -83,6 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; Folding = --
 ; EnableXP
+; DPIAware

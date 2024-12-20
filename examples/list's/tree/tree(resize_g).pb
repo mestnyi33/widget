@@ -176,6 +176,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 300, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     Define i,a,g
+    SetWindowColor(0, $B3FDFF)
     
     TreeGadget(#g_tree, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         
     g = #g_tree
@@ -204,7 +205,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Gadget(#__type_Tree, #w_tree, 0, 0, 0, 0)
     g = GetGadgetData(#w_tree)
     If Not g : g = root( ) : EndIf
-    
+   ; SetBackgroundColor(g, $FFB3FDFF)
+                        
+                        
     ;  3_example
     AddItem(g, 0, "Tree_0", -1 )
     AddItem(g, 1, "Tree_1_1", 0, 1) 
@@ -223,11 +226,17 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     ;SplitterGadget(#g_splitter,8, 8, 306, 491-16, #g_tree, #w_tree)
-    SplitterGadget(#g_splitter2, 0,0,0,0, #g_tree, #w_tree)
+    SplitterGadget(#g_splitter2, 0,0,0,0, #w_tree, #g_tree)
     SplitterGadget(#g_splitter, 8, 8, 300-16, 491-16, TextGadget(#PB_Any,0,0,0,0,""),#g_splitter2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     SetGadgetState(#g_splitter, 0)
     
     
+      ;  SetGadgetColor(#g_splitter, #PB_Gadget_BackColor, $FFB3FDFF)
+;     If StartDrawing(CanvasOutput(#w_tree))
+;        Box(0, 0, OutputWidth(), OutputHeight(),  RGB(Random(255), Random(255), Random(255)))
+;        StopDrawing()
+;     EndIf
+ 
     CompilerIf #PB_Compiler_Version =< 546
       BindGadgetEvent(#g_splitter, @SplitterCallBack())
     CompilerEndIf
@@ -247,6 +256,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; FirstLine = 101
+; CursorPosition = 226
+; FirstLine = 89
 ; Folding = 8--0--
 ; EnableXP

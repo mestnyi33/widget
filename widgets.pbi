@@ -8757,6 +8757,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
          ;( _bar_\min + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest )) ; 
+         ;( _bar_\min + Round(((( _thumb_pos_ ) + (_bar_\min[2]) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
          ( _bar_\min + Round(((( _thumb_pos_ ) + (Bool( Not _bar_\fixed ) * _bar_\min[2]) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
@@ -21108,7 +21109,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                ChangeCurrentCanvas( GadgetID( eventgadget ), 0 )
             EndIf 
             If Resize( roots( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )), 0 )
-            ;If Resize( roots( ), 0, 0, PB(GadgetWidth)( eventgadget ), PB(GadgetHeight)( eventgadget ) )
                ; Debug "resize - canvas ["+eventgadget+"]"
                ReDraw( roots( ) )
             EndIf
@@ -24058,9 +24058,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21109
-; FirstLine = 20349
-; Folding = -----------------------------------------------------------------------------------------------------vf-6f-------------b----------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------4---------8--+-8f---------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u+3-----------f------------------q---------
+; CursorPosition = 8759
+; FirstLine = 8481
+; Folding = -----------------------------------------------------------------------------------------------------vf-6f-------------b----------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------4---------8----8f---------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u+3-----------f------------------q---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

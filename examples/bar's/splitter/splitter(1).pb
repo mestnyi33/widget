@@ -1,5 +1,5 @@
 ﻿;
-; example demo resize draw splitter - OS gadgets
+; bug then resized no first fixed splitter
 ; 
 
 XIncludeFile "../../../widgets.pbi"
@@ -31,11 +31,11 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\ gadget
   ButtonGadget(1, 0, 0, 0, 0, "BTN1")
   ButtonGadget(2, 0, 0, 0, 0, "BTN2")
-  SplitterGadget(3, 125, 10, 250, 70, 1, 2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
+  SplitterGadget(3, 125, 10, 250, 70, 1, 2, #PB_Splitter_Separator | #PB_Splitter_Vertical );| #PB_Splitter_FirstFixed)
   
   ButtonGadget(4, 0, 0, 0, 0, "BTN1")
   ButtonGadget(5, 0, 0, 0, 0, "BTN2")
-  SplitterGadget(6, 125, 90, 250, 70, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+  SplitterGadget(6, 125, 90, 250, 70, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical );| #PB_Splitter_SecondFixed)
   ;
   SplitterGadget(7, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator | #PB_Splitter_Vertical)
   
@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
 
   b_2 = widget::Button(0, 0, 0, 0, "BTN1")
   b_3 = widget::Button(0, 0, 0, 0, "BTN2")
-  s_1 = widget::Splitter(125, 170+80, 250, 70, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+  s_1 = widget::Splitter(125, 170+80, 250, 70, b_2, b_3, #PB_Splitter_Separator | #PB_Splitter_Vertical );| #PB_Splitter_SecondFixed)
   ;
   s_2 = widget::Splitter(125, 170, 250, 70, s_0, s_1, #PB_Splitter_Separator | #PB_Splitter_Vertical)
   
@@ -70,8 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 37
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
 ; DPIAware

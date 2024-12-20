@@ -7,11 +7,11 @@ Procedure Events( )
    Select EventWidget( )
       Case group
          Message("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
-         MessageRequester("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
+         ;MessageRequester("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
          
       Case cost
          Message("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error)
-         MessageRequester("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error)
+         ;MessageRequester("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error)
          
    EndSelect
 EndProcedure
@@ -26,11 +26,12 @@ Bind( group, @Events( ), #__event_LostFocus )
 Bind( cost, @Events( ), #__event_LostFocus )
 
 SetActive(group.i)
+SetActiveGadget(GetCanvasGadget())
 
 WaitClose( )
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
+; CursorPosition = 13
 ; FirstLine = 1
 ; Folding = -
 ; EnableXP
