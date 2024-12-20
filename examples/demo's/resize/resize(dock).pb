@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   
-  Procedure.i _SetAlignment(*This._S_widget, Mode.q, Type.i=1)
+  Procedure.i _SetAlign(*This._S_widget, Mode.q, Type.i=1)
     ProcedureReturn SetAlign(*This, Mode)
   EndProcedure
   
@@ -50,18 +50,18 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-;       _SetAlignment(enum(Str(1)), #__flag_Flag_AutoSize|#__align_left|#__align_right)
-;       _SetAlignment(enum(Str(2)), #__flag_Flag_AutoSize|#__align_top|#__align_bottom)
-;       _SetAlignment(enum(Str(3)), #__flag_Flag_AutoSize|#__align_top|#__align_bottom|#__align_right)
-;       _SetAlignment(enum(Str(4)), #__flag_Flag_AutoSize|#__align_left|#__align_right|#__align_bottom)
-;       _SetAlignment(enum(Str(5)), #__flag_Flag_AutoSize|#__align_full)
+;       _SetAlign(enum(Str(1)), #__flag_Flag_AutoSize|#__align_left|#__align_right)
+;       _SetAlign(enum(Str(2)), #__flag_Flag_AutoSize|#__align_top|#__align_bottom)
+;       _SetAlign(enum(Str(3)), #__flag_Flag_AutoSize|#__align_top|#__align_bottom|#__align_right)
+;       _SetAlign(enum(Str(4)), #__flag_Flag_AutoSize|#__align_left|#__align_right|#__align_bottom)
+;       _SetAlign(enum(Str(5)), #__flag_Flag_AutoSize|#__align_full)
       
-      _SetAlignment(enum(Str(4)), #__flag_AutoSize|#__align_bottom)
-      _SetAlignment(enum(Str(6)), #__flag_AutoSize|#__align_bottom)
-      _SetAlignment(enum(Str(1)), #__flag_AutoSize|#__align_top)
-      _SetAlignment(enum(Str(2)), #__flag_AutoSize|#__align_left)
-      _SetAlignment(enum(Str(3)), #__flag_AutoSize|#__align_right)
-      _SetAlignment(enum(Str(5)), #__flag_AutoSize)
+      _SetAlign(enum(Str(4)), #__flag_AutoSize|#__align_bottom)
+      _SetAlign(enum(Str(6)), #__flag_AutoSize|#__align_bottom)
+      _SetAlign(enum(Str(1)), #__flag_AutoSize|#__align_top)
+      _SetAlign(enum(Str(2)), #__flag_AutoSize|#__align_left)
+      _SetAlign(enum(Str(3)), #__flag_AutoSize|#__align_right)
+      _SetAlign(enum(Str(5)), #__flag_AutoSize)
       
       ;BindGadgetEvent(Canvas_0, @Canvas_CallBack())
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
@@ -117,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 77
+; CursorPosition = 52
+; FirstLine = 48
 ; Folding = ---
 ; EnableXP

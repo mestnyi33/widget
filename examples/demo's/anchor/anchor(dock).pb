@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  Procedure.i _SetAlignment(*this._s_widget, Mode.l, Type.l=1)
+  Procedure.i _SetAlign(*this._s_widget, Mode.l, Type.l=1)
     ProcedureReturn SetAlign(*this, Mode, Type)
     
 ;       With *this
@@ -195,28 +195,28 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select EventWidget( )
       Case *t
-        _SetAlignment(*demo, #__align_Center|#__align_top|#__align_auto)
+        _SetAlign(*demo, #__align_Center|#__align_top|#__align_auto)
         
       Case *l
 ;         If GetData(*r)
 ;           SetAlign(*demo, #__align_Center|#__align_left|#__align_right|#__align_auto)
 ;         Else
-          _SetAlignment(*demo, #__align_Center|#__align_left|#__align_auto)
+          _SetAlign(*demo, #__align_Center|#__align_left|#__align_auto)
 ;         EndIf
         
       Case *r
 ;         If GetData(*l)
 ;           SetAlign(*demo, #__align_Center|#__align_left|#__align_right|#__align_auto)
 ;         Else
-          _SetAlignment(*demo, #__align_Center|#__align_right|#__align_auto)
+          _SetAlign(*demo, #__align_Center|#__align_right|#__align_auto)
 ;         EndIf
         
       Case *b
-        _SetAlignment(*demo, #__align_Center|#__align_bottom|#__align_auto)
+        _SetAlign(*demo, #__align_Center|#__align_bottom|#__align_auto)
         
         
       Case *ce
-        _SetAlignment(*demo, #__align_center|#__align_auto)
+        _SetAlign(*demo, #__align_center|#__align_auto)
         
         
       Case *lt
@@ -228,16 +228,16 @@ CompilerIf #PB_Compiler_IsMainFile
         SetState(*rt, 0)
         SetState(*rb, 0)
         SetState(*lb, 0)
-        _SetAlignment(*demo, #__align_left|#__align_top|#__align_auto)
+        _SetAlign(*demo, #__align_left|#__align_top|#__align_auto)
         
       Case *rt
-        _SetAlignment(*demo, #__align_right|#__align_top|#__align_auto)
+        _SetAlign(*demo, #__align_right|#__align_top|#__align_auto)
         
       Case *rb
-        _SetAlignment(*demo, #__align_right|#__align_bottom|#__align_auto)
+        _SetAlign(*demo, #__align_right|#__align_bottom|#__align_auto)
         
       Case *lb
-        _SetAlignment(*demo, #__align_left|#__align_bottom|#__align_auto)
+        _SetAlign(*demo, #__align_left|#__align_bottom|#__align_auto)
       
   EndSelect    
   EndProcedure
@@ -282,19 +282,19 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     SetClass(*lb, "lb_anchor")
 ;     SetClass(*ce, "ce_anchor")
     
-    _SetAlignment(*t, #__align_Center|#__align_top)
-    _SetAlignment(*b, #__align_Center|#__align_bottom)
-    _SetAlignment(*l, #__align_Center|#__align_left)
-    _SetAlignment(*r, #__align_Center|#__align_right)
+    _SetAlign(*t, #__align_Center|#__align_top)
+    _SetAlign(*b, #__align_Center|#__align_bottom)
+    _SetAlign(*l, #__align_Center|#__align_left)
+    _SetAlign(*r, #__align_Center|#__align_right)
     
     
-    _SetAlignment(*lt, #__align_left|#__align_top)
-    _SetAlignment(*rt, #__align_right|#__align_top)
-    _SetAlignment(*rb, #__align_right|#__align_bottom)
-    _SetAlignment(*lb, #__align_left|#__align_bottom)
-    _SetAlignment(*ce, #__align_center)
+    _SetAlign(*lt, #__align_left|#__align_top)
+    _SetAlign(*rt, #__align_right|#__align_top)
+    _SetAlign(*rb, #__align_right|#__align_bottom)
+    _SetAlign(*lb, #__align_left|#__align_bottom)
+    _SetAlign(*ce, #__align_center)
     
-    _SetAlignment(*c, #__align_Center|#__align_full)
+    _SetAlign(*c, #__align_Center|#__align_full)
     CloseList()
     
     Bind(*t, @events_widgets())
@@ -355,7 +355,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 244
-; FirstLine = 215
+; CursorPosition = 296
+; FirstLine = 246
 ; Folding = 8V-
 ; EnableXP

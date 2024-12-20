@@ -20,11 +20,11 @@ CompilerIf #PB_Compiler_IsMainFile
    ;Define Button_0 = Button( 200-50-5, 200-50-5, 50,  50, "right & bottom")
    Define Button_0 = Button( 5, 5, 50,  50, "right & bottom")
    
-   ;SetAlignment(Button_0, 0, 0,0,1,1 )
-   ;SetAlignment(Button_0, #__align_right|#__align_bottom )
+   ;SetAlign(Button_0, 0, 0,0,1,1 )
+   ;SetAlign(Button_0, #__align_right|#__align_bottom )
    ;
-   ;SetAlignment(Button_0, #__align_auto, 0,0,1,1 )
-   ;SetAlignment(Button_0, #__align_auto|#__align_right|#__align_bottom )
+   ;SetAlign(Button_0, #__align_auto, 0,0,1,1 )
+   ;SetAlign(Button_0, #__align_auto|#__align_right|#__align_bottom )
    ;
    SetAlign(Button_0, #__align_auto, 0,0, -5,-5 )
    
@@ -38,7 +38,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 28
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 26
+; FirstLine = 7
 ; Folding = -
 ; EnableXP

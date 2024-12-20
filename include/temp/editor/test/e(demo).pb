@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndIf
   EndProcedure
   
-  Define height=60, Text1.s = "Borderless StringGadget" + #LF$ + " Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
+  Define Height=60, Text1.s = "Borderless StringGadget" + #LF$ + " Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
   
   
   Procedure.s get_text(m.s=#LF$)
@@ -110,12 +110,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 615, 270, "Editor on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 615, 270, "Editor on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     EditorGadget(21, 0,0,0,0)
     EditorGadget(22, 0,0,0,0, #PB_Editor_WordWrap)
     
     *w_211 = Editor(0,0,0,0)
-    *w_212 = Editor(0,0,0,0, #__flag_wordwrap)
+    *w_212 = Editor(0,0,0,0, #__flag_textwordwrap)
     
     SetGadgetText(21, get_text(#LF$))
     SetGadgetText(22, get_text(""))
@@ -140,6 +140,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *s_2 = Splitter(0,0,0,0, *w_212,22 )
     
     *s_3 = Splitter(8,10,600, 250, *S_2,*S_1, #PB_Splitter_Vertical )
+    
     ;SetState(*s_3, 30)
     ;SetState(*s_3, 97)
     ;SetState(*s_3, 82)
@@ -154,7 +155,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 64
+; CursorPosition = 115
+; FirstLine = 83
 ; Folding = 8--
 ; EnableXP
+; DPIAware

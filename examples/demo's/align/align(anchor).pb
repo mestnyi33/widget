@@ -361,27 +361,27 @@ Procedure AliginsEvent()
   EndSelect
 EndProcedure
 
-Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
-  Protected widget = Container(x, y, width, height)
+Procedure AlignWidget(X = 10, Y = 10, Width = 120, Height = 140)
+  Protected widget = Container(X, Y, Width, Height)
   Protected butt_size = 15, screen_size = 50, pos = 1
   
-  L_Button  = Button(x, y+pos+butt_size, butt_size, screen_size, " ", #__flag_ButtonToggle|#__button_vertical, -1, 7)                                              ;:ToolTip(L_Button,  "Включить привязку (влево)")
-  T_Button  = Button(x+pos+butt_size, y, screen_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                                 ;:ToolTip(T_Button,  "Включить привязку (верх)")
-  R_Button  = Button(x+pos+pos+butt_size+screen_size, y+pos+butt_size, butt_size, screen_size, " ", #__flag_ButtonToggle|#__button_vertical|#__flag_Textinvert, -1, 7) ;:ToolTip(R_Button,  "Включить привязку (вправо)")
-  B_Button  = Button(x+pos+butt_size, y+pos+pos+butt_size+screen_size, screen_size, butt_size, " ", #__flag_ButtonToggle|#__flag_Textinvert, -1, 7)                    ;:ToolTip(B_Button,  "Включить привязку (вниз)")
-  LT_Button = Button(x, y, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                                                 ;:ToolTip(LT_Button, "Включить привязку (влево верх)")
-  RT_Button = Button(x+pos+pos+butt_size+screen_size, y, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                   ;:ToolTip(RT_Button, "Включить привязку (вправо верх)")
-  LB_Button = Button(x, y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                   ;:ToolTip(LB_Button, "Включить привязку (влево вниз)")
-  RB_Button = Button(x+pos+pos+butt_size+screen_size, y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                     ;:ToolTip(RB_Button, "Включить привязку (вправо вниз)")
+  L_Button  = Button(X, Y+pos+butt_size, butt_size, screen_size, " ", #__flag_ButtonToggle|#__button_vertical, -1, 7)                                              ;:ToolTip(L_Button,  "Включить привязку (влево)")
+  T_Button  = Button(X+pos+butt_size, Y, screen_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                                 ;:ToolTip(T_Button,  "Включить привязку (верх)")
+  R_Button  = Button(X+pos+pos+butt_size+screen_size, Y+pos+butt_size, butt_size, screen_size, " ", #__flag_ButtonToggle|#__button_vertical|#__flag_Textinvert, -1, 7) ;:ToolTip(R_Button,  "Включить привязку (вправо)")
+  B_Button  = Button(X+pos+butt_size, Y+pos+pos+butt_size+screen_size, screen_size, butt_size, " ", #__flag_ButtonToggle|#__flag_Textinvert, -1, 7)                    ;:ToolTip(B_Button,  "Включить привязку (вниз)")
+  LT_Button = Button(X, Y, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                                                 ;:ToolTip(LT_Button, "Включить привязку (влево верх)")
+  RT_Button = Button(X+pos+pos+butt_size+screen_size, Y, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                   ;:ToolTip(RT_Button, "Включить привязку (вправо верх)")
+  LB_Button = Button(X, Y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                                                   ;:ToolTip(LB_Button, "Включить привязку (влево вниз)")
+  RB_Button = Button(X+pos+pos+butt_size+screen_size, Y+pos+pos+butt_size+screen_size, butt_size, butt_size, " ", #__flag_ButtonToggle, -1, 7)                     ;:ToolTip(RB_Button, "Включить привязку (вправо вниз)")
   
   ;
-  S_Screen = Container(x+pos+butt_size, y+pos+butt_size, screen_size, screen_size) ;:Disable(S_Screen,1)
+  S_Screen = Container(X+pos+butt_size, Y+pos+butt_size, screen_size, screen_size) ;:Disable(S_Screen,1)
   Sha = Button(0, 0, butt_size+2, butt_size+2, "", #__flag_ButtonToggle) 
 ;   SetState(*this, 1)
 ;   SetAlign( *this, 1,1,0,0 )
   CloseList()
   
-  C_Button  = Button(x+pos+(screen_size+butt_size)/2, y+pos+(screen_size+butt_size)/2, butt_size, butt_size, "", 0, -1, 7)                                     ;:ToolTip(C_Button,  "Включить привязку (вцентре)")
+  C_Button  = Button(X+pos+(screen_size+butt_size)/2, Y+pos+(screen_size+butt_size)/2, butt_size, butt_size, "", 0, -1, 7)                                     ;:ToolTip(C_Button,  "Включить привязку (вцентре)")
   
   SetState(L_Button, 1)
   SetState(T_Button, 1)
@@ -390,7 +390,7 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
   ;SetState(LT_Button, 1)
   ; Post(#__event_LeftClick, LT_Button)
   
-  C_Add = Button(x, y+pos+pos+pos+butt_size+butt_size+screen_size, pos+pos+butt_size+butt_size+screen_size, butt_size, ">", #__flag_ButtonToggle, -1, 7)
+  C_Add = Button(X, Y+pos+pos+pos+butt_size+butt_size+screen_size, pos+pos+butt_size+butt_size+screen_size, butt_size, ">", #__flag_ButtonToggle, -1, 7)
   ; ToolTip(C_Add, "Дополнительные параметры")
   
  
@@ -408,9 +408,9 @@ Procedure AlignWidget(x = 10, y = 10, width = 120, height = 140)
 EndProcedure
 
 Procedure ShowAlignWindow()
-  x = DesktopMouseX()+20
-  y = DesktopMouseY()-10
-  ResizeWindow(Window_3,x, y,#PB_Ignore,#PB_Ignore)
+  X = DesktopMouseX()+20
+  Y = DesktopMouseY()-10
+  ResizeWindow(Window_3,X, Y,#PB_Ignore,#PB_Ignore)
   HideWindow(Window_3,0)
 EndProcedure
 
@@ -418,13 +418,13 @@ Window_3  = OpenWindow(#PB_Any, 0, 0, 400, 300, "Привязка выбраны
 Open(Window_3)
 Container(0,0,0,0)
 SetColor(widget(), #PB_Gadget_BackColor, $4737D53F)
-;SetAlignment(widget(), #__align_full,#__align_full,#__align_full,#__align_full)
-SetAlignment(widget(), #__align_auto,#__align_auto,#__align_auto,#__align_auto)
+;SetAlign(widget(), #__align_full,#__align_full,#__align_full,#__align_full)
+SetAlign(widget(), #__align_auto,#__align_auto,#__align_auto,#__align_auto)
 
 demo = Button(120, 130, 60, 20, "demo")  
 CloseList()
 
-SetAlignment(AlignWidget( ), 0,0,#__align_auto,0)
+SetAlign(AlignWidget( ), 0,0,#__align_auto,0)
 
 Procedure Sha_Events()
   Protected left, right, top, bottom
@@ -441,14 +441,14 @@ Procedure Sha_Events()
 EndProcedure
 
 Bind(Sha, @Sha_Events( ), #__event_resize)
-;SetAlignment(AlignWidget( ), 0,0,#__align_auto,0)
+;SetAlign(AlignWidget( ), 0,0,#__align_auto,0)
 
 ShowAlignWindow()
 
 Repeat :Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 377
-; FirstLine = 373
+; CursorPosition = 420
+; FirstLine = 415
 ; Folding = -------
 ; EnableXP
 ; DPIAware
