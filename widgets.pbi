@@ -22796,12 +22796,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                         
                         If widgets( )\type = #__type_Splitter
-                           If widgets( )\split_1( )
+                           If widgets( )\split_1( ) > 0
                               Debug "   free - splitter - first " + widgets( )\split_1( )\class
                               FreeStructure( widgets( )\split_1( ) )
                               widgets( )\split_1( ) = 0
                            EndIf
-                           If widgets( )\split_2( )
+                           If widgets( )\split_2( ) > 0
                               Debug "   free - splitter - second " + widgets( )\split_2( )\class
                               FreeStructure( widgets( )\split_2( ) )
                               widgets( )\split_2( ) = 0
@@ -24200,8 +24200,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21380
-; FirstLine = 20479
+; CursorPosition = 22799
+; FirstLine = 21823
 ; Folding = -----------------------------------------------------------------------------------------------------vf-8f------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------0---------+----+4---------------------+----------------------------------------------------------------------------------------------------------------------------------8------v-+--+-------------------------------------------------------------------------------------------------------------------------------424+-----------8-----------------X0---------
 ; Optimizer
 ; EnableXP

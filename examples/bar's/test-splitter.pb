@@ -26,13 +26,25 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure create_test( mode = 0, min = 0 )
+      Protected w = 180
+      Protected h = 120
+      
+      If h_bar
+         w = GetState(h_bar)
+      EndIf
+      If v_bar
+         h = GetState(v_bar)
+      EndIf
+      
       If gadget
          If mode = 1
-            object = SplitterGadget(-1,10, 10, 180, 120, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+            object = SplitterGadget(-1,10, 10, w, h, TextGadget(-1,0,0,0,0,"fixed"), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+;             SetGadgetColor(GetGadgetAttribute(object, #PB_Splitter_FirstGadget), #PB_Gadget_BackColor, $FFB3FDFF)
+;             SetGadgetColor(GetGadgetAttribute(object, #PB_Splitter_SecondGadget), #PB_Gadget_BackColor, $FFB3FDFF)
          ElseIf mode = 2
-            object = SplitterGadget(-1,10, 10, 180, 120, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+            object = SplitterGadget(-1,10, 10, w, h, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,"fixed"), #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
          Else
-            object = SplitterGadget(-1,10, 10, 180, 120, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
+            object = SplitterGadget(-1,10, 10, w, h, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
          EndIf
          If min
             SetGadgetAttribute(object, #PB_Splitter_FirstMinimumSize, 60)
@@ -41,11 +53,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Else
          
          If mode = 1
-            object = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+            object = Splitter(10, 10, w, h, Text(0,0,0,0,"fixed"), -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
          ElseIf  mode = 2
-            object = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+            object = Splitter(10, 10, w, h, -1, Text(0,0,0,0,"fixed"), #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
          Else
-            object = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical)
+            object = Splitter(10, 10, w, h, -1, -1, #PB_Splitter_Vertical)
          EndIf
          If min
             SetAttribute(object, #PB_Splitter_FirstMinimumSize, 60)
@@ -53,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
       EndIf
    EndProcedure
-          
+   
    Procedure track_v_events( )
       If gadget
          ResizeGadget(object, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(EventWidget()))
@@ -80,23 +92,41 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure key_events( )
-      If keyboard( )\key = #PB_Shortcut_R ; #PB_Key_R
+      Protected Free, Create
+      
+      If keyboard( )\key = #PB_Shortcut_1
+         Free = 1
+         Create =- 1
+      EndIf
+      If keyboard( )\key = #PB_Shortcut_2
+         Free = 1
+         Create = 1
+      EndIf
+      If keyboard( )\key = #PB_Shortcut_3
+         Free = 1
+         Create = 2
+      EndIf
+      
+      If Free
          If gadget
             FreeGadget(object)
          Else
             Free(object)
          EndIf
-         
-         gadget ! 1
-         
-         create_test( )
+      EndIf
+      
+      If Create
+         If Create =- 1
+            gadget ! 1
+         EndIf
+         create_test( Create )
       EndIf
    EndProcedure
    
-   If Open(0, 0, 0, 420, 280, "press key_R to replace object", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If Open(0, 0, 0, 420, 280, "press key_(0-1-2) to replace object", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       create_test( )
-       
+      
       ;v
       ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
       v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
@@ -124,8 +154,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 72
-; Folding = ----
+; CursorPosition = 119
+; FirstLine = 101
+; Folding = -----
 ; EnableXP
 ; DPIAware
