@@ -57,11 +57,11 @@ CompilerIf #PB_Compiler_IsMainFile
   SetAttribute( s_0, #PB_Splitter_FirstMinimumSize, 30 )
   SetAttribute( s_1, #PB_Splitter_SecondMinimumSize, 30 )
   
-  ;\\ state
-  SetGadgetState(3, 10)
-  SetGadgetState(6, 250-#__bar_splitter_size-10)
-  SetState(s_0, 10)
-  SetState(s_1, 250-#__bar_splitter_size-10)
+;   ;\\ state
+;   SetGadgetState(3, 10)
+;   SetGadgetState(6, 250-#__bar_splitter_size-10)
+;   SetState(s_0, 10)
+;   SetState(s_1, 250-#__bar_splitter_size-10)
   
   Define event
   Repeat
@@ -70,7 +70,8 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 63
+; FirstLine = 35
 ; Folding = -
 ; EnableXP
 ; DPIAware

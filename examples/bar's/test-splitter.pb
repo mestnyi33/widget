@@ -7,7 +7,6 @@ CompilerIf #PB_Compiler_IsMainFile
    Global v_bar, h_bar, gadget
    Global  w = 420-40, h = 280-40
    
-   
    Procedure events_widgets( )
       widget( ) = object
       Debug " - "+classfromevent(WidgetEvent())
@@ -47,21 +46,22 @@ CompilerIf #PB_Compiler_IsMainFile
             object = SplitterGadget(-1,10, 10, w, h, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
          EndIf
          If min
-            SetGadgetAttribute(object, #PB_Splitter_FirstMinimumSize, 60)
-            SetGadgetAttribute(object, #PB_Splitter_SecondMinimumSize, 60)
+            SetGadgetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
+            SetGadgetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
       Else
          
          If mode = 1
-            object = Splitter(10, 10, w, h, Text(0,0,0,0,"fixed"), -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+            object = Splitter(10, 10, 0, 0, Text(0,0,0,0,"fixed"), -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
          ElseIf  mode = 2
-            object = Splitter(10, 10, w, h, -1, Text(0,0,0,0,"fixed"), #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+            object = Splitter(10, 10, 0, 0, -1, Text(0,0,0,0,"fixed"), #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
          Else
-            object = Splitter(10, 10, w, h, -1, -1, #PB_Splitter_Vertical)
+            object = Splitter(10, 10, 0, 0, -1, -1, #PB_Splitter_Vertical)
          EndIf
+         Resize(object, #PB_Ignore, #PB_Ignore, w,h)
          If min
-            SetAttribute(object, #PB_Splitter_FirstMinimumSize, 60)
-            SetAttribute(object, #PB_Splitter_SecondMinimumSize, 60)
+            SetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
+            SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
       EndIf
    EndProcedure
@@ -124,8 +124,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(0, 0, 0, 420, 280, "press key_(0-1-2) to replace object", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      
-      create_test( )
+      ;gadget = 1
+      create_test( 0, 30 )
       
       ;v
       ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
@@ -154,8 +154,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 119
-; FirstLine = 101
+; CursorPosition = 127
+; FirstLine = 114
 ; Folding = -----
 ; EnableXP
 ; DPIAware

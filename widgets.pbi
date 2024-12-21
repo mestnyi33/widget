@@ -8767,13 +8767,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;       EndMacro
       
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
-         ;( _bar_\min + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest )) ; 
-         ;( _bar_\min + Round(((( _thumb_pos_ ) + (_bar_\min[2]) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
-         ( _bar_\min + Round(((( _thumb_pos_ ) + (Bool( Not _bar_\fixed ) * _bar_\min[2]) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+         ( _bar_\min + _bar_\min[2] + Round(((( _thumb_pos_ ) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+         ;( _bar_\min + Round(((( _thumb_pos_ ) + (Bool( Not _bar_\fixed ) * _bar_\min[2]) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
       Macro bar_thumb_pos_( _bar_, _scroll_pos_ )
-         Round((( _scroll_pos_ ) - _bar_\min - _bar_\min[1] ) * _bar_\percent, #PB_Round_Nearest )
+         Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ) - _bar_\min[1]
       EndMacro
       
       Macro bar_set_scroll_pos_( _this_, _pos_, _len_ )
@@ -10860,7 +10859,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If *bar\area\len ; TODO - ?
                   *bar\area\pos  = ( *BB1\size + *bar\min[1] )
-                  *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size ) ; - ( *bar\min[1] + *bar\min[2] )
+                  *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size ) ;+ *bar\min[2]
                   ;
                   If is_bar_( *this ) Or *this\type = #__type_TabBar
                      If *bar\max
@@ -10937,7 +10936,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / *bar\min
                   EndIf
                   
-                  *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] )
+                  *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size ) ; + *bar\min[2] )
                   If *bar\area\end < *bar\area\pos
                      *bar\area\end = *bar\area\pos
                   EndIf
@@ -24203,6 +24202,14 @@ CompilerEndIf
 ; CursorPosition = 22799
 ; FirstLine = 21823
 ; Folding = -----------------------------------------------------------------------------------------------------vf-8f------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------0---------+----+4---------------------+----------------------------------------------------------------------------------------------------------------------------------8------v-+--+-------------------------------------------------------------------------------------------------------------------------------424+-----------8-----------------X0---------
+; Optimizer
+; EnableXP
+; DPIAware
+; Executable = widgets-.app.exe
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 10943
+; FirstLine = 10921
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
