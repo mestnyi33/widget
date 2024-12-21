@@ -1,0 +1,131 @@
+﻿XIncludeFile "../../widgets.pbi"
+
+CompilerIf #PB_Compiler_IsMainFile
+   UseWidgets( )
+   
+   Global object 
+   Global v_bar, h_bar, gadget
+   Global  w = 420-40, h = 280-40
+   
+   
+   Procedure events_widgets( )
+      widget( ) = object
+      Debug " - "+classfromevent(WidgetEvent())
+      Debug ""+widget( )\bar\page\pos +" - page\pos"
+      Debug ""+widget( )\bar\page\len +" - page\len"
+      Debug ""+widget( )\bar\page\end +" - page\end"
+      Debug ""+widget( )\bar\page\change +" - page\change"
+      Debug ""+widget( )\bar\percent +" - percent"
+      Debug ""+widget( )\bar\area\len +" - area\len"
+      Debug ""+widget( )\bar\area\end +" - area\end"
+      Debug ""+widget( )\bar\thumb\pos +" - thumb\pos"
+      Debug ""+widget( )\bar\thumb\len +" - thumb\len"
+      Debug ""+widget( )\bar\thumb\end +" - thumb\end"
+      Debug ""+widget( )\bar\thumb\change +" - thumb\change"
+      Debug " - "
+   EndProcedure
+   
+   Procedure create_test( mode = 0, min = 0 )
+      If gadget
+         If mode = 1
+            object = SplitterGadget(-1,10, 10, 180, 120, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+         ElseIf mode = 2
+            object = SplitterGadget(-1,10, 10, 180, 120, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+         Else
+            object = SplitterGadget(-1,10, 10, 180, 120, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
+         EndIf
+         If min
+            SetGadgetAttribute(object, #PB_Splitter_FirstMinimumSize, 60)
+            SetGadgetAttribute(object, #PB_Splitter_SecondMinimumSize, 60)
+         EndIf
+      Else
+         
+         If mode = 1
+            object = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+         ElseIf  mode = 2
+            object = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+         Else
+            object = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical)
+         EndIf
+         If min
+            SetAttribute(object, #PB_Splitter_FirstMinimumSize, 60)
+            SetAttribute(object, #PB_Splitter_SecondMinimumSize, 60)
+         EndIf
+      EndIf
+   EndProcedure
+          
+   Procedure track_v_events( )
+      If gadget
+         ResizeGadget(object, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(EventWidget()))
+      Else
+         Resize(object, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(EventWidget()))
+      EndIf
+   EndProcedure
+   Procedure track_h_events( )
+      If gadget
+         ResizeGadget(object, #PB_Ignore, #PB_Ignore, GetState(EventWidget()), #PB_Ignore)
+      Else
+         Resize(object, #PB_Ignore, #PB_Ignore, GetState(EventWidget()), #PB_Ignore)
+      EndIf
+   EndProcedure
+   
+   Procedure track_vh_events( )
+      If GetState( EventWidget( ) )
+         SetState(h_bar, 180)
+         SetState(v_bar, 120)
+      Else
+         SetState(h_bar, w-10)
+         SetState(v_bar, h-10)
+      EndIf
+   EndProcedure
+   
+   Procedure key_events( )
+      If keyboard( )\key = #PB_Shortcut_R ; #PB_Key_R
+         If gadget
+            FreeGadget(object)
+         Else
+            Free(object)
+         EndIf
+         
+         gadget ! 1
+         
+         create_test( )
+      EndIf
+   EndProcedure
+   
+   If Open(0, 0, 0, 420, 280, "press key_R to replace object", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      
+      create_test( )
+       
+      ;v
+      ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
+      v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
+      SetBackgroundColor(widget(), $FF80BE8E)
+      SetState(widget(), 120)
+      Bind( widget(), @track_v_events( ), #__event_change )
+      ;h
+      ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
+      h_bar=Track( 10,h+10,w,20, 0, w-10 )
+      SetBackgroundColor(widget(), $FF80BE8E)
+      SetState(widget(), 180)
+      Bind( widget(), @track_h_events( ), #__event_change )
+      
+      Button(w+10,h+10,20,20,"", #__flag_Buttontoggle)
+      SetRound( widget(), 10 )
+      Bind( widget(), @track_vh_events( ), #__event_Down )
+      
+      
+      SetActive( root() )
+      SetActiveGadget( GetCanvasGadget() )
+      Bind( root(), @key_events( ), #__event_KeyDown )
+      
+      WaitClose( )
+   EndIf
+   
+CompilerEndIf
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 72
+; Folding = ----
+; EnableXP
+; DPIAware

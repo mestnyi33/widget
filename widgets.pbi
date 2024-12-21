@@ -21001,10 +21001,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                event = #__event_KeyDown Or
                event = #__event_KeyUp
                
-               If *this\type = #__type_listview
-                  DoKeyEvents_ListView( *this, *this\__rows( ), event )
-               Else
-                  DoKeyEvents_Tree( *this, *this\__rows( ), event )
+               If *this\row
+                  If *this\type = #__type_listview
+                     DoKeyEvents_ListView( *this, *this\__rows( ), event )
+                  Else
+                     DoKeyEvents_Tree( *this, *this\__rows( ), event )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -21376,7 +21378,139 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If GetActive( )
+              ; keyboard( )\input = 0;GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Key )
                keyboard( )\key[1] = GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Modifiers )
+               
+;                Select keyboard( )\input
+;                  Case #PB_Shortcut_0 : keyboard( )\key = #PB_Key_0
+;                  Case #PB_Shortcut_1 : keyboard( )\key = #PB_Key_1
+;                  Case #PB_Shortcut_2 : keyboard( )\key = #PB_Key_2
+;                  Case #PB_Shortcut_3 : keyboard( )\key = #PB_Key_3
+;                  Case #PB_Shortcut_4 : keyboard( )\key = #PB_Key_4
+;                  Case #PB_Shortcut_5 : keyboard( )\key = #PB_Key_5
+;                  Case #PB_Shortcut_6 : keyboard( )\key = #PB_Key_6
+;                  Case #PB_Shortcut_7 : keyboard( )\key = #PB_Key_7
+;                  Case #PB_Shortcut_8 : keyboard( )\key = #PB_Key_8
+;                  Case #PB_Shortcut_9 : keyboard( )\key = #PB_Key_9
+;                  Case #PB_Shortcut_A : keyboard( )\key = #PB_Key_A
+;                  Case #PB_Shortcut_Add : keyboard( )\key = #PB_Key_Add
+;                  Case #PB_Shortcut_All : keyboard( )\key = #PB_Key_All
+;                  ;Case #PB_Shortcut_Alt : keyboard( )\key = #PB_Key_Alt
+;                  Case #PB_Shortcut_Apps : keyboard( )\key = #PB_Key_Apostrophe        ;
+;                  Case #PB_Shortcut_B : keyboard( )\key = #PB_Key_B
+;                  Case #PB_Shortcut_Back : keyboard( )\key = #PB_Key_Back
+;                  ;Case #PB_Shortcut_BackSlash : keyboard( )\key = #PB_Key_BackSlash
+;                  Case #PB_Shortcut_C : keyboard( )\key = #PB_Key_C
+;                  Case #PB_Shortcut_Capital : keyboard( )\key = #PB_Key_Capital
+;                  ;Case #PB_Shortcut_Clear : keyboard( )\key = #PB_Key_CLear
+;                  ;Case #PB_Shortcut_Control : keyboard( )\key = #PB_Key_Control
+;                  Case #PB_Shortcut_Command : keyboard( )\key = #PB_Key_Comma          ;       
+;                  Case #PB_Shortcut_D : keyboard( )\key = #PB_Key_D
+;                  Case #PB_Shortcut_Decimal : keyboard( )\key = #PB_Key_Decimal
+;                  Case #PB_Shortcut_Delete : keyboard( )\key = #PB_Key_Delete
+;                  Case #PB_Shortcut_Divide : keyboard( )\key = #PB_Key_Divide
+;                  Case #PB_Shortcut_Down : keyboard( )\key = #PB_Key_Down
+;                  Case #PB_Shortcut_E : keyboard( )\key = #PB_Key_E
+;                  Case #PB_Shortcut_End : keyboard( )\key = #PB_Key_End
+;                  Case #PB_Shortcut_Execute : keyboard( )\key = #PB_Key_Equals         ;
+;                  Case #PB_Shortcut_Escape : keyboard( )\key = #PB_Key_Escape
+;                  Case #PB_Shortcut_F : keyboard( )\key = #PB_Key_F
+;                  Case #PB_Shortcut_F1 : keyboard( )\key = #PB_Key_F1
+;                  Case #PB_Shortcut_F10 : keyboard( )\key = #PB_Key_F10
+;                  Case #PB_Shortcut_F12 : keyboard( )\key = #PB_Key_F12
+; ;                  Case #PB_Shortcut_F13 : keyboard( )\key = #PB_Key_F3
+; ;                  Case #PB_Shortcut_F14 : keyboard( )\key = #PB_Key_F4
+; ;                  Case #PB_Shortcut_F15 : keyboard( )\key = #PB_Key_F5
+; ;                  Case #PB_Shortcut_F16 : keyboard( )\key = #PB_Key_F6
+; ;                  Case #PB_Shortcut_F17 : keyboard( )\key = #PB_Key_F7
+; ;                  Case #PB_Shortcut_F18 : keyboard( )\key = #PB_Key_F8
+; ;                  Case #PB_Shortcut_F19 : keyboard( )\key = #PB_Key_F9
+;                  Case #PB_Shortcut_F2 : keyboard( )\key = #PB_Key_F2
+; ;                  Case #PB_Shortcut_F20 : keyboard( )\key = #PB_Key_F2
+; ;                  Case #PB_Shortcut_F21 : keyboard( )\key = #PB_Key_F2
+; ;                  Case #PB_Shortcut_F22 : keyboard( )\key = #PB_Key_F2
+; ;                  Case #PB_Shortcut_F23 : keyboard( )\key = #PB_Key_F2
+; ;                  Case #PB_Shortcut_F24 : keyboard( )\key = #PB_Key_F2
+;                  Case #PB_Shortcut_F3 : keyboard( )\key = #PB_Key_F3
+;                  Case #PB_Shortcut_F4 : keyboard( )\key = #PB_Key_F4
+;                  Case #PB_Shortcut_F5 : keyboard( )\key = #PB_Key_F5
+;                  Case #PB_Shortcut_F6 : keyboard( )\key = #PB_Key_F6
+;                  Case #PB_Shortcut_F7 : keyboard( )\key = #PB_Key_F7
+;                  Case #PB_Shortcut_F8 : keyboard( )\key = #PB_Key_F8
+;                  Case #PB_Shortcut_F9 : keyboard( )\key = #PB_Key_F9
+;                  Case #PB_Shortcut_G : keyboard( )\key = #PB_Key_G
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_Grave
+;                  Case #PB_Shortcut_H : keyboard( )\key = #PB_Key_H
+;                  Case #PB_Shortcut_Home : keyboard( )\key = #PB_Key_Home
+;                  ; Case #PB_Shortcut_Help : keyboard( )\key = #PB_Key_Help
+;                  Case #PB_Shortcut_I : keyboard( )\key = #PB_Key_I
+;                  Case #PB_Shortcut_Insert : keyboard( )\key = #PB_Key_Insert
+;                  Case #PB_Shortcut_J : keyboard( )\key = #PB_Key_J
+;                  Case #PB_Shortcut_K : keyboard( )\key = #PB_Key_K
+;                  Case #PB_Shortcut_L : keyboard( )\key = #PB_Key_L
+;                  Case #PB_Shortcut_Left : keyboard( )\key = #PB_Key_Left
+;                  ;Case #PB_Shortcut_LeftWindows : keyboard( )\key = #PB_Key_
+; ;                  Case #PB_Shortcut_0 : keyboard( )\key = #PB_Key_LeftAlt
+; ;                  Case #PB_Shortcut_0 : keyboard( )\key = #PB_Key_LeftBracket
+; ;                  Case #PB_Shortcut_0 : keyboard( )\key = #PB_Key_LeftControl
+; ;                  Case #PB_Shortcut_0 : keyboard( )\key = #PB_Key_LeftShift
+;                  Case #PB_Shortcut_M : keyboard( )\key = #PB_Key_M
+;                  Case #PB_Shortcut_Menu : keyboard( )\key = #PB_Key_Minus                ; 
+;                  Case #PB_Shortcut_Multiply : keyboard( )\key = #PB_Key_Multiply
+;                  Case #PB_Shortcut_N : keyboard( )\key = #PB_Key_N
+;                  Case #PB_Shortcut_Numlock : keyboard( )\key = #PB_Key_NumLock
+;                  Case #PB_Shortcut_O : keyboard( )\key = #PB_Key_O
+;                  Case #PB_Shortcut_P : keyboard( )\key = #PB_Key_P
+;                  Case #PB_Shortcut_Pad0 : keyboard( )\key = #PB_Key_Pad0
+;                  Case #PB_Shortcut_Pad1 : keyboard( )\key = #PB_Key_Pad1
+;                  Case #PB_Shortcut_Pad2 : keyboard( )\key = #PB_Key_Pad2
+;                  Case #PB_Shortcut_Pad3 : keyboard( )\key = #PB_Key_Pad3
+;                  Case #PB_Shortcut_Pad4 : keyboard( )\key = #PB_Key_Pad4
+;                  Case #PB_Shortcut_Pad5 : keyboard( )\key = #PB_Key_Pad5
+;                  Case #PB_Shortcut_Pad6 : keyboard( )\key = #PB_Key_Pad6
+;                  Case #PB_Shortcut_Pad7 : keyboard( )\key = #PB_Key_Pad7
+;                  Case #PB_Shortcut_Pad8 : keyboard( )\key = #PB_Key_Pad8
+;                  Case #PB_Shortcut_Pad9 : keyboard( )\key = #PB_Key_Pad9
+;                  Case #PB_Shortcut_PageDown : keyboard( )\key = #PB_Key_PageDown
+;                  Case #PB_Shortcut_PageUp : keyboard( )\key = #PB_Key_PageUp
+;                  Case #PB_Shortcut_Pause : keyboard( )\key = #PB_Key_Pause
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_PadComma
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_PadEnter
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_Period
+;                  Case #PB_Shortcut_Q : keyboard( )\key = #PB_Key_Q
+;                  Case #PB_Shortcut_R : keyboard( )\key = #PB_Key_R
+;                  Case #PB_Shortcut_Return : keyboard( )\key = #PB_Key_Return
+;                  Case #PB_Shortcut_Right : keyboard( )\key = #PB_Key_Right
+; ;                  Case #PB_Shortcut_RightWindows : keyboard( )\key = #PB_Key_
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_RightAlt
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_RightBracket
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_RightControl
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_RightShift
+;                  Case #PB_Shortcut_S : keyboard( )\key = #PB_Key_S
+;                  Case #PB_Shortcut_Scroll : keyboard( )\key = #PB_Key_Scroll
+;                  Case #PB_Shortcut_Space : keyboard( )\key = #PB_Key_Space
+;                  Case #PB_Shortcut_Subtract : keyboard( )\key = #PB_Key_Subtract
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_SemiColon
+; ;                  Case #PB_Shortcut_ : keyboard( )\key = #PB_Key_Slash
+; ;                  Case #PB_Shortcut_Select : keyboard( )\key = #PB_Key_
+; ;                  Case #PB_Shortcut_Separator : keyboard( )\key = #PB_Key_
+; ;                  Case #PB_Shortcut_Shift : keyboard( )\key = #PB_Key_
+; ;                  Case #PB_Shortcut_Snapshot : keyboard( )\key = #PB_Key_
+;                  Case #PB_Shortcut_T : keyboard( )\key = #PB_Key_T
+;                  Case #PB_Shortcut_Tab : keyboard( )\key = #PB_Key_Tab
+;                  Case #PB_Shortcut_U : keyboard( )\key = #PB_Key_U
+;                  Case #PB_Shortcut_Up : keyboard( )\key = #PB_Key_Up
+;                  Case #PB_Shortcut_V : keyboard( )\key = #PB_Key_V
+;                  Case #PB_Shortcut_W : keyboard( )\key = #PB_Key_W
+;                  Case #PB_Shortcut_X : keyboard( )\key = #PB_Key_X
+;                  Case #PB_Shortcut_Y : keyboard( )\key = #PB_Key_Y
+;                  Case #PB_Shortcut_Z : keyboard( )\key = #PB_Key_Z
+;               EndSelect
+;               
+; ;                If keyboard( )\key[1] & #PB_Canvas_Alt
+; ;                   keyboard( )\key = #PB_key_Alt
+; ;                EndIf
+;                
                ;
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   If keyboard( )\key[1] & #PB_Canvas_Command
@@ -21384,6 +21518,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      keyboard( )\key[1] | #PB_Canvas_Control
                   EndIf
                CompilerEndIf
+               
                ;
                ;\\
                If eventtype = #PB_EventType_Input
@@ -21420,6 +21555,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                If eventtype = #PB_EventType_Input
                   DoEvents( GetActive( ), #__event_Input )
+                 ; keyboard( )\input = 0
                EndIf
                If eventtype = #PB_EventType_KeyUp
                   DoEvents( GetActive( ), #__event_KeyUp )
@@ -24064,9 +24200,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets2.app
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17288
-; FirstLine = 16657
-; Folding = -----------------------------------------------------------------------------------------------------vf-8f------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------0---------+----+4---------------------+----------------------------------------------------------------------------------------------------------------------------------8------v-+--+-------------------------------------------------------------------------------------------------------------------------------87b------------0-----------------r+---------
+; CursorPosition = 21380
+; FirstLine = 20479
+; Folding = -----------------------------------------------------------------------------------------------------vf-8f------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------0---------+----+4---------------------+----------------------------------------------------------------------------------------------------------------------------------8------v-+--+-------------------------------------------------------------------------------------------------------------------------------424+-----------8-----------------X0---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

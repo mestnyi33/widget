@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
@@ -29,8 +29,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    EndProcedure
    
    Procedure track_vh_events( )
-      SetState(h_bar, w-10)
-      SetState(v_bar, h-10)
+      If GetState( EventWidget( ) )
+         SetState(h_bar, 120)
+         SetState(v_bar, 120)
+      Else
+         SetState(h_bar, w-10)
+         SetState(v_bar, h-10)
+      EndIf
    EndProcedure
    
    If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -69,31 +74,21 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
 ;       widget() = widget
 ;       Debug widget()\scroll\v\x
    
-;       ;v
-;       v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
-;       SetBackgroundColor(widget(), $FF80BE8E)
-;       SetState(widget(), 120)
-;       Bind( widget(), @track_v_events( ), #__event_change )
-;       ;h
-;       h_bar=Track( 10,h+10,w,20, 0, w-10 )
-;       SetBackgroundColor(widget(), $FF80BE8E)
-;       SetState(widget(), 100)
-;       Bind( widget(), @track_h_events( ), #__event_change )
-;       
-      
-      ;v
-      v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
+      ; v
+      ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
+       v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
       SetBackgroundColor(widget(), $FF80BE8E)
       SetState(widget(), 120)
       Bind( widget(), @track_v_events( ), #__event_change )
-      ;h
-      h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
+      ; h
+      ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
+       h_bar=Track( 10,h+10,w,20, 0, w-10 )
       SetBackgroundColor(widget(), $FF80BE8E)
       SetState(widget(), 120)
       Bind( widget(), @track_h_events( ), #__event_change )
       
       
-      Button(w+10,h+10,20,20,"")
+      Button(w+10,h+10,20,20,"", #__flag_Buttontoggle)
       SetRound( widget(), 10 )
       Bind( widget(), @track_vh_events( ), #__event_Down )
 ;       
@@ -103,8 +98,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 33
+; CursorPosition = 32
+; FirstLine = 27
 ; Folding = --
 ; EnableXP
 ; DPIAware
