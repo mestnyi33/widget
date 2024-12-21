@@ -10829,11 +10829,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\type = #__type_Scroll
                   If *bar\max
                      If *BB1\size = - 1 And *BB2\size = - 1
-                        If *bar\vertical And Width > 7 And Width < 21
+                        If *bar\vertical And Width > DPIScaled(7) And Width < DPIScaled(21)
                            *BB1\size = Width - 1
                            *BB2\size = Width - 1
                            
-                        ElseIf Not *bar\vertical And Height > 7 And Height < 21
+                        ElseIf Not *bar\vertical And Height > DPIScaled(7) And Height < DPIScaled(21)
                            *BB1\size = Height - 1
                            *BB2\size = Height - 1
                            
@@ -10857,59 +10857,63 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               If *bar\area\len ; TODO - ?
+               ;
+               If *bar\area\len 
+                  ;                   ; fixed min size
+                  ;                   If *bar\area\len < ( *SB\size + *bar\min[1] + *bar\min[2] )
+                  ;                      *bar\area\len = ( *SB\size + *bar\min[1] + *bar\min[2] )
+                  ;                   EndIf
+                  
                   *bar\area\pos  = ( *BB1\size + *bar\min[1] )
-                  *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size ) ;+ *bar\min[2]
+                  *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size )
                   ;
-                  If is_bar_( *this ) Or *this\type = #__type_TabBar
+                  If *this\type = #__type_ToolBar Or 
+                     *this\type = #__type_MenuBar Or 
+                     *this\type = #__type_PopupBar Or 
+                     *this\type = #__type_TabBar
+                     ;
                      If *bar\max
                         *bar\thumb\len = *bar\thumb\end - ( *bar\max - *bar\area\len )
                         *bar\page\end  = *bar\max - ( *bar\thumb\end - *bar\thumb\len )
                         ; *bar\page\end  = *bar\max - ( *bar\area\len - *bar\thumb\len )
                      EndIf
-                     
+                     ;
                   Else
                      If *bar\page\len
-                        
+                        ;
                         ; get thumb size
                         *bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
                         If *bar\thumb\len > *bar\thumb\end
                            *bar\thumb\len = *bar\thumb\end
                         EndIf
-                        
                         If *bar\thumb\len < *SB\size
                            If *bar\thumb\end > *SB\size + *bar\thumb\len
                               *bar\thumb\len = *SB\size
                            EndIf
                         EndIf
-                        
+                        ;
                         ; for the scroll-bar
                         If *bar\max > *bar\page\len
                            *bar\page\end = *bar\max - *bar\page\len
                         Else
                            *bar\page\end = *bar\page\len - *bar\max
                         EndIf
-                        
+                        ;
                         If *bar\thumb\len = *bar\thumb\end
                            *bar\page\end = *bar\min
                         EndIf
-                        
+                        ;
                      Else
+                        ; get thumb size
+                        *bar\thumb\len = *SB\size
+                        If *bar\thumb\len > *bar\area\len
+                           *bar\thumb\len = *bar\area\len
+                        EndIf
+                        ;
                         ; get page end
                         If *bar\max
-                           *bar\thumb\len = *SB\size
-                           If *bar\thumb\len > *bar\area\len
-                              *bar\thumb\len = *bar\area\len
-                           EndIf
                            *bar\page\end = *bar\max
-                           
                         Else
-                           ; get thumb size
-                           *bar\thumb\len = *SB\size
-                           If *bar\thumb\len > *bar\area\len
-                              *bar\thumb\len = *bar\area\len
-                           EndIf
-                           
                            ; one set end
                            If Not *bar\page\end And *bar\area\len
                               *bar\page\end = *bar\area\len - *bar\thumb\len
@@ -10918,7 +10922,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  *bar\page\pos = *bar\page\end / 2
                                  *bar\PageChange( ) = *bar\page\pos
                               EndIf
-                           Else
+                              ;
+                           Else 
+                              ; не уверен нужно ли
                               If *bar\fixed = 1
                                  *bar\page\end = *bar\area\len - *bar\thumb\len
                               ElseIf *bar\PageChange( )
@@ -10932,11 +10938,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   If *bar\page\end
                      *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
-                  Else
+                  ElseIf *bar\min
                      *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / *bar\min
+                  Else
+                     *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / 1
                   EndIf
                   
-                  *bar\area\end = *bar\area\len - *bar\thumb\len - ( *BB2\size ) ; + *bar\min[2] )
+                  *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
                   If *bar\area\end < *bar\area\pos
                      *bar\area\end = *bar\area\pos
                   EndIf
@@ -10951,7 +10959,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ get thumb pos
          If Not ( *bar\fixed And Not *bar\PageChange( ) )
             If is_bar_( *this ) Or *this\type = #__type_TabBar
-               
                ;                ;
                ;                If *bar\page\pos < *bar\min
                ;                   ; If *bar\max > *bar\page\len
@@ -11026,8 +11033,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                If *this\type = #__type_Splitter
-                  If *bar\ThumbChange( )
-                     If MouseButtonPress( )
+                  If MouseButtonPress( )
+                     If *bar\ThumbChange( )
                         If Not *bar\PageChange( ) 
                            *bar\PageChange( )  = 1
                         EndIf
@@ -11046,11 +11053,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *bar\fixed[1] = *bar\thumb\pos
                EndIf
                If *bar\fixed = 2
-                  *bar\fixed[2] = *bar\area\end - *bar\thumb\pos 
+                  *bar\fixed[2] = ( *bar\area\end + *bar\min[2] ) - *bar\thumb\pos 
                EndIf
             Else
-              If *bar\fixed = 1
-                  If *bar\fixed[1] >= *bar\area\end
+               
+               If *bar\fixed = 1
+                  If *bar\area\end > *bar\fixed[1]
+                     ThumbPos = *bar\fixed[1]
+                  Else
                      If *bar\min[1] < *bar\area\end
                         ThumbPos = *bar\area\end
                      Else
@@ -11064,15 +11074,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                         EndIf
                      EndIf
-                  Else
-                     ThumbPos = *bar\fixed[1]
                   EndIf
                EndIf
                ;
                If *bar\fixed = 2
-                  If *bar\min[1] >= *bar\area\end - *bar\fixed[2] 
-                     If *bar\min[1] > *bar\area\end + *bar\min[2] 
-                        ThumbPos = *bar\area\end + *bar\min[2]
+                  If *bar\min[1] < ( *bar\area\end + *bar\min[2] ) - *bar\fixed[2] 
+                     ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\fixed[2] 
+                  Else
+                     If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
+                        ThumbPos = ( *bar\area\end + *bar\min[2] )
                      Else
                         If *bar\min[1] > *bar\area\len - *bar\thumb\len
                            ThumbPos = *bar\area\len - *bar\thumb\len
@@ -11080,8 +11090,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ThumbPos = *bar\min[1]
                         EndIf
                      EndIf
-                  Else
-                     ThumbPos = *bar\area\end - *bar\fixed[2] 
                   EndIf
                EndIf
                ;
@@ -11090,6 +11098,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *bar\thumb\pos = ThumbPos
                   ; Debug ""+*this\class +" "+  *bar\fixed +" "+ ThumbPos
                EndIf
+               
             EndIf
          EndIf
          
@@ -11382,12 +11391,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;             If Not (( #PB_Compiler_OS = #PB_OS_MacOS ) And isgadget( *this\split_1( ) ) And Not *this\parent )
                *BB1\y = *this\frame_y( )
-               *BB2\y = ( *bar\thumb\pos + *bar\thumb\len ) + *this\frame_y( )
+               *BB2\y = *this\frame_y( ) + ( *bar\thumb\pos + *bar\thumb\len )
                ;             Else
                ;               *BB1\y      = *this\frame_height( ) - *BB1\height
                ;             EndIf
                
-               *BB2\height = *this\frame_height( ) - ( *BB1\height + *bar\thumb\len )
+               *BB2\height = *bar\area\len - ( *bar\thumb\pos + *bar\thumb\len )
                *BB2\width  = *this\frame_width( )
                
                ; seperatior pos&size
@@ -11405,9 +11414,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                *BB1\y = *this\frame_y( )
                *BB2\y = *this\frame_y( )
                *BB1\x = *this\frame_x( )
-               *BB2\x = ( *bar\thumb\pos + *bar\thumb\len ) + *this\frame_x( )
+               *BB2\x = *this\frame_x( ) + ( *bar\thumb\pos + *bar\thumb\len )
                
-               *BB2\width  = *this\frame_width( ) - ( *BB1\width + *bar\thumb\len )
+               *BB2\width  = *bar\area\len - ( *bar\thumb\pos + *bar\thumb\len )
                *BB2\height = *this\frame_height( )
                
                ; seperatior pos&size
@@ -24207,9 +24216,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10943
-; FirstLine = 10921
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 10861
+; FirstLine = 10820
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------00-vb--0f-8f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

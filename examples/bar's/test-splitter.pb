@@ -52,13 +52,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Else
          
          If mode = 1
-            object = Splitter(10, 10, 0, 0, Text(0,0,0,0,"fixed"), -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+            object = Splitter(10, 10, w, h, Text(0,0,0,0,"fixed"), -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
          ElseIf  mode = 2
-            object = Splitter(10, 10, 0, 0, -1, Text(0,0,0,0,"fixed"), #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+            object = Splitter(10, 10, w, h, -1, Text(0,0,0,0,"fixed"), #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
          Else
-            object = Splitter(10, 10, 0, 0, -1, -1, #PB_Splitter_Vertical)
+            object = Splitter(10, 10, w, h, -1, -1, #PB_Splitter_Vertical)
          EndIf
-         Resize(object, #PB_Ignore, #PB_Ignore, w,h)
+         ;Resize(object, #PB_Ignore, #PB_Ignore, w,h)
          If min
             SetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
             SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
@@ -144,6 +144,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetRound( widget(), 10 )
       Bind( widget(), @track_vh_events( ), #__event_Down )
       
+;       widget() = object
+;       Debug  widget()\bar\fixed[1]
+      
+      
       
       SetActive( root() )
       SetActiveGadget( GetCanvasGadget() )
@@ -155,7 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 127
-; FirstLine = 114
+; FirstLine = 121
 ; Folding = -----
 ; EnableXP
 ; DPIAware
