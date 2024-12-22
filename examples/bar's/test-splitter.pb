@@ -126,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(0, 0, 0, 420, 280, "press key_(0-1-2) to replace object", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;gadget = 1
-      create_test( 0, 30 )
+      create_test( 2, 30 )
       
       ;v
       ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)

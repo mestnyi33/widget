@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(s_0, 10)
   SetState(s_1, 250-#__bar_splitter_size-10)
   
-  SetState(s_2, 10)
+  ;SetState(s_2, 10)
   
   Define event
   Repeat

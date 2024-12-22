@@ -8771,12 +8771,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;       EndMacro
       
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
-         ( _bar_\min + _bar_\min[2] + Round(((( _thumb_pos_ ) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+        ( _bar_\min + _bar_\min[2] + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
       Macro bar_thumb_pos_( _bar_, _scroll_pos_ )
-        ; Round((( _scroll_pos_ ) - _bar_\min - _bar_\min[1] ) * _bar_\percent, #PB_Round_Nearest )
-         Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ) - _bar_\min[1]
+        ( Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ) - _bar_\min[1] )
       EndMacro
       
       Macro bar_set_scroll_pos_( _this_, _pos_, _len_ )
@@ -10869,6 +10868,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;                   EndIf
                   
                   *bar\area\pos  = ( *BB1\size + *bar\min[1] )
+                  If *bar\area\pos > *bar\area\len
+                     *bar\area\pos = *bar\area\len
+                  EndIf
+                  ;
                   *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size )
                   ;
                   If *this\type = #__type_ToolBar Or 
@@ -10949,8 +10952,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
-                  If *bar\area\end < *bar\area\pos
-                     *bar\area\end = *bar\area\pos
+                  If *bar\area\end < 0
+                     *bar\area\end = 0
+                  EndIf
+                  If *bar\area\end > *bar\area\len
+                     *bar\area\end = *bar\area\len
                   EndIf
                EndIf
             EndIf
@@ -11811,8 +11817,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            If ScrollPos > *bar\page\end + *bar\min[2]
-               ScrollPos = *bar\page\end + *bar\min[2]
+            If ScrollPos > *bar\page\end 
+               ScrollPos = *bar\page\end
             EndIf
          EndIf
          
@@ -24226,9 +24232,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8779
-; FirstLine = 8562
-; Folding = --------------------------------------------------------------------------------------------f+f---------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------vv--f8-v-8f-8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------
+; CursorPosition = 8939
+; FirstLine = 8740
+; Folding = --------------------------------------------------------------------------------------------f+f---------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf---t---v-0v-----------------------------------------------------------------------------------------------v-ff-r-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
