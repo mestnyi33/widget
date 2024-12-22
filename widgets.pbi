@@ -4224,32 +4224,36 @@ CompilerIf Not Defined( widget, #PB_Module )
             clip_width_( *this, *parent, *this\screen_x( ) + *this\screen_width( ), _p_x2_, [#__c_draw] )
             clip_height_( *this, *parent, *this\screen_y( ) + *this\screen_height( ), _p_y2_, [#__c_draw] )
             
+            *this\x[#__c_draw2] = *this\x[#__c_draw]
+            *this\y[#__c_draw2] = *this\y[#__c_draw]
+            *this\width[#__c_draw2] = *this\width[#__c_draw]
+            *this\height[#__c_draw2] = *this\height[#__c_draw]
             
-            ;\\ x&y - clip inner coordinate
-            If *this\draw_x( ) < *this\inner_x( )
-               *this\x[#__c_draw2] = *this\inner_x( )
-            Else
-               *this\x[#__c_draw2] = *this\draw_x( )
-            EndIf
-            If *this\draw_y( ) < *this\inner_y( )
-               *this\y[#__c_draw2] = *this\inner_y( )
-            Else
-               *this\y[#__c_draw2] = *this\draw_y( )
-            EndIf
-            
-            ;\\ width&height - clip inner coordinate
-            If *parent
-               ;           If *this\scroll_width( ) And *this\scroll_width( ) < *this\inner_width( )
-               ;             clip_width_( *this, *parent, *this\inner_x( ) + *this\scroll_width( ), _p_x2_, [#__c_draw2] )
-               ;           Else
-               clip_width_( *this, *parent, *this\inner_x( ) + *this\inner_width( ), _p_x2_, [#__c_draw2] )
-               ;           EndIf
-               ;           If *this\scroll_height( ) And *this\scroll_height( ) < *this\inner_height( )
-               ;             clip_height_( *this, *parent, *this\inner_y( ) + *this\scroll_height( ), _p_y2_, [#__c_draw2] )
-               ;           Else
-               clip_height_( *this, *parent, *this\inner_y( ) + *this\inner_height( ), _p_y2_, [#__c_draw2] )
-               ;           EndIf
-            EndIf
+;             ;\\ x&y - clip inner coordinate
+;             If *this\draw_x( ) < *this\inner_x( )
+;                *this\x[#__c_draw2] = *this\inner_x( )
+;             Else
+;                *this\x[#__c_draw2] = *this\draw_x( )
+;             EndIf
+;             If *this\draw_y( ) < *this\inner_y( )
+;                *this\y[#__c_draw2] = *this\inner_y( )
+;             Else
+;                *this\y[#__c_draw2] = *this\draw_y( )
+;             EndIf
+;             
+;             ;\\ width&height - clip inner coordinate
+;             If *parent
+;                ;           If *this\scroll_width( ) And *this\scroll_width( ) < *this\inner_width( )
+;                ;             clip_width_( *this, *parent, *this\inner_x( ) + *this\scroll_width( ), _p_x2_, [#__c_draw2] )
+;                ;           Else
+;                clip_width_( *this, *parent, *this\inner_x( ) + *this\inner_width( ), _p_x2_, [#__c_draw2] )
+;                ;           EndIf
+;                ;           If *this\scroll_height( ) And *this\scroll_height( ) < *this\inner_height( )
+;                ;             clip_height_( *this, *parent, *this\inner_y( ) + *this\scroll_height( ), _p_y2_, [#__c_draw2] )
+;                ;           Else
+;                clip_height_( *this, *parent, *this\inner_y( ) + *this\inner_height( ), _p_y2_, [#__c_draw2] )
+;                ;           EndIf
+;             EndIf
          EndIf
          
          ;
@@ -11418,6 +11422,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                *BB2\width  = *bar\area\len - ( *bar\thumb\pos + *bar\thumb\len )
                *BB2\height = *this\frame_height( )
+               
+               ;Debug *BB2\width 
                
                ; seperatior pos&size
                If *bar\thumb\len
@@ -22040,6 +22046,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   __gui\eventhook( )\type     = event
                   __gui\eventhook( )\item     = item
                   __gui\eventhook( )\widget   = *this
+                  
+                  If event = #__event_resize
+                     *this\resize\send = 1
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -24216,9 +24226,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10861
-; FirstLine = 10820
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------00-vb--0f-8f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 11425
+; FirstLine = 10842
+; Folding = --------------------------------------------------------------------------------------------f+f---------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------vv--d8-v-8f-8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
