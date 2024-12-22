@@ -17012,12 +17012,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
+            clip_output_( *this, [#__c_draw2] )
             ; background image draw
             If *this\image[#__image_background]\id
                draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
             EndIf
             
-            ;clip_output_( *this, [#__c_draw] )
+            clip_output_( *this, [#__c_draw] )
             
             ; UnclipOutput( )
             ; draw_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -24458,8 +24459,8 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4094
-; FirstLine = 4070
+; CursorPosition = 17014
+; FirstLine = 16093
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf---t---v-0v-----------------------------------------------------------------------------------------------v-ff-r-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------
 ; Optimizer
 ; EnableXP
