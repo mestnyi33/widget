@@ -306,8 +306,7 @@ CompilerIf #PB_Compiler_IsMainFile
    widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 299
-; FirstLine = 205
-; Folding = f8---
+; CursorPosition = 306
+; FirstLine = 274
+; Folding = -----
 ; EnableXP
-; DPIAware
