@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Global object 
-   Global v_bar, h_bar, gadget
+   Global v_bar, h_bar, gadget, min_size
    Global  w = 420-40, h = 280-40
    
    Procedure events_widgets( )
@@ -60,6 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          ;Resize(object, #PB_Ignore, #PB_Ignore, w,h)
          If min
+            min_size = min
             SetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
             SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
@@ -119,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
          If Create =- 1
             gadget ! 1
          EndIf
-         create_test( Create )
+         create_test( Create, min_size )
       EndIf
    EndProcedure
    
@@ -158,8 +159,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 121
+; CursorPosition = 128
+; FirstLine = 108
 ; Folding = -----
 ; EnableXP
 ; DPIAware

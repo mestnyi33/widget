@@ -8772,10 +8772,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
          ( _bar_\min + _bar_\min[2] + Round(((( _thumb_pos_ ) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
-         ;( _bar_\min + Round(((( _thumb_pos_ ) + (Bool( Not _bar_\fixed ) * _bar_\min[2]) ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
       Macro bar_thumb_pos_( _bar_, _scroll_pos_ )
+        ; Round((( _scroll_pos_ ) - _bar_\min - _bar_\min[1] ) * _bar_\percent, #PB_Round_Nearest )
          Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ) - _bar_\min[1]
       EndMacro
       
@@ -11811,8 +11811,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            If ScrollPos > *bar\page\end - *bar\min[2]
-               ScrollPos = *bar\page\end - *bar\min[2]
+            If ScrollPos > *bar\page\end + *bar\min[2]
+               ScrollPos = *bar\page\end + *bar\min[2]
             EndIf
          EndIf
          
@@ -11878,7 +11878,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\BarChange( ) = 1
             EndIf
             
-            ScrollPos = bar_page_pos_( *bar, ThumbPos )
+            ScrollPos = bar_page_pos_( *bar, ThumbPos  )
             ScrollPos = bar_invert_page_pos_( *bar, ScrollPos )
             
             bar_PageChange( *this, ScrollPos, 2 ) ; and post change event 
@@ -24226,9 +24226,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11425
-; FirstLine = 10842
-; Folding = --------------------------------------------------------------------------------------------f+f---------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------vv--d8-v-8f-8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------
+; CursorPosition = 8779
+; FirstLine = 8562
+; Folding = --------------------------------------------------------------------------------------------f+f---------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------vv--f8-v-8f-8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
