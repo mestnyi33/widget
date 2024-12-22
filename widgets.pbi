@@ -16963,6 +16963,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;                     Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\caption\round / 2 + 2, 1, caption_height - *this\caption\round / 2, *this\color\frame[\ColorState( )] )
                ;                   EndIf
                
+               PB(ClipOutput)( *this\inner_x( ) + *this\fs, *this\y, *this\inner_width(), *this\caption\height - *this\fs * 2 )
+                   
                ; buttins background
                draw_mode_alpha_( #PB_2DDrawing_Default )
                draw_box_button( *this\CloseButton( ), color\back )
@@ -17006,13 +17008,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;             draw_mode_alpha_( #PB_2DDrawing_Outlined )
                   ;             draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\caption\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
-                  If *this\inner_height( )
-                     clip_output_( *this, [#__c_draw] )
-                  EndIf
+;                   If *this\inner_height( )
+;                      clip_output_( *this, [#__c_draw] )
+;                   EndIf
                EndIf
             EndIf
             
             clip_output_( *this, [#__c_draw2] )
+            
             ; background image draw
             If *this\image[#__image_background]\id
                draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
@@ -24459,9 +24462,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17014
-; FirstLine = 16093
-; Folding = ---------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf---t---v-0v-----------------------------------------------------------------------------------------------v-ff-r-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------
+; CursorPosition = 16965
+; FirstLine = 16052
+; Folding = ---------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------vf---t---v-0v-----------------------------------------------------------------------------------------------v-ff-r-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
