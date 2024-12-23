@@ -47,9 +47,9 @@ Procedure Tool_Gadget_Event( )
                ;Disable(Tool_Line_Frame,State2)
                Disable(Tool_Line_Container,State2)  
                
-               ;\\
-               SetColor(Tool_Align_To_Grid, #__Color_Front, State1 * $757B7B)
-               SetColor(Tool_Align_To_Line, #__Color_Front, State2 * $757B7B)
+;                ;\\
+;                SetColor(Tool_Align_To_Grid, #__Color_Front, State1 * $757B7B)
+;                SetColor(Tool_Align_To_Line, #__Color_Front, State2 * $757B7B)
          EndSelect
          
       Case Tool_Grid_Show
@@ -72,26 +72,26 @@ Procedure Tool_Gadget( Window, Width, Height )
    EndIf
    
    Container(10+3, 10+35, 327, 132)
-   Tool_Alignment_Mode = Frame(5, 4, 317, 124, "Режим выравнивания")
+   Tool_Alignment_Mode = Frame(5, 4, 317, 124, "Режим выравнивания", #__flag_BorderLess|#__flag_Transparent)
    
    Tool_Grid_Container = Container(10, 25, 152, 101)
    ;Tool_Grid_Frame = Frame(1, 4, 150, 93, "")
-   Tool_Grid_Show = CheckBox(6, 24, 126, 16, "Показать сетку")
-   Tool_Grid_Snap = CheckBox(6, 44, 136, 16, "Привязать к сетке")
-   Tool_Grid_Size_Info = Text(71, 72, 126, 16, "Размер сетки:")
-   Tool_Grid_Size = Spin(6, 69, 66, 23,0,20,#PB_Spin_Numeric)
+   Tool_Grid_Show = CheckBox(6, 24, 126, 16, "Показать сетку", #__flag_BorderLess|#__flag_Transparent)
+   Tool_Grid_Snap = CheckBox(6, 44, 136, 16, "Привязать к сетке", #__flag_BorderLess|#__flag_Transparent)
+   Tool_Grid_Size_Info = Text(65, 72, 126, 16, "Размер сетки", #__flag_BorderLess|#__flag_Transparent)
+   Tool_Grid_Size = Spin(6, 69, 55, 23,0,20,#__spin_Plus)
    CloseList( )
    Tool_Line_Container = Container(165, 25, 152, 101)
    ;Tool_Line_Frame = Frame(1, 4, 150, 93, "")
-   Tool_Line_Show = CheckBox(6, 24, 126, 16, "Показать линию")
-   Tool_Line_Snap = CheckBox(6, 44, 136, 16, "Привязать к линии")
-   Tool_Line_Size_Info = Text(71, 72, 126, 16, "Размер линии:")
-   Tool_Line_Size = Spin(6, 69, 66, 23,0,20,#PB_Spin_Numeric)
+   Tool_Line_Show = CheckBox(6, 24, 126, 16, "Показать линию", #__flag_BorderLess|#__flag_Transparent)
+   Tool_Line_Snap = CheckBox(6, 44, 136, 16, "Привязать к линии", #__flag_BorderLess|#__flag_Transparent)
+   Tool_Line_Size_Info = Text(65, 72, 126, 16, "Размер линии", #__flag_BorderLess|#__flag_Transparent)
+   Tool_Line_Size = Spin(6, 69, 55, 23,0,20,#__spin_Plus)
    ;SetColor( Tool_Line_Frame, #__color_back, GetColor(Tool_Line_Size_Info, #__color_back))
    CloseList( )
    
-   Tool_Align_To_Grid = Option(X(Tool_Grid_Container, 3)+6, Y(Tool_Grid_Container, 3)+2, 152-12, 16, "Выровнять по сетке")
-   Tool_Align_To_Line = Option(X(Tool_Line_Container, 3)+6, Y(Tool_Line_Container, 3)+2, 152-12, 16, "Выровнять по линии")
+   Tool_Align_To_Grid = Option(X(Tool_Grid_Container, 3)+6, Y(Tool_Grid_Container, 3)+2, 152-12, 16, "Выровнять по сетке", #__flag_BorderLess|#__flag_Transparent)
+   Tool_Align_To_Line = Option(X(Tool_Line_Container, 3)+6, Y(Tool_Line_Container, 3)+2, 152-12, 16, "Выровнять по линии", #__flag_BorderLess|#__flag_Transparent)
    CloseList( )
    CloseList( )
    
@@ -124,8 +124,8 @@ CompilerEndIf
 DisableExplicit
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 89
+; CursorPosition = 74
+; FirstLine = 69
 ; Folding = --
 ; Optimizer
 ; EnableXP

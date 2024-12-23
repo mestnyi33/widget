@@ -132,17 +132,16 @@
     #__sel_to_Set    = 5
     
     ;-\\ Coordinate (pos & size)
-    #__c_Screen    = 0 ; screen
-    #__c_Frame     = 1 ; frame screen
-    #__c_Inner     = 2 ; inner screen
-    #__c_Container = 3 ; container
-    #__c_Required  = 4 ; required
+    #__c_screen    = 0 ; screen
+    #__c_frame     = 1 ; frame screen
+    #__c_inner     = 2 ; inner screen
+    #__c_container = 3 ; container
+    #__c_required  = 4 ; required
     #__c_window    = 5 ; window
-    #__c_Draw      = 6 ; clip screen
-    #__c_Draw1     = 7 ; clip frame
-    #__c_Draw2     = 8 ; clip inner
-    #__c_Restore   = 9
-    #__c           = 10
+    #__c_restore   = 6 ; 
+    #__c_draw      = 7 ; clip screen
+    #__c_idraw     = 8 ; clip inner
+    #__c           = 9
     
     ;-\\ Color
     #__color_Front      = 1
@@ -722,8 +721,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 255
-; FirstLine = 250
+; CursorPosition = 134
+; FirstLine = 130
 ; Folding = ----
 ; Optimizer
 ; EnableXP

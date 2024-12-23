@@ -51,6 +51,8 @@ Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCe
   G_IH_Ok = Button(300, 150, 81, 21, "Ok")      
   G_IH_Cancel = Button(300, 175, 81, 21, "Cancel")                                                               
   
+  
+  
   ProcedureReturn W_IH
 EndProcedure
 
@@ -58,10 +60,10 @@ Procedure W_IH_Events(Event)
   Protected File$
   
   Select Event
-    Case #PB_Event_Gadget
-      Select EventType()
-        Case #PB_EventType_LeftClick
-          Select EventGadget()
+    Case #PB_Event_widget
+      Select WidgetEvent( )
+        Case #__event_LeftClick
+          Select EventWidget( )
             Case G_IH_Open
               File$ = OpenFileRequester("","","Image (*.png,*.bmp,*.ico,*.tiff)|*.png;*.bmp;*.ico;*.tiff|All files (*.*)|*.*",0)
               If File$
@@ -91,7 +93,7 @@ EndProcedure
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  W_IH = GetCanvasWindow(Open(#PB_Any, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
+  W_IH = GetCanvasWindow(Open(0, 398, 133, 886, 601, "ImageHelper", #PB_Window_TitleBar|#PB_Window_ScreenCentered))
   W_IH_Open()
   
   While IsWindow(W_IH)
@@ -108,7 +110,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
-; Folding = v--
+; CursorPosition = 65
+; FirstLine = 55
+; Folding = ---
 ; EnableXP
 ; DPIAware
