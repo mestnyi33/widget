@@ -4651,9 +4651,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ if the integral scroll bars
             If *this\type <> #__type_MDI
-               ;If ( Change_x Or Change_y Or Change_width Or Change_height )
-                  bar_area_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
-              ; EndIf
+               bar_area_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
             EndIf
             
             ;\\
@@ -10299,16 +10297,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             If X = #PB_Ignore
-               X = \h\container_x( )
+               X = 0
             EndIf
             If Y = #PB_Ignore
-               Y = \v\container_y( )
+               Y = 0
             EndIf
             If Width = #PB_Ignore
-               Width = \v\frame_x( ) - \h\frame_x( ) + \v\frame_width( )
+               Width = *this\container_width( ) ; \v\frame_x( ) - \h\frame_x( ) + \v\frame_width( )
             EndIf
             If Height = #PB_Ignore
-               Height = \h\frame_y( ) - \v\frame_y( ) + \h\frame_height( )
+               Height = *this\container_height( ) ; \h\frame_y( ) - \v\frame_y( ) + \h\frame_height( )
             EndIf
             
             w = Bool( *this\scroll_width( ) > Width )
@@ -18254,6 +18252,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          ;
+         ; at point button
          ;\\ reset
          If EnteredButton( )
             If a_index( ) Or ( EnteredWidget( ) And
@@ -18274,8 +18273,70 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this
             If Not a_index( )
                If Not MouseButtonPress( )
+                  Protected._s_BUTTONS *EnteredButton, *BB1, *BB2, *BB0
+                  
                   ;\\
-                  DoEvent_Button( *this, #__event_MouseMove, mouse_x, mouse_y )
+                  If *this\type = #__type_window
+                     *BB0 = *this\CloseButton( )
+                     *BB1 = *this\MaximizeButton( )
+                     *BB2 = *this\MinimizeButton( )
+                  Else
+                     If *this\row
+                        If *this\RowEntered( )
+                           *BB1 = *this\RowEntered( )\checkbox
+                           If *this\RowEntered( )\childrens
+                              *BB2 = *this\RowEntered( )\buttonbox
+                           EndIf
+                           mouse_x = mouse( )\x - *this\inner_x( ) - *this\RowEntered( )\x - *this\scroll_x( )
+                           mouse_y = mouse( )\y - *this\inner_y( ) - *this\RowEntered( )\y - *this\scroll_y( )
+                        EndIf
+                     EndIf
+                     
+                     If *this\bar
+                        *BB0 = *this\bar\button
+                        If *this\type <> #__type_splitter
+                           *BB1 = *this\bar\button[1]
+                           *BB2 = *this\bar\button[2]
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                  ;\\ get at-point-button address
+                  If *BB1 And *BB1\hide = 0 And is_atpoint_( *BB1, mouse_x, mouse_y )
+                     *EnteredButton = *BB1
+                  ElseIf *BB2 And *BB2\hide = 0 And is_atpoint_( *BB2, mouse_x, mouse_y )
+                     *EnteredButton = *BB2
+                  ElseIf *BB0 And *BB0\hide = 0 And is_atpoint_( *BB0, mouse_x, mouse_y )
+                     *EnteredButton = *BB0
+                  EndIf
+                  
+                  ;\\ do buttons events entered & leaved
+                  If EnteredButton( ) <> *EnteredButton
+                     If EnteredButton( ) And
+                        Leaved( EnteredButton( ) )
+                        *this\root\repaint = #True
+                     EndIf
+                     
+                     EnteredButton( ) = *EnteredButton
+                     
+                     If EnteredButton( ) And
+                        Entered( EnteredButton( ) )
+                        ;
+                        If EnteredButton( ) = *BB0
+                           If EnteredButton( )\_enter > 0
+                              EnteredButton( )\_enter = - 1
+                           EndIf
+                        EndIf
+                        *this\root\repaint = #True
+                     EndIf
+                  EndIf
+                  
+                  ;\\
+                  If Not EnteredButton( )
+                     If *this\caption
+                        *this\caption\interact = is_atpoint_( *this\caption, mouse( )\x, mouse( )\y )
+                     EndIf
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -20040,70 +20101,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure DoEvent_Button( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected._s_BUTTONS *EnteredButton, *BB1, *BB2, *BB0
+         Protected._s_BUTTONS *BB1, *BB2, *BB0
          
-         ;\\
-         If *this\type = #__type_window
-            *BB0 = *this\CloseButton( )
-            *BB1 = *this\MaximizeButton( )
-            *BB2 = *this\MinimizeButton( )
-         Else
-            If *this\row
-               If *this\RowEntered( )
-                  *BB1 = *this\RowEntered( )\checkbox
-                  If *this\RowEntered( )\childrens
-                     *BB2 = *this\RowEntered( )\buttonbox
-                  EndIf
-                  mouse_x = mouse( )\x - *this\inner_x( ) - *this\RowEntered( )\x - *this\scroll_x( )
-                  mouse_y = mouse( )\y - *this\inner_y( ) - *this\RowEntered( )\y - *this\scroll_y( )
-               EndIf
-            EndIf
-            
-            If *this\bar
-               *BB0 = *this\bar\button
-               If *this\type <> #__type_splitter
-                  *BB1 = *this\bar\button[1]
-                  *BB2 = *this\bar\button[2]
-               EndIf
-            EndIf
-         EndIf
          
-         ;\\ get at-point-button address
-         If *BB1 And *BB1\hide = 0 And is_atpoint_( *BB1, mouse_x, mouse_y )
-            *EnteredButton = *BB1
-         ElseIf *BB2 And *BB2\hide = 0 And is_atpoint_( *BB2, mouse_x, mouse_y )
-            *EnteredButton = *BB2
-         ElseIf *BB0 And *BB0\hide = 0 And is_atpoint_( *BB0, mouse_x, mouse_y )
-            *EnteredButton = *BB0
-         EndIf
-         
-         ;\\ do buttons events entered & leaved
-         If EnteredButton( ) <> *EnteredButton
-            If EnteredButton( ) And
-               Leaved( EnteredButton( ) )
-               *this\root\repaint = #True
-            EndIf
-            
-            EnteredButton( ) = *EnteredButton
-            
-            If EnteredButton( ) And
-               Entered( EnteredButton( ) )
-               ;
-               If EnteredButton( ) = *BB0
-                  If EnteredButton( )\_enter > 0
-                     EnteredButton( )\_enter = - 1
-                  EndIf
-               EndIf
-               *this\root\repaint = #True
-            EndIf
-         EndIf
-         
-         ;\\
-         If Not EnteredButton( )
-            If *this\caption
-               *this\caption\interact = is_atpoint_( *this\caption, mouse( )\x, mouse( )\y )
-            EndIf
-         EndIf
       EndProcedure
       
       Procedure DoEvent_Bar( *this._s_WIDGET, event.l )
@@ -24197,9 +24197,9 @@ CompilerEndIf
 ; DPIAware
 ; Executable = widgets-.app.exe
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14055
-; FirstLine = 13781
-; Folding = ---------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--f8---8f-------------------------------------------------------------------------------------------------8-44-7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---------------------------------------
+; CursorPosition = 10302
+; FirstLine = 10106
+; Folding = ----------------------------------------------------------------------------------------------------------------f20--------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--f8---8f-------------------------------------------------------------------------------------------------8-44-7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

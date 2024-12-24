@@ -53,7 +53,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
       Define i
       AddItem(widget, -1, Str(i)+"test item ")
       For i=1 To 20
-        AddItem(widget, -1, Str(i)+"test item test item test item ")
+         If i%2
+            AddItem(widget, -1, Str(i)+"test item test item test item ", -1, 1)
+         Else
+            AddItem(widget, -1, Str(i)+"test item test item test item ")
+         EndIf
       Next
       
       widget()\bs = 0
@@ -98,8 +102,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 27
+; CursorPosition = 56
+; FirstLine = 45
 ; Folding = --
 ; EnableXP
 ; DPIAware
