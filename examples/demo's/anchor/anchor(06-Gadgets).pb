@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    EndProcedure
    
    ;-\\
-   Procedure Button_DrawCallback(*Object._s_widget, x.d,y.d,width.d,height.d, DataValue.i)
+   Procedure Button_DrawCallback(*Object._s_widget, X.d,Y.d,Width.d,Height.d, DataValue.i)
       Protected Text.s = GetText(*Object)
       Protected Hue = DataValue
       
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       SaveVectorState()
-      TranslateCoordinates( x,y )
+      TranslateCoordinates( X,Y )
       
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
@@ -152,7 +152,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *Object\container = 0
       *Object\data = HighlightColorHue
       ;SetText(*Object, Text)                                 ; Set the button text as a dictionary entry
-      Bind(*Object, @Button_Events( ), #__event_Draw )  ; Set the drawing callback with the specified highlighting color
+      Bind(*Object, @Button_Events( ), #__event_Draw )        ; Set the drawing callback with the specified highlighting color
       Bind(*Object, @Button_Events( ), #__event_LeftClick ) 
       ;a_set(*Object, #__a_size|#__a_position)        ; Add handles if you want to edit the buttons.
       
@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    ;-\\ 
    ;
-   Procedure CheckBox_DrawCallback(*Object._s_widget, x.d,y.d,width.d,height.d, DataValue.i)
+   Procedure CheckBox_DrawCallback(*Object._s_widget, X.d,Y.d,Width.d,Height.d, DataValue.i)
       Protected Text.s = GetText(*Object)
       Protected State.i = GetState(*Object)
       Protected yi.i = Int((Height-19)/2)
@@ -177,7 +177,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       SaveVectorState()
-      TranslateCoordinates( x,y )
+      TranslateCoordinates( X,Y )
       
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
@@ -381,8 +381,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 348
-; FirstLine = 225
+; CursorPosition = 154
+; FirstLine = 129
 ; Folding = 0-0f-
 ; EnableXP
 ; DPIAware

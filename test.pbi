@@ -145,7 +145,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Global test_redraw_items = 1
       Global test_draw_repaint = 0
-      Global test_draw_contex = 0
       Global test_buttons_draw      = 0
       Global test_startdrawing      = 0
       Global test_clip              = 0
@@ -3041,7 +3040,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\anchors\state = #__s_1
                   ChangeCurrentCursor( *this, a_anchors( )\cursor[a_index] )
                   *this\root\repaint = #True
-                  *this\root\contex = 0
                EndIf
             EndIf
             ; 
@@ -3060,7 +3058,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure a_remove( *this._s_WIDGET )
          Protected a_index
          If *this\container <> 3
-            *this\resize\send = #False
+            *this\bindresize = #False
          EndIf
          For a_index = 0 To #__a_moved
             If *this\anchors And
@@ -3081,7 +3079,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If Not a_index( )
             If *this\container <> 3
-               *this\resize\send = #True
+               *this\bindresize = #True
             EndIf
             ; Debug "a_show_add "+*this\class
             For a_index = 0 To #__a_moved
@@ -4284,10 +4282,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          
          ;\\
-         *this\redraw = #True
-         If *this\parent 
-            *this\parent\redraw = #True
-         EndIf
          *this\resize\clip = #True
          
          ;\\
@@ -4896,7 +4890,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
 
                ;\\ Post Event
-            If *this\resize\send
+            If *this\bindresize
                Send( *this, #__event_resize )
             EndIf
          EndIf
@@ -5196,7 +5190,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             CurrentCursor( ) = *cursor
-            result = Send( *this, #__event_cursor, #PB_All, CurrentCursor( ) )
+            result = Send( *this, #__event_CursorChange, #PB_All, CurrentCursor( ) )
             If result > 0
                *cursor = result
                CurrentCursor( ) = *cursor
@@ -5671,12 +5665,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = 0
             ; *this\state = state
             ProcedureReturn #True
-         EndIf
-         
-         If is_integral_( *this )
-            *this\parent\redraw = 1
-         Else
-            *this\redraw = 1
          EndIf
          
          
@@ -6351,9 +6339,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i SetText( *this._s_WIDGET, Text.s )
          Protected result.i, Len.i, String.s, i.i
-         
-         *this\redraw = 1
-         
          If *this\type = #__type_Window
             *this\TitleText( )\string = Text
          EndIf
@@ -10303,7 +10288,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Y = \v\container_y( )
             EndIf
             If Width = #PB_Ignore
-               Width = *this\container_width( ) ;\v\container_x( ) ; (\v\frame_x( ) - \h\frame_x( )) +8;\v\frame_width( )
+               Width = (\v\frame_x( ) - \h\frame_x( )) + \v\frame_width( )
             EndIf
             If Height = #PB_Ignore
                Height = \h\frame_y( ) - \v\frame_y( ) + \h\frame_height( )
@@ -11864,12 +11849,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
             *bar\thumb\pos = ThumbPos
             
-            If is_integral_( *this )
-               *this\parent\redraw = 1
-            Else
-               *this\redraw = 1
-            EndIf
-            
             If Not ( *this\type = #__type_Track And constants::BinaryFlag( *this\flag, #PB_TrackBar_Ticks ))
                *this\BarChange( ) = 1
             EndIf
@@ -12975,7 +12954,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                If MinDistance >= Distance
                   MinDistance = Distance
                   caret = i
-                  *this\redraw = 1
                   
                Else
                   Break
@@ -14805,7 +14783,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result$
          
          Select event
-            Case #__event_cursor          : result$ = "Cursor"
+            Case #__event_CursorChange          : result$ = "Cursor"
             Case #__event_free            : result$ = "Free"
             Case #__event_drop            : result$ = "Drop"
             Case #__event_create          : result$ = "Create"
@@ -15248,7 +15226,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\container = - 1
             Else
                *this\container = 3
-               *this\resize\send = #True
+               *this\bindresize = #True
             EndIf
             *this\color\back = $FFF9F9F9
             
@@ -17244,21 +17222,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected arrow_right
          
          With *this
-            If *this\redraw = 1
-               *this\redraw = 0
-               ; Debug " redraw - " + *this\class
-            EndIf
-            
             If *this\align And 
                *this\align\update = 1
                *this\align\update = 0
                Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            EndIf
-            
-            If *this\contex
-               DrawAlphaImage( ImageID( *this\contex ), *this\screen_x( ), *this\screen_y( ) )
-               ;*this\contex = 0
-               ProcedureReturn 0
             EndIf
             
             ;\\ draw belowe drawing
@@ -17435,9 +17402,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   ; post event re draw
                   ; If __gui\eventexit > 0
-                     If is_root_( *this )
-                        Send( *this, #__event_ReDraw )
-                     Else
+                     If *this\binddraw
                         Send( *this, #__event_Draw )
                      EndIf
                   ; EndIf
@@ -17550,10 +17515,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;          ClearDebugOutput( )
          ;          ;\\
          If *root
-            If *root\contex 
-               DrawAlphaImage( ImageID( *root\contex ), 0,0)
-               ;DrawImage( ImageID( *root\contex ), 0,0)
-            Else
                If *root\drawmode & 1<<1 And Not *root\drawmode & 1<<2
                   VectorSourceColor($FFF0F0F0)
                   FillVectorOutput( )
@@ -17579,18 +17540,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\
                Draw( *root )
-            EndIf
             
             ;\\
             If Not ( *root\autosize And *root\haschildren = 0 )
                
                ;\\
                If StartEnum( *root )
-                  If *root\contex
-                     If Not widgets( )\redraw
-                        Continue
-                     EndIf
-                  EndIf
                   ;
                   If test_focus_show
                      ;\\ draw active containers frame
@@ -17860,11 +17815,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;                draw_box_( EnteredWidget( )\inner_x( )+EnteredWidget( )\RowEntered( )\x, EnteredWidget( )\inner_y( )+EnteredWidget( )\RowEntered( )\y, EnteredWidget( )\RowEntered( )\width, EnteredWidget( )\RowEntered( )\height, $ffff0000 )
             ;             EndIf
             
-            If test_draw_contex
-               If Not *root\contex
-                  *root\contex = GrabDrawingImage( #PB_Any, 0,0, OutputWidth( ), OutputHeight( ) )
-               EndIf
-            EndIf
          EndIf
          
          ProcedureReturn *root
@@ -18990,8 +18940,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; change enter/leave state
             If *this\LineEntered( ) <> *line 
-               *this\redraw = 1
-               
                ; leave state
                If *this\LineEntered( )
                   If *this\LineEntered( )\_enter
@@ -20156,9 +20104,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ; change enter/leave state
                   If *this\TabEntered( ) <> *tab 
-                     *this\redraw = 1
-                     *this\root\contex = 0
-                     
                      ;\\ leaved tabs
                      If *this\TabEntered( ) And
                         Leaved( *this\TabEntered( ) )
@@ -20669,8 +20614,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\root\repaint = #True
                   EndIf
                   
-                  *this\redraw = 1
-                  
                Case #__event_Focus,
                     #__event_LostFocus, 
                     #__event_MouseEnter,
@@ -20695,9 +20638,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; If *this\row
                   *this\root\repaint = #True
                   ; EndIf
-                  
-                  *this\redraw = 1
-                  *this\root\contex = 0
                   
             EndSelect
             
@@ -22002,7 +21942,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          ;
          If *this > 0
-            *this\haseventhook = 1
+
             ;
             If event = #PB_All 
                Define i
@@ -22024,7 +21964,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   __gui\eventhook( )\widget   = *this
                   
                   If event = #__event_resize
-                     *this\resize\send = 1
+                     *this\bindresize = 1
                   EndIf
                EndIf
             EndIf
@@ -23359,7 +23299,111 @@ EndMacro
 
 
 ;-\\ EXAMPLE
-CompilerIf #PB_Compiler_IsMainFile
+
+
+CompilerIf #PB_Compiler_IsMainFile = 99
+   UseWidgets( )
+   Define i, widget
+   ;
+   If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      widget = Tree(0, 0, 0, 0)
+      For i=0 To 20
+         AddItem(widget, -1, "test item test item test item "+Str(i))
+      Next
+      ;
+      Splitter(0, 0, 180, 120, widget, -1, #PB_Splitter_Vertical)
+      WaitClose( )
+   EndIf
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile = 99
+   UseWidgets( )
+   
+   Global widget, v_bar, h_bar
+   Global  w = 420-40, h = 280-40
+   
+   Procedure track_v_events( )
+      Resize(widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(EventWidget()))
+   EndProcedure
+   Procedure track_h_events( )
+      Resize(widget, #PB_Ignore, #PB_Ignore, GetState(EventWidget()), #PB_Ignore)
+   EndProcedure
+   
+   Procedure track_vh_events( )
+      If GetState( EventWidget( ) )
+         SetState(h_bar, 120)
+         SetState(v_bar, 120)
+      Else
+         SetState(h_bar, w-10)
+         SetState(v_bar, h-10)
+      EndIf
+   EndProcedure
+   
+   If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      widget()\bs = 0
+      widget()\fs = 0
+      Container(0,0, w,h, #PB_Container_Double)
+      SetBackgroundColor(widget(), $FFB3FDFF)
+      widget()\bs = 20
+      widget()\fs = 20
+      Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) 
+     
+      test_resize = 1
+     ; test_resize_area = 1
+      widget = Tree(0, 0, 0, 0, #__flag_borderless)
+      Define i
+      AddItem(widget, -1, Str(i)+"test item ")
+      For i=1 To 20
+         If i%2
+            AddItem(widget, -1, Str(i)+"test item test item test item ", -1, 1)
+         Else
+            AddItem(widget, -1, Str(i)+"test item test item test item ")
+         EndIf
+      Next
+      
+      widget()\bs = 0
+      widget()\fs = 0
+      
+      widget()\scroll\v\round = 0
+      widget()\scroll\v\bar\button\round = 0
+      widget()\scroll\v\bar\button[1]\round = 0
+      widget()\scroll\v\bar\button[2]\round = 0
+      
+      widget()\scroll\h\round = 0
+      widget()\scroll\h\bar\button\round = 0
+      widget()\scroll\h\bar\button[1]\round = 0
+      widget()\scroll\h\bar\button[2]\round = 0
+      CloseList()
+      
+;        Resize(widget(), 0, #PB_Ignore, 0, 120) 
+;       widget() = widget
+;       Debug widget()\scroll\v\x
+   
+      ; v
+      ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
+       v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
+      SetBackgroundColor(widget(), $FF80BE8E)
+      SetState(widget(), 120)
+      Bind( widget(), @track_v_events( ), #__event_change )
+      ; h
+      ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
+       h_bar=Track( 10,h+10,w,20, 0, w-10 )
+      SetBackgroundColor(widget(), $FF80BE8E)
+      SetState(widget(), 120)
+      Bind( widget(), @track_h_events( ), #__event_change )
+      
+      
+      Button(w+10,h+10,20,20,"", #__flag_Buttontoggle)
+      SetRound( widget(), 10 )
+      Bind( widget(), @track_vh_events( ), #__event_Down )
+;       
+      ClearDebugOutput()
+      WaitClose( )
+   EndIf
+   
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile ;= 99
    UseWidgets( )
    
    Global object 
@@ -23774,7 +23818,7 @@ CompilerEndIf
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10305
-; FirstLine = 10291
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P----v------------------4--------------------------------------------------------v--d-400-4-0X--------------------------------------------------------------------0-z---
+; CursorPosition = 147
+; FirstLine = 144
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9----+-----------------f---------------------------------------------------------+-40f-4-f-4f0---------------------------------------------------------------2-----+-6---
 ; EnableXP

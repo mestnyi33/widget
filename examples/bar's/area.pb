@@ -17,6 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global *this.allocate( widget )
    Global NewList Images.IMAGES( )
+   Declare Canvas_Events( )
    Declare Canvas_Draw( Canvas.i, List Images.IMAGES( ) )
    
    Macro Area_Draw( _this_ )
@@ -27,10 +28,10 @@ CompilerIf #PB_Compiler_IsMainFile
                               (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
       
       If Not _this_\scroll\v\hide
-        ; widget::Draw( _this_\scroll\v )
+         ; widget::Draw( _this_\scroll\v )
       EndIf
       If Not _this_\scroll\h\hide
-        ; widget::Draw( _this_\scroll\h )
+         ; widget::Draw( _this_\scroll\h )
       EndIf
       
       UnclipOutput( )
@@ -44,7 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
       Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
-      BindGadgetEvent( GetCanvasGadget( root( ) ), _callback_ )
+      ; BindGadgetEvent( GetCanvasGadget( root( ) ), _callback_ )
+      Bind( root( ), _callback_ )
    EndMacro
    
    Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
@@ -58,23 +60,23 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Bind( _parent_, _callback_)
       If _callback_
-         Bind( _parent_\root, _callback_, #__event_ReDraw )
-         ;Bind( _parent_\root, _callback_, #__event_Draw )
-         Bind( _parent_\scroll\v, _callback_ )
-         Bind( _parent_\scroll\h, _callback_ )
+         Bind( _parent_\root, _callback_);, #__event_Draw )
+         Bind( _parent_\scroll\v, _callback_, #__event_Change )
+         Bind( _parent_\scroll\h, _callback_, #__event_Change )
       EndIf
    EndMacro                                                  
    
    Procedure Area_Events( )
       Protected change
       
+      If is_root_( EventWidget())
+         Canvas_Events( )
+      EndIf
+      
       Select WidgetEvent( )
-         Case #__event_ReDraw
-            ;Case #__event_Draw
-            ; If is_root_( EventWidget( ) )
-            Debug "repaint canvas"
-            Canvas_Draw( MyCanvas, Images( ))
-            ; EndIf
+         Case #__event_Draw
+            ; Debug "repaint canvas"
+            ;  Canvas_Draw( MyCanvas, Images( ))
             
          Case #__event_Change
             change = WidgetEventData( )
@@ -172,8 +174,10 @@ CompilerIf #PB_Compiler_IsMainFile
                      EndIf
                   EndIf
                   
-                  If alpha
-                     MoveElement( Images( ), #PB_List_Last )
+                  If alpha 
+                     If MouseButtonPress( )
+                        MoveElement( Images( ), #PB_List_Last )
+                     EndIf
                      *current = @Images( )
                      currentItemXOffset = mouse_x - Images( )\x - scroll_x
                      currentItemYOffset = mouse_y - Images( )\y - scroll_y
@@ -200,32 +204,35 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Canvas_Events( )
       Protected Repaint
-      Protected Event = EventType( )
-      Protected Canvas = EventGadget( )
+      Protected Event = ToPBEventType(WidgetEvent( )) ; EventType( )
+      Protected Canvas = root()\canvas\gadget         ; EventGadget( )
+      
       Protected MouseX ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseX )
       Protected MouseY ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseY )
+      MouseX = widget::mouse( )\x
+      MouseY = widget::mouse( )\y
+      
       Width = GadgetWidth( Canvas ) - X*2
       Height = GadgetHeight( Canvas ) - Y*2
       
-      widget::EventHandler( Canvas, Event )
-      
-      MouseX = widget::mouse( )\x
-      MouseY = widget::mouse( )\y
       ;     Width = widget::Root( )\width - x*2
       ;     Height = widget::Root( )\height - y*2
-     
+      
       Select Event
          Case #PB_EventType_Repaint
-            Repaint = #True
+            Canvas_Draw( MyCanvas, Images( ))
             
-         Case #PB_EventType_LeftButtonUp : Drag = #False
-            ; Canvas_SetCursor( Mousex, Mousey )
+         Case #PB_EventType_LeftButtonUp 
+            If Drag
+               ChangeCursor( root( ), #PB_Cursor_Hand )
+               Drag = #False
+            EndIf
             
          Case #PB_EventType_LeftButtonDown
             Drag = Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
             If Drag 
-               ; Canvas_SetCursor( Mousex, Mousey, #PB_Cursor_Arrows )
-               Repaint = #True 
+               ChangeCursor( root( ), #PB_Cursor_Arrows )
+              ; Repaint = #True 
             EndIf
             
          Case #PB_EventType_MouseMove
@@ -233,34 +240,43 @@ CompilerIf #PB_Compiler_IsMainFile
                If LastElement( Images( ) )
                   If Images( )\x <> Mousex - currentItemXOffset
                      Images( )\x = Mousex - currentItemXOffset
-                   ; Repaint = #True
+                     ; Repaint = #True
                   EndIf
                   
                   If Images( )\y <> Mousey - currentItemYOffset
                      Images( )\y = Mousey - currentItemYOffset
-                    ; Repaint = #True
+                     ; Repaint = #True
                   EndIf
                EndIf
             Else 
-               ; Canvas_SetCursor( Mousex, Mousey )
+               If Not MouseButtonPress( )
+                  If Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
+                     If ChangeCursor( root( ), #PB_Cursor_Hand )
+                        Repaint = 1
+                     EndIf
+                  Else
+                     If ChangeCursor( root( ), #PB_Cursor_Default )
+                        Repaint = 1
+                     EndIf
+                  EndIf
+               EndIf
             EndIf
             
          Case #PB_EventType_Resize 
             ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) ; Bug ( 562 )
+            Resize( *this, X, Y, X+Width, Y+Height )
             
-            widget::bar_area_resize( *this, X+*this\fs, Y+*this\fs, Width-*this\fs*2, Height-*this\fs*2 )
-            
-            Repaint = #True
+            ; Repaint = #True
       EndSelect
       
-      If Repaint
-         ReDraw( root( ))
-;          If StartDraw( Root( ) )
-;             Drawing( )
-;             Canvas_Draw( MyCanvas, Images( ) ) 
-;             StopDraw( )
-;          EndIf
-      EndIf
+            If Repaint
+               ReDraw( root( ))
+;                If StartDraw( root( ) )
+;                   Drawing( )
+;                   Canvas_Draw( MyCanvas, Images( ) ) 
+;                   StopDraw( )
+;                EndIf
+            EndIf
    EndProcedure
    
    ;-
@@ -335,6 +351,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define hButton = GetAttribute(*this\Scroll\h, #__bar_buttonsize)
    ;Debug *this\Scroll\v\width
    Debug *this\root
+   
    Repeat
       Event = WaitWindowEvent( )
       
@@ -372,7 +389,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                  ;Canvas_Draw(MyCanvas, Images( ))
+                  ReDraw( root( ))
                   
                Case 4
                   If GetGadgetState(2)
@@ -382,10 +399,10 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                  ;Canvas_Draw(MyCanvas, Images( ))
+                  ReDraw( root( ))
                   
                Case 5
-                  ;Canvas_Draw(MyCanvas, Images( ))
+                  ReDraw( root( ))
                   
             EndSelect
       EndSelect
@@ -393,7 +410,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 60
-; Folding = --------
+; CursorPosition = 234
+; FirstLine = 273
+; Folding = ---------
 ; EnableXP

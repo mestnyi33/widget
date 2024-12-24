@@ -197,50 +197,60 @@
     EndEnumeration
     
     Enumeration 1
-      #__event_Create
-      #__event_MouseEnter
       #__event_Focus
-      #__event_Down
-      #__event_MiddleDown
-      #__event_LeftDown
-      #__event_RightDown
-      #__event_DragStart
+      #__event_LostFocus
+      ;
+      #__event_MouseEnter
+      #__event_MouseLeave
       #__event_MouseMove
       #__event_MouseWheel
-      #__event_MouseLeave
-      #__event_Drop
+      ;
+      #__event_Down
+      #__event_LeftDown
+      #__event_MiddleDown
+      #__event_RightDown
+      ;
       #__event_Up
-      #__event_MiddleUp
       #__event_LeftUp
+      #__event_MiddleUp
       #__event_RightUp
+      ;
       #__event_LeftClick
       #__event_RightClick
       #__event_Left2Click
       #__event_Right2Click
       #__event_Left3Click
       #__event_Right3Click
-      #__event_LostFocus
+      ;
       #__event_Change
       #__event_StatusChange
       #__event_ScrollChange
-      #__event_Cursor
+      #__event_CursorChange
+      ;
       #__event_KeyDown
       #__event_Input
       #__event_Return
       #__event_KeyUp
+      ;
+      #__event_DragStart
+      #__event_Drop
+      ;
       #__event_Draw
-      #__event_ReDraw
       #__event_Repaint
+      ;
+      #__event_Resize
+      #__event_ResizeBegin
+      #__event_ResizeEnd
       #__event_Maximize
       #__event_Minimize
       #__event_Restore
-      #__event_ResizeBegin
-      #__event_Resize
-      #__event_ResizeEnd
+      ;
+      #__event_Create
       #__event_Close
       #__event_Free
       #__event
     EndEnumeration
+    
     
 ;     #__eventmask_Create       = 1<<#__event_Create
 ;     #__eventmask_enter        = 1<<#__event_MouseEnter
@@ -268,7 +278,7 @@
 ;     #__eventmask_Change       = 1<<#__event_Change
 ;     #__eventmask_StatusChange = 1<<#__event_StatusChange
 ;     #__eventmask_ScrollChange = 1<<#__event_ScrollChange
-;     #__eventmask_CursorChange = 1<<#__event_Cursor
+;     #__eventmask_CursorChange = 1<<#__event_CursorChange
 ;     #__eventmask_KeyDown      = 1<<#__event_KeyDown
 ;     #__eventmask_Input        = 1<<#__event_Input
 ;     #__eventmask_Return       = 1<<#__event_Return
@@ -721,8 +731,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 134
-; FirstLine = 130
+; CursorPosition = 253
+; FirstLine = 187
 ; Folding = ----
 ; Optimizer
 ; EnableXP

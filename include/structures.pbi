@@ -45,7 +45,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure RESIZEINFO Extends _s_COORDINATE
          flag.c
          clip.b
-         Send.b
          change.b
          nochildren.b
       EndStructure
@@ -591,22 +590,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-         ;          Map *eventshook._s_HOOK( )
-         ;         
+         deffocus.b ; button default focus
+         
          List __lines._s_rows( )
-         deffocus.b ; default focus
          
-         haseventhook.b
-         ;          *eventhook._s_HOOK[constants::#__event_count]
-         ;          ; TEMP
-         ;          hashook.b
-         ;          List *hook._s_HOOK( ) ; hook of events
+         ; bindevent.b
+         bindresize.b
+         binddraw.b ; 
          
-         
-         ReDraw.b
+         ;
+         Resize.RESIZEINFO                 
          ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
-         Resize.RESIZEINFO                 
          
          
          Index.i         ; index widget
@@ -682,7 +677,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          StatusBarHeight.w
          ;
          
-         *contex
          *errors
          notify.l                   ; оповестить об изменении
          
@@ -787,8 +781,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 728
-; FirstLine = 723
+; CursorPosition = 679
+; FirstLine = 659
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

@@ -50,12 +50,24 @@ CompilerIf #PB_Compiler_IsMainFile
             SetGadgetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
       Else
+         Define i,widget = Tree(0, 0, 0, 0, #__flag_borderless)
+         
+         AddItem(widget, -1, Str(i)+"test item ")
+         For i=1 To 20
+            If i%2
+               AddItem(widget, -1, Str(i)+"test item test item test item ", -1, 1)
+            Else
+               AddItem(widget, -1, Str(i)+"test item test item test item ")
+            EndIf
+         Next
+         widget = Splitter(0, 0, 0, 0, -1, widget, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+         
          If mode = 1
             object = Splitter(10, 10, w, h, Text(0,0,0,0,"fixed"), -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
          ElseIf  mode = 2
             object = Splitter(10, 10, w, h, -1, Text(0,0,0,0,"fixed"), #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
          Else
-            object = Splitter(10, 10, w, h, -1, -1, #PB_Splitter_Vertical)
+            object = Splitter(10, 10, w, h, -1, widget, #PB_Splitter_Vertical)
          EndIf
          ;Resize(object, #PB_Ignore, #PB_Ignore, w,h)
          If min
@@ -63,7 +75,9 @@ CompilerIf #PB_Compiler_IsMainFile
             SetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
             SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
-      
+         
+          SetState(object, 0)
+     
       EndIf
    EndProcedure
    
@@ -138,7 +152,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
       h_bar=Track( 10,h+10,w,20, 0, w-10 )
       SetBackgroundColor(widget(), $FF80BE8E)
-      SetState(widget(), 180)
+      SetState(widget(), 380)
       Bind( widget(), @track_h_events( ), #__event_change )
       
       Button(w+10,h+10,20,20,"", #__flag_Buttontoggle)
@@ -159,8 +173,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 78
-; Folding = -vq--
+; CursorPosition = 173
+; FirstLine = 141
+; Folding = -----
 ; EnableXP
 ; DPIAware
