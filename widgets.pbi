@@ -6443,55 +6443,47 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.l SetItemText( *this._s_WIDGET, Item.l, Text.s, Column.l = 0 )
          Protected result
          
-         If is_bar_( *this ) Or *this\type = #__type_TabBar
-            If is_no_select_item_( *this\__tabs( ), item )
-               ProcedureReturn #False
-            EndIf
-            
-            *this\TabChange( )          = #True
-            *this\__tabs( )\text\string = Text.s
-            result                      = #True
-         EndIf
-         
          If *this\type = #__type_Tree Or
             *this\type = #__type_ListIcon Or
             *this\type = #__type_Properties
-            
-            ;Item = *this\row\i( Hex( Item ))
             
             If is_no_select_item_( *this\__rows( ), item )
                ProcedureReturn #False
             EndIf
             
-            Protected row_count = CountString( Text.s, #LF$ )
-            
-            If Not row_count
-               *this\__rows( )\text\string = Text.s
-            Else
+            If CountString( Text.s, #LF$ )
                *this\__rows( )\text\string      = StringField( Text.s, 1, #LF$ )
                *this\__rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+               result                        = #True
+            Else
+               If *this\__rows( )\text\string <> Text
+                  *this\__rows( )\text\string = Text
+                  result                        = #True
+               EndIf
             EndIf
             
-            *this\__rows( )\text\TextChange( ) = 1
-            *this\WidgetChange( )         = 1
-            result                        = #True
-            
+            If result
+               *this\__rows( )\text\TextChange( ) = 1
+               *this\WidgetChange( )         = 1
+            EndIf
+         
          ElseIf *this\type = #__type_Panel
             result = SetItemText( *this\tabbar, Item, Text, Column )
             
          ElseIf is_bar_( *this ) Or *this\type = #__type_TabBar
-            If is_item_( *this, Item ) And
-               SelectElement( *this\__tabs( ), Item ) And
-               *this\__tabs( )\text\string <> Text
-               *this\__tabs( )\text\string   = Text
-               *this\__tabs( )\text\TextChange( ) = 1
-               *this\WidgetChange( )         = 1
-               result                        = #True
+            If is_no_select_item_( *this\__tabs( ), item )
+               ProcedureReturn #False
             EndIf
             
+            *this\__tabs( )\text\TextChange( ) = 1
+            *this\__tabs( )\text\string = Text.s
+            *this\WidgetChange( )         = #True
+            *this\TabChange( )          = #True
+            result                      = #True
          EndIf
          
-         PostRepaint( *this\root )
+         
+         ; PostRepaint( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -24178,8 +24170,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20001
-; FirstLine = 19987
+; CursorPosition = 3219
+; FirstLine = 3210
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP

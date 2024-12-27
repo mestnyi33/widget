@@ -156,6 +156,7 @@ Procedure PropertiesEvents( )
    Protected *row._s_ROWS
    Static *last._s_WIDGET
    
+   
    Select WidgetEvent( )
       Case #__event_Focus,
            #__event_LostFocus
@@ -170,7 +171,6 @@ Procedure PropertiesEvents( )
          
       Case #__event_Change
          If EventWidget( ) = *last
-            
             Select Type( EventWidget( ) )
                Case #__type_String
                   Select GetData( EventWidget( ) ) 
@@ -197,54 +197,54 @@ Procedure PropertiesEvents( )
                   
             EndSelect
             
-            EndIf
-         
-       Case #__event_Down
-         If EventWidget( ) = *first Or
-            EventWidget( ) = *second 
-            
-            SetState( *second, EventWidget( )\RowEntered( )\index )
-            ;
-            *row = *second\RowFocused( )
-            
-            If *row
-               *this = *row\data
-               
-               If *this And *last <> *this
-                  If *last 
-                     Hide( *last, #True )
-                  EndIf
-                  
-                  *last = *this
-                  
-                  ;\\ show widget
-                  Hide( *this, #False )
-                  Select Type( *this )
-                     Case #__type_String
-                        SetText( *this, (*row\text\string) )
-                        ; SetActive( *this )
-                     Case #__type_Spin
-                        SetState( *this, Val(*row\text\string) )
-                        
-                     Case #__type_ComboBox
-                        Select GetData( *this ) 
-                           Case #_pi_disable : SetState( *this, Disable( a_focused( ) ))
-                           Case #_pi_hide    : SetState( *this, Hide( a_focused( ) ))
-                        EndSelect
-                        
-                
-                  EndSelect
-                  ResizePropertiesItem( *second )
-               EndIf
-            EndIf
-            
          EndIf
          
-            Select EventWidget( )\type
-               Case #__type_Spin     : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-               Case #__type_String   : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), GetText(EventWidget( )) )
-               Case #__type_ComboBox : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-            EndSelect
+       Case #__event_Down
+          If EventWidget( ) = *first Or
+             EventWidget( ) = *second 
+             
+             SetState( *second, EventWidget( )\RowEntered( )\index )
+             ;
+             *row = *second\RowFocused( )
+             
+             If *row
+                *this = *row\data
+                
+                If *this And *last <> *this
+                   If *last 
+                      Hide( *last, #True )
+                   EndIf
+                   
+                   *last = *this
+                   
+                   ;\\ show widget
+                   Hide( *this, #False )
+                   Select Type( *this )
+                      Case #__type_String
+                         SetText( *this, (*row\text\string) )
+                         ; SetActive( *this )
+                      Case #__type_Spin
+                         SetState( *this, Val(*row\text\string) )
+                         
+                      Case #__type_ComboBox
+                         Select GetData( *this ) 
+                            Case #_pi_disable : SetState( *this, Disable( a_focused( ) ))
+                            Case #_pi_hide    : SetState( *this, Hide( a_focused( ) ))
+                         EndSelect
+                         
+                         
+                   EndSelect
+                   ResizePropertiesItem( *second )
+                EndIf
+             EndIf
+             
+          EndIf
+          
+          Select Type( EventWidget( ))
+             Case #__type_Spin     : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+             Case #__type_String   : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), GetText(EventWidget( )) )
+             Case #__type_ComboBox : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+          EndSelect
          
       Case #__event_StatusChange
          If EventWidget( ) = *first
@@ -324,7 +324,7 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    
    Select Type
       Case #__type_Spin
-         *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__bar_button_size, 0, 1 )
+         *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__bar_button_size, 0, 7 )
          SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_String
          *this = Create( *second, "String", #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
@@ -332,7 +332,7 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
          *this = Create( *second, "ComboBox", #__type_ComboBox, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
          AddItem(*this, -1, "False")
          AddItem(*this, -1, "True")
-         SetState(*this, 1)
+        ; SetState(*this, 1)
    EndSelect
    
    If *this
@@ -365,16 +365,13 @@ Procedure CreateProperties( X,Y,Width,Height, flag=0 )
    
    Hide( *first\scroll\v, 1 )
    Hide( *first\scroll\h, 1 )
-   ;Hide( *second\scroll\v, 1 )
    Hide( *second\scroll\h, 1 )
    CloseList( )
    
-   
-   ;    SetData(*second, *first)
-   ;    SetData(*first, *second)
-   
    Bind(*first, @PropertiesEvents( ))
    Bind(*second, @PropertiesEvents( ))
+   
+   ; draw и resize отдельно надо включать пока
    Bind(*second, @PropertiesEvents( ), #__event_resize)
    ProcedureReturn *splitter
 EndProcedure
@@ -391,7 +388,8 @@ Procedure SetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    
    SetItemText( *first, item, StringField(Text.s, 1, Chr(10)) )
-   SetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
+   ProcedureReturn SetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
+    
 EndProcedure
 
 ;-
@@ -404,7 +402,7 @@ Macro properties_update_text( _gadget_, _value_ )
 EndMacro
 
 Macro properties_update_class( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 )+GetClass( _value_ )+"_"+CountType( _value_ ) )
+   SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 )+UCase(GetText( _value_ ))); GetClass( _value_ )+"_"+CountType( _value_ ) )
 EndMacro
 
 Macro properties_update_hide( _gadget_, _value_ )
@@ -841,6 +839,20 @@ Procedure widget_events( )
             
             properties_updates( ide_inspector_properties, *e_widget )
             
+            ;
+            Protected *second._s_WIDGET = GetAttribute(ide_inspector_properties, #PB_Splitter_SecondGadget)
+            If *second And *second\RowFocused( )
+               Protected *this._s_WIDGET = *second\RowFocused( )\data
+               If *this
+                  Select Type( *this )
+                     Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
+                     Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
+                     Case #__type_ComboBox : SetState(*this, Val(*second\RowFocused( )\text\string) )
+                  EndSelect
+               EndIf
+            EndIf
+               
+            ; 
             If GetActive( ) <> ide_inspector_view 
                SetActive( ide_inspector_view )
                Debug "------------- "+GetActive( )\class
@@ -924,6 +936,7 @@ Procedure widget_events( )
          EndIf
          
       Case #__event_Resize
+         ; Debug ""+GetClass(*e_widget)+" resize"
          properties_update_coordinate( ide_inspector_properties, *e_widget )
          SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
          
@@ -1268,12 +1281,13 @@ Procedure ide_events( )
          
       Case #__event_Change
          If *e_widget = ide_inspector_view
-            ; Debug GetState(*e_widget)
-            a_set( GetItemData(*e_widget, GetState(*e_widget)), #__a_full )
-            properties_updates( ide_inspector_properties, a_focused( ) )
+            ; Debug " 1 change-["+*e_widget\class+"]"
+            If a_set( GetItemData(*e_widget, GetState(*e_widget)), #__a_full )
+               properties_updates( ide_inspector_properties, a_focused( ) )
+            EndIf
          EndIf
          If *e_widget = ide_inspector_properties
-            ; Debug "  change-["+*e_widget\class+"]"
+            ; Debug " 2 change-["+*e_widget\class+"]"
             properties_updates( ide_inspector_properties, a_focused( ) )
          EndIf
          
@@ -1742,9 +1756,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 186
-; FirstLine = 177
-; Folding = -------------------------------
+; CursorPosition = 404
+; FirstLine = 329
+; Folding = ---f7f-------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
