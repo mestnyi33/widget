@@ -252,7 +252,17 @@ Procedure PropertiesEvents( )
                WidgetEventData( ) = #PB_Tree_Collapsed
                ;
                If SetItemState( *second, WidgetEventItem( ), WidgetEventData( ) )
-                  ReDraw( *second )
+                  
+                  If *last 
+                     If WidgetEventData( ) = #PB_Tree_Expanded 
+                        Hide( *last, #False )
+                     EndIf
+                     If WidgetEventData( ) = #PB_Tree_Collapsed
+                        Hide( *last, #True )
+                     EndIf
+                  EndIf
+                  
+                 ; ReDraw( *second )
                EndIf
             EndIf
             
@@ -1756,9 +1766,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 404
-; FirstLine = 329
-; Folding = ---f7f-------------------------
+; CursorPosition = 264
+; FirstLine = 234
+; Folding = ----f-8-------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

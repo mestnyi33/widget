@@ -11,6 +11,7 @@
 ; ;  (____)|   |
 ; ;   (____).__|
 ; ;    (___)__.|_____
+; ;  Mini Thread Control https://www.purebasic.fr/english/viewtopic.php?t=73231
 ; ;
 ; ; sudo adduser your_username vboxsf
 ; ; https://linuxrussia.com/sh-ubuntu.html
@@ -539,10 +540,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro ColorState( ): color\state: EndMacro
       Macro ScrollState( ): Scroll\state: EndMacro
       
-      Macro TabItemState( ): checked: EndMacro
-      Macro ToggleBoxState( ): togglebox\TabItemState( ): EndMacro
-      Macro ItemBoxState( ): CheckBox\TabItemState( ): EndMacro
-      Macro ItemButtonState( ): buttonbox\TabItemState( ): EndMacro
       
       ;-
       Macro __rows( ): columns( )\items( ) : EndMacro    ; row\items( )
@@ -5529,6 +5526,39 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure.i GetData( *this._s_WIDGET )
+         ProcedureReturn *this\data
+      EndProcedure
+      
+      Procedure SetData( *this._s_WIDGET, *data )
+         *this\data = *data
+      EndProcedure
+      
+      Procedure.i GetItemData( *this._s_WIDGET, item.l )
+         Protected result.i
+         
+         If *this\countitems
+            If is_no_select_item_( *this\__rows( ), item )
+               ProcedureReturn #False
+            EndIf
+            
+            result = *this\__rows( )\data
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure.i SetItemData( *This._s_WIDGET, item.l, *data )
+         If *this\countitems
+            If is_no_select_item_( *this\__rows( ), item )
+               ProcedureReturn #False
+            EndIf
+            
+            *this\__rows( )\data = *Data
+         EndIf
+      EndProcedure
+      
+      ;-
       Procedure.i GetState( *this._s_WIDGET )
          ; This is a universal function which works For almost all gadgets: 
          ; 
@@ -5619,7 +5649,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_ButtonImage
             
             If *this\togglebox
-               ProcedureReturn *this\ToggleBoxState( )
+               ProcedureReturn *this\togglebox\checked
             EndIf
          EndIf
          
@@ -5685,8 +5715,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ Ok
          If *this\togglebox
-            If *this\ToggleBoxState( ) <> state
-               *this\ToggleBoxState( ) = state
+            If *this\togglebox\checked <> state
+               *this\togglebox\checked = state
                
                If *this\type = #__type_Button Or
                   *this\type = #__type_ButtonImage
@@ -5709,7 +5739,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\groupbar And
                      *this\groupbar\groupbar <> *this
                      If *this\groupbar\groupbar
-                        *this\groupbar\groupbar\ToggleBoxState( ) = #False
+                        *this\groupbar\groupbar\togglebox\checked = #False
                      EndIf
                      *this\groupbar\groupbar = *this
                   EndIf
@@ -6028,9 +6058,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   result | #PB_Tree_Selected
                EndIf
                
-               If *this\__rows( )\ItemBoxState( )
+               If *this\__rows( )\checkbox\checked
                   If *this\mode\threestate And
-                     *this\__rows( )\ItemBoxState( ) = #PB_Checkbox_Inbetween
+                     *this\__rows( )\checkbox\checked = #PB_Checkbox_Inbetween
                      result | #PB_Tree_Inbetween
                   Else
                      result | #PB_Tree_Checked
@@ -6038,7 +6068,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                If *this\__rows( )\childrens And
-                  *this\__rows( )\ItemButtonState( ) = 0
+                  *this\__rows( )\buttonbox\checked = 0
                   result | #PB_Tree_Expanded
                Else
                   result | #PB_Tree_Collapsed
@@ -6072,266 +6102,55 @@ CompilerIf Not Defined( widget, #PB_Module )
             result = edit_SetItemState( *this, Item, state )
             
          ElseIf *this\type = #__type_Tree Or
-                *this\type = #__type_ListIcon
-            
+                *this\type = #__type_ListIcon Or
+                *this\type = #__type_Properties
+                
             If *this\countitems
                If is_no_select_item_( *this\__rows( ), Item )
                   ProcedureReturn #False
                EndIf
                
-               Protected *this_current_row._s_ROWS = *this\__rows( )
-               
-               If State & #PB_Tree_Selected = #PB_Tree_Selected
+               If State & #PB_Tree_Selected
                   If *this\RowFocused( ) <> *this\__rows( )
-                     *this\RowFocused( )             = *this\__rows( )
+                     *this\RowFocused( )  = *this\__rows( )
                      *this\RowFocused( )\ScrollToActive( - 1 )
                      *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
                   EndIf
                EndIf
                
-               If State & #PB_Tree_Inbetween = #PB_Tree_Inbetween
-                  *this\__rows( )\ItemBoxState( ) = #PB_Checkbox_Inbetween
-               ElseIf State & #PB_Tree_Checked = #PB_Tree_Checked
-                  *this\__rows( )\ItemBoxState( ) = #PB_Checkbox_Checked
+               If State & #PB_Tree_Inbetween 
+                  *this\__rows( )\checkbox\checked = #PB_Checkbox_Inbetween
+               ElseIf State & #PB_Tree_Checked
+                  *this\__rows( )\checkbox\checked = #PB_Checkbox_Checked
                Else
-                  *this\__rows( )\ItemBoxState( ) = #PB_Checkbox_Unchecked
+                  *this\__rows( )\checkbox\checked = #PB_Checkbox_Unchecked
                EndIf
                
+               ;
                If *this\__rows( )\childrens
-                  If State & #PB_Tree_Expanded = #PB_Tree_Expanded Or
-                     State & #PB_Tree_Collapsed = #PB_Tree_Collapsed
+                  If State & #PB_Tree_Expanded Or State & #PB_Tree_Collapsed 
+                     *this\__rows( )\buttonbox\checked = Bool( State & #PB_Tree_Collapsed )
+                     *this\WidgetChange( )             = #True
                      
-                     *this\WidgetChange( )              = #True
-                     *this\__rows( )\ItemButtonState( ) = Bool( State & #PB_Tree_Collapsed )
-                     
+                     Protected sublevel = *this\__rows( )\sublevel
                      PushListPosition( *this\__rows( ))
                      While NextElement( *this\__rows( ))
                         If *this\__rows( )\RowParent( )
-                           *this\__rows( )\hide = Bool( *this\__rows( )\RowParent( )\ItemButtonState( ) | *this\__rows( )\RowParent( )\hide )
+                           *this\__rows( )\hide = Bool( *this\__rows( )\RowParent( )\buttonbox\checked | *this\__rows( )\RowParent( )\hide )
                         EndIf
                         
-                        If *this\__rows( )\sublevel = *this_current_row\sublevel
+                        If *this\__rows( )\sublevel = sublevel
                            Break
                         EndIf
                      Wend
                      PopListPosition( *this\__rows( ))
                   EndIf
-               EndIf
-               
-               result = *this_current_row\ItemButtonState( )
-            EndIf
-            
-         EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      ;-
-      Procedure.i GetAttribute( *this._s_WIDGET, Attribute.l )
-         Protected result.i
-         
-         If *this\type = #__type_Panel
-            Select Attribute
-               Case #PB_Panel_ItemWidth : result = DPIUnScaledX(*this\inner_width( ))                           
-               Case #PB_Panel_ItemHeight : result = DPIUnScaledY(*this\inner_height( ))                        
-               Case #PB_Panel_TabHeight : result = *this\fs[1]+*this\fs[2]+*this\fs[3]+*this\fs[4] 
-            EndSelect
-         EndIf
-         
-         ; is_scrollbars_( *this )
-         If *this\type = #__type_ScrollArea Or
-            *this\type = #__type_MDI
-            ;
-            Select Attribute
-               Case #PB_ScrollArea_X : result = DPIUnScaledX(*this\scroll\h\bar\page\pos)
-               Case #PB_ScrollArea_Y : result = DPIUnScaledY(*this\scroll\v\bar\page\pos)
-               Case #PB_ScrollArea_InnerWidth : result = DPIUnScaledX(*this\scroll\h\bar\max)
-               Case #PB_ScrollArea_InnerHeight : result = DPIUnScaledY(*this\scroll\v\bar\max)
-               Case #PB_ScrollArea_ScrollStep : result = *this\scroll\increment
-            EndSelect
-         EndIf
-         
-         If *this\type = #__type_Splitter
-            Select Attribute
-               Case #PB_Splitter_FirstGadget : result = *this\split_1( )
-               Case #PB_Splitter_SecondGadget : result = *this\split_2( )
-               Case #PB_Splitter_FirstMinimumSize : result = *this\bar\min[1]
-               Case #PB_Splitter_SecondMinimumSize : result = *this\bar\min[2]
-            EndSelect
-         EndIf
-         
-         ;
-         If is_bar_( *this ) Or 
-            *this\type = #__type_TabBar Or
-            *this\type = #__type_Scroll Or
-            *this\type = #__type_Progress Or ; *this\type = #__type_Splitter Or
-            *this\type = #__type_Track Or
-            *this\type = #__type_Spin
-            
-            Select Attribute
-               Case #__bar_minimum : result = *this\bar\min          
-               Case #__bar_maximum : result = *this\bar\max          
-               Case #__bar_pagelength : result = *this\bar\page\len  
-                  
-               Case #__bar_scrollstep : result = *this\scroll\increment 
-               Case #__bar_buttonsize : result = *this\bar\button[1]\size
-                  
-               Case #__bar_direction : result = *this\bar\direction
-               Case #__bar_invert : result = *this\bar\invert
-            EndSelect
-         EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      Procedure.i SetAttribute( *this._s_WIDGET, Attribute.l, *value )
-         Protected result.i
-         Protected value = *value
-         
-         If is_bar_( *this ) Or
-            *this\type = #__type_TabBar Or
-            *this\type = #__type_Scroll Or
-            *this\type = #__type_Progress Or
-            *this\type = #__type_Track Or
-            *this\type = #__type_Splitter Or
-            *this\type = #__type_Spin
-            ;
-            result = bar_SetAttribute( *this, Attribute, *value )
-         EndIf
-         
-         If *this\type = #__type_Button Or
-            *this\type = #__type_ButtonImage
-            
-            Select Attribute
-               Case #PB_Button_Image
-                  add_image( *this, *this\image, *value )
-                  add_image( *this, *this\image[#__image_released], *value )
-                  
-               Case #PB_Button_PressedImage
-                  add_image( *this, *this\image[#__image_pressed], *value )
-                  
-            EndSelect
-         EndIf
-         
-         ;  is_scrollbars_( *this )
-         If *this\type = #__type_ScrollArea Or
-            *this\type = #__type_MDI
-            
-            Select Attribute
-               Case #PB_ScrollArea_X
-                  If bar_PageChange( *this\scroll\h, DPIScaledX(*value), 2 ) ; and post event
-                     result = 1
-                  EndIf
-                  
-               Case #PB_ScrollArea_Y
-                  If bar_PageChange( *this\scroll\v, DPIScaledY(*value), 2 ) ; and post event
-                     result = 1
-                  EndIf
-                  
-               Case #PB_ScrollArea_InnerWidth
-                  If bar_SetAttribute( *this\scroll\h, #__bar_maximum, DPIScaledX(*value) )
-                     If IsGadget(*this\scroll\gadget[2])
-                        ResizeGadget(*this\scroll\gadget[2], #PB_Ignore, #PB_Ignore, *value, #PB_Ignore)
-                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                           UpdateWindow_(GadgetID(*this\scroll\gadget[2]))
-                        CompilerEndIf
-                     EndIf
-                     result = 1
-                  EndIf
-                  
-               Case #PB_ScrollArea_InnerHeight
-                  If bar_SetAttribute( *this\scroll\v, #__bar_maximum, DPIScaledY(*value))
-                     If IsGadget(*this\scroll\gadget[2])
-                        ResizeGadget(*this\scroll\gadget[2], #PB_Ignore, #PB_Ignore, #PB_Ignore, *value)
-                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                           UpdateWindow_(GadgetID(*this\scroll\gadget[2]))
-                        CompilerEndIf
-                     EndIf
-                     result = 1
-                  EndIf
-                  
-               Case #PB_ScrollArea_ScrollStep
-                  If *this\scroll
-                     If *this\scroll\v
-                        *this\scroll\v\scroll\increment = value
-                     EndIf
-                     If *this\scroll\h
-                        *this\scroll\h\scroll\increment = value
-                     EndIf
-                  EndIf
-                  
-            EndSelect
-         EndIf
-         
-         If *this\type = #PB_GadgetType_Image
-            Select Attribute
-               Case #__DisplayMode
-                  Select Value
-                     Case 0 ; Default
-                            ;                 *this\image\Align\Vertical = 0
-                            ;                 *this\image\Align\Horizontal = 0
-                        
-                     Case 1 ; Center
-                            ;                 *this\image\Align\Vertical = 1
-                            ;                 *this\image\Align\Horizontal = 1
-                        
-                     Case 3 ; Mosaic
-                     Case 2 ; Stretch
-                        
-                     Case 5 ; Proportionally
-                  EndSelect
-            EndSelect
-         EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      Procedure.i GetItemAttribute( *this._s_WIDGET, Item.l, Attribute.l, Column.l = 0 )
-         Protected result
-         
-         If *this\type = #__type_Tree Or *this\type = #__type_ListIcon
-            
-            If is_no_select_item_( *this\__rows( ), Item )
-               ProcedureReturn #False
-            EndIf
-            
-            If *this\type = #__type_Tree
-               If Attribute = #PB_Tree_SubLevel
-                  result = *this\__rows( )\sublevel
+                  ;
+                  ProcedureReturn #True
                EndIf
             EndIf
+            
          EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      Procedure.i SetItemAttribute( *this._s_WIDGET, Item.l, Attribute.l, *value, Column.l = 0 )
-         Protected result
-         
-         If *this\type = #__type_Window
-            
-         ElseIf *this\type = #__type_Tree Or *this\type = #__type_ListIcon
-            
-            Select Attribute
-               Case #__flag_optionboxes
-                  *this\mode\optionboxes = *value
-                  
-               Case #PB_Tree_SubLevel
-                  If is_no_select_item_( *this\__rows( ), Item )
-                     ProcedureReturn #False
-                  EndIf
-                  
-                  *this\__rows( )\sublevel = *value
-                  
-            EndSelect
-            
-         ElseIf *this\type = #__type_Editor
-            
-         ElseIf *this\type = #__type_Panel
-            
-         Else
-         EndIf
-         
          
          ProcedureReturn result
       EndProcedure
@@ -6562,36 +6381,213 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.i GetData( *this._s_WIDGET )
-         ProcedureReturn *this\data
-      EndProcedure
-      
-      Procedure SetData( *this._s_WIDGET, *data )
-         *this\data = *data
-      EndProcedure
-      
-      Procedure.i GetItemData( *this._s_WIDGET, item.l )
+      Procedure.i GetAttribute( *this._s_WIDGET, Attribute.l )
          Protected result.i
          
-         If *this\countitems
-            If is_no_select_item_( *this\__rows( ), item )
-               ProcedureReturn #False
-            EndIf
+         If *this\type = #__type_Panel
+            Select Attribute
+               Case #PB_Panel_ItemWidth : result = DPIUnScaledX(*this\inner_width( ))                           
+               Case #PB_Panel_ItemHeight : result = DPIUnScaledY(*this\inner_height( ))                        
+               Case #PB_Panel_TabHeight : result = *this\fs[1]+*this\fs[2]+*this\fs[3]+*this\fs[4] 
+            EndSelect
+         EndIf
+         
+         ; is_scrollbars_( *this )
+         If *this\type = #__type_ScrollArea Or
+            *this\type = #__type_MDI
+            ;
+            Select Attribute
+               Case #PB_ScrollArea_X : result = DPIUnScaledX(*this\scroll\h\bar\page\pos)
+               Case #PB_ScrollArea_Y : result = DPIUnScaledY(*this\scroll\v\bar\page\pos)
+               Case #PB_ScrollArea_InnerWidth : result = DPIUnScaledX(*this\scroll\h\bar\max)
+               Case #PB_ScrollArea_InnerHeight : result = DPIUnScaledY(*this\scroll\v\bar\max)
+               Case #PB_ScrollArea_ScrollStep : result = *this\scroll\increment
+            EndSelect
+         EndIf
+         
+         If *this\type = #__type_Splitter
+            Select Attribute
+               Case #PB_Splitter_FirstGadget : result = *this\split_1( )
+               Case #PB_Splitter_SecondGadget : result = *this\split_2( )
+               Case #PB_Splitter_FirstMinimumSize : result = *this\bar\min[1]
+               Case #PB_Splitter_SecondMinimumSize : result = *this\bar\min[2]
+            EndSelect
+         EndIf
+         
+         ;
+         If is_bar_( *this ) Or 
+            *this\type = #__type_TabBar Or
+            *this\type = #__type_Scroll Or
+            *this\type = #__type_Progress Or ; *this\type = #__type_Splitter Or
+            *this\type = #__type_Track Or
+            *this\type = #__type_Spin
             
-            result = *this\__rows( )\data
+            Select Attribute
+               Case #__bar_minimum : result = *this\bar\min          
+               Case #__bar_maximum : result = *this\bar\max          
+               Case #__bar_pagelength : result = *this\bar\page\len  
+                  
+               Case #__bar_scrollstep : result = *this\scroll\increment 
+               Case #__bar_buttonsize : result = *this\bar\button[1]\size
+                  
+               Case #__bar_direction : result = *this\bar\direction
+               Case #__bar_invert : result = *this\bar\invert
+            EndSelect
          EndIf
          
          ProcedureReturn result
       EndProcedure
       
-      Procedure.i SetItemData( *This._s_WIDGET, item.l, *data )
-         If *this\countitems
-            If is_no_select_item_( *this\__rows( ), item )
+      Procedure.i SetAttribute( *this._s_WIDGET, Attribute.l, *value )
+         Protected result.i
+         Protected value = *value
+         
+         If is_bar_( *this ) Or
+            *this\type = #__type_TabBar Or
+            *this\type = #__type_Scroll Or
+            *this\type = #__type_Progress Or
+            *this\type = #__type_Track Or
+            *this\type = #__type_Splitter Or
+            *this\type = #__type_Spin
+            ;
+            result = bar_SetAttribute( *this, Attribute, *value )
+         EndIf
+         
+         If *this\type = #__type_Button Or
+            *this\type = #__type_ButtonImage
+            
+            Select Attribute
+               Case #PB_Button_Image
+                  add_image( *this, *this\image, *value )
+                  add_image( *this, *this\image[#__image_released], *value )
+                  
+               Case #PB_Button_PressedImage
+                  add_image( *this, *this\image[#__image_pressed], *value )
+                  
+            EndSelect
+         EndIf
+         
+         ;  is_scrollbars_( *this )
+         If *this\type = #__type_ScrollArea Or
+            *this\type = #__type_MDI
+            
+            Select Attribute
+               Case #PB_ScrollArea_X
+                  If bar_PageChange( *this\scroll\h, DPIScaledX(*value), 2 ) ; and post event
+                     result = 1
+                  EndIf
+                  
+               Case #PB_ScrollArea_Y
+                  If bar_PageChange( *this\scroll\v, DPIScaledY(*value), 2 ) ; and post event
+                     result = 1
+                  EndIf
+                  
+               Case #PB_ScrollArea_InnerWidth
+                  If bar_SetAttribute( *this\scroll\h, #__bar_maximum, DPIScaledX(*value) )
+                     If IsGadget(*this\scroll\gadget[2])
+                        ResizeGadget(*this\scroll\gadget[2], #PB_Ignore, #PB_Ignore, *value, #PB_Ignore)
+                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                           UpdateWindow_(GadgetID(*this\scroll\gadget[2]))
+                        CompilerEndIf
+                     EndIf
+                     result = 1
+                  EndIf
+                  
+               Case #PB_ScrollArea_InnerHeight
+                  If bar_SetAttribute( *this\scroll\v, #__bar_maximum, DPIScaledY(*value))
+                     If IsGadget(*this\scroll\gadget[2])
+                        ResizeGadget(*this\scroll\gadget[2], #PB_Ignore, #PB_Ignore, #PB_Ignore, *value)
+                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                           UpdateWindow_(GadgetID(*this\scroll\gadget[2]))
+                        CompilerEndIf
+                     EndIf
+                     result = 1
+                  EndIf
+                  
+               Case #PB_ScrollArea_ScrollStep
+                  If *this\scroll
+                     If *this\scroll\v
+                        *this\scroll\v\scroll\increment = value
+                     EndIf
+                     If *this\scroll\h
+                        *this\scroll\h\scroll\increment = value
+                     EndIf
+                  EndIf
+                  
+            EndSelect
+         EndIf
+         
+         If *this\type = #PB_GadgetType_Image
+            Select Attribute
+               Case #__DisplayMode
+                  Select Value
+                     Case 0 ; Default
+                            ;                 *this\image\Align\Vertical = 0
+                            ;                 *this\image\Align\Horizontal = 0
+                        
+                     Case 1 ; Center
+                            ;                 *this\image\Align\Vertical = 1
+                            ;                 *this\image\Align\Horizontal = 1
+                        
+                     Case 3 ; Mosaic
+                     Case 2 ; Stretch
+                        
+                     Case 5 ; Proportionally
+                  EndSelect
+            EndSelect
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure.i GetItemAttribute( *this._s_WIDGET, Item.l, Attribute.l, Column.l = 0 )
+         Protected result
+         
+         If *this\type = #__type_Tree Or *this\type = #__type_ListIcon
+            
+            If is_no_select_item_( *this\__rows( ), Item )
                ProcedureReturn #False
             EndIf
             
-            *this\__rows( )\data = *Data
+            If *this\type = #__type_Tree
+               If Attribute = #PB_Tree_SubLevel
+                  result = *this\__rows( )\sublevel
+               EndIf
+            EndIf
          EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure.i SetItemAttribute( *this._s_WIDGET, Item.l, Attribute.l, *value, Column.l = 0 )
+         Protected result
+         
+         If *this\type = #__type_Window
+            
+         ElseIf *this\type = #__type_Tree Or *this\type = #__type_ListIcon
+            
+            Select Attribute
+               Case #__flag_optionboxes
+                  *this\mode\optionboxes = *value
+                  
+               Case #PB_Tree_SubLevel
+                  If is_no_select_item_( *this\__rows( ), Item )
+                     ProcedureReturn #False
+                  EndIf
+                  
+                  *this\__rows( )\sublevel = *value
+                  
+            EndSelect
+            
+         ElseIf *this\type = #__type_Editor
+            
+         ElseIf *this\type = #__type_Panel
+            
+         Else
+         EndIf
+         
+         
+         ProcedureReturn result
       EndProcedure
       
       ;-
@@ -8368,7 +8364,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If *this\mode\collapsed And 
                   *row\RowParent( ) And *row\sublevel > *row\RowParent( )\sublevel
-                  *row\RowParent( )\ItemButtonState( ) = 1
+                  *row\RowParent( )\buttonbox\checked = 1
                   *row\hide                      = 1
                EndIf
                
@@ -8603,7 +8599,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If *this\RowFocused( )
                   If *this\RowFocused( )\RowParent( ) And
-                     *this\RowFocused( )\RowParent( )\ItemButtonState( )
+                     *this\RowFocused( )\RowParent( )\buttonbox\checked
                      *this\RowFocused( ) = *this\RowFocused( )\RowParent( )
                   EndIf
                   
@@ -9360,7 +9356,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  If *tabs( )\TabItemState( )
+                  If *tabs( )\checked
                      bar_draw_item_( *this\bar\vertical, *tabs( ), X, Y, round, [2] )
                   Else
                      If *tabs( ) <> *this\TabFocused( ) And 
@@ -9382,7 +9378,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; draw mouse-enter visible item
          If *this\TabEntered( ) <> *this\TabFocused( )
             If *this\TabEntered( ) And
-               *this\TabEntered( )\TabItemState( ) = 0 And
+               *this\TabEntered( )\checked = 0 And
                *this\TabEntered( )\visible 
                ;
                If *this\TabEntered( )\itemindex <> #PB_Ignore
@@ -14246,7 +14242,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *this\togglebox.allocate( BOX )
                            EndIf
                            ;
-                           *this\ToggleBoxState( ) = state
+                           *this\togglebox\checked = state
                            ;
                            If state
                               *this\ColorState( ) = #__s_2
@@ -14328,7 +14324,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;                         PushListPosition( *this\__rows( ))
                      ;                         ForEach *this\__rows( )
                      ;                            If *this\__rows( )\RowParent( )
-                     ;                               *this\__rows( )\ItemBoxState( ) = #PB_Checkbox_Unchecked
+                     ;                               *this\__rows( )\checkbox\checked = #PB_Checkbox_Unchecked
                      ;                               If state
                      ;                                  *this\__rows( )\_groupbar = get_item_( *this, 0 )
                      ;                               EndIf
@@ -14348,7 +14344,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         PushListPosition( *this\__rows( ))
                         ForEach *this\__rows( )
                            If *this\__rows( )\RowParent( )
-                              *this\__rows( )\RowParent( )\ItemButtonState( ) = state
+                              *this\__rows( )\RowParent( )\buttonbox\checked = state
                               *this\__rows( )\hide                      = state
                            EndIf
                         Next
@@ -16102,7 +16098,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Line((xs + *rows( )\buttonbox\x + *rows( )\buttonbox\width / 2), (ys + *rows( )\height / 2), DPIScaled(7), 1, *rows( )\color\line )
                      Else
                         If *this\row\sublevelsize = DPIScaled(6)
-                           If Bool( Not *rows( )\ItemButtonState( ))
+                           If Bool( Not *rows( )\buttonbox\checked)
                               LineXY((xs + *buttonBox\x - 1), (ys + 10), (xs + *buttonBox\x + *buttonBox\width / 2 - 1), ys + *rows( )\height - 1, *rows( )\color\line )
                            EndIf
                         EndIf
@@ -16131,10 +16127,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      If *rows( )\RowParent( ) And *this\mode\optionboxes
                         ; option box
-                        draw_button_( 1, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\ItemBoxState( ) , 4 )
+                        draw_button_( 1, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checked , 4 )
                      Else
                         ; check box
-                        draw_button_( 3, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\ItemBoxState( ) , 2 )
+                        draw_button_( 3, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checked , 2 )
                      EndIf
                   EndIf
                Next
@@ -16154,20 +16150,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         If Bool(DPIResolution( ) > 1)
                            If *rows( )\ColorState( ) = 1
-                              Draw_Arrow(3 - Bool(*rows( )\ItemButtonState( )), X-1-Bool(*rows( )\ItemButtonState( )), Y-1-Bool(*rows( )\ItemButtonState( )=0), DPIScaled(10), 1 )
+                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X-1-Bool(*rows( )\buttonbox\checked), Y-1-Bool(*rows( )\buttonbox\checked=0), DPIScaled(10), 1 )
                            ElseIf *rows( )\ColorState( ) = 2
-                              Draw_Arrow(3 - Bool(*rows( )\ItemButtonState( )), X-Bool(*rows( )\ItemButtonState( )=0)*DPIScaled(1), Y-DPIScaled(1), DPIScaled(11), 1, 2 )
-                              ;   Draw_Arrow(3 - Bool(*rows( )\ItemButtonState( )), x-1-Bool(*rows( )\ItemButtonState( )), y-1-Bool(*rows( )\ItemButtonState( )=0), DPIScaled(10), 1, 0, $ffffffff )
+                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X-Bool(*rows( )\buttonbox\checked=0)*DPIScaled(1), Y-DPIScaled(1), DPIScaled(11), 1, 2 )
+                              ;   Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), x-1-Bool(*rows( )\buttonbox\checked), y-1-Bool(*rows( )\buttonbox\checked=0), DPIScaled(10), 1, 0, $ffffffff )
                            Else
-                              Draw_Arrow(3 - Bool(*rows( )\ItemButtonState( )), X+DPIScaled(1), Y+DPIScaled(1), DPIScaled(6)+DPIScaled(Bool(DPIResolution( )>1)), 1)
+                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+DPIScaled(1), Y+DPIScaled(1), DPIScaled(6)+DPIScaled(Bool(DPIResolution( )>1)), 1)
                            EndIf
                         Else
                            If *rows( )\ColorState( ) = 1
-                              Draw_Arrow(3 - Bool(*rows( )\ItemButtonState( )), X, Y-Bool(*rows( )\ItemButtonState( )=0), 8, 1 )
+                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X, Y-Bool(*rows( )\buttonbox\checked=0), 8, 1 )
                            ElseIf *rows( )\ColorState( ) = 2
-                              Draw_Arrow(3 - Bool(*rows( )\ItemButtonState( )), X+Bool(*rows( )\ItemButtonState( ))*2, Y+Bool(*rows( )\ItemButtonState( )=0), 8, 1, 2 )
+                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+Bool(*rows( )\buttonbox\checked)*2, Y+Bool(*rows( )\buttonbox\checked=0), 8, 1, 2 )
                            Else
-                              Draw_Arrow(3 - Bool(*rows( )\ItemButtonState( )), X+2, Y+2, 4, 1)
+                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+2, Y+2, 4, 1)
                            EndIf
                         EndIf
                         
@@ -16875,7 +16871,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\type = #__type_Button Or
                *this\type = #__type_ButtonImage
                state = *this\ColorState( )
-               If *this\togglebox And *this\ToggleBoxState( )
+               If *this\togglebox And *this\togglebox\checked
                   state = #__s_2
                EndIf
             EndIf
@@ -16979,7 +16975,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                _box_type_ = 3
             EndIf
             If _box_type_
-               draw_button_( _box_type_, *this\togglebox\x, *this\togglebox\y, *this\togglebox\width, *this\togglebox\height, *this\ToggleBoxState( ), *this\togglebox\round )
+               draw_button_( _box_type_, *this\togglebox\x, *this\togglebox\y, *this\togglebox\width, *this\togglebox\height, *this\togglebox\checked, *this\togglebox\round )
             EndIf
             
             ;\\ draw image
@@ -20179,12 +20175,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  ;
                                  ;\\ change toggle state
                                  If *tabmenu
-                                    If *tabmenu\TabItemState( )
-                                       *tabmenu\TabItemState( ) = 0
+                                    If *tabmenu\checked
+                                       *tabmenu\checked = 0
                                     EndIf
                                     If *tab\childrens
-                                       If *tab\TabItemState( ) = 0
-                                          *tab\TabItemState( ) = 1
+                                       If *tab\checked = 0
+                                          *tab\checked = 1
                                           *tabmenu = *tab
                                        EndIf
                                     EndIf
@@ -20196,7 +20192,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                        DisplayPopupBar( *tab\_menubar, *this )
                                     Else
                                        If *tab\_focus Or 
-                                          *tab\TabItemState( )
+                                          *tab\checked
                                           ;Debug "  show TOOLBAR "+ClassFromEvent(event)
                                           DisplayPopupBar( *tab\_menubar, *this )
                                        EndIf
@@ -20287,7 +20283,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *this\TabFocused( )\_focus = 1
                               
                            ElseIf *this\TabEntered( )\childrens 
-                              *tab\TabItemState( ) ! 1
+                              *tab\checked ! 1
                               *tabmenu = *tab
                            EndIf
                         EndIf
@@ -20446,7 +20442,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ; collapsed/expanded button
                   If *this\RowEntered( )\buttonbox\_enter
-                     If *this\RowEntered( )\ItemButtonState( )
+                     If *this\RowEntered( )\buttonbox\checked
                         SetItemState( *this, *this\RowEntered( )\_index, #PB_Tree_Expanded )
                         Send( *this, #__event_StatusChange, *this\RowEntered( )\_index, #PB_Tree_Expanded )
                      Else
@@ -20463,14 +20459,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *this\RowEntered( )\_groupbar
                            If *this\RowEntered( )\RowParent( ) 
                               If *this\RowEntered( )\_groupbar\RowParent( ) And
-                                 *this\RowEntered( )\_groupbar\ItemBoxState( )
-                                 *this\RowEntered( )\_groupbar\ItemBoxState( ) = #PB_Checkbox_Unchecked
+                                 *this\RowEntered( )\_groupbar\checkbox\checked
+                                 *this\RowEntered( )\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                               EndIf
                            EndIf
                            
                            If *this\RowEntered( )\_groupbar\_groupbar <> *this\RowEntered( )
                               If *this\RowEntered( )\_groupbar\_groupbar
-                                 *this\RowEntered( )\_groupbar\_groupbar\ItemBoxState( ) = #PB_Checkbox_Unchecked
+                                 *this\RowEntered( )\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                               EndIf
                               *this\RowEntered( )\_groupbar\_groupbar = *this\RowEntered( )
                            EndIf
@@ -20478,7 +20474,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ; tree checkbox change check
-                     set_check_state_( *this\RowEntered( )\ItemBoxState( ), *this\mode\threestate )
+                     set_check_state_( *this\RowEntered( )\checkbox\checked, *this\mode\threestate )
                      
                      ; Send( *this, #__event_StatusChange, *this\RowEntered( )\_index, *this\mode\threestate  )
                      ;                         ;\\
@@ -20761,7 +20757,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;\\
                Case #__type_Button, #__type_ButtonImage
-                  If Not ( *this\togglebox And *this\ToggleBoxState( ))
+                  If Not ( *this\togglebox And *this\togglebox\checked)
                      Select event
                         Case #__event_MouseEnter
                            If *this\enter 
@@ -20808,7 +20804,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If MouseButtons( ) & #PB_Canvas_LeftButton
                         If *this\enter 
                            If *this\togglebox
-                              SetState( *this, Bool( *this\ToggleBoxState( ) ! 1 ))
+                              SetState( *this, Bool( *this\togglebox\checked ! 1 ))
                            EndIf
                         EndIf
                      EndIf
@@ -20825,7 +20821,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\
                Case #__type_checkBox
                   If event = #__event_LeftClick
-                     If SetState( *this, Bool( *this\ToggleBoxState( ) ! 1 ) )
+                     If SetState( *this, Bool( *this\togglebox\checked ! 1 ) )
                         
                      EndIf
                   EndIf
@@ -24170,8 +24166,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3219
-; FirstLine = 3210
+; CursorPosition = 6132
+; FirstLine = 6121
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
