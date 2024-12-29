@@ -412,6 +412,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          sublevelpos.a
          sublevelsize.a
          ;
+         ;;highlighted.w
+         ;
          *focused._s_rows         ; focused item
          *pressed._s_rows         ; pushed item
          *entered._s_rows         ; entered item
@@ -430,7 +432,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     TAB
       Structure _s_TAB
-         state.c
+         state.i;c
          Index.c
          
          ; tab
@@ -686,12 +688,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          
          ;
+         state.l
          flag.q
          *root._s_ROOT
          *window._s_WIDGET
          *parent._s_WIDGET
-         *address                   ; widget( )\ list address
          *data
+         *address                   ; widget( )\ list address
          *gadget._s_WIDGET;[3]
                           ; \root\gadget[0] - active gadget
                           ; \gadget[0] - window active child gadget
@@ -781,8 +784,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 353
-; FirstLine = 347
+; CursorPosition = 690
+; FirstLine = 618
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

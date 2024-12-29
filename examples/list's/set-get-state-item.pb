@@ -5,194 +5,143 @@ IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  UseWidgets( )
-  
-  Global a, *item2, *item3, *item4, *item1, *this._s_widget, *g1, *g2, CountItems=99; количесвто итемов 
-  
-  Procedure.b SetState_( *this._S_widget, state.f )
-      Protected result
+   EnableExplicit
+   UseWidgets( )
+   
+   Global a, *demo, *get, *reset, *item1, *item2, *item3, *item4, *this._s_widget, *g1, *g2, CountItems=20;99; количесвто итемов 
+   
+   Procedure.b SetState_( *this._S_widget, state.f )
+      Debug SetState( *this, state )
+   EndProcedure
+   
+   
+   Procedure button_events()
+      Protected count
       
-      ;;\\ - widget::tree_SetState_
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
-        ; Debug *this\mode\check
-        
-        ; reset all selected items
-        If State = - 1
-          If *this\RowFocused( )
-            If *this\mode\check <> #__m_optionselect
-              If *this\RowFocused( )\focus
-                *this\RowFocused( )\focus = #False
-                ; multi select mode
-                If *this\mode\multiselect
-                  Post( *this, #__event_Change, *this\RowFocused( )\_index, - 1 )
-                EndIf
-              EndIf
-            EndIf
+      Select WidgetEvent( )
+         Case #__event_Up
             
-            *this\RowFocused( )\color\state = #__S_0
-            *this\RowFocused( )             = #Null
-          EndIf
-        EndIf
-        
-        ;
-        If is_no_select_item_( *this\__rows( ), State )
-          ProcedureReturn #False
-        EndIf
-        
-        ;\\
-        If *this\countitems
-          *this\scroll\state  = - 1
-          
-          If *this\row\index <> state
-          *this\row\index = state
-          ;\\
-          If *this\RowFocused( ) <> *this\__rows( )
-            If *this\RowFocused( )
-              If *this\RowFocused( )\focus
-                *this\RowFocused( )\focus = #False
-                ; multi select mode
-                If *this\row\multiselect
-                  Post( *this, #__event_Change, *this\RowFocused( )\index, - 1 )
-                EndIf
-              EndIf
-              
-              *this\RowFocused( )\color\state = #__S_0
-            EndIf
+;             If *this\row
+;                If *this\EnteredRow( )
+;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
+;                EndIf
+;                If *this\PressedRow( )
+;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
+;                EndIf
+;                If *this\RowFocused( )
+;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
+;                EndIf
+;             EndIf
             
-            *this\RowFocused( ) = *this\__rows( )
+            Debug "-------b-------"
+            Select EventWidget( )
+               Case *get : Debug GetState(*this)
+               Case *reset : SetState_(*this, - 1)
+               Case *item1 : SetState_(*this, Val(GetText(EventWidget( ))))
+               Case *item2 : SetState_(*this, Val(GetText(EventWidget( ))))
+               Case *item3 : SetState_(*this, Val(GetText(EventWidget( ))))
+               Case *item4 : SetState_(*this, Val(GetText(EventWidget( ))))
+            EndSelect
+            Debug "-------b-------"
             
-            ; click select mode
-            If *this\row\clickselect
-              If *this\RowFocused( )\focus
-                *this\RowFocused( )\focus = 0
-                *this\RowFocused( )\color\state = #__S_0
-              Else
-                *this\RowFocused( )\focus = 1
-                *this\RowFocused( )\color\state = #__S_3
-              EndIf
-              
-              Post( *this, #__event_Change, *this\RowFocused( )\index )
-            Else
-              If *this\RowFocused( )\focus = 0 ; ???
-                *this\RowFocused( )\focus = 1
-                ; multi select mode
-                If *this\row\multiselect
-                  Post( *this, #__event_Change, *this\RowFocused( )\index, 1 )
-                EndIf
-              EndIf
-              
-              *this\RowFocused( )\color\state = #__S_2 + Bool( *this\focus = #False )
-            EndIf
+;             If *this\row
+;                If *this\EnteredRow( )
+;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
+;                EndIf
+;                If *this\PressedRow( )
+;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
+;                EndIf
+;                If *this\RowFocused( )
+;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
+;                EndIf
+;             EndIf
             
-            PostEventCanvasRepaint( *this )
-            ProcedureReturn #True
-          EndIf
-        EndIf
+      EndSelect
+   EndProcedure
+   
+   Procedure UpdateItemColor( *this._s_WIDGET, *row._s_ROWS  )
+      If *row 
+         PushListPosition( *this\__rows( ) )
+         SelectElement( *this\__rows( ), *row\index)
+         *this\__rows( )\color = *row\color
+         PopListPosition( *this\__rows( ) )
       EndIf
+   EndProcedure
+   
+   Procedure widget_events()
+      If WidgetEvent( ) <> #__event_mousemove
+         Debug classfromevent(WidgetEvent( )) +" "+ WidgetEventItem( ) ;+" "+ ItemIndex(WidgetEventData( ))
       EndIf
       
-      PostEventCanvasRepaint( *this )
-      ProcedureReturn result
-    EndProcedure
-    
-    
-  Procedure button_events()
-    Protected count
-    
-    Select widget::WidgetEvent( )
-      Case #__event_Up
-        
-        If *this\EnteredRow( )
-          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
-        EndIf
-        If *this\PressedRow( )
-          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
-        EndIf
-        If *this\RowFocused( )
-          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\focus
-        EndIf
-        
-        Debug "--------------"
-        Select widget::EventWidget( )
-          Case *item1 : SetState_(*this, 1)
-          Case *item2 : SetState_(*this, 2)
-          Case *item3 : SetState_(*this, 3)
-          Case *item4 : SetState_(*this, 90)
-        EndSelect
-        Debug "--------------"
-        
-        If *this\EnteredRow( )
-          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
-        EndIf
-        If *this\PressedRow( )
-          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
-        EndIf
-        If *this\RowFocused( )
-          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\focus
-        EndIf
-        
-    EndSelect
-  EndProcedure
-  
-  Procedure widget_events()
-    Select WidgetEvent( )
-      Case #__event_Change
-        If *this\EnteredRow( )
-          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
-        EndIf
-        If *this\PressedRow( )
-          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
-        EndIf
-        If *this\RowFocused( )
-          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\focus
-        EndIf
-        
-        Debug "--------------"
-        SetState_(*this, widget::GetState(widget::EventWidget( )))
-        Debug "--------------"
-        
-        If *this\EnteredRow( )
-          Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\state\press + " " + *this\EnteredRow( )\state\enter + " " + *this\EnteredRow( )\focus
-        EndIf
-        If *this\PressedRow( )
-          Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\state\press + " " + *this\PressedRow( )\state\enter + " " + *this\PressedRow( )\focus
-        EndIf
-        If *this\RowFocused( )
-          Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\state\press + " " + *this\RowFocused( )\state\enter + " " + *this\RowFocused( )\focus
-        EndIf
-    EndSelect
-  EndProcedure
-  
-  If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
-    *this = widget::ListView(10, 10, 230, 310)
-    
-    For a = 0 To countitems
-      widget::AddItem(*this, -1, "Item "+Str(a), 0)
-    Next
-    
-    Define h = 20, y = 20
-    widget::Bind(*this, @widget_events(), #__event_Change)
-    
-    *item1 = widget::Button( 250, y+(1+h)*1, 100, h, "1")
-    *item2 = widget::Button( 250, y+(1+h)*2, 100, h, "2")
-    *item3 = widget::Button( 250, y+(1+h)*3, 100, h, "3")
-    *item4 = widget::Button( 250, y+(1+h)*4, 100, h, "90")
-    
-    
-    widget::Bind(*item1, @button_events(), #__event_Up)
-    widget::Bind(*item2, @button_events(), #__event_Up)
-    widget::Bind(*item3, @button_events(), #__event_Up)
-    widget::Bind(*item4, @button_events(), #__event_Up)
-    
-    
-    widget::WaitClose()
-  EndIf
+      Select WidgetEvent( )
+         Case #__event_StatusChange
+           ;  SetItemState( *demo, WidgetEventItem( ), 1)
+;             ; Debug WidgetEventItem( )
+            PushListPosition(EventWidget( )\__rows( ))
+            SelectElement( EventWidget( )\__rows( ), WidgetEventItem( ))
+            UpdateItemColor( *demo, EventWidget( )\__rows( ))
+            PopListPosition(EventWidget( )\__rows( ))
+            
+         Case #__event_Change
+            Debug "-------w-------"
+            SetState_(*this, GetState(EventWidget( )))
+            Debug "-------w-------"
+      EndSelect
+   EndProcedure
+   
+   If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
+      ;Container(0, 0, 240, 330)
+      *demo = Tree(10, 10, 220/2, 310)
+      *this = Tree(110, 10, 220/2, 310)
+      ;*this = ListView(10, 10, 220, 310)
+      ;*this = Panel(10, 10, 230, 310) 
+      
+      For a = 0 To CountItems
+         If a % 10 = 0
+            AddItem(*demo, -1, "collaps "+Str(a), -1, 0)
+         Else
+            AddItem(*demo, -1, "Item "+Str(a), -1, 1)
+         EndIf
+      Next
+      For a = 0 To CountItems
+         If a % 10 = 0
+            AddItem(*this, -1, "collaps "+Str(a), -1, 0)
+         Else
+            AddItem(*this, -1, "Item "+Str(a), -1, 1)
+         EndIf
+      Next
+      
+      If IsContainer(*this)
+         CloseList( ) 
+      EndIf
+        ; CloseList( ) 
+      
+      Define h = 20, Y = 20
+      
+      *reset = Button( 250, Y+(1+h)*0, 100, h, "reset")
+      *item1 = Button( 250, Y+(1+h)*1, 100, h, "1")
+      *item2 = Button( 250, Y+(1+h)*2, 100, h, "3")
+      *item3 = Button( 250, Y+(1+h)*3, 100, h, "5")
+      *item4 = Button( 250, Y+(1+h)*4, 100, h, "25")
+      
+      *get = Button( 250, Y+(1+h)*13, 100, h, "get")
+      
+      
+      Bind(*this, @widget_events());, #__event_Change)
+      
+      Bind(*get, @button_events(), #__event_Up)
+      Bind(*reset, @button_events(), #__event_Up)
+      Bind(*item1, @button_events(), #__event_Up)
+      Bind(*item2, @button_events(), #__event_Up)
+      Bind(*item3, @button_events(), #__event_Up)
+      Bind(*item4, @button_events(), #__event_Up)
+      
+      
+      WaitClose()
+   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 47
-; Folding = -------
+; CursorPosition = 78
+; FirstLine = 65
+; Folding = ---
 ; EnableXP
