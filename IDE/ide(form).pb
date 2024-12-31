@@ -404,8 +404,10 @@ Procedure SetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    
    SetItemText( *first, item, StringField(Text.s, 1, Chr(10)) )
-   ProcedureReturn SetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
-   
+   SetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
+   ChangePropertiesItem( *splitter )
+            
+   ProcedureReturn 
 EndProcedure
 
 ;-
@@ -859,7 +861,7 @@ Procedure widget_events( )
             properties_updates( ide_inspector_properties, *e_widget )
             
             ;
-            ChangePropertiesItem( ide_inspector_properties )
+            ; ChangePropertiesItem( ide_inspector_properties )
             
             ; 
             If GetActive( ) <> ide_inspector_view 
@@ -1771,10 +1773,10 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 867
-; FirstLine = 842
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 407
+; FirstLine = 401
 ; Folding = -----------------+8-------------
 ; EnableXP
 ; DPIAware
-; Executable = ..\widgets-ide.app.exe
+; Executable = ../widgets-ide.app.exe
