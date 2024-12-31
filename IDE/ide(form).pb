@@ -140,6 +140,15 @@ Procedure UpdatePropertiesItem( *this._s_WIDGET )
       PushListPosition( *this\__rows( ) )
       SelectElement( *this\__rows( ), EventWidget( )\__rows( )\index)
       *this\__rows( )\color = EventWidget( )\__rows( )\color
+      
+;       If *this\__rows( )\colorState( ) = #__s_2
+;          If *this\RowFocused( )
+;             *this\RowFocused( )\focus = 0
+;          EndIf
+;          *this\RowFocused( ) = *this\__rows( )
+;          *this\RowFocused( )\focus = 1
+;       EndIf
+      
       PopListPosition( *this\__rows( ) )
    EndIf
    PopListPosition(EventWidget( )\__rows( ))
@@ -231,8 +240,16 @@ Procedure PropertiesEvents( )
          If EventWidget( ) = *first Or
             EventWidget( ) = *second 
             
-            SetState( *second, WidgetEventItem( ) )
+            ; 
+            If EventWidget( ) = *first
+               SetState( *second, WidgetEventItem( ) )
+            EndIf
+            If EventWidget( ) = *second
+               SetState( *first, WidgetEventItem( ) )
+            EndIf
+            SetState( EventWidget( ), WidgetEventItem( ) )
             
+            ;
             Select WidgetEventItem( )
                Case #_pi_group_0, #_pi_group_1, #_pi_group_2, #_pi_group_3
                   If *this 
@@ -334,11 +351,18 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
    
    item = CountItems( *first ) - 1
-   Protected flag = #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child
+   Protected flag = #__flag_NoFocus | #__flag_Transparent ;| #__flag_child|#__flag_invert
    
    Select Type
       Case #__type_Spin
-         *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__bar_button_size, 0, 7 )
+        ;*this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag, - 2147483648, 2147483648, 0, #__bar_button_size, 0, 7 )
+         Select item
+            Case #_pi_x, #_pi_width
+               *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_vertical|#__flag_invert, -1000, 1000, 0, #__bar_button_size, 0, 7 )
+            Case #_pi_y, #_pi_height
+               *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag, -1000, 1000, 0, #__bar_button_size, 0, 7 )
+         EndSelect
+         
          ;SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_String
          *this = Create( *second, "String", #__type_String, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
@@ -405,7 +429,7 @@ Procedure SetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
    
    SetItemText( *first, item, StringField(Text.s, 1, Chr(10)) )
    SetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
-   ChangePropertiesItem( *splitter )
+   ;ChangePropertiesItem( *splitter )
             
    ProcedureReturn 
 EndProcedure
@@ -447,9 +471,6 @@ Macro properties_updates( _gadget_, _value_ )
    
    properties_update_disable( _gadget_, _value_ )
    properties_update_hide( _gadget_, _value_ )
-   
-  ; ChangePropertiesItem( ide_inspector_properties )
-         
 EndMacro
 
 
@@ -666,7 +687,7 @@ EndMacro
 
 Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
    Protected *new._s_widget, *param1, *param2, *param3
-   Protected is_window.b, flag.i 
+   Protected is_window.b, flag.i = #__flag_NoFocus
    Protected newClass.s
    
    If *parent 
@@ -849,7 +870,7 @@ Procedure widget_events( )
       Case #__event_Close ;, #__event_Minimize, #__event_Maximize
          ProcedureReturn 1
          
-      Case #__event_Focus
+       Case #__event_Down
          If a_focused( ) = *e_widget
             If GetData( *e_widget ) >= 0
                If IsGadget( ide_g_code )
@@ -859,18 +880,22 @@ Procedure widget_events( )
             EndIf
             
             properties_updates( ide_inspector_properties, *e_widget )
-            
-            ;
-            ; ChangePropertiesItem( ide_inspector_properties )
+            ChangePropertiesItem( ide_inspector_properties )
             
             ; 
             If GetActive( ) <> ide_inspector_view 
                SetActive( ide_inspector_view )
-               Debug "------------- "+GetActive( )\class
+               Debug "------------- active "+GetActive( )\class
             EndIf
          EndIf
          
       Case #__event_DragStart
+;          ; 
+;          If GetActive( ) <> ide_inspector_properties 
+;             SetActive( ide_inspector_properties )
+;             Debug "------------- active "+GetActive( )\class
+;          EndIf
+            
          If is_drag_move( )
             If DDragPrivate( #_DD_reParent )
                ChangeCurrentCursor( *e_widget, #PB_Cursor_Arrows )
@@ -920,21 +945,6 @@ Procedure widget_events( )
          EndSelect
          
       Case #__event_LeftDown
-;          If GetData( *e_widget ) >= 0
-;             If IsGadget( ide_g_code )
-;                SetGadgetState( ide_g_code, GetData( *e_widget ) )
-;             EndIf
-;             SetState( ide_inspector_view, GetData( *e_widget ) )
-;          EndIf
-;          
-;          properties_updates( ide_inspector_properties, *e_widget )
-;          ChangePropertiesItem( ide_inspector_properties )
-;          
-; ;          If GetActive( ) <> ide_inspector_view 
-; ;             SetActive( ide_inspector_view )
-; ;             Debug "------------- "+GetActive( )\class
-; ;          EndIf
-         
          If IsContainer( *e_widget )
             If mouse( )\selector
                If GetState( ide_inspector_elements) > 0 
@@ -964,6 +974,7 @@ Procedure widget_events( )
       Case #__event_Resize
          ; Debug ""+GetClass(*e_widget)+" resize"
          properties_update_coordinate( ide_inspector_properties, *e_widget )
+         ChangePropertiesItem( ide_inspector_properties )
          SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
          
       Case #__event_MouseEnter,
@@ -1280,20 +1291,20 @@ Procedure ide_events( )
          If e_item = - 1
             ;SetText( ide_help_view, GetItemText( *e_widget, GetState( *e_widget ) ) )
          Else
-            If *e_widget = ide_inspector_view
-               Debug ""+WidgetEventData( )+" i "+e_item
-               If WidgetEventData( ) = 1
+            If WidgetEventData( ) = 1
+               If *e_widget = ide_inspector_view
+                  ;Debug ""+WidgetEventData( )+" i "+e_item
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
-            EndIf
-            If *e_widget = ide_inspector_elements
-               SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
-            EndIf
-            If *e_widget = ide_inspector_properties
-               SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
-            EndIf
-            If *e_widget = ide_inspector_events
-               SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+               If *e_widget = ide_inspector_elements
+                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+               EndIf
+               If *e_widget = ide_inspector_properties
+                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+               EndIf
+               If *e_widget = ide_inspector_events
+                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+               EndIf
             EndIf
          EndIf
          
@@ -1773,10 +1784,10 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 407
-; FirstLine = 401
-; Folding = -----------------+8-------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 360
+; FirstLine = 341
+; Folding = -----------------4f--------------
 ; EnableXP
 ; DPIAware
-; Executable = ../widgets-ide.app.exe
+; Executable = ..\widgets-ide.app.exe

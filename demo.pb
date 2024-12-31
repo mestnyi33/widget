@@ -7,7 +7,7 @@
 EnableExplicit
 UseWidgets( )
 
-test_draw_contex = 0
+
 ;test_focus_set = 1
 test_focus_show = 1
    
@@ -147,8 +147,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 3
+; CursorPosition = 9
+; FirstLine = 5
 ; Folding = ---
 ; EnableXP
 ; DPIAware

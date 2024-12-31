@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                EndIf
 ;             EndIf
             
-            Debug "-------b-------"
+            Debug "-------set-start-------"
             Select EventWidget( )
                Case *get : Debug GetState(*this)
                Case *reset : SetState_(*this, - 1)
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
                Case *item3 : SetState_(*this, Val(GetText(EventWidget( ))))
                Case *item4 : SetState_(*this, Val(GetText(EventWidget( ))))
             EndSelect
-            Debug "-------b-------"
+            Debug "-------set-stop-------"
             
 ;             If *this\row
 ;                If *this\EnteredRow( )
@@ -64,6 +64,13 @@ CompilerIf #PB_Compiler_IsMainFile
          PushListPosition( *this\__rows( ) )
          SelectElement( *this\__rows( ), *row\index)
          *this\__rows( )\color = *row\color
+         If *this\__rows( )\colorState( ) = #__s_2
+            If *this\RowFocused( )
+               *this\RowFocused( )\focus = 0
+            EndIf
+            *this\RowFocused( ) = *this\__rows( )
+            *this\RowFocused( )\focus = 1
+         EndIf
          PopListPosition( *this\__rows( ) )
       EndIf
    EndProcedure
@@ -80,7 +87,6 @@ CompilerIf #PB_Compiler_IsMainFile
             ; изменять цвета только у выделеных итемов
             ; If Not MouseButtons( ) : ProcedureReturn : EndIf
             
-            ;Debug 777
             PushListPosition(EventWidget( )\__rows( ))
             SelectElement( EventWidget( )\__rows( ), WidgetEventItem( ))
             UpdateItemColor( *demo, EventWidget( )\__rows( ))
@@ -89,9 +95,9 @@ CompilerIf #PB_Compiler_IsMainFile
             ;  SetItemState( *demo, WidgetEventItem( ), 1)
              
          Case #__event_Change
-            Debug "-------w-------"
+            Debug "-------change-start-------"
             SetState_(*this, GetState(EventWidget( )))
-            Debug "-------w-------"
+            Debug "-------change-stop-------"
       EndSelect
    EndProcedure
    
@@ -147,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 66
+; CursorPosition = 68
+; FirstLine = 48
 ; Folding = ---
 ; EnableXP
