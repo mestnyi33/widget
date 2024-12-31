@@ -3149,7 +3149,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure a_show( *this._s_WIDGET )
-         If a_focused( ) <> *this And 
+           ;Debug ""+Bool(a_focused( ) <> *this) +" "+ Bool(a_entered( ) <> *this)
+           
+           If a_focused( ) <> *this And 
             a_entered( ) <> *this
             ;
             If *this\anchors And *this\anchors\mode
@@ -4620,11 +4622,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\inner_height( ) = *this\container_height( )
          EndIf
          ; 
-         If ( Change_x Or Change_y Or Change_width Or Change_height )
-            If *this\resize\clip <> 0
-               *this\resize\clip = 0
-               Reclip( *this )
-            EndIf
+         If *this\resize\clip <> 0
+            *this\resize\clip = 0
+            Reclip( *this )
          EndIf
          
          ;
@@ -6116,17 +6116,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         If *this\RowFocused( )\_focus
                            If *this\focus = 2
-                              *this\RowFocused( )\ColorState( ) = #__s_2
+                              If *this\RowFocused( )\ColorState( ) <> #__s_2
+                                 *this\RowFocused( )\ColorState( ) = #__s_2
+                                 DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
+                              EndIf
                            Else
-                              *this\RowFocused( )\ColorState( ) = #__s_3
+                              If *this\RowFocused( )\ColorState( ) <> #__s_3
+                                 *this\RowFocused( )\ColorState( ) = #__s_3
+                                 DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
+                              EndIf
                            EndIf
                         Else
-                           *this\RowFocused( )\ColorState( ) = #__s_0
+                           If *this\RowFocused( )\ColorState( ) <> #__s_1
+                              *this\RowFocused( )\ColorState( ) = #__s_1
+                              DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
+                           EndIf
                         EndIf
                         ;
-                        If Not MouseButtons( ) 
-                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
-                        EndIf
                         DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
                         ProcedureReturn 1
                      EndIf
@@ -7524,7 +7530,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\
-            If Not *active\disable
+            If Not (*this\disable And Not *this\anchors) ; Not *active\disable ; 
                If GetActive( ) <> *this
                   *deactive = GetActive( )
                   *deactiveWindow = ActiveWindow( )
@@ -20662,7 +20668,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          a_doevents( *this, event )
          
          ;\\
-         If Not *this\disable
+         If Not (*this\disable And Not *this\anchors) ;Not *this\disable ; 
             
             ;\\ repaint state
             Select event
@@ -24189,9 +24195,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19797
-; FirstLine = 17368
-; Folding = --------------------------------------------------------------------------------------------4-----f----------------------------------------------------v-02-8f--+------------------------------------04vu+0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------r-----n44-+-0v----------------fd--f------------------------------------------------------------------------------
+; CursorPosition = 7532
+; FirstLine = 6861
+; Folding = -----------------------------------------------------------------------------------+--------4----------------------------------------------------------4-+7-0v--0------------------------------------4vfd08-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------X-----Pvv-0-8------------------8+-L+-----4404---------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Global a, *demo, *get, *reset, *item1, *item2, *item3, *item4, *this._s_widget, *g1, *g2, CountItems=20;99; количесвто итемов 
+   Global a, *demo._s_WIDGET, *get, *reset, *item1, *item2, *item3, *item4, *this._s_widget, *g1, *g2, CountItems=20;99; количесвто итемов 
    
    Procedure.b SetState_( *this._S_widget, state.f )
       Debug SetState( *this, state )
@@ -80,6 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ; изменять цвета только у выделеных итемов
             ; If Not MouseButtons( ) : ProcedureReturn : EndIf
             
+            ;Debug 777
             PushListPosition(EventWidget( )\__rows( ))
             SelectElement( EventWidget( )\__rows( ), WidgetEventItem( ))
             UpdateItemColor( *demo, EventWidget( )\__rows( ))
@@ -146,7 +147,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 57
+; CursorPosition = 82
+; FirstLine = 66
 ; Folding = ---
 ; EnableXP

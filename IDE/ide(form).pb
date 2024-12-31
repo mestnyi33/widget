@@ -119,6 +119,19 @@ Procedure.s StrBool( state )
    EndIf
 EndProcedure
 
+Procedure ChangePropertiesItem( *inspector._s_WIDGET )
+   Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
+   If *second And *second\RowFocused( )
+      Protected *this._s_WIDGET = *second\RowFocused( )\data
+      If *this
+         Select Type( *this )
+            Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
+            Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
+            Case #__type_ComboBox : SetState(*this, Val(*second\RowFocused( )\text\string) )
+         EndSelect
+      EndIf
+   EndIf
+EndProcedure
 
 Procedure UpdatePropertiesItem( *this._s_WIDGET )
    PushListPosition(EventWidget( )\__rows( ))
@@ -432,6 +445,9 @@ Macro properties_updates( _gadget_, _value_ )
    
    properties_update_disable( _gadget_, _value_ )
    properties_update_hide( _gadget_, _value_ )
+   
+  ; ChangePropertiesItem( ide_inspector_properties )
+         
 EndMacro
 
 
@@ -843,17 +859,7 @@ Procedure widget_events( )
             properties_updates( ide_inspector_properties, *e_widget )
             
             ;
-            Protected *second._s_WIDGET = GetAttribute(ide_inspector_properties, #PB_Splitter_SecondGadget)
-            If *second And *second\RowFocused( )
-               Protected *this._s_WIDGET = *second\RowFocused( )\data
-               If *this
-                  Select Type( *this )
-                     Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
-                     Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
-                     Case #__type_ComboBox : SetState(*this, Val(*second\RowFocused( )\text\string) )
-                  EndSelect
-               EndIf
-            EndIf
+            ChangePropertiesItem( ide_inspector_properties )
             
             ; 
             If GetActive( ) <> ide_inspector_view 
@@ -912,6 +918,21 @@ Procedure widget_events( )
          EndSelect
          
       Case #__event_LeftDown
+;          If GetData( *e_widget ) >= 0
+;             If IsGadget( ide_g_code )
+;                SetGadgetState( ide_g_code, GetData( *e_widget ) )
+;             EndIf
+;             SetState( ide_inspector_view, GetData( *e_widget ) )
+;          EndIf
+;          
+;          properties_updates( ide_inspector_properties, *e_widget )
+;          ChangePropertiesItem( ide_inspector_properties )
+;          
+; ;          If GetActive( ) <> ide_inspector_view 
+; ;             SetActive( ide_inspector_view )
+; ;             Debug "------------- "+GetActive( )\class
+; ;          EndIf
+         
          If IsContainer( *e_widget )
             If mouse( )\selector
                If GetState( ide_inspector_elements) > 0 
@@ -1661,12 +1682,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;CloseList( )
       SetState( *panel, 1 )
       
-      ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
-      ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
-      ;SetSizeBounds( *scrollarea )
-      SetMoveBounds( btn2, -1,-1,-1,-1 )
-      SetMoveBounds( ide_design_form, -1,-1,-1,-1 )
-      ;SetChildrenBounds( ide_design_MDI )
+;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
+;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
+;       ;SetSizeBounds( *scrollarea )
+;       SetMoveBounds( btn2, -1,-1,-1,-1 )
+       SetMoveBounds( ide_design_form, -1,-1,-1,-1 )
+;       ;SetChildrenBounds( ide_design_MDI )
       
    ElseIf example = 4
       ;\\ example 3
@@ -1751,9 +1772,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 265
-; Folding = ----------------f-0-------------
+; CursorPosition = 867
+; FirstLine = 842
+; Folding = -----------------+8-------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
