@@ -220,7 +220,15 @@ Procedure PropertiesEvents( )
             
             SetState( *second, WidgetEventItem( ) )
             
-            *this = CreatePropertiesItem( *second )
+            Select WidgetEventItem( )
+               Case #_pi_group_0, #_pi_group_1, #_pi_group_2, #_pi_group_3
+                  If *this 
+                     Hide( *this, #True )
+                  EndIf
+                  
+               Default
+                  *this = CreatePropertiesItem( *second )
+            EndSelect
          EndIf
          
          Select Type( EventWidget( ))
@@ -230,7 +238,7 @@ Procedure PropertiesEvents( )
          EndSelect
          
       Case #__event_Change
-         If EventWidget( ) = *this
+         If *this = EventWidget( )
             Select Type( EventWidget( ) )
                Case #__type_String
                   Select GetData( EventWidget( ) ) 
@@ -313,14 +321,15 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
    
    item = CountItems( *first ) - 1
-   Protected flag ;= #__flag_child
+   Protected flag = #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child
    
    Select Type
       Case #__type_Spin
          *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag, 0, 1000, 0, #__bar_button_size, 0, 7 )
-         SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
+         ;SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_String
-         *this = Create( *second, "String", #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *second, "String", #__type_String, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
+         ;*this = Create( *second, "String", #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
       Case #__type_ComboBox
          *this = Create( *second, "ComboBox", #__type_ComboBox, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
          AddItem(*this, -1, "False")
@@ -329,6 +338,7 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    EndSelect
    
    If *this
+      SetActive( *this )
       SetData(*this, item)
       Bind(*this, @PropertiesEvents( ), #__event_Change)
       Bind(*this, @PropertiesEvents( ), #__event_LostFocus)
@@ -1236,7 +1246,7 @@ Procedure ide_events( )
          
       Case #__event_StatusChange
          ; отключаем событие покидания итема
-         If WidgetEventData( ) = - 1
+         If WidgetEventData( ) = 0
             ProcedureReturn 
          EndIf
          
@@ -1248,8 +1258,10 @@ Procedure ide_events( )
             ;SetText( ide_help_view, GetItemText( *e_widget, GetState( *e_widget ) ) )
          Else
             If *e_widget = ide_inspector_view
-               ;Debug "i "+e_item
-               SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+               Debug ""+WidgetEventData( )+" i "+e_item
+               If WidgetEventData( ) = 1
+                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+               EndIf
             EndIf
             If *e_widget = ide_inspector_elements
                SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
@@ -1739,9 +1751,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 187
-; FirstLine = 167
-; Folding = --------------------------------
+; CursorPosition = 239
+; FirstLine = 265
+; Folding = ----------------f-0-------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

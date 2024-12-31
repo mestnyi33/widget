@@ -5562,6 +5562,118 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure SetRowState( *this._s_WIDGET, List *rows._s_ROWS( ), *row._s_ROWS )
+         Protected dragged = Bool( mouse( )\drag And *this\press )
+         
+         If *row
+            If is_atpoint_( *row, mouse( )\x-*this\inner_x( )-*this\scroll_x( ), mouse( )\y-*this\inner_y( )-*this\scroll_y( ) )
+               *this\RowEntered( ) = *row
+            EndIf
+            
+            *this\RowFocusedIndex( ) = *this\RowEntered( )\_index
+            
+            If *this\mode\clickSelect
+               If *this\mode\multiSelect
+                  PushListPosition( *rows( ) )
+                  ForEach *rows( )
+                     If *rows( )\ColorState( ) = #__s_2
+                        If *rows( )\press <> 1
+                           *rows( )\press = 1
+                        EndIf
+                     EndIf
+                  Next
+                  PopListPosition( *rows( ) )
+               EndIf
+               
+               If Not *this\mode\multiSelect
+                  If dragged
+                     If *row <> *this\RowEntered( )
+                        If *this\RowEntered( )
+                           *row\press       = 0
+                           *row\ColorState( ) = #__s_0
+                           
+                           *this\RowEntered( )\press       = 1
+                           *this\RowEntered( )\ColorState( ) = #__s_2
+                           
+                           ;Debug "change1"
+                           DoEvents(*this, #__event_Change, *this\RowEntered( )\_index, *this\RowEntered( ))
+                        Else
+                           If *row\press
+                              *row\ColorState( ) = #__s_0
+                           Else
+                              *row\ColorState( ) = #__s_2
+                           EndIf
+                           *row\press ! 1
+                           
+                        EndIf
+                     EndIf
+                  Else
+                     ; Debug "change2" ; click-select flag
+                     DoEvents(*this, #__event_Change, *row\_index, *row)
+                  EndIf
+               EndIf
+            EndIf
+            
+            If Not *this\mode\clickSelect
+               If Not *this\mode\multiSelect
+                  If *this\RowEntered( ) And
+                     *this\RowEntered( )\_enter
+                     ;
+                     If *this\RowFocused( ) <> *this\RowEntered( )
+                        If *this\RowFocused( ) 
+                           *this\RowFocused( )\_enter        = 0 ;???
+                           *this\RowFocused( )\_focus        = 0
+                           *this\RowFocused( )\ColorState( ) = #__s_0
+                           ;
+                           DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index)
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                  If *row <> *this\RowEntered( )
+                     If *row\_focus        = 0
+                        *row\_enter        = 0
+                        *row\ColorState( ) = #__s_0
+                     EndIf
+                  EndIf
+               EndIf
+               ;
+               *row\press = 0
+               *row       = #Null
+               ;
+               If *this\RowEntered( ) And
+                  *this\RowEntered( )\_enter
+                  *this\RowFocused( ) = *this\RowEntered( )
+               EndIf
+               ;
+               If *this\RowFocused( )
+                  If *this\RowFocused( )\press
+                     *this\RowFocused( )\press = 0
+                  EndIf
+                  ;
+                  *this\RowFocused( )\ColorState( ) = #__s_2
+                  ;
+                  If *this\RowFocused( )\_focus = 0
+                     *this\RowFocused( )\_focus = 1
+                     
+                     ;Debug "change3"
+                     If is_integral_( *this ) And *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+                        ; Debug " combo send change event"
+                        DoEvents(*this\parent\parent, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ))
+                     Else
+                        DoEvents(*this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ))
+                     EndIf
+                  Else
+                     ; status-focus
+                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index)
+                  EndIf
+               EndIf
+               ;
+            EndIf
+         EndIf
+         
+      EndProcedure
+      
       Procedure.i GetState( *this._s_WIDGET )
          ; This is a universal function which works For almost all gadgets: 
          ; 
@@ -5712,6 +5824,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; - Web( )         : perform some action on the gadget. See WebGadget For further descriptions.
          
          Protected result
+         Protected *row._s_ROWS
          
          ;\\ custom object
          If *this\type = 0
@@ -5926,10 +6039,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   If state = - 1
                      ;\\ reset all selected items
-                     If *this\RowFocused( )
+                     If *this\RowFocused( ) And
+                        *this\RowFocused( )\_focus
                         *this\RowFocused( )\_focus = 0
                         *this\RowFocused( )\ColorState( ) = #__s_0
-                        DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( ) )
+                        *this\RowFocused( )\ColorState( ) = #__s_0
+                        DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ) )
                         *this\RowFocused( )               = #Null
                         ProcedureReturn - 1
                      EndIf
@@ -5937,6 +6052,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If Not SelectElement( *this\__rows( ), State )
                         ProcedureReturn #False
                      EndIf
+                     
+                     *row = *this\__rows( )
                      
                      ;\\ example file "D&D-items"
                      If *this\drop
@@ -5978,15 +6095,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;\\
-                     If *this\RowFocused( ) <> *this\__rows( )
+                     If *this\RowFocused( ) <> *row
                         ;
-                        If *this\RowFocused( )
+                        If *this\RowFocused( ) And
+                           *this\RowFocused( )\_focus
                            *this\RowFocused( )\_focus = 0
                            *this\RowFocused( )\ColorState( ) = #__s_0
-                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( ) )
+                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ) )
                         EndIf
                         
-                        *this\RowFocused( ) = *this\__rows( )
+                        *this\RowFocused( ) = *row
                         
                         ; click select mode
                         If *this\mode\clickSelect And 
@@ -6005,14 +6123,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Else
                            *this\RowFocused( )\ColorState( ) = #__s_0
                         EndIf
-                        
-                        DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( ) )
-                        
-                        ;If *this\mode\clickSelect
-                           ; list items change
-                           DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
-                        ;EndIf
-                        ; PostRepaint( *this\root )
+                        ;
+                        If Not MouseButtons( ) 
+                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
+                        EndIf
+                        DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
                         ProcedureReturn 1
                      EndIf
                   EndIf
@@ -6131,7 +6246,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\RowFocused( ) <> *this\__rows( )
                      *this\RowFocused( )  = *this\__rows( )
                      *this\RowFocused( )\ScrollToActive( - 1 )
-                     *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
+                     *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
                   EndIf
                EndIf
                
@@ -7371,9 +7486,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If *this
-            If *this\focus =- 1 Or 
-               *this\root\focus =- 1
-               ProcedureReturn 0
+            If *this\focus = #__state_nofocus ; Or *this\root\focus = #__state_nofocus
+                ; DoFocus( *this, #__event_Focus )
+                ProcedureReturn 0
             EndIf
             
             ;\\
@@ -8441,7 +8556,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      *this\RowFocused( )             = *row
                      *this\RowFocused( )\_focus = 1
-                     *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
+                     *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
                   EndIf
                   
                   If *this\ScrollState( ) = #True
@@ -8622,7 +8737,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   *this\RowFocused( )\press       = #True
                   *this\RowFocused( )\_focus = 1
-                  *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = #False )
+                  *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
                EndIf
             EndIf
             
@@ -14966,7 +15081,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\class  = class
          *this\round  = DPIScaled( round )
          *this\child  = constants::BinaryFlag( Flag, #__flag_child )
-         
+         If constants::BinaryFlag( Flag, #__flag_NoFocus )
+            *this\focus = #__state_nofocus
+         EndIf
          ;\\
          *this\frame_x( )      = #PB_Ignore
          *this\frame_y( )      = #PB_Ignore
@@ -16287,7 +16404,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                
                ;\\
-               If *this\focus >= 0
+               If *this\focus > 1
                   *this\ColorState( ) = *this\focus
                EndIf
                
@@ -17453,19 +17570,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\root\drawmode & 1<<2
                      ;\\
                      If test_focus_show
-                        If *this\focus 
+                        If *this\focus = 2
                            draw_mode_(#PB_2DDrawing_Outlined)
-                           If *this\focus = 2
-                              If Not *this\haschildren 
-                                 If *this = GetActive( )
-                                    draw_focus_frame( *this, $ff0000ff) ; $ffff0000
-                                 Else
-                                    draw_focus_frame( *this, $ff00ff00)
-                                 EndIf
+                           If Not *this\haschildren 
+                              If *this = GetActive( )
+                                 draw_focus_frame( *this, $ff0000ff) ; $ffff0000
+                              Else
+                                 draw_focus_frame( *this, $ff00ff00)
                               EndIf
-                           ElseIf *this\focus = 3
-                              draw_focus_frame( *this, $FFBFBFC3)
                            EndIf
+                        ElseIf *this\focus = 3
+                           draw_mode_(#PB_2DDrawing_Outlined)
+                           draw_focus_frame( *this, $FFBFBFC3)
                         EndIf
                      EndIf
                      
@@ -19641,8 +19757,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                Else
                   
-                  If dragged 
-                     If event = #__event_MouseMove
+                  If event = #__event_MouseMove
+                     If dragged 
                         If is_inside_( *this\screen_x( ), *this\screen_width( ), mouse( )\x )
                            If mouse( )\y <= mouse( )\delta\y + *this\inner_y( ) And mouse( )\y <= *this\inner_y( )
                               If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
@@ -19669,9 +19785,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                            EndIf
                         EndIf
-                        If *row = 0
-                           ProcedureReturn 0
-                        EndIf
                      EndIf
                   EndIf
                EndIf
@@ -19679,6 +19792,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ change enter/leave state
             If *this\RowEntered( ) <> *row
+               If mouse( )\drag And *this\RowFocused( ) And  *this\RowFocused( )\press
+                  If Not MouseButtonPress( )
+                     Debug 555
+                     *this\RowFocused( )\press = 0
+                  EndIf
+                  ProcedureReturn 
+               EndIf
+               
                Protected *rowleaved._s_ROWS
                If *this\RowEntered( )
                   *rowleaved = *this\RowEntered( )
@@ -19688,34 +19809,38 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\RowEntered( ) = *row
                ; 
                ;\\ leave state
-               If *rowleaved And 
-                  *rowleaved\_enter
-                  *rowleaved\_enter = 0
-                  
-                  If ( *this\press And Not mouse( )\drop ) And
-                     Not *this\mode\multiSelect And
-                     Not *this\mode\clickSelect
+               ; not mouse button up event
+               If Not ( MouseButtons( ) And Not MouseButtonPress( )) ;And Not (MouseButtonPress( ) And Not *row)
+                  If *rowleaved And 
+                     *rowleaved\_enter
+                     *rowleaved\_enter = 0
                      
-                     If *rowleaved\ColorState( ) = #__s_2
-                        *rowleaved\ColorState( ) = #__s_0
-                     EndIf
-                  Else
-                     If *rowleaved\ColorState( ) = #__s_1
-                        *rowleaved\ColorState( ) = #__s_0
-                     EndIf
-                     
-                     If *rowleaved\_focus
-                        If *rowleaved\ColorState( ) <> #__s_2
-                           *rowleaved\ColorState( ) = #__s_3
-                           *this\root\repaint              = #True
+                     If ( *this\press And Not mouse( )\drop ) And
+                        Not *this\mode\multiSelect And
+                        Not *this\mode\clickSelect
+                        
+                        If *rowleaved\ColorState( ) = #__s_2
+                           If *rowleaved = *this\RowFocused( )
+                              *rowleaved\ColorState( ) = #__s_3
+                           Else
+                              *rowleaved\ColorState( ) = #__s_0
+                           EndIf
+                        EndIf
+                     Else
+                        If *rowleaved\ColorState( ) = #__s_1
+                           *rowleaved\ColorState( ) = #__s_0
+                        EndIf
+                        
+                        If *rowleaved\_focus
+                           If *rowleaved\ColorState( ) <> #__s_2
+                              *rowleaved\ColorState( ) = #__s_3
+                              *this\root\repaint              = #True
+                           EndIf
                         EndIf
                      EndIf
-                  EndIf
-                  
-                  ; not mouse button up event
-                  If Not ( MouseButtons( ) And Not MouseButtonPress( ))
+                     
                      ; Debug " leave-item status change"
-                     DoEvents(*this, #__event_StatusChange, *rowleaved\_index, - 1 )
+                     DoEvents( *this, #__event_StatusChange, *rowleaved\_index, *rowleaved\ColorState( ) )
                   EndIf
                EndIf
                  
@@ -19735,9 +19860,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      If ( *this\press And Not mouse( )\drop ) And ( *this\mode\clickSelect = 0 Or
                                                                     ( *this\mode\clickSelect And *this\mode\multiSelect ))
-                        If *row\ColorState( ) = #__s_0
+                        
+                        If *row\ColorState( ) <> #__s_2
                            *row\ColorState( ) = #__s_2
                         EndIf
+                        
                      Else
                         If *row\ColorState( ) = #__s_0
                            *row\ColorState( ) = #__s_1
@@ -19751,26 +19878,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;\\ update non-focus status
-                     If Not ( *this\RowLeaved( ) = #Null And *row = *this\RowFocused( ) And
-                              Not ( *this\press And Not *this\mode\clickSelect And Not *this\mode\multiSelect ) )
-                        ; Debug " enter-item status change"
-                        DoEvents(*this, #__event_StatusChange, *row\_index)
-                     Else
-                        *this\root\repaint = #True
+                     If Not ( Not *this\press And *row = *this\RowFocused( ) )
+                        DoEvents( *this, #__event_StatusChange, *row\_index, *row\ColorState( ) )
                      EndIf
-                  EndIf
-                  
-                  ;\\
-               ElseIf *this\press = 0 And
-                      Not ( *this\RowLeaved( ) = *this\RowFocused( ) And 
-                            Not ( *this\press And Not *this\mode\clickSelect And Not *this\mode\multiSelect ))
-                  ; Debug " leave-items status change"
-                  
-                  If *this\RowFocused( )
-                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index)
-                  ElseIf *this\RowLeaved( )
-                     Debug "lllllleave row "+Bool(*this\RowLeaved( ) = *rowleaved)
-                     DoEvents(*this, #__event_StatusChange, *this\RowLeaved( )\_index)
                   EndIf
                EndIf
                ;
@@ -19831,7 +19941,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *rows( )\ColorState( ) = #__s_2
                            ;
                            ; status-focus
-                           DoEvents(*this, #__event_StatusChange, *rows( )\_index)
+                           DoEvents( *this, #__event_StatusChange, *rows( )\_index, *rows( )\ColorState( ))
                         EndIf
                      EndIf
                   Next
@@ -19850,7 +19960,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   ; status-focus
-                  DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index)
+                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
                EndIf
             EndIf
             
@@ -19864,7 +19974,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *rows( )\ColorState( ) = #__s_3
                            ;
                            ; status-lostfocus
-                           DoEvents(*this, #__event_StatusChange, *rows( )\_index)
+                           DoEvents( *this, #__event_StatusChange, *rows( )\_index, *rows( )\ColorState( ))
                         EndIf
                      EndIf
                   Next
@@ -19877,7 +19987,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\RowFocused( )\ColorState( ) = #__s_3
                      ;
                      ; status-lostfocus
-                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index)
+                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
                   EndIf
                EndIf
             EndIf
@@ -19886,65 +19996,72 @@ CompilerIf Not Defined( widget, #PB_Module )
             If event = #__event_Down
                If MouseButtons( ) & #PB_Canvas_LeftButton
                   If *this\RowEntered( ) And Not EnteredButton( )
-                     ;\\
-                     If *this\mode\multiSelect And Not *this\mode\clickSelect
-                        PushListPosition( *rows( ) )
-                        ForEach *rows( )
-                           If *rows( )\ColorState( ) <> #__s_0
-                              *rows( )\ColorState( ) = #__s_0
-                              
-                              ;                               If *rows( )\focus > 0
-                              ;                                  Debug " multiselect " + *rows( )\focus + " " + *rows( )\text\string
-                              ;                               EndIf
-                              
-                              If Not *rows( )\_enter
-                                 If *rows( )\_focus <> 0
-                                    *rows( )\_focus = 0
-                                 EndIf
-                              EndIf
-                           EndIf
-                        Next
-                        PopListPosition( *rows( ) )
-                     EndIf
-                     
-                     *this\RowPressed( ) = *this\RowEntered( )
-                     
-                     ;\\
+                     ;
                      If *this\mode\clickSelect
                         *this\RowEntered( )\press ! 1
-                        If *this\RowEntered( )\press
-                           *this\RowEntered( )\ColorState( ) = #__s_2
-                        Else
-                           *this\RowEntered( )\ColorState( ) = #__s_1
-                        EndIf
-                        ;
-                        ;    ; status-change
-                        DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\_index)
                      Else
-                        *this\RowEntered( )\press       = 1
-                        *this\RowEntered( )\ColorState( ) = #__s_2
-                        
-                        If *this\RowFocused( ) <> *this\RowEntered( )
-                           If *this\RowFocused( ) And
-                              *this\RowFocused( )\ColorState( ) = #__s_2
-                              *this\RowFocused( )\ColorState( ) = #__s_3
-                              ;
-                              ; status-lostfocus
-                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index)
-                           EndIf
-                           ;
-                           ; status-focus
-                           DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\_index)
+                        *this\RowEntered( )\press = 1
+                        ;
+                        If *this\mode\multiSelect
+                           PushListPosition( *rows( ) )
+                           ForEach *rows( )
+                              If *rows( )\ColorState( ) <> #__s_0
+                                 *rows( )\ColorState( ) = #__s_0
+                                 
+                                 If Not *rows( )\_enter
+                                    If *rows( )\_focus <> 0
+                                       *rows( )\_focus = 0
+                                    EndIf
+                                 EndIf
+                              EndIf
+                           Next
+                           PopListPosition( *rows( ) )
                         EndIf
                      EndIf
+                     ;
+                     *this\RowPressed( ) = *this\RowEntered( )
+                     ;
+                     If *this\RowEntered( )\press
+                        If *this\RowEntered( )\ColorState( ) <> #__s_2
+                           *this\RowEntered( )\ColorState( ) = #__s_2
+                           
+                           If *this\RowFocused( ) And *this\RowFocused( ) <> *this\RowEntered( )  
+                              If *this\RowFocused( )\ColorState( ) = #__s_2
+                                 *this\RowFocused( )\ColorState( ) = #__s_3
+                                 ;
+                                 ; status-lostfocus
+                                 DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ) )
+                              EndIf
+                           EndIf
+                           ;
+                           ; status-change
+                           DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\_index, *this\RowEntered( )\ColorState( ) )
+                        EndIf
+                     Else
+                        *this\RowEntered( )\ColorState( ) = #__s_1
+                        ; status-change
+                        DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\_index, *this\RowEntered( )\ColorState( ) )
+                     EndIf
+                     ;
                   EndIf
+               EndIf
+            EndIf
+            
+            ;\\
+            If event = #__event_MouseLeave 
+               ; это для того чтобы при покидании 
+               ; отобразить информацию выбранного итема
+               ; не уверен есть ли в этом польза))
+               If *this\RowFocused( )
+                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, 1 )
                EndIf
             EndIf
             
             ;\\
             If event = #__event_DragStart ; Ok
                If *this\RowEntered( )
-                  *this\RowFocusedIndex( ) = *this\RowEntered( )\_index
+                 ; *this\RowFocusedIndex( ) = *this\RowEntered( )\_index
+                 ; SetState( *this, *this\RowPressed( )\_index ) 
                EndIf
             EndIf
             
@@ -19967,127 +20084,26 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If event = #__event_Up
                If MouseButtons( ) & #PB_Canvas_LeftButton
-                  ;             If *row
-                  ;               Debug "up * - " + *row + " " + *row\text\string + " " + *row\press + " " + *row\_enter + " " + *row\focus
-                  ;             EndIf
-                  ;             If *this\RowEntered( )
-                  ;               Debug "up e - " + *this\RowEntered( ) + " " + *this\RowEntered( )\text\string + " " + *this\RowEntered( )\press + " " + *this\RowEntered( )\_enter + " " + *this\RowEntered( )\_focus
-                  ;             EndIf
-                  ;             If *this\RowPressed( )
-                  ;               Debug "up p - " + *this\RowPressed( ) + " " + *this\RowPressed( )\text\string + " " + *this\RowPressed( )\press + " " + *this\RowPressed( )\_enter + " " + *this\RowPressed( )\_focus
-                  ;             EndIf
-                  ;             If *this\RowFocused( )
-                  ;               Debug "up f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\_enter + " " + *this\RowFocused( )\_focus
-                  ;             EndIf
-                  
-                  
                   If *this\RowPressed( )
-                     If is_atpoint_( *this\RowPressed( ), mouse( )\x-*this\inner_x( )-*this\scroll_x( ), mouse( )\y-*this\inner_y( )-*this\scroll_y( ) )
-                        *this\RowEntered( ) = *this\RowPressed( )
-                     EndIf
-                     
-                     *this\RowFocusedIndex( ) = *this\RowEntered( )\_index
-                     
-                     If *this\mode\clickSelect
-                        If *this\mode\multiSelect
-                           PushListPosition( *rows( ) )
-                           ForEach *rows( )
-                              If *rows( )\ColorState( ) = #__s_2
-                                 If *rows( )\press <> 1
-                                    *rows( )\press = 1
-                                 EndIf
-                              EndIf
-                           Next
-                           PopListPosition( *rows( ) )
-                        EndIf
-                        
-                        If Not *this\mode\multiSelect
-                           If dragged
-                              If *this\RowPressed( ) <> *this\RowEntered( )
-                                 If *this\RowEntered( )
-                                    *this\RowPressed( )\press       = 0
-                                    *this\RowPressed( )\ColorState( ) = #__s_0
-                                    
-                                    *this\RowEntered( )\press       = 1
-                                    *this\RowEntered( )\ColorState( ) = #__s_2
-                                    
-                                    ;Debug "change1"
-                                    DoEvents(*this, #__event_Change, *this\RowEntered( )\_index, *this\RowEntered( ))
-                                 Else
-                                    If *this\RowPressed( )\press
-                                       *this\RowPressed( )\ColorState( ) = #__s_0
-                                    Else
-                                       *this\RowPressed( )\ColorState( ) = #__s_2
-                                    EndIf
-                                    *this\RowPressed( )\press ! 1
-                                    
-                                 EndIf
-                              EndIf
-                           Else
-                              ; Debug "change2" ; click-select flag
-                              DoEvents(*this, #__event_Change, *this\RowPressed( )\_index, *this\RowPressed( ))
-                           EndIf
-                        EndIf
-                     EndIf
-                     
                      If Not *this\mode\clickSelect
-                        If Not *this\mode\multiSelect
-                           If *this\RowEntered( ) And
-                              *this\RowEntered( )\_enter
+                        If *this\RowEntered( )
+                           SetState( *this, *this\RowEntered( )\_index ) 
+                        Else
+                           ; Debug *this\RowFocused( )\ColorState( ) 
+                           If *this\RowFocused( ) And
+                              *this\RowFocused( )\ColorState( ) = #__s_3
+                              *this\RowFocused( )\ColorState( ) = #__s_2
                               ;
-                              If *this\RowFocused( ) <> *this\RowEntered( )
-                                 If *this\RowFocused( ) 
-                                    *this\RowFocused( )\_enter        = 0 ;???
-                                    *this\RowFocused( )\_focus        = 0
-                                    *this\RowFocused( )\ColorState( ) = #__s_0
-                                    ;
-                                    DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index)
-                                 EndIf
-                              EndIf
-                           EndIf
-                           
-                           If *this\RowPressed( ) <> *this\RowEntered( )
-                              If *this\RowPressed( )\_focus        = 0
-                                 *this\RowPressed( )\_enter        = 0
-                                 *this\RowPressed( )\ColorState( ) = #__s_0
-                              EndIf
+                              ; status-focus
+                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
                            EndIf
                         EndIf
                         ;
                         *this\RowPressed( )\press = 0
-                        *this\RowPressed( )       = #Null
-                        ;
-                        If *this\RowEntered( ) And
-                           *this\RowEntered( )\_enter
-                           *this\RowFocused( ) = *this\RowEntered( )
-                        EndIf
-                        ;
-                        If *this\RowFocused( )
-                           If *this\RowFocused( )\press
-                              *this\RowFocused( )\press = 0
-                           EndIf
-                           ;
-                           *this\RowFocused( )\ColorState( ) = #__s_2
-                           ;
-                           If *this\RowFocused( )\_focus = 0
-                              *this\RowFocused( )\_focus = 1
-                              
-                              ;Debug "change3"
-                              If is_integral_( *this ) And *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
-                                 ; Debug " combo send change event"
-                                 DoEvents(*this\parent\parent, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ))
-                              Else
-                                 DoEvents(*this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ))
-                              EndIf
-                           Else
-                              ; status-focus
-                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\_index)
-                           EndIf
-                        EndIf
-                        ;
                      EndIf
+                     ;
+                     *this\RowPressed( ) = 0 
                   EndIf
-                  
                EndIf
             EndIf
          EndIf
@@ -22287,7 +22303,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If constants::BinaryFlag( Flag, #__window_NoActivate )
-               *root\focus =- 1
+               *root\focus = #__state_nofocus
             Else
                SetActive( *root )
             EndIf
@@ -22557,7 +22573,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If constants::BinaryFlag( *this\flag, #__window_NoActivate )
-            *this\focus =- 1
+            *this\focus = #__state_nofocus
          Else
             If Not *this\anchors
                SetActive( *this )
@@ -24173,9 +24189,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19988
-; FirstLine = 19567
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------v-02--f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----660v-7---------------------40--0------------------------------------------------------------------------------
+; CursorPosition = 19797
+; FirstLine = 17368
+; Folding = --------------------------------------------------------------------------------------------4-----f----------------------------------------------------v-02-8f--+------------------------------------04vu+0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------r-----n44-+-0v----------------fd--f------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

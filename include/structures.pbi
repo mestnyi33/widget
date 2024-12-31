@@ -353,6 +353,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          StructureUnion
            Index.i
            _index.i
+           position.i
          EndStructureUnion
          change.b
          Drawing.b
@@ -784,8 +785,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 690
-; FirstLine = 618
+; CursorPosition = 355
+; FirstLine = 347
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

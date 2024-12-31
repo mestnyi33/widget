@@ -153,7 +153,17 @@
     #__color_Frame      = 7
     #__color_Fore       = 8
     
-    ;-
+    ;- 
+    ;-\\ state
+    #__state_Selected  = 1<<5  ; выделено
+    #__state_expanded  = 1<<6  ; развернуто
+    #__state_Checked   = 1<<7  ; выбрано
+    #__state_Collapsed = 1<<8  ; свернуто
+    #__state_Inbetween = 1<<9
+    ;#__state_entered   = 1<<10 ; мышь внутри
+    ;#__state_pressed   = 1<<11 ; нажато
+    #__state_nofocus = 2; - 1
+    
     ;-\\ color-state
     Enumeration
       #__s_0
@@ -185,6 +195,8 @@
     #__resize_Restore  = 1<<1 
     #__resize_Minimize = 1<<2 
     #__resize_Maximize = 1<<3 
+    
+    
     
     ;-
     ;-\\ event-type
@@ -422,7 +434,7 @@
     #__flag_Center         = 1<<53
     #__flag_Full           = 1<<54
     #__flag_Proportional   = 1<<55
-    ; #__flag_   = 1<<56
+    #__flag_NoFocus        = 1<<56
     ; #__flag_   = 1<<57
     ; #__flag_   = 1<<58
     ; #__flag_   = 1<<59
@@ -731,8 +743,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 253
-; FirstLine = 187
+; CursorPosition = 162
+; FirstLine = 150
 ; Folding = ----
 ; Optimizer
 ; EnableXP

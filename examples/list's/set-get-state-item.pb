@@ -70,18 +70,23 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure widget_events()
       If WidgetEvent( ) <> #__event_mousemove
-         Debug classfromevent(WidgetEvent( )) +" "+ WidgetEventItem( ) ;+" "+ ItemIndex(WidgetEventData( ))
+         ;If WidgetEventData( ) = 1
+            Debug ""+WidgetEventData( ) +" "+ classfromevent(WidgetEvent( )) +" "+ WidgetEventItem( )
+         ;EndIf
       EndIf
       
       Select WidgetEvent( )
          Case #__event_StatusChange
-           ;  SetItemState( *demo, WidgetEventItem( ), 1)
-;             ; Debug WidgetEventItem( )
+            ; изменять цвета только у выделеных итемов
+            ; If Not MouseButtons( ) : ProcedureReturn : EndIf
+            
             PushListPosition(EventWidget( )\__rows( ))
             SelectElement( EventWidget( )\__rows( ), WidgetEventItem( ))
             UpdateItemColor( *demo, EventWidget( )\__rows( ))
             PopListPosition(EventWidget( )\__rows( ))
             
+            ;  SetItemState( *demo, WidgetEventItem( ), 1)
+             
          Case #__event_Change
             Debug "-------w-------"
             SetState_(*this, GetState(EventWidget( )))
@@ -141,7 +146,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 65
+; CursorPosition = 74
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP
