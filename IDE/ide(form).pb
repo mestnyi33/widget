@@ -119,7 +119,36 @@ Procedure.s StrBool( state )
    EndIf
 EndProcedure
 
-Procedure ChangePropertiesItem( *inspector._s_WIDGET )
+Procedure StatusChange( *this._s_WIDGET, item )
+   PushListPosition(EventWidget( )\__rows( ))
+   SelectElement( EventWidget( )\__rows( ), item )
+   ;
+   If EventWidget( )\__rows( ) 
+      PushListPosition( *this\__rows( ) )
+      SelectElement( *this\__rows( ), EventWidget( )\__rows( )\index)
+      *this\__rows( )\color = EventWidget( )\__rows( )\color
+      
+      If *this\__rows( )\colorState( ) = #__s_2
+         If *this\RowFocused( )
+            *this\RowFocused( )\focus = 0
+         EndIf
+         *this\RowFocused( ) = *this\__rows( )
+         *this\RowFocused( )\focus = 1
+      EndIf
+      
+      PopListPosition( *this\__rows( ) )
+   EndIf
+   PopListPosition(EventWidget( )\__rows( ))
+   
+;    If WidgetEventData( ) = 3
+;       If GetActive( ) <> EventWidget( )
+;          Debug "set active "+GetClass(EventWidget( ))
+;          SetActive( EventWidget( ))
+;       EndIf
+;    EndIf
+EndProcedure
+
+Procedure ChangeEditPropertiesItem( *inspector._s_WIDGET )
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
    If *second And *second\RowFocused( )
       Protected *this._s_WIDGET = *second\RowFocused( )\data
@@ -133,28 +162,7 @@ Procedure ChangePropertiesItem( *inspector._s_WIDGET )
    EndIf
 EndProcedure
 
-Procedure UpdatePropertiesItem( *this._s_WIDGET )
-   PushListPosition(EventWidget( )\__rows( ))
-   SelectElement( EventWidget( )\__rows( ), WidgetEventItem( ))
-   If EventWidget( )\__rows( ) 
-      PushListPosition( *this\__rows( ) )
-      SelectElement( *this\__rows( ), EventWidget( )\__rows( )\index)
-      *this\__rows( )\color = EventWidget( )\__rows( )\color
-      
-;       If *this\__rows( )\colorState( ) = #__s_2
-;          If *this\RowFocused( )
-;             *this\RowFocused( )\focus = 0
-;          EndIf
-;          *this\RowFocused( ) = *this\__rows( )
-;          *this\RowFocused( )\focus = 1
-;       EndIf
-      
-      PopListPosition( *this\__rows( ) )
-   EndIf
-   PopListPosition(EventWidget( )\__rows( ))
-EndProcedure
-
-Procedure ResizePropertiesItem( *second._s_WIDGET )
+Procedure ResizeEditPropertiesItem( *second._s_WIDGET )
    Protected *this._s_WIDGET
    Protected *row._s_ROWS
    
@@ -164,7 +172,7 @@ Procedure ResizePropertiesItem( *second._s_WIDGET )
       ;
       If *this
          Resize(*this,
-                *row\x,; +30, 
+                *row\x + *second\scroll_x( ),; +30, 
                 *row\y + *second\scroll_y( ), 
                 *row\width,;*second\inner_width( ),;; -30, 
                 *row\height, 0 )
@@ -172,7 +180,7 @@ Procedure ResizePropertiesItem( *second._s_WIDGET )
    EndIf
 EndProcedure
 
-Procedure CreatePropertiesItem( *second._s_WIDGET )
+Procedure CreateEditPropertiesItem( *second._s_WIDGET )
    Protected *this._s_WIDGET
    Protected *row._s_ROWS
    Static *last._s_WIDGET
@@ -211,7 +219,7 @@ Procedure CreatePropertiesItem( *second._s_WIDGET )
                
          EndSelect
          
-         ResizePropertiesItem( *this\parent )
+         ResizeEditPropertiesItem( *this\parent )
       EndIf
    EndIf
    
@@ -228,28 +236,37 @@ Procedure PropertiesEvents( )
    
    Select WidgetEvent( )
       Case #__event_Up
-         If mouse( )\drag
-            If EventWidget( ) = *first Or
-               EventWidget( ) = *second 
-               
-               *this = CreatePropertiesItem( *second )
-            EndIf
-         EndIf
+;          If mouse( )\drag
+;             If EventWidget( ) = *first Or
+;                EventWidget( ) = *second 
+;                
+;                *this = CreateEditPropertiesItem( *second )
+;             EndIf
+;          EndIf
          
       Case #__event_Down
          If EventWidget( ) = *first Or
             EventWidget( ) = *second 
-            
             ; 
-            If EventWidget( ) = *first
-               SetState( *second, WidgetEventItem( ) )
-            EndIf
-            If EventWidget( ) = *second
-               SetState( *first, WidgetEventItem( ) )
-            EndIf
-            SetState( EventWidget( ), WidgetEventItem( ) )
-            
+            SetState( EventWidget( ), WidgetEventItem( ))
+         Else
+            Select Type( EventWidget( ))
+               Case #__type_Spin     : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+               Case #__type_String   : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), GetText(EventWidget( )) )
+               Case #__type_ComboBox : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+            EndSelect
+         EndIf
+         
+      Case #__event_Change
+         If EventWidget( ) = *first Or
+            EventWidget( ) = *second 
             ;
+            Select EventWidget( )
+               Case *first : SetState(*second, GetState(EventWidget( )))
+               Case *second : SetState(*first, GetState(EventWidget( )))
+            EndSelect
+            
+            ; create EditPropertiesItem
             Select WidgetEventItem( )
                Case #_pi_group_0, #_pi_group_1, #_pi_group_2, #_pi_group_3
                   If *this 
@@ -257,17 +274,10 @@ Procedure PropertiesEvents( )
                   EndIf
                   
                Default
-                  *this = CreatePropertiesItem( *second )
+                  *this = CreateEditPropertiesItem( *second )
             EndSelect
          EndIf
-         
-         Select Type( EventWidget( ))
-            Case #__type_Spin     : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-            Case #__type_String   : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), GetText(EventWidget( )) )
-            Case #__type_ComboBox : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-         EndSelect
-         
-      Case #__event_Change
+      
          If *this = EventWidget( )
             Select Type( EventWidget( ) )
                Case #__type_String
@@ -297,6 +307,7 @@ Procedure PropertiesEvents( )
             
          EndIf
          
+         
       Case #__event_StatusChange
          If WidgetEventData( ) = #PB_Tree_Expanded Or
             WidgetEventData( ) = #PB_Tree_Collapsed
@@ -310,13 +321,10 @@ Procedure PropertiesEvents( )
             EndIf
          EndIf
          
-         If EventWidget( ) = *first
-            UpdatePropertiesItem( *second )
-         EndIf
-         ;
-         If EventWidget( ) = *second
-            UpdatePropertiesItem( *first )
-         EndIf
+         Select EventWidget( ) 
+            Case *first : StatusChange( *second, WidgetEventItem( ) )
+            Case *second : StatusChange( *first, WidgetEventItem( ) )
+         EndSelect
          
       Case #__event_ScrollChange
          If EventWidget( ) = *first 
@@ -329,13 +337,13 @@ Procedure PropertiesEvents( )
             If GetState( *first\scroll\v ) <> WidgetEventData( )
                SetState(*first\scroll\v, WidgetEventData( ) )
                ;
-               ResizePropertiesItem( *second )
+               ResizeEditPropertiesItem( *second )
             EndIf
          EndIf
          
       Case #__event_resize
          If EventWidget( ) = *second
-            ResizePropertiesItem( *second )
+            ResizeEditPropertiesItem( *second )
          EndIf
          
          
@@ -429,7 +437,7 @@ Procedure SetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
    
    SetItemText( *first, item, StringField(Text.s, 1, Chr(10)) )
    SetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
-   ;ChangePropertiesItem( *splitter )
+   ;ChangeEditPropertiesItem( *splitter )
             
    ProcedureReturn 
 EndProcedure
@@ -880,7 +888,7 @@ Procedure widget_events( )
             EndIf
             
             properties_updates( ide_inspector_properties, *e_widget )
-            ChangePropertiesItem( ide_inspector_properties )
+            ChangeEditPropertiesItem( ide_inspector_properties )
             
             ; 
             If GetActive( ) <> ide_inspector_view 
@@ -974,7 +982,7 @@ Procedure widget_events( )
       Case #__event_Resize
          ; Debug ""+GetClass(*e_widget)+" resize"
          properties_update_coordinate( ide_inspector_properties, *e_widget )
-         ChangePropertiesItem( ide_inspector_properties )
+         ChangeEditPropertiesItem( ide_inspector_properties )
          SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
          
       Case #__event_MouseEnter,
@@ -1279,11 +1287,6 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_StatusChange
-         ; отключаем событие покидания итема
-         If WidgetEventData( ) = 0
-            ProcedureReturn 
-         EndIf
-         
          If *e_widget = ide_design_code
             ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetState( ide_design_code )
          EndIf
@@ -1291,8 +1294,8 @@ Procedure ide_events( )
          If e_item = - 1
             ;SetText( ide_help_view, GetItemText( *e_widget, GetState( *e_widget ) ) )
          Else
-            If WidgetEventData( ) = 1
-               If *e_widget = ide_inspector_view
+           If WidgetEventData( ) > 0
+             If *e_widget = ide_inspector_view
                   ;Debug ""+WidgetEventData( )+" i "+e_item
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
@@ -1785,9 +1788,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 360
-; FirstLine = 341
-; Folding = -----------------4f--------------
+; CursorPosition = 150
+; FirstLine = 147
+; Folding = ----4------------8v--------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

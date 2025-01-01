@@ -1601,8 +1601,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          ( _this_\inner_y( ) + _address_\y )
       EndMacro
       
+      Macro row_scroll_( _this_, _pos_, _len_ )
+         Bool( Bool(((( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) < 0 And bar_PageChange( _this_, (( _pos_ ) + _this_\bar\min ) )) Or
+               Bool(((( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) > ( _this_\bar\page\len - ( _len_ )) And bar_PageChange( _this_, (( _pos_ ) + _this_\bar\min ) - ( _this_\bar\page\len - ( _len_ ) ))) )
+      EndMacro
+      
       Macro row_scroll_y_( _this_, _row_, _page_height_ = )
-         bar_set_scroll_pos_( _this_\scroll\v, ( row_y_( _this_, _row_ ) _page_height_ ) - _this_\scroll\v\y, _row_\height )
+         row_scroll_( _this_\scroll\v, ( row_y_( _this_, _row_ ) _page_height_ ) - _this_\scroll\v\y, _row_\height )
       EndMacro
       
       Macro row_sel_element_( _this_, _address_, _index_ )
@@ -6118,22 +6123,29 @@ CompilerIf Not Defined( widget, #PB_Module )
                            If *this\focus = 2
                               If *this\RowFocused( )\ColorState( ) <> #__s_2
                                  *this\RowFocused( )\ColorState( ) = #__s_2
-                                 DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
+                                 result = 2
                               EndIf
                            Else
                               If *this\RowFocused( )\ColorState( ) <> #__s_3
                                  *this\RowFocused( )\ColorState( ) = #__s_3
-                                 DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
+                                 result = 3
                               EndIf
                            EndIf
                         Else
                            If *this\RowFocused( )\ColorState( ) <> #__s_1
                               *this\RowFocused( )\ColorState( ) = #__s_1
-                              DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
+                              result = 1
                            EndIf
+                        EndIf
+                        
+                        If row_scroll_y_( *this, *this\RowFocused( ) )
+                           *this\WidgetChange( ) = - 1
                         EndIf
                         ;
                         DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
+                        If result  
+                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\_index, *this\RowFocused( )\ColorState( ))
+                        EndIf 
                         ProcedureReturn 1
                      EndIf
                   EndIf
@@ -8905,11 +8917,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Macro bar_thumb_pos_( _bar_, _scroll_pos_ )
          ( Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ) - _bar_\min[1] )
-      EndMacro
-      
-      Macro bar_set_scroll_pos_( _this_, _pos_, _len_ )
-         Bool( Bool(((( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) < 0 And bar_PageChange( _this_, (( _pos_ ) + _this_\bar\min ) )) Or
-               Bool(((( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) > ( _this_\bar\page\len - ( _len_ )) And bar_PageChange( _this_, (( _pos_ ) + _this_\bar\min ) - ( _this_\bar\page\len - ( _len_ ) ))) )
       EndMacro
       
       Macro bar_invert_page_pos_( _bar_, _scroll_pos_ )
@@ -16614,8 +16621,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                            EndIf
                            
-                           ;row_scroll_y_( *this, *this\LineFocused( ) )
-                           bar_set_scroll_pos_( *this\scroll\v, *this\text\caret\y, *this\text\caret\height ) ; ok
+                           row_scroll_( *this\scroll\v, *this\text\caret\y, *this\text\caret\height ) ; ok
                         EndIf
                      EndIf
                      
@@ -16631,8 +16637,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                            EndIf
                            
-                           ; bar_set_scroll_pos_( *this\scroll\h, (*this\text\caret\x - *this\text\padding\x), ( *this\text\padding\x * 2 + *this\MarginLine( )\width )) ; ok
-                           bar_set_scroll_pos_( *this\scroll\h, *this\text\caret\x, *this\text\caret\width ) ; ok
+                           row_scroll_( *this\scroll\h, *this\text\caret\x, *this\text\caret\width ) ; ok
                         EndIf
                      EndIf
                      
@@ -18809,31 +18814,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                               Else
                                  select_prev_item_( *rows( ), *this\RowFocused( )\_index )
                               EndIf
+                              
                               ;
-                              If *this\RowFocused( ) <> *rows( )
-                                 If *this\RowFocused( )
-                                    If *this\RowFocused( )\_enter
-                                       *this\RowFocused( )\ColorState( ) = 1
-                                    Else
-                                       *this\RowFocused( )\ColorState( ) = 0
-                                    EndIf
-                                 EndIf
-                                 
-                                 *row_selected                  = *rows( )
-                                 *this\RowFocused( )             = *rows( )
-                                 *this\RowFocused( )\ColorState( ) = 2
-                                 
-                                 If *this\RowFocused( )\y + *this\scroll_y( ) <= 0
-                                    If row_scroll_y_( *this, *this\RowFocused( ) )
-                                       *this\WidgetChange( ) = - 1
-                                    EndIf
-                                 EndIf
-                                 ; tree items change
-                                 DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
-                                 result = 1
-                              EndIf
-                              
-                              
+                              result = SetState( *this, *rows( )\_index )
                            EndIf
                         EndIf
                         
@@ -18857,31 +18840,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  select_next_item_( *rows( ), *this\RowFocused( )\_index )
                               EndIf
                               
-                              If *this\RowFocused( ) <> *rows( )
-                                 If *this\RowFocused( )
-                                    If *this\RowFocused( )\_enter
-                                       *this\RowFocused( )\ColorState( ) = 1
-                                    Else
-                                       *this\RowFocused( )\ColorState( ) = 0
-                                    EndIf
-                                 EndIf
-                                 
-                                 *row_selected                  = *rows( )
-                                 *this\RowFocused( )             = *rows( )
-                                 *this\RowFocused( )\ColorState( )     = 2
-                                 
-                                 If *this\RowFocused( )\y >= *this\inner_height( )
-                                    If row_scroll_y_( *this, *this\RowFocused( ) )
-                                       *this\WidgetChange( ) = - 1
-                                    EndIf
-                                 EndIf
-                                 ;
-                                 ; tree items change
-                                 DoEvents( *this, #__event_Change, *this\RowFocused( )\_index, *this\RowFocused( ) )
-                                 result = 1
-                              EndIf
-                              
-                              
+                              ;
+                              result = SetState( *this, *rows( )\_index )
                            EndIf
                         EndIf
                         
@@ -24203,9 +24163,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7530
-; FirstLine = 6846
-; Folding = -----------------------------------------------------------------------------------+--------4----------------------------------------------------------4-+7-0v--0------------------------------------4vfd08-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------f0-----9++4-v------------------v8-v5-----ff4f---------------------------------------------------------------------
+; CursorPosition = 18812
+; FirstLine = 17286
+; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v-02-8f--v-------------------------------------+0rrf------------------------------------------------uD---------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------f-----P---0-8------------------8+-L+-----4404---------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
