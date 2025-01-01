@@ -326,7 +326,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; for the tree( )
         If *this\row\last\parent And 
            *this\row\last\parent\sublevel < sublevel
-          *this\row\last\parent\last = *this\row\last
+          *this\row\last\parent\_last = *this\row\last
         EndIf
         
         If sublevel = 0
@@ -357,19 +357,20 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\__rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
-        *this\count\items + 1
+        *this\countitems + 1
         *this\change = 1
       EndIf
     EndIf
     ;EndWith
     
-    ProcedureReturn *this\count\items - 1
+    ProcedureReturn *this\countitems - 1
   EndProcedure
   
   Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
     ;;ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
-    Protected handle, *last._s__rows, *parent._s__rows
-    ;sublevel = 0
+    Protected handle, *last._s_rows, *parent._s_rows
+    Protected *row.allocate(ROWS)
+       ;sublevel = 0
     
     ;With *this
     If *this
@@ -403,9 +404,11 @@ CompilerIf #PB_Compiler_IsMainFile
         handle = InsertElement( *this\__rows( ) )
       EndIf
       ;}
-      
+        
       If handle
-        If sublevel > position
+         *this\__rows( ) = *row
+         
+       If sublevel > position
           sublevel = position
         EndIf
         
@@ -453,7 +456,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         
-        *this\__rows( )\parent = *parent
+       *this\__rows( )\parent = *parent
         
         If *last
          ; *this\row\last = *last
@@ -464,7 +467,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; for the tree( )
         If *this\row\last\parent And 
            *this\row\last\parent\sublevel < sublevel
-          *this\row\last\parent\last = *this\row\last
+          *this\row\last\parent\_last = *this\row\last
         EndIf
         
         If sublevel = 0
@@ -495,19 +498,19 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\__rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
-        *this\count\items + 1
+        *this\countitems + 1
         *this\change = 1
       EndIf
     EndIf
     ;EndWith
     
-    ProcedureReturn *this\count\items - 1
+    ProcedureReturn *this\countitems - 1
   EndProcedure
   
   LoadFont(5, "Arial", 16)
   LoadFont(6, "Arial", 25)
   
-  Open(OpenWindow(-1, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  Open(0, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   
   
@@ -774,8 +777,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 494
-; FirstLine = 463
+; CursorPosition = 372
+; FirstLine = 351
 ; Folding = ---------------
 ; Optimizer
 ; EnableXP

@@ -51,8 +51,10 @@ Procedure events_widgets()
       Debug  ""+Index(EventWidget())+" "+GetClass(EventWidget())+" - event( SCROLL ) "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ WidgetEventData()
       
     Case #__event_StatusChange
-      Debug  ""+Index(EventWidget())+" "+GetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
-      
+       If WidgetEventdata()
+          Debug  ""+Index(EventWidget())+" "+GetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+       EndIf
+       
     Case #__event_LeftClick
       Debug  ""+Index(EventWidget())+" "+GetClass(EventWidget())+" - event( LEFTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
       
@@ -193,7 +195,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 65
+; CursorPosition = 53
 ; FirstLine = 38
 ; Folding = ---
 ; EnableXP

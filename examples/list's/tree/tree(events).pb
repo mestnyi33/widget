@@ -33,8 +33,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_ScrollChange
         Debug  ""+Index(EventWidget())+" "+GetClass(EventWidget())+" - event( SCROLL ) "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ WidgetEventData()
         
-      Case #__event_StatusChange
-        Debug  ""+Index(EventWidget())+" "+GetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
+;       Case #__event_StatusChange
+;         Debug  ""+Index(EventWidget())+" "+GetClass(EventWidget())+" - event( STATUS ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
         
       Case #__event_LeftClick
         Debug  ""+Index(EventWidget())+" "+GetClass(EventWidget())+" - event( LEFTCLICK ) "+GetState(EventWidget()) +" "+ WidgetEventItem()
@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
+; CursorPosition = 36
 ; FirstLine = 21
 ; Folding = --
 ; EnableXP

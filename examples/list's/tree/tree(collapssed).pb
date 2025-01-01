@@ -63,8 +63,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
-    ;;ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
+    ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
     Protected handle, *last._s_ROWS, *parent._s_ROWS
+    Protected *row.allocate(ROWS)
     ; sublevel + 1
     
     ;With *this
@@ -104,6 +105,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;}
       
       If handle
+         *this\__rows( ) = *row
+         
         If sublevel > position
           sublevel = position
         EndIf
@@ -139,7 +142,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 If *this\row\last\parent\sublevel = sublevel 
 ; ;                   *last = *this\row\last\parent
 ; ;                   *parent = *this\row\last\parent
-; ; ;                   *parent\last = *this\__rows( )
+; ; ;                   *parent\_last = *this\__rows( )
 ; ;                    *this\row\last = *parent
                   *this\row\last\parent\after = *this\__rows( )
                   ;*this\row\last = *parent
@@ -162,7 +165,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; for the tree( )
         If *this\row\last\parent And 
            *this\row\last\parent\sublevel < sublevel
-          *this\row\last\parent\last = *this\row\last
+          *this\row\last\parent\_last = *this\row\last
         EndIf
         
         If sublevel = 0
@@ -193,13 +196,13 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\__rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
-        *this\count\items + 1
+        *this\countitems + 1
         *this\change = 1
       EndIf
     EndIf
     ;EndWith
     
-    ProcedureReturn *this\count\items - 1
+    ProcedureReturn *this\countitems - 1
   EndProcedure
   
   LoadFont(5, "Arial", 16)
@@ -460,8 +463,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;   Next i
   
 ;   ForEach *g\row\_s()
-;     If *g\row\_s()\parent ;And *g\row\_s()\parent\last = *g\row\_s()
-;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\parent\text\string +" l "+ *g\row\_s()\parent\last\text\string
+;     If *g\row\_s()\parent ;And *g\row\_s()\parent\_last = *g\row\_s()
+;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\parent\text\string +" l "+ *g\row\_s()\parent\_last\text\string
 ;     EndIf
 ;   Next
 ;   Debug ""
@@ -476,8 +479,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 192
-; FirstLine = 161
+; CursorPosition = 65
+; FirstLine = 57
 ; Folding = -------
 ; Optimizer
 ; EnableXP

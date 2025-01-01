@@ -20450,7 +20450,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; change box ( option&check )
                   If *this\RowEntered( )\checkbox\_enter
                      ; Debug ""+*this\RowEntered( ) +" "+ *this\RowEntered( )\_groupbar
-                     ; change box option
+                     ; option change box
                      If *this\mode\optionboxes
                         If *this\RowEntered( )\_groupbar
                            If *this\RowEntered( )\RowParent( ) 
@@ -20469,7 +20469,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     ; tree checkbox change check
+                     ; checkbox change box
                      set_check_state_( *this\RowEntered( )\checkbox\checked, *this\mode\threestate )
                      
                      ; Send( *this, #__event_StatusChange, *this\RowEntered( )\_index, *this\mode\threestate  )
@@ -20483,32 +20483,32 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
-         If event = #__event_Up
-            If MouseButtons( ) & #PB_Canvas_LeftButton
-               If *this\RowEntered( ) And
-                  *this\RowEntered( )\_enter
-                  
-                  If *this\RowEntered( )\ColorState( ) = #__s_0
-                     *this\RowEntered( )\ColorState( ) = #__s_1
-                  Else
-                     If *this\RowEntered( )\buttonbox\_enter
-                        Send( *this, #__event_Up, *this\RowEntered( )\_index, *this\RowEntered( ) )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
+;          If event = #__event_Up
+;             If MouseButtons( ) & #PB_Canvas_LeftButton
+;                If *this\RowEntered( ) And
+;                   *this\RowEntered( )\_enter
+;                   
+;                   If *this\RowEntered( )\ColorState( ) = #__s_0
+;                      *this\RowEntered( )\ColorState( ) = #__s_1
+;                   Else
+;                      If *this\RowEntered( )\buttonbox\_enter
+;                         Send( *this, #__event_Up, *this\RowEntered( )\_index, *this\RowEntered( ) )
+;                      EndIf
+;                   EndIf
+;                EndIf
+;             EndIf
+;          EndIf
          
-         ;\\
-         If event = #__event_Left2Click Or
-            event = #__event_RightClick Or
-            event = #__event_Right2Click
-            
-            If *this\RowEntered( ) And
-               *this\RowEntered( )\_enter
-               Post( *this, event, *this\RowEntered( )\_index )
-            EndIf
-         EndIf
+;          ;\\
+;          If event = #__event_Left2Click Or
+;             event = #__event_RightClick Or
+;             event = #__event_Right2Click
+;             
+;             If *this\RowEntered( ) And
+;                *this\RowEntered( )\_enter
+;                Post( *this, event, *this\RowEntered( )\_index )
+;             EndIf
+;          EndIf
          
          ProcedureReturn Repaint
       EndProcedure
@@ -20576,12 +20576,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *data   = mouse( )\x | mouse( )\y << 16
                   EndIf
                   ;
-               ElseIf event = #__event_MouseMove Or
-                      event = #__event_Down Or
-                      event = #__event_MouseEnter
+               Else
                   ;
-                  *button = *this\RowEntered( )\_index
-                  *data   = *this\RowEntered( )
+                  If *this\RowEntered( )
+                     *Button = *this\RowEntered( )\_index
+                     
+                     If *this\RowEntered( )\buttonbox And 
+                        *this\RowEntered( )\buttonbox\_enter
+                        *Data   = *this\RowEntered( )\buttonbox\checked
+                     Else
+                        *Data   = *this\RowEntered( )
+                     EndIf
+                  EndIf
+                  
                EndIf
             EndIf
             ;
@@ -24163,9 +24170,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18812
-; FirstLine = 17286
-; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v-02-8f--v-------------------------------------+0rrf------------------------------------------------uD---------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------f-----P---0-8------------------8+-L+-----4404---------------------------------------------------------------------
+; CursorPosition = 20592
+; FirstLine = 18903
+; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v-02-8f--v-------------------------------------+0rrf------------------------------------------------uD---------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------f-----P---0-8-----------------d--X9-----vv8v---------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

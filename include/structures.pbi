@@ -372,7 +372,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMoveMax.i
          
          *_menubar._s_WIDGET
+         StructureUnion
          *_parent._s_ROWS
+         *parent._s_ROWS
+         EndStructureUnion
          
          childrens.w ; Row( )\ ; rows( )\ ; row\
          sublevel.w
@@ -785,8 +788,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 355
-; FirstLine = 347
+; CursorPosition = 376
+; FirstLine = 362
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

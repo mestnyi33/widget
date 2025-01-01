@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global a, *first, *last, *added, *reset, *w1, *w2, *g1, *g2, CountItems=9; количесвто итемов 
   
   ;\\
-  Procedure SetGadgetState_(gadget, state)
+   Procedure SetGadgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
         If state >= 0
@@ -22,12 +22,23 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(gadget, state)
   EndProcedure
   
+  Procedure SetGadgetItemState_(gadget, item, state)
+    CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_MacOS
+        If state >= 0
+          CocoaMessage(0, GadgetID(gadget), "scrollRowToVisible:", item )
+        EndIf
+    CompilerEndSelect 
+    
+    SetGadgetItemState(gadget, item, state)
+  EndProcedure
+  
   ;\\
   Procedure AddGadgetItem_(gadget, position, Text.s, imageID=0, flags=0)
     AddGadgetItem(gadget, position, Text, imageID, flags)
     
     If GetGadgetState(gadget) >= 0
-      SetGadgetState_( gadget, CountGadgetItems(gadget) - 1 )
+      SetGadgetItemState_( gadget, CountGadgetItems(gadget) - 1, #PB_Tree_Selected )
     EndIf
   EndProcedure
   
@@ -54,19 +65,19 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select widget::EventWidget( )
           Case *first
-            widget::SetState(*w1, 0)
-            widget::SetState(*w2, 0)
-            SetGadgetState_(*g1, 0)
-            SetGadgetState_(*g2, 0)
+            widget::SetItemState(*w1, 0, #PB_Tree_Selected)
+            widget::SetItemState(*w2, 0, #PB_Tree_Selected)
+            SetGadgetItemState_(*g1, 0, #PB_Tree_Selected)
+            SetGadgetItemState_(*g2, 0, #PB_Tree_Selected)
             
             widget::Disable(*reset, 0)
             widget::SetState(*last, 0)
             
           Case *last
-            widget::SetState(*w1, widget::CountItems( *w1 ) - 1)
-            widget::SetState(*w2, widget::CountItems( *w2 ) - 1)
-            SetGadgetState_(*g1, CountGadgetItems(*g1) - 1)
-            SetGadgetState_(*g2, CountGadgetItems(*g2) - 1)
+            widget::SetItemState(*w1, widget::CountItems( *w1 ) - 1, #PB_Tree_Selected)
+            widget::SetItemState(*w2, widget::CountItems( *w2 ) - 1, #PB_Tree_Selected)
+            SetGadgetItemState_(*g1, CountGadgetItems(*g1) - 1, #PB_Tree_Selected)
+            SetGadgetItemState_(*g2, CountGadgetItems(*g2) - 1, #PB_Tree_Selected)
             
             widget::Disable(*reset, 0)
             widget::SetState(*first, 0)
@@ -86,10 +97,10 @@ CompilerIf #PB_Compiler_IsMainFile
             widget::SetState(*first, 0)
             widget::SetState(*last, 0)
             ;
-            widget::SetState(*w1, count - 1)
-            widget::SetState(*w2, count - 1)
-            SetGadgetState_(*g1, count - 1)
-            SetGadgetState_(*g2, count - 1)
+            widget::SetItemState(*w1, count - 1,0); #PB_Tree_Selected)
+            widget::SetItemState(*w2, count - 1,0); #PB_Tree_Selected)
+            SetGadgetItemState_(*g1, count - 1,0); #PB_Tree_Selected)
+            SetGadgetItemState_(*g2, count - 1,0); #PB_Tree_Selected)
             
             
         EndSelect
@@ -108,7 +119,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #__event_Change
         widget::Disable(*reset, 0)
-        widget::SetState(*w1, widget::GetState(widget::EventWidget( )))
+        widget::SetItemState(*w1, widget::GetState(widget::EventWidget( )), #PB_Tree_Selected)
         
     EndSelect
   EndProcedure
@@ -123,7 +134,7 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
       Case #PB_EventType_Change
-        SetGadgetState_(*g1, GetGadgetState(EventGadget()))
+        SetGadgetItemState_(*g1, GetGadgetState(EventGadget()), #PB_Tree_Selected)
         
     EndSelect
   EndProcedure
@@ -138,8 +149,8 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
     Next
     
-    SetGadgetState_(*g1, a-1)
-    SetGadgetState_(*g2, a-1) 
+;     SetGadgetState_(*g1, a-1)
+;     SetGadgetState_(*g2, a-1) 
     BindGadgetEvent(*g2, @gadget_events())
     
     ; demo widget
@@ -151,8 +162,8 @@ CompilerIf #PB_Compiler_IsMainFile
       widget::AddItem(*w2, -1, "Item "+Str(a), 0)
     Next
     
-    widget::SetState(*w1, a-1)
-    widget::SetState(*w2, a-1) 
+;     widget::SetState(*w1, a-1)
+;     widget::SetState(*w2, a-1) 
     widget::Bind(*w2, @widget_events())
     widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
@@ -173,8 +184,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 87
-; Folding = ---
+; CursorPosition = 121
+; FirstLine = 119
+; Folding = ----
 ; EnableXP
 ; DPIAware
