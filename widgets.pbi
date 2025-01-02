@@ -816,7 +816,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro _get_colors_( ) : colors::*this\blue : EndMacro
       
       ;-
-      Macro is_item_( _this_, _item_ ) : Bool( _item_ >= 0 And _item_ < _this_\countitems ) : EndMacro
+      Macro is_valid_items_( _address_, _item_, _countitems_ ) : Bool( _item_ >= 0 And _item_ < _countitems_ And SelectElement( _address_, item ) ) : EndMacro
       Macro is_menu_( _this_ ) : Bool( _this_\type = constants::#__type_MenuBar Or _this_\type = constants::#__type_PopupBar ) : EndMacro
       Macro is_bar_( _this_ ) : Bool( is_menu_( _this_ ) Or _this_\type = constants::#__type_ToolBar ) : EndMacro
       Macro is_root_(_this_ ) : Bool( _this_ >= 65536 And _this_ = _this_\root ): EndMacro
@@ -887,7 +887,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               ( _address_1_\y#_address_1_mode_ + _address_1_\height#_address_1_mode_ ) > _address_2_\y And _address_1_\y#_address_1_mode_ < ( _address_2_\y + _address_2_\height ))
       EndMacro
       
-      Macro is_no_select_item_( _list_, _item_ )
+      Macro is_no_select_item_( _list_, _item_);, _countitems_ = 0 )
          Bool( _item_ < 0 Or _item_ >= ListSize( _list_ ) Or (ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) ))
       EndMacro
       
@@ -5377,8 +5377,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Select *this\type
             Case #__type_Editor, #__type_Tree, #__type_ListIcon
                
-               If is_item_( *this, item ) And
-                  SelectElement( *this\__rows( ), Item )
+               If is_valid_items_( *this\__rows( ), Item, *this\countitems )
                   *color = *this\__rows( )\color
                EndIf
             Default
@@ -5408,7 +5407,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                PopListPosition( *this\__rows( ))
                
             Else
-               If is_item_( *this, item ) And SelectElement( *this\__rows( ), Item )
+               If is_valid_items_( *this\__rows( ), Item, *this\countitems )
                   add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [Column] )
                EndIf
             EndIf
@@ -5424,7 +5423,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                PopListPosition( *this\__tabs( ))
                
             Else
-               If is_item_( *this, item ) And SelectElement( *this\__tabs( ), Item )
+               If is_valid_items_( *this\__tabs( ), Item, *this\countitems )
                   add_color( result, *this\__tabs( )\color, ColorType, Color, alpha, [Column] )
                EndIf
             EndIf
@@ -5516,8 +5515,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_ListIcon Or
             *this\type = #__type_ListView
             
-            If is_item_( *this, item ) And
-               SelectElement( *this\__rows( ), item )
+            If is_valid_items_( *this\__rows( ), item, *this\countitems )
                If *this\__rows( )\image\img <> Image
                   add_image( *this, *this\__rows( )\Image, Image )
                   *this\WidgetChange( ) = 1
@@ -5543,17 +5541,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i GetItemData( *this._s_WIDGET, item.l )
-         Protected result.i
-         
          If *this\countitems
             If is_no_select_item_( *this\__rows( ), item )
                ProcedureReturn #False
             EndIf
             
-            result = *this\__rows( )\data
+            ProcedureReturn *this\__rows( )\data
          EndIf
-         
-         ProcedureReturn result
       EndProcedure
       
       Procedure.i SetItemData( *This._s_WIDGET, item.l, *data )
@@ -5562,7 +5556,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             
-            *this\__rows( )\data = *Data
+            *this\__rows( )\data = *data
          EndIf
       EndProcedure
       
@@ -6201,27 +6195,30 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn *this\edit_caret_1( )
             EndIf
             
-         ElseIf *this\type = #__type_Tree Or *this\type = #__type_ListIcon
+         ElseIf *this\type = #__type_Tree Or 
+                *this\type = #__type_ListView Or
+                *this\type = #__type_ListIcon Or
+                *this\type = #__type_Properties
             
-            If is_item_( *this, item ) And SelectElement( *this\__rows( ), Item )
+            If is_valid_items_( *this\__rows( ), Item, *this\countitems )
                If *this\__rows( )\ColorState( )
                   result | #PB_Tree_Selected
                EndIf
-               
+               ;
                If *this\__rows( )\checkbox\checked
-                  If *this\mode\threestate And
-                     *this\__rows( )\checkbox\checked = #PB_Checkbox_Inbetween
+                  If *this\__rows( )\checkbox\checked = #PB_Checkbox_Inbetween
                      result | #PB_Tree_Inbetween
                   Else
                      result | #PB_Tree_Checked
                   EndIf
                EndIf
-               
-               If *this\__rows( )\childrens And
-                  *this\__rows( )\buttonbox\checked = 0
-                  result | #PB_Tree_Expanded
-               Else
-                  result | #PB_Tree_Collapsed
+               ;
+               If *this\__rows( )\childrens 
+                  If *this\__rows( )\buttonbox\checked
+                     result | #PB_Tree_Collapsed
+                  Else
+                     result | #PB_Tree_Expanded
+                  EndIf
                EndIf
             EndIf
             
@@ -6235,23 +6232,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.b SetItemState( *this._s_WIDGET, Item.l, State.b )
          Protected result
          
-         If is_bar_( *this ) Or *this\type = #__type_TabBar
-            ;
-            If is_no_select_item_( *this\__tabs( ), Item )
-               ProcedureReturn #False
-            EndIf
-            
-            If State & #PB_Tree_Selected = #PB_Tree_Selected
-               If bar_tab_SetState( *this, Item )
-                  result = #True
-               EndIf
-            EndIf
-         EndIf
-         
          If *this\type = #__type_Editor
             result = edit_SetItemState( *this, Item, state )
-            
-         ElseIf *this\type = #__type_Tree Or
+         EndIf
+         
+         If *this\type = #__type_Tree Or
+                *this\type = #__type_ListView Or
                 *this\type = #__type_ListIcon Or
                 *this\type = #__type_Properties
                 
@@ -6260,36 +6246,41 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ProcedureReturn #False
                EndIf
                
-               If State & #PB_Tree_Selected
-                  If *this\RowFocused( ) <> *this\__rows( )
-                     *this\RowFocused( )  = *this\__rows( )
-                     *this\RowFocused( )\ScrollToActive( - 1 )
-                     *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
-                  EndIf
-               EndIf
-               
-               If State & #PB_Tree_Inbetween 
-                  *this\__rows( )\checkbox\checked = #PB_Checkbox_Inbetween
-               ElseIf State & #PB_Tree_Checked
-                  *this\__rows( )\checkbox\checked = #PB_Checkbox_Checked
-               Else
-                  *this\__rows( )\checkbox\checked = #PB_Checkbox_Unchecked
-               EndIf
-               
+               Protected *row._s_ROWS
+               *row = *this\__rows( )
                ;
-               If *this\__rows( )\childrens
+               If State & #PB_Tree_Selected
+                  *row\_focus = 1
+                  If *this\focus
+                     *row\ColorState( ) = #__s_2
+                  Else
+                     *row\ColorState( ) = #__s_3
+                  EndIf
+               Else
+                  *row\_focus = 0
+                  *row\ColorState( ) = #__s_0
+               EndIf
+               ;
+               If State & #PB_Tree_Inbetween 
+                  *row\checkbox\checked = #PB_Checkbox_Inbetween
+               ElseIf State & #PB_Tree_Checked
+                  *row\checkbox\checked = #PB_Checkbox_Checked
+               Else
+                  *row\checkbox\checked = #PB_Checkbox_Unchecked
+               EndIf
+               ;
+               If *row\childrens
                   If State & #PB_Tree_Expanded Or State & #PB_Tree_Collapsed 
-                     *this\__rows( )\buttonbox\checked = Bool( State & #PB_Tree_Collapsed )
+                     *row\buttonbox\checked = Bool( State & #PB_Tree_Collapsed )
                      *this\WidgetChange( )             = #True
                      
-                     Protected sublevel = *this\__rows( )\sublevel
                      PushListPosition( *this\__rows( ))
                      While NextElement( *this\__rows( ))
                         If *this\__rows( )\RowParent( )
                            *this\__rows( )\hide = Bool( *this\__rows( )\RowParent( )\buttonbox\checked | *this\__rows( )\RowParent( )\hide )
                         EndIf
                         
-                        If *this\__rows( )\sublevel = sublevel
+                        If *this\__rows( )\sublevel = *row\sublevel
                            Break
                         EndIf
                      Wend
@@ -6300,6 +6291,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
+         EndIf
+         
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_TabBar
+            ;
+            If is_no_select_item_( *this\__tabs( ), Item )
+               ProcedureReturn #False
+            EndIf
+            
+            If State & #PB_Tree_Selected = #PB_Tree_Selected
+               If bar_tab_SetState( *this, Item )
+                  result = #True
+               EndIf
+            EndIf
          EndIf
          
          ProcedureReturn result
@@ -9094,8 +9101,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.s bar_tab_GetItemText( *this._s_WIDGET, Item.l, Column.l = 0 )
          Protected result.s
          
-         If is_item_( *this, Item ) And
-            SelectElement( *this\__tabs( ), Item )
+         If is_valid_items_( *this\__tabs( ), Item, *this\countitems )
             result = *this\__tabs( )\text\string
          EndIf
          
@@ -14498,7 +14504,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ForEach *this\__rows( )
                            If *this\__rows( )\RowParent( )
                               *this\__rows( )\RowParent( )\buttonbox\checked = state
-                              *this\__rows( )\hide                      = state
+                              *this\__rows( )\hide                           = state
                            EndIf
                         Next
                         PopListPosition( *this\__rows( ))
@@ -19792,7 +19798,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If ( *this\press And Not mouse( )\drop ) And
                         Not *this\mode\multiSelect And
                         Not *this\mode\clickSelect
-                        
+                        ;
                         If *rowleaved\ColorState( ) = #__s_2
                            If *rowleaved = *this\RowFocused( )
                               *rowleaved\ColorState( ) = #__s_3
@@ -19804,7 +19810,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *rowleaved\ColorState( ) = #__s_1
                            *rowleaved\ColorState( ) = #__s_0
                         EndIf
-                        
+                        ; 
                         If *rowleaved\_focus
                            If *rowleaved\ColorState( ) <> #__s_2
                               *rowleaved\ColorState( ) = #__s_3
@@ -19843,7 +19849,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *row\ColorState( ) = #__s_0
                            *row\ColorState( ) = #__s_1
                         EndIf
-                        
+                        ;
                         If *row\_focus
                            If *row\ColorState( ) <> #__s_2
                               *row\ColorState( ) = #__s_1
@@ -24170,9 +24176,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20592
-; FirstLine = 18903
-; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v-02-8f--v-------------------------------------+0rrf------------------------------------------------uD---------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------f-----P---0-8-----------------d--X9-----vv8v---------------------------------------------------------------------
+; CursorPosition = 6259
+; FirstLine = 5742
+; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v--2-8f--vv------------------------------------84vu+0-----------------------------------------------8O9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----9--4-v-----------------40-fx------+u-+--------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
