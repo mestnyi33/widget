@@ -1,6 +1,7 @@
 ﻿;- 
 #IDE_path = "../"
 XIncludeFile #IDE_path + "widgets.pbi"
+;XIncludeFile #IDE_path + "test.pbi"
 ;
 EnableExplicit
 ;
@@ -1788,8 +1789,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 147
+; CursorPosition = 3
 ; Folding = ----4------------8v--------------
 ; EnableXP
 ; DPIAware

@@ -162,7 +162,7 @@ StartEnumWidget
 StopEnumWidget
 
 
-
+PostRepaint
 
 GadgetMouseX
 GadgetMouseY

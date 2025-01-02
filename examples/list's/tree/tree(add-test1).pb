@@ -20,7 +20,10 @@ CompilerIf #PB_Compiler_IsMainFile
     g1 = TreeGadget(#PB_Any, 230, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
     
     ; 1_example
-    AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
+    AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)  
+    SetGadgetState(g, 0)
+    ;SetGadgetItemState(g, 0, #PB_Tree_Selected)
+    
     AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)         
     AddGadgetItem(g, -1, "Sub-Item 3", 0, 3)
     AddGadgetItem(g, -1, "Sub-Item 2", 0, 2)
@@ -42,6 +45,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; 1_example
     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+    SetState(*g, 0)
+    ;SetItemState(*g, 0, #PB_Tree_Selected)
+    
     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
     AddItem (*g, -1, "Sub-Item 3", -1, 3)
     AddItem (*g, -1, "Sub-Item 2", -1, 2)
@@ -51,6 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   ; 2_example
     AddItem (*g1, 0, "Node "+Str(a), 0, 0)                                         
+    SetState(*g1, 0)
     AddItem (*g1, 1, "Sub-Item 1", -1, 1)                                           
     AddItem (*g1, 3, "Sub-Item 3", -1, 3)
     AddItem (*g1, 2, "Sub-Item 2", -1, 2)
@@ -70,19 +77,19 @@ CompilerIf #PB_Compiler_IsMainFile
 
   EndIf
   
-  AddGadgetItem(g, item, "Add-Item "+Str(item), 0, sublevel)
-  AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
-  
-  AddGadgetItem(g1, item, "Add-Item "+Str(item), 0, sublevel)
-  AddItem (*g1, item, "Add-Item "+Str(item), -1, sublevel)
-  
-; ;   
-; ;   item = 4
-; ;   Debug "g - "+ GetGadgetItemData(g, item) +" "+ GetGadgetItemText(g, item)
-; ;   Debug "w - "+ GetItemData(*g, item) +" "+ GetItemText(*g, item)
-; ;   
-; ;   Debug "g1 - "+ GetGadgetItemData(g1, item) +" "+ GetGadgetItemText(g1, item)
-; ;   Debug "w1 - "+ GetItemData(*g1, item) +" "+ GetItemText(*g1, item)
+;   AddGadgetItem(g, item, "Add-Item "+Str(item), 0, sublevel)
+;   AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
+;   
+;   AddGadgetItem(g1, item, "Add-Item "+Str(item), 0, sublevel)
+;   AddItem (*g1, item, "Add-Item "+Str(item), -1, sublevel)
+;   
+; ; ;   
+; ; ;   item = 4
+; ; ;   Debug "g - "+ GetGadgetItemData(g, item) +" "+ GetGadgetItemText(g, item)
+; ; ;   Debug "w - "+ GetItemData(*g, item) +" "+ GetItemText(*g, item)
+; ; ;   
+; ; ;   Debug "g1 - "+ GetGadgetItemData(g1, item) +" "+ GetGadgetItemText(g1, item)
+; ; ;   Debug "w1 - "+ GetItemData(*g1, item) +" "+ GetItemText(*g1, item)
   
   For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
   For i=0 To CountGadgetItems(g1) : SetGadgetItemState(g1, i, #PB_Tree_Expanded) : Next
@@ -95,6 +102,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 91
+; FirstLine = 75
 ; Folding = -
 ; EnableXP

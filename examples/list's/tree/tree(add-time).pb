@@ -27,18 +27,21 @@ CompilerIf #PB_Compiler_IsMainFile
   
   UseWidgets( )
   EnableExplicit
+  test_redraw_items = 0
+  
+  
   Define *w,a, Event
   Define gLN=1500
   Define LN=gLN
   
-  test_redraw_items = 0
-
+  
   If Open(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
     *w = Tree(270, 10, 250, 680, #__Tree_NoLines|#__Tree_NoButtons) 
     
     Define time = ElapsedMilliseconds()
     For a = 0 To LN
-      AddItem (*w, -1, "Item "+Str(a), 0,0)
+       AddItem (*w, -1, "Item "+Str(a), 0,0) 
+       
       If A & $f=$f
         WindowEvent() ; это нужно чтобы немного обновлялся
       EndIf
@@ -48,7 +51,10 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
-      
+     ; ReDraw( GetRoot(*w)) 
+    PostReDraw( root( ) )
+       
+        
     ; ListViewGadget(0, 10, 10, 250, 680, #PB_Tree_NoLines|#PB_Tree_NoButtons)
     TreeGadget(0, 10, 10, 250, 680, #PB_Tree_NoLines|#PB_Tree_NoButtons)
     
@@ -71,8 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 24
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 54
+; FirstLine = 42
 ; Folding = --
 ; EnableXP
