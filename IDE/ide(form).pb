@@ -67,6 +67,7 @@ Enumeration
    #_tb_widget_copy
    #_tb_widget_cut
    
+   #_tb_file_new
    #_tb_file_open
    #_tb_file_save
    #_tb_file_save_as
@@ -652,21 +653,22 @@ Macro widget_copy( )
 EndMacro
 
 Macro widget_delete( )
-   If a_focused( )\anchors
+;    If ListSize( a_group( ))
+;       ForEach a_group( )
+;          RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
+;          Free( a_group( )\widget )
+;          DeleteElement( a_group( ) )
+;       Next
+;       
+;       ClearList( a_group( ) )
+;    Else
+      ; Debug 777
       RemoveItem( ide_inspector_view, GetData( a_focused( ) ) )
       
       Free( a_focused( ) )
       
       a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
-   Else
-      ForEach a_group( )
-         RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
-         Free( a_group( )\widget )
-         DeleteElement( a_group( ) )
-      Next
-      
-      ClearList( a_group( ) )
-   EndIf
+;    EndIf
 EndMacro
 
 Macro widget_paste( )
@@ -1380,10 +1382,10 @@ Procedure ide_events( )
       Case #__event_LeftClick
          ; ide_menu_events( *e_widget, WidgetEventItem( ) )
          
-         If Type( *e_widget ) = #__type_ToolBar
-            If *e_widget\TabEntered( )
-               ide_menu_events( *e_widget, *e_widget\TabEntered( )\itemindex )
-            EndIf
+         ; Debug *e_widget\TabEntered( )
+         
+         If *e_widget\TabEntered( )
+            ide_menu_events( *e_widget, *e_widget\TabEntered( )\index )
          Else
             If GetClass( *e_widget ) = "ToolBar"
                ide_menu_events( *e_widget, GetData( *e_widget ) )
@@ -1410,11 +1412,12 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    SetColor(ide_toolbar, #__color_back, $FFD8DBDB )
    
    OpenSubBar("Menu")
-   BarItem( #_tb_file_open, "Open" + Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_save, "Save" + Chr(9) + "Ctrl+S")
+   BarItem( #_tb_file_new, "New" );+ Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_open, "Open" );+ Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_save, "Save" );+ Chr(9) + "Ctrl+S")
    BarItem( #_tb_file_save_as, "Save as...")
    BarSeparator( )
-   BarItem( #_tb_file_quit, "Quit" + Chr(9) + "Ctrl+Q")
+   BarItem( #_tb_file_quit, "Quit" );+ Chr(9) + "Ctrl+Q")
    CloseSubBar( )
    ;
    BarSeparator( )
@@ -1472,7 +1475,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    If ide_root2
      CloseGadgetList( )
      UseGadgetList( GadgetID(ide_g_canvas))
-     Openlist(ide_root)
+     OpenList(ide_root)
    Else
      Define ide_g_canvas2 = ide_design_panel
    EndIf
@@ -1798,9 +1801,9 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 1458
-; FirstLine = 1370
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1457
+; FirstLine = 1381
 ; Folding = ----4------------8v--------------
 ; EnableXP
 ; DPIAware
