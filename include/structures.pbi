@@ -349,10 +349,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_ITEMS Extends _s_BOX
          separator.b
          
-         itemindex.i
          StructureUnion
            Index.i
-           _index.i
+           ;_index.i ; row
+           lindex.i ; line
+           rindex.i ; row
+           tindex.i ; tab
            position.i
          EndStructureUnion
          change.b
@@ -388,18 +390,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
          buttonbox._s_BOX ;  buttonbox\
          CheckBox._s_BOX  ;  checkbox\
          
-         
-         ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
-         *first._s_rows           ;TEMP first elemnt in the list
-         *after._s_rows           ;TEMP first elemnt in the list
-         *before._s_rows          ;TEMP first elemnt in the list
-         
-         *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
-         
-         *_groupbar._s_rows ; option group row
+         ;*_first._s_rows
+         ;          ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
+         ; когда переместил margin._s_edit выше *_last._s_rows то снова заработало
+;          *first._s_rows           ;TEMP first elemnt in the list
+;          *after._s_rows           ;TEMP first elemnt in the list
+;          *before._s_rows          ;TEMP first elemnt in the list
          
          ; edit
          margin._s_edit
+         
+         *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
+         *_groupbar._s_rows ; option group row
+         
          
          ;*data  ; set/get item data
       EndStructure
@@ -595,6 +598,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
+        ;;; Map *linelevel._s_COORDINATE( )
+         
          deffocus.b ; button default focus
          
          List __lines._s_rows( )
@@ -788,8 +793,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 376
-; FirstLine = 362
+; CursorPosition = 600
+; FirstLine = 598
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

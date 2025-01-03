@@ -23,8 +23,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Define LN=count;5000 ;0;0
   Global *w._S_widget
   
-  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
-    Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
+    Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
     If gadget =- 1 : gadget = g : EndIf
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -38,11 +38,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
-    Open(0, 270, 10, 250, 680);, "", #__flag_borderless)
-    *w=Tree(0, 0, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#__Flag_GridLines|#PB_Flag_MultiSelect
     
     TreeGadget_(0, 10, 10, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)    ;, #PB_ListView_MultiSelect
     
+    Open(0, 270, 10, 250, 680)
+    *w=Tree(0, 0, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#__Flag_GridLines|#PB_Flag_MultiSelect
     
     Define a=0
     Define time = ElapsedMilliseconds()
@@ -103,8 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until  Event= #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 101
-; FirstLine = 69
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 33
 ; Folding = -
 ; EnableXP

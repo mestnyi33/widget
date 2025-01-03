@@ -67,6 +67,7 @@ Enumeration
    #_tb_widget_copy
    #_tb_widget_cut
    
+   #_tb_file_new
    #_tb_file_open
    #_tb_file_save
    #_tb_file_save_as
@@ -652,21 +653,22 @@ Macro widget_copy( )
 EndMacro
 
 Macro widget_delete( )
-   If a_focused( )\anchors
+;    If ListSize( a_group( ))
+;       ForEach a_group( )
+;          RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
+;          Free( a_group( )\widget )
+;          DeleteElement( a_group( ) )
+;       Next
+;       
+;       ClearList( a_group( ) )
+;    Else
+      ; Debug 777
       RemoveItem( ide_inspector_view, GetData( a_focused( ) ) )
       
       Free( a_focused( ) )
       
       a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
-   Else
-      ForEach a_group( )
-         RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
-         Free( a_group( )\widget )
-         DeleteElement( a_group( ) )
-      Next
-      
-      ClearList( a_group( ) )
-   EndIf
+;    EndIf
 EndMacro
 
 Macro widget_paste( )
@@ -1380,10 +1382,10 @@ Procedure ide_events( )
       Case #__event_LeftClick
          ; ide_menu_events( *e_widget, WidgetEventItem( ) )
          
-         If Type( *e_widget ) = #__type_ToolBar
-            If *e_widget\TabEntered( )
-               ide_menu_events( *e_widget, *e_widget\TabEntered( )\itemindex )
-            EndIf
+         ; Debug *e_widget\TabEntered( )
+         
+         If *e_widget\TabEntered( )
+            ide_menu_events( *e_widget, *e_widget\TabEntered( )\index )
          Else
             If GetClass( *e_widget ) = "ToolBar"
                ide_menu_events( *e_widget, GetData( *e_widget ) )
@@ -1410,11 +1412,12 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    SetColor(ide_toolbar, #__color_back, $FFD8DBDB )
    
    OpenSubBar("Menu")
-   BarItem( #_tb_file_open, "Open" + Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_save, "Save" + Chr(9) + "Ctrl+S")
+   BarItem( #_tb_file_new, "New" );+ Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_open, "Open" );+ Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_save, "Save" );+ Chr(9) + "Ctrl+S")
    BarItem( #_tb_file_save_as, "Save as...")
    BarSeparator( )
-   BarItem( #_tb_file_quit, "Quit" + Chr(9) + "Ctrl+Q")
+   BarItem( #_tb_file_quit, "Quit" );+ Chr(9) + "Ctrl+Q")
    CloseSubBar( )
    ;
    BarSeparator( )
@@ -1456,7 +1459,9 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ; gadgets
    
    ;\\\ 
-   ide_design_panel = Panel( 0,0,0,0 ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__bar_vertical ) : OpenList( ide_design_panel )
+   Define ide_root2 ;= Open(1) : Define ide_g_canvas2 =  GetCanvasGadget(ide_root2)
+   
+   ide_design_panel = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__bar_vertical ) : OpenList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
    ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
    SetColor( ide_design_MDI, #__color_back, RGBA(195, 156, 191, 255) )
@@ -1467,6 +1472,14 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    AddItem( ide_design_panel, -1, "Hiasm" )
    CloseList( )
    
+   If ide_root2
+     CloseGadgetList( )
+     UseGadgetList( GadgetID(ide_g_canvas))
+     OpenList(ide_root)
+   Else
+     Define ide_g_canvas2 = ide_design_panel
+   EndIf
+ 
    ;
    ide_debug_view = Editor( 0,0,0,0 ) : SetClass(ide_debug_view, "ide_debug_view" ) ; ListView( 0,0,0,0 ) 
    If Not ide_design_code
@@ -1530,7 +1543,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;\\\ ide splitters
    ;       ;
    ;       ; main splitter 1 example
-   ;       ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
+   ;       ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar_container,ide_g_canvas2, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
    ;       ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_panel, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_view_splitter, "ide_inspector_view_splitter" )
    ;       ide_debug_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
    ;       ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
@@ -1559,7 +1572,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;    ;
    ;    ;\\ main splitter 2 example 
    ;    ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_panel, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_view_splitter, "ide_inspector_view_splitter" )
-   ;    ide_debug_splitter = Splitter( 0,0,0,0, ide_design_panel,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
+   ;    ide_debug_splitter = Splitter( 0,0,0,0, ide_g_canvas2,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
    ;    ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
    ;    ide_design_splitter = Splitter( 0,0,0,0, ide_inspector_panel_splitter, ide_debug_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
    ;    ide_splitter = Splitter( 0,0,0,0, ide_toolbar_container, ide_design_splitter,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_splitter, "ide_splitter" )
@@ -1588,7 +1601,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;\\ main splitter 2 example 
    ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_panel,ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_view_splitter" )
    ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view, ide_inspector_panel_splitter) : SetClass(ide_inspector_view_splitter, "ide_inspector_panel_splitter" )
-   ide_debug_splitter = Splitter( 0,0,0,0, ide_design_panel,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
+   ide_debug_splitter = Splitter( 0,0,0,0, ide_g_canvas2,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
    ide_design_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter, ide_debug_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
    ide_splitter = Splitter( 0,0,0,0, ide_toolbar_container, ide_design_splitter,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_splitter, "ide_splitter" )
    
@@ -1789,7 +1802,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 1461
+; FirstLine = 1381
 ; Folding = ----4------------8v--------------
 ; EnableXP
 ; DPIAware

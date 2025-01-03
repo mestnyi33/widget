@@ -186,7 +186,7 @@ CompilerIf #PB_Compiler_IsMainFile
             AddItem(*w2, -1, "Item "+Str(a), -1)
          EndIf
       Next
-      SetItemState(*w1, 3, #PB_Tree_Collapsed )
+      SetItemState(*w1, 4, #PB_Tree_Collapsed )
       
       SetItemState(*w1, - 1, #PB_Tree_Selected )
       SetItemState(*w1, CountItems + 1, #PB_Tree_Selected )
@@ -215,8 +215,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 187
-; FirstLine = 164
+; CursorPosition = 188
+; FirstLine = 172
 ; Folding = ------
 ; EnableXP
 ; DPIAware
