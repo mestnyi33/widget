@@ -8912,96 +8912,148 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ; - widget::tree_remove_item( )
          If *this\type = #__type_Tree Or
-            *this\type = #__type_ListIcon Or
-            *this\type = #__type_ListView
+         *this\type = #__type_ListIcon Or
+         *this\type = #__type_ListView
             
-            If is_no_select_item_( *this\__rows( ), Item )
-               ProcedureReturn #False
-            EndIf
-            
-            ;\\
-            Protected sublevel = *this\__rows( )\sublevel
-            Protected *parent_row._s_ROWS = *this\__rows( )\RowParent( )
-            
-            ; if is last parent item then change to the prev element of his level
-            If *parent_row And *parent_row\_last = *this\__rows( )
-               PushListPosition( *this\__rows( ))
-               While PreviousElement( *this\__rows( ))
-                  If *parent_row = *this\__rows( )\RowParent( )
-                     *parent_row\_last = *this\__rows( )
-                     Break
-                  EndIf
-               Wend
-               PopListPosition( *this\__rows( ))
-               
-               ; if the remove last parent children's
-               If *parent_row\_last = *this\__rows( )
-                  *parent_row\childrens = #False
-                  *parent_row\_last      = #Null
-               Else
-                  *parent_row\childrens = #True
-               EndIf
-            EndIf
-            
-            ; before deleting a parent, we delete its children's
-            If *this\__rows( )\childrens
-               PushListPosition( *this\__rows( ))
-               While NextElement( *this\__rows( ))
-                  If *this\__rows( )\sublevel > sublevel
-                     DeleteElement( *this\__rows( ))
-                     *this\countitems - 1
-                  Else
-                     Break
-                  EndIf
-               Wend
-               PopListPosition( *this\__rows( ))
-            EndIf
-            
-            ; if the item to be removed is selected,
-            ; then we set the next item of its level as selected
-            If *this\RowFocused( ) = *this\__rows( )
-               If *this\RowFocused( )\press
-                  *this\RowFocused( )\press = 0
-               EndIf
-               *this\RowFocused( )\_focus = 0 ;???
-               
-               ; if he is a parent then we find the next item of his level
-               PushListPosition( *this\__rows( ))
-               While NextElement( *this\__rows( ))
-                  If *this\__rows( )\sublevel = *this\RowFocused( )\sublevel
-                     Break
-                  EndIf
-               Wend
-               
-               ; if we remove the last selected then
-               If *this\RowFocused( ) = *this\__rows( )
-                  *this\RowFocused( ) = PreviousElement( *this\__rows( ))
-               Else
-                  *this\RowFocused( ) = *this\__rows( )
-               EndIf
-               
-               PopListPosition( *this\__rows( ))
-               
-               If *this\RowFocused( )
-                  If *this\RowFocused( )\RowParent( ) And
-                     *this\RowFocused( )\RowParent( )\buttonbox And 
-                     *this\RowFocused( )\RowParent( )\buttonbox\checked
-                     *this\RowFocused( ) = *this\RowFocused( )\RowParent( )
-                  EndIf
-                  
-                  *this\RowFocused( )\press       = #True
-                  *this\RowFocused( )\_focus = 1
-                  *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
-               EndIf
-            EndIf
-            
-            *this\WidgetChange( ) = 1
-            *this\countitems - 1
-            DeleteElement( *this\__rows( ))
-            PostRepaint( *this\root )
-            result = #True
+         
+         If is_no_select_item_( *this\__rows( ), Item )
+            ProcedureReturn #False
          EndIf
          
+         ;\\
+         Protected removecount = 1
+         Protected sublevel = *this\__rows( )\sublevel
+         Protected *rowParent._s_ROWS = *this\__rows( )\RowParent( )
+         Protected *row._s_ROWS = *this\__rows( )
+         Debug "remove "+ Item +" "+ *row\text\string
+     
+         ; if is last parent item then change to the prev element of his level
+         If *rowParent And *rowParent\_last = *row
+            PushListPosition( *this\__rows( ))
+            While PreviousElement( *this\__rows( ))
+               If *rowParent = *this\__rows( )\RowParent( )
+                  *rowParent\_last = *this\__rows( )
+                  Break
+               EndIf
+            Wend
+            PopListPosition( *this\__rows( ))
+            
+            ; if the remove last parent children's
+            If *rowParent\_last = *row
+               *rowParent\childrens = #False
+               *rowParent\_last      = #Null
+            Else
+               *rowParent\childrens = #True
+            EndIf
+         EndIf
+         
+         ; before deleting a parent, we delete its children's
+         If *row\childrens
+            PushListPosition( *this\__rows( ))
+            While NextElement( *this\__rows( ))
+               If *this\__rows( )\sublevel > sublevel
+                  ; 
+                  If *this\RowFocused( ) = *this\__rows( )
+                     *this\RowFocused( ) = *row
+                  EndIf
+                  ;
+                  DeleteElement( *this\__rows( ))
+                  *this\countitems - 1
+                  removecount + 1
+               Else
+                  Break
+               EndIf
+            Wend
+            PopListPosition( *this\__rows( ))
+         EndIf
+         
+         ; 
+         If *this\RowFirstLevelFirst( ) = *row
+            PushListPosition( *this\__rows( ))
+            If NextElement( *this\__rows( ))
+               *this\RowFirstLevelFirst( ) = *this\__rows( )
+            Else
+               *this\RowFirstLevelFirst( ) = 0
+            EndIf
+            PopListPosition( *this\__rows( ))
+         EndIf
+         
+         ; 
+         If *this\RowFirstLevelLast( ) = *row
+            PushListPosition( *this\__rows( ))
+            If PreviousElement( *this\__rows( ))
+               If *this\__rows( )\sublevel = *row\sublevel
+                  *this\RowFirstLevelLast( ) = *this\__rows( )
+               Else
+                  *rowParent = *this\__rows( )\RowParent( )
+                  While *rowParent
+                     If *rowParent\sublevel = *row\sublevel
+                        Break
+                     Else
+                        *rowParent = *rowParent\RowParent( )
+                     EndIf
+                  Wend
+                  *this\RowFirstLevelLast( ) = *rowParent
+               EndIf
+            Else
+               *this\RowFirstLevelLast( ) = 0
+            EndIf
+            PopListPosition( *this\__rows( ))
+         EndIf
+         
+         ;
+         PushListPosition( *this\__rows( ))
+         While NextElement( *this\__rows( ))
+            *this\__rows( )\lindex - removecount ; = ListIndex( *this\__rows( ) ) 
+         Wend
+         PopListPosition(*this\__rows( ))
+         
+         
+         If *this\RowFocused( ) = *row ; *this\__rows( )
+            *this\RowFocused( )\_focus = 0 
+            *this\RowFocused( )\ColorState( ) = 0
+            DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+            
+            ; if he is a parent then we find the next item of his level
+            PushListPosition( *this\__rows( ))
+            While NextElement( *this\__rows( ))
+               If *this\__rows( )\sublevel =< *row\sublevel
+                  Break
+               EndIf
+            Wend
+            
+            ; if we remove the last selected then
+            If *this\RowFocused( ) = *this\__rows( )
+               PreviousElement( *this\__rows( ))
+            EndIf
+            *this\RowFocused( ) = *this\__rows( )
+            PopListPosition( *this\__rows( ))
+            
+            If *this\RowFocused( )
+               If *this\RowFocused( )\RowParent( ) 
+                  If *this\RowFocused( )\RowParent( )\buttonbox  
+                     If *this\RowFocused( )\RowParent( )\buttonbox\checked
+                        *this\RowFocused( ) = *this\RowFocused( )\RowParent( )
+                     EndIf
+                  EndIf
+               EndIf
+               
+               *this\RowFocused( )\_focus = *this\focus
+               *this\RowFocused( )\ColorState( ) = *this\focus
+               DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+            EndIf
+         EndIf
+         
+         ;
+         DeleteElement( *this\__rows( ))
+         
+         *this\WidgetChange( ) = 1
+         *this\countitems - 1
+         PostRepaint( *this\root )
+         result = #True
+      EndIf
+      
+         ;
          If *this\type = #__type_Panel
             result = bar_tab_removeItem( *this\tabbar, Item )
             
@@ -18273,7 +18325,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\
                   PushListPosition( *rows( ))
                   ForEach *rows( )
-                     *this\__rows( )\rindex = ListIndex( *rows( ))
+                     ;*this\__rows( )\rindex = ListIndex( *rows( ))
                      
                      If *rows( )\hide
                         *rows( )\visible = 0
@@ -24436,9 +24488,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20828
-; FirstLine = 19812
-; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v--2-8---vv------------------------------------84vu+0----------------------------------------------------f4h---------------------------------------------------------------------------------------------------------------------vv---------------------------------------------------------------------------------------------------------------------------------------------------------------4v----4--f----+--v-----0-----f4--+9-----vv-v------------+--------------------------------------------------------
+; CursorPosition = 8917
+; FirstLine = 8307
+; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v--2-8---vv------------------------------------84vu+0------------------------------------------------------dH+---------------------------------------------------------------------------------------------------------------------++--------------------------------------------------------------------------------------------------------------------------------------------------------------f-+---f---0---8---+----4------d--8z------++-+-----------8--------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

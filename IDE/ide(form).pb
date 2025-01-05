@@ -652,6 +652,23 @@ Macro widget_copy( )
    mouse( )\selector\y = mouse( )\steps
 EndMacro
 
+
+Procedure widget_data( ide_inspector_view, position, CountItems )
+   Protected i
+   
+   If position =- 1
+      For i = 0 To CountItems - 1
+         SetData( GetItemData( ide_inspector_view, i ), i )
+      Next  
+   Else
+      If CountItems > position
+         For i = position To CountItems - 1
+            SetData( GetItemData( ide_inspector_view, i ), i + 1 )
+         Next 
+      EndIf
+   EndIf
+EndProcedure
+
 Macro widget_delete( )
 ;    If ListSize( a_group( ))
 ;       ForEach a_group( )
@@ -662,12 +679,13 @@ Macro widget_delete( )
 ;       
 ;       ClearList( a_group( ) )
 ;    Else
-      ; Debug 777
-      RemoveItem( ide_inspector_view, GetData( a_focused( ) ) )
-      
-      Free( a_focused( ) )
-      
-      a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
+   RemoveItem( ide_inspector_view, GetData( a_focused( ) ) )
+   
+   Free( a_focused( ) )
+   
+   widget_data( ide_inspector_view, - 1, CountItems( ide_inspector_view ) )
+   
+   a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
 ;    EndIf
 EndMacro
 
@@ -825,12 +843,13 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          ; set new widget data
          SetData( *new, position )
          
-         ; update new widget data item
+         ; update new widget data item ;????
          If CountItems > position
             For i = position To CountItems - 1
                SetData( GetItemData( ide_inspector_view, i ), i + 1 )
             Next 
          EndIf
+         
          
          ; get image associated with class
          Protected img =- 1
@@ -1802,9 +1821,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1457
-; FirstLine = 1381
-; Folding = ----4------------8v--------------
+; CursorPosition = 845
+; FirstLine = 806
+; Folding = ----4------------f-0-------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
