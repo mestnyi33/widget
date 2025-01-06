@@ -3825,7 +3825,30 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro HideState( _this_, _parent_ )
-         _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\tabbar And _this_\TabIndex( ) <> _parent_\tabbar\TabState( ) ))))
+         ;_this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\tabbar And _this_\TabIndex( ) <> _parent_\tabbar\TabState( ) ))))
+         
+         If _this_\hide[1]
+            _this_\hide = 1
+         Else
+            If _parent_ 
+               If _parent_\hide 
+                  _this_\hide = 1
+               Else
+                  If _parent_\tabbar 
+                     ;Debug  _parent_\tabbar\class ; tabbar\TabState( )
+                     If _parent_\tabbar\TabState( ) >= 0 And _this_\TabIndex( ) <> _parent_\tabbar\TabState( )
+                        _this_\hide = 1
+                     Else
+                        _this_\hide = 0
+                     EndIf
+                  Else
+                     _this_\hide = 0
+                  EndIf
+               EndIf
+            Else
+               _this_\hide = 0
+            EndIf
+         EndIf
          
          If _this_\tabbar
             If _this_\hide
@@ -3925,9 +3948,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default, flags.q = 0 )
          If State = #PB_Default : ProcedureReturn *this\hide : EndIf
          
-         If *this\hide[1] <> state
+         ;If *this\hide[1] <> state
             *this\hide[1] = state
-            ;
+            
             HideState( *this, *this\parent )
             ;
             If *this\haschildren
@@ -3938,7 +3961,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             ProcedureReturn 1
-         EndIf
+         ;EndIf
       EndProcedure
       
       Procedure.b DisableItem( *this._s_widget, item.l, state.b )
@@ -5575,118 +5598,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure SetRowState( *this._s_WIDGET, List *rows._s_ROWS( ), *row._s_ROWS )
-         Protected dragged = Bool( mouse( )\drag And *this\press )
-         
-         If *row
-            If is_atpoint_( *row, mouse( )\x-*this\inner_x( )-*this\scroll_x( ), mouse( )\y-*this\inner_y( )-*this\scroll_y( ) )
-               *this\RowEntered( ) = *row
-            EndIf
-            
-            *this\RowFocusedIndex( ) = *this\RowEntered( )\rindex
-            
-            If *this\mode\clickSelect
-               If *this\mode\multiSelect
-                  PushListPosition( *rows( ) )
-                  ForEach *rows( )
-                     If *rows( )\ColorState( ) = #__s_2
-                        If *rows( )\press <> 1
-                           *rows( )\press = 1
-                        EndIf
-                     EndIf
-                  Next
-                  PopListPosition( *rows( ) )
-               EndIf
-               
-               If Not *this\mode\multiSelect
-                  If dragged
-                     If *row <> *this\RowEntered( )
-                        If *this\RowEntered( )
-                           *row\press       = 0
-                           *row\ColorState( ) = #__s_0
-                           
-                           *this\RowEntered( )\press       = 1
-                           *this\RowEntered( )\ColorState( ) = #__s_2
-                           
-                           ;Debug "change1"
-                           DoEvents(*this, #__event_Change, *this\RowEntered( )\rindex, *this\RowEntered( ))
-                        Else
-                           If *row\press
-                              *row\ColorState( ) = #__s_0
-                           Else
-                              *row\ColorState( ) = #__s_2
-                           EndIf
-                           *row\press ! 1
-                           
-                        EndIf
-                     EndIf
-                  Else
-                     ; Debug "change2" ; click-select flag
-                     DoEvents(*this, #__event_Change, *row\rindex, *row)
-                  EndIf
-               EndIf
-            EndIf
-            
-            If Not *this\mode\clickSelect
-               If Not *this\mode\multiSelect
-                  If *this\RowEntered( ) And
-                     *this\RowEntered( )\_enter
-                     ;
-                     If *this\RowFocused( ) <> *this\RowEntered( )
-                        If *this\RowFocused( ) 
-                           *this\RowFocused( )\_enter        = 0 ;???
-                           *this\RowFocused( )\_focus        = 0
-                           *this\RowFocused( )\ColorState( ) = #__s_0
-                           ;
-                           DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex)
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-                  If *row <> *this\RowEntered( )
-                     If *row\_focus        = 0
-                        *row\_enter        = 0
-                        *row\ColorState( ) = #__s_0
-                     EndIf
-                  EndIf
-               EndIf
-               ;
-               *row\press = 0
-               *row       = #Null
-               ;
-               If *this\RowEntered( ) And
-                  *this\RowEntered( )\_enter
-                  *this\RowFocused( ) = *this\RowEntered( )
-               EndIf
-               ;
-               If *this\RowFocused( )
-                  If *this\RowFocused( )\press
-                     *this\RowFocused( )\press = 0
-                  EndIf
-                  ;
-                  *this\RowFocused( )\ColorState( ) = #__s_2
-                  ;
-                  If *this\RowFocused( )\_focus = 0
-                     *this\RowFocused( )\_focus = 1
-                     
-                     ;Debug "change3"
-                     If is_integral_( *this ) And *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
-                        ; Debug " combo send change event"
-                        DoEvents(*this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                     Else
-                        DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                     EndIf
-                  Else
-                     ; status-focus
-                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex)
-                  EndIf
-               EndIf
-               ;
-            EndIf
-         EndIf
-         
-      EndProcedure
-      
       Procedure.i GetState( *this._s_WIDGET )
          ; This is a universal function which works For almost all gadgets: 
          ; 
@@ -5886,35 +5797,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\
-         If *this\type = #__type_ComboBox
-            If *this\popupbar
-               If is_no_select_item_( *this\popupbar\__rows( ), State )
-                  ProcedureReturn #False
-               EndIf
-               
-               If *this\popupbar\RowFocused( ) <> *this\popupbar\__rows( )
-                  
-                  If *this\popupbar\RowFocused( )
-                     If *this\popupbar\RowFocused( )\_focus = 1
-                        *this\popupbar\RowFocused( )\_focus = 0
-                     EndIf
-                     
-                     *this\popupbar\RowFocused( )\ColorState( ) = #__s_0
-                  EndIf
-                  
-                  *this\popupbar\RowFocused( )             = *this\popupbar\__rows( )
-                  *this\popupbar\RowFocused( )\_focus = 1
-                  *this\popupbar\RowFocused( )\ColorState( ) = #__s_2
-                  Debug "SETSTATE - combo " + GetState( *this\popupbar )
-                  ;*this\text\string = *this\popupbar\RowFocused( )\text\string
-                  
-                  SetText( *this, *this\popupbar\RowFocused( )\text\string )
-                  ;SetText( *this, GetItemText( *this\popupbar, GetState( *this\popupbar ) ) )
-               EndIf
-            EndIf
-         EndIf
-         
          ;\\ - widget::IPaddress_SetState( )
          If *this\class = "IPAddress" ; type = #__type_IPAddress
             If *this\LineFocusedIndex( ) <> State
@@ -6023,6 +5905,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             edit_SetState( *this, state )
          EndIf
          
+         ;\\
+         If *this\type = #__type_ComboBox
+            If *this\popupbar
+               SetState( *this\popupbar, state )
+            EndIf
+         EndIf
+         
          ;\\ - widget::tree_setState
          If *this\type = #__type_Tree Or
             *this\type = #__type_ListIcon Or
@@ -6114,6 +6003,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\RowFocused( )\_focus
                            *this\RowFocused( )\_focus = 0
                            *this\RowFocused( )\ColorState( ) = #__s_0
+                           ;
                            DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ) )
                         EndIf
                         
@@ -6150,10 +6040,30 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\WidgetChange( ) = - 1
                         EndIf
                         ;
-                        DoEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ) )
-                        If result  
-                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
-                        EndIf 
+                        If is_integral_( *this ) 
+                           If *this\parent  
+                              If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+                                 SetText( *this\parent\parent, *this\RowFocused( )\text\string )
+                                 DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                 If result  
+                                    DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                                 EndIf 
+                              Else
+                                 If *this\parent\type = #__type_ComboBox
+                                    SetText( *this\parent, *this\RowFocused( )\text\string )
+                                 EndIf 
+                                 DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                 If result  
+                                    DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                                 EndIf 
+                              EndIf 
+                           EndIf 
+                        Else
+                           DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                           If result  
+                              DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                           EndIf 
+                        EndIf
                         ProcedureReturn 1
                      EndIf
                   EndIf
@@ -8728,8 +8638,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_combobox
             If *this\popupbar
                ProcedureReturn AddItems( *this\popupbar, *this\popupbar\__rows( ), Item, Text, Image, flag )
-            Else
-               ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, Image, flag )
             EndIf
          EndIf
          
@@ -12591,8 +12499,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             HideBar( *this )
          Else
-            If *this\parent\parent ;And *this\parent\parent\type = #__type_ComboBox
-                                   ;
+            If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
                DisplayPopupBar( *this, *this\parent\parent )
             EndIf
          EndIf
@@ -12623,9 +12530,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *display\type = #__type_ComboBox
                If *display\button
                   If *this\hide
-                     *display\button\arrow\direction = 2 
+                     *display\button\arrow\direction = 3 
                   Else
-                     *display\button\arrow\direction = 3
+                     *display\button\arrow\direction = 2
                   EndIf
                EndIf
                
@@ -12638,7 +12545,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\ hide current popup widget
                Hide( *this, *this\hide ! 1 )
                
+               test_display = 1
                If *this\hide
+                  
                   If test_display
                      Debug "comboBar - hide "+*this\class +" "+ *this\hide
                   EndIf
@@ -24363,9 +24272,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21520
-; FirstLine = 20750
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------f-8r-nv-x--------------------------------------------------------------------------------8---------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----+8--------------------------------------------------------------
+; CursorPosition = 3837
+; FirstLine = 3823
+; Folding = --------------------------------------------------------------------------------------+------------------------------------------------------------v-2-8f-n-f-------------------------------------------------------------------------------4----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----04--------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -209,9 +209,11 @@ Procedure StatusChange( *this._s_WIDGET, item )
 EndProcedure
 
 Procedure ChangeEditPropertiesItem( *inspector._s_WIDGET )
+   ; ProcedureReturn 
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
    If *second And *second\RowFocused( )
       Protected *this._s_WIDGET = *second\RowFocused( )\data
+      
       If *this
          Select Type( *this )
             Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
@@ -308,31 +310,36 @@ Procedure PropertiesEvents( )
             Select Type( EventWidget( ) )
                Case #__type_String
                   Select GetData( EventWidget( ) ) 
-                     Case #_pi_class  : SetClass( a_focused( ), GetText( EventWidget( ) ) )
-                     Case #_pi_text   : SetText( a_focused( ), GetText( EventWidget( ) ) )
+                     Case #_pi_class  
+                        SetClass( a_focused( ), GetText( EventWidget( ) ) )
+                        properties_update_class( ide_inspector_properties, a_focused( ))
+                     Case #_pi_text   
+                        SetText( a_focused( ), GetText( EventWidget( ) ) )  
+                        properties_update_text( ide_inspector_properties, a_focused( ))
                   EndSelect
                   
                Case #__type_Spin
-                  ; SetItemText( GetParent(EventWidget( )), GetData( EventWidget( ) ), Str(GetState( EventWidget( ) )))
                   Select GetData( EventWidget( ) ) 
                      Case #_pi_x      : Resize( a_focused( ), GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
                      Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore )
                      Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore )
                      Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ) )
                   EndSelect
+                  ; properties_update_coordinate( ide_inspector_properties, a_focused( ))
                   
                Case #__type_ComboBox
-                  SetItemText( GetParent(EventWidget( )), GetData( EventWidget( ) ), StrBool(GetState( EventWidget( ) )))
-                  ;
                   Select GetData( EventWidget( ) ) 
-                     Case #_pi_disable : Disable( a_focused( ), GetState( EventWidget( ) ) )
-                     Case #_pi_hide    : Hide( a_focused( ), GetState( EventWidget( ) ) )
+                     Case #_pi_disable 
+                        If Disable( a_focused( ), GetState( EventWidget( ) ) )
+                           properties_update_disable( ide_inspector_properties, a_focused( ))
+                        EndIf
+                     Case #_pi_hide    
+                        If Hide( a_focused( ), GetState( EventWidget( ) ) )
+                           properties_update_hide( ide_inspector_properties, a_focused( ))
+                        EndIf
                   EndSelect
-                  
+                 ;
             EndSelect
-            
-            ; SetItemText( )
-            properties_updates( ide_inspector_view, a_focused( ) )
       EndSelect
    EndIf
    
@@ -373,7 +380,9 @@ Procedure PropertiesEvents( )
             Select WidgetEventItem( )
                Case #_pi_group_0, #_pi_group_1, #_pi_group_2, #_pi_group_3
                   If *this 
-                     Hide( *this, #True )
+                     If Hide( *this, #True )
+                       ; properties_update_text( ide_inspector_properties, a_focused( ))
+                     EndIf 
                   EndIf
                   
                Default
@@ -459,8 +468,8 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    If *this
       SetActive( *this )
       SetData(*this, item)
-      Bind(*this, @PropertiesEvents( ), #__event_Change)
       Bind(*this, @PropertiesEvents( ), #__event_Down)
+      Bind(*this, @PropertiesEvents( ), #__event_Change)
       Bind(*this, @PropertiesEvents( ), #__event_MouseWheel)
       Bind(*this, @PropertiesEvents( ), #__event_LostFocus)
    EndIf
@@ -1036,9 +1045,11 @@ Procedure widget_events( )
          EndIf
          
       Case #__event_Resize
-         ; Debug ""+GetClass(*e_widget)+" resize"
-         properties_update_coordinate( ide_inspector_properties, *e_widget )
-         ChangeEditPropertiesItem( ide_inspector_properties )
+;          ; Debug ""+GetClass(*e_widget)+" resize"
+         If *e_widget = a_focused( )
+            properties_update_coordinate( ide_inspector_properties, a_focused( ) )
+            ChangeEditPropertiesItem( ide_inspector_properties )
+         EndIf
          SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
          
       Case #__event_MouseEnter,
@@ -1719,7 +1730,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState( ide_inspector_panel, 1 )
    
    ;   ;OpenList(ide_design_MDI)
-   Define result, btn2, example = 2
+   Define result, btn2, example = 3
    
    
    ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
@@ -1893,9 +1904,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 101
-; Folding = -40--v------------8v---0---------
+; CursorPosition = 333
+; FirstLine = 291
+; Folding = -4----------------f-0--f----------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
