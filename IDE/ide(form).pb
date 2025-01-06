@@ -110,8 +110,66 @@ Global group_drag
 
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
 
+Declare SetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
+Declare.s GetItemTextProperties( *splitter._s_WIDGET, item )
+
 ;-
 ;- PUBLICs
+;-
+Macro properties_update_id( _gadget_, _value_ )
+   SetItemTextProperties( _gadget_, #_pi_id,      GetItemTextProperties( _gadget_, #_pi_id )      +Chr( 10 )+Str( Index(_value_) - 25 ) )
+EndMacro
+
+Macro properties_update_text( _gadget_, _value_ )
+   SetItemTextProperties( _gadget_, #_pi_text,    GetItemTextProperties( _gadget_, #_pi_text )    +Chr( 10 )+GetText( _value_ ) )
+EndMacro
+
+Macro properties_update_class( _gadget_, _value_ )
+   SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 )+UCase(GetText( _value_ ))); GetClass( _value_ )+"_"+CountType( _value_ ) )
+EndMacro
+
+Macro properties_update_hide( _gadget_, _value_ )
+   SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 )+StrBool( Hide( _value_ ) ) )
+EndMacro
+
+Macro properties_update_disable( _gadget_, _value_ )
+   SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 )+StrBool( Disable( _value_ ) ) )
+EndMacro
+
+Macro properties_update_coordinate( _gadget_, _value_ )
+   SetItemTextProperties( _gadget_, #_pi_x,       GetItemTextProperties( _gadget_, #_pi_x )       +Chr( 10 )+Str( X( _value_, #__c_container ) ) )
+   SetItemTextProperties( _gadget_, #_pi_y,       GetItemTextProperties( _gadget_, #_pi_y )       +Chr( 10 )+Str( Y( _value_, #__c_container ) ) )
+   SetItemTextProperties( _gadget_, #_pi_width,   GetItemTextProperties( _gadget_, #_pi_width )   +Chr( 10 )+Str( Width( _value_ ) ) )
+   SetItemTextProperties( _gadget_, #_pi_height,  GetItemTextProperties( _gadget_, #_pi_height )  +Chr( 10 )+Str( Height( _value_ ) ) )
+EndMacro
+
+Macro properties_updates( _gadget_, _value_ )
+   If _value_
+      properties_update_id( _gadget_, _value_ )
+      properties_update_class( _gadget_, _value_ )
+      
+      properties_update_text( _gadget_, _value_ )
+      properties_update_coordinate( _gadget_, _value_ )
+      
+      properties_update_disable( _gadget_, _value_ )
+      properties_update_hide( _gadget_, _value_ )
+      
+   Else
+      SetItemTextProperties( _gadget_, #_pi_id,      GetItemTextProperties( _gadget_, #_pi_id )      +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 ))
+      
+      SetItemTextProperties( _gadget_, #_pi_text,    GetItemTextProperties( _gadget_, #_pi_text )    +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_x,       GetItemTextProperties( _gadget_, #_pi_x )       +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_y,       GetItemTextProperties( _gadget_, #_pi_y )       +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_width,   GetItemTextProperties( _gadget_, #_pi_width )   +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_height,  GetItemTextProperties( _gadget_, #_pi_height )  +Chr( 10 ) )
+      
+      SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 ) )
+      
+   EndIf
+EndMacro
+
 ;-
 Procedure.s StrBool( state )
    If state > 0
@@ -235,7 +293,50 @@ Procedure PropertiesEvents( )
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    Static *this._s_WIDGET
    
+   ;
+   If *this = EventWidget( )
+      Select WidgetEvent( )
+         Case #__event_Down
+            GetActive( )\gadget = EventWidget( )
+            
+         Case #__event_MouseWheel
+            If WidgetEventItem( ) > 0
+               SetState(*this\scroll\v, GetState( *this\scroll\v ) - WidgetEventData( ) )
+            EndIf
+            
+         Case #__event_Change
+            Select Type( EventWidget( ) )
+               Case #__type_String
+                  Select GetData( EventWidget( ) ) 
+                     Case #_pi_class  : SetClass( a_focused( ), GetText( EventWidget( ) ) )
+                     Case #_pi_text   : SetText( a_focused( ), GetText( EventWidget( ) ) )
+                  EndSelect
+                  
+               Case #__type_Spin
+                  ; SetItemText( GetParent(EventWidget( )), GetData( EventWidget( ) ), Str(GetState( EventWidget( ) )))
+                  Select GetData( EventWidget( ) ) 
+                     Case #_pi_x      : Resize( a_focused( ), GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore )
+                     Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore )
+                     Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ) )
+                  EndSelect
+                  
+               Case #__type_ComboBox
+                  SetItemText( GetParent(EventWidget( )), GetData( EventWidget( ) ), StrBool(GetState( EventWidget( ) )))
+                  ;
+                  Select GetData( EventWidget( ) ) 
+                     Case #_pi_disable : Disable( a_focused( ), GetState( EventWidget( ) ) )
+                     Case #_pi_hide    : Hide( a_focused( ), GetState( EventWidget( ) ) )
+                  EndSelect
+                  
+            EndSelect
+            
+            ; SetItemText( )
+            properties_updates( ide_inspector_view, a_focused( ) )
+      EndSelect
+   EndIf
    
+   ;  
    Select WidgetEvent( )
       Case #__event_Up
 ;          If mouse( )\drag
@@ -280,35 +381,6 @@ Procedure PropertiesEvents( )
             EndSelect
          EndIf
       
-         If *this = EventWidget( )
-            Select Type( EventWidget( ) )
-               Case #__type_String
-                  Select GetData( EventWidget( ) ) 
-                     Case #_pi_class  : SetClass( a_focused( ), GetText( EventWidget( ) ) )
-                     Case #_pi_text   : SetText( a_focused( ), GetText( EventWidget( ) ) )
-                  EndSelect
-                  
-               Case #__type_Spin
-                  ; SetItemText( GetParent(EventWidget( )), GetData( EventWidget( ) ), Str(GetState( EventWidget( ) )))
-                  Select GetData( EventWidget( ) ) 
-                     Case #_pi_x      : Resize( a_focused( ), GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                     Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore )
-                     Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore )
-                     Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ) )
-                  EndSelect
-                  
-               Case #__type_ComboBox
-                  SetItemText( GetParent(EventWidget( )), GetData( EventWidget( ) ), StrBool(GetState( EventWidget( ) )))
-                  ;
-                  Select GetData( EventWidget( ) ) 
-                     Case #_pi_disable : Disable( a_focused( ), GetState( EventWidget( ) ) )
-                     Case #_pi_hide    : Hide( a_focused( ), GetState( EventWidget( ) ) )
-                  EndSelect
-                  
-            EndSelect
-            
-         EndIf
-         
          
       Case #__event_StatusChange
          If WidgetEventData( ) = #PB_Tree_Expanded Or
@@ -388,6 +460,8 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
       SetActive( *this )
       SetData(*this, item)
       Bind(*this, @PropertiesEvents( ), #__event_Change)
+      Bind(*this, @PropertiesEvents( ), #__event_Down)
+      Bind(*this, @PropertiesEvents( ), #__event_MouseWheel)
       Bind(*this, @PropertiesEvents( ), #__event_LostFocus)
    EndIf
    
@@ -443,61 +517,6 @@ Procedure SetItemTextProperties( *splitter._s_WIDGET, item, Text.s )
             
    ProcedureReturn 
 EndProcedure
-
-;-
-Macro properties_update_id( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_id,      GetItemTextProperties( _gadget_, #_pi_id )      +Chr( 10 )+Str( Index(_value_) - 25 ) )
-EndMacro
-
-Macro properties_update_text( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_text,    GetItemTextProperties( _gadget_, #_pi_text )    +Chr( 10 )+GetText( _value_ ) )
-EndMacro
-
-Macro properties_update_class( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 )+UCase(GetText( _value_ ))); GetClass( _value_ )+"_"+CountType( _value_ ) )
-EndMacro
-
-Macro properties_update_hide( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 )+StrBool( Hide( _value_ ) ) )
-EndMacro
-
-Macro properties_update_disable( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 )+StrBool( Disable( _value_ ) ) )
-EndMacro
-
-Macro properties_update_coordinate( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_x,       GetItemTextProperties( _gadget_, #_pi_x )       +Chr( 10 )+Str( X( _value_, #__c_container ) ) )
-   SetItemTextProperties( _gadget_, #_pi_y,       GetItemTextProperties( _gadget_, #_pi_y )       +Chr( 10 )+Str( Y( _value_, #__c_container ) ) )
-   SetItemTextProperties( _gadget_, #_pi_width,   GetItemTextProperties( _gadget_, #_pi_width )   +Chr( 10 )+Str( Width( _value_ ) ) )
-   SetItemTextProperties( _gadget_, #_pi_height,  GetItemTextProperties( _gadget_, #_pi_height )  +Chr( 10 )+Str( Height( _value_ ) ) )
-EndMacro
-
-Macro properties_updates( _gadget_, _value_ )
-   If _value_
-      properties_update_id( _gadget_, _value_ )
-      properties_update_class( _gadget_, _value_ )
-      
-      properties_update_text( _gadget_, _value_ )
-      properties_update_coordinate( _gadget_, _value_ )
-      
-      properties_update_disable( _gadget_, _value_ )
-      properties_update_hide( _gadget_, _value_ )
-      
-   Else
-      SetItemTextProperties( _gadget_, #_pi_id,      GetItemTextProperties( _gadget_, #_pi_id )      +Chr( 10 ) )
-      SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 ))
-      
-      SetItemTextProperties( _gadget_, #_pi_text,    GetItemTextProperties( _gadget_, #_pi_text )    +Chr( 10 ) )
-      SetItemTextProperties( _gadget_, #_pi_x,       GetItemTextProperties( _gadget_, #_pi_x )       +Chr( 10 ) )
-      SetItemTextProperties( _gadget_, #_pi_y,       GetItemTextProperties( _gadget_, #_pi_y )       +Chr( 10 ) )
-      SetItemTextProperties( _gadget_, #_pi_width,   GetItemTextProperties( _gadget_, #_pi_width )   +Chr( 10 ) )
-      SetItemTextProperties( _gadget_, #_pi_height,  GetItemTextProperties( _gadget_, #_pi_height )  +Chr( 10 ) )
-      
-      SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 ) )
-      SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 ) )
-      
-   EndIf
-EndMacro
 
 
 ;-
@@ -1874,9 +1893,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1321
-; FirstLine = 1127
-; Folding = ----4-------------+8--f----------
+; CursorPosition = 114
+; FirstLine = 101
+; Folding = -40--v------------8v---0---------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
