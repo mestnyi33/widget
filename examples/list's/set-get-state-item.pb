@@ -17,22 +17,23 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure StatusChange( *this._s_WIDGET, item )
       PushListPosition(EventWidget( )\__rows( ))
-      SelectElement( EventWidget( )\__rows( ), item)
-      ;
-      If EventWidget( )\__rows( ) 
-         PushListPosition( *this\__rows( ) )
-         SelectElement( *this\__rows( ), EventWidget( )\__rows( )\index)
-         *this\__rows( )\color = EventWidget( )\__rows( )\color
-         
-         If *this\__rows( )\colorState( ) = #__s_2
-            If *this\RowFocused( )
-               *this\RowFocused( )\focus = 0
+      If SelectItem( EventWidget( ), item)
+         ;
+         If EventWidget( )\__rows( ) 
+            PushListPosition( *this\__rows( ) )
+            SelectItem( *this, EventWidget( )\__rows( )\index)
+            *this\__rows( )\color = EventWidget( )\__rows( )\color
+            
+            If *this\__rows( )\colorState( ) = #__s_2
+               If *this\RowFocused( )
+                  *this\RowFocused( )\focus = 0
+               EndIf
+               *this\RowFocused( ) = *this\__rows( )
+               *this\RowFocused( )\focus = 1
             EndIf
-            *this\RowFocused( ) = *this\__rows( )
-            *this\RowFocused( )\focus = 1
+            
+            PopListPosition( *this\__rows( ) )
          EndIf
-         
-         PopListPosition( *this\__rows( ) )
       EndIf
       PopListPosition(EventWidget( )\__rows( ))
    EndProcedure
@@ -251,7 +252,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 149
+; CursorPosition = 29
+; FirstLine = 13
 ; Folding = -----
 ; EnableXP

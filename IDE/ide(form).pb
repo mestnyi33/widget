@@ -473,14 +473,30 @@ Macro properties_update_coordinate( _gadget_, _value_ )
 EndMacro
 
 Macro properties_updates( _gadget_, _value_ )
-   properties_update_id( _gadget_, _value_ )
-   properties_update_class( _gadget_, _value_ )
-   
-   properties_update_text( _gadget_, _value_ )
-   properties_update_coordinate( _gadget_, _value_ )
-   
-   properties_update_disable( _gadget_, _value_ )
-   properties_update_hide( _gadget_, _value_ )
+   If _value_
+      properties_update_id( _gadget_, _value_ )
+      properties_update_class( _gadget_, _value_ )
+      
+      properties_update_text( _gadget_, _value_ )
+      properties_update_coordinate( _gadget_, _value_ )
+      
+      properties_update_disable( _gadget_, _value_ )
+      properties_update_hide( _gadget_, _value_ )
+      
+   Else
+      SetItemTextProperties( _gadget_, #_pi_id,      GetItemTextProperties( _gadget_, #_pi_id )      +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_class,   GetItemTextProperties( _gadget_, #_pi_class )   +Chr( 10 ))
+      
+      SetItemTextProperties( _gadget_, #_pi_text,    GetItemTextProperties( _gadget_, #_pi_text )    +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_x,       GetItemTextProperties( _gadget_, #_pi_x )       +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_y,       GetItemTextProperties( _gadget_, #_pi_y )       +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_width,   GetItemTextProperties( _gadget_, #_pi_width )   +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_height,  GetItemTextProperties( _gadget_, #_pi_height )  +Chr( 10 ) )
+      
+      SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 ) )
+      SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 ) )
+      
+   EndIf
 EndMacro
 
 
@@ -652,44 +668,6 @@ Macro widget_copy( )
    mouse( )\selector\y = mouse( )\steps
 EndMacro
 
-
-Procedure widget_data( ide_inspector_view, position, CountItems )
-   Protected i
-   
-   If position =- 1
-      For i = 0 To CountItems - 1
-         SetData( GetItemData( ide_inspector_view, i ), i )
-      Next  
-   Else
-      If CountItems > position
-         For i = position To CountItems - 1
-            SetData( GetItemData( ide_inspector_view, i ), i + 1 )
-         Next 
-      EndIf
-   EndIf
-EndProcedure
-
-Macro widget_delete( )
-;    If ListSize( a_group( ))
-;       ForEach a_group( )
-;          RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
-;          Free( a_group( )\widget )
-;          DeleteElement( a_group( ) )
-;       Next
-;       
-;       ClearList( a_group( ) )
-;    Else
-   
-   RemoveItem( ide_inspector_view, GetData( a_focused( ) ) )
-   
-   Free( a_focused( ) )
-   
-   widget_data( ide_inspector_view, - 1, CountItems( ide_inspector_view ) )
-      
-   a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
-;    EndIf
-EndMacro
-
 Macro widget_paste( )
    If ListSize( *copy( ) )
       ForEach *copy( )
@@ -708,12 +686,57 @@ Macro widget_paste( )
       CopyList( *copy( ), a_group( ) )
    EndIf
    
+   ;
    ForEach a_group( )
       Debug " group "+a_group( )\widget
    Next
    
+   ;
    ;a_update( a_focused( ) )
 EndMacro
+
+Procedure widget_delete( *this._s_WIDGET  )
+   Protected item
+   Protected i 
+   Protected CountItems
+   
+   ;    If ListSize( a_group( ))
+;       ForEach a_group( )
+;          RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
+;          Free( a_group( )\widget )
+;          DeleteElement( a_group( ) )
+;       Next
+;       
+;       ClearList( a_group( ) )
+;    Else
+   
+   If *this <> ide_design_MDI
+      item = GetData( *this )
+      
+      Free( *this )
+      
+      RemoveItem( ide_inspector_view, item )
+      ;
+      ; after remove item 
+      CountItems = CountItems( ide_inspector_view ) 
+      If CountItems
+         ; update widget data item
+         For i = 0 To CountItems - 1
+            SetData( GetItemData( ide_inspector_view, i ), i )
+         Next 
+         ;
+         ; set anchor focus
+         If a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
+            properties_updates( ide_inspector_properties, a_focused( ) )
+         EndIf
+      Else
+         ; reset anchor focus
+         If a_Set( ide_design_MDI )
+            properties_updates( ide_inspector_properties, 0 )
+         EndIf
+      EndIf
+   EndIf
+EndProcedure
 
 Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
    Protected *new._s_widget, *param1, *param2, *param3
@@ -921,12 +944,6 @@ Procedure widget_events( )
          EndIf
          
       Case #__event_DragStart
-;          ; 
-;          If GetActive( ) <> ide_inspector_properties 
-;             SetActive( ide_inspector_properties )
-;             Debug "------------- active "+GetActive( )\class
-;          EndIf
-            
          If is_drag_move( )
             If DDragPrivate( #_DD_reParent )
                ChangeCurrentCursor( *e_widget, #PB_Cursor_Arrows )
@@ -1176,7 +1193,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
    Protected transform, move_x, move_y
    Static NewList *copy._s_a_group( )
    
-   Debug "ide_menu_events "+BarButton
+   ; Debug "ide_menu_events "+BarButton
    
    Select BarButton
       Case 1
@@ -1220,13 +1237,13 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          
       Case #_tb_widget_cut
          widget_copy( )
-         widget_delete( )
+         widget_delete( a_focused( ) )
          
       Case #_tb_widget_paste
          widget_paste( )
          
       Case #_tb_widget_delete
-         widget_delete( )
+         widget_delete( a_focused( ) )
          
          
       Case #_tb_group_left,
@@ -1315,11 +1332,11 @@ Procedure ide_events( )
          EndIf
          
          If e_item = - 1
-            ;SetText( ide_help_view, GetItemText( *e_widget, GetState( *e_widget ) ) )
+            SetText( ide_help_view, "help for the inspector" )
          Else
             If WidgetEventData( ) > 0
-              If *e_widget = ide_inspector_view
-                  ;Debug ""+WidgetEventData( )+" i "+e_item
+               If *e_widget = ide_inspector_view
+                  ; Debug ""+WidgetEventData( )+" i "+e_item
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
                If *e_widget = ide_inspector_elements
@@ -1336,10 +1353,13 @@ Procedure ide_events( )
          
       Case #__event_Change
          If *e_widget = ide_inspector_view
-            ; Debug " 1 change-["+*e_widget\class+"]"
+            Debug ""+GetState(*e_widget)+" change-["+*e_widget\class+"]"
+            ;PushListPosition(*e_widget\__rows())
+            ;Debug GetClass(GetItemData(*e_widget, GetState(*e_widget)))
             If a_set( GetItemData(*e_widget, GetState(*e_widget)), #__a_full )
                properties_updates( ide_inspector_properties, a_focused( ) )
             EndIf
+            ;PopListPosition(*e_widget\__rows())
          EndIf
          If *e_widget = ide_inspector_properties
             ; Debug " 2 change-["+*e_widget\class+"]"
@@ -1855,9 +1875,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1693
-; FirstLine = 1442
-; Folding = ----4--------v---f-0-------------
+; CursorPosition = 1338
+; FirstLine = 1145
+; Folding = ----4-------------+8--f----------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

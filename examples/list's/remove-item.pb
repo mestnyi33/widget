@@ -47,6 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
                RemoveGadgetItem(g1, item)
                RemoveGadgetItem(g2, item)
                
+               Debug GetGadgetState( g1 )
+               
 ;                For a = 0 To CountGadgetItems(g1)-1
 ;                   Debug ""+a+" "+GetGadgetItemText(g1,a)
 ;                Next
@@ -70,6 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
                
                RemoveItem_(*g1, item)
                RemoveItem_(*g2, item)
+               
+               Debug GetState( *g1 )
                
 ;                ;                   For a = 0 To CountItems(*g1)-1
 ;                ;                      Debug ""+a+" "+GetItemText(*g1,a)
@@ -181,7 +185,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 28
+; CursorPosition = 75
+; FirstLine = 57
 ; Folding = ----
 ; EnableXP
 ; DPIAware
