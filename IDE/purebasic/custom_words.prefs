@@ -229,6 +229,8 @@ Tab
 DisableItem
 HideItem
 SelectItem
+PushItem
+PopItem
 
 SetForeground
 SetAttach

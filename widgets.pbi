@@ -1369,6 +1369,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.l CountItems( *this )
       Declare.l ClearItems( *this )
       Declare.b IsItem( *this, Item.l ) 
+      Declare.b PushItem( *this )
+      Declare.b PopItem( *this )
+      Declare.b SelectItem( *this, Item.l )
       Declare   RemoveItem( *this, Item.l )
       Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
       Declare   AddColumn( *this, position.l, Text.s, Width.l, Image.i = - 1 )
@@ -8693,12 +8696,22 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure   ItemID( *this._s_WIDGET, Item.l ) 
+         Protected result
+         PushListPosition( *this\__rows( ))
+         result = SelectElement( *this\__rows( ), Item )
+         PopListPosition( *this\__rows( ))
+         ProcedureReturn result 
+      EndProcedure
+      
       Procedure.b SelectItem( *this._s_WIDGET, Item.l ) 
          ProcedureReturn Bool( Item > #PB_Any And Item < *this\countitems And SelectElement( *this\__rows( ), Item ))
       EndProcedure
-      Procedure.b PushItem( *this._s_WIDGET, Item.l = - 1 ) 
+      
+      Procedure.b PushItem( *this._s_WIDGET ) 
          PushListPosition( *this\__rows( ))
       EndProcedure
+      
       Procedure.b PopItem( *this._s_WIDGET ) 
          PopListPosition( *this\__rows( ))
       EndProcedure
@@ -24327,9 +24340,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8698
+; CursorPosition = 8701
 ; FirstLine = 8491
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------f-8r-4v-x----------------------------------------------------------------------------------------t2--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------f-8r-4v-x--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

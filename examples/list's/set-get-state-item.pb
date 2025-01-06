@@ -16,11 +16,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure StatusChange( *this._s_WIDGET, item )
-      PushListPosition(EventWidget( )\__rows( ))
+      PushItem(EventWidget( ))
       If SelectItem( EventWidget( ), item)
          ;
          If EventWidget( )\__rows( ) 
-            PushListPosition( *this\__rows( ) )
+            PushItem( *this )
             SelectItem( *this, EventWidget( )\__rows( )\index)
             *this\__rows( )\color = EventWidget( )\__rows( )\color
             
@@ -32,10 +32,10 @@ CompilerIf #PB_Compiler_IsMainFile
                *this\RowFocused( )\focus = 1
             EndIf
             
-            PopListPosition( *this\__rows( ) )
+            PopItem( *this )
          EndIf
       EndIf
-      PopListPosition(EventWidget( )\__rows( ))
+      PopItem(EventWidget( ))
    EndProcedure
    
    Procedure ResizePropertiesItem( *second._s_WIDGET )
@@ -252,7 +252,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 13
+; CursorPosition = 34
 ; Folding = -----
 ; EnableXP
