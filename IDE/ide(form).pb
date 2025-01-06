@@ -679,12 +679,13 @@ Macro widget_delete( )
 ;       
 ;       ClearList( a_group( ) )
 ;    Else
+   
    RemoveItem( ide_inspector_view, GetData( a_focused( ) ) )
    
    Free( a_focused( ) )
    
    widget_data( ide_inspector_view, - 1, CountItems( ide_inspector_view ) )
-   
+      
    a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
 ;    EndIf
 EndMacro
@@ -1316,8 +1317,8 @@ Procedure ide_events( )
          If e_item = - 1
             ;SetText( ide_help_view, GetItemText( *e_widget, GetState( *e_widget ) ) )
          Else
-           If WidgetEventData( ) > 0
-             If *e_widget = ide_inspector_view
+            If WidgetEventData( ) > 0
+              If *e_widget = ide_inspector_view
                   ;Debug ""+WidgetEventData( )+" i "+e_item
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
@@ -1328,7 +1329,7 @@ Procedure ide_events( )
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
                If *e_widget = ide_inspector_events
-                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+                 SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
             EndIf
          EndIf
@@ -1680,27 +1681,60 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState( ide_inspector_panel, 1 )
    
    ;   ;OpenList(ide_design_MDI)
-   Define result, btn2, example = 3
+   Define result, btn2, example = 2
    
    
    ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    
    If example = 2
-      ;\\ example 2
+      widget_add( ide_design_form, "button", 10, 20, 100, 30 )
       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
       widget_add( *container, "button", 10, 20, 30, 30 )
-      widget_add( ide_design_form, "button", 10, 20, 100, 30 )
       
-      Define item = 1
-      SetState( ide_inspector_view, item )
-      If IsGadget( ide_g_code )
-         SetGadgetState( ide_g_code, item )
-      EndIf
-      Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-      widget_add( *container2, "button", 10, 20, 30, 30 )
+;       ClearItems(ide_inspector_view)
+; ;       AddItem(ide_inspector_view, -1, "window_0", -1, 0)
+; ;       AddItem(ide_inspector_view, -1, "button_0", -1, 1)
+; ;       AddItem(ide_inspector_view, -1, "container_0", -1, 1)
+; ;       AddItem(ide_inspector_view, -1, "button_1", -1, 2)
+; ;       
+;       Define *parent._s_WIDGET = ide_design_MDI
+;       ;PushListPosition(widgets())
+;       If StartEnum( *parent ,0)
+;          Debug "99 "+ widget()\class +" "+ widget()\parent\class +" "+ Str(Level(widget()))+" "+Str(Level(*parent));IsChild(widget(), *parent )
+;          Select CountItems(ide_inspector_view)
+;             Case 0 
+;                AddItem(ide_inspector_view, -1, "window_0", -1, Level(widget())-Level(*parent)-1)
+;             Case 1 
+;                AddItem(ide_inspector_view, -1, "button_0", -1, Level(widget())-Level(*parent)-1)
+;             Case 2 
+;                AddItem(ide_inspector_view, -1, "container_0", -1, Level(widget())-Level(*parent)-1)
+;             Case 3 
+;                AddItem(ide_inspector_view, -1, "button_1", -1, Level(widget())-Level(*parent)-1)
+;          EndSelect
+;          
+;          ;   Debug CountItems(ide_inspector_view)-1
+;          SetData(widget(), CountItems(ide_inspector_view)-1)
+;          SetItemData(ide_inspector_view, CountItems(ide_inspector_view)-1, widget())
+;          
+;          StopEnum()
+;       EndIf
+;       ;PopListPosition(widgets())
       
-      SetState( ide_inspector_view, 0 )
-      widget_add( ide_design_form, "button", 10, 130, 100, 30 )
+      ;\\ example 2
+;       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
+;       widget_add( *container, "button", 10, 20, 30, 30 )
+;       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
+;       
+;       Define item = 1
+;       SetState( ide_inspector_view, item )
+;       If IsGadget( ide_g_code )
+;          SetGadgetState( ide_g_code, item )
+;       EndIf
+;       Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+;       widget_add( *container2, "button", 10, 20, 30, 30 )
+;       
+;       SetState( ide_inspector_view, 0 )
+;       widget_add( ide_design_form, "button", 10, 130, 100, 30 )
       
    ElseIf example = 3
       ;\\ example 3
@@ -1821,9 +1855,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 845
-; FirstLine = 806
-; Folding = ----4------------f-0-------------
+; CursorPosition = 1693
+; FirstLine = 1442
+; Folding = ----4--------v---f-0-------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

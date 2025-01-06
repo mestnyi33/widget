@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   If *this\RowFocused( )
                      Protected item = *this\RowFocused( )\index
                      RemoveItem(*this, item)
-                     RemoveItem(*demo, item)
+                    ; RemoveItem(*demo, item)
                   EndIf
                
                Case *reset : SetState_(*this, - 1)
@@ -251,7 +251,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 83
+; CursorPosition = 164
+; FirstLine = 149
 ; Folding = -----
 ; EnableXP

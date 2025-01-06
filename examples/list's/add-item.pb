@@ -26,223 +26,206 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    
-    Procedure.i AddItems( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
-         Protected last
-         Protected *row.allocate(ROWS)
-         Protected *rowParent._s_ROWS
-         
-         If *this
-            If *row
-               ;{ Генерируем идентификатор
-               If position < 0 Or position > ListSize( *rows( )) - 1
-                  ResetList( *rows( )) 
-                  LastElement( *rows( ))
-                  AddElement( *rows( ))
-                  
-                  If position < 0
-                     position = ListIndex( *rows( ))
-                  EndIf
-                  
-                  *rows( ) = *row
-               Else
-                  SelectElement( *rows( ), position )
-                  
-                  ; for the tree( )
-                  If sublevel > *rows( )\sublevel
-                     PushListPosition( *rows( ))
-                     If PreviousElement( *rows( ))
-                        *this\RowLast( ) = *rows( )
-                     Else
-                        last     = *this\RowLast( )
-                        sublevel = *rows( )\sublevel
-                     EndIf
-                     PopListPosition( *rows( ))
-                  Else
-                     last     = *this\RowLast( )
-                     sublevel = *rows( )\sublevel
-                     ; новое 
-                     *this\RowLast( ) =  *rows( )
-                  EndIf
-                  
-                  InsertElement( *rows( ))
-                  *rows( ) = *row
-                  
-                  ;PushListPosition( *rows( ))
-                  While NextElement( *rows( ))
-                     *rows( )\lindex = ListIndex( *rows( ) )
-                  Wend
-                  ;PopListPosition(*rows( ))
-               EndIf
-               ;}
+   Procedure.i AddItems( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+      Protected *rowLast._s_ROWS 
+      Protected *row.allocate(ROWS)
+      Protected *rowParent._s_ROWS
+      
+      If *this
+         If *row
+            ;{ Генерируем идентификатор
+            If position < 0 Or position > ListSize( *rows( )) - 1
+               ResetList( *rows( )) 
+               LastElement( *rows( ))
+               AddElement( *rows( ))
+               ;
+               position = ListIndex( *rows( ))
+               ;
+               *rows( ) = *row
+               *rowLast = *this\RowLast( )
+               *this\RowLast( ) = *row
+             Else
+               SelectElement( *rows( ), position )
                
-               ;
-               If sublevel > position
-                  sublevel = position
+               ; for the tree( )
+               If sublevel > *rows( )\sublevel
+                  PushListPosition( *rows( ))
+                  If PreviousElement( *rows( ))
+                     *rowLast = *rows( )
+                  Else
+                     sublevel = *rows( )\sublevel
+                  EndIf
+                  PopListPosition( *rows( ))
+               Else
+                  sublevel = *rows( )\sublevel
                EndIf
-               If sublevel
-                  *row\sublevel = sublevel
-               EndIf
+               
+               InsertElement( *rows( ))
+               *rows( ) = *row
                ;
-               *row\rindex = position 
-               *row\columnindex = ListIndex( *this\columns( ))
-               ;
-               If *this\RowLast( )
-                  If sublevel > *this\RowLast( )\sublevel
-                     sublevel    = *this\RowLast( )\sublevel + 1
-                     *rowParent = *this\RowLast( )
+               ;PushListPosition( *rows( ))
+               While NextElement( *rows( ))
+                  *rows( )\lindex = ListIndex( *rows( ) )
+               Wend
+               ;PopListPosition(*rows( ))
+            EndIf
+            ;}
+            
+            ;
+            If sublevel > position
+               sublevel = position
+            EndIf
+            ;
+            *row\rindex = position 
+            *row\columnindex = ListIndex( *this\columns( ))
+            ;
+            If *rowLast 
+               If sublevel > *rowLast\sublevel
+                  sublevel    = *rowLast\sublevel + 1
+                  *rowParent = *rowLast
+                  
+               ElseIf *rowLast\RowParent( )
+                  If sublevel > *rowLast\RowParent( )\sublevel
+                     *rowParent = *rowLast\RowParent( )
                      
-                  ElseIf *this\RowLast( )\RowParent( )
-                     If sublevel > *this\RowLast( )\RowParent( )\sublevel
-                        *rowParent = *this\RowLast( )\RowParent( )
+                  ElseIf sublevel < *rowLast\sublevel
+                     If *rowLast\RowParent( )\RowParent( )
+                        *rowParent = *rowLast\RowParent( )\RowParent( )
                         
-                     ElseIf sublevel < *this\RowLast( )\sublevel
-                        If *this\RowLast( )\RowParent( )\RowParent( )
-                           *rowParent = *this\RowLast( )\RowParent( )\RowParent( )
-                           
-                           While *rowParent
-                              If sublevel >= *rowParent\sublevel
-                                 If sublevel = *rowParent\sublevel
-                                    *rowParent = *rowParent\RowParent( )
-                                 EndIf
-                                 Break
-                              Else
+                        While *rowParent
+                           If sublevel >= *rowParent\sublevel
+                              If sublevel = *rowParent\sublevel
                                  *rowParent = *rowParent\RowParent( )
                               EndIf
-                           Wend
-                        EndIf
-                        
-                        ; for the editor( )
-                        If *this\RowLast( )\RowParent( )
-                           If *this\RowLast( )\RowParent( )\sublevel = sublevel
-                              ;                     *row\before = *this\RowLast( )\RowParent( )
-                              ;                     *this\RowLast( )\RowParent( )\after = *row
-                              
-                              If *this\type = #__type_Editor
-                                 *rowParent         = *this\RowLast( )\RowParent( )
-                                 *rowParent\_last    = *row
-                                 *this\RowLast( ) = *rowParent
-                                 last                = *rowParent
-                              EndIf
-                              
+                              Break
+                           Else
+                              *rowParent = *rowParent\RowParent( )
                            EndIf
+                        Wend
+                     EndIf
+                     
+                     ; for the editor( )
+                     If *rowLast\RowParent( )
+                        If *rowLast\RowParent( )\sublevel = sublevel
+                           ;                     *row\before = *rowLast\RowParent( )
+                           ;                     *rowLast\RowParent( )\after = *row
+                           
+                           If *this\type = #__type_Editor
+                              *rowParent         = *rowLast\RowParent( )
+                              *rowParent\_last    = *row
+                              *rowLast = *rowParent
+                           EndIf
+                           
                         EndIf
                      EndIf
                   EndIf
                EndIf
-               
-               
-;                If Not FindMapElement( *this\linelevel( ), Str(*rowParent+sublevel) )
-;                   AddMapElement(*this\linelevel( ), Str(*rowParent+sublevel) )
-;                   Debug Text
-;                   *this\linelevel( ) = AllocateStructure( _s_COORDINATE )
-;                EndIf
-               
+            EndIf
+            
+            ;
+            If sublevel
+               *row\sublevel = sublevel
+            EndIf
+            
+            ;
+            If sublevel = 0
                If position = 0
-                  If sublevel = 0
-                      *this\RowFirstLevelFirst( ) = *row
-                  EndIf
+                  *this\RowFirstLevelFirst( ) = *row
                EndIf
-               If Not last
-                  If sublevel = 0
-                     *this\RowFirstLevelLast( ) = *row
-                  EndIf
-                  *this\RowLast( ) = *row
-                  ;
-                  ; for the tree draw line
-                  If *rowParent 
-                     If *rowParent\sublevel < sublevel
-                        *rowParent\_last = *row
-                     EndIf
-                  EndIf
+               If *this\RowLast( ) = *row
+                  *this\RowFirstLevelLast( ) = *row
                EndIf
+            EndIf
+            
+            ;
+            If *rowParent
+               *row\RowParent( ) = *rowParent
+               *rowParent\childrens + 1
                
-               If *rowParent
-                  *row\RowParent( ) = *rowParent
-                  *rowParent\childrens + 1
-                  
-                  If *this\mode\collapsed And 
-                     *rowParent\sublevel < sublevel
+               If *rowParent\sublevel < sublevel
+                  ; for the tree draw line
+                  *rowParent\_last = *row
+                  ;
+                  If *this\mode\collapsed  
                      *rowParent\buttonbox\checked = 1
                      *row\hide                    = 1
                   EndIf
                EndIf
+            EndIf
+            
+            ; properties
+            If *this\flag & #__tree_property
+               If *rowParent And Not *rowParent\sublevel And Not GetFontID( *rowParent )
+                  *rowParent\color\back     = $FFF9F9F9
+                  *rowParent\color\back[1]  = *rowParent\color\back
+                  *rowParent\color\back[2]  = *rowParent\color\back
+                  *rowParent\color\frame    = *rowParent\color\back
+                  *rowParent\color\frame[1] = *rowParent\color\back
+                  *rowParent\color\frame[2] = *rowParent\color\back
+                  *rowParent\color\front[1] = *rowParent\color\front
+                  *rowParent\color\front[2] = *rowParent\color\front
+                  SetFontID( *rowParent, FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic )))
+               EndIf
+            EndIf
+            
+            ; add lines
+            *row\color         = *this\color ; _get_colors_( )
+            *row\ColorState( ) = 0
+            *row\color\back    = 0
+            *row\color\frame   = 0
+            
+            *row\color\fore[0] = 0
+            *row\color\fore[1] = 0
+            *row\color\fore[2] = 0
+            *row\color\fore[3] = 0
+            
+            ;
+            ;                If *this\RowFirstLevelLast( )
+            ;                   If *this\RowFirstLevelLast( )\_type = #__type_Option
+            ;                      *row\_groupbar = *this\RowFirstLevelLast( )\_groupbar
+            ;                   Else
+            ;                      *row\_groupbar = *this\RowFirstLevelLast( )
+            ;                   EndIf
+            ;                Else
+            *row\_groupbar = *row\RowParent( )
+            ;                EndIf
+            
+            
+            ;If Text
+            *row\text\TextChange( ) = 1
+            *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
+                                      ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
+                                      ;EndIf
+            
+            ;\\
+            If *row\columnindex = 0
+               *this\countitems + 1
+               *this\WidgetChange( ) = 1
+               ; add_image( *this, *row\Image, Image )
                
-               
+               If *this\RowFocused( )
+                  *this\RowFocused( )\_focus = 0
+                  *this\RowFocused( )\ColorState( ) = #__s_0
                   
-               ; properties
-               If *this\flag & #__tree_property
-                  If *rowParent And Not *rowParent\sublevel And Not GetFontID( *rowParent )
-                     *rowParent\color\back     = $FFF9F9F9
-                     *rowParent\color\back[1]  = *rowParent\color\back
-                     *rowParent\color\back[2]  = *rowParent\color\back
-                     *rowParent\color\frame    = *rowParent\color\back
-                     *rowParent\color\frame[1] = *rowParent\color\back
-                     *rowParent\color\frame[2] = *rowParent\color\back
-                     *rowParent\color\front[1] = *rowParent\color\front
-                     *rowParent\color\front[2] = *rowParent\color\front
-                     SetFontID( *rowParent, FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic )))
-                  EndIf
+                  *this\RowFocused( )             = *row
+                  *this\RowFocused( )\_focus = 1
+                  *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
                EndIf
                
-               ; add lines
-               *row\color         = *this\color ; _get_colors_( )
-               *row\ColorState( ) = 0
-               *row\color\back    = 0
-               *row\color\frame   = 0
+               If *this\ScrollState( ) = #True
+                  *this\ScrollState( ) = - 1
+               EndIf
                
-               *row\color\fore[0] = 0
-               *row\color\fore[1] = 0
-               *row\color\fore[2] = 0
-               *row\color\fore[3] = 0
-               
-               ;
-               ;                If *this\RowFirstLevelLast( )
-               ;                   If *this\RowFirstLevelLast( )\_type = #__type_Option
-               ;                      *row\_groupbar = *this\RowFirstLevelLast( )\_groupbar
-               ;                   Else
-               ;                      *row\_groupbar = *this\RowFirstLevelLast( )
-               ;                   EndIf
-               ;                Else
-               *row\_groupbar = *row\RowParent( )
-               ;                EndIf
-               
-               
-               ;If Text
-               *row\text\TextChange( ) = 1
-               *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
-                                         ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
-                                         ;EndIf
-               
-               ;\\
-               If *row\columnindex = 0
-                  *this\countitems + 1
-                  *this\WidgetChange( ) = 1
-                 ; add_image( *this, *row\Image, Image )
-                  
-                  If *this\RowFocused( )
-                     *this\RowFocused( )\_focus = 0
-                     *this\RowFocused( )\ColorState( ) = #__s_0
-                     
-                     *this\RowFocused( )             = *row
-                     *this\RowFocused( )\_focus = 1
-                     *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
-                  EndIf
-                  
-                  If *this\ScrollState( ) = #True
-                     *this\ScrollState( ) = - 1
-                  EndIf
-                  
-                  If test_redraw_items
-                     PostReDraw( *this\root )
-                  EndIf
+               If test_redraw_items
+                  PostReDraw( *this\root )
                EndIf
             EndIf
          EndIf
-         ;EndWith
-         
-         ProcedureReturn *row
-      EndProcedure
-     
+      EndIf
+      
+      ProcedureReturn *row
+   EndProcedure
+   
    Procedure AddItem_( *this._s_WIDGET, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
       ; ProcedureReturn AddItem( *this, position, Text, Image, sublevel )
       ProcedureReturn AddItems( *this, *this\__rows( ), position, Text, Image, sublevel )
@@ -280,6 +263,17 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       AddGadgetItem(g, 13, "13_6", 0 )
       AddGadgetItem(g, 14, "14_7", 0 )
+      
+;       ;  
+;       AddGadgetItem(g, 0, "Window ", 0, 0)
+;       AddGadgetItem(g, 1, "Container ", 0, 1)
+;       AddGadgetItem(g, -1, "but7ton ", 0, 1)
+;       AddGadgetItem(g, 2, "Cont3ainer ", 0, 2)
+;        AddGadgetItem(g, 5, "but4ton ", 0, 3)
+; ;       AddGadgetItem(g, 2, "but2ton ", 0, 2)
+; ;       AddGadgetItem(g, -1, "button ", 0, 1)
+       
+       ;
       BindGadgetEvent(g, @gadget_events())
       For a=0 To CountGadgetItems(g) - 1
          ;Debug GetGadgetItemText(g, a)
@@ -310,6 +304,18 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       AddItem_(*g, 13, "13_6", -1 )
       AddItem_(*g, 14, "14_7", -1 )
+      
+      
+;        AddItem_(*g, 0, "Window ", -1, 0)
+;       AddItem_(*g, 1, "Container ", -1, 1)
+;       AddItem_(*g, -1, "but7ton ", -1, 1)
+;       AddItem_(*g, 2, "Cont3ainer ", -1, 2)
+;        AddItem_(*g, 5, "but4ton ", -1, 3)
+; ;       AddItem_(*g, 2, "but2ton ", -1, 2)
+; ;       AddItem_(*g, -1, "button ", -1, 1)
+      
+      Debug *g\Rowlast( )\text\string
+      
       Bind(*g, @widget_events())
       
       ;       For a=0 To CountItems(*g) - 1
@@ -317,7 +323,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Next
       
       ForEach *g\__rows( )
-         Debug ""+*g\__rows( )\index +" "+*g\__rows( )\text\string
+         Debug ""+*g\__rows( )\index +" "+*g\__rows( )\sublevel +" "+*g\__rows( )\text\string
       Next
       
       
@@ -325,8 +331,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 127
+; CursorPosition = 116
+; FirstLine = 103
 ; Folding = -------
 ; EnableXP
 ; DPIAware

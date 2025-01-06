@@ -674,6 +674,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
+               
+               ;
+               If Not IsChild( widgets(), _parent_ )
+                  Break
+               EndIf
                ;
                widget( ) = widgets( )
             EndMacro
@@ -683,7 +688,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;             EndMacro
             ;             ;
             Macro StopEnum( )
-            Until Not NextElement( widgets( ) )
+           Until Not NextElement( widgets( ) )
          EndIf
          PopListPosition( widgets( ) )
          widget( ) = *before_start_enumerate_widget
@@ -8406,8 +8411,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-       Procedure.i AddItems( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
-         Protected last
+      Procedure.i AddItems( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+         Protected *rowLast._s_ROWS 
          Protected *row.allocate(ROWS)
          Protected *rowParent._s_ROWS
          
@@ -8418,12 +8423,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ResetList( *rows( )) 
                   LastElement( *rows( ))
                   AddElement( *rows( ))
-                  
-                  If position < 0
-                     position = ListIndex( *rows( ))
-                  EndIf
-                  
+                  ;
+                  position = ListIndex( *rows( ))
+                  ;
                   *rows( ) = *row
+                  *rowLast = *this\RowLast( )
+                  *this\RowLast( ) = *row
                Else
                   SelectElement( *rows( ), position )
                   
@@ -8431,22 +8436,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If sublevel > *rows( )\sublevel
                      PushListPosition( *rows( ))
                      If PreviousElement( *rows( ))
-                        *this\RowLast( ) = *rows( )
+                        *rowLast = *rows( )
                      Else
-                        last     = *this\RowLast( )
                         sublevel = *rows( )\sublevel
                      EndIf
                      PopListPosition( *rows( ))
                   Else
-                     last     = *this\RowLast( )
                      sublevel = *rows( )\sublevel
-                     ; новое 
-                     *this\RowLast( ) =  *rows( )
                   EndIf
                   
                   InsertElement( *rows( ))
                   *rows( ) = *row
-                  
+                  ;
                   ;PushListPosition( *rows( ))
                   While NextElement( *rows( ))
                      *rows( )\lindex = ListIndex( *rows( ) )
@@ -8459,25 +8460,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                If sublevel > position
                   sublevel = position
                EndIf
-               If sublevel
-                  *row\sublevel = sublevel
-               EndIf
                ;
                *row\rindex = position 
                *row\columnindex = ListIndex( *this\columns( ))
                ;
-               If *this\RowLast( )
-                  If sublevel > *this\RowLast( )\sublevel
-                     sublevel    = *this\RowLast( )\sublevel + 1
-                     *rowParent = *this\RowLast( )
+               If *rowLast 
+                  If sublevel > *rowLast\sublevel
+                     sublevel    = *rowLast\sublevel + 1
+                     *rowParent = *rowLast
                      
-                  ElseIf *this\RowLast( )\RowParent( )
-                     If sublevel > *this\RowLast( )\RowParent( )\sublevel
-                        *rowParent = *this\RowLast( )\RowParent( )
+                  ElseIf *rowLast\RowParent( )
+                     If sublevel > *rowLast\RowParent( )\sublevel
+                        *rowParent = *rowLast\RowParent( )
                         
-                     ElseIf sublevel < *this\RowLast( )\sublevel
-                        If *this\RowLast( )\RowParent( )\RowParent( )
-                           *rowParent = *this\RowLast( )\RowParent( )\RowParent( )
+                     ElseIf sublevel < *rowLast\sublevel
+                        If *rowLast\RowParent( )\RowParent( )
+                           *rowParent = *rowLast\RowParent( )\RowParent( )
                            
                            While *rowParent
                               If sublevel >= *rowParent\sublevel
@@ -8492,16 +8490,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                         
                         ; for the editor( )
-                        If *this\RowLast( )\RowParent( )
-                           If *this\RowLast( )\RowParent( )\sublevel = sublevel
-                              ;                     *row\before = *this\RowLast( )\RowParent( )
-                              ;                     *this\RowLast( )\RowParent( )\after = *row
+                        If *rowLast\RowParent( )
+                           If *rowLast\RowParent( )\sublevel = sublevel
+                              ;                     *row\before = *rowLast\RowParent( )
+                              ;                     *rowLast\RowParent( )\after = *row
                               
                               If *this\type = #__type_Editor
-                                 *rowParent         = *this\RowLast( )\RowParent( )
+                                 *rowParent         = *rowLast\RowParent( )
                                  *rowParent\_last    = *row
-                                 *this\RowLast( ) = *rowParent
-                                 last                = *rowParent
+                                 *rowLast = *rowParent
                               EndIf
                               
                            EndIf
@@ -8510,33 +8507,34 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               If position = 0
-                  If sublevel = 0
-                      *this\RowFirstLevelFirst( ) = *row
-                  EndIf
+               ;
+               If sublevel
+                  *row\sublevel = sublevel
                EndIf
-               If Not last
-                  If sublevel = 0
-                     *this\RowFirstLevelLast( ) = *row
+               
+               ;
+               If sublevel = 0
+                  If position = 0
+                     *this\RowFirstLevelFirst( ) = *row
                   EndIf
-                  *this\RowLast( ) = *row
-                  ;
-                  ; for the tree( )
-                  If *rowParent 
-                     If *rowParent\sublevel < sublevel
-                        *rowParent\_last = *row
-                     EndIf
+                  If *this\RowLast( ) = *row
+                     *this\RowFirstLevelLast( ) = *row
                   EndIf
                EndIf
                
+               ;
                If *rowParent
                   *row\RowParent( ) = *rowParent
                   *rowParent\childrens + 1
                   
-                  If *this\mode\collapsed And 
-                     *rowParent\sublevel < sublevel
-                     *rowParent\buttonbox\checked = 1
-                     *row\hide                    = 1
+                  If *rowParent\sublevel < sublevel
+                     ; for the tree draw line
+                     *rowParent\_last = *row
+                     ;
+                     If *this\mode\collapsed  
+                        *rowParent\buttonbox\checked = 1
+                        *row\hide                    = 1
+                     EndIf
                   EndIf
                EndIf
                
@@ -8552,219 +8550,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *rowParent\color\front[1] = *rowParent\color\front
                      *rowParent\color\front[2] = *rowParent\color\front
                      SetFontID( *rowParent, FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic )))
-                  EndIf
-               EndIf
-               
-               ; add lines
-               *row\color         = *this\color ; _get_colors_( )
-               *row\ColorState( ) = 0
-               *row\color\back    = 0
-               *row\color\frame   = 0
-               
-               *row\color\fore[0] = 0
-               *row\color\fore[1] = 0
-               *row\color\fore[2] = 0
-               *row\color\fore[3] = 0
-               
-               ;
-               ;                If *this\RowFirstLevelLast( )
-               ;                   If *this\RowFirstLevelLast( )\_type = #__type_Option
-               ;                      *row\_groupbar = *this\RowFirstLevelLast( )\_groupbar
-               ;                   Else
-               ;                      *row\_groupbar = *this\RowFirstLevelLast( )
-               ;                   EndIf
-               ;                Else
-               *row\_groupbar = *row\RowParent( )
-               ;                EndIf
-               
-               
-               ;If Text
-               *row\text\TextChange( ) = 1
-               *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
-                                         ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
-                                         ;EndIf
-               
-               ;\\
-               If *row\columnindex = 0
-                  *this\countitems + 1
-                  *this\WidgetChange( ) = 1
-                 ; add_image( *this, *row\Image, Image )
-                  
-                  If *this\RowFocused( )
-                     *this\RowFocused( )\_focus = 0
-                     *this\RowFocused( )\ColorState( ) = #__s_0
-                     
-                     *this\RowFocused( )             = *row
-                     *this\RowFocused( )\_focus = 1
-                     *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
-                  EndIf
-                  
-                  If *this\ScrollState( ) = #True
-                     *this\ScrollState( ) = - 1
-                  EndIf
-                  
-                  If test_redraw_items
-                     PostReDraw( *this\root )
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         ;EndWith
-         
-         ProcedureReturn *row
-      EndProcedure
-      Procedure.i AddItem_Tree( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
-        ProcedureReturn AddItems( *this, *rows( ), position, Text, Image, sublevel )
-         
-         Protected last
-         Protected *row.allocate(ROWS)
-         Protected._s_ROWS *parent_row
-         
-         If *this
-            If *row
-               ;{ Генерируем идентификатор
-               If position < 0 Or position > ListSize( *this\__rows( )) - 1
-                  ResetList( *this\__rows( )) 
-                  LastElement( *this\__rows( ))
-                  AddElement( *this\__rows( ))
-                  
-                  If position < 0
-                     position = ListIndex( *this\__rows( ))
-                  EndIf
-                  
-                  *this\__rows( ) = *row
-               Else
-                  SelectElement( *this\__rows( ), position )
-                  
-                  ; for the tree( )
-                  If sublevel > *this\__rows( )\sublevel
-                     PushListPosition( *this\__rows( ))
-                     If PreviousElement( *this\__rows( ))
-                        *this\RowLast( ) = *this\__rows( )
-                     Else
-                        last     = *this\RowLast( )
-                        sublevel = *this\__rows( )\sublevel
-                     EndIf
-                     PopListPosition( *this\__rows( ))
-                  Else
-                     last     = *this\RowLast( )
-                     sublevel = *this\__rows( )\sublevel
-                     ; новое 
-                     *this\RowLast( ) =  *this\__rows( )
-                  EndIf
-                  
-                  InsertElement( *this\__rows( ))
-                  *this\__rows( ) = *row
-                  
-                  ;PushListPosition( *this\__rows( ))
-                  While NextElement( *this\__rows( ))
-                     *this\__rows( )\lindex = ListIndex( *this\__rows( ) ) ; position ; 
-                  Wend
-                  ;PopListPosition(*this\__rows( ))
-               EndIf
-               ;}
-               
-;                *this\__rows( ) = *row
-;                
-               *row\columnindex = ListIndex( *this\columns( ))
-               *row\rindex = position 
-               
-               If sublevel > position
-                  sublevel = position
-               EndIf
-               
-               If *this\RowLast( )
-                  If sublevel > *this\RowLast( )\sublevel
-                     sublevel    = *this\RowLast( )\sublevel + 1
-                     *parent_row = *this\RowLast( )
-                     
-                  ElseIf *this\RowLast( )\RowParent( )
-                     If sublevel > *this\RowLast( )\RowParent( )\sublevel
-                        *parent_row = *this\RowLast( )\RowParent( )
-                        
-                     ElseIf sublevel < *this\RowLast( )\sublevel
-                        If *this\RowLast( )\RowParent( )\RowParent( )
-                           *parent_row = *this\RowLast( )\RowParent( )\RowParent( )
-                           
-                           While *parent_row
-                              If sublevel >= *parent_row\sublevel
-                                 If sublevel = *parent_row\sublevel
-                                    *parent_row = *parent_row\RowParent( )
-                                 EndIf
-                                 Break
-                              Else
-                                 *parent_row = *parent_row\RowParent( )
-                              EndIf
-                           Wend
-                        EndIf
-                        
-                        ; for the editor( )
-                        If *this\RowLast( )\RowParent( )
-                           If *this\RowLast( )\RowParent( )\sublevel = sublevel
-                              ;                     *row\before = *this\RowLast( )\RowParent( )
-                              ;                     *this\RowLast( )\RowParent( )\after = *row
-                              
-                              If *this\type = #__type_Editor
-                                 *parent_row         = *this\RowLast( )\RowParent( )
-                                 *parent_row\_last    = *row
-                                 *this\RowLast( ) = *parent_row
-                                 last                = *parent_row
-                              EndIf
-                              
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               If *parent_row
-                  *parent_row\childrens + 1
-                  *row\RowParent( ) = *parent_row
-               EndIf
-               
-               If sublevel
-                  *row\sublevel = sublevel
-               EndIf
-               
-               If Not last
-                  If sublevel = 0
-                     *this\RowFirstLevelLast( ) = *row
-                  EndIf
-                  ;
-                  *this\RowLast( ) = *row
-                  ;
-                  ; for the tree( )
-                  If *row\RowParent( ) And
-                     *row\RowParent( )\sublevel < sublevel
-                     *row\RowParent( )\_last = *row
-                  EndIf
-               EndIf
-               
-               
-               If position = 0
-                  If sublevel = 0
-                     *this\RowFirstLevelFirst( ) = *row
-                  EndIf
-               EndIf
-               
-               If *this\mode\collapsed And 
-                  *row\RowParent( ) And *row\sublevel > *row\RowParent( )\sublevel
-                  *row\RowParent( )\buttonbox\checked = 1
-                  *row\hide                      = 1
-               EndIf
-               
-               ; properties
-               If *this\flag & #__tree_property
-                  If *parent_row And Not *parent_row\sublevel And Not GetFontID( *parent_row )
-                     *parent_row\color\back     = $FFF9F9F9
-                     *parent_row\color\back[1]  = *parent_row\color\back
-                     *parent_row\color\back[2]  = *parent_row\color\back
-                     *parent_row\color\frame    = *parent_row\color\back
-                     *parent_row\color\frame[1] = *parent_row\color\back
-                     *parent_row\color\frame[2] = *parent_row\color\back
-                     *parent_row\color\front[1] = *parent_row\color\front
-                     *parent_row\color\front[2] = *parent_row\color\front
-                     SetFontID( *parent_row, FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic )))
                   EndIf
                EndIf
                
@@ -8822,7 +8607,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         ;EndWith
          
          ProcedureReturn *row
       EndProcedure
@@ -8865,7 +8649,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ForEach *This\Columns( )
                String = StringField( Text, ListIndex( *this\columns( )) + 1, #LF$)
                If String Or count = ListIndex( *this\columns( ))
-                  AddItem_Tree( *this, *this\__rows( ), Item, String, Image, flag )
+                  AddItems( *this, *this\__rows( ), Item, String, Image, flag )
                EndIf
             Next
          EndIf
@@ -8876,18 +8660,18 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If *this\type = #__type_Tree Or
             *this\type = #__type_Properties
-            ProcedureReturn AddItem_Tree( *this, *this\__rows( ), Item, Text, Image, flag )
+            ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, Image, flag )
          EndIf
          
          If *this\type = #__type_ListView
-            ProcedureReturn AddItem_Tree( *this, *this\__rows( ), Item, Text, Image, flag )
+            ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, Image, flag )
          EndIf
          
          If *this\type = #__type_combobox
             If *this\popupbar
-               ProcedureReturn AddItem_Tree( *this\popupbar, *this\popupbar\__rows( ), Item, Text, Image, flag )
+               ProcedureReturn AddItems( *this\popupbar, *this\popupbar\__rows( ), Item, Text, Image, flag )
             Else
-               ProcedureReturn AddItem_Tree( *this, *this\__rows( ), Item, Text, Image, flag )
+               ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, Image, flag )
             EndIf
          EndIf
          
@@ -8912,147 +8696,149 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ; - widget::tree_remove_item( )
          If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+            *this\type = #__type_ListIcon Or
+            *this\type = #__type_ListView
             
-         
-         If is_no_select_item_( *this\__rows( ), Item )
-            ProcedureReturn #False
-         EndIf
-         
-         ;\\
-         Protected removecount = 1
-         Protected sublevel = *this\__rows( )\sublevel
-         Protected *rowParent._s_ROWS = *this\__rows( )\RowParent( )
-         Protected *row._s_ROWS = *this\__rows( )
-         Debug "remove "+ Item +" "+ *row\text\string
-     
-         ; if is last parent item then change to the prev element of his level
-         If *rowParent And *rowParent\_last = *row
-            PushListPosition( *this\__rows( ))
-            While PreviousElement( *this\__rows( ))
-               If *rowParent = *this\__rows( )\RowParent( )
-                  *rowParent\_last = *this\__rows( )
-                  Break
-               EndIf
-            Wend
-            PopListPosition( *this\__rows( ))
             
-            ; if the remove last parent children's
-            If *rowParent\_last = *row
-               *rowParent\childrens = #False
-               *rowParent\_last      = #Null
-            Else
-               *rowParent\childrens = #True
+            If is_no_select_item_( *this\__rows( ), Item )
+               ProcedureReturn #False
             EndIf
-         EndIf
-         
-         ; before deleting a parent, we delete its children's
-         If *row\childrens
-            PushListPosition( *this\__rows( ))
-            While NextElement( *this\__rows( ))
-               If *this\__rows( )\sublevel > sublevel
-                  ; 
-                  If *this\RowFocused( ) = *this\__rows( )
-                     *this\RowFocused( ) = *row
+            
+            ;\\
+            Protected removecount = 1
+            Protected sublevel = *this\__rows( )\sublevel
+            Protected *rowParent._s_ROWS = *this\__rows( )\RowParent( )
+            Protected *row._s_ROWS = *this\__rows( )
+            Debug "remove "+ Item +" "+ *row\text\string
+            
+            ; if is last parent item then change to the prev element of his level
+            If *rowParent And *rowParent\_last = *row
+               PushListPosition( *this\__rows( ))
+               While PreviousElement( *this\__rows( ))
+                  If *rowParent = *this\__rows( )\RowParent( )
+                     *rowParent\_last = *this\__rows( )
+                     Break
                   EndIf
-                  ;
-                  DeleteElement( *this\__rows( ))
-                  *this\countitems - 1
-                  removecount + 1
-               Else
-                  Break
-               EndIf
-            Wend
-            PopListPosition( *this\__rows( ))
-         EndIf
-         
-         ; 
-         If *this\RowFirstLevelFirst( ) = *row
-            PushListPosition( *this\__rows( ))
-            If NextElement( *this\__rows( ))
-               *this\RowFirstLevelFirst( ) = *this\__rows( )
-            Else
-               *this\RowFirstLevelFirst( ) = 0
-            EndIf
-            PopListPosition( *this\__rows( ))
-         EndIf
-         
-         ; 
-         If *this\RowFirstLevelLast( ) = *row
-            PushListPosition( *this\__rows( ))
-            If PreviousElement( *this\__rows( ))
-               If *this\__rows( )\sublevel = *row\sublevel
-                  *this\RowFirstLevelLast( ) = *this\__rows( )
-               Else
-                  *rowParent = *this\__rows( )\RowParent( )
-                  While *rowParent
-                     If *rowParent\sublevel = *row\sublevel
-                        Break
-                     Else
-                        *rowParent = *rowParent\RowParent( )
-                     EndIf
-                  Wend
-                  *this\RowFirstLevelLast( ) = *rowParent
-               EndIf
-            Else
-               *this\RowFirstLevelLast( ) = 0
-            EndIf
-            PopListPosition( *this\__rows( ))
-         EndIf
-         
-         ;
-         PushListPosition( *this\__rows( ))
-         While NextElement( *this\__rows( ))
-            *this\__rows( )\lindex - removecount ; = ListIndex( *this\__rows( ) ) 
-         Wend
-         PopListPosition(*this\__rows( ))
-         
-         
-         If *this\RowFocused( ) = *row ; *this\__rows( )
-            *this\RowFocused( )\_focus = 0 
-            *this\RowFocused( )\ColorState( ) = 0
-            DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
-            
-            ; if he is a parent then we find the next item of his level
-            PushListPosition( *this\__rows( ))
-            While NextElement( *this\__rows( ))
-               If *this\__rows( )\sublevel =< *row\sublevel
-                  Break
-               EndIf
-            Wend
-            
-            ; if we remove the last selected then
-            If *this\RowFocused( ) = *this\__rows( )
-               PreviousElement( *this\__rows( ))
-            EndIf
-            *this\RowFocused( ) = *this\__rows( )
-            PopListPosition( *this\__rows( ))
-            
-            If *this\RowFocused( )
-               If *this\RowFocused( )\RowParent( ) 
-                  If *this\RowFocused( )\RowParent( )\buttonbox  
-                     If *this\RowFocused( )\RowParent( )\buttonbox\checked
-                        *this\RowFocused( ) = *this\RowFocused( )\RowParent( )
-                     EndIf
-                  EndIf
-               EndIf
+               Wend
+               PopListPosition( *this\__rows( ))
                
-               *this\RowFocused( )\_focus = *this\focus
-               *this\RowFocused( )\ColorState( ) = *this\focus
-               DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+               ; if the remove last parent children's
+               If *rowParent\_last = *row
+                  *rowParent\childrens = #False
+                  *rowParent\_last      = #Null
+               Else
+                  *rowParent\childrens = #True
+               EndIf
             EndIf
+            
+            ; before deleting a parent, we delete its children's
+            If *row\childrens
+               PushListPosition( *this\__rows( ))
+               While NextElement( *this\__rows( ))
+                  If *this\__rows( )\sublevel > sublevel
+                     ; 
+                     If *this\RowFocused( ) = *this\__rows( )
+                        *this\RowFocused( ) = *row
+                     EndIf
+                     ;
+                     DeleteElement( *this\__rows( ))
+                     *this\countitems - 1
+                     removecount + 1
+                  Else
+                     Break
+                  EndIf
+               Wend
+               PopListPosition( *this\__rows( ))
+            EndIf
+            
+            ; 
+            If *this\RowFirstLevelFirst( ) = *row
+               PushListPosition( *this\__rows( ))
+               If NextElement( *this\__rows( ))
+                  *this\RowFirstLevelFirst( ) = *this\__rows( )
+               Else
+                  *this\RowFirstLevelFirst( ) = 0
+               EndIf
+               PopListPosition( *this\__rows( ))
+            EndIf
+            
+            ; 
+            If *this\RowFirstLevelLast( ) = *row
+               PushListPosition( *this\__rows( ))
+               If PreviousElement( *this\__rows( ))
+                  If *this\__rows( )\sublevel = *row\sublevel
+                     *this\RowFirstLevelLast( ) = *this\__rows( )
+                  Else
+                     *rowParent = *this\__rows( )\RowParent( )
+                     While *rowParent
+                        If *rowParent\sublevel = *row\sublevel
+                           Break
+                        Else
+                           *rowParent = *rowParent\RowParent( )
+                        EndIf
+                     Wend
+                     *this\RowFirstLevelLast( ) = *rowParent
+                  EndIf
+               Else
+                  *this\RowFirstLevelLast( ) = 0
+               EndIf
+               PopListPosition( *this\__rows( ))
+            EndIf
+            
+            ;
+            PushListPosition( *this\__rows( ))
+            While NextElement( *this\__rows( ))
+               *this\__rows( )\lindex - removecount ; = ListIndex( *this\__rows( ) ) 
+            Wend
+            PopListPosition(*this\__rows( ))
+            
+            ;
+            If *this\RowFocused( ) = *row 
+               *this\RowFocused( )\_focus = 0 
+               *this\RowFocused( )\ColorState( ) = 0
+               
+               PushListPosition( *this\__rows( ))
+               ; if he is a parent then we find the next item of his level
+               While NextElement( *this\__rows( ))
+                  If *this\__rows( )\sublevel =< *row\sublevel
+                     Break
+                  EndIf
+               Wend
+               
+               ; if we remove the last selected then
+               If *this\RowFocused( ) = *this\__rows( )
+                  PreviousElement( *this\__rows( ))
+               EndIf
+               ;
+               *this\RowFocused( ) = *this\__rows( )
+               
+               If *this\RowFocused( )
+                  If *this\RowFocused( )\RowParent( ) 
+                     If *this\RowFocused( )\RowParent( )\buttonbox  
+                        If *this\RowFocused( )\RowParent( )\buttonbox\checked
+                           *this\RowFocused( ) = *this\RowFocused( )\RowParent( )
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                  *this\RowFocused( )\_focus = *this\focus
+                  *this\RowFocused( )\ColorState( ) = *this\focus
+                  ;
+                  ; DoEvents( *this, #__event_StatusChange, *row\rindex, *row\ColorState( ))
+                  ; DoEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                  ; DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+               EndIf
+               PopListPosition( *this\__rows( ))
+            EndIf
+            
+            ;
+            DeleteElement( *this\__rows( ))
+            *this\WidgetChange( ) = 1
+            *this\countitems - 1
+            
+            result = #True
          EndIf
          
-         ;
-         DeleteElement( *this\__rows( ))
-         
-         *this\WidgetChange( ) = 1
-         *this\countitems - 1
-         PostRepaint( *this\root )
-         result = #True
-      EndIf
-      
          ;
          If *this\type = #__type_Panel
             result = bar_tab_removeItem( *this\tabbar, Item )
@@ -18439,6 +18225,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Next
                   PopListPosition( *rows( ))
                   
+                  If *this\scroll_height( ) <  *this\inner_height( )
+                     If bar_PageChange( *this\scroll\v, 0 )
+                        Update_TreeRows( *this, *rows( ) )
+                     EndIf
+                  EndIf
+                  
+                 ; Debug  ""+*this\scroll_height( ) +" "+  *this\height
                   ;\\
                   If *this\mode\gridlines
                      ; *this\scroll_height( ) - *this\mode\gridlines
@@ -24488,9 +24281,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8917
-; FirstLine = 8307
-; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v--2-8---vv------------------------------------84vu+0------------------------------------------------------dH+---------------------------------------------------------------------------------------------------------------------++--------------------------------------------------------------------------------------------------------------------------------------------------------------f-+---f---0---8---+----4------d--8z------++-+-----------8--------------------------------------------------------
+; CursorPosition = 8673
+; FirstLine = 7857
+; Folding = -----------------------------------------------------------------------------------0--------v----------------------------------------------------------v--2-8---vv------------------------------------84vu+0-----------------------------------+------------8O9---------------------------------------------------------------------------------------------------------------------00---------------------------------------------------------------------------------------------------------------------------------------------------------------84----8--v---f---4-----+-----v8-ff+-----44-4-----------f---------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
