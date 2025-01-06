@@ -10,8 +10,8 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
  UseWidgets( )
  
- Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
-  Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+ Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
+  Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
   If gadget =- 1 : gadget = g : EndIf
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -288,7 +288,7 @@ EndProcedure
 ; ;     ;     Debug "g "+ GetGadgetText(g)
     g = 0
     ; 1_example
-    TreeGadget_(g, 10, 10, 210, 100)                                         
+    TreeGadget_(g, 10, 10, 210, 100, #PB_Tree_CheckBoxes)                                         
     AddGadgetItem(g, -1, "Node "+Str(a), img, 0)                                         
     AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)                                           
     AddGadgetItem(g, -1, "Sub-Item 3", 0, 3)
@@ -299,7 +299,7 @@ EndProcedure
       
     g = 1
     ; 2_example
-    TreeGadget_(g, 10, 10+110, 210, 100)                                         
+    TreeGadget_(g, 10, 10+110, 210, 100, #PB_Tree_CheckBoxes)                                         
     AddGadgetItem(g, 0, "Node "+Str(a), img, 0)                                         
     AddGadgetItem(g, 1, "Sub-Item 1", 0, 1)                                           
     AddGadgetItem(g, 3, "Sub-Item 3", 0, 3)
@@ -491,7 +491,7 @@ EndProcedure
     ;}
     
     
-    splitter(230, 100, 210, 210, *g6,*g5, #PB_Splitter_Vertical)                                         
+    Splitter(230, 100, 210, 210, *g6,*g5, #PB_Splitter_Vertical)                                         
     
     
        ;  2_example
@@ -586,8 +586,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 514
-; FirstLine = 356
+; CursorPosition = 301
+; FirstLine = 118
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware

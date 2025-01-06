@@ -713,26 +713,23 @@ Procedure widget_delete( *this._s_WIDGET  )
    If *this <> ide_design_MDI
       item = GetData( *this )
       
-      Free( *this )
-      
-      RemoveItem( ide_inspector_view, item )
-      ;
-      ; after remove item 
-      CountItems = CountItems( ide_inspector_view ) 
-      If CountItems
-         ; update widget data item
-         For i = 0 To CountItems - 1
-            SetData( GetItemData( ide_inspector_view, i ), i )
-         Next 
+      If item 
+         Free( *this )
+         
+         RemoveItem( ide_inspector_view, item )
          ;
-         ; set anchor focus
-         If a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
-            properties_updates( ide_inspector_properties, a_focused( ) )
-         EndIf
-      Else
-         ; reset anchor focus
-         If a_Set( ide_design_MDI )
-            properties_updates( ide_inspector_properties, 0 )
+         ; after remove item 
+         CountItems = CountItems( ide_inspector_view ) 
+         If CountItems 
+            ; update widget data item
+            For i = 0 To CountItems - 1
+               SetData( GetItemData( ide_inspector_view, i ), i )
+            Next 
+            ;
+            ; set anchor focus
+            If a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
+               properties_updates( ide_inspector_properties, a_focused( ) )
+            EndIf
          EndIf
       EndIf
    EndIf
@@ -1320,6 +1317,7 @@ Procedure ide_events( )
          
       Case #__event_DragStart
          If *e_widget = ide_inspector_elements
+            SetState( *e_widget, WidgetEventItem( ))
             Debug " ------ drag ide_events() ----- "
             If DDragPrivate( #_DD_CreateNew )
                ChangeCurrentCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, GetState( *e_widget ) ) ) ) )
@@ -1875,8 +1873,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1338
-; FirstLine = 1145
+; CursorPosition = 1319
+; FirstLine = 1133
 ; Folding = ----4-------------+8--f----------
 ; EnableXP
 ; DPIAware

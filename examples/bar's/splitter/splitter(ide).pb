@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   If minsize
     ;\\ set splitter default minimum size
-    widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
+    widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 300)
     widget::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
     widget::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
     widget::SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 100)
@@ -166,8 +166,8 @@ CompilerEndIf
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 132
+; CursorPosition = 50
+; FirstLine = 36
 ; Folding = -
 ; Optimizer
 ; EnableXP

@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Global a, *g._s_WIDGET, g, CountItems=9; количесвто итемов 
+   Global a, *g1._s_WIDGET, g1, *g2._s_WIDGET, g2, CountItems=9; количесвто итемов 
    
    Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
       Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
                *rows( ) = *row
                *rowLast = *this\RowLast( )
                *this\RowLast( ) = *row
-             Else
+            Else
                SelectElement( *rows( ), position )
                
                ; for the tree( )
@@ -227,7 +227,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure AddItem_( *this._s_WIDGET, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
-      ; ProcedureReturn AddItem( *this, position, Text, Image, sublevel )
+      ProcedureReturn AddItem( *this, position, Text, Image, sublevel )
       ProcedureReturn AddItems( *this, *this\__rows( ), position, Text, Image, sublevel )
    EndProcedure
    
@@ -239,100 +239,105 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   If Open(1, 100, 50, 525, 435+40, "demo add item", #PB_Window_SystemMenu)
+   If Open(1, 100, 50, 525, 435+40, "demo remove item", #PB_Window_SystemMenu)
       ; demo gadget
-      g = TreeGadget_(#PB_Any, 10, 10, 250, 450, #PB_Tree_CheckBoxes|#PB_Tree_ThreeState|#PB_Tree_AlwaysShowSelection)
-      AddGadgetItem(g, 0, "0_0", 0 )
-      AddGadgetItem(g, 1, "1_0_1", 0, 1) 
-      AddGadgetItem(g, 4, "4_0_3", 0, 2) 
-      AddGadgetItem(g, 5, "5_0_4", 0, 2) 
-      AddGadgetItem(g, 6, "6_0_4_1", 0, 3) 
-      AddGadgetItem(g, 8, "8_0_4_1_1 [------------------]", 0, 4) 
-      AddGadgetItem(g, 7, "7_0_4_2", 0, 3) 
-      AddGadgetItem(g, 2, "2_0_2", 0, 1) 
-      AddGadgetItem(g, 3, "3_0_2_1", 0, 4) 
+      g1 = TreeGadget_(#PB_Any, 10, 10, 250, 120, #PB_Tree_CheckBoxes|#PB_Tree_ThreeState|#PB_Tree_AlwaysShowSelection)
+      AddGadgetItem(g1, 0, "Window ", 0, 0)
+      AddGadgetItem(g1, 1, "Container1 ", 0, 1)
+      AddGadgetItem(g1, -1, "Container2 ", 0, 1)
+      AddGadgetItem(g1, 2, "button1 ", 0, 2)
+      AddGadgetItem(g1, 5, "button2 ", 0, 3)
+      ;        AddGadgetItem(g1, 2, "button0 ", 0, 2)
+      ;        AddGadgetItem(g1, -1, "button ", 0, 1)
+      
+      
+      g2 = TreeGadget_(#PB_Any, 10, 135, 250, 330);, #PB_Tree_NoButtons|#PB_Tree_NoLines)                                                                     
+      AddGadgetItem(g2, 0, "0_0", 0 )
+      AddGadgetItem(g2, 1, "1_0_1", 0, 1) 
+      AddGadgetItem(g2, 4, "4_0_3", 0, 2) 
+      AddGadgetItem(g2, 5, "5_0_4", 0, 2) 
+      AddGadgetItem(g2, 6, "6_0_4_1", 0, 3) 
+      AddGadgetItem(g2, 8, "8_0_4_1_1 [------------------]", 0, 4) 
+      AddGadgetItem(g2, 7, "7_0_4_2", 0, 3) 
+      AddGadgetItem(g2, 2, "2_0_2", 0, 1) 
+      AddGadgetItem(g2, 3, "3_0_2_1", 0, 4) 
       ;
       ;
-      AddGadgetItem(g, 9, "9_2",0 )
-      AddGadgetItem(g, 10, "10_3", 0 )
-      AddGadgetItem(g, 11, "11_4", 0 )
-      AddGadgetItem(g, 12, "12_5", 0 )
+      AddGadgetItem(g2, 9, "9_2",0 )
+      AddGadgetItem(g2, 10, "10_3", 0 )
+      AddGadgetItem(g2, 11, "11_4", 0 )
+      AddGadgetItem(g2, 12, "12_5", 0 )
       ;
       ; comment\uncomment
-      AddGadgetItem(g, 8, "8_add",0 )
+      AddGadgetItem(g2, 8, "8_add",0 )
       ;
-      AddGadgetItem(g, 13, "13_6", 0 )
-      AddGadgetItem(g, 14, "14_7", 0 )
+      AddGadgetItem(g2, 13, "13_6", 0 )
+      AddGadgetItem(g2, 14, "14_7", 0 )
       
-;       ;  
-;       AddGadgetItem(g, 0, "Window ", 0, 0)
-;       AddGadgetItem(g, 1, "Container ", 0, 1)
-;       AddGadgetItem(g, -1, "but7ton ", 0, 1)
-;       AddGadgetItem(g, 2, "Cont3ainer ", 0, 2)
-;        AddGadgetItem(g, 5, "but4ton ", 0, 3)
-; ;       AddGadgetItem(g, 2, "but2ton ", 0, 2)
-; ;       AddGadgetItem(g, -1, "button ", 0, 1)
-       
-       ;
-      BindGadgetEvent(g, @gadget_events())
-      For a=0 To CountGadgetItems(g) - 1
-         ;Debug GetGadgetItemText(g, a)
-         SetGadgetItemState(g, a, #PB_Tree_Expanded) 
-      Next
-      Debug ""
+      ;       
+      Define i : For i=0 To CountGadgetItems(g1)-1 : SetGadgetItemState(g1, i, #PB_Tree_Expanded) : Next
+      Define i : For i=0 To CountGadgetItems(g2)-1 : SetGadgetItemState(g2, i, #PB_Tree_Expanded) : Next
+      
+      ;
+      BindGadgetEvent(g1, @gadget_events())
+      BindGadgetEvent(g2, @gadget_events())
       
       ; demo widget
-      *g = Tree(265, 10, 250, 450, #PB_Tree_CheckBoxes|#PB_Tree_ThreeState ) 
-      AddItem_(*g, 0, "0_0", -1 )
-      AddItem_(*g, 1, "1_0_1", 0, 1) 
-      AddItem_(*g, 4, "4_0_3", -1, 2) 
-      AddItem_(*g, 5, "5_0_4", -1, 2) 
-      AddItem_(*g, 6, "6_0_4_1", -1, 3) 
-      AddItem_(*g, 8, "8_0_4_1_1 [------------------]", -1, 4) 
-      AddItem_(*g, 7, "7_0_4_2", -1, 3) 
-      AddItem_(*g, 2, "2_0_2", -1, 1) 
-      AddItem_(*g, 3, "3_0_2_1", -1, 4) 
+      *g1 = Tree(265, 10, 250, 120, #PB_Tree_CheckBoxes|#PB_Tree_ThreeState ) 
+      AddItem(*g1, 0, "Window ", -1, 0)
+      AddItem(*g1, 1, "Container1 ", -1, 1)
+      AddItem(*g1, -1, "Container2 ", -1, 1)
+      AddItem(*g1, 2, "button1 ", -1, 2)
+      AddItem(*g1, 5, "button2 ", -1, 3)
+      ;       AddItem(*g1, 2, "button0 ", -1, 2)
+      ;       AddItem(*g1, -1, "button ", -1, 1)
+      
+      
+      *g2 = Tree(265, 135, 250, 330);, #PB_Tree_NoButtons|#PB_Tree_NoLines )
+      AddItem_(*g2, 0, "0_0", -1 )
+      AddItem_(*g2, 1, "1_0_1", 0, 1) 
+      AddItem_(*g2, 4, "4_0_3", -1, 2) 
+      AddItem_(*g2, 5, "5_0_4", -1, 2) 
+      AddItem_(*g2, 6, "6_0_4_1", -1, 3) 
+      AddItem_(*g2, 8, "8_0_4_1_1 [------------------]", -1, 4) 
+      AddItem_(*g2, 7, "7_0_4_2", -1, 3) 
+      AddItem_(*g2, 2, "2_0_2", -1, 1) 
+      AddItem_(*g2, 3, "3_0_2_1", -1, 4) 
       ;       ;
       ;       ;
-      AddItem_(*g, 9, "9_2",-1 )
-      AddItem_(*g, 10, "10_3", -1 )
-      AddItem_(*g, 11, "11_4", -1 )
-      AddItem_(*g, 12, "12_5", -1 )
+      AddItem_(*g2, 9, "9_2",-1 )
+      AddItem_(*g2, 10, "10_3", -1 )
+      AddItem_(*g2, 11, "11_4", -1 )
+      AddItem_(*g2, 12, "12_5", -1 )
       ;       ;
       ; comment\uncomment
-      AddItem_(*g, 8, "8_add", -1 )
+      AddItem_(*g2, 8, "8_add", -1 )
       ;
-      AddItem_(*g, 13, "13_6", -1 )
-      AddItem_(*g, 14, "14_7", -1 )
+      AddItem_(*g2, 13, "13_6", -1 )
+      AddItem_(*g2, 14, "14_7", -1 )
       
+      ;
+      ; Define i : For i=0 To CountItems(*g1)-1 : SetItemState(*g1, i, #PB_Tree_Expanded) : Next
+      ; Define i : For i=0 To CountItems(*g2)-1 : SetItemState(*g2, i, #PB_Tree_Expanded) : Next
       
-;        AddItem_(*g, 0, "Window ", -1, 0)
-;       AddItem_(*g, 1, "Container ", -1, 1)
-;       AddItem_(*g, -1, "but7ton ", -1, 1)
-;       AddItem_(*g, 2, "Cont3ainer ", -1, 2)
-;        AddItem_(*g, 5, "but4ton ", -1, 3)
-; ;       AddItem_(*g, 2, "but2ton ", -1, 2)
-; ;       AddItem_(*g, -1, "button ", -1, 1)
+      Bind(*g1, @widget_events())
+      Bind(*g2, @widget_events())
       
-      Debug *g\Rowlast( )\text\string
-      
-      Bind(*g, @widget_events())
-      
-      ;       For a=0 To CountItems(*g) - 1
-      ;          Debug GetItemText(*g, a)
-      ;       Next
-      
-      ForEach *g\__rows( )
-         Debug ""+*g\__rows( )\index +" "+*g\__rows( )\sublevel +" "+*g\__rows( )\text\string
-      Next
+;       ;       For a=0 To CountItems(*g1) - 1
+;       ;          Debug GetItemText(*g1, a)
+;       ;       Next
+;       
+;       ForEach *g1\__rows( )
+;          Debug ""+*g1\__rows( )\index +" "+*g1\__rows( )\sublevel +" "+*g1\__rows( )\text\string
+;       Next
       
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 103
+; CursorPosition = 331
+; FirstLine = 305
 ; Folding = -------
 ; EnableXP
 ; DPIAware
