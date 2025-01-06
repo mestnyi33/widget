@@ -1318,9 +1318,10 @@ Procedure ide_events( )
       Case #__event_DragStart
          If *e_widget = ide_inspector_elements
             SetState( *e_widget, WidgetEventItem( ))
+            
             Debug " ------ drag ide_events() ----- "
             If DDragPrivate( #_DD_CreateNew )
-               ChangeCurrentCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, GetState( *e_widget ) ) ) ) )
+               ChangeCurrentCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, WidgetEventItem( ) ) ) ) )
             EndIf
          EndIf
          
@@ -1873,8 +1874,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1319
-; FirstLine = 1133
+; CursorPosition = 1321
+; FirstLine = 1127
 ; Folding = ----4-------------+8--f----------
 ; EnableXP
 ; DPIAware

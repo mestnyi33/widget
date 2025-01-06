@@ -14,39 +14,16 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState( *this, state )
    EndProcedure
    
-   
-   Procedure StatusChange( *this._s_WIDGET, item )
-      PushItem(EventWidget( ))
-      If SelectItem( EventWidget( ), item)
-         ;
-         If EventWidget( )\__rows( ) 
-            PushItem( *this )
-            SelectItem( *this, EventWidget( )\__rows( )\index)
-            *this\__rows( )\color = EventWidget( )\__rows( )\color
-            
-            If *this\__rows( )\colorState( ) = #__s_2
-               If *this\RowFocused( )
-                  *this\RowFocused( )\focus = 0
-               EndIf
-               *this\RowFocused( ) = *this\__rows( )
-               *this\RowFocused( )\focus = 1
-            EndIf
-            
-            PopItem( *this )
-         EndIf
-      EndIf
-      PopItem(EventWidget( ))
-   EndProcedure
-   
-   Procedure ResizePropertiesItem( *second._s_WIDGET )
+   ;-
+   Procedure ResizeButton( *second._s_WIDGET )
       Protected *this._s_WIDGET
       Protected *row._s_ROWS
-      
       *row = *second\RowFocused( )
       If *row
          *this = *row\data
          ;
          If *this
+            Debug *second\RowFocused( )
             ;             Resize(*this,
             ;                    *row\x + *second\scroll_x( ),; +30, 
             ;                    *row\y + *second\scroll_y( ), 
@@ -72,6 +49,52 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
+   Procedure DisplayButton( item )
+      Protected *row._s_ROWS
+      *row = *this\RowFocused( )
+      If *row
+         ResizeButton( *this )
+         SetText( *row\data, *row\text\string )
+      EndIf
+   EndProcedure
+   
+   Procedure ButtonEvents( )
+      Select WidgetEvent( )
+         Case #__event_Down
+            GetActive( )\gadget = EventWidget( )
+            
+         Case #__event_MouseWheel
+            If WidgetEventItem( ) > 0
+               SetState(*this\scroll\v, GetState( *this\scroll\v ) - WidgetEventData( ) )
+            EndIf
+      EndSelect
+   EndProcedure
+   
+   ;-
+   Procedure StatusChange( *this._s_WIDGET, item )
+      PushItem(EventWidget( ))
+      If SelectItem( EventWidget( ), item)
+         ;
+         If EventWidget( )\__rows( ) 
+            PushItem( *this )
+            SelectItem( *this, EventWidget( )\__rows( )\index)
+            *this\__rows( )\color = EventWidget( )\__rows( )\color
+            
+            If *this\__rows( )\colorState( ) = #__s_2
+               If *this\RowFocused( )
+                  *this\RowFocused( )\focus = 0
+                  ;Debug *this\RowFocused( )\index
+               EndIf
+               *this\RowFocused( ) = *this\__rows( )
+               *this\RowFocused( )\focus = 1
+            EndIf
+            
+            PopItem( *this )
+         EndIf
+      EndIf
+      PopItem(EventWidget( ))
+   EndProcedure
+   
    
    Procedure widget_events()
       If WidgetEvent( ) <> #__event_mousemove
@@ -82,12 +105,21 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__event_Down
-            ;             Select EventWidget( )
-            ;                Case *demo : SetState_(*this, WidgetEventItem( ))
-            ;                Case *this : SetState_(*demo, WidgetEventItem( ))
-            ;             EndSelect
-            SetState_( EventWidget( ), WidgetEventItem( ))
+            ; чтобы выбирать сразу
+            ; SetState_( EventWidget( ), WidgetEventItem( ))
             
+         Case #__event_Change
+            Debug "change  "+GetClass(EventWidget( )) +" "+ WidgetEventData( )
+            
+            ;
+            DisplayButton( WidgetEventItem( ) )
+            
+            ; Debug "-------change-start-------"
+            Select EventWidget( )
+               Case *demo : SetState_(*this, WidgetEventItem( ))
+               Case *this : SetState_(*demo, WidgetEventItem( ))
+            EndSelect
+            ; Debug "-------change-stop-------"
             
          Case #__event_StatusChange
             If WidgetEventData( ) = #PB_Tree_Expanded Or
@@ -106,34 +138,30 @@ CompilerIf #PB_Compiler_IsMainFile
                Case *demo : StatusChange(*this, WidgetEventItem( ))
                Case *this : StatusChange(*demo, WidgetEventItem( ))
             EndSelect
-            ;  SetItemState( *demo, WidgetEventItem( ), 1)
             
-            ; Case #__event_LostFocus
-            If WidgetEventData( ) = 3
-               If GetActive( ) <> EventWidget( )
-                  Debug "set active "+GetClass(EventWidget( ))
-                  SetActive( EventWidget( ))
-               EndIf
-            EndIf
+            ;             ; Case #__event_LostFocus
+            ;             If WidgetEventData( ) = 3
+            ;                If GetActive( ) <> EventWidget( )
+            ;                   Debug "set active "+GetClass(EventWidget( ))
+            ;                   SetActive( EventWidget( ))
+            ;                EndIf
+            ;             EndIf
             
-         Case #__event_Change
-            Debug "change  "+GetClass(EventWidget( )) +" "+ WidgetEventData( )
-; ;             SetItemData( *this, WidgetEventItem( ), *test )
-; ;             ResizePropertiesItem( *this )
-; ;             ; Debug ""+WidgetEventItem( ) +" "+ GetState(EventWidget( ))
-; ;             SetItemData( *this, WidgetEventItem( ), 0 )
-            
-            ;             ;Debug "-------change-start-------"
-            ;             Select EventWidget( )
-            ;                Case *demo : SetState_(*this, GetState(EventWidget( )))
-            ;                Case *this : SetState_(*demo, GetState(EventWidget( )))
-            ;             EndSelect
+         Case #__event_ScrollChange
             Select EventWidget( )
-               Case *demo : SetState_(*this, WidgetEventItem( ))
-               Case *this : SetState_(*demo, WidgetEventItem( ))
+               Case *demo 
+                  If GetState( *this\scroll\v ) <> WidgetEventData( )
+                     SetState(*this\scroll\v, WidgetEventData( ) )
+                  EndIf
+               Case *this 
+                  If GetState( *demo\scroll\v ) <> WidgetEventData( )
+                     SetState(*demo\scroll\v, WidgetEventData( ) )
+                  EndIf
             EndSelect
-            ; ;             SetActive( EventWidget( ))
-            ;             ;Debug "-------change-stop-------"
+            
+            ResizeButton( *this )
+            
+            
       EndSelect
    EndProcedure
    
@@ -163,9 +191,9 @@ CompilerIf #PB_Compiler_IsMainFile
                   If *this\RowFocused( )
                      Protected item = *this\RowFocused( )\index
                      RemoveItem(*this, item)
-                    ; RemoveItem(*demo, item)
+                     ; RemoveItem(*demo, item)
                   EndIf
-               
+                  
                Case *reset : SetState_(*this, - 1)
                Case *item1 : SetState_(*this, Val(GetText(EventWidget( ))))
                Case *item2 : SetState_(*this, Val(GetText(EventWidget( ))))
@@ -199,6 +227,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*demo, @widget_events());, #__event_Change)
       Bind(*this, @widget_events());, #__event_Change)
       
+      OpenList( *this )
+      *test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_textcenter| bug
+      Bind( *test, @Buttonevents( ));, #__event_Change)
+      CloseList( )
+      
       For a = 0 To CountItems
          If a % 10 = 0
             AddItem(*demo, -1, "collaps "+Str(a), -1, 0)
@@ -212,6 +245,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Else
             AddItem(*this, -1, "Item "+Str(a), -1, 1)
          EndIf
+         SetItemData( *this, a, *test )
       Next
       
       If IsContainer(*this)
@@ -221,9 +255,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Define h = 20, Y = 20
       
-      OpenList( *this )
-      *test = Button( 0, 0, 0, 0, "test", #__flag_NoFocus)
-      CloseList( )
       
       *reset = Button( 250, Y+(1+h)*0, 100, h, "reset")
       *item1 = Button( 250, Y+(1+h)*1, 100, h, "1")
@@ -252,6 +283,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 34
-; Folding = -----
+; CursorPosition = 230
+; FirstLine = 213
+; Folding = ------
 ; EnableXP
