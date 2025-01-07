@@ -5,7 +5,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
-  Define a,i, height=60
+  Define a,i, Height=60
   
   UsePNGImageDecoder()
   LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/world.png")
@@ -59,11 +59,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select eventtype
       Case #__event_Focus
-        ComboBox.s = "focus "+Str(EventWidget( )\index-1)+" "+eventtype
+        ComboBox.s = "focus "+Str(EventWidget( )\index)+" "+eventtype
       Case #__event_LostFocus
-        ComboBox.s = "lostfocus "+Str(EventWidget( )\index-1)+" "+eventtype
+        ComboBox.s = "lostfocus "+Str(EventWidget( )\index)+" "+eventtype
       Case #__event_Change
-        ComboBox.s = "change "+Str(EventWidget( )\index-1)+" "+eventtype
+        ComboBox.s = "change "+Str(EventWidget( )\index)+" "+eventtype
     EndSelect
     
     If eventtype = #__event_Focus
@@ -132,8 +132,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 90
+; CursorPosition = 61
+; FirstLine = 26
 ; Folding = 8--
 ; Optimizer
 ; EnableXP

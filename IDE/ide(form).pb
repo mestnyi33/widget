@@ -129,11 +129,11 @@ Macro properties_update_class( _gadget_, _value_ )
 EndMacro
 
 Macro properties_update_hide( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 )+StrBool( Hide( _value_ ) ) )
+   SetItemTextProperties( _gadget_, #_pi_hide,    GetItemTextProperties( _gadget_, #_pi_hide )    +Chr( 10 )+BoolToStr( Hide( _value_ ) ) )
 EndMacro
 
 Macro properties_update_disable( _gadget_, _value_ )
-   SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 )+StrBool( Disable( _value_ ) ) )
+   SetItemTextProperties( _gadget_, #_pi_disable, GetItemTextProperties( _gadget_, #_pi_disable ) +Chr( 10 )+BoolToStr( Disable( _value_ ) ) )
 EndMacro
 
 Macro properties_update_coordinate( _gadget_, _value_ )
@@ -171,11 +171,19 @@ Macro properties_updates( _gadget_, _value_ )
 EndMacro
 
 ;-
-Procedure.s StrBool( state )
-   If state > 0
+Procedure.s BoolToStr( val )
+   If val > 0
       ProcedureReturn "True"
-   ElseIf state = 0
+   ElseIf val = 0
       ProcedureReturn "False"
+   EndIf
+EndProcedure
+
+Procedure StrToBool( str.s )
+   If str = "True"
+      ProcedureReturn 1
+   ElseIf str = "False"
+      ProcedureReturn 0
    EndIf
 EndProcedure
 
@@ -218,7 +226,7 @@ Procedure ChangeEditPropertiesItem( *inspector._s_WIDGET )
          Select Type( *this )
             Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
             Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
-            Case #__type_ComboBox : SetState(*this, Val(*second\RowFocused( )\text\string) )
+            Case #__type_ComboBox : SetState(*this, StrToBool(*second\RowFocused( )\text\string) )
          EndSelect
       EndIf
    EndIf
@@ -1904,9 +1912,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 333
-; FirstLine = 291
-; Folding = -4----------------f-0--f----------
+; CursorPosition = 181
+; FirstLine = 179
+; Folding = -------------------04---0---------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
