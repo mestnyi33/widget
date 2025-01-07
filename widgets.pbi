@@ -3923,7 +3923,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default, flags.q = 0 )
-         If State = #PB_Default : ProcedureReturn *this\hide : EndIf
+         If State = #PB_Default : ProcedureReturn *this\hide[1] : EndIf
          
          ;If *this\hide[1] <> state
             *this\hide[1] = state
@@ -3952,7 +3952,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.b Disable( *this._s_WIDGET, State.b = #PB_Default )
-         If State = #PB_Default : ProcedureReturn *this\disable : EndIf
+         If State = #PB_Default : ProcedureReturn *this\disable[1] : EndIf
          
          If *this\disable[1] <> State
             *this\disable[1] = State
@@ -8591,11 +8591,20 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure   AddItem( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, flag.q = 0 )
          Protected result
+         If *this\type = #__type_Combobox
+            If IsImage( Image )
+               ;Debug ""+ImageWidth(Image)+""+DPIResolutionX( )
+               If ImageWidth(Image) <> DPIScaledX(16) And ImageHeight(Image) <> DPIScaledY(16)
+                  ResizeImage(Image, DPIScaledX(16), DPIScaledY(16), #PB_Image_Raw )
+               EndIf
+            EndIf
+         EndIf
+         
          ;          
          ;CompilerIf #PB_Compiler_DPIAware
          If IsImage( Image )
             ;Debug ""+ImageWidth(Image)+""+DPIResolutionX( )
-            If ImageWidth(Image) =< 16 And ImageHeight(Image) =< 16
+            If ImageWidth(Image) <> DPIScaledX(16) And ImageHeight(Image) <> DPIScaledY(16)
                ResizeImage(Image, DPIScaledx(ImageWidth(Image)), DPIScaledy(ImageHeight(Image)), #PB_Image_Raw )
             EndIf
          EndIf
@@ -12536,8 +12545,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *display\button
                   If *this\hide
                      *display\button\arrow\direction = 3 
+                     ;If *display\button\enter
+                        If MouseButtonPress( )
+                           *display\button\ColorState( ) = 2
+                           *display\ColorState( ) = 2
+                        EndIf
+                     ;EndIf
                   Else
                      *display\button\arrow\direction = 2
+                     If *display\ColorState( ) = 2
+                        If *display\button\enter
+                           *display\ColorState( ) = 1
+                        Else
+                           *display\ColorState( ) = 0
+                        EndIf
+                        *display\button\ColorState( ) = 0
+                     EndIf
                   EndIf
                EndIf
                
@@ -12711,6 +12734,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Height = DPIUnScaledY( Height )
                   EndIf
                CompilerEndIf
+               
             EndIf
             
             ;\\
@@ -12793,6 +12817,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If Not ( root( ) And root( )\canvas\gadget = *display\root\canvas\gadget )
                   ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ) )
                EndIf 
+               DoEvents( *this, #__event_Focus )
                ProcedureReturn #True
             EndIf
             
@@ -20613,6 +20638,43 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
+         ;\\ combobox button state
+         If event = #__event_MouseEnter
+            If *this\parent
+               If *this\parent\stringbar
+                  If *this\parent\button
+                     If *this\parent\button\enter = 1
+                        *this\parent\button\enter = 0
+                        If *this\ColorState( ) = 1
+                           *this\ColorState( ) = 0
+                        EndIf
+                        *this\root\repaint = #True
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         If *this\button
+            If is_atpoint_( *this\button, mouse( )\x, mouse( )\y )
+               If *this\button\enter = 0
+                  *this\button\enter = 1
+                  If *this\ColorState( ) = 0
+                     *this\ColorState( ) = 1
+                  EndIf
+                  *this\root\repaint = #True
+               EndIf
+            Else
+               If *this\button\enter = 1
+                  *this\button\enter = 0
+                  If *this\ColorState( ) = 1
+                     *this\ColorState( ) = 0
+                  EndIf
+                  *this\root\repaint = #True
+               EndIf
+            EndIf
+         EndIf
+            
+         
          ;\\ update current cursor state
          If event = #__event_MouseEnter Or
             event = #__event_MouseMove Or
@@ -20762,9 +20824,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                DoEvent_Lines( *this, event, mouse( )\x, mouse( )\y )
                
-            ElseIf is_items_( *this )
-               
-               DoEvent_Rows( *this, *this\__rows( ), event, mouse( )\x, mouse( )\y )
+            Else
+               If is_items_( *this )
+                  DoEvent_Rows( *this, *this\__rows( ), event, mouse( )\x, mouse( )\y )
+               EndIf
             EndIf
             If event = #__event_MouseEnter
                If is_integral_( *this )
@@ -20840,7 +20903,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ;\\
                Case #__type_Button, #__type_ButtonImage
                   If Not ( *this\togglebox And *this\togglebox\checked)
                      Select event
@@ -20895,7 +20957,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ;\\
                Case #__type_Option
                   If event = #__event_LeftClick
                      If SetState( *this, #True )
@@ -20903,7 +20964,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ;\\
                Case #__type_checkBox
                   If event = #__event_LeftClick
                      If SetState( *this, Bool( *this\togglebox\checked ! 1 ) )
@@ -20946,6 +21006,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\type = #__type_combobox
                      If *this\popupbar
                         DisplayPopupBar( *this\popupbar, *this )
+;                         If *this\button\enter
+;                            *this\button\ColorState( ) = 2
+;                            *this\ColorState( ) = 2
+;                         EndIf
                      EndIf
                   Else
                      If *this\root\parent And
@@ -20963,6 +21027,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             If event = #__event_up
+;                If *this\type = #__type_ComboBox 
+;                   If *this\ColorState( ) = 2
+;                      *this\button\ColorState( ) = 0
+;                      *this\ColorState( ) = 0
+;                   EndIf
+;                EndIf
+               
                If *this <> *this\root\parent
                   If *this\root\parent 
                      If *this\root\parent\type = #__type_ComboBox 
@@ -24282,9 +24353,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3917
-; FirstLine = 3908
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------8f0-+4-6---------------------------------------------------------------------------------f----------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----+8--------------------------------------------------------------
+; CursorPosition = 3925
+; FirstLine = 3924
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------8f0-+4-6---------------------------------------------------------------------------------f-----------------8-------------------------------------------------------------------------------------------f4k8---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0+u-0-4-0------f----04--------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
