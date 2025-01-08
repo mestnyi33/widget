@@ -22342,10 +22342,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             If constants::BinaryFlag( Flag, #__window_BorderLess )
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   If CocoaMessage(0, w, "hasShadow") = 0
                      CocoaMessage(0, w, "setHasShadow:", 1)
                   EndIf
+                  ; https://www.purebasic.fr/english/viewtopic.php?p=393084#p393084
+                  CocoaMessage(0, w, "setStyleMask:", CocoaMessage(0, w, "styleMask")&~#NSTitledWindowMask)
                CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
                   If GetClassLongPtr_( w, #GCL_STYLE ) & #CS_DROPSHADOW = 0
                      SetClassLongPtr_( w, #GCL_STYLE, #CS_DROPSHADOW )
@@ -24351,10 +24353,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3925
-; FirstLine = 3924
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 22348
+; FirstLine = 21368
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------8f0-+4-6---------------------------------------------------------------------------------f-----------------8-------------------------------------------------------------------------------------------f4k8---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0+u-0-4-0------f----04--------------------------------------------------------------
 ; Optimizer
 ; EnableXP
