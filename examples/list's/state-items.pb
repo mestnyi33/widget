@@ -1,7 +1,7 @@
 ﻿; 
 ; demo state
 
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -157,12 +157,15 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
       Next
       
-      SetGadgetItemState_(*g1, - 1, #PB_Tree_Selected )
-      SetGadgetItemState_(*g1, CountItems + 1, #PB_Tree_Selected )
-      SetGadgetItemState_(*g1, 1, #PB_Tree_Selected )
-      SetGadgetItemState_(*g1, 2, #PB_Tree_Selected|#PB_Tree_Checked )
-      SetGadgetItemState_(*g1, 3, #PB_Tree_Selected|#PB_Tree_Inbetween )
-      SetGadgetItemState_(*g1, 4, #PB_Tree_Selected|#PB_Tree_Inbetween|#PB_Tree_Expanded)
+      SetGadgetItemState_(*g1, 2, #PB_Tree_Checked )
+      SetGadgetItemState_(*g1, 2, #PB_Tree_Selected )
+      
+;       SetGadgetItemState_(*g1, - 1, #PB_Tree_Selected )
+;       SetGadgetItemState_(*g1, CountItems + 1, #PB_Tree_Selected )
+;       SetGadgetItemState_(*g1, 1, #PB_Tree_Selected )
+;       SetGadgetItemState_(*g1, 2, #PB_Tree_Selected|#PB_Tree_Checked )
+;       SetGadgetItemState_(*g1, 3, #PB_Tree_Selected|#PB_Tree_Inbetween )
+;       SetGadgetItemState_(*g1, 4, #PB_Tree_Selected|#PB_Tree_Inbetween|#PB_Tree_Expanded)
       
       ; баг или не баг
       SetGadgetState_(*g1, 0) 
@@ -188,13 +191,16 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       SetItemState(*w1, 4, #PB_Tree_Collapsed )
       
-      SetItemState(*w1, - 1, #PB_Tree_Selected )
-      SetItemState(*w1, CountItems + 1, #PB_Tree_Selected )
-      SetItemState(*w1, 1, #PB_Tree_Selected )
-      SetItemState(*w1, 2, #PB_Tree_Selected|#PB_Tree_Checked )
-      SetItemState(*w1, 3, #PB_Tree_Selected|#PB_Tree_Inbetween )
-      SetItemState(*w1, 4, #PB_Tree_Selected|#PB_Tree_Inbetween|#PB_Tree_Expanded)
-      ;SetState(*w1, 0) 
+      SetItemState(*w1, 2, #PB_Tree_Checked )
+      SetItemState(*w1, 2, #PB_Tree_Selected )
+      
+;       SetItemState(*w1, - 1, #PB_Tree_Selected )
+;       SetItemState(*w1, CountItems + 1, #PB_Tree_Selected )
+       
+;       SetItemState(*w1, 2, #PB_Tree_Selected|#PB_Tree_Checked )
+;       SetItemState(*w1, 3, #PB_Tree_Selected|#PB_Tree_Inbetween )
+;       SetItemState(*w1, 4, #PB_Tree_Selected|#PB_Tree_Inbetween|#PB_Tree_Expanded)
+;       ;SetState(*w1, 0) 
       
       Bind(*w2, @widget_events())
       
@@ -215,8 +221,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 175
+; CursorPosition = 25
+; FirstLine = 24
 ; Folding = ------
 ; EnableXP
 ; DPIAware

@@ -131,6 +131,8 @@ CompilerEndIf
 ;-  >>>
 CompilerIf Not Defined( widget, #PB_Module )
    DeclareModule widget
+      Global display_mode_linux = 1
+      
       Global test_align = 0
       Global test_atpoint
       Global test_display
@@ -6206,15 +6208,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                *row = *this\__rows( )
                ;
                If State & #PB_Tree_Selected
-                  *row\_focus = 1
-                  If *this\focus
-                     *row\ColorState( ) = #__s_2
+                  If *row\_focus
+                     *row\ColorState( ) = #__s_0
                   Else
-                     *row\ColorState( ) = #__s_3
+                     If *this\focus
+                        *row\ColorState( ) = #__s_2
+                     Else
+                        *row\ColorState( ) = #__s_3
+                     EndIf
                   EndIf
-               Else
-                  *row\_focus = 0
-                  *row\ColorState( ) = #__s_0
+                  ;
+                  *row\_focus ! 1
                EndIf
                ;
                If State & #PB_Tree_Inbetween 
@@ -6222,25 +6226,24 @@ CompilerIf Not Defined( widget, #PB_Module )
                ElseIf State & #PB_Tree_Checked
                   *row\checkbox\checked = #PB_Checkbox_Checked
                Else
-                  *row\checkbox\checked = #PB_Checkbox_Unchecked
+                  If Not State
+                     *row\checkbox\checked = #PB_Checkbox_Unchecked
+                  EndIf
                EndIf
                ;
                If *row\childrens
                   If State & #PB_Tree_Expanded Or State & #PB_Tree_Collapsed 
                      *row\buttonbox\checked = Bool( State & #PB_Tree_Collapsed )
-                     *this\WidgetChange( )             = #True
-                     
+                     *this\WidgetChange( )  = #True
+                     ;
                      PushListPosition( *this\__rows( ))
                      While NextElement( *this\__rows( ))
                         If *this\__rows( )\sublevel =< *row\sublevel
                            Break
                         EndIf
-                        
                         If *this\__rows( )\RowParent( )
                            *this\__rows( )\hide = Bool( *this\__rows( )\RowParent( )\buttonbox\checked | *this\__rows( )\RowParent( )\hide )
-                        Debug ""+*this\__rows( )\RowParent( )\text\string +" ? "+ *row\sublevel +" "+ *this\__rows( )\sublevel +" "+ *this\__rows( )\text\string 
                         EndIf
-                        
                      Wend
                      PopListPosition( *this\__rows( ))
                   EndIf
@@ -14570,7 +14573,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   
                   If ( *this\mode\lines Or *this\mode\buttons )
-                     *this\row\sublevelsize = DPIScaled( #__sublevelsize )
+;                      If display_mode_linux
+;                         *this\row\sublevelsize = DPIScaled( #__sublevelsize )
+;                      Else
+                        *this\row\sublevelsize = DPIScaled( #__sublevelsize )
+;                      EndIf
                   Else
                      *this\row\sublevelsize = 0
                   EndIf
@@ -16301,14 +16308,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *buttonBox = *this\__rows( )\_last\buttonbox
                   EndIf
                   
-                  Xs         = row_x_( *this, *this\__rows( ) ) - _scroll_x_
+                  Xs         = row_x_( *this, *this\__rows( ) ) - _scroll_x_ 
                   Ys         = row_y_( *this, *this\__rows( ) ) - _scroll_y_
                   
+                  If display_mode_linux
+                     If *this\__rows( )\sublevel Or  *this\__rows( )\childrens
+                        Xs - *this\row\sublevelsize
+                     EndIf
+                  EndIf
+               
                   ; for the tree vertical line
                   If *this\__rows( )\_last And Not *this\__rows( )\_last\hide And *this\__rows( )\_last\sublevel
-                     Define iy = (Ys + *this\__rows( )\height)
-                     Define iheight = ((*this\__rows( )\_last\y - *this\__rows( )\y) - *this\__rows( )\_last\height / 2)
-                     
+                     Define iy = (Ys + *this\__rows( )\height / 2 )
+                     Define iheight = (*this\__rows( )\_last\y - *this\__rows( )\y) ; - display_mode_linux * *this\__rows( )\_last\height / 2
+               
                      If iy < *this\inner_y( )
                         iheight + ( iy - *this\inner_y( ) )
                         iy = *this\inner_y( )
@@ -16334,11 +16347,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, *this\__rows( )\color\line )
                   EndIf
                   
-                  ;                      ; for the tree horizontal line
-                  If *this\__rows( )\visible And Not *this\__rows( )\hide And Not (*this\mode\Buttons And *this\__rows( )\childrens)
+                  ;  for the tree horizontal line
+                  If *this\__rows( )\visible And Not *this\__rows( )\hide And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
                      Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), DPIScaled(7), 1, *this\__rows( )\color\line )
                   EndIf
-                  
                Next
                
                ; for the tree item first vertical line
@@ -20071,54 +20083,92 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If event = #__event_Down
                If MouseButtons( ) & #PB_Canvas_LeftButton
-                  If *this\RowEntered( ) And Not EnteredButton( )
-                     ;
-                     If *this\mode\clickSelect
-                        *this\RowEntered( )\press ! 1
-                     Else
-                        *this\RowEntered( )\press = 1
-                        ;
-                        If *this\mode\multiSelect
-                           PushListPosition( *rows( ) )
-                           ForEach *rows( )
-                              If *rows( )\ColorState( ) <> #__s_0
-                                 *rows( )\ColorState( ) = #__s_0
-                                 
-                                 If Not *rows( )\_enter
-                                    If *rows( )\_focus <> 0
-                                       *rows( )\_focus = 0
+                  If *this\RowEntered( ) 
+                     If EnteredButton( )
+                        ; change collapsed/expanded button state
+                        If *this\RowEntered( )\buttonbox\_enter
+                           If *this\RowEntered( )\buttonbox\checked
+                              SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
+                              Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
+                           Else
+                              SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                              Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                           EndIf
+                        EndIf
+                        
+                        ; change box ( option&check )
+                        If *this\RowEntered( )\checkbox\_enter
+                           ;
+                           ; change option box state
+                           If *this\mode\optionboxes
+                              If *this\RowEntered( )\_groupbar
+                                 If *this\RowEntered( )\RowParent( ) 
+                                    If *this\RowEntered( )\_groupbar\RowParent( ) And
+                                       *this\RowEntered( )\_groupbar\checkbox\checked
+                                       *this\RowEntered( )\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                                     EndIf
                                  EndIf
-                              EndIf
-                           Next
-                           PopListPosition( *rows( ) )
-                        EndIf
-                     EndIf
-                     ;
-                     *this\RowPressed( ) = *this\RowEntered( )
-                     ;
-                     If *this\RowEntered( )\press
-                        If *this\RowEntered( )\ColorState( ) <> #__s_2
-                           *this\RowEntered( )\ColorState( ) = #__s_2
-                           
-                           If *this\RowFocused( ) And *this\RowFocused( ) <> *this\RowEntered( )  
-                              If *this\RowFocused( )\ColorState( ) = #__s_2
-                                 *this\RowFocused( )\ColorState( ) = #__s_3
-                                 ;
-                                 ; status-lostfocus
-                                 DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ) )
+                                 
+                                 If *this\RowEntered( )\_groupbar\_groupbar <> *this\RowEntered( )
+                                    If *this\RowEntered( )\_groupbar\_groupbar
+                                       *this\RowEntered( )\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                    EndIf
+                                    *this\RowEntered( )\_groupbar\_groupbar = *this\RowEntered( )
+                                 EndIf
                               EndIf
                            EndIf
                            ;
+                           ; change checked box state
+                           set_check_state_( *this\RowEntered( )\checkbox\checked, *this\mode\threestate )
+                        EndIf
+                     Else
+                        ;
+                        If *this\mode\clickSelect
+                           *this\RowEntered( )\press ! 1
+                        Else
+                           *this\RowEntered( )\press = 1
+                           ;
+                           If *this\mode\multiSelect
+                              PushListPosition( *rows( ) )
+                              ForEach *rows( )
+                                 If *rows( )\ColorState( ) <> #__s_0
+                                    *rows( )\ColorState( ) = #__s_0
+                                    
+                                    If Not *rows( )\_enter
+                                       If *rows( )\_focus <> 0
+                                          *rows( )\_focus = 0
+                                       EndIf
+                                    EndIf
+                                 EndIf
+                              Next
+                              PopListPosition( *rows( ) )
+                           EndIf
+                        EndIf
+                        ;
+                        *this\RowPressed( ) = *this\RowEntered( )
+                        ;
+                        If *this\RowEntered( )\press
+                           If *this\RowEntered( )\ColorState( ) <> #__s_2
+                              *this\RowEntered( )\ColorState( ) = #__s_2
+                              
+                              If *this\RowFocused( ) And *this\RowFocused( ) <> *this\RowEntered( )  
+                                 If *this\RowFocused( )\ColorState( ) = #__s_2
+                                    *this\RowFocused( )\ColorState( ) = #__s_3
+                                    ;
+                                    ; status-lostfocus
+                                    DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ) )
+                                 EndIf
+                              EndIf
+                              ;
+                              ; status-change
+                              DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, *this\RowEntered( )\ColorState( ) )
+                           EndIf
+                        Else
+                           *this\RowEntered( )\ColorState( ) = #__s_1
                            ; status-change
                            DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, *this\RowEntered( )\ColorState( ) )
                         EndIf
-                     Else
-                        *this\RowEntered( )\ColorState( ) = #__s_1
-                        ; status-change
-                        DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, *this\RowEntered( )\ColorState( ) )
                      EndIf
-                     ;
                   EndIf
                EndIf
             EndIf
@@ -20525,65 +20575,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result 
       EndProcedure
       
-      Procedure.l DoEvent_Tree( *this._s_WIDGET, event.l, mouse_x.l, mouse_y.l )
-         Protected Repaint
-         
-         ;
-         If event = #__event_Down
-            If MouseButtons( ) & #PB_Canvas_LeftButton
-               If *this\RowEntered( ) And
-                  *this\RowEntered( )\_enter
-                  
-                  ; collapsed/expanded button
-                  If *this\RowEntered( )\buttonbox\_enter
-                     If *this\RowEntered( )\buttonbox\checked
-                        SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
-                        Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
-                     Else
-                        SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
-                        Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
-                     EndIf
-                  EndIf
-                  
-                  ; change box ( option&check )
-                  If *this\RowEntered( )\checkbox\_enter
-                     ; Debug ""+*this\RowEntered( ) +" "+ *this\RowEntered( )\_groupbar
-                     ; option change box
-                     If *this\mode\optionboxes
-                        If *this\RowEntered( )\_groupbar
-                           If *this\RowEntered( )\RowParent( ) 
-                              If *this\RowEntered( )\_groupbar\RowParent( ) And
-                                 *this\RowEntered( )\_groupbar\checkbox\checked
-                                 *this\RowEntered( )\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
-                              EndIf
-                           EndIf
-                           
-                           If *this\RowEntered( )\_groupbar\_groupbar <> *this\RowEntered( )
-                              If *this\RowEntered( )\_groupbar\_groupbar
-                                 *this\RowEntered( )\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
-                              EndIf
-                              *this\RowEntered( )\_groupbar\_groupbar = *this\RowEntered( )
-                           EndIf
-                        EndIf
-                     EndIf
-                     
-                     ; checkbox change box
-                     set_check_state_( *this\RowEntered( )\checkbox\checked, *this\mode\threestate )
-                     
-                     ; Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, *this\mode\threestate  )
-                     ;                         ;\\
-                     ;                         If *this\RowEntered( )\ColorState( ) = #__s_2
-                     ;                            ; tree items change
-                     ;                                  DoEvents( *this, #__event_Change, *this\RowEntered( )\rindex, *this\RowEntered( ) )
-                     ;                         EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         ProcedureReturn Repaint
-      EndProcedure
-      
       Procedure DoEvents( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
          If Not *this
             ProcedureReturn 0
@@ -20962,9 +20953,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-                  
-               Case #__type_Tree, #__type_ListView, #__type_ListIcon
-                  DoEvent_Tree( *this, event, mouse( )\x, mouse( )\y )
                   
                   
             EndSelect
@@ -24323,9 +24311,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8418
-; FirstLine = 8351
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 16350
+; FirstLine = 16295
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f---444-----------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

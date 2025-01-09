@@ -586,8 +586,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 301
-; FirstLine = 118
+; CursorPosition = 499
+; FirstLine = 322
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware

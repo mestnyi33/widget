@@ -488,7 +488,7 @@ EndProcedure
 
 Procedure CreateProperties( X,Y,Width,Height, flag=0 )
    Protected position = 70
-   Protected *first._s_WIDGET = Tree(0,0,0,0)
+   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines)
    Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines)
    
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
@@ -1912,8 +1912,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 181
-; FirstLine = 179
+; CursorPosition = 490
+; FirstLine = 482
 ; Folding = -------------------04---0---------
 ; EnableXP
 ; DPIAware
