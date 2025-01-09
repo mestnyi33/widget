@@ -93,13 +93,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Enter.i
          Leave.i
       EndStructure
-;       ;--     OBJECTTYPE
-;       Structure _s_OBJECTTYPE
-;          *root._s_ROOT
-;          ;*row._s_ROWS
-;          ;*widget._s_WIDGET
-;          ;*button._s_BUTTONS
-;       EndStructure
       ;--     D&D
       Structure _s_DROP
          format.l
@@ -108,7 +101,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *imageID
          
-         ;*value
          StructureUnion
             String.s
             files.s
@@ -150,12 +142,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          bottom.b
          autodock._s_COORDINATE
       EndStructure
-      ;--     ARROW
-      Structure _s_ARROW
-         size.a
-         Type.b
-         direction.b
-      EndStructure
       ;--     STATE
       Structure _s_STATE
          visible.b
@@ -184,6 +170,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Y.l
          Width.l
          Height.l
+      EndStructure
+      ;--     ARROW
+      Structure _s_ARROW
+         size.a
+         Type.b
+         direction.b
       EndStructure
       ;--     BUTTONS
       Structure _s_BUTTONS Extends _s_BOX
@@ -245,8 +237,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          rotate.f
          align._s_align
-         padding._s_point
-      EndStructure
+         ; padding._s_point
+       EndStructure
       
       ;--     IMAGE
       Structure _s_image Extends _s_COORDINATE
@@ -263,7 +255,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ;;rotate.f
          align._s_align
-         padding._s_point
+         ;padding._s_point
          ;
          ;
          ;       *pressed._s_image
@@ -464,11 +456,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       Structure _s_BAR
          change.w
-         *gadget._s_WIDGET[3]
-         ; \root\gadget[0] - active gadget bar
-         ; \gadget[0] - window active child gadget
-         ; \gadget[1] - splitter( ) first gadget
-         ; \gadget[2] - splitter( ) second gadget
          
          max.l
          min.l[3]   ; fixed min[1&2] bar size
@@ -598,7 +585,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-        ;;; Map *linelevel._s_COORDINATE( )
+           padding._s_point
+      ;;; Map *linelevel._s_COORDINATE( )
          
          deffocus.b ; button default focus
          
@@ -650,6 +638,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
                                   ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
                                   ; container =- 1         ; if the not has children ( Splitter( ); Frame( ))
                                   ;
+         ; *integralParent._s_WIDGET
+         ; integral.b
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
          CountItems.l             ; count items
@@ -703,13 +693,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *window._s_WIDGET
          *parent._s_WIDGET
          *data
-         *address                   ; widget( )\ list address
-         *gadget._s_WIDGET;[3]
-                          ; \root\gadget[0] - active gadget
-                          ; \gadget[0] - window active child gadget
-                          ; \gadget[1] - splitter( ) first gadget
-                          ; \gadget[2] - splitter( ) second gadget
-                          ;
+         *address         ; widget( )\ list address
+         *gadget._s_WIDGET[3]
+         ; \root\gadget[0] - active gadget
+         ; \gadget[0]     ; window active child gadget
+         ; \gadget[1]     ; splitter( ) first gadget
+         ; \gadget[2]     ; splitter( ) second gadget
+         ;
          *cursor[4]  
          ; \cursor[0]     ; this cursor
          ; \cursor[1]     ; current cursor
@@ -793,8 +783,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 600
-; FirstLine = 598
+; CursorPosition = 257
+; FirstLine = 230
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

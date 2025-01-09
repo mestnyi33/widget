@@ -27,6 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure.i AddItems( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+      Protected last
       Protected *rowLast._s_ROWS 
       Protected *row.allocate(ROWS)
       Protected *rowParent._s_ROWS
@@ -52,17 +53,20 @@ CompilerIf #PB_Compiler_IsMainFile
                   PushListPosition( *rows( ))
                   If PreviousElement( *rows( ))
                      *rowLast = *rows( )
-                  Else
-                     sublevel = *rows( )\sublevel
+                  ;Else
+                     ;last     = *this\RowLast( )
+                     ;sublevel = *rows( )\sublevel
                   EndIf
                   PopListPosition( *rows( ))
                Else
+                  last     = *this\RowLast( )
                   sublevel = *rows( )\sublevel
+                  *rowLast = *rows( )
                EndIf
                
                InsertElement( *rows( ))
                *rows( ) = *row
-               ;
+               
                ;PushListPosition( *rows( ))
                While NextElement( *rows( ))
                   *rows( )\lindex = ListIndex( *rows( ) )
@@ -76,12 +80,9 @@ CompilerIf #PB_Compiler_IsMainFile
                sublevel = position
             EndIf
             ;
-            *row\rindex = position 
-            *row\columnindex = ListIndex( *this\columns( ))
-            ;
-            If *rowLast 
-               If sublevel > *rowLast\sublevel
-                  sublevel    = *rowLast\sublevel + 1
+            If *rowLast
+               If sublevel   > *rowLast\sublevel
+                  sublevel   = *rowLast\sublevel + 1
                   *rowParent = *rowLast
                   
                ElseIf *rowLast\RowParent( )
@@ -112,8 +113,9 @@ CompilerIf #PB_Compiler_IsMainFile
                            
                            If *this\type = #__type_Editor
                               *rowParent         = *rowLast\RowParent( )
-                              *rowParent\_last    = *row
-                              *rowLast = *rowParent
+                              *rowParent\_last   = *row
+                              *this\RowLast( )   = *rowParent
+                              last               = *rowParent
                            EndIf
                            
                         EndIf
@@ -139,13 +141,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
             If *rowParent
-               *row\RowParent( ) = *rowParent
                *rowParent\childrens + 1
+               *row\RowParent( ) = *rowParent
                
                If *rowParent\sublevel < sublevel
-                  ; for the tree draw line
-                  *rowParent\_last = *row
-                  ;
+                  If Not last
+                     ; for the tree draw line
+                     *rowParent\_last = *row
+                  EndIf
                   If *this\mode\collapsed  
                      *rowParent\buttonbox\checked = 1
                      *row\hide                    = 1
@@ -169,6 +172,8 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             ; add lines
+            *row\rindex        = position 
+            *row\columnindex   = ListIndex( *this\columns( ))
             *row\color         = *this\color ; _get_colors_( )
             *row\ColorState( ) = 0
             *row\color\back    = 0
@@ -222,12 +227,13 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
          EndIf
       EndIf
+      ;EndWith
       
       ProcedureReturn *row
    EndProcedure
    
    Procedure AddItem_( *this._s_WIDGET, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
-      ProcedureReturn AddItem( *this, position, Text, Image, sublevel )
+      ;ProcedureReturn AddItem( *this, position, Text, Image, sublevel )
       ProcedureReturn AddItems( *this, *this\__rows( ), position, Text, Image, sublevel )
    EndProcedure
    
@@ -284,11 +290,11 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; demo widget
       *g1 = Tree(265, 10, 250, 120, #PB_Tree_CheckBoxes|#PB_Tree_ThreeState ) 
-      AddItem(*g1, 0, "Window ", -1, 0)
-      AddItem(*g1, 1, "Container1 ", -1, 1)
-      AddItem(*g1, -1, "Container2 ", -1, 1)
-      AddItem(*g1, 2, "button1 ", -1, 2)
-      AddItem(*g1, 5, "button2 ", -1, 3)
+      AddItem_(*g1, 0, "Window ", -1, 0)
+      AddItem_(*g1, 1, "Container1 ", -1, 1)
+      AddItem_(*g1, -1, "Container2 ", -1, 1)
+      AddItem_(*g1, 2, "button1 ", -1, 2)
+      AddItem_(*g1, 5, "button2 ", -1, 3)
       ;       AddItem(*g1, 2, "button0 ", -1, 2)
       ;       AddItem(*g1, -1, "button ", -1, 1)
       
@@ -323,21 +329,21 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*g1, @widget_events())
       Bind(*g2, @widget_events())
       
-;       ;       For a=0 To CountItems(*g1) - 1
-;       ;          Debug GetItemText(*g1, a)
-;       ;       Next
-;       
-;       ForEach *g1\__rows( )
-;          Debug ""+*g1\__rows( )\index +" "+*g1\__rows( )\sublevel +" "+*g1\__rows( )\text\string
-;       Next
+      ;       ;       For a=0 To CountItems(*g1) - 1
+      ;       ;          Debug GetItemText(*g1, a)
+      ;       ;       Next
+      ;       
+      ForEach *g2\__rows( )
+         Debug ""+*g2\__rows( )\parent +" "+*g2\__rows( )\index +" "+*g2\__rows( )\sublevel +" "+*g2\__rows( )\text\string
+      Next
       
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 331
-; FirstLine = 305
+; CursorPosition = 55
+; FirstLine = 40
 ; Folding = -------
 ; EnableXP
 ; DPIAware
