@@ -349,10 +349,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
            tindex.i ; tab
            position.i
          EndStructureUnion
+         
          change.b
          Drawing.b
-         
-         
          
          ;*columnaddress
          columnindex.c
@@ -379,8 +378,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROWS
       Structure _s_ROWS Extends _s_ITEMS
-         buttonbox._s_BOX ;  buttonbox\
-         CheckBox._s_BOX  ;  checkbox\
+         *buttonbox._s_BOX ;  buttonbox\
+         *checkBox._s_BOX  ;  checkbox\
          
          ;*_first._s_rows
          ;          ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
@@ -392,11 +391,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; edit
          margin._s_edit
          
-         *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
+         StructureUnion
+            *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
+            *last._s_rows             ; if parent - \last\child ; if child - \parent\last\child
+         EndStructureUnion
+         
          *_groupbar._s_rows ; option group row
-         
-         
-         ;*data  ; set/get item data
       EndStructure
       
       Structure _s_VISIBLEITEMS
@@ -783,8 +783,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 257
-; FirstLine = 230
+; CursorPosition = 354
+; FirstLine = 376
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

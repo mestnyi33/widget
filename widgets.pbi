@@ -8538,6 +8538,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; add lines
             *row\rindex        = position 
             *row\columnindex   = ListIndex( *this\columns( ))
+            
+            If *this\mode\check
+               *row\checkbox.allocate( BOX )
+            EndIf
+            If *this\mode\lines Or *this\mode\buttons
+               *row\buttonbox.allocate( BOX )
+            EndIf
+                        
             *row\color         = *this\color ; _get_colors_( )
             *row\ColorState( ) = 0
             *row\color\back    = 0
@@ -14573,11 +14581,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   
                   If ( *this\mode\lines Or *this\mode\buttons )
-;                      If display_mode_linux
-;                         *this\row\sublevelsize = DPIScaled( #__sublevelsize )
-;                      Else
-                        *this\row\sublevelsize = DPIScaled( #__sublevelsize )
-;                      EndIf
+                     *this\row\sublevelsize = DPIScaled( #__sublevelsize )
                   Else
                      *this\row\sublevelsize = 0
                   EndIf
@@ -16299,6 +16303,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; draw_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
                
                ForEach *this\__rows( )
+                  If Not *this\__rows( )\buttonbox
+                     Break 
+                  EndIf
                   ; Debug " 9999 "+*this\__rows( )\columnindex+" "+ListIndex( *this\columns( ))+" "+*this\__rows( )\text\string
                   If *this\__rows( )\columnindex <> ListIndex( *this\columns( ))
                      Continue
@@ -16354,7 +16361,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Next
                
                ; for the tree item first vertical line
-               If *this\RowFirstLevelFirst( ) And *this\RowFirstLevelLast( )
+               If *this\RowFirstLevelFirst( ) And *this\RowFirstLevelLast( ) And *this\RowFirstLevelFirst( )\buttonbox
                   Line((*this\inner_x( ) + *this\padding\x + *this\RowFirstLevelFirst( )\buttonbox\x + *this\RowFirstLevelFirst( )\buttonbox\width / 2) - _scroll_x_, (row_y_( *this, *this\RowFirstLevelFirst( ) ) + *this\RowFirstLevelFirst( )\height / 2) - _scroll_y_, 1, (*this\RowFirstLevelLast( )\y - *this\RowFirstLevelFirst( )\y), *this\RowFirstLevelFirst( )\color\line )
                EndIf
                
@@ -16376,7 +16383,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *rows( )\columnindex <> ListIndex( *this\columns( ))
                      Continue
                   EndIf
-                  If *rows( )\visible And *this\mode\check
+                  If *rows( )\visible And *this\mode\check And *rows( )\checkbox
                      X = row_x_( *this, *rows( ) ) - _scroll_x_
                      Y = row_y_( *this, *rows( ) ) - _scroll_y_
                      
@@ -16400,25 +16407,30 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         ;If Not ( *this\mode\optionboxes )
                         
-                        X = row_x_( *this, *rows( ) ) + *rows( )\buttonbox\x - _scroll_x_
-                        Y = row_y_( *this, *rows( ) ) + *rows( )\buttonbox\y - _scroll_y_
+                        X = row_x_( *this, *rows( ) ) - _scroll_x_
+                        Y = row_y_( *this, *rows( ) ) - _scroll_y_
                         
-                        If Bool(DPIResolution( ) > 1)
-                           If *rows( )\ColorState( ) = 1
-                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X-1-Bool(*rows( )\buttonbox\checked), Y-1-Bool(*rows( )\buttonbox\checked=0), DPIScaled(10), 1 )
-                           ElseIf *rows( )\ColorState( ) = 2
-                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X-Bool(*rows( )\buttonbox\checked=0)*DPIScaled(1), Y-DPIScaled(1), DPIScaled(11), 1, 2 )
-                              ;   Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), x-1-Bool(*rows( )\buttonbox\checked), y-1-Bool(*rows( )\buttonbox\checked=0), DPIScaled(10), 1, 0, $ffffffff )
+                        If *rows( )\buttonbox
+                           X + *rows( )\buttonbox\x
+                           Y + *rows( )\buttonbox\y
+                           
+                           If Bool(DPIResolution( ) > 1)
+                              If *rows( )\ColorState( ) = 1
+                                 Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X-1-Bool(*rows( )\buttonbox\checked), Y-1-Bool(*rows( )\buttonbox\checked=0), DPIScaled(10), 1 )
+                              ElseIf *rows( )\ColorState( ) = 2
+                                 Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X-Bool(*rows( )\buttonbox\checked=0)*DPIScaled(1), Y-DPIScaled(1), DPIScaled(11), 1, 2 )
+                                 ;   Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), x-1-Bool(*rows( )\buttonbox\checked), y-1-Bool(*rows( )\buttonbox\checked=0), DPIScaled(10), 1, 0, $ffffffff )
+                              Else
+                                 Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+DPIScaled(1), Y+DPIScaled(1), DPIScaled(6)+DPIScaled(Bool(DPIResolution( )>1)), 1)
+                              EndIf
                            Else
-                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+DPIScaled(1), Y+DPIScaled(1), DPIScaled(6)+DPIScaled(Bool(DPIResolution( )>1)), 1)
-                           EndIf
-                        Else
-                           If *rows( )\ColorState( ) = 1
-                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X, Y-Bool(*rows( )\buttonbox\checked=0), 8, 1 )
-                           ElseIf *rows( )\ColorState( ) = 2
-                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+Bool(*rows( )\buttonbox\checked)*2, Y+Bool(*rows( )\buttonbox\checked=0), 8, 1, 2 )
-                           Else
-                              Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+2, Y+2, 4, 1)
+                              If *rows( )\ColorState( ) = 1
+                                 Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X, Y-Bool(*rows( )\buttonbox\checked=0), 8, 1 )
+                              ElseIf *rows( )\ColorState( ) = 2
+                                 Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+Bool(*rows( )\buttonbox\checked)*2, Y+Bool(*rows( )\buttonbox\checked=0), 8, 1, 2 )
+                              Else
+                                 Draw_Arrow(3 - Bool(*rows( )\buttonbox\checked), X+2, Y+2, 4, 1)
+                              EndIf
                            EndIf
                         EndIf
                         
@@ -18164,44 +18176,36 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      If *rows( )\columnindex = 0
                         ;\\ check box size
-                        If *this\mode\check
+                        If *this\mode\check And *rows( )\checkbox
                            *rows( )\checkbox\width  = boxsize
                            *rows( )\checkbox\height = boxsize
-                        EndIf
-                        
-                        ;\\ collapse box size
-                        If *this\mode\Lines Or *this\mode\Buttons 
-                           *rows( )\buttonbox\width  = buttonsize
-                           *rows( )\buttonbox\height = buttonsize
                         EndIf
                         
                         ;\\ sublevel position
                         *this\row\sublevelpos = *rows( )\sublevel * *this\row\sublevelsize 
                         
-                        If *this\mode\Buttons Or *this\mode\Lines 
+                        ;\\ expanded & collapsed box coordinate
+                        If *rows( )\buttonbox
                            *this\row\sublevelpos + (buttonpos+buttonsize) 
-                        EndIf
-                        
-                        ;\\ expanded & collapsed box position
-                        If ( *this\mode\Lines Or *this\mode\Buttons ) 
+                           ;
+                           *rows( )\buttonbox\width  = buttonsize
+                           *rows( )\buttonbox\height = buttonsize
                            *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - dpi_scale_two
                            *rows( )\buttonbox\y = ( *rows( )\height ) - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
                         EndIf
                         
-                        If *this\mode\check 
-                           *this\row\sublevelpos + (boxpos+boxsize)
-                        EndIf
-                        
                         ;\\ check & option box position
-                        If *this\mode\check
+                        If *rows( )\checkbox
+                           *this\row\sublevelpos + (boxpos+boxsize)
+                           ;
                            *rows( )\checkbox\x = *this\row\sublevelpos - *rows( )\checkbox\width
-                           *rows( )\checkbox\y = ( *rows( )\height ) - ( *rows( )\height + *rows( )\checkbox\height ) / 2
+                           *rows( )\checkbox\y = *rows( )\height - ( *rows( )\height + *rows( )\checkbox\height ) / 2
                         EndIf
                         
                         ;\\ image position
                         If *rows( )\image\id
                            If *this\mode\check
-                              ; If Not ( *this\mode\Buttons And *this\mode\Lines )
+                              ; If Not *rows( )\buttonbox
                               *this\row\sublevelpos + dpi_scale_two
                               ; EndIf
                            EndIf
@@ -18234,7 +18238,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;\\ horizontal scroll max value
                      If *this\type = #__type_ListIcon
                         *rows( )\image\x - DPIScaled(8)
-                        *rows( )\checkbox\x - boxsize
+                        If *rows( )\checkbox
+                           *rows( )\checkbox\x - boxsize
+                        EndIf
                         scroll_width = ( *this\row\sublevelpos + *this\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
                      Else
                         scroll_width = ( *rows( )\x + *rows( )\text\x + *rows( )\text\width + *this\mode\fullSelection + *this\padding\x * 2 ) ; - *this\inner_x( )
@@ -18522,6 +18528,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *BB1 = *this\MaximizeButton( )
                      *BB2 = *this\MinimizeButton( )
                   Else
+                     ; enter item buttons
                      If *this\row
                         If *this\RowEntered( )
                            *BB1 = *this\RowEntered( )\checkbox
@@ -18530,6 +18537,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                            mouse_x = mouse( )\x - *this\inner_x( ) - *this\RowEntered( )\x - *this\scroll_x( )
                            mouse_y = mouse( )\y - *this\inner_y( ) - *this\RowEntered( )\y - *this\scroll_y( )
+;                            If*BB1 And *BB2
+;                               Debug ""+""+ is_atpoint_( *BB1, mouse_x, mouse_y ) +" "+ is_atpoint_( *BB2, mouse_x, mouse_y )
+;                            EndIf
                         EndIf
                      EndIf
                      
@@ -18577,6 +18587,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *this\caption
                         *this\caption\interact = is_atpoint_( *this\caption, mouse( )\x, mouse( )\y )
                      EndIf
+;                   Else
+;                      If *this\row And *this\RowEntered( ) And *this\RowEntered( )\checkbox
+;                         Debug ""+ Bool( EnteredButton( ) = *this\RowEntered( )\checkbox ) +" "+ *this\RowEntered( )\checkbox\enter
+;                      EndIf
                   EndIf
                EndIf
             EndIf
@@ -20086,40 +20100,44 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\RowEntered( ) 
                      If EnteredButton( )
                         ; change collapsed/expanded button state
-                        If *this\RowEntered( )\buttonbox\_enter
-                           If *this\RowEntered( )\buttonbox\checked
-                              SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
-                              Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
-                           Else
-                              SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
-                              Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                        If *this\RowEntered( )\buttonbox
+                           If *this\RowEntered( )\buttonbox\_enter
+                              If *this\RowEntered( )\buttonbox\checked
+                                 SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
+                                 Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
+                              Else
+                                 SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                                 Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                              EndIf
                            EndIf
                         EndIf
                         
                         ; change box ( option&check )
-                        If *this\RowEntered( )\checkbox\_enter
-                           ;
-                           ; change option box state
-                           If *this\mode\optionboxes
-                              If *this\RowEntered( )\_groupbar
-                                 If *this\RowEntered( )\RowParent( ) 
-                                    If *this\RowEntered( )\_groupbar\RowParent( ) And
-                                       *this\RowEntered( )\_groupbar\checkbox\checked
-                                       *this\RowEntered( )\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                        If *this\RowEntered( )\checkbox
+                           If *this\RowEntered( )\checkbox\_enter
+                              ;
+                              ; change option box state
+                              If *this\mode\optionboxes
+                                 If *this\RowEntered( )\_groupbar
+                                    If *this\RowEntered( )\RowParent( ) 
+                                       If *this\RowEntered( )\_groupbar\RowParent( ) And
+                                          *this\RowEntered( )\_groupbar\checkbox\checked
+                                          *this\RowEntered( )\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                       EndIf
                                     EndIf
-                                 EndIf
-                                 
-                                 If *this\RowEntered( )\_groupbar\_groupbar <> *this\RowEntered( )
-                                    If *this\RowEntered( )\_groupbar\_groupbar
-                                       *this\RowEntered( )\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                    
+                                    If *this\RowEntered( )\_groupbar\_groupbar <> *this\RowEntered( )
+                                       If *this\RowEntered( )\_groupbar\_groupbar
+                                          *this\RowEntered( )\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                       EndIf
+                                       *this\RowEntered( )\_groupbar\_groupbar = *this\RowEntered( )
                                     EndIf
-                                    *this\RowEntered( )\_groupbar\_groupbar = *this\RowEntered( )
                                  EndIf
                               EndIf
+                              ;
+                              ; change checked box state
+                              set_check_state_( *this\RowEntered( )\checkbox\checked, *this\mode\threestate )
                            EndIf
-                           ;
-                           ; change checked box state
-                           set_check_state_( *this\RowEntered( )\checkbox\checked, *this\mode\threestate )
                         EndIf
                      Else
                         ;
@@ -20252,7 +20270,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If Not MouseButtonPress( )
             If *this\tab
-               If *this\bar
+               If *bar
                   Protected mouse_bar_x = mouse( )\x - *this\bar\button\x
                   Protected mouse_bar_y = mouse( )\y - *this\bar\button\y
                   
@@ -20351,8 +20369,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         If event = #__event_LostFocus
-            If *this\tab
+         If *this\tab
+            If event = #__event_LostFocus
                If PopupBar( *this )
                   If PopupBar( *this )\enter = 0 
                      HidePopupBar( PopupBar( *this ) )
@@ -20360,12 +20378,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   PopupBar( *this ) = 0
                EndIf
             EndIf
-         EndIf
-         
-         ;\\
-         If event = #__event_Down
-            If MouseButtons( ) & #PB_Canvas_LeftButton
-               If *this\tab
+            ;
+            If event = #__event_Down
+               If MouseButtons( ) & #PB_Canvas_LeftButton
                   *tab = *this\TabEntered( )
                   If Not (*Tab And *Tab\disable )
                      
@@ -20432,56 +20447,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               
-               If *bar
-                  If EnteredButton( ) And
-                     EnteredButton( )\press = #False And
-                     EnteredButton( )\disable = #False And
-                     EnteredButton( )\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
-                     
-                     PressedButton( )       = EnteredButton( )
-                     PressedButton( )\press = #True
-                     
-                     If Not ( *this\type = #__type_Track Or
-                              ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
-                        PressedButton( )\ColorState( ) = #__s_2
-                     EndIf
-                     
-                     ;
-                     If ( *BB2\press And *bar\invert ) Or
-                        ( *BB1\press And Not *bar\invert )
-                        
-                        If *this\type = #__type_spin
-                           If bar_PageChange( *this, *bar\page\pos - *this\scroll\increment )
-                              result = #True
-                           EndIf
-                        Else
-                           If bar_ThumbChange( *this, *bar\thumb\pos - *this\scroll\increment )
-                              result = #True
-                           EndIf
-                        EndIf
-                     ElseIf ( *BB1\press And *bar\invert ) Or
-                            ( *BB2\press And Not *bar\invert )
-                        
-                        If *this\type = #__type_spin
-                           If bar_PageChange( *this, *bar\page\pos + *this\scroll\increment )
-                              result = #True
-                           EndIf
-                        Else
-                           If bar_ThumbChange( *this, *bar\thumb\pos + *this\scroll\increment )
-                              result = #True
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
             EndIf
-         EndIf
-         
-         ;\\
-         If event = #__event_Up
-            If MouseButtons( ) & #PB_Canvas_LeftButton
-               If *this\tab
+            ;
+            If event = #__event_Up
+               If MouseButtons( ) & #PB_Canvas_LeftButton
                   If *this\TabEntered( ) And *this\TabEntered( )\childrens 
                      If Not PopupBar( *this )
                         If *this\TabFocused( )
@@ -20497,8 +20466,77 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               
-               If *bar
+            EndIf
+         EndIf
+         
+         ;\\
+         If event = #__event_LeftClick
+            If *this\type = #__type_TabBar
+               If Not ( *this\TabPressed( ) And *this\TabPressed( )\disable )
+                  Protected state = GetItemIndex( *this, *this\TabPressed( ) )
+                  ;
+                  If state >= 0 
+                     If SetState( *this, state ) 
+                        result = #True
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\ bar button event
+         If *bar
+            If event = #__event_Down
+               If MouseButtons( ) & #PB_Canvas_LeftButton
+                  If *bar
+                     If EnteredButton( ) And
+                        EnteredButton( )\press = #False And
+                        EnteredButton( )\disable = #False And
+                        EnteredButton( )\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
+                        
+                        PressedButton( )       = EnteredButton( )
+                        PressedButton( )\press = #True
+                        
+                        If Not ( *this\type = #__type_Track Or
+                                 ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
+                           PressedButton( )\ColorState( ) = #__s_2
+                        EndIf
+                        
+                        ; left&top button
+                        If ( *BB2\press And *bar\invert ) Or
+                           ( *BB1\press And Not *bar\invert )
+                           
+                           If *this\type = #__type_spin
+                              If bar_PageChange( *this, *bar\page\pos - *this\scroll\increment )
+                                 result = #True
+                              EndIf
+                           Else
+                              If bar_ThumbChange( *this, *bar\thumb\pos - *this\scroll\increment )
+                                 result = #True
+                              EndIf
+                           EndIf
+                           
+                           ; right&bottom button
+                        ElseIf ( *BB1\press And *bar\invert ) Or
+                               ( *BB2\press And Not *bar\invert )
+                           
+                           If *this\type = #__type_spin
+                              If bar_PageChange( *this, *bar\page\pos + *this\scroll\increment )
+                                 result = #True
+                              EndIf
+                           Else
+                              If bar_ThumbChange( *this, *bar\thumb\pos + *this\scroll\increment )
+                                 result = #True
+                              EndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            If event = #__event_Up
+               If MouseButtons( ) & #PB_Canvas_LeftButton
                   If PressedButton( ) And
                      PressedButton( )\press = #True
                      PressedButton( )\press = #False
@@ -20538,26 +20576,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-         EndIf
-         
-         ;\\
-         If event = #__event_LeftClick
-            If *this\type = #__type_TabBar
-               If Not ( *this\TabPressed( ) And *this\TabPressed( )\disable )
-                  Protected state = GetItemIndex( *this, *this\TabPressed( ) )
-                  ;
-                  If state >= 0 
-                     If SetState( *this, state ) 
-                        result = #True
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\
-         If event = #__event_MouseMove
-            If *bar 
+            ;
+            If event = #__event_MouseMove
                If *SB\press
                   If *bar\vertical
                      If bar_ThumbChange( *this, ( mouse( )\y - mouse( )\delta\y ))
@@ -24258,7 +24278,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetItemFont(*w, 5, 6)
    
    ;\\
-   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_RowClickSelect )
+   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__tree_checkboxes|#__flag_RowClickSelect )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -24311,9 +24331,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16350
-; FirstLine = 16295
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f---444-----------------------------------------------------------------------------------------------------------
+; CursorPosition = 20119
+; FirstLine = 19853
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---+------------------------------------v-----fff--8----Xv--t--8-X---+---------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

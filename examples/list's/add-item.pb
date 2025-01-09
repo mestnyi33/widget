@@ -174,6 +174,14 @@ CompilerIf #PB_Compiler_IsMainFile
             ; add lines
             *row\rindex        = position 
             *row\columnindex   = ListIndex( *this\columns( ))
+            
+            If *this\mode\check
+               *row\checkbox.allocate( BOX )
+            EndIf
+            If *this\mode\lines Or *this\mode\buttons
+               *row\buttonbox.allocate( BOX )
+            EndIf
+                        
             *row\color         = *this\color ; _get_colors_( )
             *row\ColorState( ) = 0
             *row\color\back    = 0
@@ -342,8 +350,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 40
+; CursorPosition = 177
+; FirstLine = 163
 ; Folding = -------
 ; EnableXP
 ; DPIAware
