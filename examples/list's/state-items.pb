@@ -220,8 +220,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 25
+; IDE Options = PureBasic 6.04 LTS (Linux - x64)
+; CursorPosition = 40
 ; FirstLine = 24
 ; Folding = ------
 ; EnableXP
