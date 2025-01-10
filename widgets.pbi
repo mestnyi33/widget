@@ -17291,18 +17291,18 @@ CompilerIf Not Defined( widget, #PB_Module )
          Else
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
             draw_gradient_( *this\text\vertical, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
-;             If *this\text\string
+            If *this\text\string
                 draw_mode_alpha_( #PB_2DDrawing_Transparent )
-;                DrawText( *this\frame_x( ) + *this\text\x,
-;                          *this\frame_y( ) + *this\text\y,
-;                          *this\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
-;             EndIf
+               DrawText( *this\frame_x( ) + *this\text\x,
+                         *this\frame_y( ) + *this\text\y,
+                         *this\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+            EndIf
                 
                 
-                DrawText( *this\frame_x( ) + *this\text\x,
-                      *this\frame_y( ) + *this\text\y,
-                      *this\popupbar\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
-            
+;                 DrawText( *this\frame_x( ) + *this\text\x,
+;                       *this\frame_y( ) + *this\text\y,
+;                       *this\popupbar\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+;             
          EndIf
          
          ;
@@ -24331,9 +24331,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20119
-; FirstLine = 19853
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---+------------------------------------v-----fff--8----Xv--t--8-X---+---------------------------------------------------------------------------------------
+; CursorPosition = 17304
+; FirstLine = 17244
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---0------------------------------------f------+++-4----ve--b--4-v+--0---------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
