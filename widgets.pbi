@@ -4796,15 +4796,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          If *this\type = #__type_ComboBox
             If *this\stringbar
-               *this\button\width = *this\fs[3]
-               *this\button\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
+               *this\combobutton\width = *this\fs[3]
+               *this\combobutton\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
             Else
-               *this\button\width = *this\inner_width( )
-               *this\button\x     = *this\inner_x( )
+               *this\combobutton\width = *this\frame_width( ) - *this\fs * 2 ; *this\inner_width( )
+               *this\combobutton\x     = *this\frame_x( ) + *this\fs
             EndIf
             
-            *this\button\y      = *this\inner_y( )
-            *this\button\height = *this\inner_height( )
+            *this\combobutton\y      = *this\inner_y( )
+            *this\combobutton\height = *this\inner_height( )
          EndIf
          
          ;\\
@@ -11866,28 +11866,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;EndIf
          EndIf
          
-         ;\\ Ok
+         ;-\\ UPDATE-SPIN
          If *this\type = #__type_Spin
             *SB\x      = *this\inner_x( )
             *SB\y      = *this\inner_y( )
             *SB\width  = *this\inner_width( )
             *SB\height = *this\inner_height( )
             
-            If Not *this\flag & #__spin_Plus
-               Protected draw_tipe = 1
-               If *BB2\size
-                  *BB2\x      = ( *this\frame_x( ) + *this\frame_width( ) ) - *SB\size + draw_tipe * 2
-                  *BB2\y      = *this\frame_y( ) + draw_tipe * 2
-                  *BB2\width  = *SB\size - draw_tipe * 4
-                  *BB2\height = *BB2\size - draw_tipe * 3
-               EndIf
-               If *BB1\size
-                  *BB1\x      = *BB2\x
-                  *BB1\y      = ( *this\frame_y( ) + *this\frame_height( ) ) - *BB1\size + draw_tipe
-                  *BB1\height = *BB1\size - draw_tipe * 3
-                  *BB1\width  = *BB2\width
-               EndIf
-            Else
+            If *this\flag & #__spin_Plus
                ; spin buttons numeric plus -/+
                If *bar\vertical
                   If *BB1\size
@@ -11915,6 +11901,25 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *BB2\width  = *BB2\size
                      *BB2\height = *this\frame_height( )
                   EndIf
+               EndIf
+            Else
+               Protected draw_tipe = 0;DPIScaled(1)
+               If *BB2\size
+                  If *this\fs[1]
+                     *BB2\x      = *this\frame_x( ) + draw_tipe * 2
+                  EndIf
+                  If *this\fs[3]
+                     *BB2\x      = ( *this\frame_x( ) + *this\frame_width( ) ) - *SB\size + draw_tipe * 2
+                  EndIf
+                  *BB2\y      = *this\frame_y( ) + draw_tipe * 2
+                  *BB2\width  = *SB\size - draw_tipe * 4
+                  *BB2\height = *BB2\size - draw_tipe * 3
+               EndIf
+               If *BB1\size
+                  *BB1\x      = *BB2\x
+                  *BB1\y      = ( *this\frame_y( ) + *this\frame_height( ) ) - *BB1\size + draw_tipe
+                  *BB1\height = *BB1\size - draw_tipe * 3
+                  *BB1\width  = *BB2\width
                EndIf
             EndIf
          EndIf
@@ -12177,6 +12182,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *SB\size <> *value
                         *SB\size = *value
                         
+                        ;- SPIN BUTTON POSITION
                         If *this\type = #__type_spin
                            If *this\flag & #__spin_plus
                               ; set real spin-buttons width
@@ -12191,19 +12197,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  *this\fs[3] = *BB2\size - 1
                               EndIf
                            Else
-                              If *bar\vertical
-                                 If *bar\invert
+;                               If *bar\vertical
+                                 If *bar\mirror
                                     *this\fs[1] = *value - 1
                                  Else
-                                    *this\fs[3] = *value - 1
+                                     *this\fs[3] = *value - 1
                                  EndIf
-                              Else
-                                 If *bar\invert
-                                    *this\fs[2] = *value - 1
-                                 Else
-                                    *this\fs[4] = *value - 1
-                                 EndIf
-                              EndIf
+;                               Else
+;                                  If *bar\invert
+;                                     *this\fs[2] = *value - 1
+;                                  Else
+;                                     *this\fs[4] = *value - 1
+;                                  EndIf
+;                               EndIf
                            EndIf
                            
                            
@@ -12557,24 +12563,24 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ ComboBox
             If *display\type = #__type_ComboBox
-               If *display\button
+               If *display\combobutton
                   If *this\hide
-                     *display\button\arrow\direction = 3 
-                     ;If *display\button\enter
+                     *display\combobutton\arrow\direction = 3 
+                     ;If *display\combobutton\enter
                         If MouseButtonPress( )
-                           *display\button\ColorState( ) = 2
+                           *display\combobutton\ColorState( ) = 2
                            *display\ColorState( ) = 2
                         EndIf
                      ;EndIf
                   Else
-                     *display\button\arrow\direction = 2
+                     *display\combobutton\arrow\direction = 2
                      If *display\ColorState( ) = 2
-                        If *display\button\enter
+                        If *display\combobutton\enter
                            *display\ColorState( ) = 1
                         Else
                            *display\ColorState( ) = 0
                         EndIf
-                        *display\button\ColorState( ) = 0
+                        *display\combobutton\ColorState( ) = 0
                      EndIf
                   EndIf
                EndIf
@@ -15512,20 +15518,20 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ - Create ComboBox
          If *this\type = #__type_ComboBox
-            *this\button.allocate( BUTTONS )
-            *this\button\color           = _get_colors_( )
-            *this\button\arrow\type      = #__arrow_type
-            *this\button\arrow\size      = DPIScaled( #__arrow_size )
-            *this\button\arrow\direction = 2
+            *this\combobutton.allocate( BUTTONS )
+            *this\combobutton\color           = _get_colors_( )
+            *this\combobutton\arrow\type      = #__arrow_type
+            *this\combobutton\arrow\size      = DPIScaled( #__arrow_size )
+            *this\combobutton\arrow\direction = 2
             
             ;\\
             If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
                *this\stringbar = Create( *this, "ComboString", #__type_String,
                                          0, 0, 0, 0, #Null$, #__flag_child | #__flag_borderless )
+            EndIf
                
                *this\fs[3] = size
                *this\fs[3] + Bool( Not *this\fs[3] % 2)
-            EndIf
             
             ;\\
             *this\popupbar = Create( *this, "ComboListView", #__type_ListView,
@@ -15551,10 +15557,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button.allocate( BUTTONS )
             *this\bar\button.allocate( BUTTONS, [1] )
             *this\bar\button.allocate( BUTTONS, [2] )
-            
-            If *this\type = #__type_Spin
-               *this\bar\PageChange( ) = 1
-            EndIf
             
             *this\scroll\increment  = ScrollStep
             Protected._s_BUTTONS *BB1, *BB2, *SB
@@ -15601,8 +15603,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                *SB\arrow\size  = DPIScaled( 3 )
             EndIf
             
-            ; - Create Spin
+            ;- Create Spin
             If *this\type = #__type_Spin
+               *this\bar\PageChange( ) = 1
+            
                *this\color\back   = - 1
                *this\ColorAlphaState( ) = 255
                *this\color\back   = $FFFFFFFF
@@ -15612,6 +15616,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;
                *this\bar\invert = constants::BinaryFlag( Flag, #__bar_invert )
+               
+               *this\bar\mirror = constants::BinaryFlag( Flag, #__spin_mirror )
                
                If *this\flag & #__spin_Plus
                   If constants::BinaryFlag( Flag, #__bar_vertical ) Or 
@@ -15635,7 +15641,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\
                *this\stringbar = Create( *this, "SpinString",
                                          #__type_String, 0, 0, 0, 0, #Null$,
-                                         #__flag_child | #__flag_Textnumeric | #__flag_borderless | *this\flag )
+                                         #__flag_child | #__flag_Textnumeric | #__flag_borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
                
                
             EndIf
@@ -17281,50 +17287,47 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          *this\text\x = 5
-         *this\text\y = ( *this\button\height - *this\text\height ) / 2
+         *this\text\y = ( *this\combobutton\height - *this\text\height ) / 2
          
          ;
          If *this\stringbar
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
-            draw_gradient_( 0, *this\button, *this\color\fore[*this\ColorState( )], *this\color\back[state] )
+            draw_gradient_( 0, *this\combobutton, *this\color\fore[*this\ColorState( )], *this\color\back[state] )
             ; Draw_Editor( *this\stringbar )
          Else
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
             draw_gradient_( *this\text\vertical, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
-            If *this\text\string
-                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawText( *this\frame_x( ) + *this\text\x,
+                
+            If *this\popupbar\RowFocused( )
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               
+               If *this\popupbar\RowFocused( )\image\ID
+                  DrawImage( *this\popupbar\RowFocused( )\image\ID, *this\frame_x( )+5, *this\frame_y( ) + 5);(*this\popupbar\RowFocused( )\height-*this\popupbar\RowFocused( )\image\height) )
+               EndIf
+               
+               DrawText( *this\frame_x( ) + *this\text\x + *this\popupbar\RowFocused( )\image\width + 5,
                          *this\frame_y( ) + *this\text\y,
-                         *this\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+                      *this\popupbar\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+            
             EndIf
-                
-                
-;                 DrawText( *this\frame_x( ) + *this\text\x,
-;                       *this\frame_y( ) + *this\text\y,
-;                       *this\popupbar\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
-;             
          EndIf
          
          ;
          draw_mode_alpha_( #PB_2DDrawing_Default )
-;          If *this\stringbar
-;             draw_arrows( *this\button, *this\button\arrow\direction )
-;          Else
-            Draw_Arrow( *this\button\arrow\direction,
-                        *this\button\x + ( *this\button\width - *this\button\arrow\size * 2 - *this\button\arrow\size / 2 ),
-                        *this\button\y + ( *this\button\height - *this\button\arrow\size ) / 2,
-                        *this\button\arrow\size, 
-                        *this\button\arrow\type, 0,
-                        *this\button\color\front[state] & $FFFFFF | *this\button\AlphaState24( ))
-;          EndIf
-         
+            Draw_Arrow( *this\combobutton\arrow\direction,
+                        *this\combobutton\x + ( *this\combobutton\width - *this\combobutton\arrow\size * 2 ) - *this\combobutton\arrow\size / 2,
+                        *this\combobutton\y + ( *this\combobutton\height - *this\combobutton\arrow\size ) / 2,
+                        *this\combobutton\arrow\size, 
+                        *this\combobutton\arrow\type, 0,
+                        *this\combobutton\color\front[state] & $FFFFFF | *this\combobutton\AlphaState24( ))
+        
          ; frame draw
          If *this\fs
             draw_mode_( #PB_2DDrawing_Outlined )
             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[state] )
          EndIf
          
-         ;draw_box_( *this\button\x, *this\button\y, *this\button\width, *this\button\height, $ff000000 )
+         ;draw_box_( *this\combobutton\x, *this\combobutton\y, *this\combobutton\width, *this\combobutton\height, $ff000000 )
          
       EndProcedure
       
@@ -20623,9 +20626,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If event = #__event_MouseEnter
             If *this\parent
                If *this\parent\stringbar
-                  If *this\parent\button
-                     If *this\parent\button\enter = 1
-                        *this\parent\button\enter = 0
+                  If *this\parent\combobutton
+                     If *this\parent\combobutton\enter = 1
+                        *this\parent\combobutton\enter = 0
                         If *this\ColorState( ) = 1
                            *this\ColorState( ) = 0
                         EndIf
@@ -20635,18 +20638,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         If *this\button
-            If is_atpoint_( *this\button, mouse( )\x, mouse( )\y )
-               If *this\button\enter = 0
-                  *this\button\enter = 1
+         If *this\combobutton
+            If is_atpoint_( *this\combobutton, mouse( )\x, mouse( )\y )
+               If *this\combobutton\enter = 0
+                  *this\combobutton\enter = 1
                   If *this\ColorState( ) = 0
                      *this\ColorState( ) = 1
                   EndIf
                   *this\root\repaint = #True
                EndIf
             Else
-               If *this\button\enter = 1
-                  *this\button\enter = 0
+               If *this\combobutton\enter = 1
+                  *this\combobutton\enter = 0
                   If *this\ColorState( ) = 1
                      *this\ColorState( ) = 0
                   EndIf
@@ -20973,8 +20976,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-                  
-                  
             EndSelect
             
             ;\\
@@ -20984,10 +20985,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\type = #__type_combobox
                      If *this\popupbar
                         DisplayPopupBar( *this\popupbar, *this )
-;                         If *this\button\enter
-;                            *this\button\ColorState( ) = 2
-;                            *this\ColorState( ) = 2
-;                         EndIf
                      EndIf
                   Else
                      If *this\root\parent And
@@ -21005,13 +21002,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             If event = #__event_up
-;                If *this\type = #__type_ComboBox 
-;                   If *this\ColorState( ) = 2
-;                      *this\button\ColorState( ) = 0
-;                      *this\ColorState( ) = 0
-;                   EndIf
-;                EndIf
-               
                If *this <> *this\root\parent
                   If *this\root\parent 
                      If *this\root\parent\type = #__type_ComboBox 
@@ -21019,12 +21009,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         DisplayPopupBar( *this, *this\root\parent )
                         PostRepaint( *this\root\parent\root )
                      EndIf
-                     
-                     ;                     If *this\root\parent\type = #__type_MenuBar 
-                     ;                        Debug *this\popupbar\class
-                     ;                         _HidePopupBar( *this\popupbar )
-                     ;                       ;HidePopupBar( *this ) 
-                     ;                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -23993,9 +23977,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *root2._s_WIDGET = Open(#window_1, 10, 300, 300 - 20, 300 - 20): *root2\class = "root2": SetText(*root2, "root2")
    ;BindWidgetEvent( *root2, @HandlerEvents( ) )
    
-   HyperLink( 10, 10, 80, 40, "HyperLink", RGB(105, 245, 44) )
-   String( 60, 20, 60, 40, "String" )
-   *w = ComboBox( 108, 30, 152, 40, #PB_ComboBox_Editable )
+   HyperLink( 10, 10, 80, 30, "HyperLink", RGB(105, 245, 44) )
+   String( 60, 20, 60, 30, "String" )
+   *w = ComboBox( 108, 30, 152, 30, #PB_ComboBox_Editable )
    For i = 1 To 100;0000
       AddItem(*w, i, "text-" + Str(i))
    Next
@@ -24206,23 +24190,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;-\\ OPENROOT2
    OpenList( *root2 )
    SetText(*root2, "*root2" )
-   ;   ;Define *p3._s_WIDGET = Container( 80,80, 150,150 )
-   ;   Define *p3._s_WIDGET = ScrollArea( 80,80, 150+30,150+30, 300,300 )
-   ;   SetText(*p3, "12" )
-   ;   SetText(Container( 40,-30, 50,50, #__Flag_NoGadgets ), "13" )
-   ;
-   ;   Define *p2._s_WIDGET = Container( 40,40, 70,70 ) : SetText(*p2, "4" )
-   ;   SetText(Container( 5,5, 70,70 ), "5" )
-   ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "6")
-   ;   CloseList( )
-   ;   Define *c1._s_WIDGET = Container( 40,-30, 50,50, #__Flag_NoGadgets ) : SetText(*c1, "3" )
-   ;   CloseList( )
-   ;
-   ;   SetText(Container( 50,130, 50,50, #__Flag_NoGadgets ), "14" )
-   ;   SetText(Container( -30,40, 50,50, #__Flag_NoGadgets ), "15" )
-   ;   SetText(Container( 130,50, 50,50, #__Flag_NoGadgets ), "16" )
-   ;   CloseList( )
-   ;   CloseList( )
+
    Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
    ;   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
    ;   Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
@@ -24247,14 +24215,23 @@ CompilerIf #PB_Compiler_IsMainFile
    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
    Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
    Button_0 = Progress(0, 0, 0, 0, 0, 100, #__bar_invert|#__bar_vertical) : SetState(Button_0, 50)
-   Splitter_5 = widget::Splitter(10, 80, 250, 120, Button_0, Splitter_4, #PB_Splitter_Vertical)
+   Splitter_5 = widget::Splitter(10, 70, 250, 120, Button_0, Splitter_4, #PB_Splitter_Vertical)
    SetState(Splitter_5, 50)
    SetState(Splitter_4, 50)
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
    
-   Spin(10, 210, 250, 25, 25, 30, #__flag_Textright )
-   Spin(10, 240, 250, 25, 5, 30, #__spin_Plus)
+   Spin(10, 195, 80, 25, 5, 30, #__flag_TextLeft )
+   Spin(10, 225, 80, 25, 5, 30, #__flag_TextCenter|#__spin_mirror)
+   Spin(10, 255, 80, 25, 5, 30, #__flag_TextRight|#__flag_invert)
+   
+   Spin(95, 195, 80, 25, 5, 30, #__flag_TextLeft|#__spin_Plus )
+   Spin(95, 225, 80, 25, 5, 30, #__flag_TextCenter|#__spin_Plus|#__spin_mirror)
+   Spin(95, 255, 80, 25, 5, 30, #__flag_TextRight|#__spin_Plus|#__flag_invert)
+   
+   Spin(180, 195, 80, 25, 5, 30, #__spin_vertical|#__flag_Textright )
+   Spin(180, 225, 80, 25, 5, 30, #__spin_vertical|#__flag_TextCenter|#__spin_mirror)
+   Spin(180, 255, 80, 25, 5, 30, #__spin_vertical|#__flag_TextRight|#__flag_invert)
    
    ;-\\ OPENROOT3
    OpenList( *root3 )
@@ -24330,10 +24307,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17304
-; FirstLine = 17244
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---0------------------------------------f------+++-4----ve--b--4-v+--0---------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 11923
+; FirstLine = 10525
+; Folding = ----------------------------------------------------------------------------------------------------2v4--+--rX8-f20f0---4--f----------------------------------------------------------------------------------------------------------------8---------------------------------------------------------------3--4--4-f-8f-----v--+80-j----------------------------------------------------------------0--------------------+-00v-4P-4-r--------------------------------------------------------------------4---0------------------------------------f------+++-4-----e--b--4-v+--08----4f--------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

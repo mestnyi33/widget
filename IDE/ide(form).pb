@@ -454,14 +454,14 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
    
    Select Type
       Case #__type_Spin
-        ;*this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag, - 2147483648, 2147483648, 0, #__bar_button_size, 0, 7 )
-         Select item
-            Case #_pi_x, #_pi_width
-               *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_vertical|#__flag_invert, -1000, 1000, 0, #__bar_button_size, 0, 7 )
-            Case #_pi_y, #_pi_height
-               *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag, -1000, 1000, 0, #__bar_button_size, 0, 7 )
-         EndSelect
-         
+;          Select item
+;             Case #_pi_x, #_pi_width
+;                *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert|#__flag_vertical, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+;             Case #_pi_y, #_pi_height
+;                *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+;          EndSelect
+             *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+           
          ;SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_String
          *this = Create( *second, "String", #__type_String, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
@@ -1911,10 +1911,10 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 490
-; FirstLine = 482
-; Folding = -------------------04---0---------
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 462
+; FirstLine = 446
+; Folding = -------------------+8---+---------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

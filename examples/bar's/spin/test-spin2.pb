@@ -11,10 +11,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetColor(root( ), #__color_back, $FFEFEFEF )
       a_init(root( ))
       
-      Define *spin1 = Spin(50, 20, 250, 50, 0, 30)
+      Define *spin1 = Spin(50, 20, 250, 50, 0, 30, #__flag_invert)
       SetState(*spin1, 0)
       
-      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__flag_Textcenter|#__flag_vertical);|#__flag_invert)
+      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__flag_vertical);|#__flag_invert)
        ;Define *spin2 = Create( root( ), "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, #__flag_vertical|#__flag_invert, -1000, 1000, 0, #__bar_button_size, 0, 7 )
       SetState(*spin2, 15)
       
@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
 
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP
 ; DPIAware

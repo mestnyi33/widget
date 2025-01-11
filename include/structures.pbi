@@ -465,6 +465,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          vertical.b
          direction.b
          
+         mirror.b 
         ;;; orient.b ; Поддерживаемые ориентации
          
          percent.f
@@ -622,7 +623,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Height.l[constants::#__c]
          Width.l[constants::#__c]
          ;
-         Type.w[2]                
+         Type.w;[2]                
          ; type[0] = createtype
          ; type[1] = grouptype
          ;
@@ -667,7 +668,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
         ; StructureUnion
             *togglebox._s_BOX     ; checkbox; optionbox, ToggleButton
-            *button._s_BUTTONS    ; combobox button
+            *combobutton._s_BUTTONS    ; combobox button
         ; EndStructureUnion
          
          displaypopup.b
@@ -782,9 +783,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 354
-; FirstLine = 376
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 10
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

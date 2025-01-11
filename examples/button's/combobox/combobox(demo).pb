@@ -5,6 +5,9 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
+  test_clip = 1
+  ;test_area = 1
+  
   Define a,i, Height=60
   
   UsePNGImageDecoder()
@@ -132,8 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 26
+; CursorPosition = 8
 ; Folding = 8--
 ; Optimizer
 ; EnableXP

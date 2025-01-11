@@ -73,41 +73,39 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(*combo3, 3)    ; set (beginning with 0) the third item as active one
     
     ;\\
-    Define s1combo = ComboBoxGadget(#PB_Any, 0,0,0,0)
+    Define s1combo = ComboBoxGadget(#PB_Any, 0,0,0,0, #PB_ComboBox_Editable )
     For a = 0 To 5
       AddGadgetItem(s1combo, -1,"ComboBox item " + Str(a))
     Next
     
-    Define *s1combo = ComboBox( 0,0,0,0 )
-    For a = 0 To 0
-      AddItem(*s1combo, -1,"ComboBox item " + Str(a))
-    Next
-    
-    Splitter( 10, 40+h*3, 250, h*3, s1combo, *s1combo )
-    
-    ;\\
     Define s2combo = ComboBoxGadget(#PB_Any, 0,0,0,0)
     For a = 0 To 5
       AddGadgetItem(s2combo, -1,"ComboBox item " + Str(a))
     Next
     
-    Define *s2combo = ComboBox( 0,0,0,0 )
+    Splitter( 10, 40+h*3, 250, h*3, s1combo, s2combo, #PB_Splitter_Vertical )
+    
+    ;\\
+    Define *s1combo = ComboBox( 0,0,0,0, #PB_ComboBox_Editable )
     For a = 0 To 5
+      AddItem(*s1combo, -1,"ComboBox item " + Str(a))
+    Next
+    
+    Define *s2combo = ComboBox( 0,0,0,0 )
+    For a = 0 To 115
       AddItem(*s2combo, -1,"ComboBox item " + Str(a))
     Next
     
-    Define s2combo = ComboBox( 0,0,0,0 )
-    For a = 0 To 115
-      AddItem(s2combo, -1,"ComboBox item " + Str(a))
-    Next
-    
-    Splitter( 10+x, 40+h*3, 250, h*3, s2combo, *s2combo , #PB_Splitter_Vertical)
+    Splitter( 10+X, 40+h*3, 250, h*3, *s1combo, *s2combo, #PB_Splitter_Vertical)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 36
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 75
+; FirstLine = 68
 ; Folding = -
+; Optimizer
 ; EnableXP
+; DPIAware
+; CommandLine = PureBasic.exe Example.pb /PORTABLE

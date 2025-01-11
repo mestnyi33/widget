@@ -511,6 +511,7 @@
     #__spin_Left             = 1<<1
     #__spin_Right            = 1<<2
     #__spin_plus             = 1<<3
+    #__spin_mirror           = 1<<4
     
     ;-\\ Text
     #__text_Update           = - 124
@@ -742,9 +743,9 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 150
+; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; CursorPosition = 513
+; FirstLine = 496
 ; Folding = ----
 ; Optimizer
 ; EnableXP

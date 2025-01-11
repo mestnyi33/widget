@@ -68,3 +68,4 @@ CompilerEndIf
 ; CursorPosition = 4
 ; Folding = -
 ; EnableXP
+; DPIAware
