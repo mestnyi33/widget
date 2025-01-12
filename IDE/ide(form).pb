@@ -460,14 +460,15 @@ Procedure AddItemProperties( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 
 ;             Case #_pi_y, #_pi_height
 ;                *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
 ;          EndSelect
-             *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+         
+         *this = Create( *second, "Spin", #__type_Spin, 0, 0, 0, 0, "", flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
            
          ;SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_String
          *this = Create( *second, "String", #__type_String, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
          ;*this = Create( *second, "String", #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
       Case #__type_ComboBox
-         *this = Create( *second, "ComboBox", #__type_ComboBox, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *second, "ComboBox", #__type_ComboBox, 0, 0, 0, 0, "", flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
          AddItem(*this, -1, "False")
          AddItem(*this, -1, "True")
          ; SetState(*this, 1)
@@ -1912,8 +1913,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 462
-; FirstLine = 446
+; CursorPosition = 461
+; FirstLine = 450
 ; Folding = -------------------+8---+---------
 ; EnableXP
 ; DPIAware
