@@ -15,50 +15,50 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;-
-   Procedure ResizeButton( *second._s_WIDGET )
-      Protected *this._s_WIDGET
+   Procedure ResizePropertiesButton( *this._s_WIDGET )
       Protected *row._s_ROWS
-      *row = *second\RowFocused( )
+      *row = *this\RowFocused( )
       If *row
-         *this = *row\data
-         ;
-         If *this
-            Debug *second\RowFocused( )
-            ;             Resize(*this,
-            ;                    *row\x + *second\scroll_x( ),; +30, 
-            ;                    *row\y + *second\scroll_y( ), 
-            ;                    *row\width,;*second\inner_width( ),;; -30, 
-            ;                    *row\height, 0 )
-            Debug ""+*row\width +" "+ *row\height ;*second\scroll\v\bar\page\pos
-            Resize(*this,
-                   *row\x + *second\scroll_x( ), 
-                   *row\y + *second\scroll_y( ), 
-                   *second\inner_width( )-4, 
-                   *row\height, 0 )
-            
-            ;             *this\x[7] = *this\x
-            ;             *this\y[7] = *this\y
-            ;             *this\width[7] = *this\width
-            ;             *this\height[7] = *this\height
-            ;             *this\x[8] = *this\x
-            ;             *this\y[8] = *this\y
-            ;             *this\width[8] = *this\width
-            ;             *this\height[8] = *this\height
-            ;             
+         If *row\data
+            If *row\hide
+               If Not Hide( *row\data )
+                  Hide( *row\data, #True )
+               EndIf
+            Else
+               If Hide( *row\data )
+                  Hide( *row\data, #False )
+               EndIf
+               ;
+               Resize(*row\data,
+                      *row\x + *this\scroll_x( ), 
+                      *row\y + *this\scroll_y( ), 
+                      *this\inner_width( )-2, 
+                      *row\height, 0 )
+            EndIf
          EndIf
       EndIf
    EndProcedure
    
-   Procedure DisplayButton( item )
+   Procedure DisplayPropertiesButton( item )
       Protected *row._s_ROWS
       *row = *this\RowFocused( )
       If *row
-         ResizeButton( *this )
-         SetText( *row\data, *row\text\string )
+         If *row\childrens
+            If Not Hide( *row\data )
+               Hide( *row\data, #True )
+            EndIf
+         Else
+            If Hide( *row\data )
+               Hide( *row\data, #False )
+            EndIf
+            ;
+            ResizePropertiesButton( *this )
+            SetText( *row\data, *row\text\string )
+         EndIf
       EndIf
    EndProcedure
    
-   Procedure ButtonEvents( )
+   Procedure PropertiesButtonEvents( )
       Select WidgetEvent( )
          Case #__event_Down
             GetActive( )\gadget = EventWidget( )
@@ -106,13 +106,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_Down
             ; чтобы выбирать сразу
-            ; SetState_( EventWidget( ), WidgetEventItem( ))
+            If Not EnteredButton( )
+             SetState_( EventWidget( ), WidgetEventItem( ))
+            EndIf
             
          Case #__event_Change
             Debug "change  "+GetClass(EventWidget( )) +" "+ WidgetEventData( )
             
             ;
-            DisplayButton( WidgetEventItem( ) )
+            DisplayPropertiesButton( WidgetEventItem( ) )
             
             ; Debug "-------change-start-------"
             Select EventWidget( )
@@ -124,6 +126,17 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_StatusChange
             If WidgetEventData( ) = #PB_Tree_Expanded Or
                WidgetEventData( ) = #PB_Tree_Collapsed
+               
+;                ;
+;                If *this\RowFocused( ) 
+;                   If *this\RowFocused( )\data
+;                      If *this\RowFocused( )\index = WidgetEventItem( )
+;                         Debug 8765678
+;                         Hide( *this\RowFocused( )\data, Bool( WidgetEventData( ) = #PB_Tree_Collapsed ))
+;                      EndIf
+;                   EndIf
+;                EndIf
+               
                ;
                Select EventWidget( )
                   Case *demo : SetItemState(*this, WidgetEventItem( ), WidgetEventData( ))
@@ -158,11 +171,18 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetState(*demo\scroll\v, WidgetEventData( ) )
                   EndIf
             EndSelect
-            
-            ResizeButton( *this )
-            
+            Debug "scroll change"
+      EndSelect
+      
+      ;
+      Select WidgetEvent( )
+         Case #__event_Resize, ;#__event_StatusChange,
+              #__event_ScrollChange
+            Debug 77
+            ResizePropertiesButton( *this )
             
       EndSelect
+      
    EndProcedure
    
    Procedure button_events()
@@ -220,16 +240,17 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
       ;Container(0, 0, 240, 330)
       *demo = Tree(10, 10, 220/2, 310) : SetClass(*demo, "demo")
-      *this = Tree(110, 10, 220/2, 310) : SetClass(*this, "this")
+      *this = Tree(110, 10, 220/2, 310, #__flag_nolines) : SetClass(*this, "this")
       ;*this = ListView(10, 10, 220, 310)
       ;*this = Panel(10, 10, 230, 310) 
+      Splitter(10,10, 230, 310, *demo, *this, #PB_Splitter_Vertical )
       
       Bind(*demo, @widget_events());, #__event_Change)
       Bind(*this, @widget_events());, #__event_Change)
       
       OpenList( *this )
       *test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_textcenter| bug
-      Bind( *test, @Buttonevents( ));, #__event_Change)
+      Bind( *test, @PropertiesButtonevents( ))                       ;, #__event_Change)
       CloseList( )
       
       For a = 0 To CountItems
@@ -283,7 +304,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 213
-; Folding = ------
+; CursorPosition = 286
+; FirstLine = 250
+; Folding = --v----
 ; EnableXP

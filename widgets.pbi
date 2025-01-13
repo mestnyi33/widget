@@ -5933,7 +5933,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\RowFocused( )\_focus = 0
                         *this\RowFocused( )\ColorState( ) = #__s_0
                         *this\RowFocused( )\ColorState( ) = #__s_0
-                        DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ) )
+                        DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
                         *this\RowFocused( )               = #Null
                         ProcedureReturn - 1
                      EndIf
@@ -5991,7 +5991,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\RowFocused( )\_focus = 0
                            *this\RowFocused( )\ColorState( ) = #__s_0
                            ;
-                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ) )
+                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
                         EndIf
                         
                         *this\RowFocused( ) = *row
@@ -6033,7 +6033,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  SetText( *this\parent\parent, *this\RowFocused( )\text\string )
                                  DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                                  If result  
-                                    DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                                    DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                                  EndIf 
                               Else
                                  If *this\parent\type = #__type_ComboBox
@@ -6041,14 +6041,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  EndIf 
                                  DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                                  If result  
-                                    DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                                    DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                                  EndIf 
                               EndIf 
                            EndIf 
                         Else
                            DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                            If result  
-                              DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                              DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                            EndIf 
                         EndIf
                         ProcedureReturn 1
@@ -6231,7 +6231,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                ;
-               If *row\childrens
+               If *row\childrens 
                   If State & #PB_Tree_Expanded Or State & #PB_Tree_Collapsed 
                      *row\buttonbox\checked = Bool( State & #PB_Tree_Collapsed )
                      *this\WidgetChange( )  = #True
@@ -8542,8 +8542,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\mode\check
                *row\checkbox.allocate( BOX )
             EndIf
-            If *this\mode\lines Or *this\mode\buttons
+            If *this\mode\lines
                *row\buttonbox.allocate( BOX )
+            EndIf
+            If *row\RowParent( ) And 
+               *row\RowParent( )\childrens
+               If Not *row\RowParent( )\buttonbox
+                  *row\RowParent( )\buttonbox.allocate( BOX )
+               EndIf
             EndIf
                         
             *row\color         = *this\color ; _get_colors_( )
@@ -8865,8 +8871,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *rowFocused\ColorState( ) = *this\focus
                      *this\RowFocusedIndex( ) = *rowFocused\rindex 
                      ;
-                     DoEvents( *this, #__event_StatusChange, *row\rindex, *row\ColorState( ))
-                     DoEvents( *this, #__event_StatusChange, *rowFocused\rindex, *rowFocused\ColorState( ))
+                     DoEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ))
+                     DoEvents( *this, #__event_StatusChange, *rowFocused\rindex, -*rowFocused\ColorState( ))
                   EndIf
                EndIf
                PopListPosition( *this\__rows( ))
@@ -10657,6 +10663,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If result
             bar_area_resize( *this )
+            ; example state-item.pb
+            ; Send( *this, #__event_Resize )
+            Send( *this, #__event_ScrollChange )
          EndIf
          
          ProcedureReturn result
@@ -19945,7 +19954,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ; Debug " leave-item status change"
-                     DoEvents( *this, #__event_StatusChange, *rowleaved\rindex, *rowleaved\ColorState( ) )
+                     DoEvents( *this, #__event_StatusChange, *rowleaved\rindex, -*rowleaved\ColorState( ) )
                   EndIf
                EndIf
                
@@ -19984,7 +19993,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      ;\\ update non-focus status
                      If Not ( Not *this\press And *row = *this\RowFocused( ) )
-                        DoEvents( *this, #__event_StatusChange, *row\rindex, *row\ColorState( ) )
+                        DoEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
                      EndIf
                   EndIf
                EndIf
@@ -20046,7 +20055,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *rows( )\ColorState( ) = #__s_2
                            ;
                            ; status-focus
-                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, *rows( )\ColorState( ))
+                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
                         EndIf
                      EndIf
                   Next
@@ -20065,7 +20074,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   ; status-focus
-                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                EndIf
             EndIf
             
@@ -20079,7 +20088,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *rows( )\ColorState( ) = #__s_3
                            ;
                            ; status-lostfocus
-                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, *rows( )\ColorState( ))
+                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
                         EndIf
                      EndIf
                   Next
@@ -20092,7 +20101,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\RowFocused( )\ColorState( ) = #__s_3
                      ;
                      ; status-lostfocus
-                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                   EndIf
                EndIf
             EndIf
@@ -20106,11 +20115,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *this\RowEntered( )\buttonbox
                            If *this\RowEntered( )\buttonbox\_enter
                               If *this\RowEntered( )\buttonbox\checked
-                                 SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
-                                 Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
+                                 ; развернул список
+                                 If SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
+                                    Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
+                                    Send( *this, #__event_ScrollChange )
+                                 EndIf
                               Else
-                                 SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
-                                 Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                                 ; свернул список
+                                 If SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                                    Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                                    Send( *this, #__event_ScrollChange )
+                                 EndIf
                               EndIf
                            EndIf
                         EndIf
@@ -20177,17 +20192,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     *this\RowFocused( )\ColorState( ) = #__s_3
                                     ;
                                     ; status-lostfocus
-                                    DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ) )
+                                    DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
                                  EndIf
                               EndIf
                               ;
                               ; status-change
-                              DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, *this\RowEntered( )\ColorState( ) )
+                              DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, -*this\RowEntered( )\ColorState( ) )
                            EndIf
                         Else
                            *this\RowEntered( )\ColorState( ) = #__s_1
                            ; status-change
-                           DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, *this\RowEntered( )\ColorState( ) )
+                           DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, -*this\RowEntered( )\ColorState( ) )
                         EndIf
                      EndIf
                   EndIf
@@ -20200,7 +20215,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; отобразить информацию выбранного итема
                ; не уверен есть ли в этом польза))
                If *this\RowFocused( )
-                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, 1 )
+                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - 1 )
                EndIf
             EndIf
             
@@ -20242,7 +20257,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *this\RowFocused( )\ColorState( ) = #__s_2
                               ;
                               ; status-focus
-                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( )\ColorState( ))
+                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                            EndIf
                         EndIf
                         ;
@@ -24307,10 +24322,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 11923
-; FirstLine = 10525
-; Folding = ----------------------------------------------------------------------------------------------------2v4--+--rX8-f20f0---4--f----------------------------------------------------------------------------------------------------------------8---------------------------------------------------------------3--4--4-f-8f-----v--+80-j----------------------------------------------------------------0--------------------+-00v-4P-4-r--------------------------------------------------------------------4---0------------------------------------f------+++-4-----e--b--4-v+--08----4f--------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 20194
+; FirstLine = 18242
+; Folding = ----------------------------------------------------------------------------------------------------2v4--+--rX8-f20f0---4--f----------------------------------------------------------------------------------------------------------------8---------------------------------------------------------------b--f--f--0v-0-----+-8v4-P+---------------------------------------------------------------4--------------------8-44-+f-9f-v+-------------------------------------------------------------------f---4-------------------------------------0-----8----0----v4--3--0-r--f-+-----4--------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
