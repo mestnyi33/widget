@@ -14,7 +14,7 @@ Global W_IH=-1,
        G_IH_Ok=-1,
        G_IH_Cancel=-1
 
-Declare W_IH_Events(Event)
+Declare W_IH_Events( )
 
 Procedure UseImageDecoder( FullPathName$ )
   Select GetExtensionPart( FullPathName$ )
@@ -27,10 +27,6 @@ Procedure UseImageDecoder( FullPathName$ )
   EndSelect
 EndProcedure
 
-Procedure W_IH_CallBack()
-  W_IH_Events(Event())
-EndProcedure
-
 Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCentered)
   If IsWindow(W_IH)
     SetActiveWindow(W_IH)
@@ -39,7 +35,8 @@ Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCe
   
   W_IH = GetCanvasWindow(Open(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID))                                                  
   ;G_IH_ScrollArea_0 = ScrollArea( 5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
-  G_IH_View = Image(5, 5, 291, 191, 0)    
+  G_IH_View = Image(5, 5, 291, 191, 0) 
+  SetBackgroundColor( G_IH_View, $FFB3FDFF )
   ;CloseList( )
   G_IH_Open = Button(300, 5, 81, 21, "Open")    
   G_IH_Save = Button(300, 30, 81, 21, "Save")    
@@ -49,63 +46,59 @@ Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCe
   G_IH_Ok = Button(300, 150, 81, 21, "Ok")      
   G_IH_Cancel = Button(300, 175, 81, 21, "Cancel")                                                               
   
+  Bind( #PB_All, @W_IH_Events( ) )
   ProcedureReturn W_IH
 EndProcedure
 
-Procedure W_IH_Events(Event)
+Procedure W_IH_Events( )
   Protected File$
   
-  Select Event
-    Case #PB_Event_Gadget
-      Select EventType()
-        Case #PB_EventType_LeftClick
-          Select EventGadget()
-            Case G_IH_Open
+  Select WidgetEvent( )
+     Case #__event_LeftClick
+        Select EventWidget( )
+           Case G_IH_Open
               File$ = OpenFileRequester("","","Image (*.png,*.bmp,*.ico,*.tiff)|*.png;*.bmp;*.ico;*.tiff|All files (*.*)|*.*",0)
               If File$
-                UseImageDecoder( File$ )
-                
-                Protected img = LoadImage(#PB_Any, File$)
-                If IsImage(img)
-;                   If ImageWidth(img) > GetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerWidth)
-;                     SetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerWidth, ImageWidth(img))
-;                   EndIf
-;                   If ImageHeight(img) > GetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerHeight)
-;                     SetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerHeight, ImageHeight(img))
-;                   EndIf
-                  SetState(G_IH_View, ImageID(img))
-                EndIf
+                 UseImageDecoder( File$ )
+                 
+                 Protected img = LoadImage(#PB_Any, File$)
+                 If IsImage(img)
+                    ;                   If ImageWidth(img) > GetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerWidth)
+                    ;                     SetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerWidth, ImageWidth(img))
+                    ;                   EndIf
+                    ;                   If ImageHeight(img) > GetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerHeight)
+                    ;                     SetGadgetAttribute(G_IH_ScrollArea_0, #PB_ScrollArea_InnerHeight, ImageHeight(img))
+                    ;                   EndIf
+                    SetState(G_IH_View, (img))
+                 EndIf
               EndIf
               
-            Case G_IH_Cancel
-              ProcedureReturn #PB_Event_CloseWindow
+           Case G_IH_Cancel
+              PostEvent( #PB_Event_CloseWindow, W_IH, - 1 )
               
-          EndSelect
-      EndSelect
+        EndSelect
   EndSelect
-  
-  ProcedureReturn Event
 EndProcedure
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  W_IH_Open()
+   Define Event 
+   W_IH_Open()
   
   While IsWindow(W_IH)
-    Define Event = WaitWindowEvent()
+    Event = WaitWindowEvent()
     
     Select EventWindow()
       Case W_IH
-        If W_IH_Events( Event ) = #PB_Event_CloseWindow
-          
+        If Event = #PB_Event_CloseWindow
           CloseWindow(EventWindow())
         EndIf
         
     EndSelect
   Wend
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 41
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 29
 ; FirstLine = 30
 ; Folding = ---
 ; EnableXP

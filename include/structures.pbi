@@ -205,62 +205,44 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *color._s_color
       EndStructure
       
-      ;--     syntax
-      Structure _s_syntax
-         List *word._s_edit( )
-      EndStructure
+;       ;--     syntax
+;       Structure _s_syntax
+;          List *word._s_edit( )
+;       EndStructure
       
       ;--     TEXT
       Structure _s_TEXT Extends _s_edit
-         ;     ;     Char.c
-         *fontID ; .i[2]
+         *fontID 
          
-         ;StructureUnion
          pass.b
          lower.b
          upper.b
          numeric.b
-         ;EndStructureUnion
-         
          editable.b
          multiline.b
          
          invert.b
          vertical.b
+         rotate.f
+         
+         ; char.c
+         ; short._s_edit ; ".."
+         ; short._s_text ; сокращенный текст
+         ; syntax._s_syntax
          
          edit._s_edit[4]
          caret._s_caret
-         syntax._s_syntax
-         
-         ; short._s_edit ; ".."
-         ; short._s_text ; сокращенный текст
-         
-         rotate.f
          align._s_align
-         ; padding._s_point
        EndStructure
       
       ;--     IMAGE
       Structure _s_image Extends _s_COORDINATE
-         StructureUnion
-            *id  ; - ImageID( )
-            *imageID
-         EndStructureUnion
-         *img ; - Image( )
+         change.b ; TEMP
          
-         ;;*output;transparent.b
-         change.b
-         depth.a
-         size.w  ; icon small/large
-         
-         ;;rotate.f
+         *imageID
+         *image
+         rotate.f
          align._s_align
-         ;padding._s_point
-         ;
-         ;
-         ;       *pressed._s_image
-         ;       *released._s_image
-         ;       *background._s_image
       EndStructure
       
       ;
@@ -357,7 +339,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          columnindex.c
          
          Text._s_text
-         Image._s_image
+         img._s_image
          color._s_color
          
          OffsetMove.i
@@ -521,7 +503,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          visible.b
          
          Text._s_text
-         Image._s_image
+         img._s_image
          color._s_color
       EndStructure
       
@@ -539,7 +521,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;index.i
          
          Text._s_TEXT
-         Image._s_image
+         img._s_image
          
          
          ;--TEMP---
@@ -706,7 +688,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \cursor[1]     ; current cursor
          ; \cursor[2]     ; change cursor 1
          ; \cursor[3]     ; change cursor 2
-         Image._s_image[4]
+         ;
+         imgsize.w        ; icon small/large
+         img._s_image[4]
          ; \image[0] - draw image
          ; \image[1] - released image
          ; \image[2] - pressed image
@@ -783,8 +767,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 10
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 239
+; FirstLine = 237
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

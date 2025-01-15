@@ -102,32 +102,32 @@ Procedure widget_events( )
                                             ;EventData.i = WidgetEventData( )
   
   Protected i, Text$, Files$, Count
-  
+          
   ; DragStart event on the Gadget_Source s, initiate a drag & drop
   ;
   Select EventType
     Case #__event_DragStart
-      Debug  "Drag - " + EventWidget
-      
-      Select EventWidget
+       ; 
+       ; The DragStart event tells us that the user clicked on an item and
+       ; wants to start draging it. We save this item for later use and
+       ; start our drag
+       ;
+       ; Событие DragStart сообщает нам, что пользователь щелкнул элемент и
+       ; хочет начать перетаскивание. Мы сохраняем этот элемент для последующего использования
+       ; и начинаем наше перетаскивание
+       ;
+       Debug  "Drag - " + EventWidget
+       
+       Select EventWidget
         Case Gadget_SourceItem
-          Protected Level, CountItems
-          ; 
-          ; The DragStart event tells us that the user clicked on an item and
-          ; wants to start draging it. We save this item for later use and
-          ; start our private drag
-          ;
-          ; Событие DragStart сообщает нам, что пользователь щелкнул элемент и
-          ; хочет начать перетаскивание. Мы сохраняем этот элемент для последующего использования
-          ; и начинаем наше "частное" перетаскивание
-          ;
           SourceItem = GetState(Gadget_SourceItem)
+          
           If SourceItem =- 1
             Debug " item не выбран"
           Else
             If DDragPrivate(#PrivateType_0, #PB_Drag_Move)
               Protected img =- 1
-              
+              ;
               SelectElement(EventWidget( )\__rows( ), SourceItem)
               img = CreateImage(#PB_Any, EventWidget( )\__rows( )\text\width, EventWidget( )\__rows( )\text\height, 32, #PB_Image_Transparent )
               StartDrawing(ImageOutput(img))
@@ -190,6 +190,8 @@ Procedure widget_events( )
           ; Здесь мы получаем событие падения. Убедитесь, что он находится на правильном гаджете и имеет правильный тип,
           ; особенно если в вашей программе есть несколько элементов Drag & Drop.
           ;
+          Protected Level, CountItems
+          
           If DDropType( ) = #PB_Drop_Private And
              DDropPrivate( ) = #PrivateType_0
             Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
@@ -354,7 +356,7 @@ Procedure widget_events( )
             ;ClearDebugOutput()
             Define *this._s_widget = Gadget_TargetItem
             ForEach *this\__rows( )
-              Debug ""+ *this\__rows( )\_index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\string +""
+              Debug ""+ *this\__rows( )\index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\string +""
             Next
           EndIf
           
@@ -409,7 +411,8 @@ Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
   ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
   
    ;\\
-   Text(X,Y,Width,20,title) : SetColor( widget( ), #__color_back, $FFC2C2C2)
+   Text(X,Y,Width,20,title, #__flag_textinline) : SetColor( widget( ), #__color_back, $FFC2C2C2)
+   
    ProcedureReturn Tree(X,Y+20,Width,Height-20)
 EndProcedure
 
@@ -507,8 +510,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 419
-; FirstLine = 366
+; CursorPosition = 195
+; FirstLine = 372
 ; Folding = -----
 ; Optimizer
 ; EnableXP

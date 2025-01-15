@@ -1,31 +1,9 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
-UseWidgets( )
-
-; ; LN=1000; количесвто итемов 
-; ; Global *w._S_widget
-; ; 
-; ; If Open(OpenWindow(#PB_Any, 100, 50, 400, 500, "ListViewGadget", #PB_Window_SystemMenu))
-; ;   If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
-; ;   EndIf
-; ;   
-; ;   Image(10, 10, 380, 380, (0)) 
-; ;   
-; ;   Button(10,390, 95, 25, "")
-; ;   WaitClose()
-; ; EndIf
-
-; ImageSize.NSSize
-; ImageSize\width = 64
-; ImageSize\height = 64
-; CocoaMessage(0, ImageID(1), "setSize:@", @ImageSize)
-
-; IncludePath "../"
-; XIncludeFile "widgets().pbi"
-
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
+   UseWidgets( )
    EnableExplicit
    
    Global.i gEvent, gQuit
@@ -33,24 +11,50 @@ CompilerIf #PB_Compiler_IsMainFile
    
    UsePNGImageDecoder()
    
-   If Not LoadImage(10, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")  ;  "/Users/as/Desktop/Снимок экрана 2018-12-29 в 21.35.28.png") ; 
+   Procedure NewImage( Image, Width, Height )
+      ;
+      ; Create some images for the image demonstration
+      ; 
+      Define i, font ;= LoadFont( 0, "Aria", (13) )
+      CreateImage( Image, Width, Height )
+      If StartDrawing( ImageOutput( Image ) )
+         ;DrawingFont( font )
+         
+         Box( 0, 0, Width, Height, $FFFFFF )
+         ;DrawText( 5, 5, "Drag this image", $000000, $FFFFFF )        
+         For i = 45 To 1 Step -1
+            Circle( 70, 80, i, Random( $FFFFFF ) )
+         Next i        
+         
+         StopDrawing( )
+      EndIf  
+   EndProcedure
+
+   If Not LoadImage(10, #PB_Compiler_Home + "examples/sources/Data/Background.bmp") 
       End
    EndIf
+   
+   ;NewImage( 1, 32, 32 )
    
    If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
       End
    EndIf
    
-   If DesktopResolutionX() > 1
-    ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
-    
-    ResizeImage(10, DesktopScaledX(ImageWidth(10)),DesktopScaledY(ImageHeight(10)))
-  EndIf
-  
+;    If DesktopResolutionX() > 1
+;       ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+;       
+;       ResizeImage(10, DesktopScaledX(ImageWidth(10)),DesktopScaledY(ImageHeight(10)))
+;    EndIf
+   
+   
    Procedure Window_0_widget_events( )
       Select EventWidget( )
          Case *Button
-            SetState( *Image, GetState( *Button ) )
+            If GetState( *Button )
+               SetState( *Image, (10) )
+            Else
+               SetState( *Image, (1) )
+            EndIf
             
          Case *ComboBox
             SetAttribute( *Image, #__DisplayMode, GetState( *ComboBox ) )
@@ -58,36 +62,34 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure Window_0_Resize( )
-      Protected width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)
-      Protected height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
-      
-      Resize(*Image, #PB_Ignore, #PB_Ignore, width-20, height-85)
-      Resize(*Button, #PB_Ignore, height-65, width-10, #PB_Ignore)
-      Resize(*ComboBox, #PB_Ignore, height-35, width-10, #PB_Ignore)
-   EndProcedure
-   
    Procedure Window_0( )
-      If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-         *Image = Image(10, 10, 230,  225, 10)
+      If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+         *Image = Image(10, 10, 230,  175, (1))
+         *Button = Button( 5, 195, 240,  25, "change image", #__flag_ButtonToggle)
+         *ComboBox = Container(5, 230, 240,  75) ; ComboBox( 5,   245+30, 240,  30)
          
-         *Button = Button( 5,   245, 240,  25, "change image", #__flag_ButtonToggle)
-         *ComboBox = ComboBox( 5,   245+30, 240,  30)
-         AddItem(*ComboBox, -1, "Default")
-         AddItem(*ComboBox, -1, "Center")
-         AddItem(*ComboBox, -1, "Mosaic")
-         AddItem(*ComboBox, -1, "Stretch")
-         AddItem(*ComboBox, -1, "Proportionally")
-         SetState(*ComboBox, 0)
+         CloseList( )
          
-         Bind( *Button, @Window_0_widget_events( ), #__event_LeftClick )
-         Bind( *ComboBox, @Window_0_widget_events( ), #__event_Change )
-         
+         SetBackgroundColor( *Image, $FFB3FDFF )
+         ;
          SetAlign(*Image, 0, 1,1,1,1 )
          SetAlign(*Button, 0, 1,0,1,1 )
          SetAlign(*ComboBox, 0, 1,0,1,1 )
          
-         ; Resize( root(), 0, 0, 450, 610)
+;          ;
+;          AddItem(*ComboBox, 0, "Default")
+;          AddItem(*ComboBox, 1, "Center")
+;          AddItem(*ComboBox, 2, "Mosaic")
+;          AddItem(*ComboBox, 3, "Stretch")
+;          AddItem(*ComboBox, 4, "Proportionally")
+;          SetState(*ComboBox, 0)
+         
+         ;
+         Bind( *Button, @Window_0_widget_events( ), #__event_LeftClick )
+         Bind( *ComboBox, @Window_0_widget_events( ), #__event_Change )
+         
+         HideWindow(0,0)
+         ResizeWindow(0, #PB_Ignore, #PB_Ignore, #PB_Ignore, 250)
       EndIf
    EndProcedure
    
@@ -104,8 +106,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 73
-; Folding = --
+; CursorPosition = 69
+; FirstLine = 41
+; Folding = 0-
 ; EnableXP
 ; DPIAware

@@ -7,20 +7,20 @@ CompilerIf #PB_Compiler_IsMainFile
   Define Width=500, Height=400
   
   Procedure Active()
-     If MouseButtonPress( )
-        ClearDebugOutput( )
+     ;If MouseButtonPress( )
+        ;ClearDebugOutput( )
         Debug ""+#PB_Compiler_Procedure +" - "+ GetClass( EventWidget( ) ) ;+"_"+ GetActive( )\class ; GetText( EventWidget( ) )
-        If StartEnum( root( ) )
-           Debug Space(Bool(Not is_window_(widget()))*5)+ "["+ widgets(  )\class +
-                 "]  FIRST["+ widgets(  )\parent\FirstWidget( )\class +
-                 "]  LAST["+ widgets(  )\parent\LastWidget( )\class+"]"
-           StopEnum( ) 
-        EndIf
-     EndIf
+;         If StartEnum( root( ) )
+;            Debug Space(Bool(Not is_window_(widget()))*5)+ "["+ widgets(  )\class +
+;                  "]  FIRST["+ widgets(  )\parent\FirstWidget( )\class +
+;                  "]  LAST["+ widgets(  )\parent\LastWidget( )\class+"]"
+;            StopEnum( ) 
+;         EndIf
+     ;EndIf
   EndProcedure
   
   Procedure deactive()
-   ; Debug " "+#PB_Compiler_Procedure +" - "+ GetClass( EventWidget( ) ) +"_"+ GetText( EventWidget( ) )
+    Debug " "+#PB_Compiler_Procedure +" - "+ GetClass( EventWidget( ) ) ;+"_"+ GetText( EventWidget( ) )
   EndProcedure
   
   ;
@@ -62,6 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End  
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11
-; Folding = --
+; CursorPosition = 22
+; FirstLine = 11
+; Folding = -
 ; EnableXP

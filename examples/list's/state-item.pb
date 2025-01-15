@@ -171,14 +171,14 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetState(*demo\scroll\v, WidgetEventData( ) )
                   EndIf
             EndSelect
-            Debug "scroll change"
+            ;Debug "scroll change"
       EndSelect
       
       ;
       Select WidgetEvent( )
          Case #__event_Resize, ;#__event_StatusChange,
               #__event_ScrollChange
-            Debug 77
+            ;Debug 77
             ResizePropertiesButton( *this )
             
       EndSelect
@@ -238,8 +238,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
-      ;Container(0, 0, 240, 330)
-      *demo = Tree(10, 10, 220/2, 310) : SetClass(*demo, "demo")
+;       ;Container(0, 0, 240, 330)
+       *demo = Tree(10, 10, 220/2, 310) : SetClass(*demo, "demo")
       *this = Tree(110, 10, 220/2, 310, #__flag_nolines) : SetClass(*this, "this")
       ;*this = ListView(10, 10, 220, 310)
       ;*this = Panel(10, 10, 230, 310) 
@@ -304,7 +304,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 286
-; FirstLine = 250
-; Folding = --v----
+; CursorPosition = 300
+; FirstLine = 276
+; Folding = -------
 ; EnableXP

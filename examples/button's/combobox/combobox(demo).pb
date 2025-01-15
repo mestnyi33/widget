@@ -83,9 +83,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 615, 120, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
-    ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable)
+    ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable|#PB_ComboBox_Image)
     For a = 1 To 31 ; xp=31 ;linux-qt=11 ; mac = 5
-      AddGadgetItem(0, -1,"ComboBox item " + Str(a))
+      AddGadgetItem(0, -1,"ComboBox item " + Str(a), ImageID(0))
     Next
     
     ComboBoxGadget(1, 10, 40, 250, 21, #PB_ComboBox_Image)
@@ -110,7 +110,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\
     ComboBox(305+10, 10, 250, 21, #PB_ComboBox_Editable)
     For a = 1 To 31
-      AddItem(widget(), -1,"ComboBox item " + Str(a))
+      AddItem(widget(), -1,"ComboBox item " + Str(a), (0))
     Next
     
     ComboBox(305+10, 40, 250, 21, #PB_ComboBox_Image)
@@ -135,7 +135,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
+; CursorPosition = 85
+; FirstLine = 50
 ; Folding = 8--
 ; Optimizer
 ; EnableXP

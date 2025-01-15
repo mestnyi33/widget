@@ -25,6 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList()
     
     *g = MDI(310, 10, 290, 300)
+    ;a_init(*g)
     SetAttribute(*g, #PB_ScrollArea_ScrollStep, 15)
     SetAttribute(*g, #PB_ScrollArea_InnerWidth, sw)
     SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh)
@@ -112,8 +113,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 7
+; CursorPosition = 27
+; FirstLine = 12
 ; Folding = 0-
 ; Optimizer
 ; EnableXP

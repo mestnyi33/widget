@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
    Global Event.i, MyCanvas, *mdi._s_widget, vButton, hButton
-   Global x=200,y=150, width=320, height=320 , focus
+   Global X=200,Y=150, Width=320, Height=320 , focus
    
    Enumeration 1
       #Window
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Procedure Button_DrawCallback(*Object._s_widget, Width.i, Height.i, DataValue.i)
       Protected Text.s = GetText(*Object)
       Protected Hue = DataValue
-        Protected x, y
+        Protected X, Y
        Draw_Button( *Object )
      
    EndProcedure
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_MouseMove
             If DragWidget = *ew
-               Resize( *ew, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
+              Resize( *ew\parent, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore, 0)
             EndIf
             
          Case #__event_Draw
@@ -98,21 +98,22 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure MDI_AddObject( *mdi, type, x, y, width, height, text.s, round=0 )
+   Procedure MDI_AddObject( *mdi, Type, X, Y, Width, Height, Text.s, round=0 )
       Protected *Object._s_widget
       
       *Object = AddItem( *mdi, -1, "", -1, #__flag_BorderLess )
-      *Object\class = "draw-"+Str(type)
+      *Object\class = "draw-"+Str(Type)
       *Object\cursor = #PB_Cursor_Hand
       *Object\round = DPIScaled(round)
       
-      If type = #PB_GadgetType_Button
-        *Object\root\widget = Button(0,0,0,0,text,#__flag_autosize, -1, round)
+      If Type = #PB_GadgetType_Button
+         ;*Object\root\widget =
+         Define *this = Button(0,0,0,0,Text,#__flag_autosize, -1, round)
       EndIf
       
-      Resize(*Object, x, y, width, height)
+      Resize(*Object, X, Y, Width, Height)
       
-      *Object = *Object\root\widget
+      *Object = *this ; *Object\root\widget
       Bind( *Object, @MDI_ObjectEvents(), #__event_LeftUp )
       Bind( *Object, @MDI_ObjectEvents(), #__event_LeftDown )
       Bind( *Object, @MDI_ObjectEvents(), #__event_MouseMove )
@@ -125,9 +126,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;- \\
    Procedure Canvas_resize( )
       ;Protected width = GadgetWidth( EventGadget() )
-      Protected width = WindowWidth( EventWindow() )
-      Resize( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
-      Resize( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
+      Protected Width = WindowWidth( EventWindow() )
+      Resize( root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
+      Resize( *mdi, #PB_Ignore, #PB_Ignore, Width-X*2, #PB_Ignore )
    EndProcedure
    
    Procedure Gadgets_Events()
@@ -166,7 +167,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define yy = 90
    Define xx = 0
-   If Not OpenWindow( 0, 0, 0, Width+x*2+20+xx, Height+y*2+20+yy, "Move/Drag Canvas Object", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
+   If Not OpenWindow( 0, 0, 0, Width+X*2+20+xx, Height+Y*2+20+yy, "Move/Drag Canvas Object", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
       MessageRequester( "Fatal error", "Program terminated." )
       End
    EndIf
@@ -197,21 +198,22 @@ CompilerIf #PB_Compiler_IsMainFile
       StopDrawing() ; This is absolutely needed when the drawing operations are finished !!! Never forget it !
       
    EndIf
-   ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
+   ImageGadget(#PB_Any, Width+X*2+20-210,10,200,80, ImageID(0) )
    
    Define round = 50
    
    ;
-   MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
+   MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+X*2, Height+Y*2 ) )
    SetColor(root(), #__color_back, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
    
-   *mdi = MDI(x,y,width,height);, #__flag_autosize)
-                               ;a_init( *mdi )
-   SetColor(*mdi, #__color_back, $ffffffff)
-   ;SetColor(*mdi, #__color_frame, $ffffffff)
+   *mdi = MDI(X,Y,Width,Height);, #__flag_autosize)
+   mouse( )\steps = 35
+   ;a_init( *mdi )
+   ;SetColor(*mdi, #__color_back, $ffffffff)
+   SetColor(*mdi, #__color_frame, $ffffffff)
    
    Define b=DPIScaled(19);20        
    *mdi\scroll\v\round = DPIScaled(11)
@@ -241,8 +243,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 111
+; CursorPosition = 212
+; FirstLine = 208
 ; Folding = ---
 ; EnableXP
 ; DPIAware

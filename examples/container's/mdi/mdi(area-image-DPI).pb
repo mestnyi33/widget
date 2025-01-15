@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
    Global Event.i, MyCanvas, *mdi._s_widget, vButton, hButton
-   Global x=200,y=150, width=320, height=320 , focus
+   Global X=200,Y=150, Width=320, Height=320 , focus
    
    CompilerIf #PB_Compiler_DPIAware
      Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_MouseMove
             If DragWidget = *ew
-               Resize( *ew, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore)
+               Resize( *ew, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore, 0)
             EndIf
             
          Case #__Event_Draw
@@ -118,7 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             With *ew\parent\scroll
-               Box( (x), (y), (Width), (Height), RGB( 0,255,0 ) )
+               Box( (X), (Y), (Width), (Height), RGB( 0,255,0 ) )
                Box( DPIUnscaled(\h\x), DPIUnscaled(\v\y), DPIUnscaled(\h\bar\page\len), DPIUnscaled(\v\bar\page\len), RGB( 0,0,255 ) )
                Box( DPIUnscaled(\h\x-\h\bar\page\pos), DPIUnscaled(\v\y - \v\bar\page\pos), DPIUnscaled(\h\bar\max), DPIUnscaled(\v\bar\max), RGB( 255,0,0 ) )
             EndWith
@@ -126,11 +126,11 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure MDI_AddImage( *mdi, x, y, img, round=0 )
-      Protected *this._s_widget, width, height
+   Procedure MDI_AddImage( *mdi, X, Y, img, round=0 )
+      Protected *this._s_widget, Width, Height
       
-      width = ImageWidth( img )
-      height = ImageHeight( img )
+      Width = ImageWidth( img )
+      Height = ImageHeight( img )
       
       ;ResizeImage(img, DpiScaled(width), DPIScaled(height) )
       
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *this\cursor = #PB_Cursor_Hand
       *this\round = DPIScaled(round)
       
-      Resize(*this, x, y, width, height )
+      Resize(*this, X, Y, Width, Height )
       
       Bind( *this, @MDI_ImageEvents(), #__event_LeftUp )
       Bind( *this, @MDI_ImageEvents(), #__event_LeftDown )
@@ -154,9 +154,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;- \\
    Procedure Canvas_resize( )
       ;Protected width = GadgetWidth( EventGadget() )
-      Protected width = WindowWidth( EventWindow() )
-      Resize( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
-      Resize( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
+      Protected Width = WindowWidth( EventWindow() )
+      Resize( root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
+      Resize( *mdi, #PB_Ignore, #PB_Ignore, Width-X*2, #PB_Ignore )
    EndProcedure
    
    Procedure Gadgets_Events()
@@ -195,7 +195,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define yy = 90
    Define xx = 0
-   Define text.s
+   Define Text.s
    CompilerIf #PB_Compiler_DPIAware
      text.s = " enable DPIAware"
    CompilerElse
@@ -301,8 +301,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 119
+; CursorPosition = 96
+; FirstLine = 168
 ; Folding = ------
 ; EnableXP
 ; DPIAware
