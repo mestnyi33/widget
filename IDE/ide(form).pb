@@ -885,6 +885,9 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          Case "buttonimage" : *new = ButtonImage( X,Y,Width,Height, img, flag )
          Case "progress"    : *new = Progress( X,Y,Width,Height, 0,100, flag ) 
          Case "button"      : *new = Button( X,Y,Width,Height, "", flag ) 
+         Case "option"      : *new = Option( X,Y,Width,Height, "", flag ) 
+         Case "checkbox"    : *new = CheckBox( X,Y,Width,Height, "", flag ) 
+         Case "combobox"    : *new = ComboBox( X,Y,Width,Height, flag ) 
          Case "string"      : *new = String( X,Y,Width,Height, "", flag )
          Case "text"        : *new = Text( X,Y,Width,Height, "", flag )
       EndSelect
@@ -1219,11 +1222,17 @@ Procedure.i ide_add_image_list( *id, Directory$ )
                               Image = #PB_Any
                            ElseIf FindString( PackEntryName, "button" )
                               Image = #PB_Any
+                           ElseIf FindString( PackEntryName, "option" )
+                              Image = #PB_Any
+                           ElseIf FindString( PackEntryName, "checkbox" )
+                              Image = #PB_Any
                            ElseIf FindString( PackEntryName, "string" )
                               Image = #PB_Any
                            ElseIf FindString( PackEntryName, "text" )
                               Image = #PB_Any
                            ElseIf FindString( PackEntryName, "progress" )
+                              Image = #PB_Any
+                           ElseIf FindString( PackEntryName, "combobox" )
                               Image = #PB_Any
                            ElseIf FindString( PackEntryName, "container" )
                               Image = #PB_Any
@@ -1408,7 +1417,7 @@ Procedure ide_events( )
          If e_item = - 1
             SetText( ide_help_view, "help for the inspector" )
          Else
-            If WidgetEventData( ) > 0
+            If WidgetEventData( ) < 0
                If *e_widget = ide_inspector_view
                   ; Debug ""+WidgetEventData( )+" i "+e_item
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
@@ -1776,15 +1785,15 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState( ide_inspector_panel, 1 )
    
    ;   ;OpenList(ide_design_MDI)
-   Define result, btn2, example = 2
+   Define result, btn2, example = 3
    
    
    ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    
    If example = 2
-      widget_add( ide_design_form, "button", 10, 20, 100, 30 )
-      
-      Debug ""+widget()\parent\class +" "+ widget()\x[0] +" "+ widget()\x[7] +" "+ widget()\width[0] +" "+ widget()\width[7]
+;       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
+;       
+;       Debug ""+widget()\parent\class +" "+ widget()\x[0] +" "+ widget()\x[7] +" "+ widget()\width[0] +" "+ widget()\width[7]
 ;       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
 ;       widget_add( *container, "button", 10, 20, 30, 30 )
 ;       
@@ -1952,8 +1961,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2
-; Folding = -----------v--------4f---4----------
+; CursorPosition = 1419
+; FirstLine = 1323
+; Folding = -----------v--------4f--------------
 ; Markers = 478
 ; EnableXP
 ; DPIAware

@@ -25,9 +25,14 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(0, #PB_Button_PressedImage, ImageID(#PB_Button_PressedImage))
     
     Open( 0, 10, 60, 180, 40 )
-    ButtonImage(0, 0, 0, 0, (0), #__flag_autosize)
+    ;Image(0, 0, 180, 40, (0))
     
-    ;Debug widget()\width
+    ;Image(0, 0, 180, 40, (0), #__flag_autosize)
+    Image(0, 0, 0, 0, (0), #__flag_autosize)
+    ;Debug widget()\parent
+    ;String(0, 0, 0, 0, "text", #__flag_autosize)
+    ;SetBackgroundColor(widget(), $FFB3FDFF)
+    
     ; SetAttribute(widget(), #PB_Button_Image, (#PB_Button_Image))
     SetAttribute(widget(), #PB_Button_PressedImage, (#PB_Button_PressedImage))
     
@@ -35,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 7
+; CursorPosition = 33
+; FirstLine = 11
 ; Folding = -
 ; EnableXP

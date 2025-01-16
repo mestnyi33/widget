@@ -389,6 +389,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROW
       Structure _s_ROW
+         autoscroll.b
+         
          ID.i[4]
          sublevelpos.a
          sublevelsize.a
@@ -463,9 +465,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     SCROLL
       Structure _s_SCROLL Extends _s_COORDINATE
          bars.b
-         align._s_align
-         
-         state.b          ; set state status
          
          gadget.i[3]
          increment.f      ; scrollarea

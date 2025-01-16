@@ -1,18 +1,18 @@
-﻿; Dessiner sur des objets avec diverses modes à l'aide d'un canevas temporaire.
-; Dans cet exemple assez compliqué, nous allons pouvoir dessiner sur nos objets à l'aide d'un canevas temporaire.
-; Double-cliquez sur un objet pour faire apparaître un canevas temporaire, dessinez-y avec le mode voulu, puis cliquez en dehors pour valider le dessin.
+﻿; Рисовать на объектах с различными режимами, используя временный холст.
+; В этом довольно сложном примере мы сможем рисовать на наших объектах, используя временный холст.
+; Дважды щелкните объект, чтобы отобразить временный холст, нарисуйте его в нужном режиме, затем щелкните вне, чтобы подтвердить чертеж.
 
-; Drawing on objects With various modes using a temporary canvas.
-; In this rather complicated example, we're going to draw on our objects using a temporary canvas.
-; Double-click on an object To bring up a temporary canvas, draw on it With the desired mode, then click outside To validate the drawing.
-  
-; Créé le: 12/01/2025 par Dieppedalle David Alias Shadow.
-; Created on: 12/01/2025 by Dieppedalle David Alias Shadow.
+; Рисование на объектах с различными режимами с использованием временного холста.
+; В этом довольно сложном примере мы собираемся рисовать на наших объектах, используя временный холст.
+; Дважды щелкните объект, чтобы создать временный холст, нарисуйте его в нужном режиме, затем щелкните снаружи, чтобы подтвердить чертеж.
+ 
+; Создано: 12.01.2025 г. Диппедаллем Дэвидом по прозвищу Тень.
+; Создано: 12/01/2025 Дьеппедалем Дэвидом по псевдониму тень.
 
-; Inclue le fichier du programme.
+; Включает файл программы.
 XIncludeFile "EditorFactory.pbi"
 
-; Initialise le module pour pouvoir l'utiliser.
+; Инициализирует модуль, чтобы иметь возможность его использовать.
 UseModule EditorFactory
 
 ; ---------------------------------------------- Exemple: ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -55,35 +55,35 @@ Global ActiveObject.i = 0
 ; Le numéro du canevas ou s'est passé un évènement.
 Global Canevas.i = 0
 
-; The drawing mode applied when drawing on an object.
-; - Mode 1: draws randomly coloured circles;
-; - Mode 2: draws a solid square, randomly colored;
-; - Mode 3: draws an empty square with random-colored borders.
+; Режим рисования, применяемый при рисовании объекта.
+;- Режим 1: рисует произвольно окрашенные круги;
+; - режим 2: рисует сплошной квадрат, произвольно окрашенный;
+; - режим 3: рисует пустой квадрат со случайно окрашенными границами.
 
-; Le mode de dessin appliqué quand on dessine sur un objet.
-; - Mode 1: dessine des ronds de couleur aléatoire;
-; - Mode 2: dessine un carré plein, de couleur aléatoire ;
-; - Mode 3: dessine un carré vide avec des bordures de couleur aléatoire.
+; Режим рисования, применяемый при рисовании объекта.
+;- Режим 1: нарисуйте круги случайного цвета;
+; - режим 2: Нарисуйте полный квадрат случайного цвета ;
+; - режим 3: нарисуйте пустой квадрат с рамками случайного цвета.
 Global ModeDessin.i = 1
 
-; Transparency of desined shapes.
-; Transparence des Formes déssiné.
+; Прозрачность очерченных форм.
+; Прозрачность форм, лишенных формы.
 Global TransparenceRondPleins.i = 100
 Global TransparenceCarrePleins.i = 125
 Global TransparenceBordureCarreVide.i = 75
 
-; Mémorise la position de la souris quand un clique gauche a lieu avec la souris l'or d'un mode de déssin > 1
+; Запоминает положение мыши, когда происходит щелчок левой кнопкой мыши, золото режима выбора > 1
 Global MouseClickX.i
 Global MouseClickY.i
 
-; Mémorise la position de la souris quand elle se déplace sur le Canevas.
+; Запоминает положение мыши при ее перемещении по холсту.
 Global MouseMoveX.i
 Global MouseMoveY.i
 
-; Si l'Objets contient une image valide dans ses données, alors la retourne, sinon retourne 0.
+; Если объект содержит допустимое изображение в своих данных, то возвращает его, в противном случае возвращает 0.
 Procedure.i IsObjectImage(Object.i)
   
-  ; Si l'Objets a une image Additionnelle stoquer en tans que valeur Data.
+  ; Если у объекта есть дополнительное изображение, то оно должно соответствовать значению Data.
   ObjectData.i = GetObjectData(Object.i)
   
   If ObjectData.i <> 0 And IsImage(ObjectData.i)
@@ -102,24 +102,24 @@ Procedure WhenDoubleClickedObject()
   ; Activer le canevas temporaire.
   CanevasTemporaireActif.b = #True
   
-  ; Déséléctionne tous les Objets du Canevas sauf celui sélectionné, un seul Objet doit être sélectionné et c'est celui don on est en train d'éditer l'image, sinon bug car plusieurs Objet sont sélectionné.
-  
-  ;{ Désélectionne l'Objet spécifié ou tous les Objets du Canevas spécifié.
-  ;  iObject:               Le numéro de l'Objet, les constantes suivantes peuvent être utilisées à la place du numéro de l'objet.
-	;                          - #Object_All:       Deselectionne tous les objets dans l'ordre.
-	;                          - #Object_Selected:  Deselectionne tous les objets sélectionnés dans l'ordre.
-  ;  iCanvasGadget:         Numéro du canevas pour restraindre la Deselection seulement à ce canevas, ou #PB_Ignore pour autoriser la Deselection de tous les objets peut importe ou il ce trouve.
-	;  bPostEvent:            Par défaut (#False), aucun événement n'est déclenché. Utilisez #True pour déclencher le type d'événement #EventType_Unselected.
-	;}
+  ; Отменяет выбор всех объектов на холсте, кроме выбранного, должен быть выбран только один объект, и это тот, который мы редактируем в процессе редактирования изображения, в противном случае возникает ошибка, потому что выбрано несколько объектов.
+ 
+ ; { Отменяет выбор указанного объекта или всех объектов на указанном холсте.
+ ; iObject: номер объекта, следующие константы могут использоваться вместо номера объекта.
+ ;- #Object_All: отменяет выбор всех объектов по порядку.
+ ;- #Object_Selected: отменяет выбор всех выбранных объектов по порядку.
+ ; iCanvasGadget: номер холста, чтобы ограничить отмену выбора только этим холстом, или #PB_Ignore, чтобы разрешить отмену выбора для всех объектов, которые могут иметь значение, где бы они ни находились.
+ ; bPostEvent: по умолчанию (#False) событие не запускается. Используйте #True для запуска типа события #EventType_Unselected.
+;}
   UnselectObject(#Object_Selected, Canevas.i)
   
-	;{ Sélectionne l'Objet spécifié ou tous les Objets du Canevas spécifié.
-	;  iObject:               Numéro d'objet ou l'une des constantes suivantes:
-	;                          - #Object_All: Itère à travers tous les objets dans l'ordre.
-	;  iCanvasGadget:         Numéro du canevas gadget pour restreindre #Object_All au gadget spécifié, ou #PB_Ignore pour autoriser tous les gadgets.
-	;  bPostEvent:            Par défaut (#False), aucun événement n'est déclenché. Utilisez #True pour déclencher le type d'événement #EventType_Selected.
-	;}
-  ; Sélectionne l'Objet en court d'édition.
+	; { Выбирает указанный объект или все объекты на указанном холсте.
+ ; iObject: номер объекта или одна из следующих констант:
+ ;- #Object_All: перебирает все объекты по порядку.
+ ; iCanvasGadget: номер холста гаджета, чтобы ограничить #Object_All указанным гаджетом, или #PB_Ignore, чтобы разрешить все гаджеты.
+ ; bPostEvent: по умолчанию (#False) событие не запускается. Используйте #True для запуска типа события #EventType_Selected.
+ ;}
+; Выбирает объект в кратком виде для редактирования.
   SelectObject(EventObject(Canevas.i), Canevas.i)
   
   ; Redimensionner et positionner le canevas temporaire pour correspondre à l'objet.
@@ -539,15 +539,15 @@ EndProcedure
 
 ; ----------------------------------------------
 
-;{ Procédure Callback pour dessiner une image sur l'objet dans le Canevas car quand celui-ci est créer, il n'y a rien (Gris).
-; MyDrawingObject = Le nom de la procédure personnalisé pour dessiner quelque chose sur l'objet voulut, donnez lui le nom que vous voulez mais elle devras obligatoirement avoir ces arguments: Object.i, Width.i, Height.i
-; Les paramètres: (Object.i, Width.i, Height.i) seront automatiquement utiliser dans la procédure MyDrawingObject().
-; Object.i est le numéro de l'objet, cette variable n’apparaît pas dans la procédure mais est indispensable.
-; Width.i est la largeur de l'objet.
-; Height.i est la hauteur de l'objet.
-; iData.i est une donnée personnalisé, un chiffre ici (Couleur), n'est pas obligatoire, même dans les paramètre de la procédure, MyDrawingObject(Object.i, Width.i, Height.i) fonctionne aussi.
+; { Процедура обратного вызова для рисования изображения на объекте на холсте, потому что когда он создается, на нем ничего нет (серый).
+; MyDrawingObject = пользовательское имя процедуры для рисования чего-либо на желаемом объекте, дайте ей любое имя, которое вы хотите, но у нее обязательно должны быть следующие аргументы: Object. i, Width. i, Height.i
+; параметры: (Object.i, Width. i, Height. i) будут автоматически использоваться в процедуре MyDrawingObject ().
+; Object.i-это номер объекта, эта переменная не отображается в процедуре, но является обязательной.
+; Width.i-ширина объекта.
+; Height.i-высота объекта.
+; iData.i-это пользовательские данные, здесь цифра (цвет) не обязательна, даже в параметрах процедуры MyDrawingObject (Object.i, Width.i, Height.i) тоже работает.
 ;}
-; Cette procédure va dessiner ou redessiner automatiquement le contenu de cette procédure sur l'Objet à chaque fois que ce sera nécessaire.
+; эта процедура автоматически нарисует или перерисует содержимое этой выполняйте процедуру с объектом всякий раз, когда это будет необходимо.
 Runtime Procedure MyDrawingObject(Object.i, Width.i, Height.i, iData.i)
   
   ; Graphique de base.
@@ -597,33 +597,29 @@ ButtonGadget(#BoutonDessinMode3, WindowWidth(#Window) - 40, 80, 32, 32, "3", #PB
 ; Active le bouton 1.
 SetGadgetState(#BoutonDessinMode1, #True)
 
-;{ Initialise le gestionnaire d'Objets pour le Canevas gadget spécifié dans la fenêtre spécifiée, doit être fait pour chaque Canevas gadget.
-;  iCanvasGadget:         PB Numéro du Canevas gadget.
-;  iWindow:               PB Numéro de fenêtre.
-;  Résulta:               Renvoie #True, si l'initialisation a réussi, sinon, #False.
+; { Инициализирует диспетчер объектов для указанного холста-гаджета в указанном окне, это необходимо сделать для каждого холста-гаджета.
+; iCanvasGadget: PB номер холста гаджета.
+; iWindow: номер окна PB.
+; Результат: возвращает #True, если инициализация прошла успешно, в противном случае #False.
 ;}
-; Initialise la gestion pour le Canevas gadget.
+; инициализирует обработку для холста-гаджета.
 InitializeCanvasObjects(#Canevas, #Window)
 
-;{ Crée et ajoute un Objet au Canevas spécifié. ATTENTION: InitializeCanvasObjects() doit être appelé avant d'ajouter des Objets à ce Canevas.
-;  iCanvasGadget:         PB Numéro du gadget Canevas.
-;  iObject:               Un Numéro de l'Objet auto-défini ou #PB_Any pour générer un numéro unique. Le nombre auto-défini doit être compris entre 1 et 65535.
-;  iX, iY:                La position de l'Objet sur le Canevas.
-;  iWidth, iHeight:       La taille de l'Objet sur le Canevas.
-;	 iParentObject:         Un numéro d'objet valide auquel l'objet doit être rattaché (facultatif). Par défaut, l'objet sera placé sur le cadre de la toile.
-;  iFrameIndex:           Un index du cadre (commençant par 0) ou l'une des constantes suivantes, dans lequel l'objet doit être attaché (facultatif).
-;                          - #Frame_NoFrame:     L'objet sera attaché au cadre standard non indexé (cadre pour les pièces jointes).
-;                          - #Frame_ViewedFrame: L'objet sera attaché au cadre indexé actuellement affiché.
-;  Résultat:              Le numéro d'objet de l'objet créé ou 0 si la création a échoué. 
-;}
-; Les #Objet ont été crée sur le #Canevas, mais ici sont vides (Gris et sans poignées).
-; Les paramètres suivant: iParentObject et iFrameIndex, n'ont pas d'utilité dans cet exemple-ci, nous verront cela plus tard dans un autre exemple !
+; { Создает и добавляет объект на указанный холст. Предупреждение: перед добавлением объектов на этот холст необходимо вызвать функцию InitializeCanvasObjects ().
+; iCanvasGadget: PB номер гаджета на холсте.
+; iObject: номер самостоятельно определенного объекта или #PB_Any для генерации уникального номера. Самоустановленное число должно находиться в диапазоне от 1 до 65535.
+; iX, iY: положение объекта на холсте.
+; iWidth, iHeight: размер объекта на холсте.
+; iParentObject: действительный номер объекта, к которому объект должен быть присоединен (необязательно). По умолчанию объект будет помещен в рамку холста.
+; iFrameIndex: индекс фрейма (начинающийся с 0) или одна из следующих констант, к которым должен быть присоединен объект (необязательно).
+;- #Frame_NoFrame: объект будет прикреплен к стандартному неиндексированному фрейму (фрейм для вложений).
+;- #Frame_ViewedFrame: объект будет прикреплен к кадру
 CreateObject(#Canevas, #Objet1, 20, 20, 120, 80)
 CreateObject(#Canevas, #Objet2, 150, 20, 120, 80)
 CreateObject(#Canevas, #Objet3, 20, 110, 120, 80)
 CreateObject(#Canevas, #Objet4, 150, 110, 120, 80)
 
-;{ Création des images totalement transparente qui seront déssiné par dessus les graphiques de base des Objets, ceci est un exemple, déssinez ce que vous voulez dedans, ou rien.
+; { Создание полностью прозрачных изображений, которые будут удалены поверх базовой графики объектов, это пример, удалите из них то, что вы хотите, или ничего.
 If CreateImage(#ImageObjet1, GetObjectWidth(#Objet1), GetObjectHeight(#Objet1), 32, #PB_Image_Transparent)
   
   If StartVectorDrawing(ImageVectorOutput(#ImageObjet1))
@@ -899,59 +895,59 @@ Repeat
               Select EventType()
                   
                 Case #PB_EventType_MouseEnter
-                  Debug "La souris est entrée sur le Canevas"
+                  Debug "Мышь вошла на холст"
                   
                 Case #PB_EventType_MouseLeave
-                  Debug "La souris est sortie du Canevas"
+                  Debug "Мышь исчезла с холста"
                   
                 Case #PB_EventType_LeftButtonDown
-                  Debug "Le bouton gauche de la souris a été appuyé sur le Canevas"
+                  Debug "Левая кнопка мыши была нажата на холсте"
                   
                 Case #PB_EventType_LeftButtonUp
-                  Debug "Le bouton gauche de la souris a été relâché sur le Canevas"
+                  Debug "Левая кнопка мыши была отпущена на холст"
                   
                 Case #PB_EventType_LeftClick
-                  Debug "Un clique gauche de la souris a eu lieu sur le Canevas"
+                  Debug "Произошел щелчок левой кнопкой мыши по холсту"
                   
                 Case #PB_EventType_LeftDoubleClick
-                  Debug "Un double clique gauche de la souris a eu lieu sur le Canevas"
+                  Debug "Произошел двойной щелчок левой кнопкой мыши по холсту"
                   
                 Case #PB_EventType_MiddleButtonDown
-                  Debug "Le bouton du milieux de la souris a été appuyé sur le Canevas"
+                  Debug "Кнопка фона мыши была нажата на холсте"
                   
                 Case #PB_EventType_MiddleButtonUp
-                  Debug "Le bouton du milieux de la souris a été relâché sur le Canevas"
+                  Debug "Кнопка фона мыши была отпущена на холст"
                   
                 Case #PB_EventType_RightButtonDown
-                  Debug "Le bouton droit de la souris a été appuyé sur le Canevas"
+                  Debug "Правая кнопка мыши была нажата на холсте"
                   
                 Case #PB_EventType_RightButtonUp
-                  Debug "Le bouton droit de la souris a été relâché sur le Canevas"
+                  Debug "Правая кнопка мыши была отпущена на холст"
                   
                 Case #PB_EventType_RightClick
-                  Debug "Un clique droit de la souris a eu lieu sur le Canevas"
+                  Debug "Произошел щелчок правой кнопкой мыши по холсту"
                   
                 Case #PB_EventType_RightDoubleClick
-                  Debug "Un double clique droit de la souris a eu lieu sur le Canevas"
+                  Debug "Произошел двойной щелчок правой кнопкой мыши по холсту"
                   
                 Case #PB_EventType_KeyDown
-                  Debug "La touche du clavier " + Chr(GetGadgetAttribute(#Canevas, #PB_Canvas_Key)) + " a été enfoncée sur le Canevas" ; Voir la Table Ascii.
+                  Debug "Клавиша на клавиатуре " + Chr(GetGadgetAttribute(#Canevas, #PB_Canvas_Key)) + " была нажата на холсте" ; Посмотреть таблицу Ascii.
                   
                 Case #PB_EventType_KeyUp
-                  Debug "La touche du clavier " + Chr(GetGadgetAttribute(#Canevas, #PB_Canvas_Key)) + " a été relâché sur le Canevas" ; Voir la Table Ascii.
+                  Debug "Клавиша на клавиатуре " + Chr(GetGadgetAttribute(#Canevas, #PB_Canvas_Key)) + " был выпущен на холст" ; Посмотреть таблицу Ascii.
                   
                 Case #PB_EventType_MouseWheel
                   
                   If GetGadgetAttribute(#Canevas, #PB_Canvas_WheelDelta) > 0
-                    Debug "La molette de la souris a été tournée vers le haut sur le Canevas"
+                    Debug "Колесо мыши было повернуто вверх на холсте"
                   Else
-                    Debug "La molette de la souris a été tournée vers le bas sur le Canevas"
+                    Debug "Колесо мыши было повернуто вниз на холсте"
                   EndIf
                   
               EndSelect
               
             Case #CanevasTemporaire
-              ; Quand on est en train de déssiner sur l'Objet.
+              ; Когда мы занимаемся расчисткой объекта.
               WhenDrawObject()
               
             Case #BoutonDessinMode1
@@ -1004,102 +1000,102 @@ Repeat
       
   EndSelect
   
-  ; Boucle d'évènement des Objets dans le Canevas.
+  ; Цикл обработки событий объектов на холсте.
   Repeat
     
-    Select CanvasObjectsEvent() ;  Quelque chose s'est passé dans un Canevas.
+    Select CanvasObjectsEvent() ; Что-то произошло на холсте.
         
-      Case #Event_Object ; C'est un Evénements de type Objets.
+      Case #Event_Object ; Это событие типа объектов.
         
-        Canevas.i = CanvasObjectsEventGadget() ; Sur quel Canevas s'est passé l'évènement ?
+        Canevas.i = CanvasObjectsEventGadget() ; На каком холсте произошло событие ?
         
-        Select CanvasObjectsEventType(Canevas.i) ; Quel type d’Événements s'est passé sur l'Objet du Canevas ?
+        Select CanvasObjectsEventType(Canevas.i) ; Какие события произошли на объекте холста ?
             
           Case #EventType_MouseEnter
-            Debug "La souris est entrée sur l’Objet n°" + EventObject(Canevas.i)
+            Debug "Мышь вошла в объект n°" + EventObject(Canevas.i)
             
           Case #EventType_MouseLeave
-            Debug "La souris est sortie de l’Objet n°" + EventObject(Canevas.i)
+            Debug "Мышь вышла из объекта n°" + EventObject(Canevas.i)
             
           Case #EventType_LeftMouseBottonDown
-            Debug "Le bouton gauche de la souris a été appuyé sur l'Objet n°" + EventObject(Canevas.i)
+            Debug "Левая кнопка мыши была нажата на объекте n°" + EventObject(Canevas.i)
             
           Case #EventType_LeftMouseBottonUp
-            Debug "Le bouton gauche de la souris a été relâché sur l'Objet n°" + EventObject(Canevas.i)
+            Debug "Левая кнопка мыши была отпущена на объект n°" + EventObject(Canevas.i)
             
           Case #EventType_LeftMouseClick
-            Debug "Un clique gauche de la souris a eu lieu sur l’Objet n°" + EventObject(Canevas.i)
+            Debug "Произошел щелчок левой кнопкой мыши по объекту n°" + EventObject(Canevas.i)
             
           Case #EventType_LeftMouseDoubleClick
-            Debug "Un double-clic gauche de la souris a eu lieu sur l’Objet n°" + EventObject(Canevas.i)
-            ; Quand on double clique sur un Objet, active le canevas temporaire puis affiche l'image de l'Objet dedans pour la modifier.
+            Debug "Произошел двойной щелчок левой кнопкой мыши по объекту n°" + EventObject(Canevas.i)
+            ; При двойном щелчке по объекту активируется временный холст, а затем отображается изображение объекта в нем для редактирования.
             WhenDoubleClickedObject()
             
           Case #EventType_MiddleMouseBottonDown
-            Debug "Le bouton du milieux de la souris a été appuyé sur l'Objet n°" + EventObject(Canevas.i)
+            Debug "Кнопка фона мыши была нажата на объекте n°" + EventObject(Canevas.i)
             
           Case #EventType_MiddleMouseBottonUp
-            Debug "Le bouton du milieux de la souris a été relâché sur l'Objet n°" + EventObject(Canevas.i)
+            Debug "Кнопка фона мыши была отпущена на объект n°" + EventObject(Canevas.i)
             
           Case #EventType_MiddleMouseClick
-            Debug "Un clique centre de la souris a eu lieu sur l’Objet n°" + EventObject(Canevas.i)
+            Debug "На объекте произошел щелчок мышью по центру n°" + EventObject(Canevas.i)
             
           Case #EventType_MiddleMouseDoubleClick
-            Debug "Un double clique centre de la souris a eu lieu sur l’Objet n°" + EventObject(Canevas.i)
+            Debug "На объекте произошел двойной щелчок мышью по центру n°" + EventObject(Canevas.i)
             
           Case #EventType_RightMouseBottonDown
-            Debug "Le bouton droit de la souris a été appuyé sur l'Objet n°" + EventObject(Canevas.i)
+            Debug "Правая кнопка мыши была нажата на объекте n°" + EventObject(Canevas.i)
             
           Case #EventType_RightMouseBottonUp
-            Debug "Le bouton droit de la souris a été relâché sur l'Objet n°" + EventObject(Canevas.i)
+            Debug "Правая кнопка мыши была отпущена на объект n°" + EventObject(Canevas.i)
             
           Case #EventType_RightMouseClick
-            Debug "Un clique droit de la souris a eu lieu sur l’Objet n°" + EventObject(Canevas.i)
+            Debug "Произошел щелчок правой кнопкой мыши по объектуn°" + EventObject(Canevas.i)
             
           Case #EventType_RightMouseDoubleClick
-            Debug "Un double clique droit de la souris a eu lieu sur l’Objet n°" + EventObject(Canevas.i)
+            Debug "Произошел двойной щелчок правой кнопкой мыши по объекту n°" + EventObject(Canevas.i)
             
           Case #EventType_MouseWheel
             
             If CanvasObjectsEventData(Canevas.i) > 0
-              Debug "La molette de la souris a été tournée vers le haut sur l'Objet n°" + EventObject(Canevas.i)
+              Debug "Колесо мыши было повернуто на объекте вверх n°" + EventObject(Canevas.i)
             Else
-              Debug "La molette de la souris a été tournée vers le bas sur l'Objet n°" + EventObject(Canevas.i)
+              Debug "Колесо мыши было повернуто на объекте вниз" + EventObject(Canevas.i)
             EndIf
             
           Case #EventType_KeyUp
-            Debug "La touche du clavier " + Chr(CanvasObjectsEventData(Canevas.i)) + " a été enfoncée sur  l'Objet n°" + EventObject(Canevas.i) ; Voir la Table Ascii.
+            Debug "Клавиша на клавиатуре " + Chr(CanvasObjectsEventData(Canevas.i)) + " была нажата на объекте n°" + EventObject(Canevas.i) ; Смотрите таблицу Ascii.
             
           Case #EventType_KeyDown
-            Debug "La touche du clavier " + Chr(CanvasObjectsEventData(Canevas.i)) + " a été relâché sur  l'Objet n°" + EventObject(Canevas.i) ; Voir la Table Ascii.
+            Debug "Клавиша на клавиатуре " + Chr(CanvasObjectsEventData(Canevas.i)) + " был выпущен на объект n°" + EventObject(Canevas.i) ; Смотрите таблицу Ascii.
             
           Case #EventType_Selected
-            Debug "L'Objet n°" + EventObject(Canevas.i) + " a été sélectionné."
+            Debug "объект n°" + EventObject(Canevas.i) + " был выбран."
             
-          Case #EventType_Unselected ; Si un objet a été désélectionné, cache le canevas temporaire s'il est actif.
-            Debug "L'Objet n°" + EventObject(Canevas.i) + " a été désélectionné."
-            ; Quand on clique en dehor du Canevas temporaire, pour valider les changement, l'image de l'Objet est alors mise à jour.
+          Case #EventType_Unselected ; Если объект был отменен, скройте временный холст, если он активен.
+            Debug "объект n°" + EventObject(Canevas.i) + " был отменен выбор."
+            ; Когда мы щелкаем за пределами временного холста, чтобы зафиксировать изменения, изображение объекта затем обновляется.
             WhenUnselectObject()
             
           Case #EventType_Resized
-            Debug "L'Objet n°" + EventObject(Canevas.i) + " a été redimensionné."
-            ; Quand un Objet est redimentionné, agrandis l'image de l'Objet si celle-ci est plus petite, sinon ne fait rien. 
+            Debug "объект n°" + EventObject(Canevas.i) + " был изменен размер."
+            ; При изменении размера объекта увеличьте изображение объекта, если оно меньше, в противном случае ничего не делайте.
             WhenResizeObject()
             
-            ; Subtilité ici avec cette fonction !
-            ShowObject(EventObject(Canevas.i)) ; Déclenche un repeint de l'Objet sur le Canevas.
+            ; Тонкость здесь с этой функцией !
+            ShowObject(EventObject(Canevas.i)) ; Запускает перерисовку объекта на холсте.
             
           Case #EventType_Selection
             X.i = CanvasObjectsEventData(Canevas.i, #EventTypeData_MinX)
             Y.i = CanvasObjectsEventData(Canevas.i, #EventTypeData_MinY)
             Largeur.i = CanvasObjectsEventData(Canevas.i, #EventTypeData_MaxX) - X.i
             Hauteur.i = CanvasObjectsEventData(Canevas.i, #EventTypeData_MaxY) - Y.i
-            Debug "Une séléction à été déssiné: ({X: " + Str(X.i) + ", Y: " + Str(Y.i) + "}, {Largeur: " + Str(Largeur.i) + ", Hauteur: " + Str(Hauteur.i) + "})"
+            Debug "Выбор был отменен: ({X: " + Str(X.i) + ", Y: " + Str(Y.i) + "}, {Ширина: " + Str(Largeur.i) + ", Высота: " + Str(Hauteur.i) + "})"
             
         EndSelect
         
-      Case #Event_None ; Pas d’Événements.
-        Break          ; A ne jamais omettre ou sinon le programme tournera en boucle !
+      Case #Event_None ; Никаких событий.
+        Break          ; Никогда не опускайте его, иначе программа будет зацикливаться !
         
     EndSelect
     
@@ -1107,6 +1103,7 @@ Repeat
   
 ForEver
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13
-; Folding = ------------
+; CursorPosition = 628
+; FirstLine = 613
+; Folding = ----------+
 ; EnableXP

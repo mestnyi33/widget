@@ -51,9 +51,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Select EventWidget( )
          Case *Button
             If GetState( *Button )
-               SetState( *Image, (10) )
+               SetImage( *Image, (10) )
             Else
-               SetState( *Image, (1) )
+               SetImage( *Image, (1) )
             EndIf
             
          Case *ComboBox
@@ -64,9 +64,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Window_0( )
       If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-         *Image = Image(10, 10, 230,  175, (1))
-         *Button = Button( 5, 195, 240,  25, "change image", #__flag_ButtonToggle)
-         *ComboBox = Container(5, 230, 240,  75) ; ComboBox( 5,   245+30, 240,  30)
+         *Image = Image(10, 10, 230,  225, (1))
+         ;*Image = ButtonImage(10, 10, 230,  225, (1))
+         *Button = Button( 5, 245, 240,  25, "change image", #__flag_ButtonToggle)
+         *ComboBox = ComboBox( 5,   245+30, 240,  30) ; Container(5, 230, 240,  75) ; 
          
          CloseList( )
          
@@ -76,13 +77,13 @@ CompilerIf #PB_Compiler_IsMainFile
          SetAlign(*Button, 0, 1,0,1,1 )
          SetAlign(*ComboBox, 0, 1,0,1,1 )
          
-;          ;
-;          AddItem(*ComboBox, 0, "Default")
-;          AddItem(*ComboBox, 1, "Center")
-;          AddItem(*ComboBox, 2, "Mosaic")
-;          AddItem(*ComboBox, 3, "Stretch")
-;          AddItem(*ComboBox, 4, "Proportionally")
-;          SetState(*ComboBox, 0)
+         ;
+         AddItem(*ComboBox, 0, "Default")
+         AddItem(*ComboBox, 1, "Center")
+         AddItem(*ComboBox, 2, "Mosaic")
+         AddItem(*ComboBox, 3, "Stretch")
+         AddItem(*ComboBox, 4, "Proportionally")
+         SetState(*ComboBox, 0)
          
          ;
          Bind( *Button, @Window_0_widget_events( ), #__event_LeftClick )
@@ -106,8 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 41
+; CursorPosition = 67
+; FirstLine = 27
 ; Folding = 0-
 ; EnableXP
 ; DPIAware

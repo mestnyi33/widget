@@ -21,25 +21,25 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure.s get_text(m.s = #LF$)
     Protected Text.s = "This is a long line." + m.s +
-                       "Who should show." +
-                       m.s +
-                       m.s +
-                       m.s +
-                       m.s +
-                       "I have to write the text in the box or not." +
-                       m.s +
-                       m.s +
-                       m.s +
-                       m.s +
+                       "Who should show." + m.s +
+                        m.s +
+;                        m.s +
+;                        m.s +
+                       "I have to write the text in the box or not." + m.s +
+                        m.s +
+;                        m.s +
+;                        m.s +
                        "The string must be very long." + m.s +
                        "Otherwise it will not work." ;+ m.s; +
     
     ProcedureReturn Text
   EndProcedure
   
-  Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  ; cr = "" : text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Text.s = get_text( )
+  Define cr.s = #LF$, Text.s
+  Text = get_text( )
+  Text = "V & H" + cr + " multiline " + cr + "text"
+  ;Text = "text ";
+  
   Global *this._s_widget,
          Tree,
          gadget,
@@ -54,6 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
          button_center,
          button_vertical,
          button_invert,
+         button_mirror,
          Splitter_0,
          Splitter_1,
          Splitter_2,
@@ -91,8 +92,8 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             ;
-          Case button_default   : flag = #PB_Button_Default
-          Case button_multiline : flag = #PB_Button_MultiLine
+          Case button_default   : flag = #__Flag_ButtonDefault
+          Case button_multiline : flag = #__flag_TextMultiline
             ;
           Case button_top,
                button_left,
@@ -101,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
                button_center
             
             
-            Flag(*this, #PB_Button_Left|#PB_Button_Right|#__flag_Texttop|#__flag_Textbottom, 0)
+            Flag(*this, #__flag_TextLeft|#__flag_TextRight|#__flag_TextTop|#__flag_TextBottom, 0)
             ;
             If EventWidget <> button_top And EventWidget <> button_left And EventWidget <> button_right
               SetState(button_top,0) 
@@ -116,26 +117,26 @@ CompilerIf #PB_Compiler_IsMainFile
               SetState(button_bottom,0) 
             EndIf
             If EventWidget <> button_center 
-              Flag(*this, #__flag_Textcenter, 0)
+              Flag(*this, #__flag_TextCenter, 0)
               SetState(button_center,0) 
             EndIf
             
             If GetState(button_left) And GetState(button_bottom)
-              Flag(*this, #PB_Button_Left|#__flag_Textbottom, 1)
+              Flag(*this, #__flag_TextLeft|#__flag_TextBottom, 1)
             ElseIf GetState(button_right) And GetState(button_bottom)
-              Flag(*this, #PB_Button_Right|#__flag_Textbottom, 1)
+              Flag(*this, #__flag_TextRight|#__flag_TextBottom, 1)
             ElseIf GetState(button_left) And GetState(button_top)
-              Flag(*this, #PB_Button_Left|#__flag_Texttop, 1)
+              Flag(*this, #__flag_TextLeft|#__flag_TextTop, 1)
             ElseIf GetState(button_right) And GetState(button_top)
-              Flag(*this, #PB_Button_Right|#__flag_Texttop, 1)
+              Flag(*this, #__flag_TextRight|#__flag_TextTop, 1)
             ElseIf GetState(button_left)
-              Flag(*this, #PB_Button_Left, 1)
+              Flag(*this, #__flag_TextLeft, 1)
             ElseIf GetState(button_right) 
-              Flag(*this, #PB_Button_Right, 1)
+              Flag(*this, #__flag_TextRight, 1)
             ElseIf GetState(button_bottom)
-              Flag(*this, #__flag_Textbottom, 1)
+              Flag(*this, #__flag_TextBottom, 1)
             ElseIf GetState(button_top)
-              Flag(*this, #__flag_Texttop, 1)
+              Flag(*this, #__flag_TextTop, 1)
             EndIf
             
             If GetState(button_left)=0 And 
@@ -143,21 +144,23 @@ CompilerIf #PB_Compiler_IsMainFile
                GetState(button_right)=0 And
                GetState(button_bottom)=0
               SetState(button_center,1) 
-              Flag(*this, #__flag_Textcenter, 1)
+              Flag(*this, #__flag_TextCenter, 1)
             EndIf
             
             ;
             Select EventWidget
-              Case button_top       : flag = #__flag_Texttop     
-              Case button_left      : flag = #PB_Button_Left
-              Case button_right     : flag = #PB_Button_Right
-              Case button_bottom    : flag = #__flag_Textbottom
-              Case button_center    : flag = #__flag_Textcenter
+              Case button_top       : flag = #__flag_TextTop     
+              Case button_left      : flag = #__flag_TextLeft
+              Case button_right     : flag = #__flag_TextRight
+              Case button_bottom    : flag = #__flag_TextBottom
+              Case button_center    : flag = #__flag_TextCenter
             EndSelect
             ;
           Case button_toggle    : flag = #__flag_ButtonToggle
           Case button_invert    : flag = #__flag_Textinvert
           Case button_vertical  : flag = #__flag_Textvertical
+          Case button_mirror    ;: flag = #__flag_TextMirror
+             Debug "ЕЩЕ НЕ РЕАЛИЗОВАНО"
         EndSelect
         
         If flag
@@ -194,8 +197,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
       
   If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-    *this  = widget::Button(100, 100, 250, 200, Text, #PB_Button_MultiLine);|)
+    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #__flag_TextMultiline) : HideGadget(gadget, 1)
+    *this  = widget::Button(100, 100, 250, 200, Text, #__flag_TextMultiline);|)
     
     Define Y  = 10
     Define bh = 24
@@ -212,6 +215,7 @@ CompilerIf #PB_Compiler_IsMainFile
     button_toggle    = widget::Button(Width + 45, Y + p * 8, 100, bh, "toggle", #__flag_ButtonToggle)
     button_vertical  = widget::Button(Width + 45, Y + p * 9, 100, bh, "vertical", #__flag_ButtonToggle)
     button_invert    = widget::Button(Width + 45, Y + p * 10, 100, bh, "invert", #__flag_ButtonToggle)
+    button_mirror    = widget::Button(Width + 45, Y + p * 11, 100, bh, "mirror", #__flag_ButtonToggle)
     
 ;     ; flag
 ;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__flag_optionboxes | #__tree_CheckBoxes | #__Tree_threestate)
@@ -228,11 +232,11 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     AddItem(tree, #tree_item_invert, "invert")
     
     Bind(#PB_All, @events_widgets())
-    ;Flag(*this, #PB_Button_MultiLine)
-    ;Debug _Flag(*this, #PB_Button_MultiLine)
+    ;Flag(*this, #__flag_TextMultiline)
+    ;Debug _Flag(*this, #__flag_TextMultiline)
     ;\\ set button toggled state
-    SetState(button_multiline, Flag(*this, #PB_Button_MultiLine ))
-    SetState(button_center, Flag(*this, #__flag_Textcenter))
+    SetState(button_multiline, Flag(*this, #__flag_TextMultiline ))
+    SetState(button_center, Flag(*this, #__flag_TextCenter))
     Hide(Button_type, 1)
     
     ;\\
@@ -241,19 +245,28 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
     Splitter_3 = widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
     
-    ;\\
-    SetState(Splitter_0, pos)
-    SetState(Splitter_1, pos)
-    SetState(Splitter_3, Width - pos - #__bar_splitter_size)
-    SetState(Splitter_2, Height - pos - #__bar_splitter_size)
+        
+;     ;ReDraw(root())
+;     ;  Flag(*this, #__flag_TextTop|#__flag_Textleft, 1)
+;     
+    
+;     ;\\
+;     SetState(Splitter_0, pos)
+;     SetState(Splitter_1, pos)
+;     SetState(Splitter_3, Width - pos - #__bar_splitter_size)
+;     SetState(Splitter_2, Height - pos - #__bar_splitter_size)
+;     
+; ;     ReDraw(root())
+; ;     
+; ;     Debug ""+*this\scroll_x( )+" "+*this\scroll_width( )
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 247
-; FirstLine = 206
-; Folding = 0---
+; CursorPosition = 39
+; FirstLine = 34
+; Folding = ----
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -530,11 +530,11 @@
     #__Image_pressed         = 2
     #__Image_Background      = 3
     ;  alignment
-    #__Image_Left            = #__flag_Left
-    #__Image_top             = #__flag_top
-    #__Image_Right           = #__flag_Right
-    #__Image_Bottom          = #__flag_Bottom
-    #__Image_Center          = #__flag_Center
+    #__flag_ImageLeft        = #__flag_Left
+    #__flag_ImageTop         = #__flag_top
+    #__flag_ImageRight       = #__flag_Right
+    #__flag_ImageBottom      = #__flag_Bottom
+    #__flag_ImageCenter      = #__flag_Center
     
     ; Debug #PB_Checkbox_Unchecked ; 0
     ; Debug #PB_Checkbox_Checked   ; 1
@@ -745,8 +745,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 9
+; CursorPosition = 536
+; FirstLine = 518
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -225,8 +225,8 @@ CompilerIf #PB_Compiler_IsMainFile
                   *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
                EndIf
                
-               If *this\ScrollState( ) = #True
-                  *this\ScrollState( ) = - 1
+               If *this\row\autoscroll = #True
+                  *this\row\autoscroll = - 1
                EndIf
                
                If test_redraw_items
@@ -350,8 +350,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 163
+; CursorPosition = 223
+; FirstLine = 223
 ; Folding = -------
 ; EnableXP
 ; DPIAware

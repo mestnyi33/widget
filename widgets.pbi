@@ -542,7 +542,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro ColorState( ): color\state: EndMacro
-      Macro ScrollState( ): Scroll\state: EndMacro
       
       
       ;-
@@ -1617,19 +1616,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          row_scroll_( _this_\scroll\v, ( row_y_( _this_, _row_ ) _page_height_ ) - _this_\scroll\v\y, _row_\height )
       EndMacro
       
-      Macro row_sel_element_( _this_, _address_, _index_ )
-         _address_\_focus = 0
-         _address_\ColorState( ) = 0
-         
-         _address_ = SelectElement( _this_\__lines( ), _index_ )
-         
-         If _address_
-            _address_\ColorState( ) = 1
-            _address_\_focus = 1
-         EndIf
-      EndMacro
-      
-      Macro select_prev_item_( _address_, _index_ )
+      Macro select_prev_( _address_, _index_ )
          SelectElement( _address_, _index_ - 1 )
          
          If _address_\hide
@@ -1641,7 +1628,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro select_next_item_( _address_, _index_ )
+      Macro select_next_( _address_, _index_ )
          SelectElement( _address_, _index_ + 1 )
          
          If _address_\hide
@@ -1692,12 +1679,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
-      Macro make_scrollarea_x( _this_, _address_ )
+      Macro make_scrollarea_x( _this_, _address_, _size_ )
          ; make horizontal scroll x
          If _address_\align\right
-            _this_\scroll_x( ) = ( _this_\inner_width( ) - _this_\scroll_width( ) )
+            _this_\scroll_x( ) = ( _this_\inner_width( ) - _size_ )
          ElseIf Not _address_\align\left ; horizontal center
-            _this_\scroll_x( ) = ( _this_\inner_width( ) - _this_\scroll_width( )) / 2
+            _this_\scroll_x( ) = ( _this_\inner_width( ) - _size_ ) / 2
          Else
             If _this_\scroll\h
                _this_\scroll_x( ) = - ( _this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min )
@@ -1707,12 +1694,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro make_scrollarea_y( _this_, _address_ )
+      Macro make_scrollarea_y( _this_, _address_, _size_ )
          ; make vertical scroll y
          If _address_\align\bottom
-            _this_\scroll_y( ) = ( _this_\inner_height( ) - _this_\scroll_height( ) )
+            _this_\scroll_y( ) = ( _this_\inner_height( ) - _size_ )
          ElseIf Not _address_\align\top ; vertical center
-            _this_\scroll_y( ) = ( _this_\inner_height( ) - _this_\scroll_height( ) ) / 2
+            _this_\scroll_y( ) = ( _this_\inner_height( ) - _size_ ) / 2
          Else
             If _this_\scroll\v
                _this_\scroll_y( ) = - ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
@@ -1782,13 +1769,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf   
       EndMacro
       
-      Macro align_horizontal( _address_, _width_, _size_, _align_, _padding_ )
-         If _address_\rotate = 0 Or 
-            _address_\rotate = 90
+      Macro change_align_horizontal( _address_, _width_, _size_, _rotate_, _align_, _padding_ )
+         If _rotate_ = 0 Or
+            _rotate_ = 90
             ;
-            If _address_\align\right
+            If _align_\right
                _address_\x = ( _width_ - _size_ - _padding_ )
-            ElseIf Not _address_\align\left
+            ElseIf Not _align_\left
                _address_\x = ( _width_ - _size_ ) / 2
             Else
                _address_\x = _padding_
@@ -1796,39 +1783,39 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf  
          
          ; invert
-         If _address_\rotate = 180 Or
-            _address_\rotate = 270
+         If _rotate_ = 180 Or
+            _rotate_ = 270
             ;
-            If _address_\align\right
-               _address_\x = _size_ + _padding_
-            ElseIf Not _address_\align\left
+            If _align_\right
+               _address_\x = _width_ - _padding_
+            ElseIf Not _align_\left
                _address_\x = ( _width_ + _size_ ) / 2
             Else
-               _address_\x = _width_ - _padding_
+               _address_\x = _size_ + _padding_
             EndIf
          EndIf
       EndMacro
       
-      Macro align_vertical( _address_, _height_, _size_, _align_, _padding_ )
-         If _address_\rotate = 90 Or 
-            _address_\rotate = 180
+      Macro change_align_vertical( _address_, _height_, _size_, _rotate_, _align_, _padding_ )
+         If _rotate_ = 90 Or 
+            _rotate_ = 180
             ;
-            If _address_\align\right
-               _address_\y = _size_ + _padding_
-            ElseIf Not _address_\align\left
+            If _align_\bottom
+               _address_\y = _height_ - _padding_
+            ElseIf Not _align_\top
                _address_\y = ( _height_ + _size_ ) / 2
             Else
-               _address_\y = _height_ - _padding_
+               _address_\y = _size_ + _padding_
             EndIf
          EndIf 
          
          ; invert 
-         If _address_\rotate = 270 Or
-            _address_\rotate = 0
+         If _rotate_ = 270 Or
+            _rotate_ = 0
             ;
-            If _address_\align\right
+            If _align_\bottom
                _address_\y = ( _height_ - _size_ - _padding_ )
-            ElseIf Not _address_\align\left
+            ElseIf Not _align_\top
                _address_\y = ( _height_ - _size_ ) / 2
             Else
                _address_\y = _padding_
@@ -1836,60 +1823,101 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro set_align_x_( _address_, _width_, _rotate_, _align_, _padding_ )
-         If _rotate_ = 0
-            If _align_\right
-               _address_\x = ( _width_ - _address_\width ) - _padding_
-            ElseIf Not _align_\left
-               _address_\x = ( _width_ - _address_\width ) / 2
-            Else
-               _address_\x = _padding_
-            EndIf
-         EndIf
-         ; invert
-         If _rotate_ = 180
-            If _align_\right
-               _address_\x = _width_ - _padding_
-            ElseIf Not _align_\left
-               _address_\x = ( _width_ + _address_\width ) / 2
-            Else
-               _address_\x = _address_\width + _padding_
-            EndIf
+      Macro update_align_image( _this_ )
+         change_align_horizontal( _this_\img, _this_\inner_width( ), _this_\img\width, _this_\img\rotate, _this_\img\align, _this_\padding\x )
+         change_align_vertical( _this_\img, _this_\inner_height( ), _this_\img\height, _this_\img\rotate, _this_\img\align, _this_\padding\y )
+      EndMacro
+      
+      Macro update_align_text( _this_ )
+         If Not _this_\text\vertical
+            change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\x )
+            change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\y )
+         Else
+            change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\x )
+            change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\y )
          EndIf
       EndMacro
       
-      Macro set_align_y_( _address_, _height_, _rotate_, _align_, _padding_ )
-         If _height_ < 0
-            If _rotate_ = 90
-               _address_\y = 0
-            ElseIf _rotate_ = 180
-               _address_\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + _address_\height
-            Else
-               _address_\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
-            EndIf
-         EndIf
+      Macro set_align_x_( _address_, _width_, _rotate_, _align_, _padding_ )
+            change_align_horizontal( _address_, _width_, _address_\width, _rotate_, _align_, _padding_ )
          
-         If _height_ >= 0
-            If _rotate_ = 90
-               If _align_\bottom
-                  _address_\y = _height_ - _padding_
-               ElseIf Not _align_\top
-                  _address_\y = ( _height_ + _address_\width ) / 2
-               Else
-                  _address_\y = _address_\width + _padding_
-               EndIf
-            EndIf
-            
-            If _rotate_ = 270
-               If _align_\bottom
-                  _address_\y = ( _height_ - _address_\width ) - _padding_
-               ElseIf Not _align_\top
-                  _address_\y = ( _height_ - _address_\width ) / 2
-               Else
-                  _address_\y = _padding_
-               EndIf
-            EndIf
-         EndIf
+;          If _rotate_ = 0
+;             If _align_\right
+;                _address_\x = ( _width_ - _address_\width ) - _padding_
+;             ElseIf Not _align_\left
+;                _address_\x = ( _width_ - _address_\width ) / 2
+;             Else
+;                _address_\x = _padding_
+;             EndIf
+;          EndIf
+;          ; invert
+;          If _rotate_ = 180
+;             If _align_\right
+;                _address_\x = _width_ - _padding_
+;             ElseIf Not _align_\left
+;                _address_\x = ( _width_ + _address_\width ) / 2
+;             Else
+;                _address_\x = _address_\width + _padding_
+;             EndIf
+;          EndIf
+      EndMacro
+      
+;       Macro set_align_y_( _address_, _height_, _rotate_, _align_, _padding_ )
+;          If _rotate_ = 0
+;             If _align_\bottom
+;                _address_\y = ( _height_ - _address_\height ) - _padding_
+;             ElseIf Not _align_\top
+;                _address_\y = ( _height_ - _address_\height ) / 2
+;             Else
+;                _address_\y = _padding_
+;             EndIf
+;          EndIf
+;          ; invert
+;          If _rotate_ = 270
+;             If _align_\bottom
+;                _address_\y = _height_ - _padding_
+;             ElseIf Not _align_\top
+;                _address_\y = ( _height_ + _address_\height ) / 2
+;             Else
+;                _address_\y = _address_\height + _padding_
+;             EndIf
+;          EndIf
+;       EndMacro
+      
+      Macro set_align_y_( _address_, _height_, _rotate_, _align_, _padding_ )
+                change_align_vertical( _address_, _height_, _address_\height, _rotate_, _align_, _padding_ )
+                
+;                 If _height_ < 0
+;             If _rotate_ = 90
+;                _address_\y = 0
+;             ElseIf _rotate_ = 180
+;                _address_\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + _address_\height
+;             Else
+;                _address_\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+;             EndIf
+;          EndIf
+;          
+;          If _height_ >= 0
+;             If _rotate_ = 90
+;                If _align_\bottom
+;                   _address_\y = _height_ - _padding_
+;                ElseIf Not _align_\top
+;                   _address_\y = ( _height_ + _address_\width ) / 2
+;                Else
+;                   _address_\y = _address_\width + _padding_
+;                EndIf
+;             EndIf
+;             
+;             If _rotate_ = 270
+;                If _align_\bottom
+;                   _address_\y = ( _height_ - _address_\width ) - _padding_
+;                ElseIf Not _align_\top
+;                   _address_\y = ( _height_ - _address_\width ) / 2
+;                Else
+;                   _address_\y = _padding_
+;                EndIf
+;             EndIf
+;          EndIf
       EndMacro
       
       ;-
@@ -4953,21 +4981,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\text And *this\text\string 
                If *this\text\TextChange( ) Or 
                   *this\resize\ResizeChange( )
-                  
-;                   If Not *this\text\vertical
-;                      align_horizontal( *this\text, *this\inner_x( ), *this\inner_width( ), *this\text\width, *this\text\align, *this\padding\x )
-;                      align_vertical( *this\text, *this\inner_y( ), *this\inner_height( ), *this\text\height, *this\text\align, *this\padding\y )
-;                   Else
-;                      align_horizontal( *this\text, *this\inner_x( ), *this\inner_width( ), *this\text\height, *this\text\align, *this\padding\x )
-;                      align_vertical( *this\text, *this\inner_y( ), *this\inner_height( ), *this\text\width, *this\text\align, *this\padding\y )
-;                   EndIf
-                  If Not *this\text\vertical
-                     align_horizontal( *this\text, *this\inner_width( ), *this\text\width, *this\text\align, *this\padding\x )
-                     align_vertical( *this\text, *this\inner_height( ), *this\text\height, *this\text\align, *this\padding\y )
-                  Else
-                     align_horizontal( *this\text, *this\inner_width( ), *this\text\height, *this\text\align, *this\padding\x )
-                     align_vertical( *this\text, *this\inner_height( ), *this\text\width, *this\text\align, *this\padding\y )
-                  EndIf
+;                   
+                  update_align_text( *this )
                EndIf
                
                ;
@@ -5411,9 +5426,23 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If result
             bar_area_resize( *this )
+            
             ; example state-item.pb
             ; Send( *this, #__event_Resize )
             Send( *this, #__event_ScrollChange )
+         EndIf
+         
+         ; авто скроллим чтобы был виден выбранный итем
+         If *this\row
+            If *this\row\autoscroll = #True
+               *this\row\autoscroll = #PB_All
+               ;
+               If *this\RowFocused( ) 
+                  row_scroll_y_( *this, *this\RowFocused( ) )
+                  
+                  *this\scroll\v\WidgetChange( ) = 0
+               EndIf
+            EndIf
          EndIf
          
          ProcedureReturn result
@@ -7559,9 +7588,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If *this\autosize ;And not is_root_( *this )
-            If *this\parent And 
-               *this\parent <> *this 
-               
+            If *this\parent And *this\parent <> *this 
                X      = (*this\parent\inner_x( ))
                Y      = (*this\parent\inner_y( ))
                Width  = (*this\parent\inner_width( ))
@@ -7892,6 +7919,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If ( Change_x Or Change_y Or Change_width Or Change_height )
+            If *this\img\imageID
+               *this\img\change = #True
+            EndIf
+            
             ;\\ resize vertical&horizontal scrollbars
             If *this\scroll And
                *this\scroll\v And
@@ -8703,9 +8734,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                _address_\height = ImageHeight( _image_ )
             EndIf
             
+            _address_\change  = 1
             _address_\image   = _image_
             _address_\imageID = ImageID( _image_ )
          Else
+            _address_\change  = - 1
             _address_\image   = - 1
             _address_\imageID = 0
             _address_\width   = 0
@@ -8715,6 +8748,21 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure SetImage( *this._s_WIDGET, *image );, mode.a = 0 )
          add_image( *this\img, *image )
+         
+         If *this\type <> #__type_window
+            ; make horizontal scroll max
+            If *this\scroll_width( ) <> *this\img\width + *this\padding\x * 2
+               *this\scroll_width( ) = *this\img\width + *this\padding\x * 2
+            EndIf
+            
+            ; make vertical scroll max
+            If *this\scroll_height( ) <> *this\img\height + *this\padding\y * 2
+               *this\scroll_height( ) = *this\img\height + *this\padding\y * 2
+            EndIf
+            
+            ; updatate scrollarea size
+            bar_area_update( *this )
+         EndIf
       EndProcedure
       
       Procedure.i GetItemImage( *this._s_WIDGET, Item.l )
@@ -8995,7 +9043,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;
          If *this\type = #__type_Image
-            SetImage( *this, state )
+            add_image( *this\img, state )
             
             ; make horizontal scroll max
             If *this\scroll_width( ) <> *this\img\width + *this\padding\x * 2
@@ -9149,8 +9197,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                     ; Debug "SETSTATE "+*this\class +" ["+ *this\ RowFocusedIndex( ) +" "+ state +"]"
                   *this\RowFocusedIndex( ) = state  ; 
                   
-                  ;\\ scroll to visible
-                  *this\ScrollState( ) = - 1
                   *this\WidgetChange( ) = 1
                   
                   If state = - 1
@@ -9212,6 +9258,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      ;\\
                      If *this\RowFocused( ) <> *row
+                        ;\\ scroll to visible
+                        *this\row\autoscroll = #True
+                  
                         ;
                         If *this\RowFocused( ) And
                            *this\RowFocused( )\_focus
@@ -9221,6 +9270,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
                         EndIf
                         
+                        ;
                         *this\RowFocused( ) = *row
                         
                         ; click select mode
@@ -9250,9 +9300,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        If row_scroll_y_( *this, *this\RowFocused( ) )
-                           *this\WidgetChange( ) = - 1
-                        EndIf
+                        ; 
+                        ; If row_scroll_y_( *this, *this\RowFocused( ) )
+                        ;   *this\WidgetChange( ) = - 1
+                        ; EndIf
                         ;
                         If is_integral_( *this ) 
                            If *this\parent  
@@ -9927,20 +9978,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                EndSelect
                
-         
-                     
-                     SetState( *this, *this\img\image )
-                     
-                  
-                  
-;                   align_horizontal( *this\img, *this\scroll_width( ), *this\img\width, *this\img\align, *this\padding\x )
-;                   align_vertical( *this\img, *this\scroll_height( ), *this\img\height, *this\img\align, *this\padding\x )
-;                   
-;                   ; make horizontal scroll x
-;                   make_scrollarea_x( *this, *this\img )
-;                   
-;                   ; make vertical scroll y
-;                   make_scrollarea_y( *this, *this\img )
+               ;
+               SetState( *this, *this\img\image )
 
             EndSelect
          EndIf
@@ -11870,8 +11909,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
                EndIf
                
-               If *this\ScrollState( ) = #True
-                  *this\ScrollState( ) = - 1
+               ; если был активирован авто скролл 
+               ; то указываем что нужно скроллить бар 
+               If *this\row\autoscroll = #PB_All
+                  *this\row\autoscroll = #True
                EndIf
                
                If test_redraw_items
@@ -11901,23 +11942,25 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;          ;CompilerEndIf
          
          If *this\type = #__type_MDI
-            *this\countitems + 1 ;?
-            
+            Protected *window._S_WIDGET
+            ;
             flag | #__window_SystemMenu | #__window_MaximizeGadget | #__window_MinimizeGadget
             If Not constants::BinaryFlag( Flag, #__window_BorderLess ) 
                flag | #__window_SizeGadget
             EndIf
-            result = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__window_Child, *this )
-            
+            ;
+            *this\countitems + 1 ;?
+            *window = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__window_Child, *this )
+            ;
             If IsImage( Image )
                If constants::BinaryFlag( Flag, #__window_BorderLess ) 
-                  SetBackgroundImage( result, Image )
+                  SetBackgroundImage( *window, Image )
                Else
-                  SetImage( result, Image )
+                  add_image( *window\img, Image )
                EndIf
             EndIf
             
-            ProcedureReturn result
+            ProcedureReturn *window
          EndIf
          
          If *this\type = #__type_ListIcon
@@ -13280,10 +13323,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          bar_area_update( *this )
          
          ; make horizontal scroll x
-         make_scrollarea_x( *this, *this\text )
+         make_scrollarea_x( *this, *this\text, *this\scroll_width( ) )
          
          ; make vertical scroll y
-         make_scrollarea_y( *this, *this\text )
+         make_scrollarea_y( *this, *this\text, *this\scroll_height( ) )
          
          If *this\scroll\v And
             bar_PageChange( *this\scroll\v, - *this\scroll_y( ) )
@@ -13446,6 +13489,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Macro edit_select_line_( _this_, _address_, _index_ )
+         _address_\_focus = 0
+         _address_\ColorState( ) = 0
+         
+         _address_ = SelectElement( _this_\__lines( ), _index_ )
+         
+         If _address_
+            _address_\ColorState( ) = 1
+            _address_\_focus = 1
+         EndIf
+      EndMacro
+      
       Procedure edit_key_page_up_down_( *this._s_WIDGET, wheel, index_select_row )
          Protected repaint, select_index, page_height
          Protected first_index = 0, last_index = *this\countitems - 1
@@ -13458,7 +13513,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   select_index = first_index
                EndIf
                If *this\LineFocused( )\lindex <> select_index
-                  row_sel_element_( *this, *this\LineFocused( ), select_index )
+                  edit_select_line_( *this, *this\LineFocused( ), select_index )
                   
                   If select_index = first_index
                      *this\edit_caret_1( ) = 0
@@ -13485,7 +13540,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   select_index = last_index
                EndIf
                If *this\LineFocused( )\lindex <> select_index
-                  row_sel_element_( *this, *this\LineFocused( ), select_index )
+                  edit_select_line_( *this, *this\LineFocused( ), select_index )
                   
                   If select_index = last_index
                      *this\edit_caret_1( ) = *this\text\len
@@ -14249,10 +14304,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             bar_area_update( *this )
             
             ; make horizontal scroll x
-            make_scrollarea_x( *this, *this\text )
+            make_scrollarea_x( *this, *this\text, *this\scroll_width( ) )
             
             ; make vertical scroll y
-            make_scrollarea_y( *this, *this\text )
+            make_scrollarea_y( *this, *this\text, *this\scroll_height( ) )
             
             ;           ; This is for the caret and scroll
             ;           ; when entering the key - ( enter & backspace )
@@ -15248,9 +15303,18 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ Flags
          *this\flag = Flag
-         If *this\type = #__type_Button Or
-            *this\type = #__type_ButtonImage Or
-            *this\type = #__type_HyperLink
+         If *this\type = #__type_ButtonImage
+            
+            If constants::BinaryFlag( Flag, #__flag_ImageLeft, #False ) And 
+               constants::BinaryFlag( Flag, #__flag_ImageTop, #False ) And 
+               constants::BinaryFlag( Flag, #__flag_ImageRight, #False ) And 
+               constants::BinaryFlag( Flag, #__flag_ImageBottom, #False )
+               *this\flag | #__flag_Center
+            EndIf
+            
+         ElseIf *this\type = #__type_Button Or
+                *this\type = #__type_HyperLink
+            
             *this\flag | #__flag_Center
             
          ElseIf *this\type = #__type_ComboBox Or
@@ -15330,11 +15394,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *parent
             ;\\
             If constants::BinaryFlag( Flag, #__flag_autosize )
-               If *parent\type <> #__type_Splitter
-                  *this\autosize = 1
-                  ; set transparent parent
-                  *parent\color\back      = - 1
-                  *parent\ColorAlphaState( ) = 0
+               If *parent <> *this
+                  If *parent\type <> #__type_Splitter
+                     *this\autosize = 1
+                   ; set transparent parent
+                     *parent\color\back      = - 1
+                     *parent\ColorAlphaState( ) = 0
+                  EndIf
                EndIf
             EndIf
             
@@ -15344,7 +15410,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\address = *parent\address
                ReParent( *this, *parent )
             Else
-               *this\text\string = Text
+               ;*this\text\string = Text
                SetParent( *this, *parent, #PB_Default )
             EndIf
          EndIf
@@ -15913,6 +15979,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             align_content( *this\img, *this\flag )
          EndIf
          
+         ;\\
+         If *this\row 
+            If *this\type = #__type_Text Or
+               *this\type = #__type_Editor Or
+               *this\type = #__type_String Or
+               *this\type = #__type_Button Or
+               *this\type = #__type_Option Or
+               *this\type = #__type_CheckBox Or
+               *this\type = #__type_HyperLink
+               
+               align_content( *this\text, *this\flag )
+            EndIf
+            
+            set_text_flag_( *this, Text, *this\flag )
+         EndIf
+         
          ;\\ Scroll bars
          If constants::BinaryFlag( Flag, #__flag_NoScrollBars, #False )
             If *this\type = #__type_String
@@ -15946,22 +16028,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                bar_area_create( *this, 1, *this\img\width, *this\img\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
             EndIf
-         EndIf
-         
-         ;\\
-         If *this\row 
-            If *this\type = #__type_Text Or
-               *this\type = #__type_Editor Or
-               *this\type = #__type_String Or
-               *this\type = #__type_Button Or
-               *this\type = #__type_Option Or
-               *this\type = #__type_CheckBox Or
-               *this\type = #__type_HyperLink
-               
-               align_content( *this\text, *this\flag )
-            EndIf
-            
-            set_text_flag_( *this, Text, *this\flag )
          EndIf
          
          widget( ) = *this
@@ -16486,15 +16552,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                bar_area_update( *this )
                
-               ;\\ SetState( scroll-to-see )
-               If *this\RowFocused( ) And *this\ScrollState( ) = - 1
-                  
-                  row_scroll_y_( *this, *this\RowFocused( ) )
-                  
-                  *this\scroll\v\WidgetChange( ) = 0
-                  *this\ScrollState( )             = #True
-               EndIf
-               
                ; reset draw list
                ClearList( *this\RowVisibleList( ))
                *this\RowFirstVisible( ) = 0
@@ -16743,7 +16800,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      ; edit_make_text_position( *this )
                      ;               ;bar_area_update( *this )
-                     ;               make_scrollarea_x( *this, *this\text )
                      ;               If *this\scroll\h And
                      ;                  bar_PageChange( *this\scroll\h, -*this\scroll_x( ) )
                      ;               EndIf
@@ -17074,14 +17130,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\
                bar_area_update( *this )
                
-               ;\\ SetState( scroll-to-see )
-               If *this\RowFocused( ) And *this\ScrollState( ) = - 1
-                  row_scroll_y_( *this, *this\RowFocused( ) )
-                  
-                  *this\scroll\v\WidgetChange( ) = 0
-                  *this\ScrollState( )             = #True
-               EndIf
-               
                ;\\ reset draw list
                ClearList( *this\RowVisibleList( ))
                *this\RowFirstVisible( ) = 0
@@ -17156,6 +17204,221 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
+      Procedure   Draw_ComboBox( *this._s_WIDGET )
+         ;ProcedureReturn Draw_Button( *this )
+         
+         Protected state
+         Protected arrow_right
+         
+         state = *this\ColorState( )
+         If state = #__s_3
+            state = 0
+         EndIf
+         
+         *this\text\x = 5
+         *this\text\y = ( *this\combobutton\height - *this\text\height ) / 2
+         
+         ;
+         draw_mode_alpha_( #PB_2DDrawing_Gradient )
+         If *this\stringbar
+            draw_gradient_( 0, *this\combobutton, *this\color\fore[*this\ColorState( )], *this\color\back[state] )
+         Else
+            draw_gradient_( 0, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
+            
+            ;
+            If *this\popupbar 
+               If *this\popupbar\row
+                  If *this\popupbar\RowFocused( )
+                     draw_mode_alpha_( #PB_2DDrawing_Transparent )
+                     
+                     If *this\popupbar\RowFocused( )\img\imageID
+                        DrawImage( *this\popupbar\RowFocused( )\img\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\popupbar\RowFocused( )\img\height) )
+                     EndIf
+                     
+                     DrawText( *this\frame_x( ) + *this\text\x + *this\popupbar\RowFocused( )\img\width + 5,
+                               *this\frame_y( ) + *this\text\y,
+                               *this\popupbar\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+                     
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         ;
+         draw_mode_alpha_( #PB_2DDrawing_Default )
+         Draw_Arrow( *this\combobutton\arrow\direction,
+                     *this\combobutton\x + ( *this\combobutton\width - *this\combobutton\arrow\size * 2 ) - *this\combobutton\arrow\size / 2,
+                     *this\combobutton\y + ( *this\combobutton\height - *this\combobutton\arrow\size ) / 2,
+                     *this\combobutton\arrow\size, 
+                     *this\combobutton\arrow\type, 0,
+                     *this\combobutton\color\front[state] & $FFFFFF | *this\combobutton\AlphaState24( ))
+         
+         ; frame draw
+         If *this\fs
+            draw_mode_( #PB_2DDrawing_Outlined )
+            draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[state] )
+         EndIf
+         
+         ;draw_box_( *this\combobutton\x, *this\combobutton\y, *this\combobutton\width, *this\combobutton\height, $ff000000 )
+         
+      EndProcedure
+      
+      Procedure   Draw_Container( *this._s_WIDGET )
+         Protected i,X,Y
+         
+         With *this
+            If *this\fs
+               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               If constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or 
+                  constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  draw_roundbox_(*this\frame_x( ), *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                  draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+                  draw_roundbox_(*this\frame_x( ), *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                  draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+               EndIf
+               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                  draw_roundbox_(*this\frame_x( )+1+*this\frame_width( )-*this\round*2, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+                  draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                  draw_roundbox_(*this\frame_x( )-1+*this\frame_width( )-*this\round*2, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+               EndIf
+               
+               ;                If *this\type <> #__type_panel And *this\type <> #__type_Frame
+               ;                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               ;                   For i = 0 To *this\fs - 1
+               ;                      draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+               ;                      If *this\round
+               ;                         draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+               ;                      EndIf
+               ;                   Next
+               ;                EndIf
+            EndIf
+            
+
+            
+            ;\\ backcolor
+            If *this\color\back <> - 1
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               ; If *this\fs
+               
+               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+               
+               ; Else
+               ;   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+               ; EndIf
+            EndIf
+            
+            ;
+            If *this\img\change
+               update_align_image( *this  )
+               
+               
+;                   ; make horizontal scroll x
+;                   make_scrollarea_x( *this, *this\img, *this\img\width )
+;                   
+;                   ; make vertical scroll y
+;                   make_scrollarea_y( *this, *this\img, *this\img\height )
+                EndIf
+            
+
+            ;\\ origin position
+            X = *this\inner_x( ) + *this\scroll_x( )
+            Y = *this\inner_y( ) + *this\scroll_y( )
+            
+            ;\\
+            If *this\img\imageID Or
+               *this\img[#__image_background]\imageID
+               
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+            EndIf
+            
+            ;\\ background image draw
+            If *this\img[#__image_background]\imageID
+               draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
+            EndIf
+            
+            ;\\ scroll image draw
+            If *this\img\imageID
+               DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\AlphaState( ) )
+            EndIf
+            
+            ;\\
+            If *this\text\string
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+            EndIf
+            
+            
+            If *this\fs
+               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
+               ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
+               
+               ;draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+               ;               If *this\fs[1] Or
+               ;                  *this\fs[2] Or
+               ;                  *this\fs[3] Or
+               ;                  *this\fs[4] 
+               ;                  ;
+               ;                 If *this\inner_width( ) And 
+               ;                    *this\inner_height( ) 
+               ;                   draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
+               ;                 EndIf
+               ;               EndIf
+               
+               If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
+                  ;                   If *this\inner_width( ) And 
+                  ;                      *this\inner_height( ) 
+                  ;                      ;If *this\type <> #__type_Panel
+                  ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
+                  ;                      ;EndIf
+                  ;                   EndIf
+                  ;                   If *this\type = #__type_Container
+                  If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                  EndIf
+                  ;                   EndIf
+                  
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
+                      constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
+                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFFFFFFF)
+                  ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
+                  ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
+                  
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                  
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFAAAAAA)
+                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
+               EndIf
+               
+               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
+                  ;                 Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFE7E7E7)
+                  
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+1+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FF838383)
+                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FF838383)
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFE7E7E7)
+                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFE7E7E7)
+               EndIf
+               
+            EndIf
+            
+            
+            
+         EndWith
+      EndProcedure
+      
       Procedure   Draw_Button( *this._s_WIDGET )
          Protected X, Y
          
@@ -17176,23 +17439,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                edit_UpdateText( *this )
             EndIf
             
-            ;\\
-            If *this\resize\ResizeChange( )
-               ; make horizontal scroll max
-               If *this\scroll_width( ) < *this\img\width + *this\padding\x * 2
-                  *this\scroll_width( ) = *this\img\width + *this\padding\x * 2
+;             ;\\
+            If *this\img\change
+               If *this\text\string = ""
+                  ;                   ; make horizontal scroll x
+                  ;                   make_scrollarea_x( *this, *this\img, *this\img\width )
+                  ;                   
+                  ;                   ; make vertical scroll y
+                  ;                   make_scrollarea_y( *this, *this\img, *this\img\height )
+                  *this\scroll_x( ) = 0
+                  *this\scroll_y( ) = 0
+                  
+                  update_align_image( *this )
                EndIf
-               
-               ; make vertical scroll max
-               If *this\scroll_height( ) < *this\img\height + *this\padding\y * 2
-                  *this\scroll_height( ) = *this\img\height + *this\padding\y * 2
-               EndIf
-               
-               ; make horizontal scroll x
-               make_scrollarea_x( *this, *this\img )
-               
-               ; make vertical scroll y
-               make_scrollarea_y( *this, *this\img )
             EndIf
             
             ;\\ origin position
@@ -17291,235 +17550,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                                   *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
                EndIf
             EndIf
-            
-         EndWith
-      EndProcedure
-      
-      Procedure   Draw_ComboBox( *this._s_WIDGET )
-         ;ProcedureReturn Draw_Button( *this )
-         
-         Protected state
-         Protected arrow_right
-         
-         state = *this\ColorState( )
-         If state = #__s_3
-            state = 0
-         EndIf
-         
-         *this\text\x = 5
-         *this\text\y = ( *this\combobutton\height - *this\text\height ) / 2
-         
-         ;
-         draw_mode_alpha_( #PB_2DDrawing_Gradient )
-         If *this\stringbar
-            draw_gradient_( 0, *this\combobutton, *this\color\fore[*this\ColorState( )], *this\color\back[state] )
-         Else
-            draw_gradient_( 0, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
-            
-            ;
-            If *this\popupbar 
-               If *this\popupbar\row
-                  If *this\popupbar\RowFocused( )
-                     draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                     
-                     If *this\popupbar\RowFocused( )\img\imageID
-                        DrawImage( *this\popupbar\RowFocused( )\img\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\popupbar\RowFocused( )\img\height) )
-                     EndIf
-                     
-                     DrawText( *this\frame_x( ) + *this\text\x + *this\popupbar\RowFocused( )\img\width + 5,
-                               *this\frame_y( ) + *this\text\y,
-                               *this\popupbar\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
-                     
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         ;
-         draw_mode_alpha_( #PB_2DDrawing_Default )
-         Draw_Arrow( *this\combobutton\arrow\direction,
-                     *this\combobutton\x + ( *this\combobutton\width - *this\combobutton\arrow\size * 2 ) - *this\combobutton\arrow\size / 2,
-                     *this\combobutton\y + ( *this\combobutton\height - *this\combobutton\arrow\size ) / 2,
-                     *this\combobutton\arrow\size, 
-                     *this\combobutton\arrow\type, 0,
-                     *this\combobutton\color\front[state] & $FFFFFF | *this\combobutton\AlphaState24( ))
-         
-         ; frame draw
-         If *this\fs
-            draw_mode_( #PB_2DDrawing_Outlined )
-            draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[state] )
-         EndIf
-         
-         ;draw_box_( *this\combobutton\x, *this\combobutton\y, *this\combobutton\width, *this\combobutton\height, $ff000000 )
-         
-      EndProcedure
-      
-      Procedure   Draw_Container( *this._s_WIDGET )
-         Protected i
-         
-         With *this
-            If *this\fs
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               If constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or 
-                  constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  draw_roundbox_(*this\frame_x( ), *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
-                  draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
-                  draw_roundbox_(*this\frame_x( ), *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
-                  draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
-               EndIf
-               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
-                  draw_roundbox_(*this\frame_x( )+1+*this\frame_width( )-*this\round*2, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
-                  draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
-                  draw_roundbox_(*this\frame_x( )-1+*this\frame_width( )-*this\round*2, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
-               EndIf
-               
-               ;                If *this\type <> #__type_panel And *this\type <> #__type_Frame
-               ;                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                   For i = 0 To *this\fs - 1
-               ;                      draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-               ;                      If *this\round
-               ;                         draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-               ;                      EndIf
-               ;                   Next
-               ;                EndIf
-            EndIf
-            
-;             ;If *this\resize\width Or *this\resize\height
-;                If *this\img\imageID Or
-;                   *this\img[#__image_background]\imageID
-;                   
-;                   ; make horizontal scroll max
-;                   If *this\scroll_width( ) <> *this\img\width + *this\padding\x * 2
-;                      *this\scroll_width( ) = *this\img\width + *this\padding\x * 2
-;                   EndIf
-;                   
-;                   ; make vertical scroll max
-;                   If *this\scroll_height( ) <> *this\img\height + *this\padding\y * 2
-;                      *this\scroll_height( ) = *this\img\height + *this\padding\y * 2
-;                   EndIf
-;                   
-;                   ; make horizontal scroll x
-;                   make_scrollarea_x( *this, *this\img )
-;                   
-;                   ; make vertical scroll y
-;                   make_scrollarea_y( *this, *this\img )
-;                EndIf
-;             ;EndIf
-            
-            align_horizontal( *this\img, *this\inner_width( ), *this\img\width, *this\img\align, *this\padding\x )
-            align_vertical( *this\img, *this\inner_height( ), *this\img\height, *this\img\align, *this\padding\y )
-            
-;             ; make horizontal scroll x
-;             make_scrollarea_x( *this, *this\img )
-;             
-;             ; make vertical scroll y
-;             make_scrollarea_y( *this, *this\img )
-
-            ;\\ backcolor
-            If *this\color\back <> - 1
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               ;                If *this\fs
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-                                                                                                                                                           ;                Else
-                                                                                                                                                           ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-                                                                                                                                                           ;                EndIf
-            EndIf
-            
-            ;\\
-            If *this\img\imageID Or
-               *this\img[#__image_background]\imageID
-               
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               
-               ;\\ background image draw
-               If *this\img[#__image_background]\imageID
-                  draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
-               EndIf
-               
-               ;\\ scroll image draw
-               If *this\img\imageID
-                  DrawAlphaImage( *this\img\imageID,
-                                  *this\inner_x( ) + *this\scroll_x( ) + *this\img\x,
-                                  *this\inner_y( ) + *this\scroll_y( ) + *this\img\y, *this\AlphaState( ) )
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\text\string
-               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawText( *this\inner_x( ) + *this\scroll_x( ) + *this\text\x,
-                         *this\inner_y( ) + *this\scroll_y( ) + *this\text\y,
-                         *this\text\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-            EndIf
-            
-            
-            If *this\fs
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
-               ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
-               
-               ;draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-               ;               If *this\fs[1] Or
-               ;                  *this\fs[2] Or
-               ;                  *this\fs[3] Or
-               ;                  *this\fs[4] 
-               ;                  ;
-               ;                 If *this\inner_width( ) And 
-               ;                    *this\inner_height( ) 
-               ;                   draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
-               ;                 EndIf
-               ;               EndIf
-               
-               If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
-                  ;                   If *this\inner_width( ) And 
-                  ;                      *this\inner_height( ) 
-                  ;                      ;If *this\type <> #__type_Panel
-                  ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
-                  ;                      ;EndIf
-                  ;                   EndIf
-                  ;                   If *this\type = #__type_Container
-                  If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
-                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-                  EndIf
-                  ;                   EndIf
-                  
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
-                      constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
-                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFFFFFFF)
-                  ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
-                  ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
-                  
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
-                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
-                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
-                  
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
-                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFAAAAAA)
-                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
-               EndIf
-               
-               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
-                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
-                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
-                  ;                 Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFE7E7E7)
-                  
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+1+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FF838383)
-                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FF838383)
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFE7E7E7)
-                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFE7E7E7)
-               EndIf
-               
-            EndIf
-            
-            
             
          EndWith
       EndProcedure
@@ -17790,6 +17820,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\text\TextChange( ) = 0
             EndIf
             
+            If *this\img\change <> 0
+               *this\img\change = 0
+            EndIf
+         
             If *this\resize\x <> 0
                *this\resize\x = 0
             EndIf
@@ -18805,7 +18839,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                 ( keyboard( )\key[1] & #PB_Canvas_Alt ))
                               SelectElement( *rows( ), 0 )
                            Else
-                              select_prev_item_( *rows( ), *current\rindex )
+                              select_prev_( *rows( ), *current\rindex )
                            EndIf
                            
                            If *current <> *rows( )
@@ -18857,7 +18891,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                 ( keyboard( )\key[1] & #PB_Canvas_Alt ))
                               SelectElement( *rows( ), ( *this\countitems - 1 ))
                            Else
-                              select_next_item_( *rows( ), *current\rindex )
+                              select_next_( *rows( ), *current\rindex )
                            EndIf
                            
                            If *current <> *rows( )
@@ -18963,7 +18997,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                    ( keyboard( )\key[1] & #PB_Canvas_Alt ))
                                  SelectElement( *rows( ), 0 )
                               Else
-                                 select_prev_item_( *rows( ), *this\RowFocused( )\rindex )
+                                 select_prev_( *rows( ), *this\RowFocused( )\rindex )
                               EndIf
                               
                               ;
@@ -18988,7 +19022,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                    ( keyboard( )\key[1] & #PB_Canvas_Alt ))
                                  SelectElement( *rows( ), ( *this\countitems - 1 ))
                               Else
-                                 select_next_item_( *rows( ), *this\RowFocused( )\rindex )
+                                 select_next_( *rows( ), *this\RowFocused( )\rindex )
                               EndIf
                               
                               ;
@@ -20823,9 +20857,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                     #__event_KeyUp,
                     #__event_DragStart
                     
-                    ; If *this\row
                   *this\root\repaint = 1
-                  ; EndIf
                   
             EndSelect
             
@@ -23550,7 +23582,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
          SetClass( widget( ), "message_CONT" )
-         Image( f2, f2, iw, iw, img, #__image_center | #__flag_transparent | #__flag_borderflat )
+         Image( f2, f2, iw, iw, img, #__flag_ImageCenter | #__flag_transparent | #__flag_borderflat )
          SetClass( widget( ), "message_IMG" )
          Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_Textcenter | #__flag_Textleft | #__flag_transparent );| #__flag_borderless )
          SetClass( widget( ), "message_TXT" )
@@ -24450,9 +24482,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10322
-; FirstLine = 10259
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vrq-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 1887
+; FirstLine = 1762
+; Folding = ------------------------------------------49------------------------------------------------------------------------------------------------------------------------------------uq+-v+0+-4--fFK-------------------------------------------v-9----------------------------------------------------------------------------------------------------------------------------------------------ve------------------------------------------------------------0--------+-------+H---4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
