@@ -1839,85 +1839,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Macro set_align_x_( _address_, _width_, _rotate_, _align_, _padding_ )
-            change_align_horizontal( _address_, _width_, _address_\width, _rotate_, _align_, _padding_ )
-         
-;          If _rotate_ = 0
-;             If _align_\right
-;                _address_\x = ( _width_ - _address_\width ) - _padding_
-;             ElseIf Not _align_\left
-;                _address_\x = ( _width_ - _address_\width ) / 2
-;             Else
-;                _address_\x = _padding_
-;             EndIf
-;          EndIf
-;          ; invert
-;          If _rotate_ = 180
-;             If _align_\right
-;                _address_\x = _width_ - _padding_
-;             ElseIf Not _align_\left
-;                _address_\x = ( _width_ + _address_\width ) / 2
-;             Else
-;                _address_\x = _address_\width + _padding_
-;             EndIf
-;          EndIf
+         change_align_horizontal( _address_, _width_, _address_\width, _rotate_, _align_, _padding_ )
       EndMacro
-      
-;       Macro set_align_y_( _address_, _height_, _rotate_, _align_, _padding_ )
-;          If _rotate_ = 0
-;             If _align_\bottom
-;                _address_\y = ( _height_ - _address_\height ) - _padding_
-;             ElseIf Not _align_\top
-;                _address_\y = ( _height_ - _address_\height ) / 2
-;             Else
-;                _address_\y = _padding_
-;             EndIf
-;          EndIf
-;          ; invert
-;          If _rotate_ = 270
-;             If _align_\bottom
-;                _address_\y = _height_ - _padding_
-;             ElseIf Not _align_\top
-;                _address_\y = ( _height_ + _address_\height ) / 2
-;             Else
-;                _address_\y = _address_\height + _padding_
-;             EndIf
-;          EndIf
-;       EndMacro
-      
+       
       Macro set_align_y_( _address_, _height_, _rotate_, _align_, _padding_ )
-                change_align_vertical( _address_, _height_, _address_\height, _rotate_, _align_, _padding_ )
-                
-;                 If _height_ < 0
-;             If _rotate_ = 90
-;                _address_\y = 0
-;             ElseIf _rotate_ = 180
-;                _address_\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + _address_\height
-;             Else
-;                _address_\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
-;             EndIf
-;          EndIf
-;          
-;          If _height_ >= 0
-;             If _rotate_ = 90
-;                If _align_\bottom
-;                   _address_\y = _height_ - _padding_
-;                ElseIf Not _align_\top
-;                   _address_\y = ( _height_ + _address_\width ) / 2
-;                Else
-;                   _address_\y = _address_\width + _padding_
-;                EndIf
-;             EndIf
-;             
-;             If _rotate_ = 270
-;                If _align_\bottom
-;                   _address_\y = ( _height_ - _address_\width ) - _padding_
-;                ElseIf Not _align_\top
-;                   _address_\y = ( _height_ - _address_\width ) / 2
-;                Else
-;                   _address_\y = _padding_
-;                EndIf
-;             EndIf
-;          EndIf
+         change_align_vertical( _address_, _height_, _address_\height, _rotate_, _align_, _padding_ )
       EndMacro
       
       ;-
@@ -15303,7 +15229,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ Flags
          *this\flag = Flag
-         If *this\type = #__type_ButtonImage
+         If *this\type = #__type_Button Or
+                *this\type = #__type_ButtonImage
             
             If constants::BinaryFlag( Flag, #__flag_ImageLeft, #False ) And 
                constants::BinaryFlag( Flag, #__flag_ImageTop, #False ) And 
@@ -15312,8 +15239,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\flag | #__flag_Center
             EndIf
             
-         ElseIf *this\type = #__type_Button Or
-                *this\type = #__type_HyperLink
+         ElseIf *this\type = #__type_HyperLink
             
             *this\flag | #__flag_Center
             
@@ -17451,6 +17377,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\scroll_y( ) = 0
                   
                   update_align_image( *this )
+               Else
+                  ;Debug Str(*this\img\height-*this\text\height)
+                  *this\img\y = 13;*this\text\y+(*this\img\height-*this\text\height)
                EndIf
             EndIf
             
@@ -24482,8 +24411,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1887
-; FirstLine = 1762
+; CursorPosition = 17381
+; FirstLine = 16435
 ; Folding = ------------------------------------------49------------------------------------------------------------------------------------------------------------------------------------uq+-v+0+-4--fFK-------------------------------------------v-9----------------------------------------------------------------------------------------------------------------------------------------------ve------------------------------------------------------------0--------+-------+H---4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP

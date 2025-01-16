@@ -38,8 +38,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 9
+; CursorPosition = 38
+; FirstLine = 7
 ; Folding = -
 ; EnableXP
 ; DPIAware
