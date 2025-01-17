@@ -16895,61 +16895,62 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;
                ; then change text update cursor pos
-               If *this\text\editable
-                  If *this\LineEnteredIndex( ) >= 0
-                     If Not ( *this\LineFocused( ) And *this\LineFocused( )\lindex = *this\LineEnteredIndex( ) )
-                        *this\LineFocused( ) = SelectElement( *this\__lines( ), *this\LineEnteredIndex( ) )
-                     EndIf
-                     
-                     If test_edit_text
-                        Debug "----- " + *this\text\string
-                        Debug "    key - change caret pos " + ListSize( *this\__lines( ) ) + " " + *this\LineFocused( )\lindex + " " + *this\LinePressedIndex( )
-                     EndIf
-                     
-                     ;
+               If *this\text\editable And *this\LineEnteredIndex( ) >= 0
+                  Debug *this\text\TextChange( )
+                  ;
+                  Update_DrawText( *this, 1 )
+                  ;
+                  If Not ( *this\LineFocused( ) And *this\LineFocused( )\lindex = *this\LineEnteredIndex( ) )
+                     *this\LineFocused( ) = SelectElement( *this\__lines( ), *this\LineEnteredIndex( ) )
+                  EndIf
+                  
+                  If *this\LineFocused( )
                      edit_sel_string_( *this, *this\LineFocused( ) )
                      edit_sel_text_( *this, *this\LineFocused( ) )
-                     
-                     ;
-                     Update_DrawText( *this, 1 )
-                     ; edit_make_text_position( *this )
-                     
-;                      If *this\scroll\v And Not *this\scroll\v\hide
-;                         If *this\LineFocused( )\y + *this\scroll_y( ) < 0 Or
-;                            *this\LineFocused( )\y + *this\LineFocused( )\height + *this\scroll_y( ) > *this\inner_height( )
-;                            
-;                            If test_edit_text
-;                               If *this\LineFocused( )\y + *this\scroll_y( ) < 0
-;                                  Debug "       key - scroll UP"
-;                               ElseIf *this\LineFocused( )\y + *this\LineFocused( )\height + *this\scroll_y( ) > *this\inner_height( )
-;                                  Debug "       key - scroll DOWN"
-;                               EndIf
-;                            EndIf
-;                            
-;                            row_scroll_( *this\scroll\v, *this\text\caret\y, *this\text\caret\height ) ; ok
-;                         EndIf
-;                      EndIf
-                     
-;                      If *this\scroll\h And Not *this\scroll\h\hide
-;                         If *this\text\caret\x + *this\scroll_x( ) < 0 Or
-;                            *this\text\caret\x + *this\text\caret\width + *this\scroll_x( ) > *this\inner_width( )
-;                            
-;                            If test_edit_text
-;                               If *this\text\caret\x + *this\scroll_x( ) < 0
-;                                  Debug "       key - scroll LEFT"
-;                               ElseIf *this\text\caret\x + *this\text\caret\width + *this\scroll_x( ) > *this\inner_width( )
-;                                  Debug "       key - scroll RIGHT"
-;                               EndIf
-;                            EndIf
-;                            
-;                            row_scroll_( *this\scroll\h, *this\text\caret\x, *this\text\caret\width ) ; ok
-;                         EndIf
-;                      EndIf
-                     
-                     ; text change
-                     DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
-                     *this\LineEnteredIndex( ) = - 1
                   EndIf
+                  
+                  If test_edit_text
+                     Debug "----- " + *this\text\string
+                     Debug "    key - change caret pos " + ListSize( *this\__lines( ) ) + " " + *this\LineFocused( )\lindex + " " + *this\LinePressedIndex( )
+                  EndIf
+                  
+                  ;
+                  If *this\scroll\v And Not *this\scroll\v\hide
+                     If *this\LineFocused( )\y + *this\scroll_y( ) < 0 Or
+                        *this\LineFocused( )\y + *this\LineFocused( )\height + *this\scroll_y( ) > *this\inner_height( )
+                        
+                        If test_edit_text
+                           If *this\LineFocused( )\y + *this\scroll_y( ) < 0
+                              Debug "       key - scroll UP"
+                           ElseIf *this\LineFocused( )\y + *this\LineFocused( )\height + *this\scroll_y( ) > *this\inner_height( )
+                              Debug "       key - scroll DOWN"
+                           EndIf
+                        EndIf
+                        
+                        row_scroll_( *this\scroll\v, *this\text\caret\y, *this\text\caret\height ) ; ok
+                     EndIf
+                  EndIf
+                  
+                  ;
+                  If *this\scroll\h And Not *this\scroll\h\hide
+                     If *this\text\caret\x + *this\scroll_x( ) < 0 Or
+                        *this\text\caret\x + *this\text\caret\width + *this\scroll_x( ) > *this\inner_width( )
+                        
+                        If test_edit_text
+                           If *this\text\caret\x + *this\scroll_x( ) < 0
+                              Debug "       key - scroll LEFT"
+                           ElseIf *this\text\caret\x + *this\text\caret\width + *this\scroll_x( ) > *this\inner_width( )
+                              Debug "       key - scroll RIGHT"
+                           EndIf
+                        EndIf
+                        
+                        row_scroll_( *this\scroll\h, *this\text\caret\x, *this\text\caret\width ) ; ok
+                     EndIf
+                  EndIf
+                  ;
+                  ; text change
+                  DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
+                  *this\LineEnteredIndex( ) = - 1
                EndIf
                
                ; Draw back color
@@ -16982,7 +16983,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\text\editable And *this\focus
                   draw_mode_( #PB_2DDrawing_XOr )
                   draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
-                  Debug *this\text\caret\x
                EndIf
                
                ; Draw frames
@@ -19137,19 +19137,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                            If mouse_y > ( *this\LineEntered( )\y + *this\LineEntered( )\height / 2 )
                               If *this\LineEntered( ) = *this\LinePressed( )
                                  If test_edit_text
-                                    ;Debug " le bottom  set - Pressed  " +" "+ *this\LineEntered( )\text\string
+                                    Debug " le bottom  set - Pressed  " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_last )
                                  edit_sel_text_( *this, *this\LineEntered( ))
                               ElseIf *this\LineEntered( )\lindex < *this\LinePressed( )\lindex
                                  If test_edit_text
-                                    ;Debug "  ^le top remove - " +" "+ *this\LineEntered( )\text\string
+                                    Debug "  ^le top remove - " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_remove )
                                  edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\LineEntered( )\lindex + 1))
                               Else
                                  If test_edit_text
-                                    ;Debug " le bottom  set - " +" "+ *this\LineEntered( )\text\string
+                                    Debug " le bottom  set - " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_set )
                                  edit_sel_text_( *this, *this\LineEntered( ))
@@ -19157,19 +19157,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                            Else
                               If *this\LineEntered( ) = *this\LinePressed( )
                                  If test_edit_text
-                                    ;Debug " le top remove - Pressed  " +" "+ *this\LineEntered( )\text\string
+                                    Debug " le top remove - Pressed  " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_first )
                                  edit_sel_text_( *this, *this\LineEntered( ))
                               ElseIf *this\LineEntered( )\lindex > *this\LinePressed( )\lindex
                                  If test_edit_text
-                                    ;Debug "  le top remove - " +" "+ *this\LineEntered( )\text\string
+                                    Debug "  le top remove - " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_remove )
                                  edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\LineEntered( )\lindex - 1))
                               Else
                                  If test_edit_text
-                                    ;Debug " ^le bottom  set - " +" "+ *this\LineEntered( )\text\string
+                                    Debug " ^le bottom  set - " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_set )
                                  edit_sel_text_( *this, *this\LineEntered( ))
@@ -19574,7 +19574,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  If *this\edit_caret_1( ) = *this\LineFocused( )\text\pos
                                     If *this\LineFocused( )\lindex > 0
                                        *this\LineFocused( )\ColorState( ) = #__s_0
-                                       *this\LineFocused( )             = SelectElement( *this\__lines( ), *this\LineFocused( )\lindex - 1 )
+                                       *this\LineFocused( )               = SelectElement( *this\__lines( ), *this\LineFocused( )\lindex - 1 )
                                        *this\LineFocused( )\ColorState( ) = #__s_1
                                     EndIf
                                  EndIf
@@ -20184,6 +20184,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      ;
                      *this\RowPressed( ) = 0 
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\ key events
+            If event = #__event_Input Or
+               event = #__event_KeyDown Or
+               event = #__event_KeyUp
+               
+               If *this\row
+                  If *this\type = #__type_listview
+                     DoKeyEvents_ListView( *this, *this\__rows( ), event )
+                  ElseIf *this\type = #__type_Tree Or
+                         *this\type = #__type_ListIcon
+                     DoKeyEvents_Tree( *this, *this\__rows( ), event )
                   EndIf
                EndIf
             EndIf
@@ -21010,20 +21025,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;                   EndIf
             ;                EndIf
             ;             EndIf
-            
-            ;\\ key events
-            If event = #__event_Input Or
-               event = #__event_KeyDown Or
-               event = #__event_KeyUp
-               
-               If *this\row
-                  If *this\type = #__type_listview
-                     DoKeyEvents_ListView( *this, *this\__rows( ), event )
-                  Else
-                     DoKeyEvents_Tree( *this, *this\__rows( ), event )
-                  EndIf
-               EndIf
-            EndIf
          EndIf
          
          ;\\ post repaint canvas
@@ -24356,9 +24357,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13392
-; FirstLine = 13289
-; Folding = -4----------------------------------------P----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-2---0---------------------------------------------0--------------------------------------------------------v-v--------------------------fv-0-----------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 19672
+; FirstLine = 18972
+; Folding = -4----------------------------------------P----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-2---0---------------------------------------------0----------------------------------------------------------+-+--------------------------0+---------------------------------8--------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
