@@ -18,7 +18,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-   Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_textmultiline, 0)
+     Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_textmultiline )
+     SetImage( widget(), (0))
   EndMacro
   
   Define m.s = #LF$
@@ -88,7 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
+; CursorPosition = 21
 ; FirstLine = 6
 ; Folding = -
 ; EnableXP

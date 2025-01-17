@@ -19,22 +19,22 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define *g = window(10,10,200,200, "window", #PB_Window_SystemMenu|#__flag_autosize) : SetClass(*g, "window")
   
-  Define *g0 = window(10,10,200,200, "form_0-window", #PB_Window_SystemMenu|#__window_child, *g) : SetClass(*g0, "form_0")
+  Define *g0 = window(10,10,200,200, "form_0-window", #PB_Window_SystemMenu|#__flag_child, *g) : SetClass(*g0, "form_0")
 ;   Button(10,10,100,30,"button_0_0") : SetClass(widget(), GetText(widget()))
 ;   Button(10,50,100,30,"button_0_1") : SetClass(widget(), GetText(widget()))
 ;   Button(10,90,100,30,"button_0_2") : SetClass(widget(), GetText(widget()))
   
-  Define *g1 = window(30,10,200,200, "form_1-form_0", #PB_Window_SystemMenu|#__window_child, *g0) : SetClass(*g1, "form_1")
+  Define *g1 = window(30,10,200,200, "form_1-form_0", #PB_Window_SystemMenu|#__flag_child, *g0) : SetClass(*g1, "form_1")
   Button(10,10,100,30,"button_1_0") : SetClass(widget(), GetText(widget()))
   Button(10,50,100,30,"button_1_1") : SetClass(widget(), GetText(widget()))
   Button(10,90,100,30,"button_1_2") : SetClass(widget(), GetText(widget()))
    
-  Define *g2 = window(50,10,200,200, "form_2-form_1", #PB_Window_SystemMenu|#__window_child, *g1) : SetClass(*g2, "form_2")
+  Define *g2 = window(50,10,200,200, "form_2-form_1", #PB_Window_SystemMenu|#__flag_child, *g1) : SetClass(*g2, "form_2")
   Button(10,10,100,30,"button_2_0") : SetClass(widget(), GetText(widget()))
   Button(10,50,100,30,"button_2_1") : SetClass(widget(), GetText(widget()))
   Button(10,90,100,30,"button_2_2") : SetClass(widget(), GetText(widget()))
   
-;   window(120,40,200,200, "window_0", #PB_Window_SystemMenu|#__window_child, *g) : SetClass(widget(), "window_0")
+;   window(120,40,200,200, "window_0", #PB_Window_SystemMenu|#__flag_child, *g) : SetClass(widget(), "window_0")
 ;   Button(10,10,80,30,"button_0") : SetClass(widget(), GetText(widget()))
 ;   Button(10,50,80,30,"button_1") : SetClass(widget(), GetText(widget()))
 ;   Button(10,90,80,30,"button_2") : SetClass(widget(), GetText(widget()))
@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 33
+; CursorPosition = 36
+; FirstLine = 21
 ; Folding = -
 ; EnableXP

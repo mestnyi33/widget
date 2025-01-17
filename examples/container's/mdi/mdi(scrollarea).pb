@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *b = AddItem(*g, -1, "form") : Resize(*b, Sw-130, Sh-30, 130, 30)
     ;  *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseList()
-    ; *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : CloseList()
+    ; *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__flag_child, *g) : CloseList()
     CloseList()
    
     ;
@@ -113,8 +113,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 12
+; CursorPosition = 39
+; FirstLine = 35
 ; Folding = 0-
 ; Optimizer
 ; EnableXP

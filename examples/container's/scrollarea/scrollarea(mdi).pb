@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;bug bug bugbugbugbugbugbugbugbugbugbug
     *b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu, *g) :CloseList( )
     ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
-    ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenList(*g)
+    ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #__window_systemmenu|#__flag_child, *g) : OpenList(*g)
     ;*b = Button(Sw-130, Sh-30, 130, 30,"Window") : OpenList(*g)
     ;*b = Container(Sw-130, Sh-30, 130, 30) : OpenList(*g)
     CloseList()
@@ -148,12 +148,12 @@ CompilerIf #PB_Compiler_IsMainFile = 333
     
     ;bug bug bugbugbugbugbugbugbugbugbugbug
     ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
-    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenList(*g)
+    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__flag_child, *g) : OpenList(*g)
     ;*b = Button(Sw-130, Sh-130, 130, 30,"Window") : OpenList(*g)
     ;*b = Container(Sw-130, Sh-130, 130, 31) : OpenList(*g)
     
     *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseList()
-    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : CloseList()
+    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__flag_child, *g) : CloseList()
     ;*b = Button(Sw-130, Sh-130, 130, 30,"Window") : CloseList()
     ;*b = Container(Sw-130, Sh-130, 130, 31) : CloseList()
     CloseList()
@@ -231,8 +231,8 @@ CompilerIf #PB_Compiler_IsMainFile = 333
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 120
+; CursorPosition = 155
+; FirstLine = 126
 ; Folding = --0
 ; Optimizer
 ; EnableXP

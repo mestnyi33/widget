@@ -4,7 +4,7 @@
 ;   Debug ""+i +" "+ Str( 2147483648 >> ( (i - 1) ) )
 ; Next
 
-;#__window_child          = #__flag_child
+;#__flag_child          = #__flag_child
 Debug #PB_Window_Normal         ; 0     ; 0
 Debug #PB_Window_TitleBar       ; 8     ; 12582912   ; Creates a window with a titlebar.
 Debug #PB_Window_SystemMenu     ; 4     ; 13107200   ; Enables the system menu on the window title bar (Default).
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 31
+; CursorPosition = 6
+; FirstLine = 14
 ; Folding = -
 ; EnableXP

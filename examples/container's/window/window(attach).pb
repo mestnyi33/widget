@@ -59,10 +59,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,400+50,80,80,"mdi-bottom")
   CloseList()
   
-  Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__window_child ;|#__flag_borderless
+  Define flag = #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget ;| #__flag_child ;|#__flag_borderless
   Define vfs ;= #__window_CaptionHeight+#__window_FrameSize*2
   
-  Define *g0._s_widget = Window(50, 50, 400, 400-vfs, "main",flag|#__window_child, *mdi) : SetClass(widget(), "main") 
+  Define *g0._s_widget = Window(50, 50, 400, 400-vfs, "main",flag|#__flag_child, *mdi) : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
   
   Define *g1._s_widget =  Window(X(*g0, #__c_container)+50, Y(*g0, #__c_container)+50, 200, 300, "Child 1 (Position Attach)",flag,*g0) : SetClass(widget(), "form_1") 
@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 64
-; FirstLine = 49
+; FirstLine = 55
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -5,31 +5,31 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   Global Event.i, MyCanvas
-  Global x=100,y=100, Width=350, Height=350 , focus
+  Global X=100,Y=100, Width=350, Height=350 , focus
   
-  If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "form child's", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "form child's", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
   
   MyCanvas = GetCanvasGadget(Open(0, 10, 10))
-  a_init(Root())
+  a_init(root())
   
   ;\\
   ;Define *g = window(50,50,100,100, "window", #PB_Window_SystemMenu|#__flag_autosize) : SetClass(*g, "window")
   Define *g = window(50,50,400,400, "window", #PB_Window_SystemMenu) : SetClass(*g, "window")
   
   ;\\
-  Define *g0 = window(10,10,200,200, "form_0-window", #PB_Window_SystemMenu|#__window_child, *g) : SetClass(*g0, "form_0")
+  Define *g0 = window(10,10,200,200, "form_0-window", #PB_Window_SystemMenu|#__flag_child, *g) : SetClass(*g0, "form_0")
   
   ;\\
-  Define *g1 = window(30,10,200,200, "form_1-form_0", #PB_Window_SystemMenu|#__window_child, *g0) : SetClass(*g1, "form_1")
+  Define *g1 = window(30,10,200,200, "form_1-form_0", #PB_Window_SystemMenu|#__flag_child, *g0) : SetClass(*g1, "form_1")
   Button(10,10,100,30,"button_1_0") : SetClass(widget(), GetText(widget()))
   Button(10,50,100,30,"button_1_1") : SetClass(widget(), GetText(widget()))
   Button(10,90,100,30,"button_1_2") : SetClass(widget(), GetText(widget()))
   
   ;\\
-  Define *g2 = window(50,10,200,200, "form_2-form_1", #PB_Window_SystemMenu|#__window_child, *g1) : SetClass(*g2, "form_2")
+  Define *g2 = window(50,10,200,200, "form_2-form_1", #PB_Window_SystemMenu|#__flag_child, *g1) : SetClass(*g2, "form_2")
   Button(10,10,100,30,"button_2_0") : SetClass(widget(), GetText(widget()))
   Button(10,50,100,30,"button_2_1") : SetClass(widget(), GetText(widget()))
   Button(10,90,100,30,"button_2_2") : SetClass(widget(), GetText(widget()))
@@ -50,8 +50,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 33
+; CursorPosition = 31
+; FirstLine = 18
 ; Folding = -
 ; EnableXP
 ; DPIAware

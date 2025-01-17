@@ -1711,24 +1711,24 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro align_content( _address_, _flag_ )
-         _address_\align\left  = constants::BinaryFlag( _flag_, #__flag_left )
-         _address_\align\right = constants::BinaryFlag( _flag_, #__flag_right )
+         _address_\align\left  = constants::BinaryFlag( _flag_, #__align_left )
+         _address_\align\right = constants::BinaryFlag( _flag_, #__align_right )
          
-         _address_\align\top    = constants::BinaryFlag( _flag_, #__flag_top )
-         _address_\align\bottom = constants::BinaryFlag( _flag_, #__flag_bottom )
+         _address_\align\top    = constants::BinaryFlag( _flag_, #__align_top )
+         _address_\align\bottom = constants::BinaryFlag( _flag_, #__align_bottom )
          
-         If constants::BinaryFlag( _flag_, #__flag_center, #False )
+         If constants::BinaryFlag( _flag_, #__align_Center, #False )
             If Not _address_\align\top And
                Not _address_\align\left And
                Not _address_\align\right And
                Not _address_\align\bottom 
                
                If Not _address_\align\right
-                  _flag_ | #__flag_left
+                  _flag_ | #__align_left
                   _address_\align\left = #True
                EndIf
                If Not _address_\align\bottom
-                  _flag_ | #__flag_top
+                  _flag_ | #__align_top
                   _address_\align\top = #True
                EndIf
             Else
@@ -1736,36 +1736,36 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If Not _address_\align\right Or
                      Not _address_\align\bottom
                      _address_\align\top = #True
-                     _flag_ | #__flag_top
+                     _flag_ | #__align_top
                   EndIf
                ElseIf _address_\align\top
                   If Not _address_\align\left Or
                      Not _address_\align\bottom
                      _address_\align\right = #True
-                     _flag_ | #__flag_right
+                     _flag_ | #__align_right
                   EndIf
                ElseIf _address_\align\right
                   If Not _address_\align\left Or
                      Not _address_\align\top
                      _address_\align\bottom = #True
-                     _flag_ | #__flag_bottom
+                     _flag_ | #__align_bottom
                   EndIf
                ElseIf _address_\align\bottom
                   If Not _address_\align\right Or
                      Not _address_\align\top
                      _address_\align\left = #True
-                     _flag_ | #__flag_left
+                     _flag_ | #__align_left
                   EndIf
                EndIf
             EndIf
          EndIf
          
          If test_align
-            Debug " left "+ constants::BinaryFlag( _flag_, #__flag_Textleft) +" "+  _address_\align\left +
-                  " top "+ constants::BinaryFlag( _flag_, #__flag_Texttop) +" "+  _address_\align\top + 
-                  " right "+ constants::BinaryFlag( _flag_, #__flag_Textright) +" "+  _address_\align\right + 
-                  " bottom "+ constants::BinaryFlag( _flag_, #__flag_Textbottom) +" "+  _address_\align\bottom +
-                  " center "+ constants::BinaryFlag( _flag_, #__flag_Textcenter)
+            Debug " left "+ constants::BinaryFlag( _flag_, #__align_Left) +" "+  _address_\align\left +
+                  " top "+ constants::BinaryFlag( _flag_, #__align_Top) +" "+  _address_\align\top + 
+                  " right "+ constants::BinaryFlag( _flag_, #__align_Right) +" "+  _address_\align\right + 
+                  " bottom "+ constants::BinaryFlag( _flag_, #__align_Bottom) +" "+  _address_\align\bottom +
+                  " center "+ constants::BinaryFlag( _flag_, #__align_Center)
          EndIf   
       EndMacro
       
@@ -4904,9 +4904,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; Draw string
             If *this\text And *this\text\string 
-               If *this\text\TextChange( ) Or 
-                  *this\resize\ResizeChange( )
-;                   
+               If ( *this\text\TextChange( ) Or *this\resize\ResizeChange( ) )
                   update_align_text_x( *this, *this\text, *this\inner_width( ) )
                   update_align_text_y( *this, *this\text, *this\inner_height( ) )
                EndIf
@@ -9612,8 +9610,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             If result
+               *this\WidgetChange( )              = 1
                *this\__rows( )\text\TextChange( ) = 1
-               *this\WidgetChange( )         = 1
             EndIf
          EndIf
          
@@ -11875,7 +11873,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             *this\countitems + 1 ;?
-            *window = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__window_Child, *this )
+            *window = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__flag_child, *this )
             ;
             If IsImage( Image )
                If constants::BinaryFlag( Flag, #__window_BorderLess ) 
@@ -13129,10 +13127,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn #True
       EndProcedure
       
-      Procedure edit_sel_text_( *this._s_WIDGET, *line._s_ROWS )
+      Procedure edit_sel_text_( *this._s_WIDGET, *rowLine._s_ROWS )
          ; edit sel all items
-         If *line = #PB_All
-            *line                 = *this\LineFocused( )
+         If *rowLine = #PB_All
+            *rowLine                 = *this\LineFocused( )
             *this\LinePressed( )  = #Null
             *this\edit_caret_0( ) = 0
             *this\edit_caret_1( ) = 0
@@ -13151,18 +13149,19 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\edit_caret_1( ) > *this\edit_caret_2( )
             *this\text\edit[2]\pos = *this\edit_caret_2( )
             *this\text\edit[3]\pos = *this\edit_caret_1( )
-            *this\text\caret\x     = *line\x + *line\text\edit[3]\x - 1
+            *this\text\caret\x     = *rowLine\x + *rowLine\text\edit[3]\x - 1
          Else
             *this\text\edit[2]\pos = *this\edit_caret_1( )
             *this\text\edit[3]\pos = *this\edit_caret_2( )
-            *this\text\caret\x     = *line\x + *line\text\edit[2]\x - 1
+            *this\text\caret\x     = *rowLine\x + *rowLine\text\edit[2]\x - 1
          EndIf
          
-         *this\text\caret\height = *line\text\height
-         *this\text\caret\y      = *line\y
+         
+         *this\text\caret\height = *rowLine\text\height
+         *this\text\caret\y      = *rowLine\y
          
          ;       ;*this\text\caret\x = 13
-         ;       ;Debug ""+*this\padding\x +" "+ *this\text\caret\x +" "+ *this\edit_caret_1( ) +" "+ *line\text\edit[1]\string
+         ;       ;Debug ""+*this\padding\x +" "+ *this\text\caret\x +" "+ *this\edit_caret_1( ) +" "+ *rowLine\text\edit[1]\string
          ;       ;Debug TextWidth("W")
          
          ;
@@ -13197,18 +13196,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.l edit_make_caret_position( *this._s_WIDGET, *line._s_ROWS )
+      Procedure.l edit_make_caret_position( *this._s_WIDGET, *rowLine._s_ROWS )
          ; Get caret position
          Protected i.l, mouse_x.l, caret_x.l, caret.l = - 1
          Protected Distance.f, MinDistance.f = Infinity( )
          
-         If *line 
+         If *rowLine 
             edit_redraw_font( *this )
             
-            mouse_x = mouse( )\x - row_x_( *this, *line ) - *line\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
+            mouse_x = mouse( )\x - row_x_( *this, *rowLine ) - *rowLine\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
-            For i = 0 To *line\text\len
-               caret_x = TextWidth( Left( *line\text\string, i ))
+            For i = 0 To *rowLine\text\len
+               caret_x = TextWidth( Left( *rowLine\text\string, i ))
                Distance = ( mouse_x - caret_x ) * ( mouse_x - caret_x )
                
                If MinDistance >= Distance
@@ -14917,7 +14916,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Button Or
             *this\type = #__type_HyperLink
             
-            *this\flag | #__flag_Center
+            *this\flag | #__flag_TextCenter
             
          ElseIf *this\type = #__type_ComboBox Or
                 *this\type = #__type_Spin Or
@@ -16983,6 +16982,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\text\editable And *this\focus
                   draw_mode_( #PB_2DDrawing_XOr )
                   draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
+                  Debug *this\text\caret\x
                EndIf
                
                ; Draw frames
@@ -17543,8 +17543,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; update text
-            If *this\WidgetChange( ) Or 
-               *this\resize\ResizeChange( )
+            If *this\WidgetChange( ) Or *this\resize\ResizeChange( )
                ;
                Update_DrawText( *this, *this\text\TextChange( ) )
             EndIf
@@ -19030,7 +19029,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure DoEvent_Lines( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected dragged 
-         Protected repaint, *line._s_ROWS
+         Protected repaint, *rowLine._s_ROWS
          mouse_x - *this\inner_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
          
@@ -19055,12 +19054,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\RowVisibleList( )\hide = 0 And
                         ( ( *this\enter And is_atpoint_( *this\RowVisibleList( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\RowVisibleList( )\y, *this\RowVisibleList( )\height, mouse_y )) )
-                        *line = *this\RowVisibleList( )
+                        *rowLine = *this\RowVisibleList( )
                         Break
                      EndIf
                   Until PreviousElement( *this\RowVisibleList( )) = #False
                Else
-                  *line = *this\LineEntered( )
+                  *rowLine = *this\LineEntered( )
                EndIf
             ElseIf ListSize( *this\__lines( ) )
                If Not ( *this\LineEntered( ) And
@@ -19076,52 +19075,52 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\__lines( )\hide = 0 And
                         ( ( *this\enter And is_atpoint_( *this\__lines( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\__lines( )\y, *this\__lines( )\height, mouse_y )) )
-                        *line = *this\__lines( )
+                        *rowLine = *this\__lines( )
                         Break
                      EndIf
                   Until PreviousElement( *this\__lines( )) = #False
                Else
-                  *line = *this\LineEntered( )
+                  *rowLine = *this\LineEntered( )
                EndIf
             EndIf
             
             ;
             If dragged
-               If *line = #Null
+               If *rowLine = #Null
                   If mouse( )\y < mouse( )\delta\y + *this\inner_y( ) And mouse( )\y <= *this\inner_y( )
                      If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
                         ChangeCurrentElement( *this\__lines( ), *this\RowFirstVisible( ))
-                        *line = PreviousElement( *this\__lines( ) )
+                        *rowLine = PreviousElement( *this\__lines( ) )
                         
-                        If *line
-                           row_scroll_y_( *this, *line )
+                        If *rowLine
+                           row_scroll_y_( *this, *rowLine )
                         EndIf
                      Else
-                        ; *line = *this\RowFirstVisible( )
+                        ; *rowLine = *this\RowFirstVisible( )
                      EndIf
                   ElseIf mouse( )\y > mouse( )\delta\y + *this\inner_y( ) And mouse( )\y > *this\inner_y( ) + *this\inner_height( )
                      If *this\RowLastVisible( ) And Not bar_in_stop_( *this\scroll\v\bar )
                         ChangeCurrentElement( *this\__lines( ), *this\RowLastVisible( ))
-                        *line = NextElement( *this\__lines( ) )
+                        *rowLine = NextElement( *this\__lines( ) )
                         
-                        If *line
-                           row_scroll_y_( *this, *line )
+                        If *rowLine
+                           row_scroll_y_( *this, *rowLine )
                         EndIf
                      Else
-                        ; *line = *this\RowLastVisible( )
+                        ; *rowLine = *this\RowLastVisible( )
                      EndIf
                   EndIf
                EndIf
             Else
                If event = #__event_MouseMove
                   If *this\enter = #False
-                     *line = #Null
+                     *rowLine = #Null
                   EndIf
                EndIf
             EndIf
             
             ; change enter/leave state
-            If *this\LineEntered( ) <> *line 
+            If *this\LineEntered( ) <> *rowLine 
                ; leave state
                If *this\LineEntered( )
                   If *this\LineEntered( )\_enter
@@ -19183,26 +19182,26 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               ; Debug "lines "+*line+" "+*this\LineEntered( )
-               *this\LineEntered( ) = *line
+               ; Debug "lines "+*rowLine+" "+*this\LineEntered( )
+               *this\LineEntered( ) = *rowLine
                
                ; enter state
                If Not a_index( )
                   If *this\enter
-                     If *line And 
-                        *line\_enter = 0
-                        *line\_enter = 1
+                     If *rowLine And 
+                        *rowLine\_enter = 0
+                        *rowLine\_enter = 1
                         
-                        If *line\ColorState( ) = #__s_0
-                           *line\ColorState( ) = #__s_1
+                        If *rowLine\ColorState( ) = #__s_0
+                           *rowLine\ColorState( ) = #__s_1
                         EndIf
                         
                         If dragged = #PB_Drag_Update
                            ; Debug "en - "
                            
-                           *this\LineFocused( )  = *line
-                           *this\edit_caret_0( ) = edit_make_caret_position( *this, *line )
-                           *this\edit_caret_1( ) = *this\edit_caret_0( ) + *line\text\pos
+                           *this\LineFocused( )  = *rowLine
+                           *this\edit_caret_0( ) = edit_make_caret_position( *this, *rowLine )
+                           *this\edit_caret_1( ) = *this\edit_caret_0( ) + *rowLine\text\pos
                            
                            ; это на тот случай если резко выделили строки
                            ; чтобы не пропустить некоторые из них
@@ -19210,14 +19209,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                               If *this\LinePressed( )
                                  PushListPosition( *this\__lines( ) )
                                  ForEach *this\__lines( )
-                                    If Bool(( *line\lindex >= *this\__lines( )\lindex And
+                                    If Bool(( *rowLine\lindex >= *this\__lines( )\lindex And
                                               *this\LinePressed( )\lindex <= *this\__lines( )\lindex ) Or ; верх
-                                            ( *line\lindex <= *this\__lines( )\lindex And
+                                            ( *rowLine\lindex <= *this\__lines( )\lindex And
                                               *this\LinePressed( )\lindex >= *this\__lines( )\lindex ))   ; вниз
                                        
                                        ;
                                        If *this\__lines( )\lindex <> *this\LinePressed( )\lindex And
-                                          *this\__lines( )\lindex <> *line\lindex
+                                          *this\__lines( )\lindex <> *rowLine\lindex
                                           
                                           If *this\__lines( )\text\edit[2]\width <> *this\__lines( )\text\width + *this\mode\fullselection
                                              If test_edit_text
@@ -19240,9 +19239,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                            EndIf
                            
-                           ;\\ *this\LineEnteredIndex( ) = *line\lindex
-                           edit_sel_string_( *this, *line )
-                           edit_sel_text_( *this, *line )
+                           ;\\ *this\LineEnteredIndex( ) = *rowLine\lindex
+                           edit_sel_string_( *this, *rowLine )
+                           edit_sel_text_( *this, *rowLine )
                            
                         EndIf
                      EndIf
@@ -19401,7 +19400,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            ;\\ edit key events
+            ;-\\ edit key events
             If event = #__event_Input Or
                event = #__event_KeyDown Or
                event = #__event_KeyUp
@@ -24357,9 +24356,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15994
-; FirstLine = 15638
-; Folding = -4----------------------------------------P----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-2--+0---------------------------------------------0--------------------------------------------------------v-v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 13392
+; FirstLine = 13289
+; Folding = -4----------------------------------------P----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-2---0---------------------------------------------0--------------------------------------------------------v-v--------------------------fv-0-----------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
