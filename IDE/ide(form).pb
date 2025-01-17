@@ -1848,7 +1848,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Disable(widget_add(ide_design_form, "button", 15, 25, 50, 30),1)
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
       btn2 = widget_add(ide_design_form, "button", 35, 65+40, 50, 30)
-      widget_add(ide_design_form, "text", 45, 65+40*2, 50, 30)
+      widget_add(ide_design_form, "string", 45, 65+40*2, 50, 30)
       
       Define *scrollarea = widget_add(ide_design_form, "scrollarea", 120, 25, 165, 175)
       widget_add(*scrollarea, "button", 15, 25, 30, 30)
@@ -1961,10 +1961,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1419
-; FirstLine = 1323
-; Folding = -----------v--------4f--------------
-; Markers = 478
+; CursorPosition = 1850
+; FirstLine = 1842
+; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

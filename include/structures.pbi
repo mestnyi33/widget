@@ -567,7 +567,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-           padding._s_point
+         padding._s_point
+         ;indent.a
+         
       ;;; Map *linelevel._s_COORDINATE( )
          
          deffocus.b ; button default focus
@@ -767,8 +769,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 237
+; CursorPosition = 570
+; FirstLine = 564
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

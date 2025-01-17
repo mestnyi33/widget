@@ -4,6 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    test_align = 1
+   test_draw_area = 1
    
    If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
       End
@@ -40,8 +41,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 7
+; CursorPosition = 6
+; FirstLine = 2
 ; Folding = -
 ; EnableXP
 ; DPIAware

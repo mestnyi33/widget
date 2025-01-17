@@ -5,7 +5,7 @@ IncludePath "../../../" : XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
-  test_area = 1
+  test_draw_area = 1
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -171,7 +171,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7
+; CursorPosition = 8
+; FirstLine = 3
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -3,6 +3,7 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
+  test_draw_area = 1
   
   Global *S_0._s_widget
   Global *S_1._s_widget
@@ -116,6 +117,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure resize_splitter()
     SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
   EndProcedure
+  
+  Macro String( X,Y,Width,Height, Text, flag=0)
+     Editor( X,Y,Width,Height, flag)
+     SetText( widget(), Text)
+  EndMacro
   
   If OpenWindow(0, 0, 0, 615, (Height+5)*7+20+90+160, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Open( 0);, 0, 0, 615, (height+5)*7+20+90+160)
@@ -365,8 +371,8 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 65
+; CursorPosition = 179
+; FirstLine = 166
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -5,7 +5,7 @@ IncludePath "../../../" : XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
-  ;test_area = 1
+  ;test_draw_area = 1
   
   Macro Create(Index, X,Y,Width,Height, Text, flag=0)
     String(X,Y,Width,Height, Text, flag)
@@ -60,5 +60,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 7
+; FirstLine = 3
 ; Folding = -
 ; EnableXP

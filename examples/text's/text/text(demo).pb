@@ -3,7 +3,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   test_area = 1
+   test_draw_area = 1
    
    Global canvas_gadget, canvas_window, *B_0, *B_1, *B_2, *B_3
    
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 34
+; CursorPosition = 5
+; FirstLine = 1
 ; Folding = -
 ; EnableXP

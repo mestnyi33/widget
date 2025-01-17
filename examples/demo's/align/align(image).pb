@@ -8,6 +8,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
   EnableExplicit
   UseWidgets( )
+  test_draw_area = 1
+  
   UsePNGImageDecoder()
   
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
@@ -19,9 +21,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-     ; Image(_x_,_y_,_width_,_height_,0,_flag_) : SetBackgroundColor( widget( ), $FFB3FDFF )
+    Image(_x_,_y_,_width_,_height_,0,_flag_) : SetBackgroundColor( widget( ), $FFB3FDFF )
          
-     ButtonImage(_x_,_y_,_width_,_height_,0,_flag_)
+    ;   ButtonImage(_x_,_y_,_width_,_height_,0,_flag_)
   EndMacro
   
   Define m.s = #LF$
@@ -91,8 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 63
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = -
 ; EnableXP
 ; DPIAware

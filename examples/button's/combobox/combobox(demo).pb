@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
   test_clip = 1
-  ;test_area = 1
+  ;test_draw_area = 1
   
   Define a,i, Height=60
   
@@ -135,8 +135,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 50
+; CursorPosition = 8
+; FirstLine = 4
 ; Folding = 8--
 ; Optimizer
 ; EnableXP
