@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define Width = 560, Height = 560, pos = 60
    
-   Procedure Flag_(*this._s_WIDGET, flag.q, state.b )
+   Procedure Flag_(*this._s_WIDGET, flag.q, state.b=0 )
    EndProcedure
    
    Procedure events_widgets()
@@ -257,7 +257,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 53
-; FirstLine = 41
+; FirstLine = 35
 ; Folding = ----
 ; Optimizer
 ; EnableXP

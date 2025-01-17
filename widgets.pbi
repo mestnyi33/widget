@@ -1828,23 +1828,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          change_align_vertical( _this_\img, _this_\inner_height( ), _this_\img\height, _this_\img\rotate, _this_\img\align, _this_\padding\y )
       EndMacro
       
-      Macro update_align_text( _this_ )
+      Macro update_align_text_x( _this_, _address_, _width_ )
          If Not _this_\text\vertical
-            change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\x )
-            change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\y )
+            change_align_horizontal( _address_, _width_, _address_\width, _this_\text\rotate, _this_\text\align, _this_\padding\x )
          Else
-            change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\x )
-            change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\y )
+            change_align_horizontal( _address_, _width_, _address_\height, _this_\text\rotate, _this_\text\align, _this_\padding\x )
          EndIf
       EndMacro
       
-      Macro set_align_x_( _address_, _width_, _rotate_, _align_, _padding_ )
-         change_align_horizontal( _address_, _width_, _address_\width, _rotate_, _align_, _padding_ )
+      Macro update_align_text_y( _this_, _address_, _height_ )
+         If Not _this_\text\vertical
+            change_align_vertical( _address_, _height_, _address_\height, _this_\text\rotate, _this_\text\align, _this_\padding\y )
+         Else
+            change_align_vertical( _address_, _height_, _address_\width, _this_\text\rotate, _this_\text\align, _this_\padding\y )
+         EndIf
       EndMacro
-       
-      Macro set_align_y_( _address_, _height_, _rotate_, _align_, _padding_ )
-         change_align_vertical( _address_, _height_, _address_\height, _rotate_, _align_, _padding_ )
-      EndMacro
+      
       
       ;-
       Macro set_text_flag_( _this_, _text_, _flag_, _x_ = 0, _y_ = 0 )
@@ -4908,7 +4907,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\text\TextChange( ) Or 
                   *this\resize\ResizeChange( )
 ;                   
-                  update_align_text( *this )
+                  update_align_text_x( *this, *this\text, *this\inner_width( ) )
+                  update_align_text_y( *this, *this\text, *this\inner_height( ) )
                EndIf
                
                ;
@@ -8676,6 +8676,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          add_image( *this\img, *image )
          
          If *this\type <> #__type_window
+            *this\img\x   = *this\padding\x
+            *this\img\y  = *this\padding\y
+            
             ; make horizontal scroll max
             If *this\scroll_width( ) <> *this\img\width + *this\padding\x * 2
                *this\scroll_width( ) = *this\img\width + *this\padding\x * 2
@@ -13688,13 +13691,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          If position < 0 Or position > ListSize( e_rows( )) - 1
             LastElement( e_rows( ))
             *rowLine = AddElement( e_rows( ))
-            
-            ;If position < 0
             position = ListIndex( e_rows( ))
-            ;EndIf
-            
          Else
-            
             *rowLine   = SelectElement( e_rows( ), position )
             add_index  = e_rows( )\lindex
             add_y      = e_rows( )\y + Bool( #PB_Compiler_OS = #PB_OS_Windows )
@@ -13709,13 +13707,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                e_rows( )\text\pos + string_len + Len( #LF$ )
             Wend
             PopListPosition(e_rows( ))
-            
          EndIf
          
          ;\\
-         ;edit_redraw_font( *this )
-         
-         e_rows( )\lindex       = position
+         e_rows( )\lindex      = position
          e_rows( )\text\len    = string_len
          e_rows( )\text\string = PeekS ( *text, string_len )
          
@@ -13748,9 +13743,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          *this\countitems + 1
          *this\text\len + string_len + Len( #LF$ )
-         
-         set_align_y_( e_rows( )\text, - 1, *this\text\rotate, *this\text\align, *this\padding\y )
-         set_align_x_( e_rows( )\text, *this\scroll_width( ), *this\text\rotate, *this\text\align, *this\padding\x )
       EndProcedure
       
       Procedure edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
@@ -13768,9 +13760,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         *this\WidgetChange( )  = 0
-         *this\text\TextChange( )    = 1
-         *this\text\edit\string = *this\text\string
+         *this\WidgetChange( )    = 0
+         *this\text\TextChange( ) = 1
+         *this\text\edit\string   = *this\text\string
       EndProcedure
       
       Procedure edit_ClearItems( *this._s_WIDGET )
@@ -14922,15 +14914,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ Flags
          *this\flag = Flag
-         If *this\type = #__type_Button 
-            If constants::BinaryFlag( Flag, #__flag_ImageLeft, #False ) And 
-               constants::BinaryFlag( Flag, #__flag_ImageTop, #False ) And 
-               constants::BinaryFlag( Flag, #__flag_ImageRight, #False ) And 
-               constants::BinaryFlag( Flag, #__flag_ImageBottom, #False )
-               *this\flag | #__flag_Center
-            EndIf
-            
-         ElseIf *this\type = #__type_HyperLink
+         If *this\type = #__type_Button Or
+            *this\type = #__type_HyperLink
             
             *this\flag | #__flag_Center
             
@@ -15077,7 +15062,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ - Create Button
             If *this\type = #__type_Button
-               *this\padding\x = DPIScaled(4)
+               *this\padding\x = DPIScaled(14)
                *this\padding\y = DPIScaled(4)
             EndIf
             
@@ -15945,8 +15930,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         ; make line position
                         If *this\text\vertical
-                           If *this\scroll_height( ) < *this\__lines( )\text\height + *this\padding\y * 2 + *this\mode\fullselection
-                              *this\scroll_height( ) = *this\__lines( )\text\height + *this\padding\y * 2 + *this\mode\fullselection
+                           If *this\scroll_height( ) < *this\__lines( )\text\height + *this\mode\fullselection + *this\padding\y * 2
+                              *this\scroll_height( ) = *this\__lines( )\text\height + *this\mode\fullselection + *this\padding\y * 2
                            EndIf
                            
                            If *this\text\rotate = 90
@@ -15957,8 +15942,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                            *this\scroll_width( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
                         Else ; horizontal
-                           If *this\scroll_width( ) < *this\__lines( )\text\width + *this\padding\x * 2 + *this\mode\fullselection
-                              *this\scroll_width( ) = *this\__lines( )\text\width + *this\padding\x * 2 + *this\mode\fullselection
+                           If *this\scroll_width( ) < *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\x * 2
+                              *this\scroll_width( ) = *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\x * 2
                            EndIf
                            
                            If *this\text\rotate = 0
@@ -15996,7 +15981,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\__lines( )\text\x = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
                         EndIf
                         
-                        set_align_y_( *this\__lines( )\text, *this\scroll_height( ), *this\text\rotate, *this\text\align, *this\padding\y )
+                        update_align_text_y( *this, *this\__lines( )\text, *this\scroll_height( ) )
+                     
                      Else ; horizontal
                         If *this\text\rotate = 180
                            *this\__lines( )\y - ( *this\inner_height( ) - *this\scroll_height( ) )
@@ -16006,15 +15992,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *this\text\rotate = 90
                            *this\__lines( )\text\y = 0
                         ElseIf *this\text\rotate = 180
-                           *this\__lines( )\text\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\height
+                           *this\__lines( )\text\y = *this\__lines( )\text\height + 2 ; Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\height
                         Else
-                           *this\__lines( )\text\y = - 2 ;Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                           *this\__lines( )\text\y = - 3 ;Bool( #PB_Compiler_OS = #PB_OS_MacOS )
                         EndIf
                         
-                        set_align_x_( *this\__lines( )\text, *this\scroll_width( ) , *this\text\rotate, *this\text\align, *this\padding\x )
+                        update_align_text_x( *this, *this\__lines( )\text, *this\scroll_width( ) )
                         
                         ;
-                        *this\__lines( )\text\x + *this\img\width + *this\padding\x
+                        If *this\img\width
+                           *this\__lines( )\text\x + DPIScaled(5) + *this\img\width
+                        EndIf
                      EndIf
                      
                      
@@ -16029,7 +16017,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; 
             If *this\text\string.s
-               *this\scroll_width( ) + *this\img\width + *this\padding\x
+               If *this\img\width
+                  *this\scroll_width( ) + DPIScaled(5) + *this\img\width
+               EndIf
             EndIf
             ;\\
             bar_area_update( *this )
@@ -17431,15 +17421,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;
             If *this\img\change
-              ; update_align_image( *this  )
+               ; update_align_image( *this  )
                
                
-                  ; make horizontal scroll x
-                  make_scrollarea_x( *this, *this\img\width, *this\img\align )
-                  
-                  ; make vertical scroll y
-                  make_scrollarea_y( *this, *this\img\height, *this\img\align )
-                EndIf
+               ; make horizontal scroll x
+               make_scrollarea_x( *this, *this\scroll_width( ), *this\img\align )
+               
+               ; make vertical scroll y
+               make_scrollarea_y( *this, *this\scroll_height( ), *this\img\align )
+            EndIf
             
 
             ;\\ origin position
@@ -17569,10 +17559,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                    
                   ; make horizontal scroll x
-                  make_scrollarea_x( *this, *this\img\width, *this\img\align )
+                  make_scrollarea_x( *this, *this\scroll_width( ), *this\img\align )
                   
                   ; make vertical scroll y
-                  make_scrollarea_y( *this, *this\img\height, *this\img\align )
+                  make_scrollarea_y( *this, *this\scroll_height( ), *this\img\align )
                
                Else
                   *this\img\x = *this\padding\x
@@ -24367,9 +24357,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16957
-; FirstLine = 16895
-; Folding = -4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 15994
+; FirstLine = 15638
+; Folding = -4----------------------------------------P----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-2--+0---------------------------------------------0--------------------------------------------------------v-v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
