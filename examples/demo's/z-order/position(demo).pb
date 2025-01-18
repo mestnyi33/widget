@@ -33,17 +33,17 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     SEtColor(widget(), #PB_Gadget_BackColor, $00ffff)
       ;     SetClass(widget(), "first_2")
       ;     CloseList()
-      Button(3, 4, 17, 25+6, "1", #__flag_TextLeft) : SetClass(widget(), GetText(widget())) 
+      Button(3, 4, 17, 25+6, "1", #__text_left) : SetClass(widget(), GetText(widget())) 
       CloseList()
       
       CloseList()
       ;}
       
-      Button(55, 86, 170, 25, "2",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(8, 
-      Button(55, 82, 150, 25, "3",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(7, 
-      Button(55, 78, 130, 25, "4",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(6, 
+      Button(55, 86, 170, 25, "2",#__text_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(8, 
+      Button(55, 82, 150, 25, "3",#__text_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(7, 
+      Button(55, 78, 130, 25, "4",#__text_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(6, 
       
-      ;*current = Button(55, 74, 110, 25, "5",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(5, 
+      ;*current = Button(55, 74, 110, 25, "5",#__text_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(5, 
       
       ;{ current container
       *this = Container(10, 50, 60, 80)              ; Gadget(10, 
@@ -52,15 +52,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Container(10, 4, 60, 74-4)   
       SetColor(widget(), #PB_Gadget_BackColor, $ffff00)
-      Button(10, 4, 60, 68-8, "5", #__flag_TextLeft) : SetClass(widget(), GetText(widget())) 
+      Button(10, 4, 60, 68-8, "5", #__text_left) : SetClass(widget(), GetText(widget())) 
       CloseList()
       
       CloseList()
       ;}
       
-      Button(55, 70, 90, 25, "6",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(4, 
-      Button(55, 66, 70, 25, "7",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(3, 
-      Button(55, 62, 50, 25, "8",#__flag_TextRight) : SetClass(widget(), GetText(widget()))  ; Gadget(2, 
+      Button(55, 70, 90, 25, "6",#__text_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(4, 
+      Button(55, 66, 70, 25, "7",#__text_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(3, 
+      Button(55, 62, 50, 25, "8",#__text_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(2, 
       
       ;{ last container
       Container(55, 40, 30, 43)                     ; Gadget(1,
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
       ;     SetClass(widget(), "last_2")
       ;     CloseList()
-      Button(3, -3, 17, 25+6, "9", #__flag_TextLeft) : SetClass(widget(), GetText(widget())) 
+      Button(3, -3, 17, 25+6, "9", #__text_left) : SetClass(widget(), GetText(widget())) 
       CloseList()
       
       CloseList()
@@ -185,8 +185,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 82
+; CursorPosition = 62
+; FirstLine = 39
 ; Folding = ----
 ; EnableXP
 ; DPIAware

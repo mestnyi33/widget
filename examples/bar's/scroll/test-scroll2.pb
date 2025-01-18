@@ -90,13 +90,13 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
 ;   Debug ""
 ;   
     
-  Scroll(10, 42+30*4, 250,  20, 30, 100, 0, #__bar_invert) 
+  Scroll(10, 42+30*4, 250,  20, 30, 100, 0, #__flag_Invert) 
   SetState   (widget( ),  88)
   
-  Scroll(10, 42+30*5, 250,  20, 30, 100, 30, #__bar_invert) 
+  Scroll(10, 42+30*5, 250,  20, 30, 100, 30, #__flag_Invert) 
   SetState   (widget( ),  50)
   
-  Scroll(10, 42+30*6, 250,  20, 100, 30, 30, #__bar_invert) 
+  Scroll(10, 42+30*6, 250,  20, 100, 30, 30, #__flag_Invert) 
   SetState   (widget( ),  99) ; 50 - center 
   
   
@@ -114,21 +114,21 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
   Scroll(280+30*3, 10,20, 250, 30, 100, 100, #PB_ScrollBar_Vertical) 
   SetState   (widget( ),  50)
     
-  Scroll(280+30*4, 10,20, 250, 30, 100, 0, #PB_ScrollBar_Vertical|#__bar_invert) 
+  Scroll(280+30*4, 10,20, 250, 30, 100, 0, #PB_ScrollBar_Vertical|#__flag_Invert) 
   SetState   (widget( ),  88)
   
-  Scroll(280+30*5, 10,20, 250, 30, 100, 30, #PB_ScrollBar_Vertical|#__bar_invert) 
+  Scroll(280+30*5, 10,20, 250, 30, 100, 30, #PB_ScrollBar_Vertical|#__flag_Invert) 
   SetState   (widget( ),  50)
   
-  Scroll(280+30*6, 10,20, 250, 100, 30, 30, #PB_ScrollBar_Vertical|#__bar_invert) 
+  Scroll(280+30*6, 10,20, 250, 100, 30, 30, #PB_ScrollBar_Vertical|#__flag_Invert) 
   SetState   (widget( ),  99) ; 50 - center 
   
   
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 46
+; CursorPosition = 122
+; FirstLine = 93
 ; Folding = -
 ; EnableXP
 ; DPIAware

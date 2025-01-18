@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn Text
    EndProcedure
    
-   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
    Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
    If Open(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -39,18 +39,18 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
       
       ; example scroll widget bar
-      widget::Text(300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#__flag_Textcenter)
+      widget::Text(300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#__text_Center)
       *w = widget::Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
       widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-      *w = widget::Scroll  (300+10, 42+30, 250,  15, 30, 100, 30, #__bar_invert|#__bar_nobuttons, 7)
+      *w = widget::Scroll  (300+10, 42+30, 250,  15, 30, 100, 30, #__flag_Invert|#__flag_NoButtons, 7)
       widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
       
-      *w = widget::Scroll  (300+10, 42+30+20, 250,  10, 30, 150, 230, #__bar_invert, 7)
+      *w = widget::Scroll  (300+10, 42+30+20, 250,  10, 30, 150, 230, #__flag_Invert, 7)
       widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-      widget::Text(300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#__flag_Textright)
+      widget::Text(300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#__text_Right)
       *w = widget::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
       widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-      *w = widget::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_invert, 7)
+      *w = widget::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__flag_Vertical|#__flag_Invert, 7)
       widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
       
       
@@ -67,19 +67,19 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState(1212, 8000)
       
       ; example_2 track widget bar
-      widget::Text(300+10,  140+10, 250, 20,"TrackBar Standard");, #__flag_Textcenter)
+      widget::Text(300+10,  140+10, 250, 20,"TrackBar Standard");, #__text_Center)
       *w = widget::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
       widget::SetState(*w, 5000)
-      *w = widget::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_invert)
+      *w = widget::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__flag_Invert)
       widget::SetState(*w, 5000)
-      widget::Text(300+10, 140+90, 250, 20, "TrackBar Ticks", #__flag_Textcenter)
+      widget::Text(300+10, 140+90, 250, 20, "TrackBar Ticks", #__text_Center)
       ;     widget::Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
       *w = widget::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
       widget::SetState(*w, 60)
-      widget::Text(300+60, 140+160, 200, 20, "TrackBar Vertical", #__flag_Textright)
+      widget::Text(300+60, 140+160, 200, 20, "TrackBar Vertical", #__text_Right)
       *w = widget::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
       widget::SetState(*w, 8000)
-      *w = widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_invert)
+      *w = widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__flag_Vertical|#__flag_Invert)
       widget::SetState(*w, 8000)
       
       
@@ -92,15 +92,15 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
       
       ; example_3 progress widget bar
-      widget::Text(300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#__flag_Textcenter)
+      widget::Text(300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#__text_Center)
       *w = widget::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
       widget::SetState   (*w,  50)  
-      *w = widget::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_invert, 4)
+      *w = widget::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__flag_Invert, 4)
       widget::SetState   (*w,  50)  
-      widget::Text(300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#__flag_Textright)
+      widget::Text(300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#__text_Right)
       *w = widget::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
       widget::SetState   (*w, 100)   
-      *w = widget::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_invert)
+      *w = widget::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__flag_Vertical|#__flag_Invert)
       widget::SetState   (*w, 100)   
       
       
@@ -193,18 +193,18 @@ CompilerIf #PB_Compiler_IsMainFile
       
       AddItem(Button_1, -1, "Panel_1") 
       widget::Container(20,10,200,100)
-      widget::Button(20, 5, 100, 30, text)
+      widget::Button(20, 5, 100, 30, Text)
       
-      Define panel = widget::Panel(20,30,200,100)
-      AddItem(panel, -1, "Panel_0") 
-      widget::Button(10, 10, 100, 30, text)
-      AddItem(panel, -1, "Panel_1") 
-      widget::Button(20, 20, 100, 30, text)
+      Define Panel = widget::Panel(20,30,200,100)
+      AddItem(Panel, -1, "Panel_0") 
+      widget::Button(10, 10, 100, 30, Text)
+      AddItem(Panel, -1, "Panel_1") 
+      widget::Button(20, 20, 100, 30, Text)
       widget::CloseList()
       widget::CloseList()
       
       AddItem(Button_1, -1, "tab_2") 
-      Define *Tab = widget::Tab(0,0,0,0, 0, #__flag_autosize|#__bar_vertical); No need to specify size or coordinates
+      Define *Tab = widget::Tab(0,0,0,0, 0, #__flag_autosize|#__flag_Vertical); No need to specify size or coordinates
       widget::AddItem(*Tab, -1, "Tab_0")
       widget::AddItem(*Tab, -1, "Tab_1 (long)")
       widget::AddItem(*Tab, -1, "Tab_2")
@@ -283,7 +283,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Button_2 = widget::ScrollArea(0, 0, 0, 0, 150, 150, 1) : widget::CloseList()        ; as they will be sized automatically
       Button_3 = widget::Progress(0, 0, 0, 0, 0, 100, 30)                                 ; as they will be sized automatically
       
-      Button_4 = widget::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
+      Button_4 = widget::Spin(0, 0, 0, 0, 50,100, #__flag_Vertical) ; as they will be sized automatically
       Button_5 = widget::Tab(0, 0, 0, 0, 0)                        ; No need to specify size or coordinates
       widget::AddItem(Button_5, -1, "Tab_0")
       widget::AddItem(Button_5, -1, "Tab_1 (long)")
@@ -321,7 +321,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
-; FirstLine = 4
+; CursorPosition = 69
+; FirstLine = 53
 ; Folding = 0-
 ; EnableXP

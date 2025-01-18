@@ -85,22 +85,22 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
     
     If Open(0, 320,0,320,200)
        Spin(10, 30, 250, 18, 0, 30)
-       Spin(10, 30+18+1, 250, 21, 0, 30, #__flag_Textcenter)
-       Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__flag_Textright)
+       Spin(10, 30+18+1, 250, 21, 0, 30, #__text_Center)
+       Spin(10, 30+18+1+21+1, 250, 25, 0, 30, #__text_Right)
        SetState(ID(0), 0)
        SetState(ID(1), 15)
        SetState(ID(2), 30)
        
        Spin(10, 120, 250, 25, 5, 30, #__spin_Plus)
-       Spin(270, 10, 40, 180, 5, 30, #__spin_Plus|#__bar_vertical);|#__bar_invert)
+       Spin(270, 10, 40, 180, 5, 30, #__spin_Plus|#__flag_Vertical);|#__flag_Invert)
        SetState(widget( ), 5000)
        
        ; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
        ; ; ;   SetState(ID(2), 8000)
        
-       Text(10,  10, 250, 20,"Spin Standard", #__flag_Textcenter)
-       Text(10, 100, 250, 20, "Spin plus&minus", #__flag_Textcenter)
-       ;   Text(90, 180, 200, 20, "Spin Vertical", #__flag_Textright)
+       Text(10,  10, 250, 20,"Spin Standard", #__text_Center)
+       Text(10, 100, 250, 20, "Spin plus&minus", #__text_Center)
+       ;   Text(90, 180, 200, 20, "Spin Vertical", #__text_Right)
        
        ;Bind(#PB_All, @events_widgets())
        
@@ -112,8 +112,8 @@ If OpenWindow(0, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_W
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 25
+; CursorPosition = 101
+; FirstLine = 83
 ; Folding = --
 ; EnableXP
 ; DPIAware

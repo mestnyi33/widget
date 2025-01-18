@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   #__round = 7
-  #__Bar_Inverted = #__Bar_Invert ;: #__Bar_NoButtons = #__bar_buttonsize
+  #__flag_Inverted = #__flag_Invert ;: #__flag_NoButtons = #__bar_buttonsize
  
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 16)
@@ -99,38 +99,38 @@ CompilerIf #PB_Compiler_IsMainFile
     Tree(5, 215, 150, 150, #__flag_Checkboxes)
     For i=0 To 10;20
       If i=3 Or i=8 Or i=14
-        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
+        AddItem(widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
       Else
-        AddItem(Widget(), i, "item_"+ Str(i))
+        AddItem(widget(), i, "item_"+ Str(i))
       EndIf
     Next
     
     Panel     (160, 5, 150, 100)
     For i=0 To 10
-      AddItem (Widget(), -1, "item_"+Str(i))
+      AddItem (widget(), -1, "item_"+Str(i))
     Next
     CloseList()
-    SetState(Widget(), 5)
+    SetState(widget(), 5)
     
     ; demo editor
     Editor(320, 5, 150, 100)
-    SetText(Widget(), Text.s) 
+    SetText(widget(), Text.s) 
     Define a
     For a = 0 To 2
-      AddItem(Widget(), a, "Line "+Str(a))
+      AddItem(widget(), a, "Line "+Str(a))
     Next
-    AddItem(Widget(), a, "")
+    AddItem(widget(), a, "")
     For a = 4 To 6
-      AddItem(Widget(), a, "Line "+Str(a))
+      AddItem(widget(), a, "Line "+Str(a))
     Next
     ;SetFont(*g, FontID(0))
     
     Tree(160, 110, 150, 100, #__flag_Checkboxes)
     For i=0 To 20
       If i=3
-        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
+        AddItem(widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
       Else
-        AddItem(Widget(), i, "item_"+ Str(i))
+        AddItem(widget(), i, "item_"+ Str(i))
       EndIf
     Next
     
@@ -162,47 +162,47 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     
     ; demo bar type
-    Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1")), Button(0, 0, 0, 0,"кнопка 2", #__bar_Vertical), #PB_Splitter_Vertical) 
-    ;Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3 "+#CRLF$+"кнопка 33", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1 "+#CRLF$+"кнопка 11")), Button(0, 0, 0, 0,"кнопка 2 "+#CRLF$+"кнопка 22", #__bar_Vertical), #PB_Splitter_Vertical) 
+    Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1")), Button(0, 0, 0, 0,"кнопка 2", #__flag_Vertical), #PB_Splitter_Vertical) 
+    ;Splitter(320, 215, 150, 150, Splitter(0, 0, 0, 0, HyperLink(0, 0, 0, 0,"кнопка 3 "+#CRLF$+"кнопка 33", $FF00FF00), Button(0, 0, 0, 0,"кнопка 1 "+#CRLF$+"кнопка 11")), Button(0, 0, 0, 0,"кнопка 2 "+#CRLF$+"кнопка 22", #__flag_Vertical), #PB_Splitter_Vertical) 
     
     Spin(5, 365+5, 150, 30, 0, 20)
-    SetState(Widget(), 5)
-    Spin(5, 365+40, 150, 30, 0, 20, #__bar_Vertical)
-    SetState(Widget(), 5)
+    SetState(widget(), 5)
+    Spin(5, 365+40, 150, 30, 0, 20, #__flag_Vertical)
+    SetState(widget(), 5)
     Spin(5, 365+75, 150, 30, 0, 21);, #__bar_Reverse)
-    SetState(Widget(), 5)
+    SetState(widget(), 5)
     
     Scroll(160, 370, 150, 20, 0, 50, 30)
-    SetState(Widget(), 5)
-    Scroll(160, 370+25, 150, 10, 0, 50, 30, #__bar_Invert)
-    SetState(Widget(), 5)
+    SetState(widget(), 5)
+    Scroll(160, 370+25, 150, 10, 0, 50, 30, #__flag_Invert)
+    SetState(widget(), 5)
     
     Track(160, 370+53, 150, 20, 0, 20, #PB_TrackBar_Ticks,0)
-    SetState(Widget(), 5)
-    Track(160, 370+53+25, 150, 20, 0, 20, #__bar_Invert,0)
-    SetState(Widget(), 5)
+    SetState(widget(), 5)
+    Track(160, 370+53+25, 150, 20, 0, 20, #__flag_Invert,0)
+    SetState(widget(), 5)
     
     Progress(160, 370+105, 150, 20, 0, 20)
-    SetState(Widget(), 5)
-    Progress(160, 370+105+25, 150, 10, 0, 20, #__bar_Invert)
-    SetState(Widget(), 5)
+    SetState(widget(), 5)
+    Progress(160, 370+105+25, 150, 10, 0, 20, #__flag_Invert)
+    SetState(widget(), 5)
     
-    Scroll(320, 370, 20, 150, 0, 50, 30, #__bar_Vertical, #__round+2)
-    SetState(Widget(), 5)
-    Scroll(320+25, 370, 10, 150, 0, 50, 30, #__bar_Vertical|#__bar_Invert, #__round/2+2)
-    SetState(Widget(), 5)
+    Scroll(320, 370, 20, 150, 0, 50, 30, #__flag_Vertical, #__round+2)
+    SetState(widget(), 5)
+    Scroll(320+25, 370, 10, 150, 0, 50, 30, #__flag_Vertical|#__flag_Invert, #__round/2+2)
+    SetState(widget(), 5)
     
-    Track(320+53, 370, 20, 150, 0, 20, #__bar_Vertical, #__round);|#__bar_Invert)
-    SetState(Widget(), 5)
-    Track(320+53+25, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
-    SetAttribute(Widget(), #__bar_Invert, 0)
-    SetState(Widget(), 5)
+    Track(320+53, 370, 20, 150, 0, 20, #__flag_Vertical, #__round);|#__flag_Invert)
+    SetState(widget(), 5)
+    Track(320+53+25, 370, 20, 150, 0, 20, #__flag_Vertical, #__round)
+    SetAttribute(widget(), #__flag_Invert, 0)
+    SetState(widget(), 5)
     
-    Progress(320+105, 370, 20, 150, 0, 20, #__bar_Vertical, #__round)
-    SetAttribute(Widget(), #__bar_Invert, 0)
-    SetState(Widget(), 5)
-    Progress(320+105+25, 370, 10, 150, 0, 20, #__bar_Vertical|#__bar_Invert, #__round/2)
-    SetState(Widget(), 5)
+    Progress(320+105, 370, 20, 150, 0, 20, #__flag_Vertical, #__round)
+    SetAttribute(widget(), #__flag_Invert, 0)
+    SetState(widget(), 5)
+    Progress(320+105+25, 370, 10, 150, 0, 20, #__flag_Vertical|#__flag_Invert, #__round/2)
+    SetState(widget(), 5)
     
     
     ;         Scroll(160, 370, 150, 40, 0, 50, 30)
@@ -212,11 +212,11 @@ CompilerIf #PB_Compiler_IsMainFile
     ;         Progress(160, 370+110, 150, 40, 0, 20)
     ;         SetState(Widget(), 5)
     ;         
-    ;         Scroll(320, 370, 40, 150, 0, 50, 30, #__bar_Vertical)
+    ;         Scroll(320, 370, 40, 150, 0, 50, 30, #__flag_Vertical)
     ;         SetState(Widget(), 5)
-    ;         Track(320+55, 370, 40, 150, 0, 20, #__bar_Vertical)
+    ;         Track(320+55, 370, 40, 150, 0, 20, #__flag_Vertical)
     ;         SetState(Widget(), 5)
-    ;         Progress(320+110, 370, 40, 150, 0, 20, #__bar_Vertical)
+    ;         Progress(320+110, 370, 40, 150, 0, 20, #__flag_Vertical)
     ;         SetState(Widget(), 5)
   EndIf
   
@@ -228,7 +228,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 203
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = --
 ; EnableXP

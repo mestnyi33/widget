@@ -164,18 +164,18 @@ CompilerIf #PB_Compiler_IsMainFile
          Case 2
             If GetGadgetState(2)
                   SetGadgetText(2, "vertical bar")
-              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
+              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__flag_Invert))
             Else
                 SetGadgetText(2, "horizontal bar")
-                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
+                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__flag_Invert))
             EndIf
             
          Case 3
             If GetGadgetState(2)
-               SetAttribute(*mdi\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
+               SetAttribute(*mdi\scroll\v, #__flag_Invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
             Else
-               SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
+               SetAttribute(*mdi\scroll\h, #__flag_Invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
            
@@ -301,8 +301,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 168
+; CursorPosition = 177
+; FirstLine = 162
 ; Folding = ------
 ; EnableXP
 ; DPIAware

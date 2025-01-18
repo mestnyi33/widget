@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseModule widget
    UseModule constants
    
-   Global  flags ;= #__Bar_Invert
+   Global  flags ;= #__flag_Invert
    Global.i gEvent, gQuit, g_Canvas
    Global *progress, *scroll, *track, *splitter, *spin, *bar
    
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
             g_Canvas  = GetCanvasGadget(root())
             Frame( 0,0,0,0, "demo bars", #__flag_autosize)
             *track    = Track(15, 10, 350, 30, min, 50, flags)
-            *splitter = Splitter(15, 10 + 35 * 1, 350, 30, -1,  -1, flags | #__Bar_Vertical)
+            *splitter = Splitter(15, 10 + 35 * 1, 350, 30, -1,  -1, flags | #__flag_Vertical)
             *progress = Progress(15, 10 + 35 * 2 , 350, 30, min, 50, flags)
             *scroll   = Scroll(15, 10 + 35 * 3, 350, 30, min, 50, 8, flags)
             *spin     = Spin(15, 10 + 35 * 4, 350, 30, min, 50, 8, flags)
@@ -48,12 +48,12 @@ CompilerIf #PB_Compiler_IsMainFile
             SetState(*track, min+2)
             SetState(*scroll, min+2)
             
-            SetGadgetState(0, GetAttribute(*scroll, #__Bar_Invert))
+            SetGadgetState(0, GetAttribute(*scroll, #__flag_Invert))
             SetWindowTitle(0, Str(GetState(*scroll)))
             
             ;*bar = Scroll(15, 20+35*5, 350, 20, min, 50, 8)
             *bar = Track(15, 20 + 35 * 5, 350, 20, min, 50)
-            ;*bar = Splitter(15, 20+35*5, 350, 30, -1,-1, #__Bar_Vertical)
+            ;*bar = Splitter(15, 20+35*5, 350, 30, -1,-1, #__flag_Vertical)
             SetState(*bar, min+2)
             
             Bind( *bar, @events_widgets( ), #__event_Change )
@@ -74,11 +74,11 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select EventGadget()
                Case 0
-                  SetAttribute(*scroll, #__Bar_Invert, GetGadgetState(0))
-                  SetAttribute(*spin, #__Bar_Invert, GetGadgetState(0))
-                  SetAttribute(*splitter, #__Bar_Invert, GetGadgetState(0))
-                  SetAttribute(*progress, #__Bar_Invert, GetGadgetState(0))
-                  SetAttribute(*track, #__Bar_Invert, GetGadgetState(0))
+                  SetAttribute(*scroll, #__flag_Invert, GetGadgetState(0))
+                  SetAttribute(*spin, #__flag_Invert, GetGadgetState(0))
+                  SetAttribute(*splitter, #__flag_Invert, GetGadgetState(0))
+                  SetAttribute(*progress, #__flag_Invert, GetGadgetState(0))
+                  SetAttribute(*track, #__flag_Invert, GetGadgetState(0))
                   SetWindowTitle(0, Str(GetState(*scroll)))
                   
                   If GetGadgetState(0)
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 10
+; CursorPosition = 55
+; FirstLine = 51
 ; Folding = --
 ; EnableXP

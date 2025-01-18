@@ -411,10 +411,18 @@
     #__flag_BorderSingle    = 1<<29  
     ; #__flag_ = 1<<30
     #__flag_Borderless      = 1<<31
+    #__flag_Transparent     = 1<<34
     #__flag_Invert          = 1<<32
     #__flag_Vertical        = 1<<33
-    #__flag_Transparent     = 1<<34
+    ;
+    #__flag_ThreeState      = 1<<46
+    #__flag_Child           = 1<<47
+    ;
+    #__flag_NoFocus         = 1<<48
+    #__flag_NoLines         = 1<<44
+    #__flag_NoButtons       = 1<<45
     #__flag_NoScrollBars    = 1<<35
+    ;
     #__flag_TextNumeric     = 1<<36
     #__flag_TextReadonly    = 1<<37
     #__flag_TextLowerCase   = 1<<38
@@ -423,12 +431,6 @@
     #__flag_TextWordWrap    = 1<<41
     #__flag_TextMultiLine   = 1<<42
     #__flag_TextInLine      = 1<<43
-    #__flag_NoLines         = 1<<44
-    #__flag_NoButtons       = 1<<45
-    #__flag_ThreeState      = 1<<46
-    ;
-    #__flag_Child           = 1<<47
-    #__flag_NoFocus         = 1<<48
     ; #__flag_              = 1<<49
     ; #__flag_              = 1<<50
     ; #__flag_              = 1<<51
@@ -450,6 +452,16 @@
     #__align_auto           = 1<<63
     #__align_none           = 0
     
+    #__flag_Left             = #__align_Left
+    #__flag_Top              = #__align_Top
+    #__flag_Right            = #__align_Right
+    #__flag_Bottom           = #__align_Bottom
+    #__flag_Center           = #__align_Center
+    #__flag_AutoSize         = #__align_Auto
+    ;
+    #__flag_NoGadgets        = #__flag_NoButtons
+    #__flag_RowClickSelect   = #__flag_ButtonToggle ; 1<<3 ; 8
+    
     ;-
     ;-\\ Bar
     ; attribute
@@ -459,10 +471,6 @@
     #__Bar_ScrollStep        = 5
     #__Bar_ButtonSize        = 6
     #__Bar_Direction         = 7
-    ; flag
-    #__Bar_Invert            = #__flag_Invert
-    #__Bar_Vertical          = #__flag_Vertical
-    #__Bar_NoButtons         = #__flag_NoButtons 
     
     ;-\\ Window
     ; constant
@@ -495,41 +503,36 @@
     #__tree_Collapsed        = #__flag_Collapsed
     #__tree_OptionBoxes      = #__flag_OptionBoxes
     
-    #__tree_property         = 1<<63
+    #__tree_property         = 1<<50
     
     ;-\\ Spin
-    #__spin_vertical         = #__Bar_vertical
+    #__spin_Vertical         = #__Flag_Vertical
     #__spin_Left             = 1<<1
     #__spin_Right            = 1<<2
-    #__spin_plus             = 1<<3
-    #__spin_mirror           = 1<<4
+    #__spin_Plus             = 1<<3
+    #__spin_Mirror           = 1<<4
     
     ;-\\ Text
-    #__text_Update           = - 124
-    #__flag_Textinvert       = #__flag_Invert
-    #__flag_Textvertical     = #__flag_vertical
+    #__text_Invert           = #__flag_Invert
+    #__text_Vertical         = #__flag_Vertical
     ;  alignment
-    #__flag_Textleft         = #__align_text|#__align_Left
-    #__flag_Texttop          = #__align_text|#__align_top
-    #__flag_Textright        = #__align_text|#__align_Right
-    #__flag_Textbottom       = #__align_text|#__align_Bottom
-    #__flag_Textcenter       = #__align_text|#__align_Center
+    #__text_Left             = #__align_text|#__align_Left
+    #__text_Top              = #__align_text|#__align_Top
+    #__text_Right            = #__align_text|#__align_Right
+    #__text_Bottom           = #__align_text|#__align_Bottom
+    #__text_Center           = #__align_text|#__align_Center
     
     ;-\\ Image
     #__Image_Released        = 1
-    #__Image_pressed         = 2
+    #__Image_Pressed         = 2
     #__Image_Background      = 3
     ;  alignment
-    #__flag_ImageLeft        = #__align_image|#__align_Left
-    #__flag_ImageTop         = #__align_image|#__align_top
-    #__flag_ImageRight       = #__align_image|#__align_Right
-    #__flag_ImageBottom      = #__align_image|#__align_Bottom
-    #__flag_ImageCenter      = #__align_image|#__align_Center
+    #__image_Left            = #__align_image|#__align_Left
+    #__image_Top             = #__align_image|#__align_top
+    #__image_Right           = #__align_image|#__align_Right
+    #__image_Bottom          = #__align_image|#__align_Bottom
+    #__image_Center          = #__align_image|#__align_Center
     
-    
-    #__flag_RowClickSelect   = #__flag_ButtonToggle ; 1<<3 ; 8
-    #__flag_NoGadgets        = #__flag_NoButtons
-    #__flag_AutoSize         = #__align_auto
     
     
     ; Debug #PB_Checkbox_Unchecked ; 0
@@ -741,8 +744,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 523
-; FirstLine = 508
+; CursorPosition = 516
+; FirstLine = 511
 ; Folding = ----
 ; Optimizer
 ; EnableXP

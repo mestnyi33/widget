@@ -49,8 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Scroll   (270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
       SetState (ID(1), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
       
-      Text     (10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#__flag_Textcenter)
-      Text     (10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#__flag_Textright)
+      Text     (10, 10, 250,  30, "ScrollBar Standard  (start=50, page=30/100)",#__text_Center)
+      Text     (10,105, 250,  30, "ScrollBar Vertical  (start=100, page=50/300)",#__text_Right)
       
       For i = 0 To 1
          Bind  (ID(i), @events_widgets())
@@ -60,8 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23
-; FirstLine = 18
+; CursorPosition = 51
+; FirstLine = 37
 ; Folding = --
 ; Optimizer
 ; EnableXP

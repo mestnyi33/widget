@@ -77,8 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     Button( 10+222, 10, 200, 20, "Standard button", #__flag_ButtonDefault,-1,8 )
-    Button( 10+222, 40, 200, 20, "Left button", #__flag_TextLeft )
-    Button( 10+222, 70, 200, 20, "Right button", #__flag_TextRight )
+    Button( 10+222, 40, 200, 20, "Left button", #__text_left )
+    Button( 10+222, 70, 200, 20, "Right button", #__text_Right )
     Button( 10+222,100, 200, 60, "Default button and change font", #__flag_ButtonDefault, -1,4 )
     SetFont(widget(), FontID(0))
     Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline, -1,4 )
@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
      SetColor( *Button_0, #__Color_Front, $4919D5 ) 
 ;     SetFont( *Button_0, FontID( 10 ) )
     
-    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #__flag_Textmultiline|#__flag_Textvertical|#__flag_Textinvert )
+    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #__flag_Textmultiline|#__text_Vertical|#__text_Invert )
      SetColor( *Button_1, #__Color_Front, $FFD56F1A )
 ;     SetFont( *Button_1, FontID( 10 ) )
     
@@ -143,8 +143,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 83
+; CursorPosition = 80
+; FirstLine = 76
 ; Folding = ---
 ; Optimizer
 ; EnableXP

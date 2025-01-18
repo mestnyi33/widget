@@ -5,14 +5,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   Global Event.i, MyCanvas, *spl1,*spl2
-  Global x=100,y=100, width=420, height=420 , focus
+  Global X=100,Y=100, Width=420, Height=420 , focus
   
   Procedure ScrollBars_ChangeEvents( )
      Debug " ---- " + ClassFromEvent( WidgetEvent( ))
   EndProcedure
   
   
-  If Not OpenWindow(0, 0, 0, width+x*2+20, height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
@@ -27,8 +27,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug " * "+Width(*mdi, #__c_inner)+" "+Height(*mdi, #__c_inner)
   
   ; add childrens to mdi gadget
-  Define *g0 = Button(20, 20, 288,212, "button", #__flag_Textleft|#__flag_Texttop)
-  Define *g1 = Button(50, 50, 288,212, "button", #__flag_Textleft|#__flag_Texttop)
+  Define *g0 = Button(20, 20, 288,212, "button", #__text_left|#__text_Top)
+  Define *g1 = Button(50, 50, 288,212, "button", #__text_left|#__text_Top)
   
   ; Debug " - test parent - mdi show and size scroll bars - "
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,308,232 )
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 22
+; CursorPosition = 30
+; FirstLine = 25
 ; Folding = -
 ; EnableXP

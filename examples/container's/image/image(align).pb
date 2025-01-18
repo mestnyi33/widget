@@ -16,17 +16,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Define i, Width = 200
    
    If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      Image(10,  10, Width, 65, Image, #__flag_BorderFlat);, #__flag_ImageLeft)
-      Image(10,  10+65+10, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageTop)
-      Image(10, 160, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageRight)
-      Image(10, 160+65+10, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageBottom)
+      Image(10,  10, Width, 65, Image, #__flag_BorderFlat);, #__image_Left)
+      Image(10,  10+65+10, Width, 65, Image, #__flag_BorderFlat|#__image_Top)
+      Image(10, 160, Width, 65, Image, #__flag_BorderFlat|#__image_Right)
+      Image(10, 160+65+10, Width, 65, Image, #__flag_BorderFlat|#__image_Bottom)
       
-      Image(10, 310, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageCenter|#__flag_ImageLeft)
-      Image(10, 310+65+10, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageCenter|#__flag_ImageTop)
-      Image(10, 460, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageCenter|#__flag_ImageRight)
-      Image(10, 460+65+10, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageCenter|#__flag_ImageBottom)
+      Image(10, 310, Width, 65, Image, #__flag_BorderFlat|#__image_Center|#__image_Left)
+      Image(10, 310+65+10, Width, 65, Image, #__flag_BorderFlat|#__image_Center|#__image_Top)
+      Image(10, 460, Width, 65, Image, #__flag_BorderFlat|#__image_Center|#__image_Right)
+      Image(10, 460+65+10, Width, 65, Image, #__flag_BorderFlat|#__image_Center|#__image_Bottom)
       
-      Image(10, 610, Width, 140, Image, #__flag_BorderFlat|#__flag_ImageCenter)
+      Image(10, 610, Width, 140, Image, #__flag_BorderFlat|#__image_Center)
       
       For i=0 To 8
          SetAlign(ID(i), 0, 1,0,1,0)
@@ -38,8 +38,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 9
+; CursorPosition = 28
+; FirstLine = 16
 ; Folding = -
 ; EnableXP
 ; DPIAware

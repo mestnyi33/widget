@@ -22,15 +22,15 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g1, -1, "left 00000000000000000000000000000000000")
     SetState(*g1,0)
     
-    *g2 = ComboBox( 30+210, 30, 200, h, #__flag_Textcenter|#__flag_Texttop)
+    *g2 = ComboBox( 30+210, 30, 200, h, #__text_Center|#__text_Top)
     AddItem(*g2, -1, "0000000000000000000 center 00000000000000000000" )
     SetState(*g2,0)
     
-    *g3 = ComboBox( 30+420, 30, 200, h, #__flag_Textright|#__flag_Texttop)
+    *g3 = ComboBox( 30+420, 30, 200, h, #__text_Right|#__text_Top)
     AddItem(*g3, -1, "00000000000000000000000000000000000 right" )
     SetState(*g3,0)
     
-    *g4 = ComboBox( 30+420, 30, 200, h, #__flag_Textright|#__flag_Texttop)
+    *g4 = ComboBox( 30+420, 30, 200, h, #__text_Right|#__text_Top)
     AddItem(*g4, -1, "no editable" )
     AddItem(*g4, -1, "editable" )
     SetState(*g4,0)
@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 16
+; CursorPosition = 24
+; FirstLine = 20
 ; Folding = -
 ; EnableXP

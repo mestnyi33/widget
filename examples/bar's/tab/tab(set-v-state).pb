@@ -15,12 +15,12 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::Open(0, 10, 10, 390, 390, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
   
   ; first splitter
-  *w0 = widget::Tab(0, 0, 0, 0, #__bar_vertical )
+  *w0 = widget::Tab(0, 0, 0, 0, #__flag_Vertical )
   For i=0 To 3
     widget::AddItem(*w0, -1, "tab_0_"+Str(i))
   Next
   
-  *w1 = widget::Tab(0, 0, 0, 0, #__bar_vertical )
+  *w1 = widget::Tab(0, 0, 0, 0, #__flag_Vertical )
   For i=0 To 10
     widget::AddItem(*w1, -1, "tab_1_"+Str(i))
   Next
@@ -28,12 +28,12 @@ CompilerIf #PB_Compiler_IsMainFile
   *w2 = widget::Splitter(300, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   
   ; first splitter
-  *w3 = widget::Tab(0, 0, 0, 0, #__bar_vertical)
+  *w3 = widget::Tab(0, 0, 0, 0, #__flag_Vertical)
   For i=0 To 10
     widget::AddItem(*w3, -1, "tab_2_"+Str(i))
   Next
   
-  *w4 = widget::Tab(0, 0, 0, 0, #__bar_vertical)
+  *w4 = widget::Tab(0, 0, 0, 0, #__flag_Vertical)
   For i=0 To 10
     widget::AddItem(*w4, -1, "tab_3_"+Str(i))
   Next
@@ -47,13 +47,13 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::SetState(*w7, 250)
   
    
-  *w8 = widget::Tab(30, 210, 50, 150, #__bar_vertical)
+  *w8 = widget::Tab(30, 210, 50, 150, #__flag_Vertical)
   For i=0 To 10
     widget::AddItem(*w8, -1, "Tab "+Str(i))
   Next
   widget::bar_Tab_SetState(*w8, 6)
   
-  *w9 = widget::Panel(110, 210, 250, 150, #__bar_vertical)
+  *w9 = widget::Panel(110, 210, 250, 150, #__flag_Vertical)
   For i=0 To 10
     widget::AddItem(*w9, -1, "Sub "+Str(i))
     widget::Button(20, 60-3, 30, 30, Str(i))
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 35
+; FirstLine = 31
 ; Folding = -
 ; EnableXP

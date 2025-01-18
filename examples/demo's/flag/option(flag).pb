@@ -100,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
                button_bottom,
                button_center
             
-            Flag(*this, #__flag_Textleft|#__flag_Textright|#__flag_Texttop|#__flag_Textbottom, 0)
+            Flag(*this, #__text_left|#__text_Right|#__text_Top|#__text_Bottom, 0)
             ;
             If EventWidget <> button_top And EventWidget <> button_left And EventWidget <> button_right
               SetState(button_top,0) 
@@ -120,21 +120,21 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             If GetState(button_left) And GetState(button_bottom)
-              Flag(*this, #__flag_Textleft|#__flag_Textbottom, 1)
+              Flag(*this, #__text_left|#__text_Bottom, 1)
             ElseIf GetState(button_right) And GetState(button_bottom)
-              Flag(*this, #__flag_Textright|#__flag_Textbottom, 1)
+              Flag(*this, #__text_Right|#__text_Bottom, 1)
             ElseIf GetState(button_left) And GetState(button_top)
-              Flag(*this, #__flag_Textleft|#__flag_Texttop, 1)
+              Flag(*this, #__text_left|#__text_Top, 1)
             ElseIf GetState(button_right) And GetState(button_top)
-              Flag(*this, #__flag_Textright|#__flag_Texttop, 1)
+              Flag(*this, #__text_Right|#__text_Top, 1)
             ElseIf GetState(button_left)
-              Flag(*this, #__flag_Textleft, 1)
+              Flag(*this, #__text_left, 1)
             ElseIf GetState(button_right) 
-              Flag(*this, #__flag_Textright, 1)
+              Flag(*this, #__text_Right, 1)
             ElseIf GetState(button_bottom)
-              Flag(*this, #__flag_Textbottom, 1)
+              Flag(*this, #__text_Bottom, 1)
             ElseIf GetState(button_top)
-              Flag(*this, #__flag_Texttop, 1)
+              Flag(*this, #__text_Top, 1)
             EndIf
             
             If GetState(button_left)=0 And 
@@ -142,20 +142,20 @@ CompilerIf #PB_Compiler_IsMainFile
                GetState(button_right)=0 And
                GetState(button_bottom)=0
               SetState(button_center,1) 
-              Flag(*this, #__flag_Textcenter, 1)
+              Flag(*this, #__text_Center, 1)
             EndIf
             
             Select EventWidget
-              Case button_top       : flag = #__flag_Texttop     
-              Case button_left      : flag = #__flag_Textleft
-              Case button_right     : flag = #__flag_Textright
-              Case button_bottom    : flag = #__flag_Textbottom
-              Case button_center    : flag = #__flag_Textcenter
+              Case button_top       : flag = #__text_Top     
+              Case button_left      : flag = #__text_left
+              Case button_right     : flag = #__text_Right
+              Case button_bottom    : flag = #__text_Bottom
+              Case button_center    : flag = #__text_Center
             EndSelect
             ;
           ;Case button_toggle    : flag = #PB_Option_ThreeState
-          Case button_invert    : flag = #__flag_Textinvert
-          Case button_vertical  : flag = #__flag_Textvertical
+          Case button_invert    : flag = #__text_Invert
+          Case button_vertical  : flag = #__text_Vertical
         EndSelect
         
         If flag
@@ -227,7 +227,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;\\ set button toggled state
     SetState(button_multiline, Flag(*this, #__flag_Textmultiline))
-    SetState(button_left, Flag(*this, #__flag_Textleft))
+    SetState(button_left, Flag(*this, #__text_left))
     If Button_type
        Hide(Button_type, 1)
     EndIf
@@ -247,8 +247,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 243
-; FirstLine = 219
+; CursorPosition = 152
+; FirstLine = 140
 ; Folding = ----
 ; EnableXP
 ; DPIAware

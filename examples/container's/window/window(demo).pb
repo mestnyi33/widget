@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     CloseList()
     
-    *sp_0 = Splitter(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
+    *sp_0 = Splitter(0, 0, 0, 0, *f_1, *f_0, #__flag_Vertical)
     *sp_1 = Splitter(10, 10, 360, 360+25, *f_2, *sp_0)
     
     *f_4 = window(370+10, 10, 180,  70, "form_4 BorderLess", #__flag_BorderLess)
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 14
+; CursorPosition = 74
+; FirstLine = 70
 ; Folding = -
 ; EnableXP

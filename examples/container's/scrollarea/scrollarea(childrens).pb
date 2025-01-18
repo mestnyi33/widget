@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(10,  10, 230, 30,"Button 1")
     Button(50,  50, 230, 30,"Button 2") ;: SetAlign(widget(), #__align_right)
     Button(90,  90, 230, 30,"Button 3")
-    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__flag_Textright)
+    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_Right)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     *b = Button(Sw-130, Sh-30, 130, 30,"Button")
@@ -53,8 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 14
+; CursorPosition = 20
+; FirstLine = 16
 ; Folding = --
 ; EnableXP
 ; DPIAware

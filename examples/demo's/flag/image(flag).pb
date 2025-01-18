@@ -70,14 +70,14 @@ CompilerIf #PB_Compiler_IsMainFile
           Case f_1 : flag = #__flag_Textmultiline
           Case f_4 : flag = #__flag_ButtonToggle
             
-          Case f_5 : flag = #__flag_Texttop
+          Case f_5 : flag = #__text_Top
             ;SetState(f_6, 0)
-          Case f_2 : flag = #__flag_Textleft
-          Case f_3 : flag = #__flag_Textright
-          Case f_6 : flag = #__flag_Textbottom
+          Case f_2 : flag = #__text_left
+          Case f_3 : flag = #__text_Right
+          Case f_6 : flag = #__text_Bottom
             
-          Case f_7 : flag = #__flag_Textinvert
-          Case f_8 : flag = #__flag_Textvertical
+          Case f_7 : flag = #__text_Invert
+          Case f_8 : flag = #__text_Vertical
         EndSelect
         
         If flag
@@ -123,10 +123,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; set button toggled state
     SetState(f_1, Flag(*this, #__flag_Textmultiline))
-    SetState(f_5, Flag(*this, #__flag_Texttop))
-    SetState(f_2, Flag(*this, #__flag_Textleft))
-    SetState(f_3, Flag(*this, #__flag_Textright))
-    SetState(f_6, Flag(*this, #__flag_Textbottom))
+    SetState(f_5, Flag(*this, #__text_Top))
+    SetState(f_2, Flag(*this, #__text_left))
+    SetState(f_3, Flag(*this, #__text_Right))
+    SetState(f_6, Flag(*this, #__text_Bottom))
     
     If Button_type
        Hide(Button_type, 1)
@@ -147,8 +147,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 119
+; CursorPosition = 128
+; FirstLine = 105
 ; Folding = ---
 ; Optimizer
 ; EnableXP

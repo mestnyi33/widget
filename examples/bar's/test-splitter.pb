@@ -129,8 +129,8 @@ CompilerIf #PB_Compiler_IsMainFile
       create_test( 0, 30 )
       
       ;v
-      ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
-      v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
+      ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__flag_Invert)
+      v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__flag_Invert)
       SetBackgroundColor(widget(), $FF80BE8E)
       SetState(widget(), 120)
       Bind( widget(), @track_v_events( ), #__event_change )
@@ -159,8 +159,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 78
+; CursorPosition = 132
+; FirstLine = 80
 ; Folding = -vq--
 ; EnableXP
 ; DPIAware

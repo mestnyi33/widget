@@ -63,13 +63,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1) : SetClass( widget(), "2")
       ;SetFrame( Splitter_1, 20)
       
-      Button_0 = Button(10,140,110,80, "drag", #__flag_textleft) : SetClass( widget(), GetText(widget()))
+      Button_0 = Button(10,140,110,80, "drag", #__text_left) : SetClass( widget(), GetText(widget()))
       Button_1 = Button(60,150,80,40, "disable") : SetClass( widget(), GetText(widget()))
       Button_2 = Button(100,140,110,80, "Ibeam") : SetClass( widget(), GetText(widget())) 
       Button_3 = String(160,140,110,80, "framestring") : SetClass( widget(), GetText(widget())) 
       SetFrame( Button_3, 20)
       Button_4 = String(230,140,110,80, "string") : SetClass( widget(), GetText(widget())) 
-      Button_5 = Button(300,140,110,80, "drop", #__flag_textright) : SetClass( widget(), GetText(widget())) 
+      Button_5 = Button(300,140,110,80, "drop", #__text_Right) : SetClass( widget(), GetText(widget())) 
       
       Disable( Button_1, 1 )
       
@@ -91,8 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 55
+; CursorPosition = 71
+; FirstLine = 67
 ; Folding = --
 ; EnableXP
 ; DPIAware

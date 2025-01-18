@@ -249,7 +249,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*this, @widget_events());, #__event_Change)
       
       OpenList( *this )
-      *test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_textcenter| bug
+      *test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__text_Center| bug
       Bind( *test, @PropertiesButtonevents( ))                       ;, #__event_Change)
       CloseList( )
       
@@ -304,7 +304,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 300
-; FirstLine = 276
+; CursorPosition = 251
+; FirstLine = 247
 ; Folding = -------
 ; EnableXP

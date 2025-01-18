@@ -579,10 +579,10 @@ Procedure.s FlagFromFlag( Type, flag.i ) ;
    
    Select Type
       Case #__Type_Text
-         If flag & #__flag_TextCenter
+         If flag & #__text_Center
             flags + "#PB_Text_Center | "
          EndIf
-         If flag & #__flag_TextRight
+         If flag & #__text_Right
             flags + "#PB_Button_Right | "
          EndIf
          ;         If flag & #__flag_Textborder
@@ -1584,7 +1584,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;\\\ 
    Define ide_root2 ;= Open(1) : Define ide_g_canvas2 =  GetCanvasGadget(ide_root2)
    
-   ide_design_panel = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__bar_vertical ) : OpenList( ide_design_panel )
+   ide_design_panel = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__flag_Vertical ) : OpenList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
    ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
    SetColor( ide_design_MDI, #__color_back, RGBA(195, 156, 191, 255) )
@@ -1961,8 +1961,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1850
-; FirstLine = 1842
+; CursorPosition = 581
+; FirstLine = 577
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

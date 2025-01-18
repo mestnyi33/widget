@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
     If Open(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+    Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
     
     Button_0 = widget::Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
     widget::AddItem(Button_0, -1, "Tab_0")
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     widget::SetState(Button_0, 5)
     
-    Button_1 = widget::Tab(0, 0, 0, 0, #__bar_vertical)                  ; No need to specify size or coordinates
+    Button_1 = widget::Tab(0, 0, 0, 0, #__flag_Vertical)                  ; No need to specify size or coordinates
     widget::AddItem(Button_1, -1, "Tab_0")
     widget::AddItem(Button_1, -1, "Tab_1 (long)")
     widget::AddItem(Button_1, -1, "Tab_2")
@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     widget::SetState(Splitter_3, 55)
     ;     widget::SetState(Splitter_2, 15)
     
-    Define *panel_1 = Panel(8, 8+350, 306, 203, #__bar_vertical)
+    Define *panel_1 = Panel(8, 8+350, 306, 203, #__flag_Vertical)
     AddItem (*panel_1, -1, "Panel 1")
     Define *panel_2 = Panel(5, 5, 290, 166-30)
     AddItem(*panel_2, -1, "Sub 1")
@@ -111,8 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; CursorPosition = 82
+; FirstLine = 78
 ; Folding = --
 ; Optimizer
 ; EnableXP

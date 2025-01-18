@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
       _parent_\class = "Area"
       _parent_\fs = _frame_size_
       
-      _parent_\scroll\v = widget::Scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__bar_Vertical|_flag_, 11 )
+      _parent_\scroll\v = widget::Scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__flag_Vertical|_flag_, 11 )
       _parent_\scroll\h = widget::Scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
    EndMacro                                                  
    
@@ -375,18 +375,18 @@ CompilerIf #PB_Compiler_IsMainFile
                Case 2
                   If GetGadgetState(2)
                      SetGadgetText(2, "vertical bar")
-                     SetGadgetState(3, GetAttribute(*this\scroll\v, #__bar_invert))
+                     SetGadgetState(3, GetAttribute(*this\scroll\v, #__flag_Invert))
                   Else
                      SetGadgetText(2, "horizontal bar")
-                     SetGadgetState(3, GetAttribute(*this\scroll\h, #__bar_invert))
+                     SetGadgetState(3, GetAttribute(*this\scroll\h, #__flag_Invert))
                   EndIf
                   
                Case 3
                   If GetGadgetState(2)
-                     SetAttribute(*this\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
+                     SetAttribute(*this\scroll\v, #__flag_Invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\v)))
                   Else
-                     SetAttribute(*this\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
+                     SetAttribute(*this\scroll\h, #__flag_Invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
                   ReDraw( root( ))
@@ -410,7 +410,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 234
-; FirstLine = 273
+; CursorPosition = 56
+; FirstLine = 52
 ; Folding = ---------
 ; EnableXP

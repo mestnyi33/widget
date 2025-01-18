@@ -39,22 +39,22 @@ Procedure GetFlag( *this._s_WIDGET )
 EndProcedure
 
 
-Define flag.q = #__flag_TextLeft|#__flag_Texttop|#__flag_Textright;|#__flag_Textbottom
+Define flag.q = #__text_left|#__text_Top|#__text_Right;|#__text_Bottom
 
-Define flags.q = #__flag_Textbottom | flag
+Define flags.q = #__text_Bottom | flag
 
 ;RemoveFlag( )
-RemoveFlag( flags, #__flag_Texttop|#__flag_Textright )
+RemoveFlag( flags, #__text_Top|#__text_Right )
 
-Debug constants::BinaryFlag( flag, #__flag_TextLeft )
-Debug constants::BinaryFlag( flag, #__flag_Texttop )
-Debug constants::BinaryFlag( flag, #__flag_Textright )
-Debug constants::BinaryFlag( flag, #__flag_Textbottom )
+Debug constants::BinaryFlag( flag, #__text_left )
+Debug constants::BinaryFlag( flag, #__text_Top )
+Debug constants::BinaryFlag( flag, #__text_Right )
+Debug constants::BinaryFlag( flag, #__text_Bottom )
 Debug ""
-Debug constants::BinaryFlag( flags, #__flag_TextLeft )
-Debug constants::BinaryFlag( flags, #__flag_Texttop )
-Debug constants::BinaryFlag( flags, #__flag_Textright )
-Debug constants::BinaryFlag( flags, #__flag_Textbottom )
+Debug constants::BinaryFlag( flags, #__text_left )
+Debug constants::BinaryFlag( flags, #__text_Top )
+Debug constants::BinaryFlag( flags, #__text_Right )
+Debug constants::BinaryFlag( flags, #__text_Bottom )
 
 
 
@@ -68,11 +68,11 @@ Procedure Flag_Text( *this._s_WIDGET, flag.q )
   ;   
   
   If *this\type = #__type_Text
-    If constants::BinaryFlag( Flag, #__flag_Textinvert )
+    If constants::BinaryFlag( Flag, #__text_Invert )
       *this\text\invert = #True
     EndIf
     
-    If constants::BinaryFlag( Flag, #__flag_Textvertical )
+    If constants::BinaryFlag( Flag, #__text_Vertical )
       *this\text\vertical = #True
     EndIf
     
@@ -84,26 +84,26 @@ Procedure Flag_Text( *this._s_WIDGET, flag.q )
       *this\mode\multiSelect = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__flag_Textcenter )
+    If constants::BinaryFlag( flag, #__text_Center )
       *this\text\align\left = #False
       *this\text\align\top = #False
       *this\text\align\right = #False
       *this\text\align\bottom = #False
     EndIf
     
-    If constants::BinaryFlag( flag, #__flag_TextLeft )
+    If constants::BinaryFlag( flag, #__text_left )
       *this\text\align\left = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__flag_Texttop )
+    If constants::BinaryFlag( flag, #__text_Top )
       *this\text\align\top = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__flag_Textright )
+    If constants::BinaryFlag( flag, #__text_Right )
       *this\text\align\right = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__flag_Textbottom )
+    If constants::BinaryFlag( flag, #__text_Bottom )
       *this\text\align\bottom = #True
     EndIf
   EndIf
@@ -146,18 +146,18 @@ Procedure Flag_Button( *this._s_WIDGET, flag.q )
       *this\text\align\right = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__flag_Texttop )
+    If constants::BinaryFlag( flag, #__text_Top )
       *this\text\align\top = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__flag_Textbottom )
+    If constants::BinaryFlag( flag, #__text_Bottom )
       *this\text\align\bottom = #True
     EndIf
   EndIf
 EndProcedure
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 156
-; FirstLine = 125
+; CursorPosition = 86
+; FirstLine = 82
 ; Folding = -----
 ; EnableXP
 ; DPIAware

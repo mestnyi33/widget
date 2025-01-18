@@ -65,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  #__flag_TextLeft = #__flag_Textleft
-  #__flag_TextRight = #__flag_Textright
+  #__text_left = #__text_left
+  #__text_Right = #__text_Right
   
   Procedure example_1( )
     *root = Open( 1, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
@@ -82,14 +82,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     wlist(Hex(5)) = Button(55, 65, 80, 20, ">>|<<")    ; proportional  #proportion
     
-    wlist(Hex(6)) = Button(10, 90, 80, 20, ">>|", #__flag_TextRight) ; proportional
-    wlist(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__flag_TextLeft) ; proportional
+    wlist(Hex(6)) = Button(10, 90, 80, 20, ">>|", #__text_Right) ; proportional
+    wlist(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__text_left) ; proportional
     
-    wlist(Hex(8)) = Button(10, 115, 50, 20, ">>|", #__flag_TextRight) ; proportional
+    wlist(Hex(8)) = Button(10, 115, 50, 20, ">>|", #__text_Right) ; proportional
     wlist(Hex(9)) = Button(60, 115, 20, 20, "|")                    ; proportional
     wlist(Hex(10)) = Button(80, 115, 30, 20, "<<>>")                ; proportional
     wlist(Hex(11)) = Button(110, 115, 20, 20, "|")                  ; proportional
-    wlist(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__flag_TextLeft); proportional
+    wlist(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__text_left); proportional
     
     
     SetAlign(wlist(Hex(2)), 0, 0,1,0,#__align_proportional )    
@@ -494,9 +494,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 450
-; FirstLine = 121
-; Folding = -fg-
+; CursorPosition = 87
+; FirstLine = 64
+; Folding = --g-
 ; Optimizer
 ; EnableXP
 ; DPIAware

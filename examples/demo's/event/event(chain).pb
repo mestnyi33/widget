@@ -58,14 +58,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_Left2Click : AddItem(*view, -1, Space + "   2_click <<" + Trim(GetText(*eventWidget)) + ">>") : _2click = 2
     EndSelect
     
-    SetState(*view, countitems(*view) - 1)
+    SetState(*view, CountItems(*view) - 1)
   EndProcedure
   
   ;\\
   If Open(1, 0, 0, 260, 360, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *view = Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
-    *dragbutton = Button( 10, 280, 240, 70, "   drag", #__flag_TextLeft|#__flag_Textmultiline );| #__flag_ButtonToggle) 
+    *dragbutton = Button( 10, 280, 240, 70, "   drag", #__text_left|#__flag_Textmultiline );| #__flag_ButtonToggle) 
     ;EnableDDrop( *dragbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
     Bind(*dragbutton, @events_widgets(), #__event_LeftDown)
@@ -110,7 +110,7 @@ CompilerEndIf
 ; enter <<drag>>
 ; leave <<drag>>
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 38
+; CursorPosition = 67
+; FirstLine = 63
 ; Folding = --
 ; EnableXP

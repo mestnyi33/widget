@@ -18,7 +18,7 @@
   
   Procedure Window_0()
     Protected h = 35 * 5
-    Protected flag = 0;#__Bar_Inverted
+    Protected flag = 0;#__flag_Inverted
     Protected min = 0
     
     If OpenWindow(0, 0, 0, 400, 100 + h, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -38,7 +38,7 @@
       SetGadgetState(*track, min+2)
       SetGadgetState(*scroll, min+2)
       
-      ;         SetGadgetState(0, GetAttribute(*scroll, #__Bar_Inverted))
+      ;         SetGadgetState(0, GetAttribute(*scroll, #__flag_Inverted))
       ;         SetWindowTitle(0, Str(GetState(*scroll)))
       
       ;*bar = ScrollBarGadget(#PB_Any, 15, 20+35*5, 350, 20, min, 50, 8)
@@ -63,7 +63,7 @@
         
         Select EventGadget()
             ;           Case 0
-            ;             SetAttribute(*scroll, #__Bar_Inverted, GetGadgetState(0))
+            ;             SetAttribute(*scroll, #__flag_Inverted, GetGadgetState(0))
             ;             SetWindowTitle(0, Str(GetState(*scroll)))
             ;
             ;             If GetGadgetState(0)
@@ -85,8 +85,8 @@
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 57
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 65
+; FirstLine = 35
 ; Folding = --
 ; EnableXP

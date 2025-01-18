@@ -102,37 +102,37 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
             If EventWidget <> button_top 
-              Flag(*this, #__flag_Texttop, 0)
+              Flag(*this, #__text_Top, 0)
               SetState(button_top,0) 
             EndIf
             If EventWidget <> button_left 
-              Flag(*this, #__flag_Textleft, 0)
+              Flag(*this, #__text_left, 0)
               SetState(button_left,0) 
             EndIf
             If EventWidget <> button_right 
-              Flag(*this, #__flag_Textright, 0)
+              Flag(*this, #__text_Right, 0)
               SetState(button_right,0) 
             EndIf
             If EventWidget <> button_bottom 
-              Flag(*this, #__flag_Textbottom, 0)
+              Flag(*this, #__text_Bottom, 0)
               SetState(button_bottom,0) 
             EndIf
             If EventWidget <> button_center 
-              Flag(*this, #__flag_Textcenter, 0)
+              Flag(*this, #__text_Center, 0)
               SetState(button_center,0) 
             EndIf
             
             Select EventWidget
-              Case button_top       : flag = #__flag_Texttop     
-              Case button_left      : flag = #__flag_Textleft
-              Case button_right     : flag = #__flag_Textright
-              Case button_bottom    : flag = #__flag_Textbottom
-              Case button_center    : flag = #__flag_Textcenter
+              Case button_top       : flag = #__text_Top     
+              Case button_left      : flag = #__text_left
+              Case button_right     : flag = #__text_Right
+              Case button_bottom    : flag = #__text_Bottom
+              Case button_center    : flag = #__text_Center
             EndSelect
             ;
           ;Case button_toggle    : flag = #PB_ComboBox_ThreeState
-          Case button_invert    : flag = #__flag_Textinvert
-          Case button_vertical  : flag = #__flag_Textvertical
+          Case button_invert    : flag = #__text_Invert
+          Case button_vertical  : flag = #__text_Vertical
         EndSelect
         
         If flag
@@ -205,7 +205,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;\\ set button toggled state
     SetState(button_multiline, Flag(*this, #__flag_Textmultiline))
-    SetState(button_center, Flag(*this, #__flag_Textcenter))
+    SetState(button_center, Flag(*this, #__text_Center))
     If Button_type
        Hide(Button_type, 1)
     EndIf
@@ -226,8 +226,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 197
+; CursorPosition = 207
+; FirstLine = 184
 ; Folding = ----
 ; Optimizer
 ; EnableXP

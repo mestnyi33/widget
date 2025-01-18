@@ -7,10 +7,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Structure canvasitem
       img.i
-      x.i
-      y.i
-      width.i
-      height.i
+      X.i
+      Y.i
+      Width.i
+      Height.i
       alphatest.i
    EndStructure
    
@@ -19,12 +19,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Global *current=#False
    Global currentItemXOffset.i, currentItemYOffset.i
    Global Event.i, drag.i, hole.i
-   Global x=100,y=100, Width=420, Height=420 , focus
+   Global X=100,Y=100, Width=420, Height=420 , focus
    
    Global NewList Images.canvasitem()
    
    
-   Procedure.i HitTest (List Images.canvasitem(), x, y)
+   Procedure.i HitTest (List Images.canvasitem(), X, Y)
       Shared currentItemXOffset.i, currentItemYOffset.i
       Protected alpha.i, *current = #False
       Protected scroll_x ; = *this\scroll\h\bar\Page\Pos
@@ -32,14 +32,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If LastElement(Images()) ; search for hit, starting from end (z-order)
          Repeat
-            If x >= Images()\x - scroll_x And x < Images()\x+ Images()\width - scroll_x 
-               If y >= Images()\y - scroll_y And y < Images()\y + Images()\height - scroll_y
+            If X >= Images()\x - scroll_x And X < Images()\x+ Images()\width - scroll_x 
+               If Y >= Images()\y - scroll_y And Y < Images()\y + Images()\height - scroll_y
                   alpha = 255
                   
                   If Images()\alphatest And ImageDepth(Images()\img)>31
                      If StartDrawing(ImageOutput(Images()\img))
                         DrawingMode(#PB_2DDrawing_AlphaChannel)
-                        alpha = Alpha(Point(x-Images()\x - scroll_x, y-Images()\y - scroll_y)) ; get alpha
+                        alpha = Alpha(Point(X-Images()\x - scroll_x, Y-Images()\y - scroll_y)) ; get alpha
                         StopDrawing()
                      EndIf
                   EndIf
@@ -47,8 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
                   If alpha
                      MoveElement(Images(), #PB_List_Last)
                      *current = @Images()
-                     currentItemXOffset = x - Images()\x - scroll_x
-                     currentItemYOffset = y - Images()\y - scroll_y
+                     currentItemXOffset = X - Images()\x - scroll_x
+                     currentItemYOffset = Y - Images()\y - scroll_y
                      Break
                   EndIf
                EndIf
@@ -59,23 +59,23 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn *current
    EndProcedure
    
-   Procedure AddImage (List Images.canvasitem(), x, y, img, alphatest=0)
+   Procedure AddImage (List Images.canvasitem(), X, Y, img, alphatest=0)
       If AddElement(Images())
          Images()\img    = img
-         Images()\x          = x
-         Images()\y          = y
+         Images()\x          = X
+         Images()\y          = Y
          Images()\width  = ImageWidth(img)
          Images()\height = ImageHeight(img)
          Images()\alphatest = alphatest
       EndIf
    EndProcedure
    
-   AddImage(Images(),  x-80, y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
-   AddImage(Images(), x+100,y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp"))
+   AddImage(Images(),  X-80, Y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
+   AddImage(Images(), X+100,Y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp"))
    ;AddImage(Images(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    ;AddImage(Images(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    ;AddImage(Images(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
-   AddImage(Images(),  x+310,y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   AddImage(Images(),  X+310,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    
    hole = CreateImage(#PB_Any,100,100,32)
    If StartDrawing(ImageOutput(hole))
@@ -85,10 +85,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Circle(50,50,30,RGBA($00,$00,$00,$00))
       StopDrawing()
    EndIf
-   AddImage(Images(),x+170,y+70,hole,1)
+   AddImage(Images(),X+170,Y+70,hole,1)
    
    
-   Procedure bar_area_resize_( *this._S_widget, x.l, y.l, width.l, height.l )
+   Procedure bar_area_resize_( *this._S_widget, X.l, Y.l, Width.l, Height.l )
       If ( *this\width = 0 And *this\height = 0)
          If *this\scroll
             *this\scroll\v\hide = #True
@@ -102,26 +102,26 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Protected v1, h1, x1 = *this\x[#__c_container], y1 = *this\y[#__c_container], width1 = *this\width[#__c_container], height1 = *this\height[#__c_container], iwidth, iheight, w, h
          If Not \v Or Not \h : ProcedureReturn : EndIf
          
-         If x = #PB_Ignore
-            x = \h\x[#__c_container]
+         If X = #PB_Ignore
+            X = \h\x[#__c_container]
          EndIf
-         If y = #PB_Ignore
-            y = \v\y[#__c_container]
+         If Y = #PB_Ignore
+            Y = \v\y[#__c_container]
          EndIf
-         If width = #PB_Ignore
-            width = \v\x[#__c_frame] - \h\x[#__c_frame] + \v\width[#__c_frame]
+         If Width = #PB_Ignore
+            Width = \v\x[#__c_frame] - \h\x[#__c_frame] + \v\width[#__c_frame]
          EndIf
-         If height = #PB_Ignore
-            height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame]
+         If Height = #PB_Ignore
+            Height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame]
          EndIf
          
-         w = Bool( *this\scroll_width( ) > width )
-         h = Bool( *this\scroll_height( ) > height )
+         w = Bool( *this\scroll_width( ) > Width )
+         h = Bool( *this\scroll_height( ) > Height )
          
-         \v\bar\page\len = height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
-         \h\bar\page\len = width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
+         \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
+         \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
          
-         iheight = height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
+         iheight = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
          If \v\bar\page\len <> iheight
             \v\bar\AreaChange( ) = \v\bar\page\len - iheight
             \v\bar\page\len      = iheight
@@ -135,7 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
          EndIf
          
-         iwidth = width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
+         iwidth = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
          If \h\bar\page\len <> iwidth
             \h\bar\AreaChange( ) = \h\bar\page\len - iwidth
             \h\bar\page\len      = iwidth
@@ -149,17 +149,17 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
          EndIf
          
-         width + x
-         height + y
+         Width + X
+         Height + Y
          
-         If \v\x[#__c_frame] <> width - \v\width
+         If \v\x[#__c_frame] <> Width - \v\width
             v1 = 1
-            x1 = width - \v\width
+            x1 = Width - \v\width
          EndIf
          
-         If \h\y[#__c_frame] <> height - \h\height
+         If \h\y[#__c_frame] <> Height - \h\height
             h1 = 1
-            y1 = height - \h\height
+            y1 = Height - \h\height
          EndIf
          
          If \v\bar\max > \v\bar\page\len
@@ -207,10 +207,10 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          
          If v1
-            Resize( \v, x1 , y, #PB_Ignore, height1 )
+            Resize( \v, x1 , Y, #PB_Ignore, height1 )
          EndIf
          If h1
-            Resize( \h, x, y1, width1, #PB_Ignore )
+            Resize( \h, X, y1, width1, #PB_Ignore )
          EndIf
          
          
@@ -245,7 +245,7 @@ CompilerIf #PB_Compiler_IsMainFile
       PopListPosition(Images())
    EndMacro
    
-   Procedure Canvas_Draw(canvas.i, List Images.canvasitem())
+   Procedure Canvas_Draw(Canvas.i, List Images.canvasitem())
       ;If StartDrawing(CanvasOutput(canvas))
          DrawingMode(#PB_2DDrawing_Default)
          Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
@@ -262,7 +262,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          UnclipOutput()
          DrawingMode(#PB_2DDrawing_Outlined)
-         Box(x, y, Width, Height, RGB(0,255,255))
+         Box(X, Y, Width, Height, RGB(0,255,255))
          Box(*this\x[#__c_required], *this\y[#__c_required], *this\width[#__c_required], *this\height[#__c_required], RGB(255,0,255))
          Box(*this\x[#__c_required], *this\y[#__c_required], *this\scroll\h\bar\max, *this\scroll\v\bar\max, RGB(255,0,0))
          Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, RGB(255,255,0))
@@ -282,11 +282,11 @@ CompilerIf #PB_Compiler_IsMainFile
       
       widget::EventHandler( Canvas, Event )
       
-      MouseX = widget::Mouse( )\x
-      MouseY = widget::Mouse( )\y
+      MouseX = widget::mouse( )\x
+      MouseY = widget::mouse( )\y
       
-      Width = GadgetWidth(Canvas) - x*2
-      Height = GadgetHeight(Canvas) - y*2
+      Width = GadgetWidth(Canvas) - X*2
+      Height = GadgetHeight(Canvas) - Y*2
       
       Select Event
          Case #PB_EventType_LeftButtonUp : Drag = #False
@@ -314,7 +314,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   If Repaint
                      area_update( )
-                     bar_mdi_resize( *this, x, y, width, height)
+                     bar_mdi_resize( *this, X, Y, Width, Height)
                   EndIf
                EndIf
             EndIf
@@ -322,7 +322,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #PB_EventType_Resize 
             ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
             area_update( )
-            bar_area_resize_( *this, x, y, width, height )
+            bar_area_resize_( *this, X, Y, Width, Height )
             ;bar_mdi_resize( *this, x, y, width, height)
             
             Repaint = #True
@@ -364,19 +364,19 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+   If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
       MessageRequester("Fatal error", "Program terminated.")
       End
    EndIf
    
    MyCanvas = GetCanvasGadget(Open(0, 10, 10)) 
    BindGadgetEvent(MyCanvas, @Canvas_CallBack())
-   Bind(root( ), @events_draw(), #__event_ReDraw)
+   Bind(root( ), @events_draw(), #__event_Draw)
    
-   *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_invert, 11)
-   *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, #__bar_invert, 11)
+   *this\scroll\v = widget::Scroll(X+Width-20, Y, 20, 0, 0, 0, Width-20, #__flag_Vertical|#__flag_Invert, 11)
+   *this\scroll\h = widget::Scroll(X, Y+Height-20, 0,  20, 0, 0, Height-20, #__flag_Invert, 11)
    
-   bar_mdi_resize( *this, x, y, width, height)
+   bar_mdi_resize( *this, X, Y, Width, Height)
             
    Bind(*this\scroll\v, @events_scrolls())
    Bind(*this\scroll\h, @events_scrolls())
@@ -386,8 +386,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 129
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 375
+; FirstLine = 174
 ; Folding = 8-+----0---
 ; EnableXP
