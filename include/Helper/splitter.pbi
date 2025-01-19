@@ -152,11 +152,11 @@ Procedure W_SH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_SizeGadg
   PostEvent(#PB_Event_SizeWindow, W_SH, #PB_Ignore)
   BindEvent(#PB_Event_SizeWindow, @W_SH_CallBack(), W_SH)
   
-  CompilerSelect #PB_Compiler_OS
-    CompilerCase #PB_OS_Windows
-      SendMessage_(GadgetID(G_SH_ComboBox_G1), #CB_SETMINVISIBLE, 10, 0)
-      SendMessage_(GadgetID(G_SH_ComboBox_G2), #CB_SETMINVISIBLE, 8, 0)
-  CompilerEndSelect
+;   CompilerSelect #PB_Compiler_OS
+;     CompilerCase #PB_OS_Windows
+;       SendMessage_(GadgetID(G_SH_ComboBox_G1), #CB_SETMINVISIBLE, 10, 0)
+;       SendMessage_(GadgetID(G_SH_ComboBox_G2), #CB_SETMINVISIBLE, 8, 0)
+;   CompilerEndSelect
   
   W_SH_SetLanguage(LanguageFile)
   ProcedureReturn W_SH
@@ -244,8 +244,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   Wend
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 222
-; FirstLine = 132
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 158
+; FirstLine = 138
 ; Folding = -----
 ; EnableXP

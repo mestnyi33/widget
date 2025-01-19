@@ -1572,6 +1572,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   edit_RemoveItem( *this, item )
       Declare   edit_ClearItems( *this )
       
+      Global img_indent = DPIScaled(10)
+      
       ;\\
       Macro Leaved( _address_ )
          Bool( _address_\_enter )
@@ -15994,9 +15996,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *this\text\rotate = 90
                            *this\__lines( )\text\y = 0
                         ElseIf *this\text\rotate = 180
-                           *this\__lines( )\text\y = *this\__lines( )\text\height + 2 ; Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\height
+                           *this\__lines( )\text\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\height
                         Else
-                           *this\__lines( )\text\y = - 3 ;Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                           *this\__lines( )\text\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
                         EndIf
                         
                         update_align_text_x( *this, *this\__lines( )\text, *this\scroll_width( ) )
@@ -16005,12 +16007,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *this\img\align
                            If *this\img\align\left
                               If *this\img\width
-                                 *this\__lines( )\text\x + DPIScaled(5) + *this\img\width
+                                 *this\__lines( )\text\x + img_indent + *this\img\width
                               EndIf
                            EndIf
                            If *this\img\align\top
                               If *this\img\height
-                                 *this\__lines( )\text\y + DPIScaled(5) + *this\img\height
+                                 *this\__lines( )\text\y + img_indent + *this\img\height
                               EndIf
                            EndIf
                         EndIf
@@ -16032,12 +16034,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; If *this\flag & #__flag_Center 
                     If *this\img\align\left Or *this\img\align\right
                         If *this\img\width
-                           *this\scroll_width( ) + DPIScaled(5) + *this\img\width
+                           *this\scroll_width( ) + img_indent + *this\img\width
                         EndIf
                      EndIf
                      If *this\img\align\top Or *this\img\align\bottom 
                         If *this\img\height
-                           *this\scroll_height( ) + DPIScaled(5) + *this\img\height
+                           *this\scroll_height( ) + img_indent + *this\img\height
                         EndIf
                      EndIf
                   ; EndIf
@@ -24384,8 +24386,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23486
-; FirstLine = 23011
+; CursorPosition = 1574
+; FirstLine = 1515
 ; Folding = -4----------------------------------------P----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-2---0---------------------------------------------8-----------------------------------------------------------4-4--------------------------v4---------------------------------f---------------v-----------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP

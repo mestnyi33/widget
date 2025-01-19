@@ -2,6 +2,8 @@
 
 EnableExplicit
 UseWidgets( )
+
+; test_draw_area = 1
    
 Global W_IH=-1, 
        G_IH_ScrollArea_0=-1,
@@ -27,24 +29,49 @@ Procedure UseImageDecoder( FullPathName$ )
   EndSelect
 EndProcedure
 
+If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png")
+   End
+EndIf
+
+If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png")
+   End
+EndIf
+
+If Not LoadImage(2, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png")
+   End
+EndIf
+
+If Not LoadImage(3, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png")
+   End
+EndIf
+
+If Not LoadImage(4, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+   End
+EndIf
+
+; If Not LoadImage(5, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cancel.png")
+;    End
+; EndIf
+  
+  
 Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCentered)
   If IsWindow(W_IH)
     SetActiveWindow(W_IH)
     ProcedureReturn W_IH
   EndIf
-  
-  W_IH = GetCanvasWindow(Open(#PB_Any, 398, 133, 386, 201, "ImageHelper", Flag, ParentID))                                                  
+  Protected i = 10, ii = 10
+  W_IH = GetCanvasWindow(Open(#PB_Any, 398, 133, 376+ii+i*2, 226+i*2, "ImageHelper", Flag, ParentID))                                                  
   ;G_IH_ScrollArea_0 = ScrollArea( 5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
-  G_IH_View = Image(5, 5, 291, 191, 0) 
+  G_IH_View = Image(i, i, 271, 225, (0),#__image_Center) 
   SetBackgroundColor( G_IH_View, $FFB3FDFF )
   ;CloseList( )
-  G_IH_Open = Button(300, 5, 81, 21, "Open")    
-  G_IH_Save = Button(300, 30, 81, 21, "Save")    
-  G_IH_Copy = Button(300, 65, 81, 21, "Copy")    
-  G_IH_Cut = Button(300, 90, 81, 21, "Cut")     
-  G_IH_Paste = Button(300, 115, 81, 21, "Paste")   
-  G_IH_Ok = Button(300, 150, 81, 21, "Ok")      
-  G_IH_Cancel = Button(300, 175, 81, 21, "Cancel")                                                               
+  G_IH_Open = Button(i+271+ii, i, 101, 25, "Open", #__image_left )       : SetImage(G_IH_Open, (0))
+  G_IH_Save = Button(i+271+ii, i+30, 101, 25, "Save", #__image_left )      : SetImage(G_IH_Save, (1))
+  G_IH_Copy = Button(i+271+ii, i+70, 101, 25, "Copy", #__image_left )      : SetImage(G_IH_Copy, (2))
+  G_IH_Cut = Button(i+271+ii, i+100, 101, 25, "Cut", #__image_left )        : SetImage(G_IH_Cut, (3))
+  G_IH_Paste = Button(i+271+ii, i+130, 101, 25, "Paste", #__image_left )   : SetImage(G_IH_Paste, (4)) 
+  G_IH_Ok = Button(i+271+ii, i+170, 101, 25, "Ok")         ;: SetImage(G_IH_Ok, (0))
+  G_IH_Cancel = Button(i+271+ii, i+200, 101, 25, "Cancel") ;: SetImage(G_IH_Cancel, (0))                                                            
   
   Bind( #PB_All, @W_IH_Events( ) )
   ProcedureReturn W_IH
@@ -98,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 30
+; CursorPosition = 62
+; FirstLine = 46
 ; Folding = ---
 ; EnableXP
