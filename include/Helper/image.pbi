@@ -52,7 +52,15 @@ EndIf
 ; If Not LoadImage(5, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cancel.png")
 ;    End
 ; EndIf
-  
+
+CompilerIf #PB_Compiler_DPIAware
+   ResizeImage(0, DesktopScaledX(ImageWidth(0)), DesktopScaledY(ImageHeight(0)), #PB_Image_Raw )
+   ResizeImage(1, DesktopScaledX(ImageWidth(1)), DesktopScaledY(ImageHeight(1)), #PB_Image_Raw )
+   ResizeImage(2, DesktopScaledX(ImageWidth(2)), DesktopScaledY(ImageHeight(2)), #PB_Image_Raw )
+   ResizeImage(3, DesktopScaledX(ImageWidth(3)), DesktopScaledY(ImageHeight(3)), #PB_Image_Raw )
+   ResizeImage(4, DesktopScaledX(ImageWidth(4)), DesktopScaledY(ImageHeight(4)), #PB_Image_Raw )
+CompilerEndIf
+
   
 Procedure W_IH_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCentered)
   If IsWindow(W_IH)
@@ -125,8 +133,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 62
+; CursorPosition = 61
 ; FirstLine = 46
-; Folding = ---
+; Folding = ----
 ; EnableXP
 ; DPIAware

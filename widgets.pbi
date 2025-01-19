@@ -608,7 +608,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;Macro EventIndex( ): EventWidget( )\index: EndMacro
       Macro EventWidget( ): widget::__gui\event\widget: EndMacro
       Macro WidgetEvent( ): widget::__gui\event\type: EndMacro
-      Macro WidgetEventType( ): ToPBEventType( widget::__gui\event\type ): EndMacro
+      Macro WidgetEventType( ): ToPBEventType( WidgetEvent( ) ): EndMacro
       Macro WidgetEventData( ): widget::__gui\event\data: EndMacro
       Macro WidgetEventItem( ): widget::__gui\event\item: EndMacro
       ;
@@ -12898,6 +12898,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro edit_select_line_( _this_, _address_, _index_ )
+         _address_\_focus = 0
+         _address_\ColorState( ) = 0
+         
+         _address_ = SelectElement( _this_\__lines( ), _index_ )
+         
+         If _address_
+            _address_\ColorState( ) = 1
+            _address_\_focus = 1
+         EndIf
+      EndMacro
+      
       Macro edit_sel_reset_( _this_ )
          If _this_\text\edit[2]\width <> 0
             ; вызывать если только строки выделени
@@ -13215,7 +13227,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                If MinDistance >= Distance
                   MinDistance = Distance
                   caret = i
-                  
                Else
                   Break
                EndIf
@@ -13324,8 +13335,15 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.b edit_insert_text( *this._s_WIDGET, Chr.s )
+      Procedure.b edit_key_insert_text( *this._s_WIDGET, Chr.s )
          Protected result.b, String.s, Count.i, *rowLine._s_ROWS
+         
+         If *this\notify
+            ProcedureReturn 0
+         EndIf
+         If Not *this\text\editable
+            ProcedureReturn 0
+         EndIf
          
          Chr.s = edit_make_insert_text( *this, Chr.s)
          
@@ -13387,6 +13405,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                result             = 1
                *this\root\repaint = 1
+               
+               *this\text\TextChange( ) =- 99
+            
             EndIf
          Else
             *this\notify = 1
@@ -13394,19 +13415,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ProcedureReturn result
       EndProcedure
-      
-      ;-
-      Macro edit_select_line_( _this_, _address_, _index_ )
-         _address_\_focus = 0
-         _address_\ColorState( ) = 0
-         
-         _address_ = SelectElement( _this_\__lines( ), _index_ )
-         
-         If _address_
-            _address_\ColorState( ) = 1
-            _address_\_focus = 1
-         EndIf
-      EndMacro
       
       Procedure edit_key_page_up_down_( *this._s_WIDGET, wheel, index_select_row )
          Protected repaint, select_index, page_height
@@ -13488,7 +13496,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If keyboard( )\key[1] & #PB_Canvas_Control
             If *this\edit_caret_1( ) <> 0
                *this\edit_caret_1( )     = 0
-               *this\LineEnteredIndex( ) = 0
+               *this\LinePressedIndex( ) = 0
                
                If test_edit_text
                   Debug "key ctrl home"
@@ -13498,7 +13506,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Else
             If *this\edit_caret_1( ) <> *this\LineFocused( )\text\pos
                *this\edit_caret_1( )     = *this\LineFocused( )\text\pos
-               *this\LineEnteredIndex( ) = *this\LineFocused( )\lindex
+               *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
                
                If test_edit_text
                   Debug "key home"
@@ -13509,7 +13517,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If result
             *this\edit_caret_2( )     = *this\edit_caret_1( )
-            *this\LinePressedIndex( ) = *this\LineEnteredIndex( )
+            *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
             ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
             *this\LineFocused( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
          EndIf
@@ -13523,7 +13531,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If keyboard( )\key[1] & #PB_Canvas_Control
             If *this\edit_caret_1( ) <> *this\text\len
                *this\edit_caret_1( )     = *this\text\len
-               *this\LineEnteredIndex( ) = *this\countitems - 1
+               *this\LinePressedIndex( ) = *this\countitems - 1
                
                If test_edit_text
                   Debug "key ctrl end"
@@ -13533,7 +13541,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Else
             If *this\edit_caret_1( ) <> *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                *this\edit_caret_1( )     = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
-               *this\LineEnteredIndex( ) = *this\LineFocused( )\lindex
+               *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
                
                If test_edit_text
                   Debug "key end"
@@ -13544,7 +13552,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If result
             *this\edit_caret_2( )     = *this\edit_caret_1( )
-            *this\LinePressedIndex( ) = *this\LineEnteredIndex( )
+            *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
             ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
             *this\LineFocused( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
          EndIf
@@ -13552,134 +13560,93 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure edit_key_backup_( *this._s_WIDGET )
-         Protected Repaint, remove_chr_len, *rowLine._s_ROWS = *this\LineFocused( )
-         
-         If *this\text\edit[2]\len
-            edit_change_caret_( *this, *rowLine\lindex )
-            
-            If test_edit_text
-               Debug "" + #PB_Compiler_Procedure + " " + 1111111111
-            EndIf
-            remove_chr_len = 0
-            edit_change_text_( *rowLine, - remove_chr_len, [1] )
-            edit_change_text_( *this, - remove_chr_len, [1] )
-            Repaint = - 1
-            
-         ElseIf *this\edit_caret_1( ) > *rowLine\text\pos
-            If test_edit_text
-               Debug "" + #PB_Compiler_Procedure + " " + 2222222222 + " " + *this\text\len
-            EndIf
-            *this\edit_caret_1( ) - 1
-            *this\edit_caret_2( )     = *this\edit_caret_1( )
-            *this\LineEnteredIndex( ) = *rowLine\lindex
-            
-            remove_chr_len = 1
-            edit_change_text_( *rowLine, - remove_chr_len, [1] )
-            edit_change_text_( *this, - remove_chr_len, [1] )
-            Repaint = - 1
-            
-         Else
-            If test_edit_text
-               Debug "" + #PB_Compiler_Procedure + " " + 3333333333 + " " + *this\text\len
-            EndIf
-            If *rowLine\lindex > 0
-               remove_chr_len = Len( #LF$ )
-               *this\edit_caret_1( ) - remove_chr_len
-               *this\edit_caret_2( ) = *this\edit_caret_1( )
-               
-               *this\LineEnteredIndex( ) = *rowLine\lindex - 1
-               *this\LinePressedIndex( ) = *this\LineEnteredIndex( )
-               *this\text\TextChange( )       = - 1
-               
-               edit_change_text_( *rowLine, - remove_chr_len, [1] )
-               edit_change_text_( *this, - remove_chr_len, [1] )
-               Repaint = - 1
-               
-            Else
-               *this\notify = 2
-            EndIf
+      Procedure edit_key_remove( *this._s_WIDGET, key ) ; Ok
+         If Not *this\text\editable
+            ProcedureReturn 0
+         EndIf
+         If Not *this\LineFocused( )
+            ProcedureReturn 0
          EndIf
          
-         ProcedureReturn Repaint
-      EndProcedure
-      
-      Procedure edit_key_delete_( *this._s_WIDGET )
-         Protected Repaint, remove_chr_len, *rowLine._s_ROWS = *this\LineFocused( )
-         
-         If *this\text\edit[2]\len
-            edit_change_caret_( *this, *rowLine\lindex )
-            
-            remove_chr_len = 1
-            Repaint        = - 1
-            
-         ElseIf *this\edit_caret_1( ) < *this\text\len ; ok
-            If *this\edit_caret_1( ) = *rowLine\text\pos + *rowLine\text\len
-               remove_chr_len      = Len( #LF$ )
-               *this\text\TextChange( ) = - 1
-            Else
-               remove_chr_len = 1
-            EndIf
-            
-            ;Debug ""+*this\edit_caret_1( ) +" "+ *this\text\len
-            ; change caret
-            *this\LineEnteredIndex( ) = *rowLine\lindex
-            *this\LinePressedIndex( ) = *rowLine\lindex
-            
-            Repaint = - 1
-         EndIf
-         
-         If Repaint
-            edit_change_text_( *rowLine, - remove_chr_len, [3] )
-            edit_change_text_( *this, - remove_chr_len, [3] )
-         EndIf
-         
-         ProcedureReturn Repaint
-      EndProcedure
-      
-      Procedure edit_key_return_( *this._s_WIDGET )
-         Protected *rowLine._s_ROWS
-         
-         If *this\text\multiline
-            *rowLine._s_ROWS = *this\LineFocused( )
-            
-            If *this\LinePressedIndex( ) >= *rowLine\lindex
+         ; key_backup
+         If key = #PB_Shortcut_Back
+            If *this\text\edit[1]\string
                If *this\edit_caret_1( ) > *this\edit_caret_2( )
                   *this\edit_caret_1( ) = *this\edit_caret_2( )
                EndIf
-               *this\edit_caret_1( ) + Len( #LF$ )
-               *this\edit_caret_2( )     = *this\edit_caret_1( )
-               *this\LineEnteredIndex( ) = *rowLine\lindex + 1
+               If Not *this\text\edit[2]\len
+                  *this\text\edit[1]\string = Left( *this\text\edit[1]\string, *this\text\edit[1]\len - 1 )
+                  *this\edit_caret_1( ) - 1
+               EndIf
+               *this\edit_caret_2( )    = *this\edit_caret_1( )
             Else
-               *this\edit_caret_2( ) + Len( #LF$ )
-               *this\edit_caret_1( )     = *this\edit_caret_2( )
-               *this\LineEnteredIndex( ) = *this\LinePressedIndex( ) + 1
+               *this\notify = key
             EndIf
-            *this\LinePressedIndex( ) = *this\LineEnteredIndex( )
-            
-            ; Debug ""+*this\edit_caret_1( ) +" "+ *this\edit_caret_2( ) +" "+ *this\LineEnteredIndex( ) +" "+ *this\LinePressedIndex( )
-            
-            *this\text\string.s = *this\text\edit[1]\string + #LF$ + *this\text\edit[3]\string
-            *this\text\TextChange( ) = - 1
-            
+         EndIf
+         
+         ; key_delete
+         If key = #PB_Shortcut_Delete
+            If *this\text\edit[3]\string
+               If Not *this\text\edit[2]\len
+                  *this\text\edit[3]\string = Right( *this\text\edit[3]\string, *this\text\edit[3]\len - 1 )
+               EndIf
+               ;
+               If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                  *this\edit_caret_1( ) = *this\edit_caret_2( )
+               Else
+                  *this\edit_caret_2( ) = *this\edit_caret_1( )
+               EndIf
+            Else
+               *this\notify = key
+            EndIf
+         EndIf
+         
+         If key = #PB_Shortcut_Return
+            If *this\text\multiline
+               If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                  *this\edit_caret_1( ) = *this\edit_caret_2( )
+               EndIf
+               *this\edit_caret_1( )    + Len( #LF$ )
+               *this\edit_caret_2( )    = *this\edit_caret_1( )
+            Else
+               *this\notify = key
+            EndIf
+         EndIf
+         
+         ;
+         If Not *this\notify
+            If key = #PB_Shortcut_Return
+               *this\text\string.s = *this\text\edit[1]\string + #LF$ + *this\text\edit[3]\string
+               ;
+               If *this\LinePressedIndex( ) < *this\LineFocused( )\lindex
+                  *this\LinePressedIndex( ) + 1
+               Else
+                  *this\LinePressedIndex( ) = *this\LineFocused( )\lindex + 1
+               EndIf
+            Else
+               *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
+               ;
+               If *this\text\edit[2]\len
+                  If *this\LinePressedIndex( ) > *this\LineFocused( )\lindex
+                     *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
+                  EndIf
+               Else
+                  If *this\edit_caret_1( ) < *this\LineFocused( )\text\pos
+                     *this\LinePressedIndex( ) - 1
+                  EndIf
+               EndIf
+            EndIf
             ;
-            ;         _AddItem( *this, *this\LinePressedIndex( ), *rowLine\text\edit[3]\string )
+            *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
+            *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
             ;
-            ;         *this\text\string.s = *this\text\edit[1]\string + #LF$ + *rowLine\text\edit[3]\string + #LF$ + Right( *this\text\string.s, *this\text\len - (*rowLine\text\pos + *rowLine\text\len + 1))
-            ;         *rowLine\text\edit[3]\len = Len( #LF$ )
-            ;         *rowLine\text\edit[3]\string = #LF$
-            ;         *rowLine\text\len = *rowLine\text\edit[1]\len + *rowLine\text\edit[3]\len
-            ;         *rowLine\text\string.s = *rowLine\text\edit[1]\string + *rowLine\text\edit[3]\string
-            ;          *this\text\TextChange( ) = 0
-            ;          *this\WidgetChange( ) = 0
+            *this\text\TextChange( ) =- 99
             ;
-            ; ;                 ForEach *this\__lines( )
-            ; ;                   Debug *this\__lines( )\text\string
-            ; ;                 Next
+            *this\LineEntered( ) = 0
+            *this\LinePressed( ) = 0
+            *this\LineFocused( ) = 0
             
             ProcedureReturn - 1
-         Else
-            *this\notify = 3
          EndIf
       EndProcedure
       
@@ -15786,8 +15753,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure Update_DrawText( *this._s_WIDGET, textchange.b )
          With *this
-            
-            If *this\text\string.s
                
                Protected *str.Character
                Protected *end.Character
@@ -15839,7 +15804,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ; Get text len
                            While length > 1
                               If Width > TextWidth( RTrim( Left( line$, length ) ))
-                                 Break
+                                 Break 
                               Else
                                  length - 1
                               EndIf
@@ -15848,6 +15813,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                            While start > length
                               For found = length To 1 Step - 1
                                  If FindString( " ", Mid( line$, found, 1 ))
+                                    If Width - *this\padding\x * 2 < TextWidth( RTrim( Left( line$, found )))
+                                       *this\countitems = 0
+                                    EndIf
                                     start = found
                                     Break
                                  EndIf
@@ -15861,7 +15829,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               line$ = LTrim( Mid( line$, start + 1 ))
                               start = Len( line$ )
                               
-                              ;If length <> start
+                              ; If length <> start
                               length = start
                               
                               ; Get text len
@@ -15872,7 +15840,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     length - 1
                                  EndIf
                               Wend
-                              ;EndIf
+                              ; EndIf
                            Wend
                            
                            String + line$ + nl$
@@ -16026,7 +15994,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   Next
                EndIf
-            EndIf
             
             ; align image
             If *this\text\string.s
@@ -16921,8 +16888,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;
                ; then change text update cursor pos
-               If *this\text\editable And *this\LineEnteredIndex( ) >= 0
-                  Debug *this\text\TextChange( )
+               If *this\text\editable And *this\LineEnteredIndex( ) >= 0 And *this\text\TextChange( ) =- 99
+                  ;Debug *this\text\TextChange( )
                   ;
                   Update_DrawText( *this, 1 )
                   ;
@@ -17896,7 +17863,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   ; post event re draw
                   If *this\binddraw
-                     Send( *this, #__event_Draw )
+                     If __gui\eventexit 
+                        Send( *this, #__event_Draw )
+                     EndIf
                   EndIf
                   ;
                   ;
@@ -19443,10 +19412,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Select event
                      Case #__event_Input ; - Input ( key )
                         If Not keyboard( )\key[1] & #PB_Canvas_Control
-                           If Not *this\notify And keyboard( )\input
-                              
-                              edit_insert_text( *this, Chr( keyboard( )\input ))
-                              
+                           If keyboard( )\input
+                              edit_key_insert_text( *this, Chr( keyboard( )\input ))
                            EndIf
                         EndIf
                         
@@ -19675,17 +19642,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                               
                            Case #PB_Shortcut_Back
                               If Not *this\notify
-                                 Repaint = edit_key_backup_( *this )
+                                 Repaint = edit_key_remove( *this, keyboard( )\key )
                               EndIf
                               
                            Case #PB_Shortcut_Delete
                               If Not *this\notify
-                                 Repaint = edit_key_delete_( *this )
+                                 Repaint = edit_key_remove( *this, keyboard( )\key )
                               EndIf
                               
-                           Case #PB_Shortcut_Return
+                           Case #PB_Shortcut_Return   ; Ok
                               If Not *this\notify
-                                 Repaint = edit_key_return_( *this )
+                                 Repaint = edit_key_remove( *this, keyboard( )\key )
                               EndIf
                               
                               
@@ -19715,9 +19682,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                               
                            Case #PB_Shortcut_V
-                              ; edit_key_v_
-                              If keyboard( )\key[1] & #PB_Canvas_Control
-                                 If *this\text\editable
+                              If *this\text\editable
+                                 If keyboard( )\key[1] & #PB_Canvas_Control
                                     Protected Text.s = GetClipboardText( )
                                     
                                     If Not *this\text\multiLine
@@ -19727,7 +19693,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                        Text = RemoveString( Text, #LF$ )
                                     EndIf
                                     
-                                    edit_insert_text( *this, Text )
+                                    edit_key_insert_text( *this, Text )
                                  EndIf
                               EndIf
                               
@@ -24386,9 +24352,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1574
-; FirstLine = 1515
-; Folding = -4----------------------------------------P----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-2---0---------------------------------------------8-----------------------------------------------------------4-4--------------------------v4---------------------------------f---------------v-----------------------------------------------------------------------------------------
+; CursorPosition = 15996
+; FirstLine = 15585
+; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+f-------------------------------------------------3f+----------------------------------------------------------+-+--------------------------0+---------------------------------8---------------0----------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

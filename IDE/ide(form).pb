@@ -253,7 +253,7 @@ Procedure Resize_PropertiesButton( *second._s_WIDGET )
             Resize(*this,
                    *row\x + *second\scroll_x( ),; +30, 
                    *row\y + *second\scroll_y( ), 
-                   *second\inner_width( )-4,;*row\width,;; -30, 
+                   *second\inner_width( )-dpiscaled(2),;*row\width,;; -30, 
                    *row\height, 0 )
          EndIf
       EndIf
@@ -1604,7 +1604,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    EndIf
  
    ;
-   ide_debug_view = Editor( 0,0,0,0 ) : SetClass(ide_debug_view, "ide_debug_view" ) ; ListView( 0,0,0,0 ) 
+   ide_debug_view = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_debug_view, "ide_debug_view" ) ; ListView( 0,0,0,0 ) 
    If Not ide_design_code
       ide_design_code = ide_debug_view
    EndIf
@@ -1961,8 +1961,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 581
-; FirstLine = 577
+; CursorPosition = 549
+; FirstLine = 532
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

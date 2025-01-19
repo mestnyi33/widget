@@ -5,11 +5,11 @@
     EndMacro
     
     ;- - CONSTANTs
-    CompilerIf Not Defined(PB_Canvas_Container, #PB_Constant)
-      #PB_Canvas_Container = 1<<5
-    CompilerEndIf
     CompilerIf Not Defined(PB_Compiler_DPIAware, #PB_Constant)
       #PB_Compiler_DPIAware = 0
+    CompilerEndIf
+    CompilerIf Not Defined(PB_Canvas_Container, #PB_Constant)
+      #PB_Canvas_Container = 1<<5
     CompilerEndIf
     CompilerIf Not Defined(PB_EventType_Resize, #PB_Constant)
       #PB_EventType_Resize = 6
@@ -203,10 +203,10 @@
     ;-\\ event-type
     Enumeration #PB_EventType_FirstCustomValue
       #PB_EventType_Drop
-      #PB_EventType_Repaint
       #PB_EventType_MouseWheelX
       #PB_EventType_MouseWheelY
       #PB_EventType_ScrollChange
+      #PB_EventType_Repaint
     EndEnumeration
     
     Enumeration 1
@@ -744,8 +744,8 @@
   ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 516
-; FirstLine = 511
+; CursorPosition = 206
+; FirstLine = 202
 ; Folding = ----
 ; Optimizer
 ; EnableXP

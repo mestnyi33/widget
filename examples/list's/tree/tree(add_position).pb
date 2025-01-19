@@ -1,10 +1,10 @@
 ﻿IncludePath "../../../"
-;XIncludeFile "widgets.pbi"
+; XIncludeFile "widgets.pbi"
 
 CompilerIf Defined(widget, #PB_Module)
   UseWidgets( )
-  Macro EventGadget() : EventWidget() : EndMacro
-  Macro EventType() : ToPBEventType(WidgetEvent()) : EndMacro
+  Macro EventGadget() : EventWidget( ) : EndMacro
+  Macro EventType() : WidgetEventType( ) : EndMacro
   Macro AddGadgetItem(gadget,position,Text,imageID=0,flags=) : AddItem(gadget,position,Text,imageID,flags) : EndMacro
   Macro BindGadgetEvent(gadget,callback,eventtype=0) : Bind(gadget,callback,eventtype) : EndMacro
   Macro GetGadgetState(gadget) : GetState(gadget) : EndMacro
@@ -35,8 +35,7 @@ If OpenWindow(0, 0, 0, 355, 180, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23
-; FirstLine = 6
+; CursorPosition = 17
 ; Folding = ---
 ; EnableXP
 ; DPIAware

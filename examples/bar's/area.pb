@@ -45,7 +45,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
       Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
-      ; BindGadgetEvent( GetCanvasGadget( root( ) ), _callback_ )
       Bind( root( ), _callback_ )
    EndMacro
    
@@ -60,7 +59,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Bind( _parent_, _callback_)
       If _callback_
-         Bind( _parent_\root, _callback_);, #__event_Draw )
          Bind( _parent_\scroll\v, _callback_, #__event_Change )
          Bind( _parent_\scroll\h, _callback_, #__event_Change )
       EndIf
@@ -69,30 +67,22 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Area_Events( )
       Protected change
       
-      If is_root_( EventWidget())
-         Canvas_Events( )
-      EndIf
-      
       Select WidgetEvent( )
-         Case #__event_Draw
-            ; Debug "repaint canvas"
-            ;  Canvas_Draw( MyCanvas, Images( ))
-            
          Case #__event_Change
             change = WidgetEventData( )
             Debug "changing scroller values - " +change
             
-            PushListPosition(  Images( )  )
-            If EventWidget( )\bar\vertical
-               ForEach Images( ) 
-                  Images( )\Y + change 
-               Next
-            Else
-               ForEach Images( ) 
-                  Images( )\X + change 
-               Next
-            EndIf
-            PopListPosition( Images( ) )
+;             PushListPosition(  Images( )  )
+;             If EventWidget( )\bar\vertical
+;                ForEach Images( ) 
+;                   Images( )\Y + change 
+;                Next
+;             Else
+;                ForEach Images( ) 
+;                   Images( )\X + change 
+;                Next
+;             EndIf
+;             PopListPosition( Images( ) )
             
       EndSelect
       
@@ -204,30 +194,19 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Canvas_Events( )
       Protected Repaint
-      Protected Event = ToPBEventType(WidgetEvent( )) ; EventType( )
-      Protected Canvas = root()\canvas\gadget         ; EventGadget( )
+      Protected Event = WidgetEventType( ) ; EventType( )
+      Protected Canvas = GetCanvasGadget(root())      ; EventGadget( )
       
-      Protected MouseX ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseX )
-      Protected MouseY ;= GetGadgetAttribute( Canvas, #PB_Canvas_MouseY )
-      MouseX = widget::mouse( )\x
-      MouseY = widget::mouse( )\y
+      Protected MouseX = widget::mouse( )\x
+      Protected MouseY = widget::mouse( )\y
       
-      Width = GadgetWidth( Canvas ) - X*2
-      Height = GadgetHeight( Canvas ) - Y*2
-      
-      ;     Width = widget::Root( )\width - x*2
-      ;     Height = widget::Root( )\height - y*2
+      Width = widget::root( )\width - X*2
+      Height = widget::root( )\height - Y*2
       
       Select Event
          Case #PB_EventType_Repaint
-            ; Canvas_Draw( MyCanvas, Images( ))
-            
-            If StartDraw( root( ) )
-               Drawing( )
-               Canvas_Draw( MyCanvas, Images( ) ) 
-               StopDraw( )
-            EndIf
-
+           Canvas_Draw( MyCanvas, Images( ))
+         
          Case #PB_EventType_LeftButtonUp 
             If Drag
                ChangeCursor( root( ), #PB_Cursor_Hand )
@@ -276,12 +255,12 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
             If Repaint
-               ReDraw( root( ))
-;                If StartDraw( root( ) )
-;                   Drawing( )
-;                   Canvas_Draw( MyCanvas, Images( ) ) 
-;                   StopDraw( )
-;                EndIf
+;                ReDraw( root( ))
+;                ; If StartDraw( root( ) )
+;                ;    Drawing( )
+;                ;    Canvas_Draw( MyCanvas, Images( ) ) 
+;                ;    StopDraw( )
+;                ; EndIf
             EndIf
    EndProcedure
    
@@ -338,7 +317,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    MyCanvas = CanvasGadget( #PB_Any, xx+10, yy+10, Width+X*2, Height+Y*2, #PB_Canvas_Keyboard ) 
-   Area_Use( 0, @Canvas_Events(), MyCanvas) 
+   Area_Use( 0, @Canvas_Events( ), MyCanvas) 
    
    ; add new images
    Canvas_AddImage( Images( ), X-80, Y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
@@ -416,7 +395,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 227
-; FirstLine = 201
+; CursorPosition = 266
+; FirstLine = 266
 ; Folding = ---------
 ; EnableXP
