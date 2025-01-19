@@ -220,8 +220,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select Event
          Case #PB_EventType_Repaint
-            Canvas_Draw( MyCanvas, Images( ))
+            ; Canvas_Draw( MyCanvas, Images( ))
             
+            If StartDraw( root( ) )
+               Drawing( )
+               Canvas_Draw( MyCanvas, Images( ) ) 
+               StopDraw( )
+            EndIf
+
          Case #PB_EventType_LeftButtonUp 
             If Drag
                ChangeCursor( root( ), #PB_Cursor_Hand )
@@ -410,7 +416,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 52
+; CursorPosition = 227
+; FirstLine = 201
 ; Folding = ---------
 ; EnableXP
