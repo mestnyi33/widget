@@ -109,7 +109,7 @@ Procedure events_wbuttons()
 			EndSelect
 	EndSelect
 	
-	Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
+	Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
 	
 EndProcedure
 
@@ -222,8 +222,9 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	AddItem (ID(0), -1,"Panel 3")
 	Button(10, 15, 100, 24,"Button 3_1")
-	*b = Button(10+110, 15, 100, 24,"automatically resize button when changing font", #__flag_Textmultiline)
+	*b = Button(10, 15+24+10, 100, 24,"auto resize button when changing font", #__flag_Textmultiline)
 	SetFont(*b, 5)
+	;SetState(ID(0), 2)
 	
 	;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
 	; set auto font size
@@ -233,25 +234,12 @@ If Open(0, 322+50, 0, 322+50, 220)
 		Drawing( root( ) )
 	EndMacro
 	
-	If StartDraw( root( ) )
-		Repaint()
-		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
-		Repaint()
-		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
-		Repaint()
-		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
-		Repaint()
-		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
-		Repaint()
-		Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-		Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
-		StopDraw( )
-	EndIf
+	ReDraw(root( ))
+	;Debug Width(*b, #__c_required)
 	
+	Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
+	Resize(*b, #PB_Ignore, #PB_Ignore, Width(*b, #__c_required), Height(*b, #__c_required))
+
 	CloseList()
 	
 	SetItemFont(ID(0), 1, 6)
@@ -278,8 +266,8 @@ If Open(0, 322+50, 0, 322+50, 220)
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 76
+; CursorPosition = 239
+; FirstLine = 228
 ; Folding = ----
 ; EnableXP
 ; DPIAware

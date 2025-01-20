@@ -483,7 +483,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro TabChange( ): change: EndMacro         ; tab\widget\change
-      Macro TextChange( ): change: EndMacro        ; temp
+      Macro TextChange( ): textchange: EndMacro        ; temp
       Macro AreaChange( ): area\change: EndMacro   ; temp
       Macro PageChange( ): page\change: EndMacro   ; temp
       Macro ThumbChange( ): thumb\change: EndMacro ; temp
@@ -985,7 +985,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If _font_id_
             If Not GetFontID( _address_ )
                SetFontID( _address_, _font_id_ )
-               _address_\text\TextChange( ) = #True
+               
+               _address_\text\width = 0
+               _address_\text\height = 0
             EndIf
          EndIf
          ;
@@ -995,18 +997,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             CurrentFontID( ) = GetFontID( _address_ )
             
             DrawingFont( CurrentFontID( ) )
-            _address_\text\TextChange( ) = #True
+            
+            _address_\text\width = 0
+            _address_\text\height = 0
          EndIf
          ;
-         If _address_\text\TextChange( ) Or Not ( _address_\text\width And _address_\text\height ) 
+         If Not ( _address_\text\width And _address_\text\height )
             If _address_\text\string
                _address_\text\width = TextWidth( _address_\text\string )
             EndIf
             
             _address_\text\height = TextHeight( "A" )
             
-            ; set rotate text value
-            _address_\text\rotate = Bool( _address_\text\invert ) * 180 + Bool( _address_\text\vertical ) * 90
+             ; set rotate text value
+             _address_\text\rotate = Bool( _address_\text\invert ) * 180 + Bool( _address_\text\vertical ) * 90
             
          EndIf
       EndMacro
@@ -1854,7 +1858,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;     EndIf
          
          If _this_\text
-            _this_\text\TextChange( ) = 1
+            _this_\TextChange( ) = 1
             _this_\text\x        = _x_
             _this_\text\y        = _y_
             
@@ -4906,7 +4910,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; Draw string
             If *this\text And *this\text\string 
-               If ( *this\text\TextChange( ) Or *this\resize\ResizeChange( ) )
+               If ( *this\TextChange( ) Or *this\resize\ResizeChange( ) )
                   update_align_text_x( *this, *this\text, *this\inner_width( ) )
                   update_align_text_y( *this, *this\text, *this\inner_height( ) )
                EndIf
@@ -9512,7 +9516,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; ProcedureReturn edit_SetText( *this, Text )
                If *This\text\string.s <> Text.s
                   *This\text\string.s = Text.s
-                  *This\text\TextChange( ) = #True
+                  *this\TextChange( ) = #True
                   result              = #True
                   PostRepaint( *this\root )
                EndIf
@@ -9540,7 +9544,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If *This\text\string.s <> Text.s
                *This\text\string.s = Text.s
-               *This\text\TextChange( ) = #True
+               *this\TextChange( ) = #True
                result              = #True
                PostRepaint( *This\root )
             EndIf
@@ -9613,7 +9617,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If result
                *this\WidgetChange( )              = 1
-               *this\__rows( )\text\TextChange( ) = 1
+              ; *this\__rows( )\text\TextChange( ) = 1
             EndIf
          EndIf
          
@@ -9634,7 +9638,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             
-            *this\__tabs( )\text\TextChange( ) = 1
+            ; *this\__tabs( )\text\TextChange( ) = 1
             *this\__tabs( )\text\string = Text.s
             *this\WidgetChange( )         = #True
             *this\TabChange( )          = #True
@@ -11614,7 +11618,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             *columns\y     = 0
             *columns\width = DPIScaled( Width )
-            *columns\text\TextChange( ) = 1
+            ;*columns\text\TextChange( ) = 1
             *columns\text\string.s = Text.s
             *columns\x = (*this\padding\x + *this\scroll_width( ))
             *this\scroll_width( ) + *columns\width
@@ -11814,7 +11818,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             
             ;If Text
-            *row\text\TextChange( ) = 1
+            ; *row\text\TextChange( ) = 1
             *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
                                       ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
                                       ;EndIf
@@ -13365,7 +13369,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\edit_caret_2( ) = *this\edit_caret_1( )
                
                If count Or *rowLine\lindex <> *this\LinePressedIndex( )
-                  *this\text\TextChange( ) = - 1
+                  *this\TextChange( ) = - 1
                EndIf
                
                If *rowLine\text\edit[2]\width <> 0
@@ -13395,7 +13399,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\LinePressedIndex( ) = *this\LineEnteredIndex( )
                
                ;
-               If Not *this\text\TextChange( )
+               If Not *this\TextChange( )
                   If *this\scroll_width( ) < *rowLine\text\width
                      *this\scroll_width( ) = *rowLine\text\width
                      
@@ -13406,7 +13410,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                result             = 1
                *this\root\repaint = 1
                
-               *this\text\TextChange( ) =- 99
+               *this\TextChange( ) =- 99
             
             EndIf
          Else
@@ -13640,7 +13644,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
             *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
             ;
-            *this\text\TextChange( ) =- 99
+            *this\TextChange( ) =- 99
             ;
             *this\LineEntered( ) = 0
             *this\LinePressed( ) = 0
@@ -13729,14 +13733,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;
          *this\WidgetChange( )    = 0
-         *this\text\TextChange( ) = 1
+         *this\TextChange( ) = 1
          *this\text\edit\string   = *this\text\string
       EndProcedure
       
       Procedure edit_ClearItems( *this._s_WIDGET )
          *this\WidgetChange( )  = - 1
          *this\countitems      = - 1
-         *this\text\TextChange( )    = - 1
+         *this\TextChange( )    = - 1
          *this\text\string      = ""
          *this\text\edit\string = ""
          
@@ -13756,7 +13760,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\countitems = - 1
             edit_ClearItems( *this )
          Else
-            *this\text\TextChange( ) = - 1
+            *this\TextChange( ) = - 1
             *this\text\string   = RemoveString( *this\text\string, StringField( *this\text\string, item + 1, #LF$ ) + #LF$ )
             
             If ListSize( *this\__lines( ) )
@@ -13806,7 +13810,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; ; ;       *this\text\len = Len( string )
          ; ; ;       *this\text\string = string
          ; ; ;       *this\countitems = CountString( String, #LF$ )
-         ; ; ;       *this\text\TextChange( ) = 1
+         ; ; ;       *this\TextChange( ) = 1
          ; ; ;       *this\WidgetChange( ) = 1
          
          *this\text\len    = 0
@@ -13829,7 +13833,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\text\string = Left( *this\text\string, *this\text\len )
          
          *this\WidgetChange( ) = 1
-         *this\text\TextChange( )   = 1
+         *this\TextChange( )   = 1
          
          If count
             *this\text\edit\string = *this\text\string
@@ -14091,7 +14095,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\ text align
                If string_bar
-                  *this\text\TextChange( ) = 1
+                  *this\TextChange( ) = 1
                   ; 
                   If constants::BinaryFlag( Flag, #__text_Invert )
                      *this\text\invert = state
@@ -15110,7 +15114,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\color\frame[#__s_0] = _get_colors_( )\frame
             
             *this\WidgetChange( ) = 1
-            *this\text\TextChange( ) = 1
+            *this\TextChange( ) = 1
             
             *this\padding\x  = dpi_scale_two ;  DPIScaled(4)
             
@@ -15352,7 +15356,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\type = #__type_ToolBar Or
                *this\type = #__type_TabBar 
                ;
-               ;;*this\text\TextChange( ) = 1
+               ;;*this\TextChange( ) = 1
                *this\color\back = - 1
                *BB1\color       = _get_colors_( )
                *BB2\color       = _get_colors_( )
@@ -15389,7 +15393,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                
                *this\color         = _get_colors_( )
-               *this\text\TextChange( ) = #True
+               *this\TextChange( ) = #True
                *this\text\invert = *this\bar\invert
                *this\text\vertical = *this\bar\vertical
             EndIf
@@ -15754,246 +15758,245 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure Update_DrawText( *this._s_WIDGET, textchange.b )
          With *this
                
-               Protected *str.Character
-               Protected *end.Character
-               Protected TxtHeight = *this\text\height
-               Protected String.s, String1.s, CountString
-               Protected IT, len.l, Position.l, Width
-               Protected ColorFont = *this\color\front[\ColorState( )]
+            Protected *str.Character
+            Protected *end.Character
+            Protected TxtHeight = *this\text\height
+            Protected String.s, String1.s, CountString
+            Protected IT, len.l, Position.l, Width
+            Protected ColorFont = *this\color\front[\ColorState( )]
+            
+            ; *this\max
+            If *this\text\vertical
+               If *this\scroll_height( ) > *this\inner_height( )
+                  textchange = 1
+               EndIf
+               Width = *this\inner_height( ) - *this\padding\x * 2
                
-               ; *this\max
-               If *this\text\vertical
-                  If *this\scroll_height( ) > *this\inner_height( )
-                     textchange = 1
-                  EndIf
-                  Width = *this\inner_height( ) - *this\padding\x * 2
-                  
-               Else
-                  If *this\scroll_width( ) > *this\inner_width( )
-                     textchange = 1
-                  EndIf
-                  
-                  Width = *this\inner_width( ) - *this\padding\x * 2
+            Else
+               If *this\scroll_width( ) > *this\inner_width( )
+                  textchange = 1
                EndIf
                
-               If *this\text\multiLine
-                  ; make multiline text
-                  Protected text$ = *this\text\string.s + #LF$
+               Width = *this\inner_width( ) - *this\padding\x * 2
+            EndIf
+            
+            If *this\text\multiLine
+               ; make multiline text
+               Protected text$ = *this\text\string.s + #LF$
+               
+               ;     text$ = ReplaceString( text$, #LFCR$, #LF$ )
+               ;     text$ = ReplaceString( text$, #CRLF$, #LF$ )
+               ;     text$ = ReplaceString( text$, #CR$, #LF$ )
+               
+               If *this\text\multiLine > 0
+                  String = text$
+               Else
+                  ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
+                  Protected.i i, start, found, length
+                  Protected$ line$, DelimList$ = " " + Chr( 9 ), nl$ = #LF$
                   
-                  ;     text$ = ReplaceString( text$, #LFCR$, #LF$ )
-                  ;     text$ = ReplaceString( text$, #CRLF$, #LF$ )
-                  ;     text$ = ReplaceString( text$, #CR$, #LF$ )
+                  *str.Character = @text$
+                  *end.Character = @text$
                   
-                  If *this\text\multiLine > 0
-                     String = text$
-                  Else
-                     ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
-                     Protected.i i, start, found, length
-                     Protected$ line$, DelimList$ = " " + Chr( 9 ), nl$ = #LF$
-                     
-                     *str.Character = @text$
-                     *end.Character = @text$
-                     
-                     ; make word wrap
-                     While *end\c
-                        If *end\c = #LF
-                           start  = ( *end - *str ) >> #PB_Compiler_Unicode
-                           line$  = PeekS ( *str, start )
+                  ; make word wrap
+                  While *end\c
+                     If *end\c = #LF
+                        start  = ( *end - *str ) >> #PB_Compiler_Unicode
+                        line$  = PeekS ( *str, start )
+                        length = start
+                        
+                        ; Get text len
+                        While length > 1
+                           If Width > TextWidth( RTrim( Left( line$, length ) ))
+                              Break 
+                           Else
+                              length - 1
+                           EndIf
+                        Wend
+                        
+                        While start > length
+                           For found = length To 1 Step - 1
+                              If FindString( " ", Mid( line$, found, 1 ))
+                                 If Width - *this\padding\x * 2 < TextWidth( RTrim( Left( line$, found )))
+                                    *this\countitems = 0
+                                 EndIf
+                                 start = found
+                                 Break
+                              EndIf
+                           Next
+                           
+                           If Not found
+                              start = length
+                           EndIf
+                           
+                           String + Left( line$, start ) + nl$
+                           line$ = LTrim( Mid( line$, start + 1 ))
+                           start = Len( line$ )
+                           
+                           ; If length <> start
                            length = start
                            
                            ; Get text len
                            While length > 1
                               If Width > TextWidth( RTrim( Left( line$, length ) ))
-                                 Break 
+                                 Break
                               Else
                                  length - 1
                               EndIf
                            Wend
-                           
-                           While start > length
-                              For found = length To 1 Step - 1
-                                 If FindString( " ", Mid( line$, found, 1 ))
-                                    If Width - *this\padding\x * 2 < TextWidth( RTrim( Left( line$, found )))
-                                       *this\countitems = 0
-                                    EndIf
-                                    start = found
-                                    Break
-                                 EndIf
-                              Next
-                              
-                              If Not found
-                                 start = length
-                              EndIf
-                              
-                              String + Left( line$, start ) + nl$
-                              line$ = LTrim( Mid( line$, start + 1 ))
-                              start = Len( line$ )
-                              
-                              ; If length <> start
-                              length = start
-                              
-                              ; Get text len
-                              While length > 1
-                                 If Width > TextWidth( RTrim( Left( line$, length ) ))
-                                    Break
-                                 Else
-                                    length - 1
-                                 EndIf
-                              Wend
-                              ; EndIf
-                           Wend
-                           
-                           String + line$ + nl$
-                           *str = *end + #__sOC
-                        EndIf
+                           ; EndIf
+                        Wend
                         
-                        *end + #__sOC
-                     Wend
-                  EndIf
-                  
-                  CountString = CountString( String, #LF$ )
-               Else
-                  String.s    = RemoveString( *this\text\string, #LF$ ) + #LF$
-                  CountString = 1
-               EndIf
-               
-               ;
-               If *this\countitems <> CountString
-                  *this\countitems = CountString
-                  textchange = 1
-               EndIf
-               
-               If textchange
-                  *str.Character = @String
-                  *end.Character = @String
-                  
-                  *this\text\pos = 0
-                  *this\text\len = Len( *this\text\string )
-                  
-                  ;\\
-                  ClearList( *this\__lines( ))
-                  *this\scroll_width( )  = *this\padding\x * 2
-                  *this\scroll_height( ) = *this\padding\y * 2
-                  
-                  ;
-                  While *end\c
-                     If *end\c = #LF
-                        AddElement( *this\__lines( ))
-                        *this\__lines( )\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
-                        *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
-                        ;;*this\__lines( )\text\width = TextWidth( *this\__lines( )\text\string )
-                        
-                        ; drawing item font
-                        draw_font( *this\__lines( ));, GetFontID( *this ) )
-                        
-                        ;; editor
-                        *this\__lines( )\lindex = ListIndex( *this\__lines( ))
-                        
-                        *this\__lines( )\height = *this\__lines( )\text\height
-                        *this\__lines( )\width  = *this\inner_width( )
-                        *this\__lines( )\color  = _get_colors_( )
-                        
-                        
-                        
-;                         If *this\LineEnteredIndex( ) = *this\__lines( )\lindex Or
-;                            *this\LineFocusedIndex( ) = *this\__lines( )\lindex
-;                            *this\__lines( )\text\TextChange( ) = 1
-;                         EndIf
-                        
-                        ; make line position
-                        If *this\text\vertical
-                           If *this\scroll_height( ) < *this\__lines( )\text\height + *this\mode\fullselection + *this\padding\y * 2
-                              *this\scroll_height( ) = *this\__lines( )\text\height + *this\mode\fullselection + *this\padding\y * 2
-                           EndIf
-                           
-                           If *this\text\rotate = 90
-                              *this\__lines( )\x = *this\scroll_width( ) - *this\padding\x
-                           ElseIf *this\text\rotate = 270
-                              *this\__lines( )\x = ( *this\inner_width( ) - *this\scroll_width( ) - *this\__lines( )\text\width ) + *this\padding\x
-                           EndIf
-                           
-                           *this\scroll_width( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
-                        Else ; horizontal
-                           If *this\scroll_width( ) < *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\x * 2
-                              *this\scroll_width( ) = *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\x * 2
-                           EndIf
-                           
-                           If *this\text\rotate = 0
-                              *this\__lines( )\y = *this\scroll_height( ) - *this\padding\y
-                           ElseIf *this\text\rotate = 180
-                              *this\__lines( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - *this\__lines( )\text\height ) + *this\padding\y
-                           EndIf
-                           
-                           *this\scroll_height( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
-                        EndIf
-                        
+                        String + line$ + nl$
                         *str = *end + #__sOC
                      EndIf
                      
                      *end + #__sOC
                   Wend
+               EndIf
+               
+               CountString = CountString( String, #LF$ )
+            Else
+               String.s    = RemoveString( *this\text\string, #LF$ ) + #LF$
+               CountString = 1
+            EndIf
+            
+            ;
+            If *this\countitems <> CountString
+               *this\countitems = CountString
+               textchange = 1
+            EndIf
+            
+            If textchange
+               *str.Character = @String
+               *end.Character = @String
+               
+               *this\text\pos = 0
+               *this\text\len = Len( *this\text\string )
+               
+               ;\\
+               ClearList( *this\__lines( ))
+               *this\scroll_width( )  = *this\padding\x * 2
+               *this\scroll_height( ) = *this\padding\y * 2
+               
+               ;
+               While *end\c
+                  If *end\c = #LF
+                     AddElement( *this\__lines( ))
+                     *this\__lines( )\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
+                     *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
+                     ;;*this\__lines( )\text\width = TextWidth( *this\__lines( )\text\string )
+                     
+                     ; drawing item font
+                     draw_font( *this\__lines( ));, GetFontID( *this ) )
+                     
+                     ;; editor
+                     *this\__lines( )\lindex = ListIndex( *this\__lines( ))
+                     
+                     *this\__lines( )\height = *this\__lines( )\text\height
+                     *this\__lines( )\width  = *this\inner_width( )
+                     *this\__lines( )\color  = _get_colors_( )
+                     
+                     
+                     
+                     ;                         If *this\LineEnteredIndex( ) = *this\__lines( )\lindex Or
+                     ;                            *this\LineFocusedIndex( ) = *this\__lines( )\lindex
+                     ;                            *this\__lines( )\text\TextChange( ) = 1
+                     ;                         EndIf
+                     
+                     ; make line position
+                     If *this\text\vertical
+                        If *this\scroll_height( ) < *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\y * 2
+                           *this\scroll_height( ) = *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\y * 2
+                        EndIf
+                        
+                        If *this\text\rotate = 90
+                           *this\__lines( )\x = *this\scroll_width( ) - *this\padding\x
+                        ElseIf *this\text\rotate = 270
+                           *this\__lines( )\x = ( *this\inner_width( ) - *this\scroll_width( ) - *this\__lines( )\text\width ) + *this\padding\x
+                        EndIf
+                        
+                        *this\scroll_width( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
+                     Else ; horizontal
+                        If *this\scroll_width( ) < *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\x * 2
+                           *this\scroll_width( ) = *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\x * 2
+                        EndIf
+                        
+                        If *this\text\rotate = 0
+                           *this\__lines( )\y = *this\scroll_height( ) - *this\padding\y
+                        ElseIf *this\text\rotate = 180
+                           *this\__lines( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - *this\__lines( )\text\height ) + *this\padding\y
+                        EndIf
+                        
+                        *this\scroll_height( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
+                     EndIf
+                     
+                     *str = *end + #__sOC
+                  EndIf
                   
+                  *end + #__sOC
+               Wend
+               
+               
+               ;
+               ForEach *this\__lines( )
+                  *this\__lines( )\text\pos = *this\text\pos
+                  *this\text\pos + *this\__lines( )\text\len + 1 ; Len( #LF$ )
+                  
+                  If *this\text\vertical
+                     If *this\text\rotate = 270
+                        *this\__lines( )\x - ( *this\inner_width( ) - *this\scroll_width( ) )
+                     EndIf
+                     
+                     ; changed
+                     If *this\text\rotate = 0
+                        *this\__lines( )\text\x = 0
+                     ElseIf *this\text\rotate = 270
+                        *this\__lines( )\text\x = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\width
+                     Else
+                        *this\__lines( )\text\x = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                     EndIf
+                     
+                     update_align_text_y( *this, *this\__lines( )\text, *this\scroll_height( ) )
+                  Else ; horizontal
+                     If *this\text\rotate = 180
+                        *this\__lines( )\y - ( *this\inner_height( ) - *this\scroll_height( ) )
+                     EndIf
+                     
+                     ; changed
+                     If *this\text\rotate = 90
+                        *this\__lines( )\text\y = 0
+                     ElseIf *this\text\rotate = 180
+                        *this\__lines( )\text\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\height
+                     Else
+                        *this\__lines( )\text\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                     EndIf
+                     
+                     update_align_text_x( *this, *this\__lines( )\text, *this\scroll_width( ) )
+                  EndIf
+                  
+                  ; align image 
+                  If *this\img\align
+                     If *this\img\align\left
+                        If *this\img\width
+                           *this\__lines( )\text\x + img_indent + *this\img\width
+                        EndIf
+                     EndIf
+                     If *this\img\align\top
+                        If *this\img\height
+                           *this\__lines( )\text\y + img_indent + *this\img\height
+                        EndIf
+                     EndIf
+                  EndIf
                   
                   ;
-                  ForEach *this\__lines( )
-                     *this\__lines( )\text\pos = *this\text\pos
-                     *this\text\pos + *this\__lines( )\text\len + 1 ; Len( #LF$ )
-                     
-                     If *this\text\vertical
-                        If *this\text\rotate = 270
-                           *this\__lines( )\x - ( *this\inner_width( ) - *this\scroll_width( ) )
-                        EndIf
-                        
-                        ; changed
-                        If *this\text\rotate = 0
-                           *this\__lines( )\text\x = 0
-                        ElseIf *this\text\rotate = 270
-                           *this\__lines( )\text\x = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\width
-                        Else
-                           *this\__lines( )\text\x = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
-                        EndIf
-                        
-                        update_align_text_y( *this, *this\__lines( )\text, *this\scroll_height( ) )
-                     
-                     Else ; horizontal
-                        If *this\text\rotate = 180
-                           *this\__lines( )\y - ( *this\inner_height( ) - *this\scroll_height( ) )
-                        EndIf
-                        
-                        ; changed
-                        If *this\text\rotate = 90
-                           *this\__lines( )\text\y = 0
-                        ElseIf *this\text\rotate = 180
-                           *this\__lines( )\text\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\height
-                        Else
-                           *this\__lines( )\text\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
-                        EndIf
-                        
-                        update_align_text_x( *this, *this\__lines( )\text, *this\scroll_width( ) )
-                        
-                        ; align image 
-                        If *this\img\align
-                           If *this\img\align\left
-                              If *this\img\width
-                                 *this\__lines( )\text\x + img_indent + *this\img\width
-                              EndIf
-                           EndIf
-                           If *this\img\align\top
-                              If *this\img\height
-                                 *this\__lines( )\text\y + img_indent + *this\img\height
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                     
-                     
-                     If *this\__lines( )\text\TextChange( ) <> 0
-                        ; edit_sel_update_( *this )
-                        
-                        *this\__lines( )\text\TextChange( ) = 0
-                     EndIf
-                  Next
-               EndIf
+;                   If *this\__lines( )\text\TextChange( ) <> 0
+;                      ; edit_sel_update_( *this )
+;                      
+;                      *this\__lines( )\text\TextChange( ) = 0
+;                   EndIf
+               Next
+            EndIf
             
             ; align image
             If *this\text\string.s
@@ -16874,10 +16877,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             With *this
                ; Make output multi line text
-               If *this\text\TextChange( ) Or 
+               If *this\TextChange( ) Or 
                   *this\resize\ResizeChange( )
                   ;
-                  Update_DrawText( *this, *this\text\TextChange( ) )
+                  Update_DrawText( *this, *this\TextChange( ) )
                   ;
                   ;;;;;;;;;;;;;;;;;;;;
                   If *this\create = 1
@@ -16888,8 +16891,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;
                ; then change text update cursor pos
-               If *this\text\editable And *this\LineEnteredIndex( ) >= 0 And *this\text\TextChange( ) =- 99
-                  ;Debug *this\text\TextChange( )
+               If *this\text\editable And *this\LineEnteredIndex( ) >= 0 And *this\TextChange( ) =- 99
+                  ;Debug *this\TextChange( )
                   ;
                   Update_DrawText( *this, 1 )
                   ;
@@ -16952,7 +16955,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ; Draw margin back color
                If *this\MarginLine( )\width > 0
-                  If ( *this\text\TextChange( ) Or *this\resize\ResizeChange( ) )
+                  If ( *this\TextChange( ) Or *this\resize\ResizeChange( ) )
                      *this\MarginLine( )\x      = *this\inner_x( )
                      *this\MarginLine( )\y      = *this\inner_y( )
                      *this\MarginLine( )\height = *this\inner_height( )
@@ -16989,7 +16992,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
                EndIf
                
-               If *this\text\TextChange( ) : *this\text\TextChange( ) = 0 : EndIf
+               If *this\TextChange( ) : *this\TextChange( ) = 0 : EndIf
                If *this\WidgetChange( ) : *this\WidgetChange( ) = 0 : EndIf
             EndWith
          EndIf
@@ -17538,7 +17541,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; update text
             If *this\WidgetChange( ) Or *this\resize\ResizeChange( )
                ;
-               Update_DrawText( *this, *this\text\TextChange( ) )
+               Update_DrawText( *this, *this\TextChange( ) )
             EndIf
             
 ;             ;\\
@@ -17672,6 +17675,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;draw_roundbox_( _address_\frame_x( ) + 1, _address_\frame_y( ) + 1, _address_\frame_width( ) - 2, _address_\frame_height( ) - 2, _address_\round, _address_\round, _color_ )
          ; draw_roundbox_( _address_\frame_x( ) + 2, _address_\frame_y( ) + 2, _address_\frame_width( ) - 4, _address_\frame_height( ) - 4, _address_\round, _address_\round, _color_ )
       EndMacro
+      
       Procedure.b Draw( *this._s_WIDGET )
          Protected arrow_right
          
@@ -17683,7 +17687,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\ draw belowe drawing
-            If Not *this\hide
+            If *this\hide
+               If Not ( *this\text\width And *this\text\height )
+                  draw_font( *this, GetFontID( *this ) )
+                  Update_DrawText( *this, 1 )
+                  make_scrollarea_x( *this, *this\frame_width( ), *this\text\align )
+                  make_scrollarea_y( *this, *this\frame_height( ), *this\text\align )
+               EndIf
+            Else
                ;                ;Debug "DRAW( "+*this\class +" "+ *this\enter
                ;                If *this\resize\clip <> 0
                ;                   *this\resize\clip = 0
@@ -17937,8 +17948,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\WidgetChange( ) = 0
                EndIf
             EndIf
-            If *this\text\TextChange( ) <> 0
-               *this\text\TextChange( ) = 0
+            If *this\TextChange( ) <> 0
+               *this\TextChange( ) = 0
             EndIf
             
             If *this\img\change <> 0
@@ -18949,7 +18960,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If Not bar_in_start_( *this\scroll\v\bar )
                      scroll_y = mouse( )\y - ( *this\inner_y( ) )
                      bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
-                     Update_DrawText( *this, *this\text\TextChange( ) )
+                     Update_DrawText( *this, *this\TextChange( ) )
                      Debug "timer scroll v top " + scroll_y + " " + *this\RowFirstVisible( )\rindex
                      
                   Else
@@ -18959,7 +18970,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If Not bar_in_stop_( *this\scroll\v\bar )
                      scroll_y = 400;mouse( )\y - ( *this\inner_y( ) + *this\inner_height( ) )
                                    ;bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
-                                   ;Update_DrawText( *this, *this\text\TextChange( ) )
+                                   ;Update_DrawText( *this, *this\TextChange( ) )
                      
                      Debug "timer scroll v bottom " + scroll_y + " " + *this\RowLastVisible( )\rindex
                      
@@ -24352,9 +24363,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15996
-; FirstLine = 15585
-; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+f-------------------------------------------------3f+----------------------------------------------------------+-+--------------------------0+---------------------------------8---------------0----------------------------------------------------------------------------------------
+; CursorPosition = 1011
+; FirstLine = 971
+; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------30+-----+-+--------------------------0+---------------------------------8--------------------------------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware

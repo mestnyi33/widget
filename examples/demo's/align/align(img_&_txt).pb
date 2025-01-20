@@ -8,8 +8,10 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
   EnableExplicit
   UseWidgets( )
-  UsePNGImageDecoder()
+  test_draw_area = 1
   
+  UsePNGImageDecoder()
+   
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
     End
   EndIf
@@ -89,8 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 61
+; CursorPosition = 12
 ; Folding = -
 ; EnableXP
 ; DPIAware

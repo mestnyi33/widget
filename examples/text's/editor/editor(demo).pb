@@ -2,9 +2,28 @@
 ;   WordWrap ! 1
 ;         SetGadgetAttribute(0, #PB_Editor_WordWrap, WordWrap)
 
+
+; Key 
+;         (UP & Down) переход коретки на один итем верх или вниз и делаем видимим итем на который перешла коретка
+;         (PageUP & PageDown) прокрутка на одну страницу верх и вниз 
+; Ctrl -  (PageUP & PageDown) прокрутка на один итем верх и вниз коретка остается на том же итеме
+; Shift - (PageUP & PageDown) выделения на один итем верх и вниз если доходим на первый или последный выдимий итем то прокручиваем
+;         (Left&Right) 
+;
+;
+;
+;
+;
+;
+;
+;
+;
+
+
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   test_edit_text = 1
    
    Define g, *g, Text.s, m.s=#LF$
    
@@ -56,8 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 20
+; CursorPosition = 10
 ; Folding = -
 ; EnableXP
 ; DPIAware

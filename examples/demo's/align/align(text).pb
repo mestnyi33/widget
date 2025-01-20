@@ -14,13 +14,16 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
    Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
-      ;Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
+      
+      _flag_|#__flag_vertical
+      
+      Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;
       ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;
       ;Text(_x_,_y_,_width_,_height_,_text_,_flag_)
-      Editor(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : SetText(widget(), _text_)
+      ;Editor(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : SetText(widget(), _text_)
       ;String(_x_,_y_,_width_,_height_,_text_,_flag_)
    EndProcedure
    
@@ -69,8 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 40
+; CursorPosition = 25
+; FirstLine = 6
 ; Folding = -
 ; EnableXP
 ; DPIAware

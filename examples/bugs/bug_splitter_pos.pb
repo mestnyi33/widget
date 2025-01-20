@@ -29,7 +29,8 @@ CompilerIf #PB_Compiler_IsMainFile
      
 ;      Debug ""+widget()\bar\page\pos  +" = "+ widget()\bar\thumb\pos
 ;       Debug ""+widget()\bar\page\end  +" = "+ widget()\bar\area\end
-;       Debug ""+widget()\bar\thumb\end +" = "+ widget()\bar\area\len
+     
+     ;       Debug ""+widget()\bar\thumb\end +" = "+ widget()\bar\area\len
 
    EndProcedure
    
@@ -97,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 14
+; CursorPosition = 32
+; FirstLine = 23
 ; Folding = -
 ; EnableXP
