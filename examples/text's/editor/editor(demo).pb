@@ -23,7 +23,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   test_edit_text = 1
+   ;test_edit_text = 1
    
    Define g, *g, Text.s, m.s=#LF$
    
@@ -54,11 +54,12 @@ CompilerIf #PB_Compiler_IsMainFile
       *g = Editor(0, 0, 0, 0) 
       SetBackgroundColor(*g, $FFB3FDFF)
       SetText(*g, Text.s)
-      AddItem(*g, 0, "add line first")
-      AddItem(*g, 4, "add line "+Str(4))
-      AddItem(*g, 8, "add line "+Str(8))
-      AddItem(*g, -1, "add line last")
-      ; SetFont(*g, FontID(1))
+;       Debug ""
+       AddItem(*g, 0, "add line first")
+       AddItem(*g, 4, "add line "+Str(4))
+       AddItem(*g, 8, "add line "+Str(8))
+       AddItem(*g, -1, "add line last")
+;       ; SetFont(*g, FontID(1))
       
       Splitter(8, 8, 306, 276, g, *g, #__flag_autosize)
       
@@ -75,8 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 42
+; CursorPosition = 59
+; FirstLine = 44
 ; Folding = -
 ; EnableXP
 ; DPIAware

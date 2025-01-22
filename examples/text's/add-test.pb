@@ -44,14 +44,12 @@ CompilerIf #PB_Compiler_IsMainFile
       
       g = EditorGadget(#PB_Any, 8, 8, 306, 133) 
       ;g = EditorGadget(#PB_Any, 0, 0, 0, 0) ; bug PB on windows 
-;       SetGadgetText(g, Text.s)
-;       AddGadgetItem(g, 0, "add line first")
-;       AddGadgetItem(g, 4, "add line "+Str(4))
-;       AddGadgetItem(g, 8, "add line "+Str(8))
-;       AddGadgetItem(g, -1, "add line last")
-;       ; SetGadgetFont(g, FontID(1))
+      
       SetGadgetText(g,     "012345" )
-    AddGadgetItem(g, -1, "-text-" )
+     ; SetGadgetText(g,     "012345" +#LF$ )
+     ; SetGadgetText(g,     "012345" +#LF$+ "012345" )
+     ; SetGadgetText(g,     "012345" +#LF$+ "012345"+#LF$ )
+     AddGadgetItem(g, -1, "-text-" )
     
       *g = Editor(8, 146, 306, 133) 
       ;*g = Editor(0, 0, 0, 0) 
@@ -62,8 +60,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       AddItem(*g, 8, "add line "+Str(8))
 ;       AddItem(*g, -1, "add line last")
 ;       ; SetFont(*g, FontID(1))
-      SetText(*g,     "012345" )
-      Debug 666
+      SetText(*g,     "012345")
+      ;SetText(*g,     "012345" +#LF$)
+      ;SetText(*g,     "012345" +#LF$+ "012345")
+      ;SetText(*g,     "012345" +#LF$+ "012345"+#LF$)
       AddItem(*g, -1, "-text-" )
     
       Splitter(8, 8, 306, 276, g, *g, #__flag_autosize)
@@ -81,7 +81,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 66
+; FirstLine = 40
 ; Folding = -
 ; EnableXP
 ; DPIAware

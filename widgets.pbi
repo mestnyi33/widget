@@ -13714,7 +13714,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             PopListPosition(e_rows( ))
          EndIf
          
-         Debug position
          ;\\
          e_rows( )\lindex      = position
          e_rows( )\text\len    = string_len
@@ -13737,9 +13736,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   e_rows( )\text\pos = add_pos
                   e_rows( )\y        = add_y - *this\padding\y
                Else
-                  e_rows( )\text\pos = *this\text\len 
-                  If *this\countitems = 1
-                    e_rows( )\text\pos + 1
+                  If *this\text\len
+                     e_rows( )\text\pos = *this\text\len 
+                     If position > CountString(*this\text\string, #LF$ )
+                        e_rows( )\text\pos + 1
+                     EndIf
                   EndIf
                   e_rows( )\y        = *this\scroll_height( ) - *this\padding\y
                EndIf
@@ -13757,7 +13758,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
          edit_AddLine(*this, *this\__lines( ), position, *text, string_len)
          
-         Debug ""+*this\__lines( )\lindex +" "+ *this\__lines( )\text\pos
+         ; Debug ""+*this\__lines( )\lindex +" "+ *this\__lines( )\text\pos
            
          ; insert line 
          If *this\__lines( )\text\pos = 0
@@ -24401,9 +24402,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13741
-; FirstLine = 13579
-; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------8+--------------------t80-----0-0--------------------------80---------------------------------4---------------------------------------------------------------------------------------------------n----
+; CursorPosition = 13760
+; FirstLine = 13610
+; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------40--------------------b48-----8-8--------------------------48---------------------------------v---------------------------------------------------------------------------------------------------P-----
 ; Optimizer
 ; EnableXP
 ; DPIAware
