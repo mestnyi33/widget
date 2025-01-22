@@ -774,8 +774,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 202
-; FirstLine = 196
+; CursorPosition = 617
+; FirstLine = 612
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

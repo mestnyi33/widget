@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
    Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
       
-      _flag_|#__flag_vertical
+      ;_flag_|#__flag_vertical
       
       Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;
@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 25
+; CursorPosition = 17
 ; FirstLine = 6
 ; Folding = -
 ; EnableXP

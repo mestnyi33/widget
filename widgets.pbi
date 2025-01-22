@@ -5213,6 +5213,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                bar_Update( \v, #True )
                If \h\bar\thumb\len = \h\bar\thumb\end
                   bar_Update( \h, #True )
+                  
                EndIf
             Else
                \h\bar\AreaChange( ) = \h\bar\page\len - iwidth
@@ -5306,18 +5307,30 @@ CompilerIf Not Defined( widget, #PB_Module )
                Resize( \h, #PB_Ignore, y1-*this\inner_y( ), Width, #PB_Ignore )
             EndIf
             
-            If \v\bar\page\len >= \v\bar\max ;Or \v\bar\thumb\len = \v\bar\thumb\end
-               \v\hide = 1
-            Else
-               \v\hide = \v\hide[1]
-            EndIf
-            
-            If \h\bar\page\len >= \h\bar\max ;Or \h\bar\thumb\len = \h\bar\thumb\end
-               \h\hide = 1
-            Else
-               \h\hide = \h\hide[1]
-            EndIf
-            
+;             ;
+;             If \v\bar\max > \v\bar\page\len ; Or \v\bar\thumb\len <> \v\bar\thumb\end
+;                If \v\hide <> \v\hide[1]
+;                   Debug 777
+;                   \v\hide = \v\hide[1]
+;                EndIf
+;             Else
+;                If \V\hide = 0
+;                   Debug 888
+;                   \V\hide = 1
+;                EndIf
+;             EndIf
+;             ;
+;             If \h\bar\max > \h\bar\page\len ; Or \h\bar\thumb\len <> \h\bar\thumb\end
+;                If \h\hide <> \h\hide[1]
+;                   Debug 999
+;                   \h\hide = \h\hide[1]
+;                EndIf
+;             Else
+;                If \h\hide = 0
+;                   Debug 666
+;                   \h\hide = 1
+;                EndIf
+;             EndIf
             
             ;\\ update scrollbars parent inner coordinate
             If *this\scroll_inner_width( ) <> \h\bar\page\len
@@ -5330,8 +5343,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If \v\bar\AreaChange( ) Or
                \h\bar\AreaChange( )
+              ;*this\WidgetChange( ) = 1
                
-               ;*this\WidgetChange( ) = 1
                ;Debug ""+\v\class +" "+ \h\class +" "+ \v\hide[1] +" "+ \h\hide[1] +" "+ *this\scroll_inner_width( ) +" "+ *this\scroll_inner_height( )
                
                ProcedureReturn #True
@@ -5354,6 +5367,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             result = 1
          EndIf
          
+            
+            
          If result
             bar_area_resize( *this )
             
@@ -5642,6 +5657,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *SB  = *bar\button
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
+         
          
          ;Debug ""+ mode +" "+ *this\bar\PageChange( )
          ;mode = 2
@@ -6117,11 +6133,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Scroll
             ;\\ hide state
             If is_integral_( *this )
-               If *bar\max <= *bar\page\len
-                  *this\hide = 1
-               Else
+               If *bar\max > *bar\page\len
                   If Not *this\hide[1]
                      *this\hide = 0
+                  EndIf
+               Else
+                  If *this\hide = 0
+                     *this\hide = 1
+                     ; 
+                     *bar\page\pos = 0
                   EndIf
                EndIf
             EndIf
@@ -6225,8 +6245,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\parent And *this\parent\scroll
                   If *bar\vertical
                      If *this\parent\scroll\v = *this
-                        *this\parent\WidgetChange( ) = - 1
-                        *this\parent\scroll_y( )     = - *bar\page\pos
+                        If Not *this\parent\text\editable
+                           *this\parent\WidgetChange( ) = - 1
+                        EndIf
+                        
+                        If *this\parent\scroll_y( ) <> - *bar\page\pos
+                           *this\parent\scroll_y( ) = - *bar\page\pos
+                           *bar\AreaChange( ) = 1
+                        EndIf
                         
                         ;\\ Area children's x&y auto move
                         If *this\parent\type = #__type_ScrollArea And IsGadget(*this\parent\scroll\gadget[2])
@@ -6253,8 +6279,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   Else
                      If *this\parent\scroll\h = *this
-                        *this\parent\WidgetChange( ) = - 2
-                        *this\parent\scroll_x( )     = - *bar\page\pos
+                        If Not *this\parent\text\editable
+                           *this\parent\WidgetChange( ) = - 2
+                        EndIf
+                        
+                        If *this\parent\scroll_x( ) <> - *bar\page\pos
+                           *this\parent\scroll_x( ) = - *bar\page\pos
+                           *bar\AreaChange( ) = 1
+                        EndIf
                         ;
                         ;\\ Area children's x&y auto move
                         If *this\parent\type = #__type_ScrollArea And IsGadget(*this\parent\scroll\gadget[2])
@@ -13391,12 +13423,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
                
                ;
-               If *rowLine\lindex > *this\LinePressedIndex( )
-                  *this\LineEnteredIndex( ) = *this\LinePressedIndex( ) + Count
+               If *this\LinePressedIndex( ) > *rowLine\lindex
+                  *this\LinePressedIndex( ) = *rowLine\lindex + Count
                Else
-                  *this\LineEnteredIndex( ) = *rowLine\lindex + Count
+                  *this\LinePressedIndex( ) + Count
                EndIf
-               *this\LinePressedIndex( ) = *this\LineEnteredIndex( )
+               *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
+               *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
                
                ;
                If Not *this\TextChange( )
@@ -13622,10 +13655,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             If key = #PB_Shortcut_Return
                *this\text\string.s = *this\text\edit[1]\string + #LF$ + *this\text\edit[3]\string
                ;
-               If *this\LinePressedIndex( ) < *this\LineFocused( )\lindex
-                  *this\LinePressedIndex( ) + 1
-               Else
+               If *this\LinePressedIndex( ) > *this\LineFocused( )\lindex
                   *this\LinePressedIndex( ) = *this\LineFocused( )\lindex + 1
+               Else
+                  *this\LinePressedIndex( ) + 1
                EndIf
             Else
                *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
@@ -13641,8 +13674,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             ;
-            *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
             *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
+            *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
             ;
             *this\TextChange( ) =- 99
             ;
@@ -13656,7 +13689,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       ;-
-      Procedure edit_SetItem( *this._s_WIDGET, List e_rows._s_ROWS( ), position, *text.Character, string_len )
+      Procedure edit_AddLine( *this._s_WIDGET, List e_rows._s_ROWS( ), position, *text.Character, string_len )
          Protected *rowLine._s_ROWS
          Protected add_index = - 1, add_y, add_pos, add_height
          
@@ -13681,6 +13714,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             PopListPosition(e_rows( ))
          EndIf
          
+         Debug position
          ;\\
          e_rows( )\lindex      = position
          e_rows( )\text\len    = string_len
@@ -13703,7 +13737,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   e_rows( )\text\pos = add_pos
                   e_rows( )\y        = add_y - *this\padding\y
                Else
-                  e_rows( )\text\pos = *this\text\len
+                  e_rows( )\text\pos = *this\text\len 
+                  If *this\countitems = 1
+                    e_rows( )\text\pos + 1
+                  EndIf
                   e_rows( )\y        = *this\scroll_height( ) - *this\padding\y
                EndIf
             ElseIf *this\text\rotate = 180
@@ -13718,8 +13755,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
-         edit_SetItem(*this, *this\__lines( ), position, *text, string_len)
+         edit_AddLine(*this, *this\__lines( ), position, *text, string_len)
          
+         Debug ""+*this\__lines( )\lindex +" "+ *this\__lines( )\text\pos
+           
          ; insert line 
          If *this\__lines( )\text\pos = 0
             If *this\text\string
@@ -13818,7 +13857,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          While *end\c
             If *end\c = #LF
-               edit_SetItem( *this, *this\__lines( ), - 1, *str, (*end - *str) >> #PB_Compiler_Unicode )
+               edit_AddLine( *this, *this\__lines( ), - 1, *str, (*end - *str) >> #PB_Compiler_Unicode )
                
                If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
                If focus_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
@@ -15876,8 +15915,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\
                ClearList( *this\__lines( ))
-               *this\scroll_width( )  = *this\padding\x * 2
-               *this\scroll_height( ) = *this\padding\y * 2
+               *this\scroll_width( )  = *this\padding\x * 2 
+               *this\scroll_height( ) =  *this\padding\y * 2 
+               
+               ;
+               If Not *this\text\vertical And *this\img\width And *this\text\string = ""
+                  *this\scroll_width( )  = *this\img\width + *this\padding\x * 2 
+               EndIf
                
                ;
                While *end\c
@@ -15885,7 +15929,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      AddElement( *this\__lines( ))
                      *this\__lines( )\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
                      *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
-                     ;;*this\__lines( )\text\width = TextWidth( *this\__lines( )\text\string )
                      
                      ; drawing item font
                      draw_font( *this\__lines( ));, GetFontID( *this ) )
@@ -15906,8 +15949,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      ; make line position
                      If *this\text\vertical
-                        If *this\scroll_height( ) < *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\y * 2
-                           *this\scroll_height( ) = *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\y * 2
+                        If *this\scroll_height( ) < *this\__lines( )\text\width + *this\padding\y * 2 ;+ *this\mode\fullselection
+                           *this\scroll_height( ) = *this\__lines( )\text\width + *this\padding\y * 2 ;+ *this\mode\fullselection
                         EndIf
                         
                         If *this\text\rotate = 90
@@ -15918,8 +15961,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         *this\scroll_width( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
                      Else ; horizontal
-                        If *this\scroll_width( ) < *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\x * 2
-                           *this\scroll_width( ) = *this\__lines( )\text\width + *this\mode\fullselection + *this\padding\x * 2
+                        If *this\scroll_width( ) < *this\__lines( )\text\width + *this\padding\x * 2 ;+ *this\mode\fullselection
+                           *this\scroll_width( ) = *this\__lines( )\text\width + *this\padding\x * 2 ;+ *this\mode\fullselection
                         EndIf
                         
                         If *this\text\rotate = 0
@@ -15930,7 +15973,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         *this\scroll_height( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
                      EndIf
-                     
+                  
                      *str = *end + #__sOC
                   EndIf
                   
@@ -15984,7 +16027,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      If *this\img\align\top
                         If *this\img\height
-                           *this\__lines( )\text\y + img_indent + *this\img\height
+                           *this\__lines( )\text\y + *this\img\height + img_indent
                         EndIf
                      EndIf
                   EndIf
@@ -16009,16 +16052,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      If *this\img\align\top Or *this\img\align\bottom 
                         If *this\img\height
-                           *this\scroll_height( ) + img_indent + *this\img\height
+                           *this\scroll_height( ) + *this\img\height + img_indent
                         EndIf
                      EndIf
                   ; EndIf
                EndIf
             EndIf
             
+            
             ;\\
             bar_area_update( *this )
-            
             
             ; make horizontal scroll x
             make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
@@ -16026,43 +16069,34 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; make vertical scroll y
             make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
             
-            ;           ; This is for the caret and scroll
-            ;           ; when entering the key - ( enter & backspace )
-            ;           If *this\scroll\v
-            ;             edit_text_*this\scroll_y( )
-            ;           EndIf
-            ;           If *this\scroll\h
-            ;             edit_text_*this\scroll_x( )
-            ;           EndIf
             
-            
-            ; vertical bar one before displaying
-            If *this\scroll\v And Not *this\scroll\v\bar\ThumbChange( ) ;And Not *this\show
-               If *this\scroll\v\bar\max > *this\scroll\v\bar\page\len
-                  If *this\text\align\bottom
-                     If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\end )
-                     EndIf
-                     
-                  ElseIf Not *this\text\align\top
-                     If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\end / 2 )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; horizontal bar one before displaying
-            If *this\scroll\h And Not *this\scroll\h\bar\ThumbChange( ) ;And Not *this\show
-               If *this\scroll\h\bar\max > *this\scroll\h\bar\page\len
-                  If *this\text\align\right
-                     If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\end )
-                     EndIf
-                     
-                  ElseIf Not *this\text\align\left
-                     If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\end / 2 )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
+;             ; vertical bar one before displaying
+;             If *this\scroll\v And Not *this\scroll\v\bar\ThumbChange( ) ;And Not *this\show
+;                If *this\scroll\v\bar\max > *this\scroll\v\bar\page\len
+;                   If *this\text\align\bottom
+;                      If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\end )
+;                      EndIf
+;                      
+;                   ElseIf Not *this\text\align\top
+;                      If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\end / 2 )
+;                      EndIf
+;                   EndIf
+;                EndIf
+;             EndIf
+;             
+;             ; horizontal bar one before displaying
+;             If *this\scroll\h And Not *this\scroll\h\bar\ThumbChange( ) ;And Not *this\show
+;                If *this\scroll\h\bar\max > *this\scroll\h\bar\page\len
+;                   If *this\text\align\right
+;                      If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\end )
+;                      EndIf
+;                      
+;                   ElseIf Not *this\text\align\left
+;                      If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\end / 2 )
+;                      EndIf
+;                   EndIf
+;                EndIf
+;             EndIf
             
          EndWith
       EndProcedure
@@ -16889,64 +16923,68 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;
+               ; Debug ""+*this\text\editable +" "+ *this\LinePressedIndex( ) +" "+ *this\TextChange( )
+                     ;
                ; then change text update cursor pos
-               If *this\text\editable And *this\LineEnteredIndex( ) >= 0 And *this\TextChange( ) =- 99
-                  ;Debug *this\TextChange( )
-                  ;
+               If *this\text\editable And *this\TextChange( ) =- 99 And *this\LineFocusedIndex( ) >= 0
+                 ;
                   Update_DrawText( *this, 1 )
                   ;
-                  If Not ( *this\LineFocused( ) And *this\LineFocused( )\lindex = *this\LineEnteredIndex( ) )
-                     *this\LineFocused( ) = SelectElement( *this\__lines( ), *this\LineEnteredIndex( ) )
+                  If Not ( *this\LineFocused( ) And *this\LineFocused( )\lindex = *this\LinePressedIndex( ) )
+                     *this\LineFocused( ) = SelectElement( *this\__lines( ), *this\LinePressedIndex( ) )
                   EndIf
                   
                   If *this\LineFocused( )
+;                      *this\LineEntered( ) = *this\LineFocused( )
+;                      *this\LinePressed( ) = *this\LineFocused( )
+                     
                      edit_sel_string_( *this, *this\LineFocused( ) )
                      edit_sel_text_( *this, *this\LineFocused( ) )
-                  EndIf
-                  
-                  If test_edit_text
-                     Debug "----- " + *this\text\string
-                     Debug "    key - change caret pos " + ListSize( *this\__lines( ) ) + " " + *this\LineFocused( )\lindex + " " + *this\LinePressedIndex( )
-                  EndIf
-                  
-                  ;
-                  If *this\scroll\v And Not *this\scroll\v\hide
-                     If *this\LineFocused( )\y + *this\scroll_y( ) < 0 Or
-                        *this\LineFocused( )\y + *this\LineFocused( )\height + *this\scroll_y( ) > *this\inner_height( )
-                        
-                        If test_edit_text
-                           If *this\LineFocused( )\y + *this\scroll_y( ) < 0
-                              Debug "       key - scroll UP"
-                           ElseIf *this\LineFocused( )\y + *this\LineFocused( )\height + *this\scroll_y( ) > *this\inner_height( )
-                              Debug "       key - scroll DOWN"
-                           EndIf
-                        EndIf
-                        
-                        row_scroll_( *this\scroll\v, *this\text\caret\y, *this\text\caret\height ) ; ok
+                     
+                     If test_edit_text
+                        Debug "----- " + *this\text\string
+                        Debug "    key - change caret pos " + ListSize( *this\__lines( ) ) + " " + *this\LineFocused( )\lindex + " " + *this\LinePressedIndex( )
                      EndIf
-                  EndIf
-                  
-                  ;
-                  If *this\scroll\h And Not *this\scroll\h\hide
-                     If *this\text\caret\x + *this\scroll_x( ) < 0 Or
-                        *this\text\caret\x + *this\text\caret\width + *this\scroll_x( ) > *this\inner_width( )
-                        
-                        If test_edit_text
-                           If *this\text\caret\x + *this\scroll_x( ) < 0
-                              Debug "       key - scroll LEFT"
-                           ElseIf *this\text\caret\x + *this\text\caret\width + *this\scroll_x( ) > *this\inner_width( )
-                              Debug "       key - scroll RIGHT"
+                     
+                     ;
+                     If *this\scroll\v And Not *this\scroll\v\hide
+                        If *this\scroll_y( ) + *this\text\caret\y < 0 Or
+                           *this\scroll_y( ) + *this\text\caret\y + *this\text\caret\height > *this\inner_height( )
+                           
+                           If test_edit_text
+                              If *this\scroll_y( ) + *this\text\caret\y < 0
+                                 Debug "       key - scroll UP"
+                              ElseIf *this\scroll_y( ) + *this\text\caret\y + *this\text\caret\height > *this\inner_height( )
+                                 Debug "       key - scroll DOWN"
+                              EndIf
                            EndIf
+                           
+                           row_scroll_( *this\scroll\v, *this\text\caret\y, *this\text\caret\height ) ; ok
                         EndIf
-                        
-                        row_scroll_( *this\scroll\h, *this\text\caret\x, *this\text\caret\width ) ; ok
                      EndIf
+                     
+                     ;
+                     If *this\scroll\h And Not *this\scroll\h\hide
+                        If *this\scroll_x( ) + *this\text\caret\x < 0 Or
+                           *this\scroll_x( ) + *this\text\caret\x + *this\text\caret\width  > *this\inner_width( )
+                           
+                           If test_edit_text
+                              If *this\scroll_x( ) + *this\text\caret\x < 0
+                                 Debug "       key - scroll LEFT"
+                              ElseIf *this\scroll_x( ) + *this\text\caret\x + *this\text\caret\width > *this\inner_width( )
+                                 Debug "       key - scroll RIGHT"
+                              EndIf
+                           EndIf
+                           
+                           Debug "scroll ??????? "+*this\scroll\h\bar\page\pos
+                           row_scroll_( *this\scroll\h, *this\text\caret\x, *this\text\caret\width ) ; ok
+                        EndIf
+                     EndIf
+                     ;
+                     ; text change
+                     DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
                   EndIf
-                  ;
-                  ; text change
-                  DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
-                  *this\LineEnteredIndex( ) = - 1
+                  *this\LineFocusedIndex( ) = - 99
                EndIf
                
                ; Draw back color
@@ -23916,7 +23954,7 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem(*button_panel, -1, "2")
    *g = Tree(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
    a  = - 1
-   AddItem(*g, a, "This is a long line.")
+   AddItem(*g, a, "This is a long row.")
    AddItem(*g, a, "Who should show.")
    AddItem(*g, a, "")
    AddItem(*g, a, "")
@@ -23928,11 +23966,11 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem(*g, a, "The string must be very long.")
    AddItem(*g, a, "Otherwise it will not work.")
    For a = 0 To 2
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
+      AddItem(*g, a, Str(a) + " Row " + Str(a))
    Next
    AddItem(*g, 7 + a, "_")
    For a = 4 To 6
-      AddItem(*g, a, Str(a) + " Line " + Str(a))
+      AddItem(*g, a, Str(a) + " Row " + Str(a))
    Next
    ;\\
    AddItem(*button_panel, -1, "3")
@@ -24363,9 +24401,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1011
-; FirstLine = 971
-; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------30+-----+-+--------------------------0+---------------------------------8--------------------------------------------------------------------------------------------------------
+; CursorPosition = 13741
+; FirstLine = 13579
+; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------8+--------------------t80-----0-0--------------------------80---------------------------------4---------------------------------------------------------------------------------------------------n----
 ; Optimizer
 ; EnableXP
 ; DPIAware

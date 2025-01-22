@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿
+XIncludeFile "../../widgets.pbi"
 ;   WordWrap ! 1
 ;         SetGadgetAttribute(0, #PB_Editor_WordWrap, WordWrap)
 
@@ -41,25 +42,30 @@ CompilerIf #PB_Compiler_IsMainFile
    LoadFont(1, "Courier", 14)
    If Open(0, 0, 0, 522, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
       
-      ; g = EditorGadget(#PB_Any, 8, 8, 306, 133) 
-      g = EditorGadget(#PB_Any, 0, 0, 0, 0) ; bug PB on windows 
-      SetGadgetText(g, Text.s)
-      AddGadgetItem(g, 0, "add line first")
-      AddGadgetItem(g, 4, "add line "+Str(4))
-      AddGadgetItem(g, 8, "add line "+Str(8))
-      AddGadgetItem(g, -1, "add line last")
-      ; SetGadgetFont(g, FontID(1))
+      g = EditorGadget(#PB_Any, 8, 8, 306, 133) 
+      ;g = EditorGadget(#PB_Any, 0, 0, 0, 0) ; bug PB on windows 
+;       SetGadgetText(g, Text.s)
+;       AddGadgetItem(g, 0, "add line first")
+;       AddGadgetItem(g, 4, "add line "+Str(4))
+;       AddGadgetItem(g, 8, "add line "+Str(8))
+;       AddGadgetItem(g, -1, "add line last")
+;       ; SetGadgetFont(g, FontID(1))
+      SetGadgetText(g,     "012345" )
+    AddGadgetItem(g, -1, "-text-" )
     
-      ; *g = Editor(8, 146, 306, 133) 
-      *g = Editor(0, 0, 0, 0) 
+      *g = Editor(8, 146, 306, 133) 
+      ;*g = Editor(0, 0, 0, 0) 
       SetBackgroundColor(*g, $FFB3FDFF)
-      SetText(*g, Text.s)
-      AddItem(*g, 0, "add line first")
-      AddItem(*g, 4, "add line "+Str(4))
-      AddItem(*g, 8, "add line "+Str(8))
-      AddItem(*g, -1, "add line last")
-      ; SetFont(*g, FontID(1))
-      
+;       SetText(*g, Text.s)
+;       AddItem(*g, 0, "add line first")
+;       AddItem(*g, 4, "add line "+Str(4))
+;       AddItem(*g, 8, "add line "+Str(8))
+;       AddItem(*g, -1, "add line last")
+;       ; SetFont(*g, FontID(1))
+      SetText(*g,     "012345" )
+      Debug 666
+      AddItem(*g, -1, "-text-" )
+    
       Splitter(8, 8, 306, 276, g, *g, #__flag_autosize)
       
       Repeat
@@ -75,8 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 42
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
 ; DPIAware
