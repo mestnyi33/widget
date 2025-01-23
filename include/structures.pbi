@@ -580,6 +580,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; eventbind.b
          bindresize.b
          binddraw.b ; 
+         bindcursor.b ; 
          
          ;
          Resize.RESIZEINFO                 
@@ -774,8 +775,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 617
-; FirstLine = 612
+; CursorPosition = 582
+; FirstLine = 570
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

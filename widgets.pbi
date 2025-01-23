@@ -8431,12 +8431,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             CurrentCursor( ) = *cursor
-            result = Send( *this, #__event_CursorChange, #PB_All, CurrentCursor( ) )
-            If result > 0
-               *cursor = result
-               CurrentCursor( ) = *cursor
+            ;
+            If *this\bindcursor
+               result = Send( *this, #__event_CursorChange, #PB_All, CurrentCursor( ) )
+               If result > 0
+                  *cursor = result
+                  CurrentCursor( ) = *cursor
+               EndIf
             EndIf
-            
+         
             Cursor::Set( *this\root\canvas\gadget, *cursor ) 
          EndIf
          
@@ -10622,6 +10625,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result.i, *active._s_WIDGET
          Protected._s_WIDGET *deactive, *deactiveWindow, *deactiveGadget
          
+         ; deactivate
          If GetActive( )
             *deactive = GetActive( )
             *deactiveWindow = ActiveWindow( )
@@ -10769,6 +10773,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
+         
+         ; activate
          If *this
             ;\\
             If is_integral_( *this )
@@ -10806,7 +10812,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *active = *active\parent
             EndIf
             
-            If Not *Active 
+            If Not *active 
                ProcedureReturn 0
             EndIf
             
@@ -10816,126 +10822,72 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\
-            If Not (*this\disable And Not *this\anchors) ; Not *active\disable ; 
-               If GetActive( ) <> *this
-                  *deactive = GetActive( )
-                  *deactiveWindow = ActiveWindow( )
-                  If *deactiveWindow
-                     *deactiveGadget = ActiveGadget( )
-                  EndIf
-                  
-                  GetActive( ) = *this
-                  *this\root\active = *this
-                  
-                  If is_Window_( *active )
-                     ActiveWindow( ) = *active
-                  Else
-                     ActiveWindow( ) = *active\window
-                     If ActiveWindow( ) 
-                        If is_gadget_( *active )
-                           ActiveGadget( ) = *active
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-                  
-                  If *deactive
-                     If is_integral_( *deactive )
-                        *deactive = *deactive\parent
-                     EndIf
-                     ;
-                     If *deactiveWindow And *deactiveWindow <> *active  
-                        ;\\ set deactive all parents
-                        If *deactive And
-                           *deactive\address And
-                           Not is_root_( *deactive )
-                           
-                           If Not IsChild( *this, *deactive )
-                              PushListPosition( widgets( ) )
-                              ChangeCurrentElement( widgets( ), *deactive\address )
-                              While PreviousElement( widgets( ))
-                                 If widgets( )
-                                    widget( ) = widgets( )
-                                    
-                                    If widget( ) = *this\window
-                                       Break
-                                    EndIf
-                                    If widget( ) = *this
-                                       Break
-                                    EndIf
-                                    If IsChild( *deactive, widget( ))
-                                       ;If Not IsChild( *this, widget( ) )
-                                       If widget( )\focus = 2
-                                          widget( )\focus = 3
-                                          
-                                          If test_focus_set
-                                             Debug "Deactive widget( ) "+widget( )\class
-                                          EndIf
-                                          DoFocus( widget( ), #__event_LostFocus )
-                                       EndIf
-                                       ;EndIf
-                                    EndIf
-                                 EndIf
-                              Wend
-                              PopListPosition( widgets( ) )
-                           EndIf
-                        EndIf
-                        
-                        ;\\
-                        If Not IsChild( *active, *deactiveWindow )
-                           If *deactiveWindow\focus <> 3 
-                              *deactiveWindow\focus = 3
-                              If test_focus_set
-                                 Debug "Deactive widgetwindow "+*deactiveWindow\class
-                              EndIf
-                              ;
-                              DoFocus( *deactiveWindow, #__event_LostFocus )
-                           EndIf
-                        EndIf
-                        
-                        If *deactiveGadget And *deactiveGadget <> *active
-                           If *deactiveGadget\focus <> 3
-                              *deactiveGadget\focus = 3
-                              If test_focus_set
-                                 Debug "Deactive widgetgadget "+*deactiveGadget\class
-                              EndIf
-                              ;
-                              DoFocus( *deactiveGadget, #__event_LostFocus )
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-                  ;\\
+            If (*this\disable And Not *this\anchors) ; Not *active\disable ; 
+               ProcedureReturn 0
+            EndIf 
+            
+            If GetActive( ) <> *this
+               *deactive = GetActive( )
+               *deactiveWindow = ActiveWindow( )
+               If *deactiveWindow
+                  *deactiveGadget = ActiveGadget( )
+               EndIf
+               
+               GetActive( ) = *this
+               *this\root\active = *this
+               
+               If is_Window_( *active )
+                  ActiveWindow( ) = *active
+               Else
+                  ActiveWindow( ) = *active\window
                   If ActiveWindow( ) 
-                     ;\\ set active all parents
-                     If ActiveWindow( )\root\focus = 3
-                        ActiveWindow( )\root\focus = 2
-                        If test_focus_set
-                           Debug "Active widgetroot "+ActiveWindow( )\root\class
-                        EndIf
-                        ;
-                        DoFocus( ActiveWindow( )\root, #__event_Focus )
+                     If is_gadget_( *active )
+                        ActiveGadget( ) = *active
                      EndIf
-                     If *active\address
-                        If Not is_root_( *active )
+                  EndIf
+               EndIf
+               ; это чтобы при активации окна, если есть активный гаджет
+               ; чтобы он получил фокус клавиатуры
+               If ActiveGadget( )
+                  GetActive( ) = ActiveGadget( )
+               EndIf
+               
+               ; 
+               If *deactive
+                  If is_integral_( *deactive )
+                     *deactive = *deactive\parent
+                  EndIf
+                  ;
+                  If *deactiveWindow And *deactiveWindow <> *active  
+                     ;\\ set deactive all parents
+                     If *deactive And
+                        *deactive\address And
+                        Not is_root_( *deactive )
+                        
+                        If Not IsChild( *this, *deactive )
                            PushListPosition( widgets( ) )
-                           ChangeCurrentElement( widgets( ), *active\address )
-                           While PreviousElement( widgets( ) )
+                           ChangeCurrentElement( widgets( ), *deactive\address )
+                           While PreviousElement( widgets( ))
                               If widgets( )
                                  widget( ) = widgets( )
                                  
-                                 If is_window_( widgets( ) )
-                                    If IsChild( *active, widgets( ) )
-                                       If widgets( )\focus = 3
-                                          widgets( )\focus = 2
-                                          If test_focus_set
-                                             Debug "Active widget( ) "+widget( )\class
-                                          EndIf
-                                          ;
-                                          DoFocus( widgets( ), #__event_Focus )
+                                 If widget( ) = *this\window
+                                    Break
+                                 EndIf
+                                 If widget( ) = *this
+                                    Break
+                                 EndIf
+                                 If IsChild( *deactive, widget( ))
+                                    ;If Not IsChild( *this, widget( ) )
+                                    If widget( )\focus = 2
+                                       widget( )\focus = 3
+                                       
+                                       If test_focus_set
+                                          Debug "Deactive widget( ) "+widget( )\class
                                        EndIf
+                                       DoFocus( widget( ), #__event_LostFocus )
                                     EndIf
+                                    ;EndIf
                                  EndIf
                               EndIf
                            Wend
@@ -10943,27 +10895,88 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     
-                     If ActiveWindow( )\focus <> 2
-                        ActiveWindow( )\focus = 2
-                        If test_focus_set
-                           Debug "Active widgetwindow "+ActiveWindow( )\class
+                     ;\\
+                     If Not IsChild( *active, *deactiveWindow )
+                        If *deactiveWindow\focus <> 3 
+                           *deactiveWindow\focus = 3
+                           If test_focus_set
+                              Debug "Deactive widgetwindow "+*deactiveWindow\class
+                           EndIf
+                           ;
+                           DoFocus( *deactiveWindow, #__event_LostFocus )
                         EndIf
-                        ;
-                        DoFocus( ActiveWindow( ), #__event_Focus )
                      EndIf
                      
-                     If ActiveGadget( ) And
-                        ActiveGadget( )\focus <> 2
-                        ActiveGadget( )\focus = 2
-                        If test_focus_set
-                           Debug "Active widgetgadget "+ActiveGadget( )\class
+                     If *deactiveGadget And *deactiveGadget <> *active
+                        If *deactiveGadget\focus <> 3
+                           *deactiveGadget\focus = 3
+                           If test_focus_set
+                              Debug "Deactive widgetgadget "+*deactiveGadget\class
+                           EndIf
+                           ;
+                           DoFocus( *deactiveGadget, #__event_LostFocus )
                         EndIf
-                        ;
-                        DoFocus( ActiveGadget( ), #__event_Focus )
                      EndIf
                   EndIf
-               EndIf 
+               EndIf
+               
+               ;\\
+               If ActiveWindow( ) 
+                  ;\\ set active all parents
+                  If ActiveWindow( )\root\focus = 3
+                     ActiveWindow( )\root\focus = 2
+                     If test_focus_set
+                        Debug "Active widgetroot "+ActiveWindow( )\root\class
+                     EndIf
+                     ;
+                     DoFocus( ActiveWindow( )\root, #__event_Focus )
+                  EndIf
+                  If *active\address
+                     If Not is_root_( *active )
+                        PushListPosition( widgets( ) )
+                        ChangeCurrentElement( widgets( ), *active\address )
+                        While PreviousElement( widgets( ) )
+                           If widgets( )
+                              widget( ) = widgets( )
+                              
+                              If is_window_( widgets( ) )
+                                 If IsChild( *active, widgets( ) )
+                                    If widgets( )\focus = 3
+                                       widgets( )\focus = 2
+                                       If test_focus_set
+                                          Debug "Active widget( ) "+widget( )\class
+                                       EndIf
+                                       ;
+                                       DoFocus( widgets( ), #__event_Focus )
+                                    EndIf
+                                 EndIf
+                              EndIf
+                           EndIf
+                        Wend
+                        PopListPosition( widgets( ) )
+                     EndIf
+                  EndIf
+                  
+                  ; 
+                  If ActiveWindow( )\focus <> 2
+                     ActiveWindow( )\focus = 2
+                     If test_focus_set
+                        Debug "Active widgetwindow "+ActiveWindow( )\class
+                     EndIf
+                     ;
+                     DoFocus( ActiveWindow( ), #__event_Focus )
+                  EndIf
+                  
+                  If ActiveGadget( ) And
+                     ActiveGadget( )\focus <> 2
+                     ActiveGadget( )\focus = 2
+                     If test_focus_set
+                        Debug "Active widgetgadget "+ActiveGadget( )\class
+                     EndIf
+                     ;
+                     DoFocus( ActiveGadget( ), #__event_Focus )
+                  EndIf
+               EndIf
             EndIf 
          EndIf
          
@@ -13603,6 +13616,18 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          If Not *this\LineFocused( )
             ProcedureReturn 0
+         EndIf
+         
+         If key = #PB_Shortcut_X
+            If *this\text\edit[2]\len
+               If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                  *this\edit_caret_1( ) = *this\edit_caret_2( )
+               Else
+                  *this\edit_caret_2( ) = *this\edit_caret_1( )
+               EndIf
+            Else
+               *this\notify = key
+            EndIf
          EndIf
          
          ; key_backup
@@ -17015,9 +17040,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ; Draw caret
-               If *this\text\editable And *this\focus
-                  draw_mode_( #PB_2DDrawing_XOr )
-                  draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
+               If *this\text\editable 
+                  If *this\focus = 2
+                     draw_mode_( #PB_2DDrawing_XOr )
+                     draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
+                  EndIf
                EndIf
                
                ; Draw frames
@@ -19479,24 +19506,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                      Case #__event_KeyDown
                         Select keyboard( )\key
-                           Case #PB_Shortcut_Home
-                              Repaint = edit_key_home_( *this )
-                              
-                           Case #PB_Shortcut_End
-                              Repaint = edit_key_end_( *this )
-                              
-                           Case #PB_Shortcut_PageUp 
-                              If test_edit_text
-                                 Debug "key PageUp"
-                              EndIf
-                              Repaint = edit_key_page_up_down_( *this, - 1, 1 )
-                              
-                           Case #PB_Shortcut_PageDown 
-                              If test_edit_text
-                                 Debug "key PageDown"
-                              EndIf
-                              Repaint = edit_key_page_up_down_( *this, 1, 1 )
-                              
                            Case #PB_Shortcut_Up       ; Ok
                               If *this\LineFocused( ) And *this\edit_caret_1( ) > 0
                                  If keyboard( )\key[1] & #PB_Canvas_Shift
@@ -19690,19 +19699,31 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  edit_sel_text_( *this, *this\LineFocused( ) )
                               EndIf
                               
+                           Case #PB_Shortcut_Home
+                              edit_key_home_( *this )
+                              
+                           Case #PB_Shortcut_End
+                              edit_key_end_( *this )
+                              
+                           Case #PB_Shortcut_PageUp 
+                              edit_key_page_up_down_( *this, - 1, 1 )
+                              
+                           Case #PB_Shortcut_PageDown 
+                              edit_key_page_up_down_( *this, 1, 1 )
+                              
                            Case #PB_Shortcut_Back
                               If Not *this\notify
-                                 Repaint = edit_key_remove( *this, keyboard( )\key )
+                                 edit_key_remove( *this, keyboard( )\key )
                               EndIf
                               
                            Case #PB_Shortcut_Delete
                               If Not *this\notify
-                                 Repaint = edit_key_remove( *this, keyboard( )\key )
+                                 edit_key_remove( *this, keyboard( )\key )
                               EndIf
                               
                            Case #PB_Shortcut_Return   ; Ok
                               If Not *this\notify
-                                 Repaint = edit_key_remove( *this, keyboard( )\key )
+                                 edit_key_remove( *this, keyboard( )\key )
                               EndIf
                               
                               
@@ -19711,12 +19732,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  If *this\text\edit[2]\len <> *this\text\len
                                     
                                     ; select first and last items
-                                    *this\LinePressedIndex( ) = *this\countitems - 1
                                     *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
+                                    *this\LinePressedIndex( ) = *this\countitems - 1
                                     
                                     edit_sel_text_( *this, #PB_All )
-                                    
-                                    Repaint = 1
                                  EndIf
                               EndIf
                               
@@ -19724,10 +19743,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                               If keyboard( )\key[1] & #PB_Canvas_Control
                                  If *this\text\edit[2]\len
                                     SetClipboardText( *this\text\edit[2]\string )
-                                    
-                                    If keyboard( )\key = #PB_Shortcut_X
-                                       edit_ClearItems( *this )
-                                    EndIf
+                                 EndIf
+                                 
+                                 If keyboard( )\key = #PB_Shortcut_X
+                                    edit_key_remove( *this, keyboard( )\key )
                                  EndIf
                               EndIf
                               
@@ -19749,29 +19768,29 @@ CompilerIf Not Defined( widget, #PB_Module )
                               
                         EndSelect
                         
-                        Select keyboard( )\key
-                           Case #PB_Shortcut_Home,
-                                #PB_Shortcut_End,
-                                #PB_Shortcut_PageUp,
-                                #PB_Shortcut_PageDown,
-                                #PB_Shortcut_Up,
-                                #PB_Shortcut_Down,
-                                #PB_Shortcut_Left,
-                                #PB_Shortcut_Right,
-                                #PB_Shortcut_Delete,
-                                #PB_Shortcut_Return ;, #PB_Shortcut_back
-                              
-                              If Not Repaint
-                                 *this\notify = - 1
-                                 ProcedureReturn - 1
-                              EndIf
-                              
-                           Case #PB_Shortcut_A,
-                                #PB_Shortcut_C,
-                                #PB_Shortcut_X,
-                                #PB_Shortcut_V
-                              
-                        EndSelect
+;                         Select keyboard( )\key
+;                            Case #PB_Shortcut_Home,
+;                                 #PB_Shortcut_End,
+;                                 #PB_Shortcut_PageUp,
+;                                 #PB_Shortcut_PageDown,
+;                                 #PB_Shortcut_Up,
+;                                 #PB_Shortcut_Down,
+;                                 #PB_Shortcut_Left,
+;                                 #PB_Shortcut_Right,
+;                                 #PB_Shortcut_Delete,
+;                                 #PB_Shortcut_Return ;, #PB_Shortcut_back
+;                               
+;                               If Not Repaint
+;                                  *this\notify = - 1
+;                                  ProcedureReturn - 1
+;                               EndIf
+;                               
+;                            Case #PB_Shortcut_A,
+;                                 #PB_Shortcut_C,
+;                                 #PB_Shortcut_X,
+;                                 #PB_Shortcut_V
+;                               
+;                         EndSelect
                         
                   EndSelect
                EndWith
@@ -21012,21 +21031,25 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\ mouse wheel horizontal
                If MouseWheelDirection( ) < 0
                   ; Debug "wheelX " + *data
-                  If *this\scroll And *this\scroll\h And
-                     bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
-                     *this\root\repaint = 1
-                  ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                     *this\root\repaint = 1
+                  If Not *this\hide
+                     If *this\scroll And *this\scroll\h And Not *this\scroll\h\hide And
+                        bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
+                        *this\root\repaint = 1
+                     ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+                        *this\root\repaint = 1
+                     EndIf
                   EndIf
                   
                   ;\\ mouse wheel verticl
                Else
                   ; Debug "wheelY " + *data
-                  If *this\scroll And *this\scroll\v And 
-                     bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
-                     *this\root\repaint = 1
-                  ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                     *this\root\repaint = 1
+                  If Not *this\hide
+                     If *this\scroll And *this\scroll\v And Not *this\scroll\v\hide And 
+                        bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
+                        *this\root\repaint = 1
+                     ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+                        *this\root\repaint = 1
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -22226,8 +22249,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                If event = #__event_Draw
                   *this\binddraw = 1
                EndIf
-               If event = #__event_resize
+               If event = #__event_Resize
                   *this\bindresize = 1
+               EndIf
+               If event = #__event_CursorChange
+                  *this\bindcursor = 1
                EndIf
             EndIf
          EndIf
@@ -24402,9 +24428,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13760
-; FirstLine = 13610
-; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------40--------------------b48-----8-8--------------------------48---------------------------------v---------------------------------------------------------------------------------------------------P-----
+; CursorPosition = 10854
+; FirstLine = 10562
+; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------f--4--------X+-----------------------------------------------------------------------------------4-------------------------------------------------0----------------------------8+--------------------b48-----8-8--------------------------48---------------------------------+---------------------------------------------------------------------------------------------------n----
 ; Optimizer
 ; EnableXP
 ; DPIAware

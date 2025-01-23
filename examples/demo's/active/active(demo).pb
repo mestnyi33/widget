@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__Event_MouseEnter
         ; bug in mac os
         If GetActiveGadget() <> EventWidget( )\root\canvas\gadget
-          SetActiveGadget(EventWidget( )\root\canvas\gadget)
+         ; SetActiveGadget(EventWidget( )\root\canvas\gadget)
         EndIf
        
       Case #__Event_Focus   
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
     EndSelect
     
-    ProcedureReturn 1
+   ; ProcedureReturn 1 ; почему то с ним курсор меняется на кросс ; понятно уже почему потому что значение кросс равно единице
   EndProcedure
   
   Procedure Window_0_Resize()
@@ -60,6 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(10, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   
+  ;-
   Procedure Window_0()
     w_list(Hex(110)) = Open(0, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
@@ -315,8 +316,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 74
+; CursorPosition = 263
+; FirstLine = 240
 ; Folding = ----
 ; EnableXP
 ; DPIAware
