@@ -19351,17 +19351,42 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;
             If event = #__event_Focus
-               PushListPosition( *this\__lines( ) )
-               ForEach *this\__lines( )
-                  If *this\__lines( )\_focus
-                     If *this\__lines( )\ColorState( ) = #__s_3
-                        *this\__lines( )\ColorState( ) = #__s_2
-                        
-                        *this\root\repaint = 1
+               If *this\text\multiline
+                  PushListPosition( *this\__lines( ) )
+                  ForEach *this\__lines( )
+                     If *this\__lines( )\_focus
+                        If *this\__lines( )\ColorState( ) = #__s_3
+                           *this\__lines( )\ColorState( ) = #__s_2
+                           
+                           *this\root\repaint = 1
+                        EndIf
                      EndIf
-                  EndIf
-               Next
-               PopListPosition( *this\__lines( ) )
+                  Next
+                  PopListPosition( *this\__lines( ) )
+               Else
+                  *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
+                  *this\LinePressed( )      = *this\LineFocused( )     
+                  *this\LineEntered( )      = *this\LineFocused( )     
+                  
+                  *this\LineFocusedIndex( ) = 0
+                  *this\LinePressedIndex( ) = 0
+                  *this\LineEnteredIndex( ) = 0
+                  
+                  *this\edit_caret_0( )  = 0 
+                  *this\edit_caret_1( ) = 0
+                  *this\edit_caret_2( ) = 0
+;                   
+                  ; select first and last items
+                                    *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
+                                    *this\LinePressedIndex( ) = *this\countitems - 1
+                                    
+                                    edit_sel_text_( *this, #PB_All )
+                                    
+                                    *this\WidgetChange( ) = 1
+                                    ;
+            *this\TextChange( ) =- 99
+                         
+               EndIf
             EndIf
             
             ;
@@ -21162,7 +21187,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If EnteredWidget( ) And EnteredWidget( )\press
                   If EnteredWidget( )\root\canvas\gadget = eventgadget
                      If test_focus_set
-                        Debug "canvas - eFocus " + EnteredWidget( )\root\canvas\gadget + " " + eventgadget
+                        Debug "CANVAS - UpdateFocus " + EnteredWidget( )\root\canvas\gadget + " " + eventgadget
                      EndIf
                      SetActive( EnteredWidget( ))
                   EndIf
@@ -21172,9 +21197,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If roots( )\canvas\gadget = eventgadget
                         If roots( )\active 
                            If test_focus_set
-                              Debug "canvas - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                              Debug "CANVAS - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                            EndIf
                            SetActive( roots( )\active )
+                           ReDraw( GetActive( )\root )
                         EndIf
                         Break
                      EndIf
@@ -21186,12 +21212,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If eventtype = #PB_EventType_LostFocus
-            If GetActive( ) And
-               GetActive( )\root\canvas\gadget = eventgadget
+            If GetActive( ) And GetActive( )\root\canvas\gadget = eventgadget
                If test_focus_set
-                  Debug "canvas - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                  Debug "CANVAS - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                EndIf
                SetActive( 0 )
+               ReDraw( GetActive( )\root )
             EndIf
          EndIf
          
@@ -24428,9 +24454,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10854
-; FirstLine = 10562
-; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------f--4--------X+-----------------------------------------------------------------------------------4-------------------------------------------------0----------------------------8+--------------------b48-----8-8--------------------------48---------------------------------+---------------------------------------------------------------------------------------------------n----
+; CursorPosition = 19376
+; FirstLine = 18600
+; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------f--4--------X+-----------------------------------------------------------------------------------4-------------------------------------------------0----------------------------8+--------------------b48-----8-8--------------------------48f--------------------------------0---------------------------------------------------------------------------------------------------P-----
 ; Optimizer
 ; EnableXP
 ; DPIAware

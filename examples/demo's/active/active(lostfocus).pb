@@ -1,6 +1,8 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 UseWidgets( )
-
+test_focus_set = 1
+   test_focus_show = 1
+   
 Global group.i,cost.i
 
 Procedure Events( )
@@ -31,8 +33,7 @@ SetActiveGadget(GetCanvasGadget())
 WaitClose( )
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 1
+; CursorPosition = 4
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -1,93 +1,91 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-UseWidgets( )
 
-Procedure active()
-  If EventWidget( )\type > 0
-    Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
-  EndIf
-EndProcedure
-
-Procedure deactive()
-  If EventWidget( )\type > 0
-    Debug "  "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
-  EndIf
-EndProcedure
-
-Procedure active_0()
-  If EventWidget( )\type > 0
-    Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
-  EndIf
-EndProcedure
-
-Procedure deactive_0()
-  If EventWidget( )\type > 0
-    Debug " -   "+EventWidget( )\index +" "+ #PB_Compiler_Procedure + " gadget_"+EventWidget( )\index
-  EndIf
-EndProcedure
-
-
-Define width=500, height=400
-
-If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
-  ; If Open(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
-  ; If Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
+  UseWidgets( )
   
-;   Bind(#PB_All, @active(), #PB_EventType_Focus)
-;   Bind(#PB_All, @deactive(), #PB_EventType_LostFocus)
+  Define i, Width=500, Height=400
+  
+  Procedure Active()
+     ;If MouseButtonPress( )
+        ;ClearDebugOutput( )
+        Debug ""+#PB_Compiler_Procedure +" - "+ GetClass( EventWidget( ) ) ;+"_"+ GetActive( )\class ; GetText( EventWidget( ) )
+;         If StartEnum( root( ) )
+;            Debug Space(Bool(Not is_window_(widget()))*5)+ "["+ widgets(  )\class +
+;                  "]  FIRST["+ widgets(  )\parent\FirstWidget( )\class +
+;                  "]  LAST["+ widgets(  )\parent\LastWidget( )\class+"]"
+;            StopEnum( ) 
+;         EndIf
+     ;EndIf
+  EndProcedure
+  
+  Procedure deactive()
+    Debug " "+#PB_Compiler_Procedure +" - "+ GetClass( EventWidget( ) ) ;+"_"+ GetText( EventWidget( ) )
+  EndProcedure
+  
+  Procedure TestWindow(win, X,Y,Width,Height, Text.s, flag.q = 0)
+     Window(X,Y,Width,Height, Text, flag)
+     
+     SetClass(widget(), Text)
+  EndProcedure
+  
+  Procedure TestGadget(gad, X,Y,Width,Height, Text.s )
+     ;Tree(X,Y,Width,Height)
+     Editor(X,Y,Width,Height)
+     
+     SetClass(widget(), Text)
+  EndProcedure
+  
+  ;
+  If Open(0, 100, 200, Width, Height, "demo focus list widget", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+      
+     ;     a_init(root())
+     
+    TestWindow(10, 10, 10, 190, 150, "10", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+    TestGadget(1, 10,10,170,60,"1")
+    For i = 0 To 9
+       AddItem(widget( ),-1,"item_1"+Str(i))
+    Next
 
-  Window(10, 10, 190, 150, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-  Define *tree_0 = tree(10,10,170,60)
-  additem(*tree_0,-1,"tree_0")
-  additem(*tree_0,-1,"tree_00")
-  ;SetActive(*tree_0)
-  
-  Define *tree_1 = tree(10,80,170,60)
-  additem(*tree_1,-1,"tree_1")
-  additem(*tree_1,-1,"tree_11")
-  ;SetActive(*tree_1)
-  
-;   Window(110, 30, 190, 150, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-;   Define *tree_2 = tree(10,10,170,60)
-;   additem(*tree_2,-1,"tree_2")
-;   additem(*tree_2,-1,"tree_22")
-;   ;SetActive(*tree_2)
-;   
-;   Define *tree_3 = tree(10,80,170,60)
-;   additem(*tree_3,-1,"tree_3")
-;   additem(*tree_3,-1,"tree_33")
-;   ;SetActive(*tree_3)
-;   
-;   Window(220, 50, 190, 150, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-;   Define *tree_4 = tree(10,10,170,60)
-;   additem(*tree_4,-1,"tree_4")
-;   additem(*tree_4,-1,"tree_44")
-;   SetActive(*tree_4)
-;   
-;   Define *tree_5 = tree(10,80,170,60)
-;   additem(*tree_5,-1,"tree_5")
-;   additem(*tree_5,-1,"tree_55")
-;   ;SetActive(*tree_5)
-  
+    TestGadget(4, 10,80,170,60,"4") 
+    For i = 0 To 9
+       AddItem(widget( ),-1,"item_4"+Str(i))
+    Next
+
+    TestWindow(20, 110, 30, 190, 150, "20", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
+    TestGadget(2, 10,10,170,60,"2")
+    For i = 0 To 9
+       AddItem(widget( ),-1,"item_2"+Str(i))
+    Next
     
-  Bind( #PB_All, @active_0(), #PB_EventType_Focus)
-  Bind( #PB_All, @deactive_0(), #PB_EventType_LostFocus)
-  
-  WaitClose()
+    TestGadget(5, 10,80,170,60,"5")
+    For i = 0 To 9
+       AddItem(widget( ),-1,"item_5"+Str(i))
+    Next
 
-;   Repeat
-;     Event = WaitWindowEvent()
-;     
-;     If Event = #PB_Event_CloseWindow 
-;       Quit = 1
-;     EndIf
-;     
-;   Until Quit = 1
+    TestWindow(30, 220, 50, 190, 150, "30", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget) 
+    TestGadget(3, 10,10,170,60,"3") 
+    For i = 0 To 9
+       AddItem(widget( ),-1,"item_3"+Str(i))
+    Next
+    
+    TestGadget(6, 10,80,170,60,"6")
+    For i = 0 To 9
+       AddItem(widget( ),-1,"item_6"+Str(i))
+    Next
+    
+    SetActive( widget( ) )
+    
+    Bind(#PB_All, @active( ), #__event_Focus)
+    Bind(#PB_All, @deactive( ), #__event_LostFocus)
+    
+    WaitClose( )
+  EndIf
   
-EndIf
-
-End  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 68
-; FirstLine = 36
+  End  
+CompilerEndIf
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 31
+; FirstLine = 22
 ; Folding = --
 ; EnableXP
