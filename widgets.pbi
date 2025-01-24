@@ -13190,7 +13190,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\LinePressed( )  = *this\LineFocused( )
          EndIf
          
-         If *this\edit_caret_1( ) > *this\edit_caret_2( )
+         If *rowLine
+            If *this\edit_caret_1( ) > *this\edit_caret_2( )
             *this\text\edit[2]\pos = *this\edit_caret_2( )
             *this\text\edit[3]\pos = *this\edit_caret_1( )
             *this\text\caret\x     = *rowLine\x + *rowLine\text\edit[3]\x - 1
@@ -13237,6 +13238,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ProcedureReturn 1
+         EndIf
       EndProcedure
       
       ;-
@@ -15024,6 +15026,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_HyperLink
             
             *this\row.allocate( ROW )
+            
+            *this\edit_caret_0( ) = - 1
+            *this\edit_caret_1( ) = - 1
+            *this\edit_caret_2( ) = - 1
             *this\LineFocusedIndex( ) = - 1
             
             
@@ -19317,27 +19323,28 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Next
                   PopListPosition( *this\__lines( ) )
                Else
-                  *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
-                  *this\LinePressed( )      = *this\LineFocused( )     
-                  *this\LineEntered( )      = *this\LineFocused( )     
-                  
-                  *this\LineFocusedIndex( ) = 0
-                  *this\LinePressedIndex( ) = 0
-                  
-                  *this\edit_caret_0( )  = 0 
-                  *this\edit_caret_1( ) = 0
-                  *this\edit_caret_2( ) = 0
-                  ;                   
-                  ; select first and last items
-                  *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
-                  *this\LinePressedIndex( ) = *this\countitems - 1
-                  
-                  edit_sel_text_( *this, #PB_All )
-                  
-                  *this\WidgetChange( ) = 1
-                  ;
-                  *this\TextChange( ) =- 99
-                  
+; ;                   *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
+; ;                   *this\LinePressed( )      = *this\LineFocused( )     
+; ;                   *this\LineEntered( )      = *this\LineFocused( )     
+; ;                   
+; ;                   *this\LineFocusedIndex( ) = 0
+; ;                   *this\LinePressedIndex( ) = 0
+; ;                   
+; ;                   *this\edit_caret_0( )  = 0 
+; ;                   *this\edit_caret_1( ) = 0
+; ;                   *this\edit_caret_2( ) = 0
+; ;                   ;                   
+; ;                   ; select first and last items
+; ;                   *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
+; ;                   *this\LinePressedIndex( ) = *this\countitems - 1
+; ;                   
+; ;                   If Not MouseButtonPress( )
+; ;                      edit_sel_text_( *this, #PB_All )
+; ;                   EndIf
+; ;                   
+; ;                   *this\WidgetChange( ) = 1
+; ;                   ;
+; ;                   *this\TextChange( ) =- 99
                EndIf
             EndIf
             
@@ -19359,6 +19366,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             If event = #__event_Down
                If MouseButtons( ) & #PB_Canvas_LeftButton
+                  ; windows type
+                  If Not *this\text\multiline
+                     If *this\text\len <> *this\text\edit[2]\len
+                        *this\LineEntered( )      = SelectElement( *this\__lines( ), 0 )
+                     EndIf
+                  EndIf
+                  
                   If *this\LineEntered( )
                      *this\LinePressed( ) = *this\LineEntered( )
                      
@@ -19391,7 +19405,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      If mouse( )\click = 1
                         *this\edit_caret_0( ) = edit_make_caret_position( *this, *this\LineEntered( ) )
-                        ;Debug *this\edit_caret_0( )
+                        Debug *this\edit_caret_0( )
                         
                         If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\LineEntered( )\text\pos
                            *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\LineEntered( )\text\pos
@@ -24406,9 +24420,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13367
-; FirstLine = 12912
-; Folding = -4----------------------------------------n------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------+48-----------------------------------------------v--8--------L------------------------------------------------------------------------00-4v------f-------------------------------------------------4----------------------------v8--------------------vdv-----v-v--------------------------fv---------------------------------4----------------------------------------------------------------------------------------------------9----
+; CursorPosition = 19370
+; FirstLine = 18320
+; Folding = -4----------------------------------------n------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------+48-----------------------------------------------v--8--------L-------------------------------------------------------------------------8-vf-------+------------------------------------------------v----------------------------f4--------------------f8e-----f-f---------------------------e-8-----8--------------------------+---------------------------------------------------------------------------------------------------n----
 ; Optimizer
 ; EnableXP
 ; DPIAware

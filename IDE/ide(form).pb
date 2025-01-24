@@ -372,7 +372,7 @@ EndProcedure
 
 Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
    Protected *this._s_WIDGET
-   Protected flag = #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
+   Protected flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
    
    Select Type
       Case #__type_Spin
@@ -1961,8 +1961,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 549
-; FirstLine = 532
+; CursorPosition = 374
+; FirstLine = 366
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware
