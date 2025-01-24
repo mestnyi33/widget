@@ -14,7 +14,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure TestWindow(win, X,Y,Width,Height, Text.s, flag.q = 0)
      OpenWindow(win, X,Y,Width,Height, Text, flag|#PB_Window_Invisible|#PB_Window_NoActivate, WindowID(0))
-     SetParent_( WindowID(win), WindowID(0))
+     
+     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+       SetParent_( WindowID(win), WindowID(0))
+     CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+      ; CocoaMessage ( 0, CocoaMessage( 0, WindowID(0), "contentView" ), "addSubview:", WindowID(win) ) 
+     CompilerEndIf
+     
      HideWindow( win, 0, #PB_Window_NoActivate )
   EndProcedure
   
@@ -58,8 +64,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End  
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; CursorPosition = 20
+; FirstLine = 12
 ; Folding = --
 ; EnableXP
 ; DPIAware
