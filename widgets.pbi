@@ -519,6 +519,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro split_2( ) : gadget[2] : EndMacro ; temp
       
       ;-
+      Macro ColorState( ): color\state: EndMacro
+      
+      ;-
       Macro __tabs: Tab\_s: EndMacro
       Macro TabEntered( ): Tab\entered: EndMacro   ; Returns mouse entered tab
       Macro TabPressed( ): Tab\pressed: EndMacro   ; Returns mouse focused tab
@@ -526,7 +529,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                    ;
       Macro TabIndex( ): Tab\index: EndMacro
       Macro TabState( ): Tab\state: EndMacro      
-      Macro RowFocusedIndex( ): state: EndMacro
       
       ;-
       Macro MarginLine( ): row\margin: EndMacro ; temp
@@ -534,13 +536,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro LineEntered( ): row\entered: EndMacro ; Returns mouse entered widget
       Macro LinePressed( ): row\pressed: EndMacro ; Returns key focus item address
       Macro LineFocused( ): row\focused: EndMacro ; Returns key focus item address
-                                                  ;
-      Macro LineEnteredIndex( ): row\id[1]: EndMacro ; *this\ Returns mouse entered line index ; 31 count
-      Macro LineFocusedIndex( ): row\id[2]: EndMacro ; *this\ Returns key focused line index   ; 11 count
-      Macro LinePressedIndex( ): row\id[3]: EndMacro ; *this\ Returns mouse pressed line index ; 23 count
       
       ;-
-      Macro ColorState( ): color\state: EndMacro
+      Macro LineFocusedIndex( ): row\id[2]: EndMacro ; *this\ Returns key focused line index   ; 11 count
+      Macro LinePressedIndex( ): row\id[3]: EndMacro ; *this\ Returns mouse pressed line index ; 23 count
+      Macro RowFocusedIndex( ): state: EndMacro
       
       
       ;-
@@ -12927,25 +12927,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          _address_\text\string.s = Left( _address_\text\string.s, _address_\text\edit[1]\len ) + Right( _address_\text\string.s, _address_\text\edit[3]\len )
       EndMacro
       
-      Macro edit_change_caret_( _this_, _index_ )
-         If _this_\LinePressedIndex( ) <> _index_
-            _this_\text\TextChange( ) = - 1
-         EndIf
-         
-         If _this_\edit_caret_1( ) > _this_\edit_caret_2( )
-            _this_\edit_caret_1( ) = _this_\edit_caret_2( )
-         Else
-            _this_\edit_caret_2( ) = _this_\edit_caret_1( )
-         EndIf
-         
-         If _this_\LinePressedIndex( ) > _index_
-            _this_\LinePressedIndex( ) = _index_
-            _this_\LineEnteredIndex( ) = _index_
-         Else
-            _this_\LineEnteredIndex( ) = _this_\LinePressedIndex( )
-         EndIf
-      EndMacro
-      
       ;-
       Macro edit_select_line_( _this_, _address_, _index_ )
          _address_\_focus = 0
@@ -13385,7 +13366,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure.b edit_key_insert_text( *this._s_WIDGET, Chr.s )
-         Protected result.b, String.s, Count.i, *rowLine._s_ROWS
+         Protected result.b, String.s, Count.i
          
          If *this\notify
             ProcedureReturn 0
@@ -13397,67 +13378,52 @@ CompilerIf Not Defined( widget, #PB_Module )
          Chr.s = edit_make_insert_text( *this, Chr.s)
          
          If Chr.s
-            *rowLine = *this\LineFocused( )
-            ;\\
-            edit_redraw_font( *this )
-            
-            If *rowLine
-               Count = CountString( Chr.s, #LF$)
-               
+            If *this\LineFocused( )
                If *this\edit_caret_1( ) > *this\edit_caret_2( )
                   *this\edit_caret_1( ) = *this\edit_caret_2( )
-               Else
-                  *this\edit_caret_2( ) = *this\edit_caret_1( )
                EndIf
                
                *this\edit_caret_1( ) + Len( Chr.s )
                *this\edit_caret_2( ) = *this\edit_caret_1( )
                
-               If count Or *rowLine\lindex <> *this\LinePressedIndex( )
-                  *this\TextChange( ) = - 1
-               EndIf
-               
-               If *rowLine\text\edit[2]\width <> 0
-                  *rowLine\text\edit[2]\len      = 0
-                  *rowLine\text\edit[2]\string.s = ""
-               Else
-                  *rowLine\text\edit[1]\len + Len( Chr.s )
-                  *rowLine\text\edit[1]\string.s + Chr.s
-                  
-                  *rowLine\text\len      = *rowLine\text\edit[1]\len + *rowLine\text\edit[3]\len
-                  *rowLine\text\string.s = *rowLine\text\edit[1]\string.s + *rowLine\text\edit[3]\string.s
-                  *rowLine\text\width    = TextWidth( *rowLine\text\string )
-               EndIf
-               
-               *this\text\edit[1]\len + Len( Chr.s )
-               *this\text\edit[1]\string.s + Chr.s
-               
-               *this\text\len      = *this\text\edit[1]\len + *this\text\edit[3]\len
-               *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
-               
-               ;
-               If *this\LinePressedIndex( ) > *rowLine\lindex
-                  *this\LinePressedIndex( ) = *rowLine\lindex + Count
-               Else
-                  *this\LinePressedIndex( ) + Count
-               EndIf
-               *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
-               *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
-               
-               ;
-               If Not *this\TextChange( )
-                  If *this\scroll_width( ) < *rowLine\text\width
-                     *this\scroll_width( ) = *rowLine\text\width
-                     
-                     bar_area_update( *this )
+               If *this\text\edit[2]\len
+                  If *this\edit_caret_1( ) > *this\LineFocused( )\text\pos
+                     Debug "bug insert "
+                     *this\LinePressedIndex( ) - CountString( *this\text\edit[2]\string, #LF$) 
                   EndIf
                EndIf
+               ;
+               If *this\LineFocusedIndex( ) > *this\LinePressedIndex( )
+                  *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
+               EndIf
+               ;                
+               *this\LineFocusedIndex( ) + CountString( Chr.s, #LF$)
+               *this\LinePressedIndex( ) = *this\LineFocusedIndex( )
                
-               result             = 1
-               *this\root\repaint = 1
+                 
+               ;  Debug ""+ *this\LineFocusedIndex( ) +" "+ *this\LinePressedIndex( ) +" "+ *this\LineFocused( )\lindex
                
-               *this\TextChange( ) =- 99
-            
+;                *this\text\edit[2]\len = 0
+;                *this\text\edit[2]\string.s = ""
+               
+;                *this\text\edit[1]\len + Len( Chr.s )
+;                *this\text\edit[1]\string.s + Chr.s
+;                               
+;                *this\text\len = *this\text\edit[1]\len + *this\text\edit[3]\len
+;                *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
+               
+               *this\text\string.s = *this\text\edit[1]\string + Chr.s + *this\text\edit[3]\string
+               
+               ;result             = 1
+               
+              *this\TextChange( ) =- 99
+              
+              *this\LineFocused( ) = 0
+              *this\LinePressed( ) = 0
+              *this\LineEntered( ) = 0
+              
+              *this\root\repaint = 1
+               
             EndIf
          Else
             *this\notify = 1
@@ -13527,8 +13493,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If repaint
             *this\edit_caret_2( )     = *this\edit_caret_1( )
-            *this\LineEnteredIndex( ) = *this\LineFocused( )\lindex
-            *this\LinePressedIndex( ) = *this\LineEnteredIndex( )
+            *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
             
             If wheel = - 1
                row_scroll_y_( *this, *this\LineFocused( ), - page_height )
@@ -13567,7 +13532,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If result
             *this\edit_caret_2( )     = *this\edit_caret_1( )
-            *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
             ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
             *this\LineFocused( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
          EndIf
@@ -13602,7 +13566,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If result
             *this\edit_caret_2( )     = *this\edit_caret_1( )
-            *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
             ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
             *this\LineFocused( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
          EndIf
@@ -13700,7 +13663,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
-            *this\LineEnteredIndex( ) = *this\LinePressedIndex( )
             ;
             *this\TextChange( ) =- 99
             ;
@@ -13813,7 +13775,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\edit_caret_1( )     = 0
             *this\edit_caret_2( )     = 0
             *this\LinePressedIndex( ) = 0
-            *this\LineEnteredIndex( ) = 0
          EndIf
          
          ProcedureReturn 1
@@ -15064,7 +15025,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\row.allocate( ROW )
             *this\LineFocusedIndex( ) = - 1
-            *this\LineEnteredIndex( ) = - 1
             
             
             ;\\ - Create String
@@ -15966,12 +15926,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\__lines( )\width  = *this\inner_width( )
                      *this\__lines( )\color  = _get_colors_( )
                      
-                     
-                     
-                     ;                         If *this\LineEnteredIndex( ) = *this\__lines( )\lindex Or
-                     ;                            *this\LineFocusedIndex( ) = *this\__lines( )\lindex
-                     ;                            *this\__lines( )\text\TextChange( ) = 1
-                     ;                         EndIf
                      
                      ; make line position
                      If *this\text\vertical
@@ -16956,8 +16910,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                  ;
                   Update_DrawText( *this, 1 )
                   ;
-                  If Not ( *this\LineFocused( ) And *this\LineFocused( )\lindex = *this\LinePressedIndex( ) )
-                     *this\LineFocused( ) = SelectElement( *this\__lines( ), *this\LinePressedIndex( ) )
+                  If Not ( *this\LineFocused( ) And *this\LineFocused( )\lindex = *this\LineFocusedIndex( ) )
+                     *this\LineFocused( ) = SelectElement( *this\__lines( ), *this\LineFocusedIndex( ) )
                   EndIf
                   
                   If *this\LineFocused( )
@@ -17010,7 +16964,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ; text change
                      DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
                   EndIf
-                  *this\LineFocusedIndex( ) = - 99
                EndIf
                
                ; Draw back color
@@ -19312,7 +19265,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                            EndIf
                            
-                           ;\\ *this\LineEnteredIndex( ) = *rowLine\lindex
+                           ;\\ 
                            edit_sel_string_( *this, *rowLine )
                            edit_sel_text_( *this, *rowLine )
                            
@@ -19370,22 +19323,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   *this\LineFocusedIndex( ) = 0
                   *this\LinePressedIndex( ) = 0
-                  *this\LineEnteredIndex( ) = 0
                   
                   *this\edit_caret_0( )  = 0 
                   *this\edit_caret_1( ) = 0
                   *this\edit_caret_2( ) = 0
-;                   
+                  ;                   
                   ; select first and last items
-                                    *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
-                                    *this\LinePressedIndex( ) = *this\countitems - 1
-                                    
-                                    edit_sel_text_( *this, #PB_All )
-                                    
-                                    *this\WidgetChange( ) = 1
-                                    ;
-            *this\TextChange( ) =- 99
-                         
+                  *this\LineFocused( )      = SelectElement( *this\__lines( ), 0 )
+                  *this\LinePressedIndex( ) = *this\countitems - 1
+                  
+                  edit_sel_text_( *this, #PB_All )
+                  
+                  *this\WidgetChange( ) = 1
+                  ;
+                  *this\TextChange( ) =- 99
+                  
                EndIf
             EndIf
             
@@ -24454,9 +24406,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19376
-; FirstLine = 18600
-; Folding = -4----------------------------------------P------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------f--4--------X+-----------------------------------------------------------------------------------4-------------------------------------------------0----------------------------8+--------------------b48-----8-8--------------------------48f--------------------------------0---------------------------------------------------------------------------------------------------P-----
+; CursorPosition = 13367
+; FirstLine = 12912
+; Folding = -4----------------------------------------n------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------+48-----------------------------------------------v--8--------L------------------------------------------------------------------------00-4v------f-------------------------------------------------4----------------------------v8--------------------vdv-----v-v--------------------------fv---------------------------------4----------------------------------------------------------------------------------------------------9----
 ; Optimizer
 ; EnableXP
 ; DPIAware
