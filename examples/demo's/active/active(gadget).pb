@@ -23,9 +23,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug " "+#PB_Compiler_Procedure +" - "+ GetClass( EventWidget( ) ) ;+"_"+ GetText( EventWidget( ) )
   EndProcedure
   
+  Procedure CloseEvent( )
+     Debug "close"
+     ;Close( EventWidget( ) )
+     Free( EventWidget( ) )
+  EndProcedure
+  
+  
   Procedure TestWindow(win, X,Y,Width,Height, Text.s, flag.q = 0)
      Window(X,Y,Width,Height, "window_"+Text, flag)
      
+     Bind( widget(), @CloseEvent(), #__event_Close )
      SetClass(widget(), Text)
   EndProcedure
   
@@ -55,7 +63,6 @@ CompilerIf #PB_Compiler_IsMainFile
     SetActive( widget( ) )
     
     
-    
     Bind(#PB_All, @active( ), #__event_Focus)
     Bind(#PB_All, @deactive( ), #__event_LostFocus)
     
@@ -65,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End  
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 35
+; CursorPosition = 27
+; FirstLine = 15
 ; Folding = --
 ; EnableXP

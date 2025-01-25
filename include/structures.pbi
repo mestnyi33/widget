@@ -115,9 +115,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Height.l
       EndStructure
       ;--     KEYBOARD
-      Structure _s_KEYBOARD ; Ok
-         *window._S_WIDGET  ; active window element ; FocusedWindow( )\
-         *widget._S_WIDGET  ; keyboard focus element ; GetActive( )\
+      Structure _s_KEYBOARD  ; Ok
+         *window._S_WIDGET   ; active window element ; FocusedWindow( )\
+         *widget._S_WIDGET   ; keyboard focus element ; GetActive( )\
+         *deactive._S_WIDGET ;
+         
          change.b
          input.c
          key.l[2]
@@ -775,8 +777,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 582
-; FirstLine = 570
+; CursorPosition = 117
+; FirstLine = 107
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

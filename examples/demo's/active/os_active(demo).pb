@@ -1,68 +1,43 @@
-﻿
-Procedure active( )
-  Debug "  "+#PB_Compiler_Procedure + " window_"+EventWindow()
+﻿Global group.i,cost.i
+
+Procedure Message( title.s, Text.s, flags = 0, parentID = 0)
+   ;Open(10, #PB_Ignore, #PB_Ignore, 275, 110, "Test", #PB_Window_MinimizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+         
+    MessageRequester(title, Text, flags, parentID )
 EndProcedure
 
-Procedure deactive()
-  Debug "  "+#PB_Compiler_Procedure + " window_"+EventWindow()
+Procedure Events( )
+   Select EventGadget( )
+      Case group
+         Debug 66
+         Message("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
+          
+      Case cost
+         Debug 77
+         Message("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error)
+         
+   EndSelect
 EndProcedure
 
-Procedure event_gadget()
-  Select EventType()
-    Case #PB_EventType_Focus
-      Debug "active" + " gadget_"+EventGadget()
-    Case #PB_EventType_LostFocus
-      Debug "deactive" + " gadget_"+EventGadget()
-  EndSelect
-EndProcedure
-
-Procedure SetGadgetTextWordWrap( gadget,state )
-  CompilerIf Subsystem("qt")
-    QtScript(~"gadget("+gadget+").wordWrap = "+state+"")
-  CompilerEndIf
-EndProcedure
-
-
-
-Define width=500, height=400
-BindEvent( #PB_Event_Gadget, @event_gadget())
-BindEvent( #PB_Event_ActivateWindow, @active())
-BindEvent( #PB_Event_DeactivateWindow, @deactive())
-
-
-OpenWindow(0, 10, 10, 190, 150, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-StringGadget(0, 10,10,170,60,"string_0")
-;SetActiveGadget(0)
-
-StringGadget(1, 10,80,170,60,"string_1")
-;SetActiveGadget(1)
-
-OpenWindow(1, 110, 30, 190, 150, "Window_1", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-StringGadget(2, 10,10,170,60,"string_2")
-;SetActiveGadget(2)
-
-StringGadget(3, 10,80,170,60,"string_3")
-;SetActiveGadget(3)
-
-OpenWindow(2, 220, 50, 190, 150, "Window_2", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-StringGadget(4, 10,10,170,60,"string_4")
-;SetActiveGadget(4)
-
-StringGadget(5, 10,80,170,60,"string_5")
-SetActiveGadget(5)
-
-
-Repeat
-  Event = WaitWindowEvent()
+Procedure WaitClose( )
+     Repeat 
+     Until WaitWindowEvent( ) = #PB_Event_CloseWindow
+  EndProcedure
   
-  If Event = #PB_Event_CloseWindow 
-    Quit = 1
-  EndIf
   
-Until Quit = 1
+win.i = OpenWindow(0, #PB_Ignore, #PB_Ignore, 475, 210, "Test", #PB_Window_MinimizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 
+group.i  = StringGadget(#PB_Any, 150, 60, 100, 25, "ABC") 
+cost.i   = StringGadget(#PB_Any, 150, 95, 100, 25, "1000") 
 
-End  
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = --
+BindGadgetEvent( group, @Events( ), #PB_EventType_LostFocus )
+BindGadgetEvent( cost, @Events( ), #PB_EventType_LostFocus )
+
+SetActiveGadget(group.i)
+
+WaitClose( )
+End
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 5
+; Folding = -
 ; EnableXP

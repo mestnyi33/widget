@@ -37,10 +37,32 @@ CompilerIf #PB_Compiler_IsMainFile
             "The string must be very long." + m.s +
             "Otherwise it will not work."
    
+   Define time = ElapsedMilliseconds()
+   Define File$, length, *mem, bytes, bytesCompress, bytesUnCompress, Format = #PB_UTF8
+   Define file$ = "C:/Users/user/Documents/GitHub/widget/widgets.pbi"
+   ;File$ = OpenFileRequester("Выберите файл", GetCurrentDirectory() + "AkelPad.ini", "Все файлы (*.*)|*.*", 0)
+   
+   If Asc(File$)
+      If ReadFile(0, File$, Format)
+         length = Lof(0) ; Читает размер файла в байтах
+         FileSeek(0, 0);length-100000)                     ; set the file pointer 100000 chars from end of file
+         *mem = AllocateMemory(length)                  ; Выделяет блок памяти с размером файла
+         If *mem
+            bytes = ReadData(0, *mem, length) ; Читает данные из файла и помещает их в блок памяти
+            Debug "Количество прочитанных байтов: " + Str(bytes)
+            Text = PeekS(*mem, length, Format)
+         EndIf
+         
+         CloseFile(0)
+      EndIf
+   EndIf
+   Debug Str(ElapsedMilliseconds()-time) + " - read time"
+   
    
    LoadFont(1, "Courier", 14)
    If Open(0, 0, 0, 522, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
       
+      Define time = ElapsedMilliseconds()
       ; g = EditorGadget(#PB_Any, 8, 8, 306, 133) 
       g = EditorGadget(#PB_Any, 0, 0, 0, 0) ; bug PB on windows 
       SetGadgetText(g, Text.s)
@@ -49,7 +71,9 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(g, 8, "add line "+Str(8))
       AddGadgetItem(g, -1, "add line last")
       ; SetGadgetFont(g, FontID(1))
-    
+      Debug Str(ElapsedMilliseconds()-time) + " - add gadget time"
+   
+      Define time = ElapsedMilliseconds()
       ; *g = Editor(8, 146, 306, 133) 
       *g = Editor(0, 0, 0, 0) 
       SetBackgroundColor(*g, $FFB3FDFF)
@@ -60,7 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
        AddItem(*g, 8, "add line "+Str(8))
        AddItem(*g, -1, "add line last")
 ;       ; SetFont(*g, FontID(1))
-      
+      Debug Str(ElapsedMilliseconds()-time) + " - add widget time"
+   
       Splitter(8, 8, 306, 276, g, *g, #__flag_autosize)
       
       Repeat
@@ -76,8 +101,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 44
-; Folding = -
+; CursorPosition = 76
+; FirstLine = 59
+; Folding = --
 ; EnableXP
 ; DPIAware

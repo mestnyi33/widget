@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
  
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
-    BindEvent( #PB_Event_Repaint, @event_repaint() )
+    BindEvent( #PB_Event_Repaint, @event_repaint( ))
     
     Open(0, 270, 10, 250, 680)
     Define *w = Editor(0, 0, 250, 680) 
@@ -62,26 +62,16 @@ CompilerIf #PB_Compiler_IsMainFile
     Define time = ElapsedMilliseconds()
     For a = 0 To LN
       AddItem (*w, -1, "Item "+Str(a), 0,1)
-      If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
-      EndIf
-      If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-        Debug a
-      EndIf
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
     
-    ReDraw( ROOT( ) )
+    ReDraw( root( ) )
     
     EditorGadget(0, 10, 10, 250, 680)
     ; HideGadget(0, 1)
     Define time = ElapsedMilliseconds()
     For a = 0 To gLN
       AddGadgetItem (0, -1, "Item "+Str(a), 0, Random(5)+1)
-      If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
-      EndIf
-      If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-        Debug a
-      EndIf
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
     ; HideGadget(0, 0)
@@ -103,7 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 70
-; Folding = --
+; CursorPosition = 74
+; FirstLine = 54
+; Folding = -
 ; EnableXP
+; DPIAware

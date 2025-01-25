@@ -49,7 +49,7 @@
    
    Define File$, length, *mem, bytes, bytesCompress, bytesUnCompress
    
-   Define file$ = "/Users/as/Documents/GitHub/Widget/widgets.pbi"
+   Define file$ = "C:/Users/user/Documents/GitHub/widget/widgets.pbi"
    ;File$ = OpenFileRequester("Выберите файл", GetCurrentDirectory() + "AkelPad.ini", "Все файлы (*.*)|*.*", 0)
    
    If Asc(File$)
@@ -179,8 +179,8 @@ CompilerEndIf
 ; ----------------------------
 ; 110 - time
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 107
+; CursorPosition = 51
+; FirstLine = 47
 ; Folding = --
 ; Optimizer
 ; EnableXP

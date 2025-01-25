@@ -5,17 +5,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
   UseWidgets( )
   EnableExplicit
-  Define a, Event, LN=10000; количесвто итемов 
+  test_redraw_items = 0
   
-  If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
-    EditorGadget(0, 10, 10, 250, 680)
-    
-    Open(0, 270, 10, 250, 680)
-    Define *w = Editor(0, 0, 250, 680) 
+  Define a, Event, LN=3000; количесвто итемов 
+  
+  If Open(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
+    Define *w = Editor(270, 10, 250, 680) 
     
     Define time = ElapsedMilliseconds()
     For a = 0 To LN
       AddItem (*w, -1, "Item "+Str(a), 0,1)
+      
       If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
       EndIf
       If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
@@ -23,6 +23,10 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
+     ; ReDraw( GetRoot(*w)) 
+    PostReDraw( root( ) )
+    
+    EditorGadget(0, 10, 10, 250, 680)
     
     ; HideGadget(0, 1)
     Define time = ElapsedMilliseconds()
@@ -41,8 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 21
-; FirstLine = 17
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 18
 ; Folding = --
 ; EnableXP
+; DPIAware
