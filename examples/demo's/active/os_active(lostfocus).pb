@@ -8,14 +8,18 @@ EndProcedure
 
 Procedure LostFocusEvents( )
   Select EventGadget( )
-    Case group
-      Debug "lostfocus group"
-      Message("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
-      
-    Case cost
-      Debug "lostfocus cost"
-      Message("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error)
-      
+     Case group
+        If GetActiveWindow( ) = EventWindow( )
+           Debug "lostfocus group"
+           Message("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
+        EndIf
+        
+     Case cost
+        If GetActiveWindow( ) = EventWindow( )
+           Debug "lostfocus cost"
+           Message("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error)
+        EndIf
+        
   EndSelect
 EndProcedure
 
@@ -61,9 +65,8 @@ SetActiveGadget(group.i)
 
 WaitClose( )
 End
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 34
-; FirstLine = 17
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 17
 ; Folding = --
 ; EnableXP
 ; DPIAware

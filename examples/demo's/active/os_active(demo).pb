@@ -4,13 +4,17 @@ Declare Message( title.s, Text.s, flags = 0, parentID = 0)
 Procedure LostFocusEvents( )
   Select EventGadget( )
     Case group
-      Debug "lostfocus group"
-      Message("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
-      
+       If GetActiveWindow() = EventWindow()
+          Debug "lostfocus group"
+          Message("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
+       EndIf
+   
     Case cost
-      Debug "lostfocus cost"
-      Message("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error)
-      
+       If GetActiveWindow() = EventWindow()
+          Debug "lostfocus cost"
+          Message("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error)
+       EndIf
+       
     Default  
       Debug "lostfocus"
       
@@ -78,8 +82,7 @@ SetActiveGadget(group.i)
 
 WaitClose( )
 End
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 18
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 9
 ; Folding = --
 ; EnableXP

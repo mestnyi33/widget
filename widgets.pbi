@@ -1517,7 +1517,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Declare   WaitClose( *root = #Null, waittime.l = #PB_Default )
-      Declare   Close( *window )
+      Declare   SendClose( *window )
       Declare   Free( *this )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
@@ -21195,7 +21195,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                            If test_focus_set
                               Debug "CANVAS - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                            EndIf
-                           Debug "keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
+                           If keyboard( )\deactive
+                              Debug "keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
+                           EndIf
                            SetActive( roots( )\active )
                            ReDraw( GetActive( )\root )
                         EndIf
@@ -21211,7 +21213,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If eventtype = #PB_EventType_LostFocus
             If GetActive( ) And GetActive( )\root\canvas\gadget = eventgadget
                If test_focus_set
-                  Debug "CANVAS - LostFocus " + GetActive( )\root\canvas\gadget + " " + eventgadget
+                  Debug "CANVAS - LostFocus " + GetActive( )\root\class +" "+ GetActive( )\root\canvas\gadget + " " + eventgadget
                EndIf
                SetActive( 0 )
                ReDraw( GetActive( )\root )
@@ -21577,14 +21579,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   mouse( )\y = mouse_y
                EndIf
-               
-               ;\\ mouse-drag-start send drag event
-               If PressedWidget( ) And 
-                  PressedWidget( )\press And
-                  mouse( )\drag = #PB_Drag_None
-                  mouse( )\drag = #PB_Drag_Update
-                  DoEvents( PressedWidget( ), #__event_DragStart )
-               EndIf
             EndIf
          EndIf
          
@@ -21617,6 +21611,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;                 ;                PressedWidget( ) = 0
             ;                 
             ;             EndIf
+            
          EndIf
          
          ;\\
@@ -21821,6 +21816,20 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          
+         
+         ;
+         ;\\ do all events
+         ;
+         ;\\ mouse drag event start
+         If event = #__event_MouseMove
+            If PressedWidget( ) And 
+               PressedWidget( )\press And 
+               mouse( )\drag = #PB_Drag_None
+               mouse( )\drag = #PB_Drag_Update
+               DoEvents( PressedWidget( ), #__event_DragStart )
+            EndIf
+         EndIf
+         
          ;\\ get enter&leave widget address
          If MouseData( )
             If root( ) And root( )\canvas\gadget = eventgadget
@@ -21860,8 +21869,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         ;\\ do all events
-         ;
          If event = #__event_MouseMove
             If MouseData( ) > 1
                ;\\ mouse-pressed-widget move event
@@ -21894,7 +21901,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If event = #__event_LeftDown Or
             event = #__event_MiddleDown Or
             event = #__event_RightDown
-            ;
+           ;
             If EnteredWidget( )
                ;\\ set active widget
                ;                If EnteredWidget( )\disable
@@ -21933,7 +21940,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If event = #__event_LeftUp Or
             event = #__event_MiddleUp Or
             event = #__event_RightUp
-            
+                   
             ;\\
             If PressedWidget( )
                ;\\ do up&click events
@@ -22201,22 +22208,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Case #PB_All
                            If is_root_( *this ) Or
                               is_window_( *this )
-                              Close( #PB_All )
+                              SendClose( #PB_All )
                            EndIf
                            
                         Case 1
                            If *button >= 0
                               If Not IsWindow( *button )
-                                 Close( root( ) )
+                                 SendClose( root( ) )
                               EndIf
                            EndIf
                            
                         Case 0
                            If *button >= 0 And
                               *button = *data
-                              Close( #PB_All )
+                              SendClose( #PB_All )
                            Else
-                              Close( *this )
+                              SendClose( *this )
                            EndIf
                            
                      EndSelect
@@ -22896,7 +22903,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;          EndIf
       ;       EndProcedure
       
-      Procedure Close( *window._s_WIDGET )
+      Procedure SendClose( *window._s_WIDGET )
          Protected window, Canvas
          Protected is_window = IsWindow( *window )
          
@@ -23013,15 +23020,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                   PressedWidget( ) = #Null
                EndIf
                
-               If GetActive( ) = *this
-;                   If *this <> *this\parent
-;                      GetActive( ) = *this\parent
-;                   Else
-;                      GetActive( ) = #Null
-;                   EndIf
-                  Debug "a "
-                  SetActive( 0 )
-               EndIf
+;                If GetActive( ) = *this
+; ;                   If *this <> *this\parent
+; ;                      GetActive( ) = *this\parent
+; ;                   Else
+; ;                      GetActive( ) = #Null
+; ;                   EndIf
+;                   Debug "a "
+;                   SetActive( 0 )
+;                EndIf
                
                ;
                ; delete all childrens
@@ -23094,12 +23101,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If PressedWidget( ) = widgets( )
                            PressedWidget( ) = #Null
                         EndIf
-                        If GetActive( ) = widgets( )
-                           
-                           Debug "aa " + keyboard( )\deactive; widgets()\root\BeforeRoot( ) ; widgets()\root\active\class
-                           
-                           SetActive( keyboard( )\deactive )
-                        EndIf
+                        
+;                         If GetActive( ) = widgets( )
+;                            
+;                            Debug "aa " + keyboard( )\deactive; widgets()\root\BeforeRoot( ) ; widgets()\root\active\class
+;                            
+; ;                            SetActive( keyboard( )\deactive )
+; ;                            ReDraw( keyboard( )\deactive\root )
+;                         EndIf
                         
                         If test_delete
                            Debug " free - " + widgets( )\class
@@ -23602,7 +23611,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Sticky( *message, #False )
          result = GetData( *message )
          ;\\ close
-         Close( *message )
+         SendClose( *message )
          If IsWindow(*message\canvas\window)
             CloseWindow(*message\canvas\window)
             Debug "Close - Message window " + *message\canvas\window
@@ -24474,9 +24483,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21197
-; FirstLine = 20086
-; Folding = -4----------------------------------------n------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------+48-----------------------------------------------v--8--------L-------------------------------------------------------------------------8-vf-------0------------------------------------------------f-----------------------------u---------------------30+-----+-+--------------------------0+4-----v-------------f------------f--------------------------------------0----4--f-----------------------------------------------------6----
+; CursorPosition = 21828
+; FirstLine = 20231
+; Folding = -4----------------------------------------n------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------+48-----------------------------------------------r--8------+-L-------------------------------------------------------------------------8-vf-------0------------------------------------------------f-----------------------------u---------------------30+-----+-+--------------------------0-4-----v-------------f------------f---------------------------------f-b8u7--+0----f--v--08------------------------------v0e------------6----
 ; Optimizer
 ; EnableXP
 ; DPIAware

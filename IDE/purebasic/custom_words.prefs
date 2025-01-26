@@ -26,6 +26,7 @@ PostQuit
 WaitQuit
 WaitEvent
 WaitClose
+SendClose
 
 Create
 Open
