@@ -1306,7 +1306,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          
       Case #_tb_file_open
          Debug "#_tb_file_open"
-         Close( ide_design_form )
+         SendClose( ide_design_form )
          ;          ClearItems( ide_inspector_view )
          
          
@@ -1961,8 +1961,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 374
-; FirstLine = 366
+; CursorPosition = 1308
+; FirstLine = 1298
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

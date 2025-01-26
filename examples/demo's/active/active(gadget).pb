@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure CloseEvent( )
      Debug "close"
-     ;Close( EventWidget( ) )
+     ;SendClose( EventWidget( ) )
      Free( EventWidget( ) )
   EndProcedure
   
