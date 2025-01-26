@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
    #__s_Disable = 3
    #__s_Select = 2
    #__s_Check = 1
-   #__event_CloseItem = 300
+   #__event_ItemClose = 300
    
    ; Attribute fur das TabBar
    Enumeration
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
                             ;;;#__event_Change       ; Der aktive Tab wurde geandert
                             ;;;#__event_Resize       ; Die gro?e der Leiste hat sich geandert
       #__event_NewItem      ; ein neuer Tab wird angefordert
-                            ;;;#__event_CloseItem    ; ein Tab soll geschlossen werden
+                            ;;;#__event_ItemClose    ; ein Tab soll geschlossen werden
       #__event_SwapItem     ; der aktive Tab wurde verschoben
       #__event_EditItem     ; der Text einer Karte wurde geandert
       #__event_CheckBox     ; der Status der Checkbox hat sich geandert
@@ -333,7 +333,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         AddItem(*g_Events, 0, "NewItem: "+Str(GetItemPosition(*g_tab1, #__tab_item_Event)))
                         Position = AddItem(*g_tab1, #PB_Default, "New tab")
                         UpdateItem(Position)
-                     Case #__event_CloseItem
+                     Case #__event_ItemClose
                         AddItem(*g_Events, 0, "CloseItem: "+Str(GetItemPosition(*g_tab1, #__tab_item_Event)))
                         RemoveItem(*g_tab1, #__tab_item_Event)
                      Case #__event_Change
@@ -435,7 +435,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    #__s_Disable = 3
    #__s_Select = 2
    #__s_Check = 1
-   #__event_CloseItem = 300
+   #__event_ItemClose = 300
    
    ; Attribute fur das TabBar
    Enumeration
@@ -472,7 +472,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
                             ;;;#__event_Change       ; Der aktive Tab wurde geandert
                             ;;;#__event_Resize       ; Die gro?e der Leiste hat sich geandert
       #__event_NewItem      ; ein neuer Tab wird angefordert
-                            ;;;#__event_CloseItem    ; ein Tab soll geschlossen werden
+                            ;;;#__event_ItemClose    ; ein Tab soll geschlossen werden
       #__event_SwapItem     ; der aktive Tab wurde verschoben
       #__event_EditItem     ; der Text einer Karte wurde geandert
       #__event_CheckBox     ; der Status der Checkbox hat sich geandert
@@ -768,7 +768,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
                         AddGadgetItem(#Gadget_Events, 0, "NewItem: "+Str(GetItemPosition(*tab1, #__tab_item_Event)))
                         Position = AddItem(*tab1, #PB_Default, "New tab")
                         UpdateItemGadget(Position)
-                     Case #__event_CloseItem
+                     Case #__event_ItemClose
                         AddGadgetItem(#Gadget_Events, 0, "CloseItem: "+Str(GetItemPosition(*tab1, #__tab_item_Event)))
                         RemoveItem(*tab1, #__tab_item_Event)
                      Case #__event_Change
@@ -865,7 +865,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 269
-; FirstLine = 246
+; CursorPosition = 770
+; FirstLine = 741
 ; Folding = --------
 ; EnableXP

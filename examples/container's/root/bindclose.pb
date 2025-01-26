@@ -11,12 +11,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure gadget_CallBack( )
       Select WidgetEvent( )
          Case #__event_close
-            Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
+            Debug " close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
            ; ProcedureReturn #PB_Ignore
            ProcedureReturn 0
            
          Case #__event_Down
-            Debug "down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
+            Debug " down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
             
             Send(EventWidget( ), #__event_close)
    ;             ;\\ to send not down
@@ -99,7 +99,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 29
+; CursorPosition = 33
+; FirstLine = 18
 ; Folding = --
 ; EnableXP

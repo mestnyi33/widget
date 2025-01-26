@@ -70,7 +70,7 @@ Enumeration #PB_EventType_FirstCustomValue
 	#__event_Change       ; Der aktive Tab wurde geändert
 	#__event_Resize       ; Die größe der Leiste hat sich geändert
 	#__event_NewItem      ; ein neuer Tab wird angefordert
-	#__event_CloseItem    ; ein Tab soll geschlossen werden
+	#__event_ItemClose    ; ein Tab soll geschlossen werden
 	#__event_SwapItem     ; der aktive Tab wurde verschoben
 	#__event_EditItem     ; der Text einer Karte wurde geändert
 	#__event_CheckBox     ; der Status der Checkbox hat sich geändert
@@ -1712,7 +1712,7 @@ Procedure Examine(*this._s_widget)
 							If \LockedClose = \HoverClose
 								ChangeCurrentElement(\Item(), \LockedClose)
 								\EventTab = ListIndex(\Item())
-								PostEvent(#PB_Event_Gadget, \Window, \Number, #__event_CloseItem, \EventTab)
+								PostEvent(#PB_Event_Gadget, \Window, \Number, #__event_ItemClose, \EventTab)
 							EndIf
 					EndSelect
 				EndIf
@@ -1776,7 +1776,7 @@ Procedure Examine(*this._s_widget)
 					\LockedItem = \HoverItem
 				Case #PB_EventType_MiddleButtonUp
 					If includes\EnableMiddleClickForCloseTab And \LockedItem = \HoverItem And \LockedItem <> \NewTabItem And \LockedItem <> \Editor\Item
-						PostEvent(#PB_Event_Gadget, \Window, \Number, #__event_CloseItem, \EventTab)
+						PostEvent(#PB_Event_Gadget, \Window, \Number, #__event_ItemClose, \EventTab)
 						\MoveItem        = #Null
 						\ReadyToMoveItem = #Null
 					EndIf
@@ -3413,7 +3413,7 @@ Repeat
 							AddGadgetItem(#Gadget_Events, 0, "NewItem: "+Str(Get_ItemPosition(#Gadget_TabBar, #__tab_item_Event)))
 							Position = Add_Item(#Gadget_TabBar, #PB_Default, "New tab")
 							UpdateItemGadget(Position)
-						Case #__event_CloseItem
+						Case #__event_ItemClose
 							AddGadgetItem(#Gadget_Events, 0, "CloseItem: "+Str(Get_ItemPosition(#Gadget_TabBar, #__tab_item_Event)))
 							Remove_Item(#Gadget_TabBar, #__tab_item_Event)
 						Case #__event_Change
@@ -3506,8 +3506,8 @@ Repeat
 	
 ForEver
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 217
+; CursorPosition = 3415
+; FirstLine = 3386
 ; Folding = --------------------------------------------------------------------------------
 ; Optimizer
 ; EnableXP

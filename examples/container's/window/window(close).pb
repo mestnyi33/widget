@@ -53,6 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
            Else
               ProcedureReturn 1
            EndIf
+        Else
+         ; Free(EventWidget( ))
         EndIf
         
         
@@ -93,7 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14
+; CursorPosition = 56
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware

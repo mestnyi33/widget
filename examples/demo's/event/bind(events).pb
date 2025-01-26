@@ -1,88 +1,84 @@
-﻿IncludePath "../../../"
+﻿
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
+
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Global._s_widget *test, *bind, *unbind
-   Global binded
+   Global.i gEvent, gQuit
+   Global *butt0, *butt1
    
-   Procedure events_1()
-      Debug " "+Str(Index( EventWidget( ) ))+ " - 1event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
-   EndProcedure
-   
-   Procedure events_2()
-      Debug " "+Str(Index( EventWidget( ) ))+ " - 2event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (widget)"
-   EndProcedure
-   
-   
-   Procedure events_Bind()
-      If binded = 0
-         binded = 1
-         ClearDebugOutput()
-         Debug "binded"
-         ; post this events
-         Bind(*test, @events_1(), #__event_MouseEnter)
-         Bind(*test, @events_2(), #__event_MouseLeave)
-         ;
-         Bind(*test, @events_1(), #__event_LeftDown)
-         Bind(*test, @events_2(), #__event_LeftDown)
-         
-         Bind(*test, @events_1(), #__event_LeftUp, 1)
-         Bind(*test, @events_2(), #__event_LeftUp, 2)
-         
-         Disable( *unbind, 0 )
-         Disable( *bind, 1 )
+   Procedure events_roots( )
+      If WidgetEvent( ) <> #__event_MouseMove
+         Debug "  "+ EventWidget( )\index +" - widget event - "+ WidgetEvent( ) +" item - "+ WidgetEventItem( ) ;;+ " event - " + WidgetEvent()
       EndIf
    EndProcedure
    
-   Procedure events_Unbind()
-      If binded = 1
-         binded = 0
-         ClearDebugOutput()
-         Debug "unbinded" 
-         ; post this events
-         Unbind(*test, @events_1(), #__event_MouseEnter)
-         Unbind(*test, @events_2(), #__event_MouseLeave)
-         ;
-         Unbind(*test, @events_1(), #__event_LeftDown)
-         Unbind(*test, @events_2(), #__event_LeftDown)
-         
-         Unbind(*test, @events_1(), #__event_LeftUp, 1)
-         Unbind(*test, @events_2(), #__event_LeftUp, 2)
-         
-         
-         Disable( *bind, 0 )
-         Disable( *unbind, 1 )
-         
-      EndIf
-   EndProcedure
-   
-   
-   If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If Open(0, 100, 100, 300, 280)
-         *test = Tree(10,  10, 280, 170)
-         Define i
-         For i = 0 To 12
-            AddItem( *test, -1, "item-"+Str(i) )
-         Next i
-         ;
-         *bind = Button(10, 190, 135, 80, "Bind (events)")
-         *unbind = Button(155, 190, 135, 80, "Unbind (events)")
-         Disable( *unbind, 1 )
-         
-         Bind(*unbind, @events_Unbind(), #__event_LeftClick)
-         Bind(*bind, @events_Bind(), #__event_LeftClick)
-      EndIf
+   Procedure events_deactive( )
+      Unbind(*butt0, @events_roots())
+      SetText(*butt0, "un-bind-button-events" )
       
-      WaitClose( )
-   EndIf
+      Unbind(*butt1, @events_roots())
+      SetText(*butt1, "un-binds-button-events" )
+   EndProcedure
+   
+   Procedure Window_0( )
+      If Open(0, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+         
+         *butt0 = Button(50, 50, 280, 35, "bind-button-events") 
+         Bind( *butt0, @events_roots( ) )
+         
+         *butt1 = Button(50, 50+45, 280, 35, "binds-button-events") 
+         Bind( *butt1, @events_roots( ), #__event_Change )
+         Bind( *butt1, @events_roots( ), #__event_Down )
+         Bind( *butt1, @events_roots( ), #__event_DragStart )
+         Bind( *butt1, @events_roots( ), #__event_Focus )
+         Bind( *butt1, @events_roots( ), #__event_Input )
+         Bind( *butt1, @events_roots( ), #__event_KeyDown )
+         Bind( *butt1, @events_roots( ), #__event_KeyUp )
+         Bind( *butt1, @events_roots( ), #__event_LeftDown )
+         Bind( *butt1, @events_roots( ), #__event_LeftUp )
+         Bind( *butt1, @events_roots( ), #__event_LeftClick )
+         Bind( *butt1, @events_roots( ), #__event_Left2Click )
+         Bind( *butt1, @events_roots( ), #__event_LostFocus )
+         Bind( *butt1, @events_roots( ), #__event_MiddleDown )
+         Bind( *butt1, @events_roots( ), #__event_MiddleUp )
+         Bind( *butt1, @events_roots( ), #__event_MouseEnter )
+         Bind( *butt1, @events_roots( ), #__event_MouseLeave )
+         Bind( *butt1, @events_roots( ), #__event_MouseMove )
+         Bind( *butt1, @events_roots( ), #__event_MouseWheel )
+         Bind( *butt1, @events_roots( ), #__event_Resize )
+         Bind( *butt1, @events_roots( ), #__event_RightDown )
+         Bind( *butt1, @events_roots( ), #__event_RightUp )
+         Bind( *butt1, @events_roots( ), #__event_RightClick )
+         Bind( *butt1, @events_roots( ), #__event_Right2Click )
+         Bind( *butt1, @events_roots( ), #__event_StatusChange )
+         Bind( *butt1, @events_roots( ), #__event_Up )
+         
+         Define *butt = Button(350, 50, 80, 80, "un-bind")
+         Bind( *butt, @events_deactive( ), #__event_LeftClick )
+         
+      EndIf
+   EndProcedure
+   
+   Window_0( )
+   
+   Repeat
+      gEvent = WaitWindowEvent( )
+      
+      Select gEvent
+         Case #PB_Event_CloseWindow
+            gQuit = #True
+      EndSelect
+      
+   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 12
+; CursorPosition = 67
+; FirstLine = 24
 ; Folding = --
 ; EnableXP
 ; DPIAware

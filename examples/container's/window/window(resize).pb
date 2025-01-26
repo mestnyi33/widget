@@ -4,12 +4,13 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   test_event_repost = 1
    
    Procedure CallBack( )
       Select WidgetEvent( )
          Case #__event_Close
             Debug "disable (close - event)"
-            ProcedureReturn 1
+            ProcedureReturn #PB_Ignore
             
          Case #__event_Maximize
             Debug "maximize - event " + EventWidget( )\class
@@ -71,11 +72,12 @@ CompilerIf #PB_Compiler_IsMainFile
       SetClass(widget( ), "window_0_minimize" )
       
       
-      WaitEvent( #PB_All, @CallBack( ) )
+      Bind( #PB_All, @CallBack( ) )
+      WaitClose( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 44
-; Folding = --
+; CursorPosition = 74
+; FirstLine = 33
+; Folding = 4-
 ; EnableXP

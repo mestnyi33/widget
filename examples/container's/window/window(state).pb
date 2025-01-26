@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_Close
             Debug "disable (close - event)"
-            ProcedureReturn 1
+            ProcedureReturn #PB_Ignore
             
          Case #__event_Maximize
             Debug "maximize - event " + EventWidget( )\class
@@ -82,8 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 15
-; Folding = --
+; CursorPosition = 10
+; Folding = 4-
 ; EnableXP
 ; DPIAware

@@ -72,7 +72,7 @@ Enumeration #PB_EventType_FirstCustomValue
   #__event_Change       ; Der aktive Tab wurde geändert
   #__event_Resize       ; Die größe der Leiste hat sich geändert
   #__event_NewItem      ; ein neuer Tab wird angefordert
-  #__event_CloseItem    ; ein Tab soll geschlossen werden
+  #__event_ItemClose    ; ein Tab soll geschlossen werden
   #__event_SwapItem     ; der aktive Tab wurde verschoben
   #__event_EditItem     ; der Text einer Karte wurde geändert
   #__event_CheckBox     ; der Status der Checkbox hat sich geändert
@@ -156,7 +156,7 @@ EndStructure
       line.i[4]
       fore.i[4]
       back.i[4]
-      frame.i[4]
+      Frame.i[4]
       alpha.a[2]
     EndStructure
     
@@ -234,7 +234,7 @@ EndStructure
 
 ; Registerkartenleiste
 Structure _s_widget
-  canvas._s_canvas
+  Canvas._s_canvas
   FontID.i                          ; Schrift
   DataValue.i                       ; Benutzer-Daten-Wert
   Attributes.i                      ; Attribute
@@ -1763,7 +1763,7 @@ Procedure Examine(*this._s_widget)
               If \LockedClose = \HoverClose
                 ChangeCurrentElement(\Item(), \LockedClose)
                 \EventTab = ListIndex(\Item())
-                PostEvent(#PB_Event_Gadget, \canvas\window, \canvas\gadget, #__event_CloseItem, \EventTab)
+                PostEvent(#PB_Event_Gadget, \canvas\window, \canvas\gadget, #__event_ItemClose, \EventTab)
               EndIf
           EndSelect
         EndIf
@@ -1827,7 +1827,7 @@ Procedure Examine(*this._s_widget)
           \LockedItem = \HoverItem
         Case #PB_EventType_MiddleButtonUp
           If includes\EnableMiddleClickForCloseTab And \LockedItem = \HoverItem And \LockedItem <> \NewTabItem And \LockedItem <> \Editor\Item
-            PostEvent(#PB_Event_Gadget, \canvas\window, \canvas\gadget, #__event_CloseItem, \EventTab)
+            PostEvent(#PB_Event_Gadget, \canvas\window, \canvas\gadget, #__event_ItemClose, \EventTab)
             \MoveItem        = #Null
             \ReadyToMoveItem = #Null
           EndIf
@@ -3454,7 +3454,7 @@ Repeat
               AddGadgetItem(#Gadget_Events, 0, "NewItem: "+Str(GetItemPosition(*tab1, #__tab_item_Event)))
               Position = AddItem(*tab1, #PB_Default, "New tab")
               UpdateItemGadget(Position)
-            Case #__event_CloseItem
+            Case #__event_ItemClose
               AddGadgetItem(#Gadget_Events, 0, "CloseItem: "+Str(GetItemPosition(*tab1, #__tab_item_Event)))
               Remove_Item(*tab1, #__tab_item_Event)
             Case #__event_Change
@@ -3547,8 +3547,8 @@ Repeat
   
 ForEver
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 184
+; CursorPosition = 3456
+; FirstLine = 3292
 ; Folding = Po--0-------------------------------------------------------------------f4------
 ; Optimizer
 ; EnableXP
