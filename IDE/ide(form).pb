@@ -11,6 +11,7 @@ UsePNGImageDecoder( )
 ;test_docursor = 1
 ;test_changecursor = 1
 ;test_setcursor = 1
+;test_delete = 1
 ;
 ;- ENUMs
 #_DD_CreateNew = 1<<1
@@ -1959,8 +1960,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1390
-; FirstLine = 1381
+; CursorPosition = 13
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware
