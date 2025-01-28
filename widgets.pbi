@@ -21139,7 +21139,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure EventResize( )
          Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
          ; Debug "- resize - os - window - "+PB(WindowWidth)( PB(EventWindow)( ))
-         ; PB(ResizeGadget)( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( )) - GadgetX( canvas )*2, WindowHeight( EventWindow( )) - GadgetY( canvas )*2 )
+         
          PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( Canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( Canvas ) * 2 ) ; bug
       EndProcedure
       
@@ -21211,6 +21211,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          If eventtype = #PB_EventType_LostFocus
             If GetActive( ) And GetActive( )\root\canvas\gadget = eventgadget
+               Debug IsWindow(GetActive( )\root\canvas\window)
                If test_focus_set
                   Debug "CANVAS - LostFocus " + GetActive( )\root\class +" "+ GetActive( )\root\canvas\gadget + " " + eventgadget
                EndIf
@@ -22222,7 +22223,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *button = *data
                               SendClose( #PB_All )
                            Else
-                              SendClose( *this )
+                              ; Debug 99
+                              ; SendClose( *this )
+                              Free( *this )
                            EndIf
                            
                      EndSelect
@@ -22275,9 +22278,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                __gui\eventhook( )\widget   = *this
                
                ; 
-               If event = #__event_Close
-                  *this\bindclose = 1
-               EndIf
                If event = #__event_Draw
                   *this\binddraw = 1
                EndIf
@@ -22817,6 +22817,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If Not *parent\autosize And SetAttach( *this, *parent, 0 )
                   X - DPIUnscaled(*parent\container_x( )) - DPIUnscaled((*parent\fs + (*parent\fs[1] + *parent\fs[3])))
                   Y - DPIUnScaled(*parent\container_y( )) - DPIUnscaled((*parent\fs + (*parent\fs[2] + *parent\fs[4])))
+                  
                Else
                   ; Debug "888888 "+ *parent +" "+ root( )+" "+Opened( )
                   SetParent( *this, *parent, #PB_Default )
@@ -23014,24 +23015,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;\\
-               If PopupWindow( ) = *this
-                  PopupWindow( ) = #Null
-               EndIf
-               If PressedWidget( ) = *this
-                  PressedWidget( ) = #Null
-               EndIf
-               
-;                If GetActive( ) = *this
-; ;                   If *this <> *this\parent
-; ;                      GetActive( ) = *this\parent
-; ;                   Else
-; ;                      GetActive( ) = #Null
-; ;                   EndIf
-;                   Debug "a "
-;                   SetActive( 0 )
-;                EndIf
-               
                ;
                ; delete all childrens
                ;If *this\haschildren
@@ -23104,13 +23087,28 @@ CompilerIf Not Defined( widget, #PB_Module )
                            PressedWidget( ) = #Null
                         EndIf
                         
-;                         If GetActive( ) = widgets( )
-;                            
-;                            Debug "aa " + keyboard( )\deactive; widgets()\root\BeforeRoot( ) ; widgets()\root\active\class
-;                            
-; ;                            SetActive( keyboard( )\deactive )
-; ;                            ReDraw( keyboard( )\deactive\root )
-;                         EndIf
+                        If GetActive( ) = widgets( )
+                           GetActive( ) = 0
+                           If is_root_( *this )
+                              
+                           Else
+                              If *this\BeforeWidget( )
+                                 SetActive( *this\BeforeWidget( ) )
+                              Else
+                                 If Not SetActive( *this\parent )
+                                    GetActive( ) = *this\parent
+                                 EndIf
+                              EndIf
+                           EndIf
+                           
+;                            If keyboard( )\deactive = *this
+;                            Else
+                               Debug "aa " ;+ keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class; widgets()\root\BeforeRoot( ) ; widgets()\root\active\class
+;                               
+;                               SetActive( keyboard( )\deactive )
+;                               ;                            ReDraw( keyboard( )\deactive\root )
+;                            EndIf
+                        EndIf
                         
                         If test_delete
                            Debug " free - " + widgets( )\class
@@ -23136,6 +23134,26 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                ForEver
                ;EndIf
+               
+               ;\\
+               If PopupWindow( ) = *this
+                  PopupWindow( ) = #Null
+               EndIf
+               
+               If PressedWidget( ) = *this
+                  PressedWidget( ) = #Null
+               EndIf
+               
+               If GetActive( ) = *this
+                  Debug "a "+*this\class
+                  ;SetActive( 0 )
+                  GetActive( ) = 0
+               EndIf
+               
+               If GetActive( ) And 
+                  GetActive( )\root = *this
+                  GetActive( ) = 0
+               EndIf
                
                PostReDraw( *this\root )
                
@@ -23179,13 +23197,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If test_event_repost
                         Debug "Repost #__event_Repaint "+GetClass( GetRoot(__widget))
                      EndIf
-                  ElseIf #__event_Close = __type
-                     If test_event_repost
-                        Debug "Repost #__event_Close"
-                     EndIf
-                     Send( __widget, __type, __item, __data )
-                     Break
-                     
+    
                   ElseIf #__event_Focus = __type Or
                          #__event_LostFocus = __type
                      
@@ -23209,7 +23221,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn __result
       EndProcedure
       
-      Procedure WaitClose( *root._s_root = #Null, waitTime.l  = #PB_Default )
+      Procedure WaitClose( *root._s_root = #Null, waittime.l  = #PB_Default )
          Static mainWindow = - 1
          Protected result
          Protected *ew._s_WIDGET
@@ -23225,23 +23237,31 @@ CompilerIf Not Defined( widget, #PB_Module )
                Select WaitWindowEvent( waittime )
                   Case #PB_Event_CloseWindow
                      Protected window = PB(EventWindow)( )
-                     Protected Canvas = PB(GetWindowData)( window )
+                     Protected Canvas = - 1 ;PB(GetWindowData)( window )
+                     Canvas = PB(GetWindowData)( window )
                      
                      __gui\eventquit = - 1
                      
-                     If ChangeCurrentCanvas( PB(GadgetID)(Canvas))
-                        Debug "Wait close.... " + root( )\address + " " + root( )\canvas\window + " " + window + " - " + EventGadget( ) + " " + EventData( )
-                        
-                        Send( root( ), #__event_Close, window, mainWindow )
-                        
+                     If IsGadget(Canvas)
+                        If ChangeCurrentCanvas( PB(GadgetID)(Canvas))
+                           Debug "Wait close.... " + root( )\address + " " + root( )\canvas\window + " " + window + " - " + EventGadget( ) + " " + EventData( )
+                           
+                           Send( root( ), #__event_Close, window, mainWindow )
+                           
+                        Else
+                           FreeGadget( Canvas )
+                           CloseWindow( window )
+                        EndIf
                      Else
-                        FreeGadget( Canvas )
-                        CloseWindow( window )
+                     ForEach roots( ) 
+                            Send( roots( ), #__event_Close )
+                          ;  Free(  roots( ) )
+                           ;Canvas = roots( ) 
+                        Next
                      EndIf
                      
                      ;\\
                      If MapSize( roots( ) )
-                        ; ChangeCurrentroot( )
                         __gui\eventquit = 0
                      Else
                         __gui\eventquit = 1
@@ -23267,23 +23287,26 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If __gui\eventquit
                   __gui\eventquit = 0
-                  Debug "---------break-QUIT-------- " + IsWindow(root( )\canvas\window)
+                  Define info.s = "---------break-QUIT-------- " + IsWindow(root( )\canvas\window)
                   Break
                EndIf
                If Not MapSize( roots( ) )
-                  Debug "---------break-MAP---------"
+                  Define info.s = "---------break-MAP---------"
                   Break
                EndIf
             ForEver
             
+            Debug ""
             ;\\
             If Not __gui\eventquit
                If IsWindow( PB(EventWindow)( ))
-                  Debug "  - end cicle - yes event window"
+                  Debug "  END "+info.s
                   PB(CloseWindow)( PB(EventWindow)( ))
                Else
-                  Debug "  - end cicle - no event window"
+                  Debug "  END "+info.s
                EndIf
+            Else
+               Debug info.s
             EndIf
          EndIf
          
@@ -23291,11 +23314,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure WaitQuit( *root._s_root = #Null )
          __gui\eventloop + 1
-         
-         ;\\ send posted events
-         If Repost( )
-            
-         EndIf
          
          ;\\ start main loop
          CompilerSelect #PB_Compiler_OS
@@ -23318,24 +23336,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                
          CompilerEndSelect
          
-         Debug "    ( QUIT ) "
+         Debug "  end wait( QUIT ) "
       EndProcedure
       
       Procedure PostQuit( *root._s_root = #Null )
          Debug "post( QUIT )"
          
          __gui\eventloop = 0
-         
-         ;\\
-         ;          If *root > 0
-         ;             PushMapPosition( roots( ) )
-         ;             ForEach roots( )
-         ;                If roots( ) <> *root
-         ;                   DisableWindow( roots( )\canvas\window, #False )
-         ;                EndIf
-         ;             Next
-         ;             PopMapPosition( roots( ) )
-         ;          EndIf
          
          ;\\ stop main loop
          CompilerSelect #PB_Compiler_OS
@@ -23596,15 +23603,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          HideWindow( *message\root\canvas\window, 0);, #__window_NoActivate )
          
          ;\\
-         If Disable( *parent, 1 )
-            PostReDraw( *parent )
-         EndIf
+        ; If Disable( *parent, 1 )
+            ReDraw( *parent )
+        ; EndIf
          
-         ;ReDraw( *message )
-         PostReDraw( *message )
+         ReDraw( *message )
+         ; PostReDraw( *message )
          ;\\
          WaitQuit( *message )
          
+         Debug "----------- "+keyboard( )\deactive\class
+         ;SetActive( keyboard( )\deactive )
          ;\\
          ;Disable( *parent, 0 )
          
@@ -23612,13 +23621,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          FreeImage( img )
          Sticky( *message, #False )
          result = GetData( *message )
-         ;\\ close
-         SendClose( *message )
+;          ;\\ close
+;          SendClose( *message )
+         Free( *message )
          If IsWindow(*message\canvas\window)
             CloseWindow(*message\canvas\window)
             Debug "Close - Message window " + *message\canvas\window
          EndIf
-         ;Debug MapSize(roots())
+         
+         
+;          ;Debug MapSize(roots())
          ;\\
          ChangeCurrentCanvas( canvasID )
          
@@ -24485,9 +24497,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 14783
-; FirstLine = 14123
-; Folding = -4----------------------------------------n------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------+48-----------------------------------------------r--8------+-L-------------------------------------------------------------------------8-vf-------0------------------------------------------------f-----------------------------u---------------------30+-----+-+--------------------------0-4-----v-------------f------------f---------------------------------f-b8u7--+0----f--v--08-------u----------------------f80+-----------z----
+; CursorPosition = 23105
+; FirstLine = 23078
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------X0---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

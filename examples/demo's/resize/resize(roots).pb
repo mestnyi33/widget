@@ -31,11 +31,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu )
-  Define *root._S_widget = Open(#window_0,0,0,424, 352): *root\class = "root": SetText(*root, "root")
+ ; OpenWindow(#window_0, 0, 0, 424, 352, "AnchorsGadget", #PB_Window_SystemMenu|#PB_Window_SizeGadget )
+  Define *root._S_widget = Open(#window_0,0,0,424, 352, "AnchorsGadget", #PB_Window_SystemMenu|#PB_Window_SizeGadget): *root\class = "root": SetText(*root, "root")
   ;Bind( *root, @HandlerEvents( ) )
   
-  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  OpenWindow(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Define *root0._S_widget = Open(#window,10,10,300-20,300-20): *root0\class = "root0": SetText(*root0, "root0")
   ;Bind( *root0, @HandlerEvents( ) )
   
@@ -50,13 +50,14 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define *root4._S_widget = Open(#window, 590, 10, 200, 600-20): *root4\class = "root4": SetText(*root4, "root4")
   ;Bind( *root4, @HandlerEvents( ) )
+  SetAlign(*root4, 0, 0,1,1,1)
   
   Bind( #PB_All, @HandlerEvents( ) )
   
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 20
+; CursorPosition = 33
+; FirstLine = 28
 ; Folding = -
 ; EnableXP

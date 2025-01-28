@@ -1306,7 +1306,6 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          
       Case #_tb_file_open
          Debug "#_tb_file_open"
-         SendClose( ide_design_form )
          ;          ClearItems( ide_inspector_view )
          
          
@@ -1389,8 +1388,7 @@ Procedure ide_events( )
    Select e_type
       Case #__event_Close
          If *e_widget = ide_root
-            ; bug при отмене выбора закрыть
-            If #PB_MessageRequester_Yes = Message( "Message", 
+            If #PB_MessageRequester_Yes = MessageRequester( "Message", 
                                                    "Are you sure you want to go out?",
                                                    #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                ProcedureReturn 0
@@ -1961,8 +1959,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1308
-; FirstLine = 1298
+; CursorPosition = 1390
+; FirstLine = 1381
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

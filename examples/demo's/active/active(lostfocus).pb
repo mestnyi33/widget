@@ -53,8 +53,8 @@ Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
 ;     Debug " open message"
 ;     SetActive(*g_11)
 ; ;    
-; Message(title, Text, flags, parentID )
- ;  MessageRequester(title, Text, flags, parentID );
+ ; ProcedureReturn Message(title, Text, flags, parentID )
+   ProcedureReturn MessageRequester(title, Text, flags, parentID );
 EndProcedure
 
 
@@ -78,7 +78,8 @@ Bind( cost, @LostFocusEvents( ), #__event_LostFocus )
 WaitClose( )
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 56
+; FirstLine = 46
 ; Folding = --
 ; EnableXP
 ; DPIAware

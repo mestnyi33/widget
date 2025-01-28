@@ -9,8 +9,8 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
-     ; Message(title, Text, flags, parentID )
-     MessageRequester(title, Text, flags, parentID );
+     ; ProcedureReturn Message(title, Text, flags, parentID )
+     ProcedureReturn MessageRequester(title, Text, flags, parentID );
   EndProcedure
 
   Procedure CallBack( )
@@ -53,10 +53,10 @@ CompilerIf #PB_Compiler_IsMainFile
            Else
               ProcedureReturn 1
            EndIf
-        Else
-         ; Free(EventWidget( ))
+;         Else
+;            Debug 999999999 ; Free(EventWidget( ))
+;            ProcedureReturn 0
         EndIf
-        
         
       Case #__event_free
         Debug "free - event " + GetClass( EventWidget( ) ) 
@@ -67,9 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu |
-                                         #PB_Window_ScreenCentered )
-     ;\\
+  If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
      Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu )
      
      SetClass(widget( ), "window_0" )
@@ -90,13 +88,12 @@ CompilerIf #PB_Compiler_IsMainFile
      Button(10,10,200,50,"Button_2_close")
      SetClass(widget( ), "Button_2_close" )
      
-     Bind( #PB_All, @CallBack( ) )
+     Bind( #PB_All, @CallBack( ))
      WaitClose( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 33
+; CursorPosition = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware
