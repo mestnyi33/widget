@@ -5,6 +5,9 @@ WidgetEventType
 WidgetEventData
 WidgetEventItem
 
+PostCloseCanvasWindow
+PostClose
+
 widget
 root
 mouse
@@ -35,6 +38,7 @@ UseList
 OpenList
 CloseList
 Free
+Delete
 
 Post
 Send

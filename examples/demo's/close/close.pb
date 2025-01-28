@@ -9,6 +9,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Declare CallBack( )
    
+   Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
+     ; ProcedureReturn Message(title, Text, flags, parentID )
+     ProcedureReturn MessageRequester(title, Text, flags, parentID );
+   EndProcedure
+
    ;\\
    Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
                                        #PB_Window_SizeGadget |
@@ -43,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure buttonEvent( )
       If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
          
-         PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
+         PostCloseCanvasWindow( EventWindow( ) )
          
       EndIf
    EndProcedure
@@ -60,20 +65,19 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_leftclick
             Select GetText( EventWidget( ))
                Case "Button_0_close"
-                  If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                  If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                      Free( EventWidget( ) )
                   EndIf
                   
                Case "Button_1_close"
-                  ;  Post( EventWidget( )\window, #__event_Close )
-                  Send( EventWidget( )\window, #__event_Close )
-                  ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
-                  
+                  PostClose( EventWidget( ) )
+               
                Case "Button_2_close"
-                  If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
+                  If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
                      
-                     PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
-         
+                     ;PostCloseCanvasWindow( EventWindow( ) )
+                     PostClose( EventWidget( ) )
+                     
                   EndIf
                   
             EndSelect
@@ -83,14 +87,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;\\ demo main window
             If EventWindow( ) = 2
-               If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+               If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                   ProcedureReturn #PB_All
                Else
                   ProcedureReturn 1
                EndIf
                
             ElseIf EventWindow( ) = 0
-               If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+               If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                   ProcedureReturn 0
                Else
                   ProcedureReturn 1
@@ -109,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 57
-; Folding = --
+; CursorPosition = 75
+; FirstLine = 81
+; Folding = ---
 ; EnableXP

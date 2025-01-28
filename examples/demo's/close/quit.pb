@@ -8,13 +8,18 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   Declare CallBack( )
   
+  Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
+     ; ProcedureReturn Message(title, Text, flags, parentID )
+     ProcedureReturn MessageRequester(title, Text, flags, parentID );
+  EndProcedure
+
   ;\\
   Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
                                       #PB_Window_SizeGadget |
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_0_root" )
+  SetClass(root( ), "window_0_root" )
   Container( 10,10,240,140 ) : SetClass(widget( ), "window_0_root_container" )
   Button(10,10,200,50,"window_0_root_butt_1")
   SetClass(widget( ), "window_0_root_butt_1" )
@@ -27,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_1_root" )
+  SetClass(root( ), "window_1_root" )
   Container( 10,10,240,140 ) : SetClass(widget( ), "window_1_root_container" )
   Button(10,10,200,50,"window_1_root_butt_1")
   SetClass(widget( ), "window_1_root_butt_1" )
@@ -40,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_2_root" )
+  SetClass(root( ), "window_2_root" )
   Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
   Button(10,10,200,50,"button_message")
   SetClass(widget( ), "button_message" )
@@ -71,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick
         Select GetText( EventWidget( ) )
           Case "button_message"
-            Message( "message", "test", #__message_ScreenCentered )
+            OpenMessage( "message", "test", #__message_ScreenCentered )
             
             ; WaitQuit( )
             
@@ -86,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 56
+; CursorPosition = 78
+; FirstLine = 57
 ; Folding = -
 ; EnableXP

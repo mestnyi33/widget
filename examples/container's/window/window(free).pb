@@ -57,27 +57,27 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_buttons()
       Select WidgetEvent( ) 
          Case #__event_Maximize
-            Debug "maximize"
+            Debug "disable maximize"
             ProcedureReturn #PB_Ignore
             
          Case #__event_Minimize
-            Debug "minimize"
+            Debug "disable minimize"
             ProcedureReturn #PB_Ignore
             
          Case #__event_Close
-            Debug "close"
+            Debug "disable close"
             ProcedureReturn #PB_Ignore
             
       EndSelect
    EndProcedure
-   Bind( *window, @events_buttons() )
+   Bind( *window, @events_buttons( ) )
    
    ;
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 47
+; CursorPosition = 64
+; FirstLine = 44
 ; Folding = --
 ; EnableXP
 ; DPIAware

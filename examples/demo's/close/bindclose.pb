@@ -7,18 +7,21 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   ;\\
+   Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
+     ; ProcedureReturn Message(title, Text, flags, parentID )
+     ProcedureReturn MessageRequester(title, Text, flags, parentID );
+  EndProcedure
+
+  ;\\
    Procedure gadget_CallBack( )
       Select WidgetEvent( )
          Case #__event_close
             Debug " close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
-           ; ProcedureReturn #PB_Ignore
-           ProcedureReturn 0
            
          Case #__event_Down
             Debug " down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
             
-            Send(EventWidget( ), #__event_close)
+            PostClose( EventWidget( ) )
    ;             ;\\ to send not down
             ;                      ProcedureReturn 1
             ProcedureReturn #PB_Ignore
@@ -31,7 +34,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_close
             Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
-            ;ProcedureReturn 3
            
          Case #__event_Down
             Debug "down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
@@ -48,8 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_close
             Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
-            ;ProcedureReturn 4
-           
+            
          Case #__event_Down
             Debug "down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
             
@@ -60,11 +61,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure buttonEvent( )
-      If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+      If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
          
-         ; CloseWindow( EventWindow( ) )
-         PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
-             
+         If Delete( root( ) )
+            PostReDraw( root( ) )
+         EndIf
+         
       EndIf
    EndProcedure
    
@@ -101,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 54
+; CursorPosition = 63
+; FirstLine = 69
 ; Folding = --
 ; EnableXP

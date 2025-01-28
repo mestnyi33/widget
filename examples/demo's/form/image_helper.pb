@@ -49,9 +49,6 @@ Procedure CFE_Helper_Buttons_Events( )
    Protected Checked ;= *Create\Checked
    
    Select WidgetEvent( )
-      Case #__Event_Close
-         Free( EventWidget( ) )
-         
       Case #__Event_LeftClick
          Select EventWidget( )
             Case Button_Cancel
@@ -175,8 +172,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 57
+; CursorPosition = 51
+; FirstLine = 41
 ; Folding = ----
 ; Optimizer
 ; EnableXP

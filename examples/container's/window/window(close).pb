@@ -17,27 +17,30 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent( )
       Case #__event_leftclick
         Select GetText( EventWidget())
-          Case "Button_0_close"
-            If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( )\window )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              Free( EventWidget( ) ) 
-            EndIf
+           Case "Button_0_close" 
+              ; PostClose( EventWidget( ) )
+              If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( )\window )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                 
+                 Free( GetWindow( EventWidget( ) ) ) 
+                 
+              EndIf
             
           Case "Button_1_close"
-            ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
              
-             Send( GetWindow( EventWidget( ) ), #__event_Close )
+             PostClose( EventWidget( ) )
             
           Case "Button_2_close"
-            If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-               
-               PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
-         
-            EndIf
+             ; PostClose( EventWidget( ) )
+             If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                
+                Delete( GetRoot( EventWidget( ) ) )
+                
+             EndIf
             
         EndSelect
         
       Case #__event_close
-        ;Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ Type( EventWidget( )\window ) 
+        ; Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ Type( EventWidget( )\window ) 
         
         ;\\ demo main window
         If GetTitle( EventWidget( ) ) = "window_2"
@@ -53,9 +56,6 @@ CompilerIf #PB_Compiler_IsMainFile
            Else
               ProcedureReturn 1
            EndIf
-;         Else
-;            Debug 999999999 ; Free(EventWidget( ))
-;            ProcedureReturn 0
         EndIf
         
       Case #__event_free
@@ -93,8 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 14
+; CursorPosition = 36
+; FirstLine = 26
 ; Folding = --
 ; EnableXP
 ; DPIAware
