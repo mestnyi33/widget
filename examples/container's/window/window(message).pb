@@ -10,7 +10,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    Macro Message( title, Text, flag=0, parentID=0 ) : MessageRequester( title, Text, flag, parentID ) : EndMacro
    
    Procedure ShowMessage(  )
-      
       Debug "open - Title"
       Define Result = Message( "Title", "Please make your input:", #__message_YesNoCancel|#__message_Info ) 
       Debug " close - Title " + Result
@@ -31,7 +30,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "open - Information"
       Result = Message("Information", a$, flag)
       Debug "close - Information "+Result
-      
    EndProcedure
    
    Procedure ButtonEvents( )
@@ -103,7 +101,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 53
+; CursorPosition = 32
+; FirstLine = 21
 ; Folding = -+-
 ; EnableXP
 ; DPIAware

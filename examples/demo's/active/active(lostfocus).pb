@@ -53,8 +53,10 @@ Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
 ;     Debug " open message"
 ;     SetActive(*g_11)
 ; ;    
- ; ProcedureReturn Message(title, Text, flags, parentID )
-   ProcedureReturn MessageRequester(title, Text, flags, parentID );
+  ProcedureReturn Message(title, Text, flags, parentID )
+   Define Message = MessageRequester(title, Text, flags, parentID );
+   SetActiveGadget(GetWindowData(0))
+   ProcedureReturn Message
 EndProcedure
 
 
@@ -78,8 +80,8 @@ Bind( cost, @LostFocusEvents( ), #__event_LostFocus )
 WaitClose( )
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 46
+; CursorPosition = 55
+; FirstLine = 45
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -63,8 +63,8 @@ CompilerIf #PB_Compiler_IsMainFile
       SetParent(TestWindow(30, 220, 50, 190, 150, "30", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget), *parent ) 
       TestGadget(3, 10,10,170,60,"3") 
       TestGadget(6, 10,80,170,60,"6") 
-      SetActive( widget( ) )
       
+      SetActive( widget( ) )
       
       Bind(#PB_All, @active( ), #__event_Focus)
       Bind(#PB_All, @deactive( ), #__event_LostFocus)
@@ -75,6 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    End  
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 66
+; FirstLine = 42
 ; Folding = --
 ; EnableXP

@@ -42,7 +42,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure buttonEvent( )
       If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-         SendClose( #PB_All )
+         
+         PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
+         
       EndIf
    EndProcedure
    ButtonGadget(1, 10,70,200,50, "Button_2_close")
@@ -56,23 +58,22 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CallBack( )
       Select WidgetEvent( )
          Case #__event_leftclick
-            Select GetText( EventWidget())
+            Select GetText( EventWidget( ))
                Case "Button_0_close"
                   If #PB_MessageRequester_Yes = Message( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                     SendClose( EventWindow( ) )
+                     Free( EventWidget( ) )
                   EndIf
                   
                Case "Button_1_close"
-                  ; SendClose( EventWindow( ) )
-                  ; SendClose( EventWidget( )\window )
-                  
                   ;  Post( EventWidget( )\window, #__event_Close )
                   Send( EventWidget( )\window, #__event_Close )
                   ; PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
                   
                Case "Button_2_close"
                   If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
-                     SendClose( #PB_All )
+                     
+                     PostEvent( #PB_Event_CloseWindow, EventWidget( )\root\canvas\window, #PB_Default )
+         
                   EndIf
                   
             EndSelect
@@ -108,7 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 78
+; CursorPosition = 67
+; FirstLine = 57
 ; Folding = --
 ; EnableXP

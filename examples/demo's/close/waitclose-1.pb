@@ -28,15 +28,13 @@ CompilerIf #PB_Compiler_IsMainFile
    Desktop_0_Window_2_Button_1 = Button(25,25, 100, 25,"Button_1")
    ;CloseList()
    
-   Sticky(Desktop_0_Window_0, 1)
-   Sticky(Desktop_0_Window_0, 0)
-   Sticky(Desktop_0_Window_2, 1)
    
-   SetText(Sticky( ),"StickyWindow")
-   WaitClose( )
+   ; WaitClose(Desktop_0)
+   WaitClose(Desktop_0_Window_2)
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 4
+; CursorPosition = 31
+; FirstLine = 1
 ; Folding = -
 ; EnableXP
+; DPIAware

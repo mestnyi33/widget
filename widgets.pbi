@@ -1517,7 +1517,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Declare   WaitClose( *root = #Null, waittime.l = #PB_Default )
-      Declare   SendClose( *window )
       Declare   Free( *this )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
@@ -10693,6 +10692,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      DoFocus( *deactiveGadget, #__event_LostFocus )
                   EndIf
                EndIf
+               
+               ; reset active canvas
+               If GetActiveGadget( ) = *deactive\root\canvas\gadget
+                  SetActiveGadget( - 1 )
+               EndIf
                ProcedureReturn 0
             EndIf
             
@@ -19366,7 +19370,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                   *this\LineFocused( )      = 0
 ;                   *this\LinePressed( )      = *this\LineFocused( )     
 ;                   *this\LineEntered( )      = *this\LineFocused( )     
-                  SetActiveGadget( *this\root\canvas\gadget )
+                  
                EndIf
             EndIf
             
@@ -21199,6 +21203,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                            SetActive( roots( )\active )
                            ReDraw( GetActive( )\root )
+                           Debug "----"
                         EndIf
                         Break
                      EndIf
@@ -22121,6 +22126,97 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure SendClose( *window._s_WIDGET )
+         Protected window, Canvas
+         Protected is_window = IsWindow( *window )
+         
+         ;\\
+         If Not is_window
+            If *window = #PB_All
+               is_window = #True
+            Else
+               If is_root_( *window )
+                  *window   = *window\root\canvas\window
+                  is_window = #True
+               Else
+                  If is_widget_( *window )
+                     *window = GetCanvasWindow( *window )
+                  EndIf
+                  is_window = #True
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\
+         If is_window
+            ForEach roots( )
+               root( ) = roots( )
+               window  = root( )\canvas\window
+               Canvas  = root( )\canvas\gadget
+               
+               ;\\
+               If *window = #PB_All
+                  If root( )\haschildren
+                     LastElement( widgets( ) )
+                     Repeat
+                        If is_window_( widgets( ) )
+                           window = #PB_All
+                           ; Debug " free --------- " + widgets( )\class
+                           
+                           Free( widgets( ) )
+                           
+                           If Not root( )\haschildren
+                              Break 2
+                           EndIf
+                           
+                        ElseIf Not PreviousElement( widgets( ) )
+                           Break
+                        EndIf
+                     ForEver
+                     
+                     If window = #PB_All
+                        Break
+                     EndIf
+                  EndIf
+                  
+                  __gui\eventquit = - 1
+               Else
+                  If *window <> window
+                     Continue
+                  EndIf
+               EndIf
+               
+               ;\\
+               If Free( root( ) )
+                  If PB(IsWindow)( window )
+                     If DraggedGadget( ) = Canvas
+                        DraggedGadget( ) = - 1
+                     EndIf
+                     If EnteredGadget( ) = Canvas
+                        EnteredGadget( ) = - 1
+                     EndIf
+                     If PressedGadget( ) = Canvas
+                        PressedGadget( ) = - 1
+                     EndIf
+                     If FocusedGadget( ) = Canvas
+                        FocusedGadget( ) = - 1
+                     EndIf
+                     
+                     If __gui\eventquit = - 1
+                        FreeGadget( Canvas )
+                        CloseWindow( window )
+                        ResetMap( roots( ) )
+                     Else
+                        PostEvent( #PB_Event_CloseWindow, window, #PB_Default )
+                     EndIf
+                  EndIf
+               EndIf
+            Next
+         EndIf
+         
+         ProcedureReturn window
+      EndProcedure
+      
       Procedure.i Send( *this._s_root, event.l, *button = #PB_All, *data = #Null )
          Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
          
@@ -22223,8 +22319,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *button = *data
                               SendClose( #PB_All )
                            Else
-                              ; Debug 99
-                              ; SendClose( *this )
                               Free( *this )
                            EndIf
                            
@@ -22567,6 +22661,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *root\focus = #__state_nofocus
             Else
                SetActive( *root )
+               SetActiveGadget( *root\canvas\gadget )
             EndIf
          EndIf
          
@@ -22672,7 +22767,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;\\ open root list
          Else
-            *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text, flag | #__window_BorderLess, *parent )
+            *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #__window_BorderLess, *parent )
             X     = 0
             Y     = 0
             ;EndIf
@@ -22905,97 +23000,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;             ProcedureReturn 1
       ;          EndIf
       ;       EndProcedure
-      
-      Procedure SendClose( *window._s_WIDGET )
-         Protected window, Canvas
-         Protected is_window = IsWindow( *window )
-         
-         ;\\
-         If Not is_window
-            If *window = #PB_All
-               is_window = #True
-            Else
-               If is_root_( *window )
-                  *window   = *window\root\canvas\window
-                  is_window = #True
-               Else
-                  If is_widget_( *window )
-                     *window = GetCanvasWindow( *window )
-                  EndIf
-                  is_window = #True
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\
-         If is_window
-            ForEach roots( )
-               root( ) = roots( )
-               window  = root( )\canvas\window
-               Canvas  = root( )\canvas\gadget
-               
-               ;\\
-               If *window = #PB_All
-                  If root( )\haschildren
-                     LastElement( widgets( ) )
-                     Repeat
-                        If is_window_( widgets( ) )
-                           window = #PB_All
-                           ; Debug " free --------- " + widgets( )\class
-                           
-                           Free( widgets( ) )
-                           
-                           If Not root( )\haschildren
-                              Break 2
-                           EndIf
-                           
-                        ElseIf Not PreviousElement( widgets( ) )
-                           Break
-                        EndIf
-                     ForEver
-                     
-                     If window = #PB_All
-                        Break
-                     EndIf
-                  EndIf
-                  
-                  __gui\eventquit = - 1
-               Else
-                  If *window <> window
-                     Continue
-                  EndIf
-               EndIf
-               
-               ;\\
-               If Free( root( ) )
-                  If PB(IsWindow)( window )
-                     If DraggedGadget( ) = Canvas
-                        DraggedGadget( ) = - 1
-                     EndIf
-                     If EnteredGadget( ) = Canvas
-                        EnteredGadget( ) = - 1
-                     EndIf
-                     If PressedGadget( ) = Canvas
-                        PressedGadget( ) = - 1
-                     EndIf
-                     If FocusedGadget( ) = Canvas
-                        FocusedGadget( ) = - 1
-                     EndIf
-                     
-                     If __gui\eventquit = - 1
-                        FreeGadget( Canvas )
-                        CloseWindow( window )
-                        ResetMap( roots( ) )
-                     Else
-                        PostEvent( #PB_Event_CloseWindow, window, #PB_Default )
-                     EndIf
-                  EndIf
-               EndIf
-            Next
-         EndIf
-         
-         ProcedureReturn window
-      EndProcedure
       
       ;-
       Procedure.i Free( *this._s_WIDGET )
@@ -23253,7 +23257,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            CloseWindow( window )
                         EndIf
                      Else
-                     ForEach roots( ) 
+                        ForEach roots( ) 
                             Send( roots( ), #__event_Close )
                           ;  Free(  roots( ) )
                            ;Canvas = roots( ) 
@@ -23414,6 +23418,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             *parent = root( )
          EndIf
          
+         DisableWindow( *parent\canvas\window, #True )
+      
          ;          ;\\ 1)
          ;          x = ( root( )\width - width )/2
          ;          y = ( root( )\height - height )/2 - #__window_CaptionHeight
@@ -23432,7 +23438,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          Protected canvasID = *parent\root\canvas\gadgetID
          
-         *message = Open( #PB_Any, X, Y, Width, Height, Title, newflag, WindowID( *parent\canvas\window ))
+         *message = Open( #PB_Any, X, Y, Width, Height, Title, newflag, WindowID( *parent\canvas\window ) )
          SetClass( *message, #PB_Compiler_Procedure )
          ;*message\parent = *parent
          
@@ -23612,17 +23618,19 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          WaitQuit( *message )
          
+         
          Debug "----------- "+keyboard( )\deactive\class
          ;SetActive( keyboard( )\deactive )
          ;\\
          ;Disable( *parent, 0 )
-         
+          DisableWindow( *parent\canvas\window, #False )
+      
          ;\\
          FreeImage( img )
          Sticky( *message, #False )
          result = GetData( *message )
-;          ;\\ close
-;          SendClose( *message )
+         
+         ;\\ close
          Free( *message )
          If IsWindow(*message\canvas\window)
             CloseWindow(*message\canvas\window)
@@ -24497,9 +24505,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23105
-; FirstLine = 23078
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------X0---------
+; CursorPosition = 22128
+; FirstLine = 22068
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v7---------
 ; Optimizer
 ; EnableXP
 ; DPIAware
