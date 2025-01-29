@@ -1392,9 +1392,9 @@ Procedure ide_events( )
             If #PB_MessageRequester_Yes = MessageRequester( "Message", 
                                                    "Are you sure you want to go out?",
                                                    #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-               ProcedureReturn 0
+               ProcedureReturn #PB_All
             Else
-               ProcedureReturn 1
+               ProcedureReturn 1 ; no close
             EndIf
          EndIf
          
@@ -1960,7 +1960,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13
+; CursorPosition = 1400
+; FirstLine = 1382
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

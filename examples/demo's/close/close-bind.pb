@@ -63,10 +63,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure buttonEvent( )
       If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
          
-         If Delete( root( ) )
-            PostReDraw( root( ) )
-         EndIf
-         
+         Free( #PB_All )
+                
       EndIf
    EndProcedure
    
@@ -77,6 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "root_0" )
+   SetBackgroundColor( root( ), $FFB3FDFF )
    ButtonGadget(1, 10,10,200,50, "Button_2_close")
    BindGadgetEvent(1, @buttonEvent( ))
    
@@ -103,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 69
+; CursorPosition = 66
+; FirstLine = 52
 ; Folding = --
 ; EnableXP

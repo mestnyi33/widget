@@ -5,7 +5,6 @@ WidgetEventType
 WidgetEventData
 WidgetEventItem
 
-PostCloseCanvasWindow
 PostClose
 
 widget

@@ -7,13 +7,18 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
+   Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
+     ; ProcedureReturn Message(title, Text, flags, parentID )
+     ProcedureReturn MessageRequester(title, Text, flags, parentID );
+   EndProcedure
+
    Procedure CallBack( )
       Select WidgetEvent( )
          Case #__event_close
             Debug "close - event " + EventWidget( )\class +" --- "+ EventWidget( )\index
             
             If EventWindow( ) = 2 
-               If #PB_MessageRequester_Yes = Message( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+               If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                   ProcedureReturn #PB_All
                Else
                   ProcedureReturn 1
@@ -60,31 +65,31 @@ CompilerIf #PB_Compiler_IsMainFile
    SetClass(widget( ), "Button_2" )
    
    
-   
-   ;\\
-   ForEach roots( )
-      Debug roots( )\class
-   Next
-   
-   ;   Debug ""
-   ;   Define canvas, window
-   ;   ForEach roots( )
-   ;      Debug roots( )\class
-   ;      canvas = roots( )\canvas\gadget
-   ;      window = roots( )\canvas\window
-   ;      
-   ;      DeleteMapElement(roots( ))
-   ;      FreeGadget( canvas )
-   ;      CloseWindow( window )
-   ;      
-   ;      ResetMap(roots( ))
-   ;   Next
-   ;   
-   ;   If Not MapSize(roots( ))
-   ;     Debug "0"
-   ;     End
-   ;   EndIf
-   ;   
+;    
+;    ;\\
+;    ForEach roots( )
+;       Debug roots( )\class
+;    Next
+;    
+;    ;   Debug ""
+;    ;   Define canvas, window
+;    ;   ForEach roots( )
+;    ;      Debug roots( )\class
+;    ;      canvas = roots( )\canvas\gadget
+;    ;      window = roots( )\canvas\window
+;    ;      
+;    ;      DeleteMapElement(roots( ))
+;    ;      FreeGadget( canvas )
+;    ;      CloseWindow( window )
+;    ;      
+;    ;      ResetMap(roots( ))
+;    ;   Next
+;    ;   
+;    ;   If Not MapSize(roots( ))
+;    ;     Debug "0"
+;    ;     End
+;    ;   EndIf
+;    ;   
    
    Bind( #PB_All, @CallBack( ) )
    
@@ -92,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( root( ) )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 61
-; Folding = -
+; CursorPosition = 20
+; FirstLine = 65
+; Folding = --
 ; EnableXP

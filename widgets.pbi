@@ -751,9 +751,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; Debug #PB_Compiler_Procedure
          ; PostReDraw( _root_ )
       EndMacro
-      Macro PostCloseCanvasWindow( _canvas_window_ )
-         PostEvent( #PB_Event_CloseWindow, _canvas_window_, #PB_Default )  
-      EndMacro
       Macro PostClose( _this_ )
          Send( GetWindow( _this_ ), #__event_close )
       EndMacro
@@ -6362,8 +6359,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                *BB2\width  = *bar\area\len - ( *bar\thumb\pos + *bar\thumb\len )
                *BB2\height = *this\frame_height( )
                
-               ;Debug *BB2\width 
-               
                ; seperatior pos&size
                If *bar\thumb\len
                   *SB\y      = *this\frame_y( )
@@ -6396,7 +6391,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\split_1( )\y <> *BB1\y Or
                      *this\split_1( )\width <> *BB1\width Or
                      *this\split_1( )\height <> *BB1\height
-                     ; Debug "splitter_1_resize " + *this\split_1( )
                      
                      If *this\split_1( )\type = #__type_window
                         Resize( *this\split_1( ),
@@ -6438,7 +6432,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\split_2( )\y <> *BB2\y Or
                      *this\split_2( )\width <> *BB2\width Or
                      *this\split_2( )\height <> *BB2\height
-                     ; Debug "splitter_2_resize " + *this\split_2( )
                      
                      If *this\split_2( )\type = #__type_window
                         Resize( *this\split_2( ),
@@ -21222,7 +21215,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          If eventtype = #PB_EventType_LostFocus
             If GetActive( ) And GetActive( )\root\canvas\gadget = eventgadget
-               Debug IsWindow(GetActive( )\root\canvas\window)
+               ; Debug IsWindow(GetActive( )\root\canvas\window)
                If test_focus_set
                   Debug "CANVAS - LostFocus " + GetActive( )\root\class +" "+ GetActive( )\root\canvas\gadget + " " + eventgadget
                EndIf
@@ -22217,8 +22210,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If result <> #PB_Ignore
                      Select result
                         Case #PB_All
-                           Delete( *this\root )
-                           
+                           Free( #PB_All )
+                
                         Case 0
                            Free( *this )
                            
@@ -22514,15 +22507,19 @@ CompilerIf Not Defined( widget, #PB_Module )
             root( )    = roots( )
             *root      = roots( )
             
-            
             ;
             *root\address   = result
             *root\container = 1
+            *root\type      = #__type_Root
             *root\class     = "root"
+            ;
+            ; *root\parent   = Opened( )
             *root\root      = *root
             *root\window    = *root ; если это убрать то функцию set active надо изменить
-            *root\type      = #__type_Root
-            ;*root\parent   = Opened( )
+            ;
+            *root\canvas\GadgetID = g
+            *root\canvas\window   = Window
+            *root\canvas\gadget   = Canvas
             
             ;
             *root\color       = _get_colors_( )
@@ -22530,10 +22527,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                *root\color\back  = - 1
             EndIf
             SetFontID( *root, PB_( GetGadgetFont )( #PB_Default ))
-            ;
-            *root\canvas\GadgetID = g
-            *root\canvas\window   = Window
-            *root\canvas\gadget   = Canvas
             
             ;\\
             PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
@@ -22547,12 +22540,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If Not constants::BinaryFlag( Flag, #__window_NoGadgets ) 
-               If Opened( )
-                  Opened( )\Afterroot( ) = *root
-               EndIf
                *root\Beforeroot( ) = Opened( )
-               
+               If *root\Beforeroot( )
+                 *root\Beforeroot( )\Afterroot( ) = *root
+               EndIf
                Opened( ) = *root
+               ;
                ; OpenList( *root)
             EndIf
             
@@ -22578,7 +22571,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseLeave )
                BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseMove )
             CompilerEndIf
-            
+            ;
             BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_Resize )
             BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LeftButtonDown )
             BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LeftButtonUp )
@@ -22589,9 +22582,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_Input )
             BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_KeyDown )
             BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_KeyUp )
-            
+            ;
             ; BindGadgetEvent( Canvas, @CanvasEvents( ))
             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
+            ;
             BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
             If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
@@ -22625,7 +22619,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          widget( ) = *root
-         ;PostReDraw( *root )
          ProcedureReturn *root
       EndProcedure
       
@@ -23024,10 +23017,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             ForEver
          EndIf
+         ;
+         PostReDraw( *this\root )
       EndProcedure
       
       Procedure.i Free( *this._s_WIDGET )
-         If *this
+         If *this > 0 
             If Not Send( *this, #__event_free )
                If Opened( ) = *this
                   OpenList( *this\parent )
@@ -23067,8 +23062,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   GetActive( ) = 0
                EndIf
                
-               PostReDraw( *this\root )
-               
                ;\\
                If is_root_( *this )
                   DeleteMapElement( roots( ) )
@@ -23081,10 +23074,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If Not MapSize( roots( ) )
                      __gui\eventquit = 1
                   EndIf
+                  
+                  PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, #PB_Default ) 
                EndIf
                
                ProcedureReturn 1
             EndIf
+         Else
+            ForEach roots( ) : root( ) = roots( )
+               Free( root( ) )
+            Next
          EndIf
       EndProcedure
       
@@ -24398,9 +24397,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23146
-; FirstLine = 23030
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------zeP0--------V---------
+; CursorPosition = 23077
+; FirstLine = 22971
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-tt04-----0-v+--------q---------
 ; Optimizer
 ; EnableXP
 ; DPIAware
