@@ -23258,35 +23258,27 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure MessageEvents( )
          Select WidgetEvent( )
-            Case #__event_Draw
-               Debug "repaint - message " + EventWidget( )\class
-               
-            Case #__event_Focus
-               Debug " MessageEvents (FOCUS) "
-               
             Case #__event_LeftClick
-               Protected *ew._s_WIDGET = EventWidget( )
-               
-               If #__type_Button = *ew\type
-                  Protected *message._s_WIDGET = *ew\window
+               If #__type_Button = Type( EventWidget( ) )
+                  Protected *message._s_WIDGET = GetWindow( EventWidget( ) )
                   
-                  Select GetText( *ew )
+                  ;\\
+                  Select GetText( EventWidget( ) )
                      Case "No"     : SetData( *message, #__message_No )     ; no
                      Case "Yes"    : SetData( *message, #__message_Yes )    ; yes
                      Case "Cancel" : SetData( *message, #__message_Cancel ) ; cancel
                   EndSelect
                   
                   ;\\
-                  Unbind( *message, @MessageEvents( ), #__event_Focus )
                   Unbind( *message, @MessageEvents( ), #__event_LeftClick )
                   
                   ;\\
                   PostQuit( *message )
                EndIf
                
+               ;\\
                ProcedureReturn #PB_Ignore
          EndSelect
-         
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
@@ -23488,7 +23480,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          Bind( *message, @MessageEvents( ), #__event_LeftClick )
-         Bind( *message, @MessageEvents( ), #__event_Focus )
          
          ;\\
          DisableWindow( *parent\canvas\window, #True )
@@ -24380,8 +24371,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22625
-; FirstLine = 22590
+; CursorPosition = 23262
+; FirstLine = 23211
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tt04-----0-v+-------f2---------
 ; Optimizer
 ; EnableXP
