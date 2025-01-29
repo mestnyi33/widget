@@ -1960,8 +1960,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1393
-; FirstLine = 1382
+; CursorPosition = 5
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

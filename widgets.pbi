@@ -731,8 +731,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; Debug #PB_Compiler_Procedure
             If widget::__gui\eventloop
                If Not widget::Send( _root_, constants::#__event_Repaint )
-                  ; Debug "post - ReDraw"
-                  widget::ReDraw( _root_ )
+                  If test_draw_repaint
+                     Debug "post - ReDraw "+_root_\canvas\gadget +" "+ IsGadget(_root_\canvas\gadget)
+                  EndIf
+                  If IsGadget(_root_\canvas\gadget)
+                     widget::ReDraw( _root_ )
+                  EndIf
                EndIf
             Else
                If _root_\canvas\repaint = 0
@@ -750,9 +754,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro PostRepaint( _root_ )
          ; Debug #PB_Compiler_Procedure
          ; PostReDraw( _root_ )
-      EndMacro
-      Macro PostClose( _this_ )
-         Send( GetWindow( _this_ ), #__event_close )
       EndMacro
       
       ;-
@@ -1389,9 +1390,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i GetCanvasGadget( *this = #Null )
       Declare.i GetCanvasWindow( *this = #Null )
       
-      
       Declare.l Level( *this )
       Declare.i CountType( *this, mode.b = #False )
+      
       Declare.i SetActive( *this )
       Declare   SetForeground( *window )
       
@@ -1466,6 +1467,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   OpenSubBar( Text.s, Image.i = - 1 )
       Declare   CloseSubBar( )
       
+      Declare.i VBar( *this )
+      Declare.i HBar( *this )
+      
       ;
       Declare.i Create( *parent, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.f = 1.0 )
       
@@ -1517,9 +1521,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
       Declare   PostQuit( *root = #Null )
       Declare   WaitQuit( *root = #Null )
+      Declare   PostClose( *this )
+      Declare   WaitClose( waittime.l = #PB_Default )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
-      Declare   WaitClose( waittime.l = #PB_Default )
       Declare   Free( *this )
       Declare   Delete( *this )
       ;
@@ -5166,7 +5171,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Procedure bar_area_resize( *this._s_WIDGET )
+      Procedure _bar_area_resize( *this._s_WIDGET )
          Protected.l X = *this\inner_x( ) - *this\frame_x( ),
                   Y = *this\inner_y( ) - *this\frame_y( ),
                   Width = *this\container_width( ), 
@@ -5310,30 +5315,197 @@ CompilerIf Not Defined( widget, #PB_Module )
                Resize( \h, #PB_Ignore, y1-*this\inner_y( ), Width, #PB_Ignore )
             EndIf
             
-;             ;
-;             If \v\bar\max > \v\bar\page\len ; Or \v\bar\thumb\len <> \v\bar\thumb\end
-;                If \v\hide <> \v\hide[1]
-;                   Debug 777
-;                   \v\hide = \v\hide[1]
-;                EndIf
-;             Else
-;                If \V\hide = 0
-;                   Debug 888
-;                   \V\hide = 1
-;                EndIf
-;             EndIf
-;             ;
-;             If \h\bar\max > \h\bar\page\len ; Or \h\bar\thumb\len <> \h\bar\thumb\end
-;                If \h\hide <> \h\hide[1]
-;                   Debug 999
-;                   \h\hide = \h\hide[1]
-;                EndIf
-;             Else
-;                If \h\hide = 0
-;                   Debug 666
-;                   \h\hide = 1
-;                EndIf
-;             EndIf
+            ;
+            If \v\bar\max > \v\bar\page\len ; Or \v\bar\thumb\len <> \v\bar\thumb\end
+               If \v\hide <> \v\hide[1]
+                  \v\hide = \v\hide[1]
+               EndIf
+            Else
+               If \V\hide = 0
+                  \V\hide = 1
+               EndIf
+            EndIf
+            ;
+            If \h\bar\max > \h\bar\page\len ; Or \h\bar\thumb\len <> \h\bar\thumb\end
+               If \h\hide <> \h\hide[1]
+                  \h\hide = \h\hide[1]
+               EndIf
+            Else
+               If \h\hide = 0
+                  \h\hide = 1
+               EndIf
+            EndIf
+            
+            ;\\ update scrollbars parent inner coordinate
+            If *this\scroll_inner_width( ) <> \h\bar\page\len
+               *this\scroll_inner_width( ) = \h\bar\page\len
+            EndIf
+            If *this\scroll_inner_height( ) <> \v\bar\page\len
+               *this\scroll_inner_height( ) = \v\bar\page\len
+            EndIf
+            
+            ;\\
+            If \v\bar\AreaChange( ) Or
+               \h\bar\AreaChange( )
+              ;*this\WidgetChange( ) = 1
+               
+               ;Debug ""+\v\class +" "+ \h\class +" "+ \v\hide[1] +" "+ \h\hide[1] +" "+ *this\scroll_inner_width( ) +" "+ *this\scroll_inner_height( )
+               
+               ProcedureReturn #True
+            EndIf
+         EndWith
+      EndProcedure
+      
+      Procedure bar_area_resize( *this._s_WIDGET )
+         Protected.l X = *this\inner_x( ) - *this\frame_x( ),
+                  Y = *this\inner_y( ) - *this\frame_y( ),
+                  Width = *this\container_width( ), 
+                  Height = *this\container_height( )
+         
+         Protected resize_v, resize_h, x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight, w, h
+         ;Protected resize_v, resize_h, x1 = *this\container_x( ), y1 = *this\container_y( ), width1 = *this\container_width( ), height1 = *this\container_height( ), iwidth, iheight, w, h
+         
+         With *this\scroll
+            If Not ( *this\scroll And ( \v Or \h ))
+               ProcedureReturn 0
+            EndIf
+            
+            If ( *this\screen_width( ) = 0 And *this\screen_height( ) = 0)
+               \v\hide = #True
+               \h\hide = #True
+               ProcedureReturn 0
+            EndIf
+            
+            w = Bool( *this\scroll_width( ) > Width )
+            h = Bool( *this\scroll_height( ) > Height )
+            
+            \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
+            \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
+            
+            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\height )
+            If \v\bar\page\len = iheight
+               If \v\bar\thumb\len = \v\bar\thumb\end
+                  bar_Update( \v, #True )
+               EndIf
+               bar_Update( \h, #True )
+            Else
+               \v\bar\AreaChange( ) = \v\bar\page\len - iheight
+               \v\bar\page\len      = iheight
+               
+               If Not \v\bar\max
+                  If \v\bar\min > iheight
+                     \v\bar\max = \v\bar\min + 1
+                  Else
+                     \v\bar\max = iheight
+                  EndIf
+               EndIf
+            EndIf
+            
+            iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\width )
+            If \h\bar\page\len = iwidth
+               bar_Update( \v, #True )
+               If \h\bar\thumb\len = \h\bar\thumb\end
+                  bar_Update( \h, #True )
+               EndIf
+            Else
+               \h\bar\AreaChange( ) = \h\bar\page\len - iwidth
+               \h\bar\page\len      = iwidth
+               
+               If Not \h\bar\max
+                  If \h\bar\min > iwidth
+                     \h\bar\max = \h\bar\min + 1
+                  Else
+                     \h\bar\max = iwidth
+                  EndIf
+               EndIf
+            EndIf
+            
+            Width + X
+            Height + Y
+            
+            
+            If \v\frame_x( ) = *this\inner_x( ) + (Width - \v\width)
+               x1 = \v\frame_x( )
+            Else
+               resize_v = 1
+               x1 = *this\inner_x( ) + (Width - \v\width)
+               ; Debug "         v "+\v\frame_x( ) +" "+ x1
+            EndIf
+            
+            If \h\frame_y( ) = *this\inner_y( ) + (Height - \h\height)
+               y1 = \h\frame_y( )
+            Else
+               resize_h = 1
+               y1 = *this\inner_y( ) + (Height - \h\height)
+               ;Debug "         h "+\h\frame_y( ) +" "+ y1
+            EndIf
+            
+            If Not \v\hide[1]
+               If \v\bar\max > \v\bar\page\len
+                  resize_v     = 1
+                  Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
+                  ;                If \v\hide <> #False
+                  ;                   \v\hide = #False
+                  If \h\hide
+                     If Width <> \h\bar\page\len
+                        Width = \h\bar\page\len
+                     EndIf
+                  EndIf
+                  ;                EndIf
+               Else
+                  If \v\hide <> #True
+                     \v\hide = #True
+                     ;// reset page pos then hide scrollbar
+                     If \v\bar\page\pos > \v\bar\min
+                        bar_PageChange( \v, \v\bar\min, #False )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            If Not \h\hide[1]
+               If \h\bar\max > \h\bar\page\len
+                  resize_h    = 1
+                  Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\width / 4 ))
+                  ;                If \h\hide <> #False
+                  ;                   \h\hide = #False
+                  If \v\hide
+                     If Height <> \v\bar\page\len
+                        Height = \v\bar\page\len
+                     EndIf
+                  EndIf
+                  ;                EndIf
+               Else
+                  If \h\hide <> #True
+                     \h\hide = #True
+                     ;// reset page pos then hide scrollbar
+                     If \h\bar\page\pos > \h\bar\min
+                        bar_PageChange( \h, \h\bar\min, #False )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            If test_resize_area
+               Debug "  --- area_resize " + *this\class + " " + *this\inner_width( ) + " " + *this\inner_height( ) + " " + \v\bar\page\len + " " + \h\bar\page\len
+            EndIf
+            
+            If resize_v And (\v\frame_x( ) <> x1 Or 
+                             \v\frame_y( ) <> *this\inner_y( ) + Y Or
+                             \v\frame_height( ) <> Height)
+               If test_resize_area
+                  Debug "         v "+\v\frame_x( ) +" "+ x1
+               EndIf
+               Resize( \v, x1-*this\inner_x( ) , #PB_Ignore, #PB_Ignore, Height )
+            EndIf
+            If resize_h And (\h\frame_y( ) <> y1 Or
+                             \h\frame_x( ) <> *this\inner_x( ) + X Or
+                             \h\frame_width( ) <> Width)
+               If test_resize_area
+                  Debug "         h "+\h\frame_y( ) +" "+ y1
+               EndIf
+               Resize( \h, #PB_Ignore, y1-*this\inner_y( ), Width, #PB_Ignore )
+            EndIf
             
             ;\\ update scrollbars parent inner coordinate
             If *this\scroll_inner_width( ) <> \h\bar\page\len
@@ -7289,9 +7461,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure ToolTip( *this._s_WIDGET, Text.s, item = - 1 )
+      Procedure   ToolTip( *this._s_WIDGET, Text.s, item = - 1 )
          *this\tt\text\string = Text
       EndProcedure
+      
+      
       
       
       ;-
@@ -12910,6 +13084,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #True
             EndIf
             
+         EndIf
+      EndProcedure
+      
+      ;-
+      Procedure.i VBar( *this._s_WIDGET )
+         If *this\scroll
+            ProcedureReturn *this\scroll\v
+         EndIf
+      EndProcedure
+      
+      Procedure.i HBar( *this._s_WIDGET )
+         If *this\scroll
+            ProcedureReturn *this\scroll\h
          EndIf
       EndProcedure
       
@@ -23132,7 +23319,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn __result
       EndProcedure
       
-      Procedure WaitClose( waittime.l  = #PB_Default )
+      Procedure  PostClose( *this._s_WIDGET )
+         ProcedureReturn Send( GetWindow( *this ), #__event_close )
+      EndProcedure
+      
+      Procedure  WaitClose( waittime.l  = #PB_Default )
          
          If MapSize( roots( ) )
             Repeat
@@ -23276,7 +23467,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   PostQuit( *message )
                EndIf
                
-               ;\\
                ProcedureReturn #PB_Ignore
          EndSelect
       EndProcedure
@@ -23487,7 +23677,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          StickyWindow( *Message\root\canvas\window, #True )
          
          ;\\
-         ReDraw( *parent )
+         ; ReDraw( *parent )
          ReDraw( *message )
          WaitQuit( *message )
          
@@ -24371,9 +24561,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23262
-; FirstLine = 23211
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tt04-----0-v+-------f2---------
+; CursorPosition = 5408
+; FirstLine = 5207
+; Folding = -------------------------------------------------------------------------------------------------------------------+-----------------------8----Lf---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tt04-----0-v+------0-q---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

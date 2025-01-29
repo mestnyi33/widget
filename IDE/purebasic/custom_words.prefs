@@ -223,6 +223,8 @@ RemoveItem
 Resize
 ScrollArea
 Scroll
+HBar
+VBar
 
 SetAttribute
 SetColor

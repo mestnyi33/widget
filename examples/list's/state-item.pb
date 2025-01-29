@@ -109,7 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
             If Not EnteredButton( )
              SetState_( EventWidget( ), WidgetEventItem( ))
             EndIf
-            
+         
          Case #__event_Change
             Debug "change  "+GetClass(EventWidget( )) +" "+ WidgetEventData( )
             
@@ -240,11 +240,19 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
 ;       ;Container(0, 0, 240, 330)
        *demo = Tree(10, 10, 220/2, 310) : SetClass(*demo, "demo")
-      *this = Tree(110, 10, 220/2, 310, #__flag_nolines) : SetClass(*this, "this")
+       *this = Tree(110, 10, 220/2, 310, #__flag_nolines) : SetClass(*this, "this")
+       ;
+       ; Hide( *demo\scroll\v, 1 )
+       Hide( HBar(*demo), #True )
+       Hide( HBar(*this), #True )
+      
+       
       ;*this = ListView(10, 10, 220, 310)
       ;*this = Panel(10, 10, 230, 310) 
+      ;Debug *demo\scroll\v\hide 
       Splitter(10,10, 230, 310, *demo, *this, #PB_Splitter_Vertical )
-      
+      ;Debug *demo\scroll\v\hide 
+    
       Bind(*demo, @widget_events());, #__event_Change)
       Bind(*this, @widget_events());, #__event_Change)
       
@@ -276,7 +284,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Define h = 20, Y = 20
       
-      
+       
       *reset = Button( 250, Y+(1+h)*0, 100, h, "reset")
       *item1 = Button( 250, Y+(1+h)*1, 100, h, "1")
       *item2 = Button( 250, Y+(1+h)*2, 100, h, "3")
@@ -300,11 +308,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*item4, @button_events(), #__event_Up)
       
       
+;        ReDraw( root( ))
+;       ;*demo\scroll\v\hide = 1
+;       Debug *demo\scroll\v\hide 
+       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 251
-; FirstLine = 247
+; CursorPosition = 246
+; FirstLine = 233
 ; Folding = -------
 ; EnableXP
