@@ -23209,8 +23209,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure WaitQuit( *root._s_root = #Null )
-         __gui\eventloop + 1
-         
+         __gui\eventloop = 1
+         __gui\eventexit = 1
+            
          ;\\ start main loop
          CompilerSelect #PB_Compiler_OS
             CompilerCase #PB_OS_Linux
@@ -23232,13 +23233,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                
          CompilerEndSelect
          
-         Debug "  end wait( QUIT ) "
+        __gui\eventloop = 0
+         
+          Debug "  end wait( QUIT ) "
       EndProcedure
       
       Procedure PostQuit( *root._s_root = #Null )
          Debug "post( QUIT )"
-         
-         __gui\eventloop = 0
          
          ;\\ stop main loop
          CompilerSelect #PB_Compiler_OS
@@ -23256,7 +23257,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure MessageEvents( )
-         
          Select WidgetEvent( )
             Case #__event_Draw
                Debug "repaint - message " + EventWidget( )\class
@@ -23290,12 +23290,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
-         If __gui\eventloop > 3
-            ProcedureReturn 0
-         EndIf
-         __gui\eventloop = 1
-         __gui\eventexit = 0
-         
          Protected result, X, Y, Width = 400, Height = 120
          Protected img = - 1, f1 = - 1, f2 = 8
          Protected bw = 85, bh = 25, iw = Height - bh - f1 - f2 * 4 - 2 - 1
@@ -23310,8 +23304,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *parent = root( )
          EndIf
          
-         DisableWindow( *parent\canvas\window, #True )
-      
+         
          ;          ;\\ 1)
          ;          x = ( root( )\width - width )/2
          ;          y = ( root( )\height - height )/2 - #__window_CaptionHeight
@@ -23473,7 +23466,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
          SetClass( widget( ), "message_CONT" )
-         Image( f2, f2, iw, iw, img, #__image_Center | #__flag_transparent | #__flag_borderflat )
+         Image( f2, f2, iw, iw, img, #__image_Center | #__flag_borderflat | #__flag_transparent )
          SetClass( widget( ), "message_IMG" )
          Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__text_Center | #__text_Left | #__flag_transparent );| #__flag_borderless )
          SetClass( widget( ), "message_TXT" )
@@ -23484,50 +23477,40 @@ CompilerIf Not Defined( widget, #PB_Module )
          SetClass( *ok, "message_Yes" )
          If constants::BinaryFlag( Flag, #__message_YesNo ) Or
             constants::BinaryFlag( Flag, #__message_YesNoCancel )
-            SetText( *ok, "Yes" )
             *no = Button( Width - ( bw + f2 ) * 2 - f2, Height - bh - f2, bw, bh, "No" )
             SetClass( *no, "message_No" )
+            SetText( *ok, "Yes" )
          EndIf
          If constants::BinaryFlag( Flag, #__message_YesNoCancel )
             *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, "Cancel" )
             SetClass( *cancel, "message_Cancel" )
          EndIf
          
+         ;\\
          Bind( *message, @MessageEvents( ), #__event_LeftClick )
          Bind( *message, @MessageEvents( ), #__event_Focus )
          
          ;\\
-         Sticky( *message, #True )
-         HideWindow( *message\root\canvas\window, 0);, #__window_NoActivate )
+         DisableWindow( *parent\canvas\window, #True )
+         HideWindow( *message\root\canvas\window, #False )
+         StickyWindow( *Message\root\canvas\window, #True )
          
          ;\\
-        ; If Disable( *parent, 1 )
-            ReDraw( *parent )
-        ; EndIf
-         
+         ReDraw( *parent )
          ReDraw( *message )
-         ; PostReDraw( *message )
-         ;\\
          WaitQuit( *message )
          
-         
-         Debug "----------- "+keyboard( )\deactive\class
-         ;SetActive( keyboard( )\deactive )
          ;\\
-         ;Disable( *parent, 0 )
-          DisableWindow( *parent\canvas\window, #False )
-      
-         ;\\
-         FreeImage( img )
-         Sticky( *message, #False )
          result = GetData( *message )
-         
+         DisableWindow( *parent\canvas\window, #False )
+      
          ;\\ close
+         FreeImage( img )
          Free( *message )
-         If IsWindow(*message\canvas\window)
-            CloseWindow(*message\canvas\window)
-            Debug "Close - Message window " + *message\canvas\window
-         EndIf
+;          If IsWindow(*message\canvas\window)
+;             CloseWindow(*message\canvas\window)
+;             Debug "Close - Message window " + *message\canvas\window
+;          EndIf
          
          
 ;          ;Debug MapSize(roots())
@@ -24397,9 +24380,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23077
-; FirstLine = 22971
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-tt04-----0-v+--------q---------
+; CursorPosition = 23292
+; FirstLine = 23293
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-tt04-----0-v+-------f2---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

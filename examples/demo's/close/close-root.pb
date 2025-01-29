@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Declare CallBack( )
    
    Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
-     ; ProcedureReturn Message(title, Text, flags, parentID )
+     ProcedureReturn Message(title, Text, flags, parentID )
      ProcedureReturn MessageRequester(title, Text, flags, parentID );
    EndProcedure
 
@@ -116,7 +116,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 48
+; CursorPosition = 13
 ; Folding = ---
 ; EnableXP
