@@ -1389,7 +1389,7 @@ Procedure ide_events( )
    Select e_type
       Case #__event_Close
          If *e_widget = ide_root
-            If #PB_MessageRequester_Yes = MessageRequester( "Message", 
+            If #PB_MessageRequester_Yes = Message( "Message", 
                                                    "Are you sure you want to go out?",
                                                    #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                ProcedureReturn #PB_All
@@ -1960,7 +1960,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1400
+; CursorPosition = 1393
 ; FirstLine = 1382
 ; Folding = ------------------------------------
 ; EnableXP

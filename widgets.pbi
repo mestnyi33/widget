@@ -8846,12 +8846,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If *this\type = #__type_Window
             If *this\resize\flag & #__resize_minimize
-               ProcedureReturn #__window_Minimize
+               ProcedureReturn #PB_Window_Minimize
             EndIf
             If *this\resize\flag & #__resize_maximize
-               ProcedureReturn #__window_Maximize
+               ProcedureReturn #PB_Window_Maximize
             EndIf
-            ProcedureReturn #__window_Normal
+            ProcedureReturn #PB_Window_Normal
          EndIf
          
          ;
@@ -9037,7 +9037,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ - widget::Window_SetState( )
          If *this\type = #__type_Window
             ; restore state
-            If state = #__window_Normal
+            If state = #PB_Window_Normal
                If Not Send( *this, #__event_restore )
                   *this\resize\flag | #__resize_restore
                   If *this\resize\flag & #__resize_minimize
@@ -9065,7 +9065,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; maximize state
-            If state = #__window_Maximize
+            If state = #PB_Window_Maximize
                If Not Send( *this, #__event_maximize )
                   *this\resize\flag | #__resize_maximize
                   If *this\resize\flag & #__resize_minimize
@@ -9093,7 +9093,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; minimize state
-            If state = #__window_Minimize
+            If state = #PB_Window_Minimize
                If Not Send( *this, #__event_Minimize )
                   *this\resize\flag | #__resize_minimize
                   If *this\resize\flag & #__resize_maximize
@@ -11922,16 +11922,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_MDI
             Protected *window._S_WIDGET
             ;
-            flag | #__window_SystemMenu | #__window_MaximizeGadget | #__window_MinimizeGadget
-            If Not constants::BinaryFlag( Flag, #__window_BorderLess ) 
-               flag | #__window_SizeGadget
+            flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
+            If Not constants::BinaryFlag( Flag, #PB_Window_BorderLess ) 
+               flag | #PB_Window_SizeGadget
             EndIf
             ;
             *this\countitems + 1 ;?
             *window = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__flag_child, *this )
             ;
             If IsImage( Image )
-               If constants::BinaryFlag( Flag, #__window_BorderLess ) 
+               If constants::BinaryFlag( Flag, #PB_Window_BorderLess ) 
                   SetBackgroundImage( *window, Image )
                Else
                   add_image( *window\img, Image )
@@ -12712,7 +12712,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If test_display
                   Debug "displayBar - create " + *this\class +" "+ *this\root ;
                EndIf
-               *displayroot = Open( #PB_Any, 0, 0, 1, 1, "", #__window_NoActivate | #__window_NoGadgets | #__window_BorderLess | #__window_Invisible | #__window_Tool,  parentID )
+               *displayroot = Open( #PB_Any, 0, 0, 1, 1, "", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool,  parentID )
                *displayroot\parent = *display
                *displayroot\class = "["+*this\class+"]"+"-root" ; "root_"+
                                                                 ;\\
@@ -12894,7 +12894,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ResizeGadget( *this\root\canvas\gadget, 0, 0, Width, Height )
                
                ;
-               HideWindow( *this\root\canvas\window, #False, #__window_NoActivate )
+               HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
                DisableWindow( *this\root\canvas\window, #False)
                
                PostReDraw( *this\root )
@@ -14059,11 +14059,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\RowToolTip( )\height = *this\__rows( )\height
                Protected flag
                CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-                  flag = #__window_Tool
+                  flag = #PB_Window_Tool
                CompilerEndIf
                
                *this\RowToolTip( )\window = OpenWindow( #PB_Any, *this\RowToolTip( )\x, *this\RowToolTip( )\y, *this\RowToolTip( )\width, *this\RowToolTip( )\height, "",
-                                                        #__window_BorderLess | #__window_NoActivate | flag, WindowID( *this\root\canvas\window ))
+                                                        #PB_Window_BorderLess | #PB_Window_NoActivate | flag, WindowID( *this\root\canvas\window ))
                
                *this\RowToolTip( )\gadget      = CanvasGadget( #PB_Any, 0, 0, *this\RowToolTip( )\width, *this\RowToolTip( )\height )
                *this\RowToolTip( )\color       = *this\__rows( )\color
@@ -14460,8 +14460,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          Select Type
             Case #__type_window
-               If constants::BinaryFlag( Flag, #__window_BorderLess )
-                  flags & ~ #__window_BorderLess
+               If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
+                  flags & ~ #PB_Window_BorderLess
                   flags | #__flag_BorderLess
                EndIf
                ;
@@ -20884,9 +20884,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If event = #__event_Left2Click
                         If *this\caption\interact
                            If Not *this\resize\flag & #__resize_maximize
-                              ProcedureReturn SetState( *this, #__window_Maximize )
+                              ProcedureReturn SetState( *this, #PB_Window_Maximize )
                            Else
-                              ProcedureReturn SetState( *this, #__window_Normal )
+                              ProcedureReturn SetState( *this, #PB_Window_Normal )
                            EndIf
                         EndIf
                      EndIf
@@ -20905,17 +20905,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                               ; maximize button
                            Case *this\MaximizeButton( )
                               If Not *this\resize\flag & #__resize_maximize
-                                 ProcedureReturn SetState( *this, #__window_Maximize )
+                                 ProcedureReturn SetState( *this, #PB_Window_Maximize )
                               Else
-                                 ProcedureReturn SetState( *this, #__window_Normal )
+                                 ProcedureReturn SetState( *this, #PB_Window_Normal )
                               EndIf
                               
                               ; minimize button
                            Case *this\MinimizeButton( )
                               If Not *this\resize\flag & #__resize_minimize
-                                 ProcedureReturn SetState( *this, #__window_Minimize )
+                                 ProcedureReturn SetState( *this, #PB_Window_Minimize )
                               Else
-                                 ProcedureReturn SetState( *this, #__window_Normal )
+                                 ProcedureReturn SetState( *this, #PB_Window_Normal )
                               EndIf
                         EndSelect
                      EndIf
@@ -22407,8 +22407,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          If PB(IsWindow)( Window )
             w = WindowID( Window )
             ;
-            ;             If constants::BinaryFlag( Flag, #__window_NoGadgets )
-            ;                flag &~ #__window_NoGadgets
+            ;             If constants::BinaryFlag( Flag, #pb_window_NoGadgets )
+            ;                flag &~ #pb_window_NoGadgets
             ;             EndIf
             If constants::BinaryFlag( Flag, #PB_Canvas_Container ) 
                flag &~ #PB_Canvas_Container
@@ -22419,8 +22419,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                canvasflag | #PB_Canvas_Container
             EndIf
          Else
-            If constants::BinaryFlag( Flag, #__window_NoGadgets ) 
-               flag &~ #__window_NoGadgets
+            If constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
+               flag &~ #PB_Window_NoGadgets
             Else
                canvasflag | #PB_Canvas_Container
             EndIf
@@ -22436,7 +22436,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                w = WindowID( Window ) 
             EndIf
             ;
-            If constants::BinaryFlag( Flag, #__window_BorderLess )
+            If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   If CocoaMessage(0, w, "hasShadow") = 0
                      CocoaMessage(0, w, "setHasShadow:", 1)
@@ -22539,7 +22539,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\
-            If Not constants::BinaryFlag( Flag, #__window_NoGadgets ) 
+            If Not constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
                *root\Beforeroot( ) = Opened( )
                If *root\Beforeroot( )
                  *root\Beforeroot( )\Afterroot( ) = *root
@@ -22550,7 +22550,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\
-            If constants::BinaryFlag( Flag, #__window_NoActivate )
+            If constants::BinaryFlag( Flag, #PB_Window_NoActivate )
                *root\focus = #__state_nofocus
             Else
                SetActive( *root )
@@ -22660,7 +22660,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;\\ open root list
          Else
-            *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #__window_BorderLess, *parent )
+            *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #PB_Window_BorderLess, *parent )
             X     = 0
             Y     = 0
             ;EndIf
@@ -22729,9 +22729,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          
          ;
-         *this\CloseButton( )\hide    = constants::BinaryFlag( *this\flag, #__window_SystemMenu, #False )
-         *this\MaximizeButton( )\hide = constants::BinaryFlag( *this\flag, #__window_MaximizeGadget, #False )
-         *this\MinimizeButton( )\hide = constants::BinaryFlag( *this\flag, #__window_MinimizeGadget, #False )
+         *this\CloseButton( )\hide    = constants::BinaryFlag( *this\flag, #PB_Window_SystemMenu, #False )
+         *this\MaximizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MaximizeGadget, #False )
+         *this\MinimizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MinimizeGadget, #False )
          *this\HelpButton( )\hide     = 1
          
          
@@ -22740,7 +22740,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\CloseButton( )\hide = 0
             *this\caption\hide = 0
          Else
-            *this\caption\hide = constants::BinaryFlag( *this\flag, #__window_titleBar, #False )
+            *this\caption\hide = constants::BinaryFlag( *this\flag, #PB_Window_TitleBar, #False )
          EndIf
          
          If *this\caption\hide
@@ -22793,7 +22793,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If *parent
-            If constants::BinaryFlag( *this\flag, #__window_WindowCentered )
+            If constants::BinaryFlag( *this\flag, #PB_Window_WindowCentered )
                X = *parent\inner_x( ) + ( *parent\inner_width( ) - Width - *this\fs * 2 - *this\fs[1] - *this\fs[3] ) / 2
                Y = *parent\inner_y( ) + ( *parent\inner_height( ) - Height - *this\fs * 2 - *this\fs[2] - *this\fs[4] ) / 2
             EndIf
@@ -22814,15 +22814,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         If constants::BinaryFlag( *this\flag, #__window_SizeGadget&~#__window_TitleBar )
+         If constants::BinaryFlag( *this\flag, #PB_Window_SizeGadget&~#PB_Window_TitleBar )
             a_create( *this, #__a_full | #__a_zoom | #__a_nodraw )
          EndIf
          
-         If Not constants::BinaryFlag( *this\flag, #__window_NoGadgets )
+         If Not constants::BinaryFlag( *this\flag, #PB_Window_NoGadgets )
             OpenList( *this )
          EndIf
          
-         If constants::BinaryFlag( *this\flag, #__window_NoActivate )
+         If constants::BinaryFlag( *this\flag, #PB_Window_NoActivate )
             *this\focus = #__state_nofocus
          Else
             If Not *this\anchors
@@ -23170,13 +23170,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Case #PB_Event_MaximizeWindow
                      Debug "maximize.... "
                      If Send( root( ), #__event_Maximize )
-                        SetWindowState( window, #__window_Normal )
+                        SetWindowState( window, #PB_Window_Normal )
                      EndIf
                      
                   Case #PB_Event_MinimizeWindow
                      Debug "minimize.... "
                      If Send( root( ), #__event_Minimize )
-                        SetWindowState( window, #__window_Normal )
+                        SetWindowState( window, #PB_Window_Normal )
                      EndIf
                      
                EndSelect
@@ -23307,18 +23307,18 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;          ;\\ 1)
          ;          x = ( root( )\width - width )/2
-         ;          y = ( root( )\height - height )/2 - #__window_CaptionHeight
-         ;          *message = Window( x, y, width, height, Title, #__window_TitleBar, *parent)
+         ;          y = ( root( )\height - height )/2 - #pb_window_CaptionHeight
+         ;          *message = Window( x, y, width, height, Title, #pb_window_TitleBar, *parent)
          ; ;
          ; ; ;          ;\\ 2)
-         ; ; ;          ; *message = Window( x, y, width, height, Title, #__window_TitleBar | #__window_WindowCentered, *parent)
+         ; ; ;          ; *message = Window( x, y, width, height, Title, #pb_window_TitleBar | #pb_window_WindowCentered, *parent)
          ;
          ;\\ 3)
-         Define newflag = #__window_TitleBar | #__window_Invisible | #__window_NoActivate
+         Define newflag = #PB_Window_TitleBar | #PB_Window_Invisible | #PB_Window_NoActivate
          If constants::BinaryFlag( Flag, #__message_ScreenCentered )
-            newflag | #__window_ScreenCentered
+            newflag | #PB_Window_ScreenCentered
          Else
-            newflag | #__window_WindowCentered
+            newflag | #PB_Window_WindowCentered
          EndIf
          
          Protected canvasID = *parent\root\canvas\gadgetID
@@ -23544,7 +23544,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    Global MDI, MDI_splitter, Splitter
    
-   If Open(0, 0, 0, 700, 280, "MDI", #__window_SystemMenu | #__window_ScreenCentered)
+   If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       MDI        = MDI(10, 10, 680, 260) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
       Define *g0 = AddItem(MDI, -1, "form_0")
@@ -23651,7 +23651,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;-\\ OPENWINDOW_0
-   OpenWindow(#window_0, 0, 0, 424, 352+21+21, "AnchorsGadget", #__window_SystemMenu )
+   OpenWindow(#window_0, 0, 0, 424, 352+21+21, "AnchorsGadget", #PB_Window_SystemMenu )
    Define *root._s_WIDGET = Open(#window_0, 0, 0, 424): *root\class = "root": SetText(*root, "root")
    
    
@@ -23780,7 +23780,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;-\\ OPENWINDOW_1
-   OpenWindow(#window_1, 0, 0, 800, 600, "PanelGadget", #__window_SystemMenu | #__window_ScreenCentered, WindowID(#window_0))
+   OpenWindow(#window_1, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered, WindowID(#window_0))
    
    ;\\ Open root0
    Define *root0._s_WIDGET = Open(#window_1, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
@@ -24345,7 +24345,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define i, Y = 5
    OpenList( *root4 )
    For i = 1 To 4
-      Window(5, Y, 150, 95 + 2, "Window_" + Trim(Str(i)), #__window_SystemMenu | #__window_MaximizeGadget)
+      Window(5, Y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
       ;Container(5, y, 150, 95 + 2)
       If i = 2
          Disable( widget( ), 1)
@@ -24380,9 +24380,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23292
-; FirstLine = 23293
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-tt04-----0-v+-------f2---------
+; CursorPosition = 22625
+; FirstLine = 22590
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tt04-----0-v+-------f2---------
 ; Optimizer
 ; EnableXP
 ; DPIAware
