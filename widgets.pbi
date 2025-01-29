@@ -730,10 +730,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          If _root_
             ; Debug #PB_Compiler_Procedure
             If widget::__gui\eventloop
-               If Not widget::Send( _root_, constants::#__event_Repaint )
-                  ; Debug "post - ReDraw"
+              If Not widget::Send( _root_, constants::#__event_Repaint )
+                Debug "post - ReDraw "+_root_\canvas\gadget +" "+ IsGadget(_root_\canvas\gadget)
+                If IsGadget(_root_\canvas\gadget)
                   widget::ReDraw( _root_ )
-               EndIf
+                EndIf
+              EndIf
             Else
                If _root_\canvas\repaint = 0
                   _root_\canvas\repaint = 1
@@ -18018,16 +18020,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   ReDraw( *this._s_WIDGET )
-         If Not widget::__gui\DrawingRoot
-            widget::StartDraw( *this\root )
-         EndIf
-         widget::Drawing( *this\root )
-         widget::StopDraw( )
-         
-         ; if not is root refresh widget
-         If Not is_root_( *this )
-            Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-         EndIf
+        If Not widget::__gui\DrawingRoot
+          widget::StartDraw( *this\root )
+        EndIf
+        widget::Drawing( *this\root )
+        widget::StopDraw( )
+        
+        ; if not is root refresh widget
+        If Not is_root_( *this )
+          Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+        EndIf
       EndProcedure
       
       Procedure   Drawing( *root._s_root = 0 )
@@ -24379,9 +24381,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22625
-; FirstLine = 22590
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 18027
+; FirstLine = 18014
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tt04-----0-v+-------f2---------
 ; Optimizer
 ; EnableXP
