@@ -30,6 +30,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "open - Information"
       Result = Message("Information", a$, flag)
       Debug "close - Information "+Result
+      
+      Result = Message("Title", "text without image")
    EndProcedure
    
    Procedure ButtonEvents( )
@@ -101,7 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 33
+; FirstLine = 12
 ; Folding = -+-
 ; EnableXP
 ; DPIAware

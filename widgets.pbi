@@ -22419,17 +22419,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
          ;
-         If *this = #PB_All
+         If *this < 0
             PushMapPosition(roots( ))
             ForEach roots( )
                Bind( roots( ), *callback, event, item )
             Next
             PopMapPosition(roots( ))
             ProcedureReturn #PB_All
-         EndIf
-         ;
-         If *this > 0
-            If event = #PB_All 
+            ;
+         Else
+            If event < 0 
                Define i
                For i = 0 To #__event - 1
                   If i = #__event_Draw And Not is_root_( *this )
@@ -22439,13 +22438,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; set defaul widget events
                   Bind( *this, *callback, i, item )
                Next
-            EndIf
-            
-            If event > 0  
-               If Not FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
+               ;
+            Else
+               If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
+                  If Not __gui\eventhook( )
+                     Debug "not EVENTHOOK"
+                     ProcedureReturn 0
+                  EndIf
+               Else
                   AddMapElement(__gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
                   __gui\eventhook.allocate( HOOK, ( ))
                EndIf
+               
                __gui\eventhook( )\function = *callback
                __gui\eventhook( )\type     = event
                __gui\eventhook( )\item     = item
@@ -22467,29 +22471,28 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-         ;
-         If *this = #PB_All
+         If *this < 0
             PushMapPosition(roots( ))
             ForEach roots( )
                Unbind( roots( ), *callback, event, item )
             Next
             PopMapPosition(roots( ))
             ProcedureReturn #PB_All
-         EndIf
-         ;
-         If *this > 0
-            If event = #PB_All 
+            ;
+         Else
+            If event < 0
                Define i
                For i = 0 To #__event - 1
                   Unbind( *this, *callback, i, item )
                Next
+               ;
             Else
-               If event >= 0  
-                  If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
-                     DeleteMapElement(__gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
+               If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
+                  If Not ( *callback > 0 And __gui\eventhook( )\function <> *callback )
+                     DeleteMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
                   EndIf
                EndIf
-            EndIf 
+            EndIf
          EndIf
       EndProcedure
       
@@ -22675,7 +22678,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If PB(IsGadget)(Canvas)
             g = GadgetID( Canvas )
          Else
-            If test_focus_set Or test_focus_show
+            If test_focus_show
                canvasflag|#PB_Canvas_DrawFocus
             EndIf
             
@@ -23467,7 +23470,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   PostQuit( *message )
                EndIf
                
-               ProcedureReturn #PB_Ignore
+              ; ProcedureReturn #PB_Ignore
          EndSelect
       EndProcedure
       
@@ -23648,9 +23651,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
          SetClass( widget( ), "message_CONT" )
-         Image( f2, f2, iw, iw, img, #__image_Center | #__flag_borderflat | #__flag_transparent )
-         SetClass( widget( ), "message_IMG" )
-         Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__text_Center | #__text_Left | #__flag_transparent );| #__flag_borderless )
+         If IsImage( img )
+            Image( f2, f2, iw, iw, img, #__image_Center | #__flag_borderflat | #__flag_transparent )
+            SetClass( widget( ), "message_IMG" )
+            Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__text_Center | #__text_Left | #__flag_transparent );| #__flag_borderless )
+         Else
+            Text( f2, f2, Width - f2 * 2, iw, Text, #__text_Center | #__text_Left | #__flag_transparent );| #__flag_borderless )
+         EndIf
          SetClass( widget( ), "message_TXT" )
          CloseList( )
          
@@ -23688,6 +23695,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ close
          FreeImage( img )
          Free( *message )
+         
 ;          If IsWindow(*message\canvas\window)
 ;             CloseWindow(*message\canvas\window)
 ;             Debug "Close - Message window " + *message\canvas\window
@@ -23698,9 +23706,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          ChangeCurrentCanvas( canvasID )
          
-         If Disable( root( ), 0 )
-            ReDraw( root( ) )
-         EndIf
+         SetActive( root( ) )
+;          If Disable( root( ), 0 )
+;             ReDraw( root( ) )
+;          EndIf
          
          ;\\
          EventWidget( ) = *widget
@@ -24561,9 +24570,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5408
-; FirstLine = 5207
-; Folding = -------------------------------------------------------------------------------------------------------------------+-----------------------8----Lf---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tt04-----0-v+------0-q---------
+; CursorPosition = 23658
+; FirstLine = 23157
+; Folding = -------------------------------------------------------------------------------------------------------------------+-----------------------8----Lf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fbf-0----f--r------f-v7---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

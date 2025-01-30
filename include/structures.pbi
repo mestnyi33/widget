@@ -678,7 +678,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          bounds._s_BOUNDS
          List *columns._s_column( )
          
-         
          ;
          state.l
          flag.q
@@ -778,8 +777,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 160
-; FirstLine = 140
+; CursorPosition = 679
+; FirstLine = 659
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
