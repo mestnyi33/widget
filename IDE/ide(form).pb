@@ -306,10 +306,11 @@ Procedure Display_PropertiesButton( *second._s_WIDGET )
                         Case #_pi_hide    : SetState( *this, Hide( a_focused( ) ))
                      EndSelect
                      
-                     
                EndSelect
                
+               
                Resize_PropertiesButton( *second )
+               SetActive( *this )
             EndIf
          EndIf
       EndIf
@@ -1960,7 +1961,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 313
+; FirstLine = 286
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware
