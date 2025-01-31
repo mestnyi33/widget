@@ -3872,7 +3872,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             Protected layout = pos * 2
             Protected text_pos = DPIScaled(6)
-            Protected image_pos = 3
+            Protected image_pos = DPIScaled(3)
             
             
             ;pos = ( pos )
@@ -3882,7 +3882,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\TabChange( ) Or *this\resize\ResizeChange( )
                   
                   *bar\max = 0
-                  *this\img\x = ( *this\screen_height( ) - (16) - pos - (1) ) / 2
+                  *this\img\x = ( *this\screen_height( ) - DPIScaled(16) - pos - DPIScaled(1) ) / 2
                   ; Debug " --- widget::Tab_Update( ) - " + *this\screen_width( ) +" "+ *this\screen_height( )
                   
                   ; *this\text\width = *this\screen_width( )
@@ -3901,15 +3901,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                            ; init items position
                            If *bar\vertical
-                              If *this\scroll_width( ) < 20+*tabs( )\text\width 
-                                 *this\scroll_width( ) = 20+*tabs( )\text\width
+                              If *this\scroll_width( ) < DPIScaled(20)+*tabs( )\text\width 
+                                 *this\scroll_width( ) = DPIScaled(20)+*tabs( )\text\width
                                  
                                  If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
                                     *this\scroll_width( ) + *tabs( )\img\width 
                                  EndIf
                               EndIf
                               If *tabs( )\childrens 
-                                 *this\scroll_width( ) + 60
+                                 *this\scroll_width( ) + DPIScaled(60)
                               EndIf
                            EndIf
                         Next
@@ -9695,7 +9695,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If *this\text\pass
-            ProcedureReturn *this\text\edit\string
+            ProcedureReturn *this\text\strpass
          Else
             ProcedureReturn *this\text\string
          EndIf
@@ -9755,7 +9755,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                *this\text\len = 0
                *this\countitems = 0
-               *this\text\edit\string = *this\text\string
+               If *this\text\pass
+                  *this\text\strpass = *this\text\string
+               EndIf
                ClearList( *this\__lines( ))
                
                Protected String.s = Text.s + #LF$
@@ -9773,7 +9775,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\__lines( )\text\pos = *this\text\len 
                      *this\text\len + *this\__lines( )\text\len + len
                      *this\countitems + 1
-                     
+
+         
 ;                      ;
 ;                      If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
 ;                      If focus_index = *this\__lines( )\lindex: *this\LineFocused( ) = *this\__lines( ): EndIf
@@ -9842,11 +9845,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn ""
             EndIf
             
-            If *this\type = #__type_Properties And Column
-               result = *this\__rows( )\text\edit\string
-            Else
-               result = *this\__rows( )\text\string
-            EndIf
+            result = *this\__rows( )\text\string
          EndIf
          
          ProcedureReturn result
@@ -9863,15 +9862,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             
-            If CountString( Text.s, #LF$ )
-               *this\__rows( )\text\string      = StringField( Text.s, 1, #LF$ )
-               *this\__rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+            If *this\__rows( )\text\string <> Text
+               *this\__rows( )\text\string = Text
                result                        = #True
-            Else
-               If *this\__rows( )\text\string <> Text
-                  *this\__rows( )\text\string = Text
-                  result                        = #True
-               EndIf
             EndIf
             
             If result
@@ -12094,9 +12087,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;If Text
             ; *row\text\TextChange( ) = 1
-            *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
-                                      ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
-                                      ;EndIf
+            *row\text\string   = Text 
+            
             
             ;\\
             If *row\columnindex = 0
@@ -12534,7 +12526,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\countitems
                *this\countitems       = 0
                *this\text\string      = ""
-               *this\text\edit\string = ""
                ;          
                If *this\text\editable
                   *this\edit_caret_1( )     = 0
@@ -14014,7 +14005,47 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
-         edit_AddLine(*this, *this\__lines( ), position, *text, string_len, 0);CountString( *this\text\string, #LF$ ) )
+        ; edit_AddLine(*this, *this\__lines( ), position, *text, string_len, 0);CountString( *this\text\string, #LF$ ) )
+         
+         Protected add_index = - 1, add_pos
+         
+         If position < 0 Or position > ListSize( *this\__lines( )) - 1
+            LastElement( *this\__lines( ))
+            AddElement( *this\__lines( ))
+            position = ListIndex( *this\__lines( ))
+         Else
+            SelectElement( *this\__lines( ), position )
+            add_index  = *this\__lines( )\lindex
+            add_pos    = *this\__lines( )\text\pos
+            InsertElement( *this\__lines( ))
+            
+            PushListPosition( *this\__lines( ))
+            While NextElement( *this\__lines( ))
+               *this\__lines( )\lindex = ListIndex( *this\__lines( ) )
+               *this\__lines( )\text\pos + string_len + Len( #LF$ )
+            Wend
+            PopListPosition(*this\__lines( ))
+         EndIf
+         
+         ;\\
+         *this\__lines( )\lindex      = position
+         *this\__lines( )\text\len    = string_len
+         If *text
+            *this\__lines( )\text\string = PeekS ( *text, string_len )
+         EndIf
+         
+         If add_index >= 0
+            *this\__lines( )\text\pos = add_pos
+         Else
+            *this\__lines( )\text\pos = *this\text\len 
+            If position > 0
+               *this\__lines( )\text\pos + 1
+            EndIf
+         EndIf
+         
+         *this\countitems + 1
+         *this\text\len + string_len + Len( #LF$ )
+         
          
          ; Debug ""+*this\__lines( )\lindex +" "+ *this\__lines( )\text\pos
            
@@ -14030,9 +14061,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         *this\WidgetChange( )    = 0
-         *this\TextChange( ) = 1
-         *this\text\edit\string   = *this\text\string
+         *this\TextChange( )      = 1
+         *this\WidgetChange( )    = 1
       EndProcedure
       
       Procedure edit_SetItemState( *this._s_WIDGET, Item.l, State.i )
@@ -17059,8 +17089,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             With *this
                ; Make output multi line text
-               If *this\TextChange( ) Or 
-                  *this\resize\ResizeChange( )
+               If *this\TextChange( ) Or *this\resize\ResizeChange( ) ; And *this\text\multiline = - 1 )
                   ;
                   Update_DrawText( *this, *this\TextChange( ) )
                   ;
@@ -17884,11 +17913,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   make_scrollarea_y( *this, *this\frame_height( ), *this\text\align )
                EndIf
             Else
-               ;                ;Debug "DRAW( "+*this\class +" "+ *this\enter
-               ;                If *this\resize\clip <> 0
-               ;                   *this\resize\clip = 0
-               ;                   Reclip( *this )
-               ;                EndIf
+               ;Debug "DRAW( "+*this\class +" "+ *this\enter
+;                If *this\resize\clip <> 0
+;                   *this\resize\clip = 0
+;                   Reclip( *this )
+;                EndIf
                
                ;\\ draw clip out transform widgets frame
                If ( *this\anchors And Not *this\anchors\mode & #__a_zoom ) Or test_clip
@@ -21486,7 +21515,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             If mouse( )\press = #PB_MouseButton_Left
                If EnteredWidget( )
-                  If EnteredWidget( )\autosize
+                  If EnteredButton( ) > 0
+                     If EnteredWidget( )\bar 
+                        mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
+                        mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
+                     EndIf
+                  ElseIf EnteredWidget( )\autosize 
                      If EnteredWidget( )\parent
                         mouse( )\delta\x - EnteredWidget( )\parent\container_x( )
                         mouse( )\delta\y - EnteredWidget( )\parent\container_y( )
@@ -24530,9 +24564,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12336
-; FirstLine = 12005
-; Folding = -------------------------------------------------------------------------------------------------------------------+-----------------------8----Lf---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vtv-+----v--2------v-X0---------
+; CursorPosition = 7512
+; FirstLine = 7378
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------8----Lf----------------------------------------f080-v---7------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------fbf-0----f--r------f-v7---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

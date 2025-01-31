@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Define time = ElapsedMilliseconds()
       ; g = EditorGadget(#PB_Any, 8, 8, 306, 133) 
-      g = EditorGadget(#PB_Any, 0, 0, 0, 0) ; bug PB on windows 
+      g = EditorGadget(#PB_Any, 0, 0, 0, 0);, #PB_Editor_WordWrap) ; bug PB on windows 
       SetGadgetText(g, Text.s)
       AddGadgetItem(g, 0, "add line first")
       AddGadgetItem(g, 4, "add line "+Str(4))
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
       Define time = ElapsedMilliseconds()
       ; *g = Editor(8, 146, 306, 133) 
-      *g = Editor(0, 0, 0, 0) 
+      *g = Editor(0, 0, 0, 0);, #PB_Editor_WordWrap) ; с ним очень плохо работает ; commit 1,622
       SetBackgroundColor(*g, $FFB3FDFF)
       SetText(*g, Text.s)
 ;       Debug ""
@@ -86,7 +86,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       ; SetFont(*g, FontID(1))
       Debug Str(ElapsedMilliseconds()-time) + " - add widget time"
    
-      Splitter(8, 8, 306, 276, g, *g, #__flag_autosize)
+      Splitter(8, 8, 522-16, 490-16, g, *g, #__flag_autosize)
+      
+      
+       
       
       Repeat
          Define Event = WaitWindowEvent()
@@ -101,8 +104,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 67
+; CursorPosition = 77
+; FirstLine = 54
 ; Folding = --
 ; EnableXP
 ; DPIAware

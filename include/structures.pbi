@@ -198,8 +198,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     edit
       Structure _s_edit Extends _s_COORDINATE
-         pos.l
-         len.l
+         pos.i
+         len.i
          
          String.s
          ;;change.b
@@ -216,7 +216,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TEXT Extends _s_edit
          *fontID 
          
+         strpass.s
          pass.b
+         
          lower.b
          upper.b
          numeric.b
@@ -777,8 +779,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 679
-; FirstLine = 659
+; CursorPosition = 205
+; FirstLine = 188
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

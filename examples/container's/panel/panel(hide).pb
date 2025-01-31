@@ -7,20 +7,23 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   Global *c, *s
-  Global ._s_widget *w,*w1,*w2 ;
+  Global ._s_widget *w,*w1,*w2, *hide, *show ;
   
   Procedure Events()
     Select WidgetEvent( )
-      Case #PB_EventType_LeftClick
+      Case #__Event_LeftClick
         
         Select GetText( EventWidget( ) )
           Case "hide_2"
             Hide(*c, 1)
-            ; Disable(*c, 1)
+            Disable(EventWidget( ), 1)
+            Disable(*show, 0)
             
           Case "show_2" 
             Hide(*c, 0)
-            
+            Disable(EventWidget( ), 1)
+             Disable(*hide, 0)
+          
           Case "hide_3"
             Hide(*s, 1)
             
@@ -39,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
           StopEnum( )
         EndIf
         
-     Case #PB_EventType_Change
+     Case #__Event_Change
          Debug "hide c - "+Hide(*c)+" s - "+Hide(*s)
         
     EndSelect
@@ -48,7 +51,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Open(3)
-     
+    a_init(root())
+    
      ;Button(10,5,50,35, "butt")
      
       *w=Panel     (8, 8, 356, 203)
@@ -69,8 +73,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       
       AddItem(*w1, -1, "Под-Панель 2")
-      Bind(Button( 5, 5, 55, 22, "hide_2"), @Events())
-      Bind(Button( 5, 30, 55, 22, "show_2"), @Events())
+      *hide = Button( 5, 5, 55, 22, "hide_2")
+      Bind(*hide, @Events())
+      *show = Button( 5, 30, 55, 22, "show_2")
+      Disable(*show, 1)
+      Bind(*show, @Events())
       
       *c=Container(110,5,150,155, #PB_Container_Flat) 
       Define *p = Panel(10,5,150,65) 
@@ -135,6 +142,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Bind(@Events(), *w2)
       SetState(*w1, 3)
       
+      
+      
     Repeat
       Define Event = WaitWindowEvent()
     Until Event= #PB_Event_CloseWindow
@@ -142,8 +151,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 14
+; CursorPosition = 144
+; FirstLine = 117
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -10,6 +10,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_widget *PANEL_0, *PANEL_1
    Global img = (LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
    
+   If DesktopResolutionX() > 1
+      ResizeImage(img, DesktopScaledX(ImageWidth(img)),DesktopScaledY(ImageHeight(img)))
+   EndIf
+
    If Open( 3, 0, 0, 750, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       SetColor(root(), #__color_back, $FFE8E8E6)
       
@@ -108,8 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 12
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP
 ; DPIAware
