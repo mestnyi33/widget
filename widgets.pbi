@@ -1579,10 +1579,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Declare   edit_SetState( *this, State.i )
       Declare   edit_SetItemState( *this, Item.l, State.i )
-      Declare   edit_SetText( *this, Text.s )
       Declare   edit_AddItem( *this, position, *text.Character, string_len )
-      Declare   edit_RemoveItem( *this, item )
-      Declare   edit_ClearItems( *this )
+      Declare.s edit_make_insert_text( *this, Text.s )
       
       Global img_indent = DPIScaled(10)
       
@@ -9704,7 +9702,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i SetText( *this._s_WIDGET, Text.s )
-         Protected result.i, Len.i, String.s, i.i
+         Protected result.i, i.i
          
          If *this\type = #__type_Window
             *this\TitleText( )\string = Text
@@ -9718,9 +9716,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If *this\type = #__type_ComboBox
             If *this\stringbar
-               ProcedureReturn edit_SetText( *this\stringbar, Text )
+               ProcedureReturn SetText( *this\stringbar, Text )
             Else
-               ; ProcedureReturn edit_SetText( *this, Text )
+               ; ProcedureReturn SetText( *this, Text )
                If *This\text\string.s <> Text.s
                   *This\text\string.s = Text.s
                   *this\TextChange( ) = #True
@@ -9736,9 +9734,63 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_hyperlink Or
             *this\type = #__type_Button
             
-            ProcedureReturn edit_SetText( *this, Text )
+            Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
+            Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
+            Text.s = ReplaceString( Text.s, #CR$, #LF$ )
+            ;
+            If *this\text\multiline = 0
+               Text.s = edit_make_insert_text( *this, Text.s )
+               Text.s = RemoveString( Text.s, #LF$ )
+            EndIf
             
-            
+            If *This\text\string.s <> Text.s
+               *This\text\string.s = Text.s
+               ;
+               *this\scroll_width( )  = *this\padding\x * 2
+               *this\scroll_height( ) = *this\padding\y * 2
+               
+;                Protected enter_index = - 1: If *this\LineEntered( ): enter_index = *this\LineEntered( )\lindex: *this\LineEntered( ) = #Null: EndIf
+;                Protected focus_index = - 1: If *this\LineFocused( ): focus_index = *this\LineFocused( )\lindex: *this\LineFocused( ) = #Null: EndIf
+;                Protected press_index = - 1: If *this\LinePressed( ): press_index = *this\LinePressed( )\lindex: *this\LinePressed( ) = #Null: EndIf
+               
+               *this\text\len = 0
+               *this\countitems = 0
+               *this\text\edit\string = *this\text\string
+               ClearList( *this\__lines( ))
+               
+               Protected String.s = Text.s + #LF$
+               Protected *str.Character = @String
+               Protected *end.Character = @String
+               Protected len = Len( #LF$ )
+               
+               While *end\c
+                  If *end\c = #LF
+                     LastElement( *this\__lines( ))
+                     AddElement( *this\__lines( ))
+                     *this\__lines( )\lindex = ListIndex( *this\__lines( ))
+                     *this\__lines( )\text\len  = (*end - *str) >> #PB_Compiler_Unicode
+                     *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
+                     *this\__lines( )\text\pos = *this\text\len 
+                     *this\text\len + *this\__lines( )\text\len + len
+                     *this\countitems + 1
+                     
+;                      ;
+;                      If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
+;                      If focus_index = *this\__lines( )\lindex: *this\LineFocused( ) = *this\__lines( ): EndIf
+;                      If press_index = *this\__lines( )\lindex: *this\LinePressed( ) = *this\__lines( ): EndIf
+                     
+                     *str = *end + #__sOC
+                  EndIf
+                  *end + #__sOC
+               Wend
+               
+               ;
+               *this\text\len - len
+               *this\TextChange( )   = 1
+               *this\WidgetChange( ) = 1
+               
+               ProcedureReturn 1
+            EndIf
          Else
             ;         If *this\text\multiline = 0
             ;           Text = RemoveString( Text, #LF$ )
@@ -12279,9 +12331,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result
          
          If *this\type = #__type_Editor
-            edit_RemoveItem( *this, Item )
-            
-            result = #True
+            If item >- 1 And Item < *this\countitems
+               Protected String.s = StringField( *this\text\string, 1 + item, #LF$ )
+               If String
+                  *this\text\string = RemoveString( *this\text\string, String + #LF$, 1,1 )
+                  *this\countitems - 1
+                  *this\TextChange( )   = 1
+                  *this\WidgetChange( ) = 1
+                  ProcedureReturn 1
+               EndIf
+            EndIf
          EndIf
          
          ; - widget::tree_remove_item( )
@@ -12472,8 +12531,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ; - widget::editor_clear_items( )
          If *this\type = #__type_Editor
-            edit_ClearItems( *this )
-            ProcedureReturn #True
+            If *this\countitems
+               *this\countitems       = 0
+               *this\text\string      = ""
+               *this\text\edit\string = ""
+               ;          
+               If *this\text\editable
+                  *this\edit_caret_1( )     = 0
+                  *this\edit_caret_2( )     = 0
+                  *this\LinePressedIndex( ) = 0
+               EndIf
+               ;
+               *this\WidgetChange( )   = - 1
+               *this\TextChange( )     = - 1
+               
+               ProcedureReturn 1
+            EndIf
          EndIf
          
          ; - widget::tree_clear_items( )
@@ -13879,15 +13952,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          Else
             *rowLine   = SelectElement( e_rows( ), position )
             add_index  = e_rows( )\lindex
-            add_y      = e_rows( )\y + Bool( #PB_Compiler_OS = #PB_OS_Windows )
+;             add_y      = e_rows( )\y + Bool( #PB_Compiler_OS = #PB_OS_Windows )
             add_pos    = e_rows( )\text\pos
-            add_height = e_rows( )\height + *this\mode\gridlines
+;             add_height = e_rows( )\height + *this\mode\gridlines
             *rowLine   = InsertElement( e_rows( ))
             
             PushListPosition( e_rows( ))
             While NextElement( e_rows( ))
                e_rows( )\lindex = ListIndex( e_rows( ) )
-               e_rows( )\y + add_height
+;                e_rows( )\y + add_height
                e_rows( )\text\pos + string_len + Len( #LF$ )
             Wend
             PopListPosition(e_rows( ))
@@ -13900,37 +13973,41 @@ CompilerIf Not Defined( widget, #PB_Module )
             e_rows( )\text\string = PeekS ( *text, string_len )
          EndIf
          
-         e_rows( )\height = e_rows( )\text\height ; + 10
+         e_rows( )\height = e_rows( )\text\height
          e_rows( )\width  = *this\inner_width( )
          
          e_rows( )\color  = _get_colors_( )
          
-         ; make line position
-         If *this\text\vertical
-         Else ; horizontal
-            If *this\scroll_width( ) < e_rows( )\text\width + *this\padding\x * 2
-               *this\scroll_width( ) = e_rows( )\text\width + *this\padding\x * 2
-            EndIf
-            
-            If *this\text\rotate = 0
-               If add_index >= 0
-                  e_rows( )\text\pos = add_pos
-                  e_rows( )\y        = add_y - *this\padding\y
-               Else
-                  If *this\text\len
-                     e_rows( )\text\pos = *this\text\len 
-                     If position > count
-                        e_rows( )\text\pos + 1
-                     EndIf
-                  EndIf
-                  e_rows( )\y        = *this\scroll_height( ) - *this\padding\y
+         If add_index >= 0
+            e_rows( )\text\pos = add_pos
+         Else
+            If *this\text\len
+               e_rows( )\text\pos = *this\text\len 
+               If position > count
+                  e_rows( )\text\pos + 1
                EndIf
-            ElseIf *this\text\rotate = 180
-               e_rows( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - e_rows( )\text\height ) + *this\padding\y
             EndIf
-            
-            *this\scroll_height( ) + e_rows( )\height + *this\mode\gridlines
          EndIf
+         
+;          ; make line position
+;          If *this\text\vertical
+;          Else ; horizontal
+;             If *this\scroll_width( ) < e_rows( )\text\width + *this\padding\x * 2
+;                *this\scroll_width( ) = e_rows( )\text\width + *this\padding\x * 2
+;             EndIf
+;             
+;             If *this\text\rotate = 0
+;                If add_index >= 0
+;                   e_rows( )\y        = add_y - *this\padding\y
+;                Else
+;                   e_rows( )\y        = *this\scroll_height( ) - *this\padding\y
+;                EndIf
+;             ElseIf *this\text\rotate = 180
+;                e_rows( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - e_rows( )\text\height ) + *this\padding\y
+;             EndIf
+;             
+;             *this\scroll_height( ) + e_rows( )\height + *this\mode\gridlines
+;          EndIf
          
          *this\countitems + 1
          *this\text\len + string_len + Len( #LF$ )
@@ -13956,123 +14033,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\WidgetChange( )    = 0
          *this\TextChange( ) = 1
          *this\text\edit\string   = *this\text\string
-      EndProcedure
-      
-      Procedure edit_ClearItems( *this._s_WIDGET )
-         *this\WidgetChange( )  = - 1
-         *this\countitems      = - 1
-         *this\TextChange( )    = - 1
-         *this\text\string      = ""
-         *this\text\edit\string = ""
-         
-         If *this\text\editable
-            *this\edit_caret_1( )     = 0
-            *this\edit_caret_2( )     = 0
-            *this\LinePressedIndex( ) = 0
-         EndIf
-         
-         ProcedureReturn 1
-      EndProcedure
-      
-      Procedure edit_RemoveItem( *this._s_WIDGET, item )
-         *this\countitems - 1
-         
-         If *this\countitems = - 1
-            edit_ClearItems( *this )
-         Else
-            *this\TextChange( ) = - 1
-            *this\text\string   = RemoveString( *this\text\string, StringField( *this\text\string, item + 1, #LF$ ) + #LF$ )
-            
-            If ListSize( *this\__lines( ) )
-               If SelectElement( *this\__lines( ), item )
-                  DeleteElement( *this\__lines( ), 1 )
-               EndIf
-            EndIf
-         EndIf
-         
-         ProcedureReturn 1
-      EndProcedure
-      
-      Procedure edit_SetText( *this._s_WIDGET, Text.s )
-         ; If Text.s = "" : Text.s = #LF$ : EndIf
-         Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
-         Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
-         Text.s = ReplaceString( Text.s, #CR$, #LF$ )
-         
-         If *this\text\multiline = 0
-            Text.s = edit_make_insert_text( *this, Text.s )
-            Text.s = RemoveString( Text.s, #LF$ )
-         EndIf
-         
-          ;       If *this\text\rotate = 180
-         ;         *this\scroll\v\bar\invert = 1
-         ;       EndIf
-         
-         Protected String.s = Text.s + #LF$
-         Protected *str.Character = @string
-         Protected *end.Character = @string
-         
-         
-         *this\scroll_width( )  = *this\padding\x * 2
-         *this\scroll_height( ) = *this\padding\y * 2
-         
-         Protected enter_index = - 1: If *this\LineEntered( ): enter_index = *this\LineEntered( )\lindex: *this\LineEntered( ) = #Null: EndIf
-         Protected focus_index = - 1: If *this\LineFocused( ): focus_index = *this\LineFocused( )\lindex: *this\LineFocused( ) = #Null: EndIf
-         Protected press_index = - 1: If *this\LinePressed( ): press_index = *this\LinePressed( )\lindex: *this\LinePressed( ) = #Null: EndIf
-         
-         If *this\countitems
-            *this\countitems = 0
-            ClearList( *this\__lines( ))
-         Else
-           Define count = 1
-         EndIf
-         
-         ; ; ;       *this\text\len = Len( string )
-         ; ; ;       *this\text\string = string
-         ; ; ;       *this\countitems = CountString( String, #LF$ )
-         ; ; ;       *this\TextChange( ) = 1
-         ; ; ;       *this\WidgetChange( ) = 1
-         
-         *this\text\len    = 0
-         *this\text\string = String
-         
-                 
-          count =  CountString( *this\text\string, #LF$ ) ;  CountString( Text, #LF$ )
-;          *this\text\string = Text
-;          Define i
-;          For i=0 To count
-;             edit_AddLine( *this, *this\__lines( ), - 1, 0, 0, count )
-;          Next
-;          
-;          ProcedureReturn 0
-; 
-         While *end\c
-            If *end\c = #LF
-               edit_AddLine( *this, *this\__lines( ), - 1, *str, (*end - *str) >> #PB_Compiler_Unicode, count )
-               ;edit_AddItem(*this,-1, *str, (*end - *str) >> #PB_Compiler_Unicode)
-               
-               If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
-               If focus_index = *this\__lines( )\lindex: *this\LineFocused( ) = *this\__lines( ): EndIf
-               If press_index = *this\__lines( )\lindex: *this\LinePressed( ) = *this\__lines( ): EndIf
-               
-               *str = *end + #__sOC
-            EndIf
-            *end + #__sOC
-         Wend
-         
-         *this\text\len - Len( #LF$ )
-         *this\text\string = Left( *this\text\string, *this\text\len )
-         
-         *this\WidgetChange( ) = 1
-         *this\TextChange( )   = 1
-         
-         If count
-            *this\text\edit\string = *this\text\string
-         EndIf
-         
-         ;Debug ""+*this\scroll_height( ) +" "+ *this\scroll_width( )
-         
-         ProcedureReturn 1
       EndProcedure
       
       Procedure edit_SetItemState( *this._s_WIDGET, Item.l, State.i )
@@ -24570,9 +24530,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23658
-; FirstLine = 23157
-; Folding = -------------------------------------------------------------------------------------------------------------------+-----------------------8----Lf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fbf-0----f--r------f-v7---------
+; CursorPosition = 12336
+; FirstLine = 12005
+; Folding = -------------------------------------------------------------------------------------------------------------------+-----------------------8----Lf---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vtv-+----v--2------v-X0---------
 ; Optimizer
 ; EnableXP
 ; DPIAware

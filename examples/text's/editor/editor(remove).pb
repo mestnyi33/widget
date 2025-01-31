@@ -1,7 +1,20 @@
 ﻿XIncludeFile "../../../widgets.pbi"
- UseWidgets( )
+UseWidgets( )
 
-LN=300;0; количесвто итемов 
+; 1,622 commit
+; 7124 - widget add items time count - 30001
+; 83472 - gadget add items time count - 30001
+; 
+; 86592 - remove widget items time count - 15000
+; 213364 - remove gadget items time count - 15000
+
+; 9 - widget add items time count - 1001
+; 878 - gadget add items time count - 1001
+; 
+; 69 - remove widget items time count - 500
+; 541 - remove gadget items time count - 500
+
+LN=1000 ; количесвто итемов 
 Global *w._S_widget
 
 If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
@@ -67,8 +80,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 47
-; FirstLine = 45
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 4
 ; Folding = -
 ; EnableXP
