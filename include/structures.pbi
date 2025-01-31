@@ -207,10 +207,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *color._s_color
       EndStructure
       
-;       ;--     syntax
-;       Structure _s_syntax
-;          List *word._s_edit( )
-;       EndStructure
+      ;       ;--     syntax
+      ;       Structure _s_syntax
+      ;          List *word._s_edit( )
+      ;       EndStructure
       
       ;--     TEXT
       Structure _s_TEXT Extends _s_edit
@@ -237,7 +237,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          edit._s_edit[4]
          caret._s_caret
          align._s_align
-       EndStructure
+      EndStructure
       
       ;--     IMAGE
       Structure _s_image Extends _s_COORDINATE
@@ -289,7 +289,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
                                          ;
          grid_type.l
          *grid_image
-      
+         
          backcolor.i[3]
          framecolor.i[3]
       EndStructure
@@ -328,12 +328,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          separator.b
          
          StructureUnion
-           Index.i
-           ;_index.i ; row
-           lindex.i ; line
-           rindex.i ; row
-           tindex.i ; tab
-           position.i
+            Index.i
+            ;_index.i ; row
+            lindex.i ; line
+            rindex.i ; row
+            tindex.i ; tab
+            position.i
          EndStructureUnion
          
          change.b
@@ -352,8 +352,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *_menubar._s_WIDGET
          StructureUnion
-         *_parent._s_ROWS
-         *parent._s_ROWS
+            *_parent._s_ROWS
+            *parent._s_ROWS
          EndStructureUnion
          
          childrens.w ; Row( )\ ; rows( )\ ; row\
@@ -370,9 +370,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;*_first._s_rows
          ;          ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
          ; когда переместил margin._s_edit выше *_last._s_rows то снова заработало
-;          *first._s_rows           ;TEMP first elemnt in the list
-;          *after._s_rows           ;TEMP first elemnt in the list
-;          *before._s_rows          ;TEMP first elemnt in the list
+         ;          *first._s_rows           ;TEMP first elemnt in the list
+         ;          *after._s_rows           ;TEMP first elemnt in the list
+         ;          *before._s_rows          ;TEMP first elemnt in the list
          
          ; edit
          margin._s_edit
@@ -454,7 +454,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          direction.b
          
          mirror.b 
-        ;;; orient.b ; Поддерживаемые ориентации
+         ;;; orient.b ; Поддерживаемые ориентации
          
          percent.f
          
@@ -574,7 +574,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          padding._s_point
          ;indent.a
          
-      ;;; Map *linelevel._s_COORDINATE( )
+         ;;; Map *linelevel._s_COORDINATE( )
          
          deffocus.b ; button default focus
          
@@ -613,9 +613,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Width.l[constants::#__c]
          ;
          Type.w;[2]                
-         ; type[0] = createtype
-         ; type[1] = grouptype
-         ;
+               ; type[0] = createtype
+               ; type[1] = grouptype
+               ;
          Level.c
          class.s
          ;
@@ -625,16 +625,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
             change.b
             textchange.b
          EndStructureUnion
-      
-                                  ; transporent.b
-                                  ; dragged.b              ;
+         
+         ; transporent.b
+         ; dragged.b              ;
          autosize.b
          Container.b              ; is container
                                   ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
                                   ; container =- 1         ; if the not has children ( Splitter( ); Frame( ))
                                   ;
-         ; *integralParent._s_WIDGET
-         ; integral.b
+                                  ; *integralParent._s_WIDGET
+                                  ; integral.b
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
          CountItems.l             ; count items
@@ -660,10 +660,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *groupbar._s_WIDGET      ; = Option( ) group widget
          *stringbar._s_WIDGET     ; = SpinBar( ) string box widget
          
-        ; StructureUnion
-            *togglebox._s_BOX     ; checkbox; optionbox, ToggleButton
-            *combobutton._s_BUTTONS    ; combobox button
-        ; EndStructureUnion
+         ; StructureUnion
+         *togglebox._s_BOX     ; checkbox; optionbox, ToggleButton
+         *combobutton._s_BUTTONS    ; combobox button
+                                    ; EndStructureUnion
          
          displaypopup.b
          ;                           
@@ -779,8 +779,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 204
-; FirstLine = 188
+; CursorPosition = 779
+; FirstLine = 745
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

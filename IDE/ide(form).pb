@@ -378,15 +378,15 @@ Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
    
    Select Type
       Case #__type_Spin
-;          Select item
-;             Case #_pi_x, #_pi_width
-;                *this = Create( *parent, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert|#__flag_vertical, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
-;             Case #_pi_y, #_pi_height
-;                *this = Create( *parent, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
-;          EndSelect
+         ;          Select item
+         ;             Case #_pi_x, #_pi_width
+         ;                *this = Create( *parent, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert|#__flag_vertical, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+         ;             Case #_pi_y, #_pi_height
+         ;                *this = Create( *parent, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+         ;          EndSelect
          
          *this = Create( *parent, "Spin", #__type_Spin, 0, 0, 0, 0, "", flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
-           
+         
          ;SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_String
          *this = Create( *parent, "String", #__type_String, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
@@ -436,12 +436,12 @@ Procedure ChangeStatus_Properties( *this._s_WIDGET, item )
    EndIf
    PopListPosition(EventWidget( )\__rows( ))
    
-;    If WidgetEventData( ) = 3
-;       If GetActive( ) <> EventWidget( )
-;          Debug "set active "+GetClass(EventWidget( ))
-;          SetActive( EventWidget( ))
-;       EndIf
-;    EndIf
+   ;    If WidgetEventData( ) = 3
+   ;       If GetActive( ) <> EventWidget( )
+   ;          Debug "set active "+GetClass(EventWidget( ))
+   ;          SetActive( EventWidget( ))
+   ;       EndIf
+   ;    EndIf
 EndProcedure
 
 Procedure.s GetItemText_Properties( *splitter._s_WIDGET, item )
@@ -548,7 +548,7 @@ Procedure Create_Properties( X,Y,Width,Height, flag=0 )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    *splitter\bar\button\size = DPIScaled(2)
    *splitter\bar\button\round = 0;  DPIScaled(1)
-   ;SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
+                                 ;SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
    
    ;
    SetClass(*first\scroll\v, "first_v")
@@ -776,14 +776,14 @@ Procedure widget_delete( *this._s_WIDGET  )
    Protected CountItems
    
    ;    If ListSize( a_group( ))
-;       ForEach a_group( )
-;          RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
-;          Free( a_group( )\widget )
-;          DeleteElement( a_group( ) )
-;       Next
-;       
-;       ClearList( a_group( ) )
-;    Else
+   ;       ForEach a_group( )
+   ;          RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
+   ;          Free( a_group( )\widget )
+   ;          DeleteElement( a_group( ) )
+   ;       Next
+   ;       
+   ;       ClearList( a_group( ) )
+   ;    Else
    
    If *this <> ide_design_MDI
       item = GetData( *this )
@@ -999,7 +999,7 @@ Procedure widget_events( )
       Case #__event_Close ;, #__event_Minimize, #__event_Maximize
          ProcedureReturn 1
          
-       Case #__event_Down
+      Case #__event_Down
          If a_focused( ) = *e_widget
             If GetData( *e_widget ) >= 0
                If IsGadget( ide_g_code )
@@ -1095,7 +1095,7 @@ Procedure widget_events( )
          EndIf
          
       Case #__event_Resize
-;          ; Debug ""+GetClass(*e_widget)+" resize"
+         ;          ; Debug ""+GetClass(*e_widget)+" resize"
          If *e_widget = a_focused( )
             properties_update_coordinate( ide_inspector_properties, a_focused( ) )
             Change_PropertiesButton( ide_inspector_properties )
@@ -1429,7 +1429,7 @@ Procedure ide_events( )
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
                If *e_widget = ide_inspector_events
-                 SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
             EndIf
          EndIf
@@ -1596,13 +1596,13 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    CloseList( )
    
    If ide_root2
-     CloseGadgetList( )
-     UseGadgetList( GadgetID(ide_g_canvas))
-     OpenList(ide_root)
+      CloseGadgetList( )
+      UseGadgetList( GadgetID(ide_g_canvas))
+      OpenList(ide_root)
    Else
-     Define ide_g_canvas2 = ide_design_panel
+      Define ide_g_canvas2 = ide_design_panel
    EndIf
- 
+   
    ;
    ide_debug_view = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_debug_view, "ide_debug_view" ) ; ListView( 0,0,0,0 ) 
    If Not ide_design_code
@@ -1791,56 +1791,56 @@ CompilerIf #PB_Compiler_IsMainFile
    ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    
    If example = 2
-;       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
-;       
-;       Debug ""+widget()\parent\class +" "+ widget()\x[0] +" "+ widget()\x[7] +" "+ widget()\width[0] +" "+ widget()\width[7]
-;       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
-;       widget_add( *container, "button", 10, 20, 30, 30 )
-;       
-; ;       ClearItems(ide_inspector_view)
-; ; ;       AddItem(ide_inspector_view, -1, "window_0", -1, 0)
-; ; ;       AddItem(ide_inspector_view, -1, "button_0", -1, 1)
-; ; ;       AddItem(ide_inspector_view, -1, "container_0", -1, 1)
-; ; ;       AddItem(ide_inspector_view, -1, "button_1", -1, 2)
-; ; ;       
-; ;       Define *parent._s_WIDGET = ide_design_MDI
-; ;       ;PushListPosition(widgets())
-; ;       If StartEnum( *parent ,0)
-; ;          Debug "99 "+ widget()\class +" "+ widget()\parent\class +" "+ Str(Level(widget()))+" "+Str(Level(*parent));IsChild(widget(), *parent )
-; ;          Select CountItems(ide_inspector_view)
-; ;             Case 0 
-; ;                AddItem(ide_inspector_view, -1, "window_0", -1, Level(widget())-Level(*parent)-1)
-; ;             Case 1 
-; ;                AddItem(ide_inspector_view, -1, "button_0", -1, Level(widget())-Level(*parent)-1)
-; ;             Case 2 
-; ;                AddItem(ide_inspector_view, -1, "container_0", -1, Level(widget())-Level(*parent)-1)
-; ;             Case 3 
-; ;                AddItem(ide_inspector_view, -1, "button_1", -1, Level(widget())-Level(*parent)-1)
-; ;          EndSelect
-; ;          
-; ;          ;   Debug CountItems(ide_inspector_view)-1
-; ;          SetData(widget(), CountItems(ide_inspector_view)-1)
-; ;          SetItemData(ide_inspector_view, CountItems(ide_inspector_view)-1, widget())
-; ;          
-; ;          StopEnum()
-; ;       EndIf
-; ;       ;PopListPosition(widgets())
-;       
-;       ;\\ example 2
-; ;       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
-; ;       widget_add( *container, "button", 10, 20, 30, 30 )
-; ;       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
-; ;       
-; ;       Define item = 1
-; ;       SetState( ide_inspector_view, item )
-; ;       If IsGadget( ide_g_code )
-; ;          SetGadgetState( ide_g_code, item )
-; ;       EndIf
-; ;       Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-; ;       widget_add( *container2, "button", 10, 20, 30, 30 )
-; ;       
-; ;       SetState( ide_inspector_view, 0 )
-; ;       widget_add( ide_design_form, "button", 10, 130, 100, 30 )
+      ;       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
+      ;       
+      ;       Debug ""+widget()\parent\class +" "+ widget()\x[0] +" "+ widget()\x[7] +" "+ widget()\width[0] +" "+ widget()\width[7]
+      ;       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
+      ;       widget_add( *container, "button", 10, 20, 30, 30 )
+      ;       
+      ; ;       ClearItems(ide_inspector_view)
+      ; ; ;       AddItem(ide_inspector_view, -1, "window_0", -1, 0)
+      ; ; ;       AddItem(ide_inspector_view, -1, "button_0", -1, 1)
+      ; ; ;       AddItem(ide_inspector_view, -1, "container_0", -1, 1)
+      ; ; ;       AddItem(ide_inspector_view, -1, "button_1", -1, 2)
+      ; ; ;       
+      ; ;       Define *parent._s_WIDGET = ide_design_MDI
+      ; ;       ;PushListPosition(widgets())
+      ; ;       If StartEnum( *parent ,0)
+      ; ;          Debug "99 "+ widget()\class +" "+ widget()\parent\class +" "+ Str(Level(widget()))+" "+Str(Level(*parent));IsChild(widget(), *parent )
+      ; ;          Select CountItems(ide_inspector_view)
+      ; ;             Case 0 
+      ; ;                AddItem(ide_inspector_view, -1, "window_0", -1, Level(widget())-Level(*parent)-1)
+      ; ;             Case 1 
+      ; ;                AddItem(ide_inspector_view, -1, "button_0", -1, Level(widget())-Level(*parent)-1)
+      ; ;             Case 2 
+      ; ;                AddItem(ide_inspector_view, -1, "container_0", -1, Level(widget())-Level(*parent)-1)
+      ; ;             Case 3 
+      ; ;                AddItem(ide_inspector_view, -1, "button_1", -1, Level(widget())-Level(*parent)-1)
+      ; ;          EndSelect
+      ; ;          
+      ; ;          ;   Debug CountItems(ide_inspector_view)-1
+      ; ;          SetData(widget(), CountItems(ide_inspector_view)-1)
+      ; ;          SetItemData(ide_inspector_view, CountItems(ide_inspector_view)-1, widget())
+      ; ;          
+      ; ;          StopEnum()
+      ; ;       EndIf
+      ; ;       ;PopListPosition(widgets())
+      ;       
+      ;       ;\\ example 2
+      ; ;       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
+      ; ;       widget_add( *container, "button", 10, 20, 30, 30 )
+      ; ;       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
+      ; ;       
+      ; ;       Define item = 1
+      ; ;       SetState( ide_inspector_view, item )
+      ; ;       If IsGadget( ide_g_code )
+      ; ;          SetGadgetState( ide_g_code, item )
+      ; ;       EndIf
+      ; ;       Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
+      ; ;       widget_add( *container2, "button", 10, 20, 30, 30 )
+      ; ;       
+      ; ;       SetState( ide_inspector_view, 0 )
+      ; ;       widget_add( ide_design_form, "button", 10, 130, 100, 30 )
       
    ElseIf example = 3
       ;\\ example 3
@@ -1871,12 +1871,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;CloseList( )
       SetState( *panel, 1 )
       
-;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
-;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
-;       ;SetSizeBounds( *scrollarea )
-;       SetMoveBounds( btn2, -1,-1,-1,-1 )
-       SetMoveBounds( ide_design_form, -1,-1,-1,-1 )
-;       ;SetChildrenBounds( ide_design_MDI )
+      ;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
+      ;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
+      ;       ;SetSizeBounds( *scrollarea )
+      ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
+      SetMoveBounds( ide_design_form, -1,-1,-1,-1 )
+      ;       ;SetChildrenBounds( ide_design_MDI )
       
    ElseIf example = 4
       ;\\ example 3
@@ -1961,8 +1961,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 313
-; FirstLine = 286
+; CursorPosition = 1961
+; FirstLine = 1927
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware
