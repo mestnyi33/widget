@@ -202,7 +202,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          len.i
          
          String.s
-         ;;change.b
+         change.b
          
          *color._s_color
       EndStructure
@@ -779,7 +779,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 205
+; CursorPosition = 204
 ; FirstLine = 188
 ; Folding = ----------
 ; Optimizer

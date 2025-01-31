@@ -483,7 +483,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro TabChange( ): change: EndMacro         ; tab\widget\change
-      Macro TextChange( ): textchange: EndMacro        ; temp
+      Macro TextChange( ): Text\change: EndMacro        ; temp
       Macro AreaChange( ): area\change: EndMacro   ; temp
       Macro PageChange( ): page\change: EndMacro   ; temp
       Macro ThumbChange( ): thumb\change: EndMacro ; temp
@@ -17906,12 +17906,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ draw belowe drawing
             If *this\hide
-               If Not ( *this\text\width And *this\text\height )
-                  draw_font( *this, GetFontID( *this ) )
-                  Update_DrawText( *this, 1 )
-                  make_scrollarea_x( *this, *this\frame_width( ), *this\text\align )
-                  make_scrollarea_y( *this, *this\frame_height( ), *this\text\align )
+               
+               If *this\row
+                  If *this\TextChange( )
+                     If *this\text\string 
+                        If Not ( *this\text\width And *this\text\height )
+                           draw_font( *this, GetFontID( *this ) )
+                           Update_DrawText( *this, 1 )
+                           make_scrollarea_x( *this, *this\frame_width( ), *this\text\align )
+                           make_scrollarea_y( *this, *this\frame_height( ), *this\text\align )
+                        EndIf
+                     EndIf
+                  EndIf
                EndIf
+               
             Else
                ;Debug "DRAW( "+*this\class +" "+ *this\enter
 ;                If *this\resize\clip <> 0
@@ -24564,9 +24572,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7512
-; FirstLine = 7378
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------8----Lf----------------------------------------f080-v---7------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------fbf-0----f--r------f-v7---------
+; CursorPosition = 17910
+; FirstLine = 954
+; Folding = ACAg-BAAA5---------H-HA9------HA-DAAAAAGcAAAgAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgHAAAAAAAAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAgACAAAAAAoqqAAAAAAAAAAAAA--AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+Hw-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA9AAAAAAAAAAAAAAAQfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAADQAAAAAACAAAAAAAQAAAAAAAAAAAAA+
 ; Optimizer
 ; EnableXP
 ; DPIAware
