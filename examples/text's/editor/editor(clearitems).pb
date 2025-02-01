@@ -44,6 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Asc(File$)
       If ReadFile(0, File$, Format)
+         ; 1 вариант
          length = Lof(0)                                         ; Читает размер файла в байтах
          FileSeek(0, 0)                                          ; length-100000)                         ; set the file pointer 100000 chars from end of file
          *mem = AllocateMemory(length)                           ; Выделяет блок памяти с размером файла
@@ -52,6 +53,9 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "Количество прочитанных байтов: " + Str(bytes)
             Text = PeekS(*mem, length, Format)
          EndIf
+         
+;          ; 2 вариант
+;          Text = ReadString(0, #PB_File_IgnoreEOL) 
          
          CloseFile(0)
       EndIf
@@ -75,15 +79,20 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ReDraw( root( ))
       
+      Debug ""+CountGadgetItems( g ) +" - count gadget items"
+      Debug ""+CountItems( *g ) +" - count widget items"
+      
+      Debug "START CLEARS"
       Define time = ElapsedMilliseconds()
       ClearGadgetItems( g )
       Debug Str(ElapsedMilliseconds()-time) + " - gadget clear items time"
       Define time = ElapsedMilliseconds()
       ClearItems( *g )
       Debug Str(ElapsedMilliseconds()-time) + " - widget clear items time"
+      Debug "STOP CLEARS"
       
-      Debug CountGadgetItems( g )
-      Debug CountItems( *g )
+      Debug ""+CountGadgetItems( g ) +" - count gadget items"
+      Debug ""+CountItems( *g ) +" - count widget items"
       
       Repeat
          Define Event = WaitWindowEvent()
@@ -98,8 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 59
+; CursorPosition = 90
+; FirstLine = 70
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -10057,6 +10057,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             result = bar_SetAttribute( *this, Attribute, *value )
          EndIf
          
+         If *this\type = #__type_Editor 
+            If Attribute = #PB_Editor_WordWrap
+               If *value > 0
+                  *this\text\multiline = - 1
+               Else
+                  *this\text\multiline = 1
+               EndIf
+               ;*this\WidgetChange( ) = 1
+               *this\TextChange( ) = 1
+               
+               postReDraw( *this\root )
+            EndIf
+         EndIf
+         
          If *this\type = #__type_Button 
             Select Attribute
                Case #PB_Button_Image
@@ -12312,16 +12326,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result 
       EndProcedure
       
-      Procedure.b SelectItem( *this._s_WIDGET, Item.l ) 
-         ProcedureReturn Bool( Item > #PB_Any And Item < *this\countitems And SelectElement( *this\__rows( ), Item ))
-      EndProcedure
-      
       Procedure.b PushItem( *this._s_WIDGET ) 
          PushListPosition( *this\__rows( ))
       EndProcedure
       
       Procedure.b PopItem( *this._s_WIDGET ) 
          PopListPosition( *this\__rows( ))
+      EndProcedure
+      
+      Procedure.b SelectItem( *this._s_WIDGET, Item.l ) 
+         ProcedureReturn Bool( Item > #PB_Any And Item < *this\countitems And SelectElement( *this\__rows( ), Item ))
       EndProcedure
       
       Procedure   RemoveItem( *this._s_WIDGET, Item.l )
@@ -17095,7 +17109,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             With *this
                ; Make output multi line text
-               If *this\TextChange( ) Or *this\resize\ResizeChange( ) ; And *this\text\multiline = - 1 )
+               If *this\TextChange( ) Or ( *this\resize\ResizeChange( ) And *this\text\multiline = - 1 )
                                                                       ;
                   Update_DrawText( *this, *this\TextChange( ) )
                   ;
@@ -24312,7 +24326,7 @@ CompilerIf #PB_Compiler_IsMainFile
    *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
    AddItem( *panel, -1, "item_1" )
    ;Button( 20,20, 80,80, "item_1")
-   *g = Editor(0, 0, 0, 0, #__flag_autosize|#__flag_borderless)
+   *g = Editor(0, 0, 0, 0, #__flag_autosize|#__flag_borderless|#__flag_textwordwrap)
    ;    For a = 0 To 2
    ;       AddItem(*g, a, "Line " + Str(a))
    ;    Next
@@ -24599,9 +24613,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 6893
-; FirstLine = 6868
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------c----
+; CursorPosition = 10069
+; FirstLine = 10039
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n8---
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Open(3)
-    a_init(root())
+    ;a_init(root())
     
      ;Button(10,5,50,35, "butt")
      
@@ -151,8 +151,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 144
-; FirstLine = 117
+; CursorPosition = 53
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware
