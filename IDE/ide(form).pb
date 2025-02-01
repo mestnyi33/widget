@@ -403,7 +403,7 @@ Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
    EndSelect
    
    If *this
-      SetActive( *this )
+     ; SetActive( *this )
       SetData(*this, item)
       Bind(*this, @Events_PropertiesButton( ), #__event_Down)
       Bind(*this, @Events_PropertiesButton( ), #__event_Change)
@@ -1961,8 +1961,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1961
-; FirstLine = 1927
+; CursorPosition = 405
+; FirstLine = 389
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

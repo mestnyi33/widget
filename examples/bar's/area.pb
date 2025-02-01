@@ -72,17 +72,17 @@ CompilerIf #PB_Compiler_IsMainFile
             change = WidgetEventData( )
             Debug "changing scroller values - " +change
             
-;             PushListPosition(  Images( )  )
-;             If EventWidget( )\bar\vertical
-;                ForEach Images( ) 
-;                   Images( )\Y + change 
-;                Next
-;             Else
-;                ForEach Images( ) 
-;                   Images( )\X + change 
-;                Next
-;             EndIf
-;             PopListPosition( Images( ) )
+            PushListPosition(  Images( )  )
+            If EventWidget( )\bar\vertical
+               ForEach Images( ) 
+                  Images( )\Y + change 
+               Next
+            Else
+               ForEach Images( ) 
+                  Images( )\X + change 
+               Next
+            EndIf
+            PopListPosition( Images( ) )
             
       EndSelect
       
@@ -395,7 +395,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 266
-; FirstLine = 266
+; CursorPosition = 85
+; FirstLine = 68
 ; Folding = ---------
 ; EnableXP
