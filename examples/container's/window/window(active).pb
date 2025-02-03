@@ -26,6 +26,6 @@ EndIf
 
 End  
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 11
 ; Folding = -
 ; EnableXP

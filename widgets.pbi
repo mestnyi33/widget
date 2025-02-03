@@ -10848,7 +10848,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure DoActive( *this._s_WIDGET, *active._s_WIDGET = 0 )
-         If *active
+         Protected *window._s_WIDGET
+         
+         If *Active
             If *this <> *active\window
                ; deactivate
                If test_focus_set
@@ -10856,39 +10858,60 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                *this\focus = 0
                DoEvents( *this, #__event_Lostfocus )
-               If *this\window 
-                  If *this <> *this\window 
-                     If *active <> *this\window 
-                        If *this\window <> *active\window
-                           If test_focus_set
-                              Debug "DEACTIVEWINDOW "+*this\window\class ;+" "+ *this\window\focus
-                           EndIf
-                           *this\window\focus = 0
-                           DoEvents( *this\window, #__event_Lostfocus )
+               ;
+               *window = *this
+               While Not is_root_( *window )
+                  *window = *window\window
+                  If *window 
+                     If *this = *window
+                        Break
+                     EndIf
+                     If *active = *window
+                        Break
+                     EndIf
+                     If Not *window\anchors
+                        Break
+                     EndIf
+                     If IsChild( *active, *window )
+                        Break
+                     EndIf
+                     If *window\focus <> 0
+                        If test_focus_set
+                           Debug "DEACTIVEWINDOW "+*window\class ;+" "+ *this\window\focus
                         EndIf
+                        *window\focus = 0
+                        DoEvents( *window, #__event_Lostfocus )
                      EndIf
                   EndIf
-               EndIf
+               Wend
             EndIf
          Else
             ; activate
-            If *this\window 
-               If *this <> *this\window 
-                  ; Debug "ACTIVEWINDOW "+*this\window\focus
-                  If *this\window\focus = 0
-                     If test_focus_set
-                        Debug "ACTIVEWINDOW "+*this\window\class ; +" "+ *this\window\focus
-                     EndIf
-                     *this\window\focus = 1
-                     DoEvents( *this\window, #__event_focus )
-                  EndIf
-               EndIf
-            EndIf
             If test_focus_set
                Debug "ACTIVE "+*this\class ;+" "+ *this\focus
             EndIf
-            *this\focus = 1
+            *this\focus = 2
             DoEvents( *this, #__event_focus )
+            ;
+            *window = *this
+            While Not is_root_( *window )
+               *window = *window\window
+               If *window 
+                  If *this = *window 
+                     Break
+                  EndIf
+                  If Not *window\anchors
+                     Break
+                  EndIf
+                  If *window\focus = 0
+                     If test_focus_set
+                        Debug "ACTIVEWINDOW "+*window\class ; +" "+ *this\window\focus
+                     EndIf
+                     *window\focus = 2
+                     DoEvents( *window, #__event_focus )
+                  EndIf
+               EndIf
+            Wend
          EndIf
       EndProcedure
       
@@ -24664,9 +24687,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10855
-; FirstLine = 10571
-; Folding = ----------------------------------------------------------------------------4-+--v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------------V8-------------------------------------------------------------------------c----
+; CursorPosition = 10892
+; FirstLine = 10565
+; Folding = ----------------------------------------------------------------------------4-+--v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------va-------------------------------------------------------------------------n8---
 ; Optimizer
 ; EnableXP
 ; DPIAware

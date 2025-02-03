@@ -1,9 +1,11 @@
 ﻿XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile 
-   UseWidgets( )
-   
    EnableExplicit
+   UseWidgets( )
+   test_focus_show = 1
+test_focus_set = 1
+
    Global Event.i
    Global X=10,Y=10, Width=820, Height=620 , focus
    
@@ -83,8 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 43
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP
 ; DPIAware
