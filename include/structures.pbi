@@ -38,8 +38,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     COORDINATE
       Structure _s_COORDINATE Extends _s_SIZE
-         Y.l
          X.l
+         Y.l
       EndStructure
       ;--     RESIZEINFO
       Structure RESIZEINFO Extends _s_COORDINATE
@@ -188,12 +188,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CARET
       Structure _s_CARET Extends _s_COORDINATE
-         mode.i
+         pos.i[3]
          
-         pos.l[3]
-         time.l
-         
-         change.b
+         ; mode.i
+         ; time.l
+         ; change.b
       EndStructure
       
       ;--     edit
@@ -202,9 +201,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          len.i
          
          String.s
-         change.b
          
-         *color._s_color
       EndStructure
       
       ;       ;--     syntax
@@ -214,6 +211,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     TEXT
       Structure _s_TEXT Extends _s_edit
+         change.b
+         *color._s_color
+         ;
          *fontID 
          
          strpass.s
@@ -325,7 +325,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
-         separator.b
+         selector.a  ; selected lines last selector size
+         ;separator.b
          
          StructureUnion
             Index.i
@@ -434,13 +435,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          pos.l
          len.l
          *end
-         change.w
-      EndStructure
-      Structure _S_THUMB Extends _s_BUTTONS
-         pos.l
-         len.l
-         *end
-         change.w
+         change.l
       EndStructure
       Structure _s_BAR
          change.w
@@ -460,7 +455,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          page._s_page
          area._s_page
-         thumb._s_thumb
+         thumb._s_page
          
          *button._s_buttons[3]
          
@@ -779,8 +774,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 779
-; FirstLine = 745
+; CursorPosition = 328
+; FirstLine = 322
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

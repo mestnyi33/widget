@@ -169,7 +169,8 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetGadgetText(2, "horizontal bar")
                 SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__flag_Invert))
             EndIf
-            
+               PostReDraw(root())
+         
          Case 3
             If GetGadgetState(2)
                SetAttribute(*mdi\scroll\v, #__flag_Invert, Bool(GetGadgetState(3)))
@@ -178,7 +179,8 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__flag_Invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-           
+              PostReDraw(root())
+         
          Case 4
             If GetGadgetState(2)
                SetAttribute(*mdi\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
@@ -187,7 +189,8 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            
+               PostReDraw(root())
+         
          Case 5
             
       EndSelect
@@ -301,7 +304,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 177
+; CursorPosition = 192
 ; FirstLine = 162
 ; Folding = ------
 ; EnableXP

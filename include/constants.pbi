@@ -471,6 +471,7 @@
       #__Bar_ScrollStep        = 5
       #__Bar_ButtonSize        = 6
       #__Bar_Direction         = 7
+      #__Bar_Invert            = #__flag_invert
       
       ;-\\ Window
       ; constant
@@ -744,8 +745,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 744
-; FirstLine = 710
+; CursorPosition = 467
+; FirstLine = 453
 ; Folding = ----
 ; Optimizer
 ; EnableXP

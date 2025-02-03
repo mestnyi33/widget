@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
    Global Event.i, MyCanvas, *mdi._s_widget, vButton, hButton
-   Global x=200,y=150, width=320, height=320 , focus
+   Global X=200,Y=150, Width=320, Height=320 , focus
    
    ;-
    Procedure MDI_ImageEvents( )
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             With *ew\parent\scroll
-               Box( DpiScaled(x), DpiScaled(y), DpiScaled(Width), DpiScaled(Height), RGB( 0,255,0 ) )
+               Box( DpiScaled(X), DpiScaled(Y), DpiScaled(Width), DpiScaled(Height), RGB( 0,255,0 ) )
                Box( \h\x, \v\y, \h\bar\page\len, \v\bar\page\len, RGB( 0,0,255 ) )
                Box( \h\x-\h\bar\page\pos, \v\y - \v\bar\page\pos, \h\bar\max, \v\bar\max, RGB( 255,0,0 ) )
             EndWith
@@ -75,18 +75,18 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure MDI_AddImage( *mdi, x, y, img, round=0 )
-      Protected *this._s_widget, width, height
+   Procedure MDI_AddImage( *mdi, X, Y, img, round=0 )
+      Protected *this._s_widget, Width, Height
       
-      width = ImageWidth( img )
-      height = ImageHeight( img )
+      Width = ImageWidth( img )
+      Height = ImageHeight( img )
       
       *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess|#__flag_Transparent )
       *this\class = "image-"+Str(img)
       *this\cursor = #PB_Cursor_Hand
       *this\round = (round)
       
-      Resize(*this, x, y, width, height )
+      Resize(*this, X, Y, Width, Height )
       
       Bind( *this, @MDI_ImageEvents(), #__event_LeftUp )
       Bind( *this, @MDI_ImageEvents(), #__event_LeftDown )
@@ -101,9 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;- \\
    Procedure Canvas_resize( )
       ;Protected width = GadgetWidth( EventGadget() )
-      Protected width = WindowWidth( EventWindow() )
-      Resize( Root(), #PB_Ignore, #PB_Ignore, width, #PB_Ignore )
-      Resize( *mdi, #PB_Ignore, #PB_Ignore, width-x*2, #PB_Ignore )
+      Protected Width = WindowWidth( EventWindow() )
+      Resize( root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
+      Resize( *mdi, #PB_Ignore, #PB_Ignore, Width-X*2, #PB_Ignore )
    EndProcedure
    
    Procedure Gadgets_Events()
@@ -116,6 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetGadgetText(2, "horizontal bar")
                 SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
             EndIf
+            PostReDraw(root())
             
          Case 3
             If GetGadgetState(2)
@@ -125,7 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-           
+            PostReDraw(root())
+            
          Case 4
             If GetGadgetState(2)
                SetAttribute(*mdi\scroll\v, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * vButton)
@@ -134,7 +136,8 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            
+            PostReDraw(root())
+         
          Case 5
             
       EndSelect
@@ -142,13 +145,13 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define yy = 90
    Define xx = 0
-   Define text.s
+   Define Text.s
    CompilerIf #PB_Compiler_DPIAware
-     text.s = " enable DPIAware"
+     Text.s = " enable DPIAware"
    CompilerElse
-     text.s = " disable DPIAware"
+     Text.s = " disable DPIAware"
    CompilerEndIf
-   If Not OpenWindow( 0, 0, 0, Width+x*2+20+xx, Height+y*2+20+yy, "Move/Drag Canvas Image"+text, #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
+   If Not OpenWindow( 0, 0, 0, Width+X*2+20+xx, Height+Y*2+20+yy, "Move/Drag Canvas Image"+Text, #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered ) 
      MessageRequester( "Fatal error", "Program terminated." )
       End
    EndIf
@@ -179,7 +182,7 @@ CompilerIf #PB_Compiler_IsMainFile
       StopDrawing() ; This is absolutely needed when the drawing operations are finished !!! Never forget it !
       
    EndIf
-   ImageGadget(#PB_Any, Width+x*2+20-210,10,200,80, ImageID(0) )
+   ImageGadget(#PB_Any, Width+X*2+20-210,10,200,80, ImageID(0) )
    
    Define round = 50
    Define hole = CreateImage( #PB_Any,100,100,32 )
@@ -208,13 +211,13 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;
-   MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+x*2, Height+y*2 ) )
+   MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+X*2, Height+Y*2 ) )
    SetColor(root(), #__color_back, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
    
-   *mdi = MDI(x,y,width,height);, #__flag_autosize)
+   *mdi = MDI(X,Y,Width,Height);, #__flag_autosize)
                                ;a_init( *mdi )
    SetColor(*mdi, #__color_back, $ffffffff)
    ;SetColor(*mdi, #__color_frame, $ffffffff)
@@ -247,7 +250,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 66
-; Folding = -8--
+; CursorPosition = 138
+; FirstLine = 111
+; Folding = ----
 ; EnableXP

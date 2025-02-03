@@ -370,6 +370,8 @@ Procedure Events_PropertiesButton( )
                ;
          EndSelect
    EndSelect
+   
+   ProcedureReturn #PB_Ignore
 EndProcedure
 
 Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
@@ -536,6 +538,8 @@ Procedure Events_Properties( )
          EndIf
          
    EndSelect
+   
+   ProcedureReturn #PB_Ignore
 EndProcedure
 
 Procedure Create_Properties( X,Y,Width,Height, flag=0 )
@@ -812,7 +816,7 @@ EndProcedure
 
 Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
    Protected *new._s_widget, *param1, *param2, *param3
-   Protected is_window.b, flag.i = #__flag_NoFocus
+   Protected is_window.b, flag.i ;= #__flag_NoFocus
    Protected newClass.s
    
    If *parent 
@@ -851,10 +855,10 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          Case "window"    
             is_window = #True
             If Type( *parent ) = #__Type_MDI
-               *new = AddItem( *parent, #PB_Any, "", - 1, flag )
+               *new = AddItem( *parent, #PB_Any, "", - 1, flag | #__window_NoActivate )
                Resize( *new, #PB_Ignore, #PB_Ignore, Width,Height )
             Else
-               flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
+               flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
                *new = Window( X,Y,Width,Height, "", flag, *parent )
             EndIf
             
@@ -995,11 +999,15 @@ Procedure widget_events( )
       Case #__event_RightDown
          Debug "right"
          
-         ; disable window-toolbar-buttons events
-      Case #__event_Close ;, #__event_Minimize, #__event_Maximize
-         ProcedureReturn 1
-         
-      Case #__event_Down
+       Case #__event_LostFocus
+         ; Debug "LOSTFOCUS "+GetClass(*e_widget)
+          SetState( ide_inspector_view, - 1 )
+          
+       Case #__event_Focus
+         ; Debug "FOCUS "+GetClass(*e_widget)
+          
+;        Case #__event_Down
+;          ProcedureReturn 0
          If a_focused( ) = *e_widget
             If GetData( *e_widget ) >= 0
                If IsGadget( ide_g_code )
@@ -1013,7 +1021,7 @@ Procedure widget_events( )
             
             ; 
             If GetActive( ) <> ide_inspector_view 
-               SetActive( ide_inspector_view )
+              ; SetActive( ide_inspector_view )
                Debug "------------- active "+GetActive( )\class
             EndIf
          EndIf
@@ -1146,6 +1154,10 @@ Procedure widget_events( )
          EndIf
       EndIf
    EndIf
+   
+   ; отключаем дальнейшую обработку всех событий
+   ; а также события кнопок окна (Close, Maximize, Minimize)
+   ProcedureReturn #PB_Ignore
 EndProcedure
 
 
@@ -1961,9 +1973,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 405
-; FirstLine = 389
-; Folding = ------------------------------------
+; CursorPosition = 1006
+; FirstLine = 998
+; Folding = --------------------4ftz------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

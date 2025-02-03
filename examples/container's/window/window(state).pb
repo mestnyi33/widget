@@ -45,6 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
                                                              #PB_Window_ScreenCentered )
       
+      a_init( root())
+      
       ;\\
       Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu |
                                             #PB_Window_MinimizeGadget |
@@ -82,7 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
+; CursorPosition = 47
+; FirstLine = 11
 ; Folding = 4-
 ; EnableXP
 ; DPIAware

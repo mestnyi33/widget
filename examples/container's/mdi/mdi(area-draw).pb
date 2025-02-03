@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Type = #PB_GadgetType_Button
          ;*Object\root\widget =
-         Define *this = Button(0,0,0,0,Text,#__flag_autosize, -1, round)
+         Define *this = Button(0,0,0,0,Text,#__flag_autosize, round)
       EndIf
       
       Resize(*Object, X, Y, Width, Height)
@@ -243,8 +243,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 145
+; CursorPosition = 110
+; FirstLine = 106
 ; Folding = ---
 ; EnableXP
 ; DPIAware
