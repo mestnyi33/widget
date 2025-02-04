@@ -19,6 +19,11 @@
 ;
 ;
 
+; Количество прочитанных байтов: 1107522
+; 18 - Read time
+; 261 - add gadget time
+; 173 - add widget time
+
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -39,22 +44,26 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define time = ElapsedMilliseconds()
    Define File$, length, *mem, bytes, bytesCompress, bytesUnCompress, Format = #PB_UTF8
-   Define file$ = "C:/Users/user/Documents/GitHub/widget/widgets.pbi"
+   Define file$ = "../../../widgets.pbi"
    ;File$ = OpenFileRequester("Выберите файл", GetCurrentDirectory() + "AkelPad.ini", "Все файлы (*.*)|*.*", 0)
    
    If Asc(File$)
-      If ReadFile(0, File$, Format)
-         length = Lof(0)                                         ; Читает размер файла в байтах
-         FileSeek(0, 0) ; length-100000)                         ; set the file pointer 100000 chars from end of file
-         *mem = AllocateMemory(length)                           ; Выделяет блок памяти с размером файла
-         If *mem
-            bytes = ReadData(0, *mem, length)                    ; Читает данные из файла и помещает их в блок памяти
-            Debug "Количество прочитанных байтов: " + Str(bytes)
-            Text = PeekS(*mem, length, Format)
-         EndIf
-         
-         CloseFile(0)
-      EndIf
+     If ReadFile(0, File$, Format)
+       length = Lof(0)                                         ; Читает размер файла в байтах
+       FileSeek(0, 0)                                          ; length-100000)                         ; set the file pointer 100000 chars from end of file
+       *mem = AllocateMemory(length)                           ; Выделяет блок памяти с размером файла
+       If *mem
+         bytes = ReadData(0, *mem, length)                    ; Читает данные из файла и помещает их в блок памяти
+         Debug "Количество прочитанных байтов: " + Str(bytes)
+         Text = PeekS(*mem, length, Format)
+       EndIf
+       
+;        ; 2 вариант
+;        Text = ReadString(0, #PB_File_IgnoreEOL) ; 31
+       
+       
+       CloseFile(0)
+     EndIf
    EndIf
    Debug Str(ElapsedMilliseconds()-time) + " - read time"
    
@@ -103,9 +112,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 54
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 58
+; FirstLine = 42
 ; Folding = --
 ; EnableXP
 ; DPIAware

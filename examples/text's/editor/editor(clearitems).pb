@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define time = ElapsedMilliseconds()
    Define File$, length, *mem, bytes, bytesCompress, bytesUnCompress, Format = #PB_UTF8
-   Define file$ = "C:/Users/user/Documents/GitHub/widget/widgets.pbi"
+   Define file$ = "../../../widgets.pbi"
    ;File$ = OpenFileRequester("Выберите файл", GetCurrentDirectory() + "AkelPad.ini", "Все файлы (*.*)|*.*", 0)
    
    If Asc(File$)
@@ -106,9 +106,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 70
+; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
+; CursorPosition = 41
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
 ; DPIAware
