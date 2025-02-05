@@ -993,22 +993,29 @@ EndProcedure
 Procedure widget_events( )
    Protected eventtype = WidgetEvent( ) 
    Protected *new, *e_widget._s_widget = EventWidget( )
-   ;    Static *beforeWidget
    
    Select eventtype 
       Case #__event_RightDown
          Debug "right"
          
-       Case #__event_LostFocus
-         ; Debug "LOSTFOCUS "+GetClass(*e_widget)
-          SetState( ide_inspector_view, - 1 )
-          
-       Case #__event_Focus
-         ; Debug "FOCUS "+GetClass(*e_widget)
-          
-;        Case #__event_Down
-;          ProcedureReturn 0
+      Case #__event_Down
          If a_focused( ) = *e_widget
+            If GetActive( ) <> ide_inspector_view 
+               SetActive( ide_inspector_view )
+               Debug "------------- active "+GetActive( )\class
+            EndIf
+         EndIf
+         
+      Case #__event_LostFocus
+         If a_focused( ) = *e_widget
+            ; Debug "LOSTFOCUS "+GetClass(*e_widget)
+            SetState( ide_inspector_view, - 1 )
+         EndIf
+         
+      Case #__event_Focus
+         If a_focused( ) = *e_widget
+            ; Debug "FOCUS "+GetClass(*e_widget)
+         
             If GetData( *e_widget ) >= 0
                If IsGadget( ide_g_code )
                   SetGadgetState( ide_g_code, GetData( *e_widget ) )
@@ -1018,12 +1025,15 @@ Procedure widget_events( )
             
             properties_updates( ide_inspector_properties, *e_widget )
             Change_PropertiesButton( ide_inspector_properties )
-            
-            ; 
-            If GetActive( ) <> ide_inspector_view 
-              ; SetActive( ide_inspector_view )
-               Debug "------------- active "+GetActive( )\class
-            EndIf
+         EndIf
+         
+      Case #__event_Resize
+         If a_focused( ) = *e_widget
+            ; Debug ""+GetClass(*e_widget)+" resize"
+            properties_update_coordinate( ide_inspector_properties, a_focused( ) )
+            Change_PropertiesButton( ide_inspector_properties )
+            ;
+            SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
          EndIf
          
       Case #__event_DragStart
@@ -1102,42 +1112,23 @@ Procedure widget_events( )
             EndIf
          EndIf
          
-      Case #__event_Resize
-         ;          ; Debug ""+GetClass(*e_widget)+" resize"
-         If *e_widget = a_focused( )
-            properties_update_coordinate( ide_inspector_properties, a_focused( ) )
-            Change_PropertiesButton( ide_inspector_properties )
-         EndIf
-         SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
-         
       Case #__event_MouseEnter,
            #__event_MouseLeave,
            #__event_MouseMove
-         
-         If mouse( )\press
-            If eventtype = #__event_MouseEnter
-               If mouse( )\drag
-                  Debug "drag entered "+EnteredWidget( )\class
-                  ; EnteredWidget( )\root\repaint = 1
-               EndIf
-            EndIf
-         Else
-            If IsContainer( *e_widget ) 
+         ;
+         If Not MouseButtonPress( )
+             If IsContainer( *e_widget ) 
                If GetState( ide_inspector_elements ) > 0 
                   If eventtype = #__event_MouseLeave
-                     ;ChangeCursor( *e_widget, GetCursor( *e_widget ))
-                     If ResetCursor( *e_widget ) 
-                        ; Debug "reset cursor"
-                     EndIf
+                     ResetCursor( *e_widget ) 
                   EndIf
                   If eventtype = #__event_MouseEnter
-                     If SetCursor( *e_widget, #__Cursor_Cross, 1 )
-                        ; Debug "update cursor"
-                     EndIf
+                     SetCursor( *e_widget, #__Cursor_Cross, 1 )
                   EndIf
                EndIf
             EndIf
          EndIf
+         ;
    EndSelect
    
    ;\\
@@ -1973,9 +1964,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1006
-; FirstLine = 998
-; Folding = --------------------4ftz------------
+; CursorPosition = 1037
+; FirstLine = 1042
+; Folding = ---------------------+8------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
