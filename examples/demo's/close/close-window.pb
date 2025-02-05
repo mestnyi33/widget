@@ -9,8 +9,8 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
-     ; ProcedureReturn Message(title, Text, flags, parentID )
-     ProcedureReturn MessageRequester(title, Text, flags, parentID );
+     ProcedureReturn Message(title, Text, flags, parentID )
+     ; ProcedureReturn MessageRequester(title, Text, flags, parentID );
   EndProcedure
 
   Procedure CallBack( )
@@ -97,8 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 65
+; CursorPosition = 12
 ; Folding = --
 ; EnableXP
 ; DPIAware

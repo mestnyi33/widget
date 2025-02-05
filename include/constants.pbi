@@ -249,7 +249,6 @@
          #__event_Drop
          ;
          #__event_Draw
-         #__event_Repaint
          ;
          #__event_Resize
          #__event_ResizeBegin
@@ -297,7 +296,6 @@
       ;     #__eventmask_Return       = 1<<#__event_Return
       ;     #__eventmask_KeyUp        = 1<<#__event_KeyUp
       ;     #__eventmask_Draw         = 1<<#__event_Draw
-      ;     #__eventmask_Repaint      = 1<<#__event_Repaint
       ;     #__eventmask_Maximize     = 1<<#__event_Maximize
       ;     #__eventmask_Minimize     = 1<<#__event_Minimize
       ;     #__eventmask_Restore      = 1<<#__event_Restore
@@ -745,8 +743,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 467
-; FirstLine = 453
+; CursorPosition = 298
+; FirstLine = 292
 ; Folding = ----
 ; Optimizer
 ; EnableXP

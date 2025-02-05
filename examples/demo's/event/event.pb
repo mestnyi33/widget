@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_0_root" )
+  SetClass(root( ), "window_0_root" )
   Container( 10,10,240,140 ) : SetClass(widget( ), "window_0_root_container" )
   Button(10,10,200,50,"window_0_root_butt_1")
   SetClass(widget( ), "window_0_root_butt_1" )
@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_1_root" )
+  SetClass(root( ), "window_1_root" )
   Container( 10,10,240,140 ) : SetClass(widget( ), "window_1_root_container" )
   Button(10,10,200,50,"window_1_root_butt_1")
   SetClass(widget( ), "window_1_root_butt_1" )
@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_2_root" )
+  SetClass(root( ), "window_2_root" )
   Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
   Button(10,10,200,50,"window_2_root_butt_1")
   SetClass(widget( ), "window_2_root_butt_1" )
@@ -55,10 +55,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Debug ""+classfromevent(WidgetEvent( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEvent( )
     
     Select WidgetEvent( )
-      Case #__event_Repaint
-        Debug "repaint " + EventWidget( )\class 
-         ;               ProcedureReturn 1
-        
       Case #__event_LeftClick
         Select GetText( EventWidget( ) )
           Case "window_2_root_butt_1"
@@ -100,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 50
+; CursorPosition = 57
+; FirstLine = 53
 ; Folding = -
 ; EnableXP

@@ -117,12 +117,6 @@
 CompilerEndIf
 
 
-; #__event_Repaint
-; #__event_Repaint
-; #__event_Repaint
-; #__event_Repaint
-; #__event_Repaint
-; #__event_Repaint
 ;      -     
 ;  draw current font - Draw 4303741968 0 4299401872
 ;  draw current font - update_items_ 4312244888 4299401872 4299355456
@@ -187,8 +181,8 @@ CompilerEndIf
 ;  draw current font - Draw 4370939408 4300426464 4299401872
 ;  draw current font - Draw 4320347664 4299401872 4299355456
 ;  draw current font - Draw 4320369680 4299355456 4299401872
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 19
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 119
+; FirstLine = 115
 ; Folding = --
 ; EnableXP

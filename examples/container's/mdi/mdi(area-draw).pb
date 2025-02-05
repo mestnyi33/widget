@@ -120,7 +120,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind( *Object, @MDI_ObjectEvents(), #__event_MouseEnter )
       Bind( *Object, @MDI_ObjectEvents(), #__event_MouseLeave )
       Bind( *Object, @MDI_ObjectEvents(), #__event_Draw )
-      Bind( #PB_All, @MDI_ObjectEvents(), #__event_Repaint )
    EndProcedure
    
    ;- \\
@@ -243,8 +242,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 106
+; CursorPosition = 122
+; FirstLine = 118
 ; Folding = ---
 ; EnableXP
 ; DPIAware

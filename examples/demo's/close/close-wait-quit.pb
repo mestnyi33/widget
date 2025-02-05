@@ -69,8 +69,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LostFocus
         Debug "lostfocus "+EventWidget( )\class
         
-      Case #__event_Repaint
-        Debug "repaint " + EventWidget( )\class 
+      Case #__event_Draw
+        Debug "draw " + EventWidget( )\class 
         ;ProcedureReturn 1
         
       Case #__event_LeftClick
@@ -91,6 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11
+; CursorPosition = 72
+; FirstLine = 61
 ; Folding = -
 ; EnableXP

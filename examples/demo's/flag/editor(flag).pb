@@ -71,7 +71,6 @@ CompilerIf #PB_Compiler_IsMainFile
         If flag
           Flag(*this, flag, GetState(EventWidget( )))
         EndIf
-        ; Post(#__event_repaint, #PB_All)
     EndSelect
     
   EndProcedure
@@ -125,8 +124,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 86
+; CursorPosition = 73
+; FirstLine = 69
 ; Folding = ---
 ; EnableXP
 ; DPIAware

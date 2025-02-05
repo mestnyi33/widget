@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Debug " DeActive "+ GetData(EventWidget)
         EndIf
         
-      Case #__Event_Repaint
+      Case #__Event_Draw
 ;         ; draw active window focused frame
 ;         If GetActive( ) = EventWidget
 ;           DrawingMode(#PB_2DDrawing_Outlined)
@@ -316,8 +316,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 263
-; FirstLine = 240
+; CursorPosition = 39
+; FirstLine = 29
 ; Folding = ----
 ; EnableXP
 ; DPIAware
