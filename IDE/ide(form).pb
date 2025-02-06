@@ -320,7 +320,7 @@ Procedure Display_PropertiesButton( *second._s_WIDGET )
 EndProcedure
 
 Procedure Events_PropertiesButton( )
-   Debug ""+widget::ClassFromEvent(WidgetEvent( )) +" "+ widget::GetClass( EventWidget( ))
+   ; Debug ""+widget::ClassFromEvent(WidgetEvent( )) +" "+ widget::GetClass( EventWidget( ))
    
    Select WidgetEvent( )
       Case #__event_Down
@@ -373,9 +373,7 @@ Procedure Events_PropertiesButton( )
          EndSelect
    EndSelect
    
-   ;If Type( EventWidget( )) <> #__type_Button
-      ProcedureReturn #PB_Ignore
-   ;EndIf
+   ProcedureReturn #PB_Ignore
 EndProcedure
 
 Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
@@ -1970,8 +1968,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 377
-; FirstLine = 333
+; CursorPosition = 376
+; FirstLine = 321
 ; Folding = ------4---------------8------------
 ; EnableXP
 ; DPIAware

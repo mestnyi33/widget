@@ -22203,7 +22203,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i Send( *this._s_root, event.l, *button = #PB_All, *data = #Null )
-         Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
+         Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0
             If __gui\eventexit = 0
@@ -22225,7 +22225,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\ 
                __widget = EventWidget( )
-               __type   = WidgetEvent( )
+               __event   = WidgetEvent( )
                __item   = WidgetEventItem( )
                __data   = WidgetEventData( )
                
@@ -22252,15 +22252,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                If Not is_root_( *this )
                   ;\\ 1 call (current-widget) bind event function
                   ForEach __gui\events( )
-                      ;  Debug ""+__gui\events( )\widget +" "+ __gui\events( )\type +" "+ event +" "+ __gui\events( )\item +" "+ *button
+;                      If event = #__event_StatusChange
+;                         Debug ""+__gui\events( )\widget +" "+ __gui\events( )\type +" "+ event +" "+ __gui\events( )\item +" "+ *button
+;                         ; Debug " send StatusChange"
+;                      EndIf
                      If __gui\events( )\widget = *this And 
-                        (__gui\events( )\type = event Or __gui\events( )\type = #PB_All) And 
-                        __gui\events( )\item = *button
+                        __gui\events( )\type = event And Not ( __gui\events( )\item >= 0 And __gui\events( )\item <> *button )
+                        
                         result = __gui\events( )\function( )
-                         If result = #PB_Ignore
-                            Break
-                         EndIf
-                      EndIf
+                        If result = #PB_Ignore
+                           Break
+                        EndIf
+                     EndIf
                   Next
                   
                   ;\\ 2 call (current-widget-window) bind event function
@@ -22308,7 +22311,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
                EventWidget( )       = __widget
-               WidgetEvent( )   = __type
+               WidgetEvent( )       = __event
                WidgetEventItem( )   = __item
                WidgetEventData( )   = __data
             EndIf
@@ -22328,18 +22331,18 @@ CompilerIf Not Defined( widget, #PB_Module )
             ProcedureReturn #PB_All
             ;
          Else
-;             If event < 0 
-;                Define i
-;                For i = 0 To #__event - 1
-;                   If i = #__event_Draw And Not is_root_( *this )
-;                      Continue
-;                   EndIf
-;                   
-;                   ; set defaul widget events
-;                   Bind( *this, *callback, i, item )
-;                Next
-;                ;
-;             Else
+            If event < 0 
+               Define i
+               For i = 0 To #__event - 1
+                  If i = #__event_Draw And Not is_root_( *this )
+                     Continue
+                  EndIf
+                  
+                  ; set defaul widget events
+                  Bind( *this, *callback, i, item )
+               Next
+               ;
+            Else
                
                LastElement( __gui\events( ) )
                AddElement(__gui\events( ))
@@ -22360,7 +22363,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If event = #__event_CursorChange
                   *this\bindcursor = 1
                EndIf
-;             EndIf
+            EndIf
          EndIf
          
       EndProcedure
@@ -22396,7 +22399,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
 ;       Procedure.i Send( *this._s_root, event.l, *button = #PB_All, *data = #Null )
-;          Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
+;          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
 ;          
 ;          If *this > 0
 ;             If __gui\eventexit = 0
@@ -22418,7 +22421,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                
 ;                ;\\ 
 ;                __widget = EventWidget( )
-;                __type   = WidgetEvent( )
+;                __event   = WidgetEvent( )
 ;                __item   = WidgetEventItem( )
 ;                __data   = WidgetEventData( )
 ;                
@@ -22491,7 +22494,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                
 ;                ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
 ;                EventWidget( )       = __widget
-;                WidgetEvent( )   = __type
+;                WidgetEvent( )   = __event
 ;                WidgetEventItem( )   = __item
 ;                WidgetEventData( )   = __data
 ;             EndIf
@@ -24682,9 +24685,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22254
-; FirstLine = 22219
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------------------------------------------
+; CursorPosition = 22262
+; FirstLine = 22243
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -762,7 +762,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          eventloop.b
          eventexit.b
          
-         Map *eventhook._s_HOOk( )
+         ;Map *eventhook._s_HOOk( )
          List *eventqueue._s_EVENTDATA( )  ; __events( )
          
          List *events._s_HOOk( )
@@ -777,7 +777,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 767
+; CursorPosition = 764
 ; FirstLine = 744
 ; Folding = ----------
 ; Optimizer
