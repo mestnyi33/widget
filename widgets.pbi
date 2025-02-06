@@ -22251,21 +22251,29 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\
                If Not is_root_( *this )
                   ;\\ 1 call (current-widget) bind event function
-                  If __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(*button))
-                     result = __gui\eventhook( )\function( )
-                  ElseIf __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(#PB_All)) 
-                     result = __gui\eventhook( )\function( )
-                  EndIf
+                  ForEach __gui\events( )
+                      ;  Debug ""+__gui\events( )\widget +" "+ __gui\events( )\type +" "+ event +" "+ __gui\events( )\item +" "+ *button
+                     If __gui\events( )\widget = *this And 
+                        (__gui\events( )\type = event Or __gui\events( )\type = #PB_All) And 
+                        __gui\events( )\item = *button
+                        result = __gui\events( )\function( )
+                         If result = #PB_Ignore
+                            Break
+                         EndIf
+                      EndIf
+                  Next
                   
                   ;\\ 2 call (current-widget-window) bind event function
                   If result <> #PB_Ignore
                      If *this\window 
                         If Not is_root_( *this\window )
-                           If __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(*button)) 
-                              result = __gui\eventhook( )\function( )
-                           ElseIf __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(#PB_All)) 
-                              result = __gui\eventhook( )\function( )
-                           EndIf
+                           ForEach __gui\events( )
+                              If __gui\events( )\widget = *this\window And 
+                                 __gui\events( )\type = event And 
+                                 __gui\events( )\item = *button
+                                 result = __gui\events( )\function( )
+                              EndIf
+                           Next
                         EndIf
                      EndIf
                   EndIf
@@ -22274,11 +22282,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\ 3 call (current-widget-root) bind event function
                If result <> #PB_Ignore
                   If *this\root
-                     If __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(*button)) 
-                        result = __gui\eventhook( )\function( )
-                     ElseIf __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(#PB_All)) 
-                        result = __gui\eventhook( )\function( )
-                     EndIf
+                     ForEach __gui\events( )
+                        If __gui\events( )\widget = *this\root And 
+                           __gui\events( )\type = event And 
+                           __gui\events( )\item = *button
+                           result = __gui\events( )\function( )
+                        EndIf
+                     Next
                   EndIf
                EndIf
                
@@ -22318,32 +22328,27 @@ CompilerIf Not Defined( widget, #PB_Module )
             ProcedureReturn #PB_All
             ;
          Else
-            If event < 0 
-               Define i
-               For i = 0 To #__event - 1
-                  If i = #__event_Draw And Not is_root_( *this )
-                     Continue
-                  EndIf
-                  
-                  ; set defaul widget events
-                  Bind( *this, *callback, i, item )
-               Next
-               ;
-            Else
-               If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
-                  If Not __gui\eventhook( )
-                     Debug "not EVENTHOOK"
-                     ProcedureReturn 0
-                  EndIf
-               Else
-                  AddMapElement(__gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
-                  __gui\eventhook.allocate( HOOK, ( ))
-               EndIf
+;             If event < 0 
+;                Define i
+;                For i = 0 To #__event - 1
+;                   If i = #__event_Draw And Not is_root_( *this )
+;                      Continue
+;                   EndIf
+;                   
+;                   ; set defaul widget events
+;                   Bind( *this, *callback, i, item )
+;                Next
+;                ;
+;             Else
                
-               __gui\eventhook( )\function = *callback
-               __gui\eventhook( )\type     = event
-               __gui\eventhook( )\item     = item
-               __gui\eventhook( )\widget   = *this
+               LastElement( __gui\events( ) )
+               AddElement(__gui\events( ))
+               __gui\events.allocate( HOOK, ( ))
+               
+               __gui\events( )\function = *callback
+               __gui\events( )\type     = event
+               __gui\events( )\item     = item
+               __gui\events( )\widget   = *this
                
                ; 
                If event = #__event_Draw
@@ -22355,7 +22360,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If event = #__event_CursorChange
                   *this\bindcursor = 1
                EndIf
-            EndIf
+;             EndIf
          EndIf
          
       EndProcedure
@@ -22377,15 +22382,205 @@ CompilerIf Not Defined( widget, #PB_Module )
                Next
                ;
             Else
-               If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
-                  If Not ( *callback > 0 And __gui\eventhook( )\function <> *callback )
-                     DeleteMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
+               ForEach __gui\events( )
+                  ;   Debug ""+__gui\events( )\widget +" "+ __gui\events( )\type +" "+ event +" "+ __gui\events( )\item +" "+ *button
+                  If __gui\events( )\widget = *this And 
+                     __gui\events( )\type = event And 
+                     __gui\events( )\item = item
+                     
+                     DeleteElement( __gui\events( ), 1 )
                   EndIf
-               EndIf
+               Next
             EndIf
          EndIf
       EndProcedure
       
+;       Procedure.i Send( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+;          Protected result, __widget = #Null, __type = #PB_All, __item = #PB_All, __data = #Null
+;          
+;          If *this > 0
+;             If __gui\eventexit = 0
+;                Post( *this, event, *button, *data )
+;                
+;             ElseIf __gui\eventexit > 0
+;                If is_bar_( *this )
+;                   If event = #__event_LeftClick Or
+;                      event = #__event_Change
+;                      If *this\TabEntered( )
+;                         *button = *this\TabEntered( )\tindex
+;                      EndIf
+;                   EndIf
+;                   ;
+;                   If *button < 0
+;                      ProcedureReturn 0
+;                   EndIf
+;                EndIf
+;                
+;                ;\\ 
+;                __widget = EventWidget( )
+;                __type   = WidgetEvent( )
+;                __item   = WidgetEventItem( )
+;                __data   = WidgetEventData( )
+;                
+;                ;\\
+;                EventWidget( )     = *this
+;                WidgetEvent( )     = event
+;                WidgetEventItem( ) = *button
+;                WidgetEventData( ) = *data
+;                
+;                ;\\ menu send bind event
+;                If is_bar_( *this ) 
+;                   If *this\popupbar
+;                      While *this\popupbar
+;                         *this = *this\popupbar
+;                      Wend
+;                      EventWidget( )     = *this
+;                   EndIf
+;                EndIf
+;                
+;                ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
+;                
+;                ;
+;                ;\\
+;                If Not is_root_( *this )
+;                   ;\\ 1 call (current-widget) bind event function
+;                   If __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(*button))
+;                      result = __gui\eventhook( )\function( )
+;                   ElseIf __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(#PB_All)) 
+;                      result = __gui\eventhook( )\function( )
+;                   EndIf
+;                   
+;                   ;\\ 2 call (current-widget-window) bind event function
+;                   If result <> #PB_Ignore
+;                      If *this\window 
+;                         If Not is_root_( *this\window )
+;                            If __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(*button)) 
+;                               result = __gui\eventhook( )\function( )
+;                            ElseIf __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(#PB_All)) 
+;                               result = __gui\eventhook( )\function( )
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                EndIf
+;                
+;                ;\\ 3 call (current-widget-root) bind event function
+;                If result <> #PB_Ignore
+;                   If *this\root
+;                      If __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(*button)) 
+;                         result = __gui\eventhook( )\function( )
+;                      ElseIf __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(#PB_All)) 
+;                         result = __gui\eventhook( )\function( )
+;                      EndIf
+;                   EndIf
+;                EndIf
+;                
+;                ;\\
+;                If event = #__event_Close
+;                   If result <> #PB_Ignore
+;                      Select result
+;                         Case #PB_All
+;                            Free( #PB_All )
+;                            
+;                         Case 0
+;                            Free( *this )
+;                            
+;                      EndSelect
+;                   EndIf
+;                EndIf
+;                
+;                ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
+;                EventWidget( )       = __widget
+;                WidgetEvent( )   = __type
+;                WidgetEventItem( )   = __item
+;                WidgetEventData( )   = __data
+;             EndIf
+;          EndIf
+;          
+;          ProcedureReturn result
+;       EndProcedure
+;       
+;       Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
+;          ;
+;          If *this < 0
+;             PushMapPosition(roots( ))
+;             ForEach roots( )
+;                Bind( roots( ), *callback, event, item )
+;             Next
+;             PopMapPosition(roots( ))
+;             ProcedureReturn #PB_All
+;             ;
+;          Else
+;             If event < 0 
+;                Define i
+;                For i = 0 To #__event - 1
+;                   If i = #__event_Draw And Not is_root_( *this )
+;                      Continue
+;                   EndIf
+;                   
+;                   ; set defaul widget events
+;                   Bind( *this, *callback, i, item )
+;                Next
+;                ;
+;             Else
+;                If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
+;                   Debug "eventhook"
+;                   
+;                   If Not __gui\eventhook( )
+;                      Debug "not EVENTHOOK"
+;                      ProcedureReturn 0
+;                   EndIf
+;                Else
+;                   AddMapElement(__gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
+;                   __gui\eventhook.allocate( HOOK, ( ))
+;                EndIf
+;                
+;                __gui\eventhook( )\function = *callback
+;                __gui\eventhook( )\type     = event
+;                __gui\eventhook( )\item     = item
+;                __gui\eventhook( )\widget   = *this
+;                
+;                ; 
+;                If event = #__event_Draw
+;                   *this\binddraw = 1
+;                EndIf
+;                If event = #__event_Resize
+;                   *this\bindresize = 1
+;                EndIf
+;                If event = #__event_CursorChange
+;                   *this\bindcursor = 1
+;                EndIf
+;             EndIf
+;          EndIf
+;          
+;       EndProcedure
+;       
+;       Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
+;          If *this < 0
+;             PushMapPosition(roots( ))
+;             ForEach roots( )
+;                Unbind( roots( ), *callback, event, item )
+;             Next
+;             PopMapPosition(roots( ))
+;             ProcedureReturn #PB_All
+;             ;
+;          Else
+;             If event < 0
+;                Define i
+;                For i = 0 To #__event - 1
+;                   Unbind( *this, *callback, i, item )
+;                Next
+;                ;
+;             Else
+;                If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
+;                   If Not ( *callback > 0 And __gui\eventhook( )\function <> *callback )
+;                      DeleteMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
+;                   EndIf
+;                EndIf
+;             EndIf
+;          EndIf
+;       EndProcedure
+;       
       ;-
       Procedure.i CloseList( )
          Protected *open._s_WIDGET
@@ -24487,9 +24682,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24487
-; FirstLine = 24459
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22254
+; FirstLine = 22219
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

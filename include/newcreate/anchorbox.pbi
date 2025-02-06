@@ -27,11 +27,12 @@ Module AnchorBox
    Global FULL_state
    
    Procedure Events( )
+      If *button = widget::EventWidget( )
+         Debug "box "+widget::ClassFromEvent( widget::WidgetEvent( )) +" "+ widget::GetClass( widget::EventWidget( ))
+      EndIf
       
       Select widget::WidgetEvent( )
-         Case constants::#__event_Left2Click 
-            
-         Case constants::#__event_LeftClick 
+         Case constants::#__event_Up
             Protected *this.Structures::_s_widget = widget::EventWidget( )
             
             If *this = *button 
@@ -44,6 +45,13 @@ Module AnchorBox
                      widget::Hide(a, #True )
                   EndIf
                EndIf
+            EndIf
+            
+         Case constants::#__event_LeftClick 
+            *this = widget::EventWidget( )
+            
+            If *this = *button 
+               
             Else
                If widget::IsContainer( *this )
                   ProcedureReturn #PB_Ignore
@@ -234,7 +242,7 @@ Module AnchorBox
          widget::OpenList( *parent )
       EndIf
       *Button = widget::Button(X,Y,Width, Height, "LEFT&TOP",constants::#__flag_ButtonToggle)
-      ;*Button = widget::ComboBox(X,Y,Width, Height)
+      ;*Button = widget::ComboBox(X,Y,Width, Height); , constants::#__flag_child
       
       *a = widget::Container(0,0,size*8,size*8) 
       
@@ -273,30 +281,40 @@ Module AnchorBox
       
       ;
       *Button\popupbar = *a
-      ;       widget::Bind(*button, @Events( ), constants::#__event_LeftClick )
-      ;       
-      ;       ;
-      ;       widget::Bind(LTBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;       widget::Bind(LBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;       widget::Bind(RTBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;       widget::Bind(TBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;       widget::Bind(CENTER, @Events( ), constants::#__event_LeftClick )
-      ;       widget::Bind(RBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;       widget::Bind(RBBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;       widget::Bind(BBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;       widget::Bind(LBBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;       ;
-      ;       widget::Bind(LTBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;       widget::Bind(LBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;       widget::Bind(RTBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;       widget::Bind(TBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;       widget::Bind(CENTER, @Events( ), constants::#__event_Left2Click )
-      ;       widget::Bind(RBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;       widget::Bind(RBBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;       widget::Bind(BBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;       widget::Bind(LBBUTTON, @Events( ), constants::#__event_Left2Click )
-      
-      widget::Bind(#PB_All, @Events( ) )
+            widget::Bind(*button, @Events( ) )
+             
+            widget::Bind(LTBUTTON, @Events( ) )
+            widget::Bind(LBUTTON, @Events( ) )
+            widget::Bind(RTBUTTON, @Events( ) )
+            widget::Bind(TBUTTON, @Events( ) )
+            widget::Bind(CENTER, @Events( ) )
+            widget::Bind(RBUTTON, @Events( ) )
+            widget::Bind(RBBUTTON, @Events( ) )
+            widget::Bind(BBUTTON, @Events( ) )
+            widget::Bind(LBBUTTON, @Events( ) )
+            
+;             ;
+;             widget::Bind(LTBUTTON, @Events( ), constants::#__event_LeftClick )
+;             widget::Bind(LBUTTON, @Events( ), constants::#__event_LeftClick )
+;             widget::Bind(RTBUTTON, @Events( ), constants::#__event_LeftClick )
+;             widget::Bind(TBUTTON, @Events( ), constants::#__event_LeftClick )
+;             widget::Bind(CENTER, @Events( ), constants::#__event_LeftClick )
+;             widget::Bind(RBUTTON, @Events( ), constants::#__event_LeftClick )
+;             widget::Bind(RBBUTTON, @Events( ), constants::#__event_LeftClick )
+;             widget::Bind(BBUTTON, @Events( ), constants::#__event_LeftClick )
+;             widget::Bind(LBBUTTON, @Events( ), constants::#__event_LeftClick )
+;             ;
+;             widget::Bind(LTBUTTON, @Events( ), constants::#__event_Left2Click )
+;             widget::Bind(LBUTTON, @Events( ), constants::#__event_Left2Click )
+;             widget::Bind(RTBUTTON, @Events( ), constants::#__event_Left2Click )
+;             widget::Bind(TBUTTON, @Events( ), constants::#__event_Left2Click )
+;             widget::Bind(CENTER, @Events( ), constants::#__event_Left2Click )
+;             widget::Bind(RBUTTON, @Events( ), constants::#__event_Left2Click )
+;             widget::Bind(RBBUTTON, @Events( ), constants::#__event_Left2Click )
+;             widget::Bind(BBUTTON, @Events( ), constants::#__event_Left2Click )
+;             widget::Bind(LBBUTTON, @Events( ), constants::#__event_Left2Click )
+;       
+;      ; widget::Bind(#PB_All, @Events( ) )
       
       ;
       widget::Hide(*a, #True )
@@ -318,8 +336,8 @@ CompilerIf #PB_Compiler_IsMainFile
    widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 55
+; CursorPosition = 283
+; FirstLine = 273
 ; Folding = -------
 ; EnableXP
 ; DPIAware

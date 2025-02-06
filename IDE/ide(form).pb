@@ -320,6 +320,8 @@ Procedure Display_PropertiesButton( *second._s_WIDGET )
 EndProcedure
 
 Procedure Events_PropertiesButton( )
+   Debug ""+widget::ClassFromEvent(WidgetEvent( )) +" "+ widget::GetClass( EventWidget( ))
+   
    Select WidgetEvent( )
       Case #__event_Down
          GetActive( )\gadget = EventWidget( )
@@ -371,7 +373,9 @@ Procedure Events_PropertiesButton( )
          EndSelect
    EndSelect
    
-   ProcedureReturn #PB_Ignore
+   ;If Type( EventWidget( )) <> #__type_Button
+      ProcedureReturn #PB_Ignore
+   ;EndIf
 EndProcedure
 
 Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
@@ -407,10 +411,12 @@ Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
    If *this
      ; SetActive( *this )
       SetData(*this, item)
-      Bind(*this, @Events_PropertiesButton( ), #__event_Down)
-      Bind(*this, @Events_PropertiesButton( ), #__event_Change)
-      Bind(*this, @Events_PropertiesButton( ), #__event_MouseWheel)
-      Bind(*this, @Events_PropertiesButton( ), #__event_LostFocus)
+      Bind(*this, @Events_PropertiesButton( ))
+      
+;       Bind(*this, @Events_PropertiesButton( ), #__event_Down)
+;       Bind(*this, @Events_PropertiesButton( ), #__event_Change)
+;       Bind(*this, @Events_PropertiesButton( ), #__event_MouseWheel)
+;       Bind(*this, @Events_PropertiesButton( ), #__event_LostFocus)
    EndIf
    
    ProcedureReturn *this
@@ -1964,9 +1970,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1037
-; FirstLine = 1042
-; Folding = ---------------------+8------------
+; CursorPosition = 377
+; FirstLine = 333
+; Folding = ------4---------------8------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

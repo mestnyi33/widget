@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Procedure events_widget( )
-      ClearDebugOutput( )
+      ;ClearDebugOutput( )
       Debug ""+#PB_Compiler_Procedure +"( PROCEDURE )"
       
       If Index( EventWidget( ) ) = 1
@@ -42,8 +42,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 14
+; CursorPosition = 13
+; FirstLine = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware

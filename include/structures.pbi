@@ -561,7 +561,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       Structure _s_HOOK Extends _s_EVENTDATA
          *function.EventFunc
-         Map *buttons( )
+         
+        ; Map *buttons( )
       EndStructure
       
       ;--     WIDGET
@@ -763,6 +764,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          Map *eventhook._s_HOOk( )
          List *eventqueue._s_EVENTDATA( )  ; __events( )
+         
+         List *events._s_HOOk( )
       EndStructure
       ;}
       
@@ -774,8 +777,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 328
-; FirstLine = 322
+; CursorPosition = 767
+; FirstLine = 744
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
