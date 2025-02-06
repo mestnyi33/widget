@@ -251,11 +251,15 @@ Procedure Resize_PropertiesButton( *second._s_WIDGET )
                Hide( *this, #False )
             EndIf
             ;
+            ;Debug *this\WIdgetChange(  ) = 1
             Resize(*this,
                    *row\x + *second\scroll_x( ),; +30, 
                    *row\y + *second\scroll_y( ), 
                    *second\inner_width( )-dpiscaled(2),;*row\width,;; -30, 
                    *row\height, 0 )
+            
+;             ;*this\WIdgetChange( ) = 1
+;             *this\TextChange( ) = 1
          EndIf
       EndIf
    EndIf
@@ -339,6 +343,9 @@ Procedure Events_PropertiesButton( )
          
       Case #__event_Change
          Select Type( EventWidget( ) )
+            Case #__type_Button
+              ; Debug 555
+               
             Case #__type_String
                Select GetData( EventWidget( ) ) 
                   Case #_pi_class  
@@ -397,7 +404,7 @@ Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
          ;*this = Create( *parent, "String", #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_Button
-         *this = AnchorBox::Create(*parent, 0,0,0,20)
+         *this = AnchorBox::Create( *parent, 0,0,0,20 )
          
       Case #__type_ComboBox
          *this = Create( *parent, "ComboBox", #__type_ComboBox, 0, 0, 0, 0, "", flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
@@ -410,11 +417,6 @@ Procedure Create_PropertiesButton( Type, *parent._s_WIDGET, item )
      ; SetActive( *this )
       SetData(*this, item)
       Bind(*this, @Events_PropertiesButton( ))
-      
-;       Bind(*this, @Events_PropertiesButton( ), #__event_Down)
-;       Bind(*this, @Events_PropertiesButton( ), #__event_Change)
-;       Bind(*this, @Events_PropertiesButton( ), #__event_MouseWheel)
-;       Bind(*this, @Events_PropertiesButton( ), #__event_LostFocus)
    EndIf
    
    ProcedureReturn *this
@@ -1968,9 +1970,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 376
-; FirstLine = 321
-; Folding = ------4---------------8------------
+; CursorPosition = 346
+; FirstLine = 331
+; Folding = ----------------------8------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

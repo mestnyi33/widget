@@ -28,9 +28,9 @@ Module AnchorBox
    
    Procedure Events( )
       Protected *this.Structures::_s_widget = widget::EventWidget( )
-      If *button = widget::EventWidget( )
-         Debug "box "+widget::ClassFromEvent( widget::WidgetEvent( )) +" "+ widget::GetClass( widget::EventWidget( ))
-      EndIf
+;       If *button = widget::EventWidget( )
+;          Debug "box "+widget::ClassFromEvent( widget::WidgetEvent( )) +" "+ widget::GetClass( widget::EventWidget( ))
+;       EndIf
       
       Select widget::WidgetEvent( )
          Case constants::#__event_LeftClick 
@@ -42,9 +42,18 @@ Module AnchorBox
                
                Protected a = *this\popupbar ; widget::GetData(*this)
                If a
+                  
                   If widget::GetState(*this)
                      widget::Hide(a, #False )
-                     widget::Resize(a, widget::X(*this,constants::#__c_container), widget::Y(*this,constants::#__c_container)+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+                     
+                     If widget::GetParent( a ) = widget::GetParent( *this )
+                        widget::Resize(a, widget::X(*this,constants::#__c_container), widget::Y(*this,constants::#__c_container)+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+                     Else
+                        Debug ""+widget::X(*this) +" "+ widget::Y(*this)
+                        
+                        widget::Resize(a, widget::X(*this), widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+                        ; widget::Resize(a, widget::X(*this), widget::Y(*this)+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+                     EndIf
                   Else
                      widget::Hide(a, #True )
                   EndIf
@@ -232,7 +241,10 @@ Module AnchorBox
          widget::OpenList( *parent )
       EndIf
       *Button = widget::Button(X,Y,Width, Height, "LEFT&TOP",constants::#__flag_ButtonToggle)
-      ;*Button = widget::ComboBox(X,Y,Width, Height); , constants::#__flag_child
+      If *parent
+         widget::CloseList( )
+        ; widget::OpenList( widget::root( ) )
+      EndIf
       
       *a = widget::Container(0,0,size*8,size*8) 
       
@@ -266,7 +278,7 @@ Module AnchorBox
       ;
       widget::CloseList( )
       If *parent
-         widget::CloseList( )
+       ;  widget::CloseList( )
       EndIf
       
       ;
@@ -319,15 +331,16 @@ CompilerIf #PB_Compiler_IsMainFile
    If widget::Open( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
       ; widget::a_init(widget::root())
       
-      AnchorBox::Create(0, 30,30,250,30)
+      widget::Container(50,50,300,200)
+      AnchorBox::Create(widget::widget( ), 30,30,250,30)
       
    EndIf
    
    widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 196
+; CursorPosition = 245
+; FirstLine = 213
 ; Folding = -vv----
 ; EnableXP
 ; DPIAware
