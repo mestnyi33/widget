@@ -488,7 +488,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro PageChange( ): page\change: EndMacro   ; temp
       Macro ThumbChange( ): thumb\change: EndMacro ; temp
       Macro BarChange( ): bar\change: EndMacro     ; temp
-      Macro ResizeChange( ): change: EndMacro      ; temp
+      Macro ResizeChange( ): Resize\change: EndMacro      ; temp
       Macro WidgetChange( ): change: EndMacro      ; temp
       
       ;-
@@ -1373,9 +1373,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.l CountItems( *this )
       Declare.l ClearItems( *this )
       Declare.b IsItem( *this, Item.l ) 
-      Declare.b PushItem( *this )
-      Declare.b PopItem( *this )
-      Declare.b SelectItem( *this, Item.l )
+      Declare   PushItem( *this )
+      Declare   PopItem( *this )
+      Declare.i SelectItem( *this, Item.l )
       Declare   RemoveItem( *this, Item.l )
       Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
       Declare   AddColumn( *this, position.l, Text.s, Width.l, Image.i = - 1 )
@@ -2817,90 +2817,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
-      Procedure a_delta( *this._s_WIDGET )
-         ;\\
-         If a_index( ) And
-            *this And
-            *this\anchors\id[a_index( )]
-            ;
-            ;\\ set current transformer index state
-            *this\anchors\state = #__s_2
-            
-            ;\\ set delta pos
-            ;\\ not multi group transformer
-            ;If Not *this\anchors\multi
-            ;\\
-            If *this\parent
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                  mouse( )\delta\x + *this\parent\inner_x( )
-               EndIf
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                  mouse( )\delta\y + *this\parent\inner_y( )
-               EndIf
-               
-               ;\\
-               If Not *this\child 
-                  Select a_index( )
-                     Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                        mouse( )\delta\x + *this\parent\scroll_x( )
-                  EndSelect
-                  
-                  Select a_index( )
-                     Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                        mouse( )\delta\y + *this\parent\scroll_y( )
-                  EndSelect
-               EndIf
-            EndIf
-            
-            ;\\
-            mouse( )\delta\x - *this\anchors\id[a_index( )]\x
-            mouse( )\delta\y - *this\anchors\id[a_index( )]\y
-            
-            ;\\ window flag - sizeGadgets
-            If a_index( ) = #__a_moved
-               mouse( )\delta\x + ( *this\anchors\id[a_index( )]\x - *this\screen_x( ))
-               mouse( )\delta\y + ( *this\anchors\id[a_index( )]\y - *this\screen_y( ) )
-            EndIf
-            
-            ;\\
-            Select a_index( )
-               Case #__a_left_top, #__a_moved
-                  mouse( )\delta\x - *this\anchors\pos
-                  mouse( )\delta\y - *this\anchors\pos
-               Case #__a_left
-                  mouse( )\delta\x - *this\anchors\pos
-               Case #__a_top
-                  mouse( )\delta\y - *this\anchors\pos
-               Case #__a_right, #__a_right_top
-                  mouse( )\delta\x + *this\anchors\pos - *this\anchors\size
-                  mouse( )\delta\y - *this\anchors\pos
-               Case #__a_bottom, #__a_left_bottom
-                  mouse( )\delta\y + *this\anchors\pos - *this\anchors\size
-                  mouse( )\delta\x - *this\anchors\pos
-               Case #__a_right_bottom
-                  mouse( )\delta\x + *this\anchors\pos - *this\anchors\size
-                  mouse( )\delta\y + *this\anchors\pos - *this\anchors\size
-            EndSelect
-            
-            ;\\
-            If *this\type = #__type_window
-               Select a_index( )
-                  Case #__a_right, #__a_right_top
-                     mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                     
-                  Case #__a_bottom, #__a_left_bottom
-                     mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
-                     
-                  Case #__a_right_bottom
-                     mouse( )\delta\x + *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                     mouse( )\delta\y + *this\fs * 2 + *this\fs[2] + *this\fs[4]
-                     
-               EndSelect
-            EndIf
-         EndIf
-         
-      EndProcedure
-      
       Procedure a_enter( *this._s_WIDGET, *data )
          Protected i, result, a_index
          If Not (*this And *this\parent And Not *this\parent\hide);
@@ -3849,7 +3765,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If Not *this\hide 
                ; - widget::bar_tab_update_( )
-               If *this\TabChange( ) Or *this\resize\ResizeChange( )
+               If *this\TabChange( ) Or *this\ResizeChange( )
                   
                   *bar\max = 0
                   *this\img\x = ( *this\screen_height( ) - DPIScaled(16) - pos - DPIScaled(1) ) / 2
@@ -4886,7 +4802,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; Draw string
             If *this\text And *this\text\string 
-               If ( *this\TextChange( ) Or *this\resize\ResizeChange( ) )
+               If *this\TextChange( ) Or *this\ResizeChange( )
                   update_align_text_x( *this, *this\text, *this\inner_width( ) )
                   update_align_text_y( *this, *this\text, *this\inner_height( ) )
                EndIf
@@ -6409,7 +6325,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  If *this\parent\scroll\v <> widget( ) And
                                     *this\parent\scroll\h <> widget( ) And Not widget( )\align
                                     ;
-                                    If widget( )\child < 0
+                                    If widget( )\child =- 1
                                        Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, 0 )
                                     Else
                                        Resize( widget( ), #PB_Ignore, ( widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore, 0 )
@@ -6443,7 +6359,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  If *this\parent\scroll\v <> widget( ) And
                                     *this\parent\scroll\h <> widget( ) And Not widget( )\align
                                     ;
-                                    If widget( )\child < 0
+                                    If widget( )\child =- 1
                                        Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                                     Else
                                        Resize( widget( ), ( widget( )\container_x( ) + *bar\PageChange( ) ) - *this\parent\scroll_x( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
@@ -7221,7 +7137,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ; Чтобы обновить границы отоброжения (clip-coordinate)
-         _this_\resize\clip = #True
+         ;_this_\resize\clip = #True
       EndMacro
       
       Macro DisableState( _this_, _parent_ )
@@ -7668,7 +7584,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          
          ;\\
-         *this\resize\clip = #True
+         ; *this\resize\clip = #True
          
          ;\\
          If *this\resize\change <> #True
@@ -7998,10 +7914,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\inner_height( ) = *this\container_height( )
          EndIf
          ; 
-         If *this\resize\clip <> 0
-            *this\resize\clip = 0
-            Reclip( *this )
-         EndIf
+         ;          If *this\resize\clip <> 0
+         ;             *this\resize\clip = 0
+         Reclip( *this )
+         ;          EndIf
          
          ;
          ;\\
@@ -8064,7 +7980,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                ;\\ parent mdi
                If *this\parent\type = #__type_MDI
-                  If *this\child < 0
+                  If *this\child =- 1
                      If *this\parent\scroll\v <> *this And
                         *this\parent\scroll\h <> *this And
                         *this\parent\scroll\v\bar\PageChange( ) = 0 And
@@ -8281,7 +8197,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ then move and size parent
          ;\\ resize all children's
-         If Not *this\resize\nochildren  
             If *this\type <> #__type_Splitter
                If *this\haschildren 
                   ;Debug *this\class
@@ -8290,7 +8205,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   If StartEnum( *this )
                      If widget( )\parent <> *this
-                        widget( )\resize\clip = #True
+                        ; widget( )\resize\clip = #True
                         Continue
                      EndIf
                      ;
@@ -8427,7 +8342,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                EndIf
             EndIf
-         EndIf
          
          ;
          ProcedureReturn *this\root\repaint
@@ -10689,7 +10603,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If ReParent
                ;
                If is_drag_move( )
-                  *this\resize\clip = #True
+                  ; *this\resize\clip = #True
                   
                   X = *this\frame_x( ) - *parent\inner_x( )
                   Y = *this\frame_y( ) - *parent\inner_y( )
@@ -12361,15 +12275,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result 
       EndProcedure
       
-      Procedure.b PushItem( *this._s_WIDGET ) 
+      Procedure   PushItem( *this._s_WIDGET ) 
          PushListPosition( *this\__rows( ))
       EndProcedure
       
-      Procedure.b PopItem( *this._s_WIDGET ) 
+      Procedure   PopItem( *this._s_WIDGET ) 
          PopListPosition( *this\__rows( ))
       EndProcedure
       
-      Procedure.b SelectItem( *this._s_WIDGET, Item.l ) 
+      Procedure.i SelectItem( *this._s_WIDGET, Item.l ) 
          Protected result
          If Item > #PB_Any And Item < *this\countitems 
             result = SelectElement( *this\__rows( ), Item )
@@ -16920,8 +16834,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If Not *this\hide
             ;\\
-            If *this\WidgetChange( ) Or
-               *this\resize\ResizeChange( )
+            If *this\WidgetChange( ) Or *this\ResizeChange( )
                ;
                Update_DrawRows( *this, *this\__rows( ), *this\WidgetChange( ) )
                
@@ -17140,7 +17053,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             With *this
                ; Make output multi line text
-               If *this\TextChange( ) Or ( *this\resize\ResizeChange( ) And *this\text\multiline = - 1 )
+               If *this\TextChange( ) Or ( *this\ResizeChange( ) And *this\text\multiline = - 1 )
                   ;
                   Update_DrawText( *this, *this\TextChange( ) )
                   ;
@@ -17220,7 +17133,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ; Draw margin back color
                If *this\MarginLine( )\width > 0
-                  If ( *this\TextChange( ) Or *this\resize\ResizeChange( ) )
+                  If *this\TextChange( ) Or *this\ResizeChange( )
                      *this\MarginLine( )\x      = *this\inner_x( )
                      *this\MarginLine( )\y      = *this\inner_y( )
                      *this\MarginLine( )\height = *this\inner_height( )
@@ -17460,7 +17373,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   ; Draw string
-                  If *this\resize\ResizeChange( )
+                  If *this\ResizeChange( )
                      If *this\img\imageID
                         *this\TitleText( )\x = *this\caption\x + *this\padding\x + *this\img\width + 10
                      Else
@@ -17808,8 +17721,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; update text
-            If *this\WidgetChange( ) Or *this\resize\ResizeChange( )
-               ;
+            If *this\WidgetChange( ) Or *this\ResizeChange( )
                Update_DrawText( *this, *this\TextChange( ) )
             EndIf
             
@@ -17972,12 +17884,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
             Else
-               ;Debug "DRAW( "+*this\class +" "+ *this\enter
-               ;                If *this\resize\clip <> 0
-               ;                   *this\resize\clip = 0
-               ;                   Reclip( *this )
-               ;                EndIf
-               
+               ; Debug "DRAW( "+*this\class +" "+ *this\enter
+               ;
                ;\\ draw clip out transform widgets frame
                If ( *this\anchors And Not *this\anchors\mode & #__a_zoom ) Or test_clip
                   ;If Not ( *this\draw_width( ) > 0 And *this\draw_height( ) > 0 )
@@ -18246,8 +18154,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\resize\height = 0
             EndIf
             
-            If *this\resize\ResizeChange( ) <> 0
-               *this\resize\ResizeChange( ) = 0
+            If *this\ResizeChange( ) <> 0
+               *this\ResizeChange( ) = 0
             EndIf
          EndWith
       EndProcedure
@@ -19983,7 +19891,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            
             ;\\ change enter/leave state
             If *this\RowEntered( ) <> *row
                If mouse( )\drag And *this\RowFocused( ) And  *this\RowFocused( )\press
@@ -20009,9 +19916,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *rowleaved\_enter
                      *rowleaved\_enter = 0
                      
-                     If ( *this\press And Not mouse( )\drop ) And
-                        Not *this\mode\multiSelect And
-                        Not *this\mode\clickSelect
+                     If Not EnteredButton( ) And ( *this\press And Not mouse( )\drop ) And Not *this\mode\multiSelect And Not *this\mode\clickSelect
                         ;
                         If *rowleaved\ColorState( ) = #__s_2
                            If *rowleaved = *this\RowFocused( )
@@ -20052,8 +19957,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *row\_enter = 0
                      *row\_enter = 1
                      
-                     If ( *this\press And Not mouse( )\drop ) And ( *this\mode\clickSelect = 0 Or
-                                                                    ( *this\mode\clickSelect And *this\mode\multiSelect ))
+                     If Not EnteredButton( ) And ( *this\press And Not mouse( )\drop ) And ( *this\mode\clickSelect = 0 Or ( *this\mode\clickSelect And *this\mode\multiSelect ))
                         
                         If *row\ColorState( ) <> #__s_2
                            *row\ColorState( ) = #__s_2
@@ -20189,21 +20093,21 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If event = #__event_Down
                If MouseButtons( ) & #PB_Canvas_LeftButton
-                  If *this\RowEntered( ) 
+                  If *row 
                      If EnteredButton( )
                         ; change collapsed/expanded button state
-                        If *this\RowEntered( )\buttonbox
-                           If *this\RowEntered( )\buttonbox\_enter
-                              If *this\RowEntered( )\buttonbox\checked
+                        If *row\buttonbox
+                           If *row\buttonbox\_enter
+                              If *row\buttonbox\checked
                                  ; развернул список
-                                 If SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
-                                    Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Expanded )
+                                 If SetItemState( *this, *row\rindex, #PB_Tree_Expanded )
+                                    Send( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Expanded )
                                     Send( *this, #__event_ScrollChange )
                                  EndIf
                               Else
                                  ; свернул список
-                                 If SetItemState( *this, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
-                                    Send( *this, #__event_StatusChange, *this\RowEntered( )\rindex, #PB_Tree_Collapsed )
+                                 If SetItemState( *this, *row\rindex, #PB_Tree_Collapsed )
+                                    Send( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Collapsed )
                                     Send( *this, #__event_ScrollChange )
                                  EndIf
                               EndIf
@@ -20211,38 +20115,38 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                         
                         ; change box ( option&check )
-                        If *this\RowEntered( )\checkbox
-                           If *this\RowEntered( )\checkbox\_enter
+                        If *row\checkbox
+                           If *row\checkbox\_enter
                               ;
                               ; change option box state
                               If *this\mode\optionboxes
-                                 If *this\RowEntered( )\_groupbar
-                                    If *this\RowEntered( )\RowParent( ) 
-                                       If *this\RowEntered( )\_groupbar\RowParent( ) And
-                                          *this\RowEntered( )\_groupbar\checkbox\checked
-                                          *this\RowEntered( )\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                 If *row\_groupbar
+                                    If *row\RowParent( ) 
+                                       If *row\_groupbar\RowParent( ) And
+                                          *row\_groupbar\checkbox\checked
+                                          *row\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                                        EndIf
                                     EndIf
-                                    
-                                    If *this\RowEntered( )\_groupbar\_groupbar <> *this\RowEntered( )
-                                       If *this\RowEntered( )\_groupbar\_groupbar
-                                          *this\RowEntered( )\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                    ;
+                                    If *row\_groupbar\_groupbar <> *row
+                                       If *row\_groupbar\_groupbar
+                                          *row\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                                        EndIf
-                                       *this\RowEntered( )\_groupbar\_groupbar = *this\RowEntered( )
+                                       *row\_groupbar\_groupbar = *row
                                     EndIf
                                  EndIf
                               EndIf
                               ;
                               ; change checked box state
-                              set_check_state_( *this\RowEntered( )\checkbox\checked, *this\mode\threestate )
+                              set_check_state_( *row\checkbox\checked, *this\mode\threestate )
                            EndIf
                         EndIf
                      Else
                         ;
                         If *this\mode\clickSelect
-                           *this\RowEntered( )\press ! 1
+                           *row\press ! 1
                         Else
-                           *this\RowEntered( )\press = 1
+                           *row\press = 1
                            ;
                            If *this\mode\multiSelect
                               PushListPosition( *rows( ) )
@@ -20261,13 +20165,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                         EndIf
                         ;
-                        *this\RowPressed( ) = *this\RowEntered( )
+                        *this\RowPressed( ) = *row
                         ;
-                        If *this\RowEntered( )\press
-                           If *this\RowEntered( )\ColorState( ) <> #__s_2
-                              *this\RowEntered( )\ColorState( ) = #__s_2
+                        If *row\press
+                           If *row\ColorState( ) <> #__s_2
+                              *row\ColorState( ) = #__s_2
                               
-                              If *this\RowFocused( ) And *this\RowFocused( ) <> *this\RowEntered( )  
+                              If *this\RowFocused( ) And *this\RowFocused( ) <> *row  
                                  If *this\RowFocused( )\ColorState( ) = #__s_2
                                     *this\RowFocused( )\ColorState( ) = #__s_3
                                     ;
@@ -20277,12 +20181,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                               ;
                               ; status-change
-                              DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, -*this\RowEntered( )\ColorState( ) )
+                              DoEvents(*this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
                            EndIf
                         Else
-                           *this\RowEntered( )\ColorState( ) = #__s_1
+                           *row\ColorState( ) = #__s_1
                            ; status-change
-                           DoEvents(*this, #__event_StatusChange, *this\RowEntered( )\rindex, -*this\RowEntered( )\ColorState( ) )
+                           DoEvents(*this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
                         EndIf
                      EndIf
                   EndIf
@@ -20295,7 +20199,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; отобразить информацию выбранного итема
                ; не уверен есть ли в этом польза))
                If *this\RowFocused( )
-                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - 1 )
+                  If Not MouseButtonPress( ) 
+                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - 1 )
+                  EndIf
                EndIf
             EndIf
             
@@ -21170,26 +21076,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
-            ;             ;\\ enabled mouse behavior
-            ;             If event = #__event_Down
-            ;                
-            ;                ;             If *this\type = #__type_Splitter
-            ;                ;                If EnteredButton( ) And
-            ;                ;                   EnteredButton( )\_enter
-            ;                ;                EndIf
-            ;                ;             EndIf
-            ;             EndIf
-            ;             
-            ;             ;\\ after post-widget-events then drop if create new widget
-            ;             If event = #__event_Drop
-            ;                If *this <> widgets( )
-            ;                   If widgets( )\resize\clip <> 0
-            ;                      widgets( )\resize\clip = 0
-            ;                      Reclip( widgets( ) )
-            ;                   EndIf
-            ;                EndIf
-            ;             EndIf
          EndIf
          
          ;\\ post repaint canvas
@@ -21410,39 +21296,30 @@ CompilerIf Not Defined( widget, #PB_Module )
             mouse( )\delta.allocate( POINT )
             mouse( )\delta\x = mouse( )\x
             mouse( )\delta\y = mouse( )\y
-            ;
+            ; 
             If mouse( )\press = #PB_MouseButton_Left
                If EnteredWidget( )
-                  If EnteredButton( ) > 0
-                     If EnteredWidget( )\bar 
-                        mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
-                        mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
-                     EndIf
-                  ElseIf EnteredWidget( )\autosize 
-                     If EnteredWidget( )\parent
-                        mouse( )\delta\x - EnteredWidget( )\parent\container_x( )
-                        mouse( )\delta\y - EnteredWidget( )\parent\container_y( )
-                     EndIf
-                  Else
-                     If EnteredWidget( )\anchors
-                        If EnteredWidget( )\container
-                           If EnteredWidget( )\caption And 
-                              EnteredWidget( )\caption\interact
-                              ; Чтобы например шелкнув на  
-                              ; загаловке можно было переместить
-                              If Not a_index( ) 
-                                 a_index( )  = #__a_moved
-                              EndIf
-                           EndIf
-                        Else
-                           ; Чтобы например шелкнув на кнопке
-                           ; в любом месте можно было переместить его
+                  ;
+                  If EnteredWidget( )\anchors
+                     If EnteredWidget( )\container
+                        If EnteredWidget( )\caption And 
+                           EnteredWidget( )\caption\interact
+                           ; Чтобы например шелкнув на  
+                           ; загаловке можно было переместить
                            If Not a_index( ) 
                               a_index( )  = #__a_moved
                            EndIf
                         EndIf
-                        
-                        ;
+                     Else
+                        ; Чтобы например шелкнув на кнопке
+                        ; в любом месте можно было переместить его
+                        If Not a_index( ) 
+                           a_index( )  = #__a_moved
+                        EndIf
+                     EndIf
+                  
+                  ;
+                     If Not EnteredWidget( )\autosize 
                         If mouse( )\steps
                            mouse( )\delta\x + ( mouse( )\delta\x % mouse( )\steps )
                            mouse( )\delta\x = ( mouse( )\delta\x / mouse( )\steps ) * mouse( )\steps
@@ -21452,111 +21329,119 @@ CompilerIf Not Defined( widget, #PB_Module )
                            mouse( )\delta\x + ( EnteredWidget( )\inner_x( ) % mouse( )\steps ) 
                            mouse( )\delta\y + ( EnteredWidget( )\inner_y( ) % mouse( )\steps ) 
                         EndIf
-                        
+                     EndIf
+                  EndIf
+                  ;
+                     
+                  If EnteredButton( ) > 0
+                     If Not EnteredWidget( )\anchors 
+                        If EnteredWidget( )\bar 
+                           mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
+                           mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
+                        EndIf
+                     EndIf
+                  
+                  ElseIf EnteredWidget( )\autosize 
+                     Debug EnteredWidget( )\anchors 
+                     
+                     If EnteredWidget( )\parent
+                        mouse( )\delta\x - EnteredWidget( )\parent\container_x( )
+                        mouse( )\delta\y - EnteredWidget( )\parent\container_y( )
+                     EndIf
+                     
+                  ElseIf a_index( )
+                     ;
+                     If EnteredWidget( )\anchors\id[a_index( )]
                         ;
-                        If a_index( ) And
-                           EnteredWidget( ) And
-                           EnteredWidget( )\anchors\id[a_index( )]
-                           ;
-                           ;\\ set current transformer index state
-                           EnteredWidget( )\anchors\state = #__s_2
-                           
-                           ;\\ set delta pos
-                           ;\\ not multi group transformer
-                           ;If Not EnteredWidget( )\anchors\multi
-                           ;\\
-                           If EnteredWidget( )\parent
-                              If Not ( EnteredWidget( )\bounds\attach And EnteredWidget( )\bounds\attach\mode = 2 )
-                                 mouse( )\delta\x + EnteredWidget( )\parent\inner_x( )
-                              EndIf
-                              If Not ( EnteredWidget( )\bounds\attach And EnteredWidget( )\bounds\attach\mode = 1 )
-                                 mouse( )\delta\y + EnteredWidget( )\parent\inner_y( )
-                              EndIf
-                              
-                              ;\\
-                              If Not EnteredWidget( )\child 
-                                 Select a_index( )
-                                    Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                                       mouse( )\delta\x + EnteredWidget( )\parent\scroll_x( )
-                                 EndSelect
-                                 
-                                 Select a_index( )
-                                    Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                                       mouse( )\delta\y + EnteredWidget( )\parent\scroll_y( )
-                                 EndSelect
-                              EndIf
+                        ;\\ set current transformer index state
+                        EnteredWidget( )\anchors\state = #__s_2
+                        
+                        ;\\ set delta pos
+                        If EnteredWidget( )\parent
+                           If Not ( EnteredWidget( )\bounds\attach And EnteredWidget( )\bounds\attach\mode = 2 )
+                              mouse( )\delta\x + EnteredWidget( )\parent\inner_x( )
+                           EndIf
+                           If Not ( EnteredWidget( )\bounds\attach And EnteredWidget( )\bounds\attach\mode = 1 )
+                              mouse( )\delta\y + EnteredWidget( )\parent\inner_y( )
                            EndIf
                            
                            ;\\
-                           mouse( )\delta\x - EnteredWidget( )\anchors\id[a_index( )]\x
-                           mouse( )\delta\y - EnteredWidget( )\anchors\id[a_index( )]\y
-                           
-                           ;\\ window flag - sizeGadgets
-                           If a_index( ) = #__a_moved
-                              mouse( )\delta\x + ( EnteredWidget( )\anchors\id[a_index( )]\x - EnteredWidget( )\screen_x( ))
-                              mouse( )\delta\y + ( EnteredWidget( )\anchors\id[a_index( )]\y - EnteredWidget( )\screen_y( ) )
-                           EndIf
-                           
-                           ;\\
-                           Select a_index( )
-                              Case #__a_left_top, #__a_moved
-                                 mouse( )\delta\x - EnteredWidget( )\anchors\pos
-                                 mouse( )\delta\y - EnteredWidget( )\anchors\pos
-                              Case #__a_left
-                                 mouse( )\delta\x - EnteredWidget( )\anchors\pos
-                              Case #__a_top
-                                 mouse( )\delta\y - EnteredWidget( )\anchors\pos
-                              Case #__a_right, #__a_right_top
-                                 mouse( )\delta\x + EnteredWidget( )\anchors\pos - EnteredWidget( )\anchors\size
-                                 mouse( )\delta\y - EnteredWidget( )\anchors\pos
-                              Case #__a_bottom, #__a_left_bottom
-                                 mouse( )\delta\y + EnteredWidget( )\anchors\pos - EnteredWidget( )\anchors\size
-                                 mouse( )\delta\x - EnteredWidget( )\anchors\pos
-                              Case #__a_right_bottom
-                                 mouse( )\delta\x + EnteredWidget( )\anchors\pos - EnteredWidget( )\anchors\size
-                                 mouse( )\delta\y + EnteredWidget( )\anchors\pos - EnteredWidget( )\anchors\size
-                           EndSelect
-                           
-                           ;\\
-                           If EnteredWidget( )\type = #__type_window
+                           If Not EnteredWidget( )\child 
                               Select a_index( )
-                                 Case #__a_right, #__a_right_top
-                                    mouse( )\delta\x + EnteredWidget( )\fs * 2 + EnteredWidget( )\fs[1] + EnteredWidget( )\fs[3]
-                                    
-                                 Case #__a_bottom, #__a_left_bottom
-                                    mouse( )\delta\y + EnteredWidget( )\fs * 2 + EnteredWidget( )\fs[2] + EnteredWidget( )\fs[4]
-                                    
-                                 Case #__a_right_bottom
-                                    mouse( )\delta\x + EnteredWidget( )\fs * 2 + EnteredWidget( )\fs[1] + EnteredWidget( )\fs[3]
-                                    mouse( )\delta\y + EnteredWidget( )\fs * 2 + EnteredWidget( )\fs[2] + EnteredWidget( )\fs[4]
-                                    
+                                 Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
+                                    mouse( )\delta\x + EnteredWidget( )\parent\scroll_x( )
+                              EndSelect
+                              
+                              Select a_index( )
+                                 Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
+                                    mouse( )\delta\y + EnteredWidget( )\parent\scroll_y( )
                               EndSelect
                            EndIf
                         EndIf
-                     Else
-                        If Not a_index( )  
-                           If EnteredButton( ) > 0
-                              If EnteredWidget( )\bar 
-                                 mouse( )\delta\x - EnteredWidget( )\bar\thumb\pos
-                                 mouse( )\delta\y - EnteredWidget( )\bar\thumb\pos
-                              EndIf
-                           Else
-                              mouse( )\delta\x - EnteredWidget( )\container_x( )
-                              mouse( )\delta\y - EnteredWidget( )\container_y( )
-                              ;
-                              If EnteredWidget( )\parent
-                                 If Not EnteredWidget( )\child
-                                    mouse( )\delta\x - EnteredWidget( )\parent\scroll_x( )
-                                    mouse( )\delta\y - EnteredWidget( )\parent\scroll_y( )
-                                 EndIf
-                              EndIf
+                        
+                        ;\\
+                        mouse( )\delta\x - EnteredWidget( )\anchors\id[a_index( )]\x
+                        mouse( )\delta\y - EnteredWidget( )\anchors\id[a_index( )]\y
+                        
+                        ;\\ window flag - sizeGadgets
+                        If a_index( ) = #__a_moved
+                           mouse( )\delta\x + ( EnteredWidget( )\anchors\id[a_index( )]\x - EnteredWidget( )\screen_x( ))
+                           mouse( )\delta\y + ( EnteredWidget( )\anchors\id[a_index( )]\y - EnteredWidget( )\screen_y( ) )
+                        EndIf
+                        
+                        ;\\
+                        Select a_index( )
+                           Case #__a_left_top, #__a_moved
+                              mouse( )\delta\x - EnteredWidget( )\anchors\pos
+                              mouse( )\delta\y - EnteredWidget( )\anchors\pos
+                           Case #__a_left
+                              mouse( )\delta\x - EnteredWidget( )\anchors\pos
+                           Case #__a_top
+                              mouse( )\delta\y - EnteredWidget( )\anchors\pos
+                           Case #__a_right, #__a_right_top
+                              mouse( )\delta\x + EnteredWidget( )\anchors\pos - EnteredWidget( )\anchors\size
+                              mouse( )\delta\y - EnteredWidget( )\anchors\pos
+                           Case #__a_bottom, #__a_left_bottom
+                              mouse( )\delta\y + EnteredWidget( )\anchors\pos - EnteredWidget( )\anchors\size
+                              mouse( )\delta\x - EnteredWidget( )\anchors\pos
+                           Case #__a_right_bottom
+                              mouse( )\delta\x + EnteredWidget( )\anchors\pos - EnteredWidget( )\anchors\size
+                              mouse( )\delta\y + EnteredWidget( )\anchors\pos - EnteredWidget( )\anchors\size
+                        EndSelect
+                        
+                        ;\\
+                        If EnteredWidget( )\type = #__type_window
+                           Select a_index( )
+                              Case #__a_right, #__a_right_top
+                                 mouse( )\delta\x + EnteredWidget( )\fs * 2 + EnteredWidget( )\fs[1] + EnteredWidget( )\fs[3]
+                                 
+                              Case #__a_bottom, #__a_left_bottom
+                                 mouse( )\delta\y + EnteredWidget( )\fs * 2 + EnteredWidget( )\fs[2] + EnteredWidget( )\fs[4]
+                                 
+                              Case #__a_right_bottom
+                                 mouse( )\delta\x + EnteredWidget( )\fs * 2 + EnteredWidget( )\fs[1] + EnteredWidget( )\fs[3]
+                                 mouse( )\delta\y + EnteredWidget( )\fs * 2 + EnteredWidget( )\fs[2] + EnteredWidget( )\fs[4]
+                                 
+                           EndSelect
+                        EndIf
+                     EndIf
+                     
+                  Else
+                     If Not EnteredWidget( )\anchors 
+                        mouse( )\delta\x - EnteredWidget( )\container_x( )
+                        mouse( )\delta\y - EnteredWidget( )\container_y( )
+                        ;
+                        If EnteredWidget( )\parent
+                           If Not EnteredWidget( )\child
+                              mouse( )\delta\x - EnteredWidget( )\parent\scroll_x( )
+                              mouse( )\delta\y - EnteredWidget( )\parent\scroll_y( )
                            EndIf
                         EndIf
                      EndIf
                   EndIf
                   ;  
                   ; Это должно сработат только внутри настоящего контейнера
-                  ; например (Window;Container;Panel;ScrollArea)
+                  ; например (Window;Container;Panel;ScrollArea) а не (Splitter;Frame)
                   If EnteredWidget( )\container > 0  And Not a_index( ) And EnteredWidget( )\enter = 2
                      mouse( )\selector.allocate( SELECTOR )
                      mouse( )\selector\x = mouse( )\delta\x 
@@ -21567,6 +21452,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Else
                      mouse( )\selector = #Null
                   EndIf
+                  ;
                EndIf
             EndIf
          EndIf
@@ -22227,7 +22113,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\ 
                __widget = EventWidget( )
-               __event   = WidgetEvent( )
+               __event  = WidgetEvent( )
                __item   = WidgetEventItem( )
                __data   = WidgetEventData( )
                
@@ -24687,9 +24573,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8029
-; FirstLine = 8019
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20204
+; FirstLine = 19568
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84---8-------------------------------------------------0------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

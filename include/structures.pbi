@@ -42,11 +42,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Y.l
       EndStructure
       ;--     RESIZEINFO
-      Structure RESIZEINFO Extends _s_COORDINATE
+      Structure _s_RESIZEINFO Extends _s_COORDINATE
          flag.c
-         clip.b
+         ; clip.b
          change.b
-         nochildren.b
       EndStructure
       ;--     MODE
       Structure _s_mode
@@ -584,7 +583,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          bindclose.b
          
          ;
-         Resize.RESIZEINFO                 
+         Resize._s_RESIZEINFO                 
          ;          size.SIZEINFO                 
          ;          move.MOVEINFO                 
          
@@ -777,8 +776,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 764
-; FirstLine = 744
+; CursorPosition = 46
+; FirstLine = 34
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

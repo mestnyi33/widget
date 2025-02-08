@@ -109,6 +109,8 @@ CompilerIf #PB_Compiler_IsMainFile
       If Type = #PB_GadgetType_Button
          ;*Object\root\widget =
          Define *this = Button(0,0,0,0,Text,#__flag_autosize, round)
+        ; Define *this = Image(0,0,0,0,-1,#__flag_autosize) : SetRound( *this, round )
+        ; a_set( *this )
       EndIf
       
       Resize(*Object, X, Y, Width, Height)
@@ -210,7 +212,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    *mdi = MDI(X,Y,Width,Height);, #__flag_autosize)
    mouse( )\steps = 35
-   ;a_init( *mdi )
+   a_init( *mdi )
    ;SetColor(*mdi, #__color_back, $ffffffff)
    SetColor(*mdi, #__color_frame, $ffffffff)
    
@@ -242,8 +244,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 118
+; CursorPosition = 110
+; FirstLine = 107
 ; Folding = ---
 ; EnableXP
 ; DPIAware

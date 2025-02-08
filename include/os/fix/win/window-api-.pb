@@ -6,13 +6,13 @@
   Define g1,g2
   
   Procedure Resize_2()
-    Protected canvas = 2
-    ResizeGadget(canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(canvas)*2, WindowHeight(EventWindow()) - GadgetY(canvas)*2)
+    Protected Canvas = 2
+    ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(Canvas)*2, WindowHeight(EventWindow()) - GadgetY(Canvas)*2)
   EndProcedure
   
   Procedure Resize_3()
-    Protected canvas = 3
-    ResizeGadget(canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(canvas)*2, WindowHeight(EventWindow()) - GadgetY(canvas)*2)
+    Protected Canvas = 3
+    ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(Canvas)*2, WindowHeight(EventWindow()) - GadgetY(Canvas)*2)
   EndProcedure
   
   Procedure EventHandler(eventobject, eventtype, eventdata)
@@ -83,7 +83,10 @@
   
   Procedure Window1Callback(hWnd, uMsg, wParam, lParam) 
     Select uMsg 
-      Case #WM_CREATE
+       Case #WM_ACTIVATE
+       Debug "#WM_ACTIVATE "+ GetActiveWindow( )
+       
+    Case #WM_CREATE
         Debug "#WM_CREATE"
       
       Case #WM_CLOSE 
@@ -102,7 +105,13 @@
   
   Procedure Window1Callback2(hWnd, uMsg, wParam, lParam) 
     Select uMsg 
-      Case #WM_CREATE
+       Case #WM_ACTIVATE
+       Debug "2#WM_ACTIVATE "+ GetActiveWindow( )
+       SetFocus_( WindowID(1))
+      ; ProcedureReturn 0
+       Result  = #PB_ProcessPureBasicEvents
+       
+    Case #WM_CREATE
         Debug "2#WM_CREATE"
       
       Case #WM_CLOSE 
@@ -119,8 +128,8 @@
     ProcedureReturn Result 
   EndProcedure 
   
-  Procedure OpenWindow_(window, x,y,width,height, title.s, flag=0)
-    Protected result = OpenWindow(window, x,y,width,height, title.s, flag)
+  Procedure OpenWindow_(window, X,Y,Width,Height, title.s, flag=0)
+    Protected result = OpenWindow(window, X,Y,Width,Height, title.s, flag)
     If window >= 0
       WindowID = WindowID(window)
     Else
@@ -131,8 +140,8 @@
     ProcedureReturn result
   EndProcedure
   
-  Macro OpenWindow(window, x,y,width,height, title, flag=0)
-    OpenWindow_(window, x,y,width,height, title, flag)
+  Macro OpenWindow(window, X,Y,Width,Height, title, flag=0)
+    OpenWindow_(window, X,Y,Width,Height, title, flag)
   EndMacro
   
   
@@ -237,7 +246,7 @@
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 137
+; CursorPosition = 108
+; FirstLine = 99
 ; Folding = --
 ; EnableXP

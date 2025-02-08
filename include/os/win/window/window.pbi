@@ -44,11 +44,11 @@ Procedure SetWindowColor_(windowID, Color)
   DeleteObject_(brush)
 EndProcedure
 
-Procedure Callback(WindowID,message,wParam,lParam)
+Procedure Callback(WindowID,Message,wParam,lParam)
   Protected Text$
   Protected Result = #PB_ProcessPureBasicEvents
   
-  Select message
+  Select Message
     Case #DM_GETDEFID : Text$ = "DM_GetDefID"
     Case #DM_SETDEFID : Text$ = "DM_SetDefID"
     Case #WM_ACTIVATE : Text$ = "Activate"
@@ -177,7 +177,7 @@ Procedure Callback(WindowID,message,wParam,lParam)
     Case #WM_WINDOWPOSCHANGING : Text$ = "WindowPosChanging"
     Case #WM_WININICHANGE : Text$ = "WinIniChange"
     Default
-      Debug "Неопределено " + Str(message)
+      Debug "Неопределено " + Str(Message)
   EndSelect
   Debug Text$+" "+Str(wParam)+" "+Str(lParam)
   ProcedureReturn Result
@@ -191,34 +191,34 @@ Procedure EventTypeCallback(windowID, uMsg, wParam, lParam)
   ; Protected ETCallback = GetProp_(windowID, "oldproc") 
   
   If uMsg = #WM_LBUTTONDOWN
-    Debug "#WM_LBUTTONDOWN "+id::gadget(windowID)
+    Debug "#WM_LBUTTONDOWN "+ID::gadget(windowID)
   ElseIf uMsg = #WM_LBUTTONUP 
-    Debug "#WM_LBUTTONUP "+id::gadget(windowID)
+    Debug "#WM_LBUTTONUP "+ID::gadget(windowID)
   ElseIf uMsg = #WM_RBUTTONDOWN
-    Debug "#WM_RBUTTONDOWN "+id::gadget(windowID)
+    Debug "#WM_RBUTTONDOWN "+ID::gadget(windowID)
   ElseIf uMsg = #WM_RBUTTONUP
-    Debug "#WM_RBUTTONUP "+id::gadget(windowID)
+    Debug "#WM_RBUTTONUP "+ID::gadget(windowID)
   ElseIf uMsg = #WM_MBUTTONDOWN
-    Debug "#WM_MBUTTONDOWN "+id::gadget(windowID)
+    Debug "#WM_MBUTTONDOWN "+ID::gadget(windowID)
   ElseIf uMsg = #WM_MBUTTONUP
-    Debug "#WM_MBUTTONUP "+id::gadget(windowID)
+    Debug "#WM_MBUTTONUP "+ID::gadget(windowID)
   ElseIf uMsg = #WM_MOUSEFIRST
     ;  Debug "#WM_MOUSEMOVE "+id::gadget(windowID)
     
     
-      Protected TRACK.TRACKMOUSEEVENT
-          TRACK\cbSize = SizeOf(TRACK)
-          TRACK\dwFlags = #TME_HOVER|#TME_LEAVE
-          TRACK\hwndTrack = windowID
-          TRACK\dwHoverTime = 10
+      Protected Track.TRACKMOUSEEVENT
+          Track\cbSize = SizeOf(Track)
+          Track\dwFlags = #TME_HOVER|#TME_LEAVE
+          Track\hwndTrack = windowID
+          Track\dwHoverTime = 10
           TrackMouseEvent_(@TRACK)
       
   ElseIf uMsg = #WM_MOUSEHOVER
-    Debug "#WM_MOUSEHOVER "+id::gadget(windowID)
+    Debug "#WM_MOUSEHOVER "+ID::gadget(windowID)
   ElseIf uMsg = #WM_MOUSELEAVE
-    Debug "#WM_MOUSELEAVE "+id::gadget(windowID)
+    Debug "#WM_MOUSELEAVE "+ID::gadget(windowID)
   ElseIf uMsg = #WM_CREATE
-    Debug "#WM_CREATE "+id::gadget(windowID)
+    Debug "#WM_CREATE "+ID::gadget(windowID)
   EndIf
   
   ProcedureReturn CallWindowProc_(ETCallback, windowID, uMsg, wParam, lParam)
@@ -244,11 +244,11 @@ Procedure OpenWindowCallback_(windowID, uMsg, wParam, lParam)
     Debug "#WM_MOUSEHOVER "
   ElseIf uMsg = #WM_MOUSEMOVE
      
-      Protected TRACK.TRACKMOUSEEVENT
-          TRACK\cbSize = SizeOf(TRACK)
-          TRACK\dwFlags = #TME_HOVER|#TME_LEAVE
-          TRACK\hwndTrack = windowID
-          TRACK\dwHoverTime = 10
+      Protected Track.TRACKMOUSEEVENT
+          Track\cbSize = SizeOf(Track)
+          Track\dwFlags = #TME_HOVER|#TME_LEAVE
+          Track\hwndTrack = windowID
+          Track\dwHoverTime = 10
           TrackMouseEvent_(@TRACK)
             
       
@@ -282,7 +282,7 @@ Procedure OpenWindowCallback_(windowID, uMsg, wParam, lParam)
   ProcedureReturn Result 
 EndProcedure
 
-Procedure OpenWindow_(window, x, y, width, height, title.s, flags = 0, parentID = 0 )
+Procedure OpenWindow_(window, X, Y, Width, Height, title.s, flags = 0, parentID = 0 )
   Protected win, uFlags, WindowClass.s  = "WindowClass_227B" 
   
   Protected wc.WNDCLASSEX 
@@ -309,7 +309,7 @@ Procedure OpenWindow_(window, x, y, width, height, title.s, flags = 0, parentID 
   ;win  = CreateWindowEx_( #WS_EX_TOPMOST|#WS_EX_NOACTIVATE|#WS_EX_NOPARENTNOTIFY|#WS_EX_TOOLWINDOW, WindowClass, "Test Window", #WS_VISIBLE | #WS_OVERLAPPEDWINDOW , x, y, width, height, 0, 0, 0, 0) 
   
   ;win  = CreateWindowEx_( #WS_EX_TOPMOST, WindowClass, "Test Window", #WS_VISIBLE | #WS_CAPTION | #WS_SYSMENU , x, y, width, height, 0, 0, 0, 0) 
-  win  = CreateWindowEx_( #WS_EX_TOPMOST | #WS_EX_NOACTIVATE, WindowClass, "Test Window", uFlags, x, y, width, height, 0, 0, 0, 0) 
+  win  = CreateWindowEx_( #WS_EX_TOPMOST | #WS_EX_NOACTIVATE, WindowClass, "Test Window", uFlags, X, Y, Width, Height, 0, 0, 0, 0) 
   
   ; SetWindowPos_( win, #windowID_TOPMOST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE);|#SWP_NOACTIVATE);|#SWP_SHOWWINDOW )
   If ParentID
@@ -495,8 +495,8 @@ Repeat
     Debug " pb_window_leftclick"
   EndIf
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 6.04 LTS (Windows - x64)
-; CursorPosition = 296
-; FirstLine = 286
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 311
+; FirstLine = 301
 ; Folding = -------
 ; EnableXP
