@@ -1032,7 +1032,7 @@ Procedure widget_events( )
          
       Case #__event_Focus
          If a_focused( ) = *e_widget
-             Debug "FOCUS "+GetClass(*e_widget)
+            ; Debug "FOCUS "+GetClass(*e_widget)
          
             If GetData( *e_widget ) >= 0
                If IsGadget( ide_g_code )
@@ -1983,8 +1983,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1035
-; FirstLine = 1019
+; CursorPosition = 1034
+; FirstLine = 1001
 ; Folding = ----------------------4-------------
 ; EnableXP
 ; DPIAware

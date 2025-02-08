@@ -932,23 +932,23 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro a_anchors( )
-         mouse( )\anchors
+         widget::mouse( )\anchors
       EndMacro
       ;
       Macro a_index( )
-         a_anchors( )\index
+         widget::a_anchors( )\index
       EndMacro
       Macro a_main( )
-         a_anchors( )\main
+         widget::a_anchors( )\main
       EndMacro
       Macro a_entered( )
-         a_anchors( )\entered
+         widget::a_anchors( )\entered
       EndMacro
       Macro a_focused( )
-         a_anchors( )\focused
+         widget::a_anchors( )\focused
       EndMacro
       Macro a_group( )
-         mouse( )\selector\group( )
+         widget::mouse( )\selector\group( )
       EndMacro
       Macro a_getsize( _this_ )
          DPIUnScaled(_this_\anchors\size)
@@ -11210,6 +11210,30 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure UpdateAlign( *this._s_WIDGET )
+         If *this\parent And *this\parent\align
+            ;If Not *this\parent\align\width
+               *this\parent\align\x     = *this\parent\container_x( )
+               *this\parent\align\width = *this\parent\inner_width( )
+            ;EndIf
+            ;If Not *this\parent\align\height
+               *this\parent\align\y      = *this\parent\container_y( )
+               *this\parent\align\height = *this\parent\inner_height( )
+            ;EndIf
+            
+            *this\align\x = *this\container_x( )
+            *this\align\y = *this\container_y( )
+            ;\\
+            If *this\type = #__type_window
+               *this\align\width  = *this\inner_width( )
+               *this\align\height = *this\inner_height( )
+            Else
+               *this\align\width  = *this\frame_width( )
+               *this\align\height = *this\frame_height( )
+            EndIf
+         EndIf         
+      EndProcedure
+      
       Procedure SetAlign( *this._s_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
          Protected flag.q
          ;\\
@@ -11425,7 +11449,21 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\parent
             If Not *this\parent\align
                *this\parent\align.allocate( ALIGN )
+                             
+               
+;               ;\\ ?-надо тестировать
+;                If Not *this\parent\align\width
+                  *this\parent\align\x     = *this\parent\container_x( )
+                  *this\parent\align\width = *this\parent\inner_width( )
+;                EndIf
+;                If Not *this\parent\align\height
+                  *this\parent\align\y      = *this\parent\container_y( )
+                  *this\parent\align\height = *this\parent\inner_height( )
+;                EndIf
+;                
+
             EndIf
+            
             If Not *this\align
                *this\align.allocate( ALIGN )
             EndIf
@@ -11472,27 +11510,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\align\bottom = 0
                EndIf
                
-               ;\\ ?-надо тестировать
-               If Not *this\parent\align\width
-                  *this\parent\align\x     = *this\parent\container_x( )
-                  *this\parent\align\width = *this\parent\inner_width( )
-                  ;                   If *this\parent\type = #__type_window
-                  ;                      *this\parent\align\x + *this\parent\fs
-                  ;                      Debug *this\parent\align\width
-                  ;                      *this\parent\align\width - *this\parent\fs * 2 - ( *this\parent\fs[1] + *this\parent\fs[3] )
-                  ;                      Debug *this\parent\align\width
-                  ;                   EndIf
-               EndIf
-               If Not *this\parent\align\height
-                  *this\parent\align\y      = *this\parent\container_y( )
-                  *this\parent\align\height = *this\parent\inner_height( )
-                  ;                   If *this\parent\type = #__type_window
-                  ;                      *this\parent\align\y + *this\parent\fs
-                  ;                      *this\parent\align\height - *this\parent\fs * 2 - ( *this\parent\fs[2] + *this\parent\fs[4] )
-                  ;                   EndIf
-               EndIf
-               
-               ;\\
+              ;\\
                ; Debug ""+mode +" - "+ left+" "+top+" "+right+" "+bottom
                If mode = 0
                   *this\align\x = *this\container_x( )
@@ -11502,7 +11520,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\align\width  = *this\inner_width( )
                      *this\align\height = *this\inner_height( )
                   Else
-                     *this\align\width  = (*this\frame_width( ))
+                     *this\align\width  = *this\frame_width( )
                      *this\align\height = *this\frame_height( )
                   EndIf
                   
@@ -11652,11 +11670,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;\\
+               ;                ;\\
                ; update parent children's coordinate
-               *this\parent\align\update = 1
-               ; Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               PostRepaint( *this\root )
+               ;*this\parent\align\update = 1
+               Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+               ; PostRepaint( *this\root )
             EndIf
          EndIf
       EndProcedure
@@ -17859,6 +17877,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\align And 
                *this\align\update = 1
                *this\align\update = 0
+;               ;\\ ?-надо тестировать
+;                ;If Not *this\align\width
+;                   *this\align\x     = *this\container_x( )
+;                   *this\align\width = *this\inner_width( )
+; ;                EndIf
+; ;                If Not *this\align\height
+;                   *this\align\y      = *this\container_y( )
+;                   *this\align\height = *this\inner_height( )
+; ;                EndIf
                Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             EndIf
             
@@ -22017,6 +22044,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
+               ; 
+               If PressedWidget( )\align 
+                  UpdateAlign( PressedWidget( ) )
+               EndIf
+               
                PressedWidget( ) = 0
             EndIf
             
@@ -24566,9 +24598,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22157
-; FirstLine = 21951
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84---8-------------------------------------------------0------------------------------------------------------------
+; CursorPosition = 11675
+; FirstLine = 11354
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f--8-fg----4f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v---4-------------------------------------------------8------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

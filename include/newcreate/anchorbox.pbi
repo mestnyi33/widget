@@ -226,6 +226,20 @@ Module AnchorBox
                   widget::SetText(*button, "FULL")
                EndIf
                
+               If widget::a_focused( )
+                  Select widget::GetText(*button)
+                        Case "LEFT" : widget::SetAlign(widget::a_focused( ), 0, 1,0,0,0 )
+                        Case "TOP" : widget::SetAlign(widget::a_focused( ), 0, 0,1,0,0 )
+                        Case "RIGHT" : widget::SetAlign(widget::a_focused( ), 0, 0,0,1,0 )
+                        Case "BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 0,0,0,1 )
+                           
+                        Case "LEFT&TOP" : widget::SetAlign(widget::a_focused( ), 0, 1,1,0,0 )
+                        Case "LEFT&BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 1,0,0,1 )
+                        Case "RIGHT&TOP" : widget::SetAlign(widget::a_focused( ), 0, 0,1,1,0 )
+                        Case "RIGHT&BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 0,0,1,1 )
+                  EndSelect
+               EndIf
+               
             EndIf
       EndSelect
       
@@ -340,8 +354,8 @@ CompilerIf #PB_Compiler_IsMainFile
    widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 213
-; Folding = -vv----
+; CursorPosition = 235
+; FirstLine = 192
+; Folding = -vv-----
 ; EnableXP
 ; DPIAware
