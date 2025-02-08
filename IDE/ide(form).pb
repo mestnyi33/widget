@@ -1032,7 +1032,7 @@ Procedure widget_events( )
          
       Case #__event_Focus
          If a_focused( ) = *e_widget
-            ; Debug "FOCUS "+GetClass(*e_widget)
+             Debug "FOCUS "+GetClass(*e_widget)
          
             If GetData( *e_widget ) >= 0
                If IsGadget( ide_g_code )
@@ -1552,8 +1552,8 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)
    
    ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
-   ide_toolbar = ToolBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Buttons|#PB_ToolBar_Large);| #PB_ToolBar_InlineText )
-   SetColor(ide_toolbar, #__color_back, $FFD8DBDB )
+   ide_toolbar = ToolBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
+   SetColor(ide_toolbar, #__color_back, $fffefefe )
    
    OpenSubBar("Menu")
    BarItem( #_tb_file_new, "New" );+ Chr(9) + "Ctrl+O")
@@ -1763,7 +1763,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 500 )
    
    ; set splitters dafault positions
-   SetState( ide_splitter, Height( ide_toolbar ) )
+   SetState( ide_splitter, Height( ide_toolbar ))
    SetState( ide_design_splitter, 200 )
    SetState( ide_debug_splitter, Height( ide_debug_splitter )-180 )
    ;SetState( ide_inspector_panel_splitter, 250 )
@@ -1870,6 +1870,7 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
       btn2 = widget_add(ide_design_form, "button", 35, 65+40, 50, 30)
       widget_add(ide_design_form, "string", 45, 65+40*2, 50, 30)
+      ;widget_add(ide_design_form, "button", 45, 65+40*2, 50, 30)
       
       Define *scrollarea = widget_add(ide_design_form, "scrollarea", 120, 25, 165, 175)
       widget_add(*scrollarea, "button", 15, 25, 30, 30)
@@ -1982,8 +1983,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 552
-; FirstLine = 526
+; CursorPosition = 1035
+; FirstLine = 1019
 ; Folding = ----------------------4-------------
 ; EnableXP
 ; DPIAware

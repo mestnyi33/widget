@@ -12093,11 +12093,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;          ;CompilerIf #PB_Compiler_DPIAware
          If IsImage( Image )
             *this\imgsize = DPIScaled(16)
-            ;             ;Debug ""+ImageWidth(Image)+""+DPIResolutionX( )
-            ;             If ImageWidth(Image) <> DPIScaledX(16) And ImageHeight(Image) <> DPIScaledY(16)
-            ;               ; ResizeImage(Image, DPIScaledx(ImageWidth(Image)), DPIScaledy(ImageHeight(Image)), #PB_Image_Raw )
-            ;                 ResizeImage(Image, DPIScaledX(16), DPIScaledY(16), #PB_Image_Raw )
-            ;             EndIf
          EndIf
          ;          ;CompilerEndIf
          
@@ -12607,7 +12602,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *box\type = #__type_TabBar
                      size = 21 + bar_toggle_line_size
                   Else
-                     size = 21
+                     size = 24
                   EndIf
                ElseIf constants::BinaryFlag( *box\flag, #__flag_BarLarge )
                   size = 40
@@ -12624,7 +12619,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf   
             
-            size = DPIScaled( size )
+            size =DPIScaled( size )
             
             If *this  
                If *this\type = #__type_Panel Or *box\Type = #__type_ToolBar
@@ -22160,8 +22155,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If Not is_root_( *this\window )
                            ForEach __gui\events( )
                               If __gui\events( )\widget = *this\window And 
-                                 __gui\events( )\type = event And 
-                                 __gui\events( )\item = *button
+                                 __gui\events( )\type = event And Not ( __gui\events( )\item >= 0 And __gui\events( )\item <> *button )
                                  result = __gui\events( )\function( )
                               EndIf
                            Next
@@ -22175,8 +22169,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\root
                      ForEach __gui\events( )
                         If __gui\events( )\widget = *this\root And 
-                           __gui\events( )\type = event And 
-                           __gui\events( )\item = *button
+                           __gui\events( )\type = event And Not ( __gui\events( )\item >= 0 And __gui\events( )\item <> *button )
                            result = __gui\events( )\function( )
                         EndIf
                      Next
@@ -24573,9 +24566,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20204
-; FirstLine = 19568
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84---8-------------------------------------------------0------------------------------------------------------------
+; CursorPosition = 22157
+; FirstLine = 21951
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84---8-------------------------------------------------0------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
