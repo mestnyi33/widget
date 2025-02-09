@@ -19,8 +19,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent()
       Case #__event_mouseenter ; leftclick
         If tree_view
-          ;Debug *eventWidget
           ClearItems(tree_view)
+          
           ;Debug *eventWidget
           If *eventWidget And *eventWidget\align
             ;Debug AnchorLeft(*eventWidget)
@@ -35,30 +35,29 @@ CompilerIf #PB_Compiler_IsMainFile
                 AddItem(tree_view, -1, "LEFT-PROPORTIONAL")
               EndIf
               
-              If *eventWidget\align\right > 0
+              If *EventWidget\align\right > 0
                 AddItem(tree_view, -1, "RIGHT")
               ElseIf *eventWidget\align\right < 0
                 AddItem(tree_view, -1, "RIGHT-PROPORTIONAL")
               EndIf
               
-              If *eventWidget\align\top > 0
+              If *EventWidget\align\top > 0
                 AddItem(tree_view, -1, "TOP")
               ElseIf *eventWidget\align\top < 0
                 AddItem(tree_view, -1, "TOP-PROPORTIONAL")
               EndIf
               
-              If *eventWidget\align\bottom > 0
+              If *EventWidget\align\bottom > 0
                 AddItem(tree_view, -1, "BOTTOM")
               ElseIf *eventWidget\align\bottom < 0
                 AddItem(tree_view, -1, "BOTTOM-PROPORTIONAL")
               EndIf
               
-              ;               If CountItems(tree_view) = 0
-              ;                 AddItem(tree_view, -1, "CENTER")
-              ;               EndIf
-              ;               
-              ;               ; SetItemState(tree_view, CountItems(tree_view), 1)
+              If Not (*eventWidget\align\left Or *EventWidget\align\top Or *EventWidget\align\right Or *EventWidget\align\bottom)
+                 AddItem(tree_view, -1, "CENTER")
+              EndIf
               
+              ReDraw( GetRoot(tree_view))
             EndIf
           EndIf
         EndIf
@@ -494,9 +493,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 320
-; FirstLine = 141
-; Folding = --o-
+; CursorPosition = 59
+; FirstLine = 37
+; Folding = --R-
 ; Optimizer
 ; EnableXP
 ; DPIAware

@@ -18955,12 +18955,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
-      Procedure.l DoKeyEvent_Lines( *this._s_WIDGET, List  *lines._s_ROWS( ), event.l )
+      Procedure.l DoKeyEvent_Lines( *this._s_WIDGET, List *lines._s_ROWS( ), event.l )
          Static _caret_last_pos_, DoubleClick.i
          Protected i.i, caret.i
          
          Protected Item.i, String.s
-         Protected _line_, _step_ = 1, _caret_min_ = 0, _caret_max_ = *lines( )\text\len, _line_first_ = 0, _line_last_ = *this\countitems - 1
+         Protected _line_, _step_ = 1, _caret_min_ = 0, _line_first_ = 0, _line_last_ = *this\countitems - 1
          Protected page_height = *this\inner_height( )
          
          With *this
@@ -24598,8 +24598,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 11675
-; FirstLine = 11354
+; CursorPosition = 18962
+; FirstLine = 18640
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f--8-fg----4f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v---4-------------------------------------------------8------------------------------------------------------------
 ; EnableXP
 ; DPIAware
