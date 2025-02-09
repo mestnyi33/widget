@@ -35,7 +35,7 @@ EndEnumeration
 ;   iData.i is a custom data value set in SetObjectDrawingCallback, here it is used as the color
 ; This procedure will automatically called during the draw of the Object
 Runtime Procedure MyDrawingObject(Object.i, Width.i, Height.i, iData.i)
-	AddPathBox(0.5, 0.5, Width-1, Height-1)
+   AddPathBox(0.5, 0.5, Width-1, Height-1)
 	VectorSourceColor(iData|$80000000)
 	FillPath(#PB_Path_Preserve)
 	VectorSourceColor(iData|$FF000000)
@@ -231,9 +231,11 @@ Repeat
 ForEver
 
 End
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; Folding = -
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 4
+; FirstLine = 81
+; Folding = --
 ; EnableXP
-; EnableCompileCount = 171
+; EnableCompileCount = 176
 ; EnableBuildCount = 0
 ; EnableExeConstant

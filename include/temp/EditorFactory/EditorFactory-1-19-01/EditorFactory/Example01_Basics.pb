@@ -77,9 +77,9 @@ Repeat
 ForEver
 
 End
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; Folding = -
 ; EnableXP
-; EnableCompileCount = 63
+; EnableCompileCount = 65
 ; EnableBuildCount = 0
 ; EnableExeConstant

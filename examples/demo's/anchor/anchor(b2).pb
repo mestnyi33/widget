@@ -9,6 +9,7 @@ Global *Object1,*Object2,*Object3,*Object4,*Object5
 ;   PB(a_set)( this, mode, DPIScaled(size) )
 ; EndMacro
 
+
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   ;;*this\_a_\mode = mode  
   SetFrame(*this, size)
@@ -49,6 +50,8 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   ;\\ Define different cursors to the objects
   SetCursor(*Object2, #PB_Cursor_Hand)
   SetCursor(*Object3, #PB_Cursor_Cross)
+;   SetCursor(*Object4, #PB_Cursor_Busy)
+;   SetCursor(*Object5, #PB_Cursor_Denied)
   
   
 ;   ;\\ Sets the selection frame style of the specified object.
@@ -66,7 +69,8 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9
+; CursorPosition = 11
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
 ; DPIAware

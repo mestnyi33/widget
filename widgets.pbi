@@ -1344,7 +1344,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   Draw_Button( *this )
       Declare.b Draw( *this )
       Declare   ReDraw( *this )
-      Declare   Drawing( *root = 0 )
+      Declare   Drawing( )
       
       Declare.b HideItem( *this, item.l, state.b )
       Declare.b Hide( *this, State.b = #PB_Default, flags.q = 0 )
@@ -2637,22 +2637,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             a_anchors( )\line[#__a_line_bottom]
             
             ;\\ line default size&pos
-            a_anchors( )\line[#__a_line_left]\width  = 1
+            a_anchors( )\line[#__a_line_left]\width  = DPIScaled(1)
             a_anchors( )\line[#__a_line_left]\height = 0 ; _this_\frame_height( )
             a_anchors( )\line[#__a_line_left]\x      = _this_\frame_x( )
             a_anchors( )\line[#__a_line_left]\y      = _this_\frame_y( )
             
-            a_anchors( )\line[#__a_line_top]\height = 1
+            a_anchors( )\line[#__a_line_top]\height = DPIScaled(1)
             a_anchors( )\line[#__a_line_top]\width  = 0 ; _this_\frame_width( )
             a_anchors( )\line[#__a_line_top]\x      = _this_\frame_x( )
             a_anchors( )\line[#__a_line_top]\y      = _this_\frame_y( )
             
-            a_anchors( )\line[#__a_line_right]\width  = 1
+            a_anchors( )\line[#__a_line_right]\width  = DPIScaled(1)
             a_anchors( )\line[#__a_line_right]\height = 0 ; _this_\frame_height( )
             a_anchors( )\line[#__a_line_right]\x      = ( _this_\frame_x( ) + _this_\frame_width( ) ) - a_anchors( )\line[#__a_line_right]\width
             a_anchors( )\line[#__a_line_right]\y      = _this_\frame_y( )
             
-            a_anchors( )\line[#__a_line_bottom]\height = 1
+            a_anchors( )\line[#__a_line_bottom]\height = DPIScaled(1)
             a_anchors( )\line[#__a_line_bottom]\width  = 0 ; _this_\frame_width( )
             a_anchors( )\line[#__a_line_bottom]\x      = _this_\frame_x( )
             a_anchors( )\line[#__a_line_bottom]\y      = ( _this_\frame_y( ) + _this_\frame_height( ) ) - a_anchors( )\line[#__a_line_bottom]\height
@@ -3267,18 +3267,21 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure a_object( X.l, Y.l, Width.l, Height.l, Text.s, Color.l, flag.q = #Null, framesize = 1 )
+         ;framesize = 0
          Protected *this._s_WIDGET
          If Not Alpha(Color)
             Color = Color & $FFFFFF | 255 << 24
          EndIf
          ;
-         *this._s_WIDGET = Container(X, Y, Width, Height, #__flag_nogadgets)
-         ;;*this\type = 0
+         ;*this._s_WIDGET = Text(X, Y, Width, Height, "", #__flag_nogadgets|#__flag_Transparent)
+         *this._s_WIDGET = Container(X, Y, Width, Height, #__flag_nogadgets|#__flag_BorderLess) : *this\container = 0
+         
          If Text
             SetText( *this, Text)
          EndIf
          ;
-         SetFrame( *this, framesize)
+         ;SetFrame( *this, framesize)
+         *this\fs = framesize
          ;
          SetColor( *this, #__color_back, Color)
          ;
@@ -3393,6 +3396,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ;                         StopDraw( )
                         ;                      EndIf
                      EndIf
+                  EndIf
+                  
+                  If a_index( ) = #__a_Moved
+                     ChangeCurrentCursor( *this, #PB_Cursor_Arrows )
                   EndIf
                EndIf
             EndIf
@@ -8529,10 +8536,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                               mouse( )\drag = #PB_Drag_Leave
                               ; Debug "press #PB_Drag_Leave"
                               
-                              ;                               Debug *this\RowPressed( )\index
+                              ;                               Debug *this\RowPressed( )\rindex
                               If *this\row
                                  If *this\RowPressed( )
-                                    SetState( *this, *this\RowPressed( )\index )
+                                    SetState( *this, *this\RowPressed( )\rindex )
                                  EndIf
                               EndIf
                               
@@ -8926,9 +8933,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_ListView
             
             If *this\RowPressed( )
-               ProcedureReturn *this\RowPressed( )\index
+               ProcedureReturn *this\RowPressed( )\rindex
             ElseIf *this\RowFocused( )
-               ProcedureReturn *this\RowFocused( )\index
+               ProcedureReturn *this\RowFocused( )\rindex
             Else
                ProcedureReturn - 1 ; *this\RowFocusedIndex( ) ; \TabState( )
             EndIf
@@ -10249,6 +10256,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
+         ;
+         If Position = #PB_List_First Or
+            Position = #PB_List_Last 
+            PushListPosition( widgets( ) )
+            ForEach widgets( )
+               widgets( )\layer = ListIndex( widgets( ) )
+            Next
+            PopListPosition( widgets( ) )
+         Else
+            If *this\AfterWidget( )
+               *this\AfterWidget( )\layer = *this\layer + 1 + *this\haschildren
+            EndIf
+            If *this\BeforeWidget( )
+               *this\BeforeWidget( )\layer = *this\layer - 1 - *this\haschildren
+            EndIf
+         EndIf
       EndProcedure
       
       Procedure.i GetPosition( *this._s_WIDGET, position.l, tabindex.l = #PB_Default )
@@ -10346,17 +10369,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                   PushListPosition( widgets( ))
                   ChangeCurrentElement( widgets( ), *this\address )
                   MoveElement( widgets( ), #PB_List_Before, *widget\address )
+                  widgets( )\layer = ListIndex( widgets( ) )
                   
                   If *this\haschildren
                      While PreviousElement( widgets( ))
                         If IsChild( widgets( ), *this )
                            MoveElement( widgets( ), #PB_List_After, *widget\address )
+                           widgets( )\layer = ListIndex( widgets( ) )
                         EndIf
                      Wend
                      
                      While NextElement( widgets( ))
                         If IsChild( widgets( ), *this )
                            MoveElement( widgets( ), #PB_List_Before, *widget\address )
+                           widgets( )\layer = ListIndex( widgets( ) )
                         EndIf
                      Wend
                   EndIf
@@ -10371,17 +10397,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                      PushListPosition( widgets( ))
                      ChangeCurrentElement( widgets( ), *this\address )
                      MoveElement( widgets( ), #PB_List_After, *last\address )
-                     
+                     widgets( )\layer = ListIndex( widgets( ) )
+                  
                      If *this\haschildren
                         While NextElement( widgets( ))
                            If IsChild( widgets( ), *this )
                               MoveElement( widgets( ), #PB_List_Before, *last\address )
+                              widgets( )\layer = ListIndex( widgets( ) )
                            EndIf
                         Wend
                         
                         While PreviousElement( widgets( ))
                            If IsChild( widgets( ), *this )
                               MoveElement( widgets( ), #PB_List_After, *this\address )
+                              widgets( )\layer = ListIndex( widgets( ) )
                            EndIf
                         Wend
                      EndIf
@@ -10566,8 +10595,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                AddElement( widgets( ) )
-               widgets( )  = *this
-               *this\index     = ListIndex( widgets( ) )
+               widgets( )    = *this
+               *this\layer   = ListIndex( widgets( ) )
+               *this\index   = ListIndex( widgets( ) )
                *this\address = @widgets( )
             EndIf
             ;
@@ -10655,10 +10685,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure ReParent( *this._s_WIDGET, *parent._s_WIDGET )
          ;\\
-         ;If Not is_integral_( *this )
-         If *parent\container 
+         ;If *parent\container 
             *parent\haschildren + 1
-         EndIf
          ;EndIf
          
          ;\\
@@ -17601,13 +17629,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\ backcolor
             If *this\color\back <> - 1
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               ; If *this\fs
-               
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-               
-               ; Else
-               ;   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-               ; EndIf
+;                If *this\fs
+                  draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+;                Else
+;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+;                EndIf
             EndIf
             
             ;
@@ -17877,15 +17903,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\align And 
                *this\align\update = 1
                *this\align\update = 0
-;               ;\\ ?-надо тестировать
-;                ;If Not *this\align\width
-;                   *this\align\x     = *this\container_x( )
-;                   *this\align\width = *this\inner_width( )
-; ;                EndIf
-; ;                If Not *this\align\height
-;                   *this\align\y      = *this\container_y( )
-;                   *this\align\height = *this\inner_height( )
-; ;                EndIf
                Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             EndIf
             
@@ -17909,13 +17926,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; Debug "DRAW( "+*this\class +" "+ *this\enter
                ;
                ;\\ draw clip out transform widgets frame
-               If ( *this\anchors And Not *this\anchors\mode & #__a_zoom ) Or test_clip
-                  ;If Not ( *this\draw_width( ) > 0 And *this\draw_height( ) > 0 )
-                  UnclipOutput( )
-                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ff00ffff )
-                  draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, $ff00ffff )
-                  ;EndIf
+               If *this\root\drawmode & 1<<2
+                  If ( *this\anchors And Not *this\anchors\mode & #__a_zoom ) Or test_clip
+                     ;If Not ( *this\draw_width( ) > 0 And *this\draw_height( ) > 0 )
+                     UnclipOutput( )
+                     draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ff00ffff )
+                     draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, $ff00ffff )
+                     ;EndIf
+                  EndIf
                EndIf
                
                ;\\
@@ -18082,7 +18101,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; post event re draw
                   If *this\binddraw
                      If __gui\eventexit 
+                        If *this\root\drawmode & 1<<1
+                           SaveVectorState( )
+                           TranslateCoordinates( *this\x[#__c_frame], *this\y[#__c_frame] )
+                        EndIf
                         Send( *this, #__event_Draw )
+                        If *this\root\drawmode & 1<<1
+                           RestoreVectorState( )
+                        EndIf
                      EndIf
                   EndIf
                   ;
@@ -18182,23 +18208,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure   ReDraw( *this._s_WIDGET )
-         If Not widget::__gui\DrawingRoot
-            widget::StartDraw( *this\root )
-         EndIf
-         widget::Drawing( *this\root )
-         widget::StopDraw( )
-         
-         ; if not is root refresh widget
-         If Not is_root_( *this )
-            Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-         EndIf
-      EndProcedure
-      
-      Procedure   Drawing( *root._s_root = 0 )
-         If Not *root
-            *root = __gui\DrawingRoot
-         EndIf
+      Procedure   Drawing( )
+         Protected *root._s_root = __gui\DrawingRoot
          
          ;          ClearDebugOutput( )
          ;          ;\\
@@ -18482,6 +18493,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn *root
       EndProcedure
       
+      Procedure   ReDraw( *this._s_WIDGET )
+         If widget::__gui\DrawingRoot
+            Debug " ----REDRAW---- "
+         Else
+            widget::StartDraw( *this\root )
+         EndIf
+         widget::Drawing( )
+         widget::StopDraw( )
+         
+         ; if not is root refresh widget
+         If Not is_root_( *this )
+            Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         EndIf
+      EndProcedure
+      
+      
       ;-
       Macro multi_select_rows_( _this_, _current_row_ )
          PushListPosition( *this\__rows( ))
@@ -18624,7 +18651,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   If a_enter( a_entered( ), - 3 )
                      If a_entered( )
-                        If ( *this And a_entered( )\index < *this\index ) And 
+                        If ( *this And a_entered( )\layer < *this\layer ) And 
                            a_entered( ) <> a_focused( ) 
                            ;
                            a_index( ) = 0
@@ -19469,9 +19496,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                                           EndIf
                                           
                                           
-                                          Debug ""+*this\__lines( )\index +" - "+ Str(*this\__lines( )\text\edit[2]\width-*this\__lines( )\selector) +" "+ *this\__lines( )\text\width
+                                          Debug ""+*this\__lines( )\lindex +" - "+ Str(*this\__lines( )\text\edit[2]\width-*this\__lines( )\selector) +" "+ *this\__lines( )\text\width
                                           If Not *this\__lines( )\text\edit[2]\width ; -*this\__lines( )\selector <> *this\__lines( )\text\width
-                                                                                     ;Debug *this\__lines( )\index
+                                                                                     ;Debug *this\__lines( )\lindex
                                              edit_sel_string_( *this, *this\__lines( ), #__sel_to_set )
                                              ;  *this\root\repaint = 1
                                           EndIf
@@ -24598,9 +24625,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18962
-; FirstLine = 18640
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f--8-fg----4f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4v---4-------------------------------------------------8------------------------------------------------------------
+; CursorPosition = 2654
+; FirstLine = 2628
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-8-f--D9----+8------------------------------------------------------------------------------------------------------------------------------------------------------------4-------8-------8-8---------------------------------------------84---8--------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   ;
   If Open(0, 0, 0, 800, 450, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetColor(root( ), #__color_back, RGBA(244, 245, 233, 255))
+    SetColor(root( ), #__color_back, RGBA(245, 245, 245, 255))
     ;
     ;\\
     a_init(root( ))
@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP
 ; DPIAware

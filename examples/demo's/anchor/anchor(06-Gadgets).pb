@@ -49,8 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
          press = 0
       EndIf
       
-      SaveVectorState()
-      TranslateCoordinates( X,Y )
+;       SaveVectorState()
+;       TranslateCoordinates( X,Y )
       
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
@@ -123,8 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
          DrawVectorParagraph(Text, Width, Height, #PB_VectorParagraph_Center)
       EndIf
       
-      ;
-      RestoreVectorState()
+;       ;
+;       RestoreVectorState()
    EndProcedure
    
    Procedure Button_Events( )
@@ -176,8 +176,8 @@ CompilerIf #PB_Compiler_IsMainFile
          press = 0
       EndIf
       
-      SaveVectorState()
-      TranslateCoordinates( X,Y )
+;       SaveVectorState()
+;       TranslateCoordinates( X,Y )
       
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
@@ -265,8 +265,8 @@ CompilerIf #PB_Compiler_IsMainFile
          ;DrawVectorText(Text)
       EndIf
       
-      ;
-      RestoreVectorState()
+;       ;
+;       RestoreVectorState()
    EndProcedure
    
    Procedure CheckBox_Events( )
@@ -381,8 +381,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 111
-; Folding = 0-0f-
+; CursorPosition = 277
+; FirstLine = 140
+; Folding = 0-0--
 ; EnableXP
 ; DPIAware

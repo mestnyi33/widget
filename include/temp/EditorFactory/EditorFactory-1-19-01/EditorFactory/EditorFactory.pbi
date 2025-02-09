@@ -2636,7 +2636,12 @@ Module EditorFactory
 	;  Résultat:              Le numéro d'objet de l'objet créé ou 0 si la création a échoué. 
 	;}
 	Procedure.i CreateObject(iCanvasGadget.i, iObject.i, iX.i, iY.i, iWidth.i, iHeight.i, iParentObject.i=#PB_Default, iFrameIndex.i=#Frame_NoFrame)
-		
+	   iX = DesktopScaledX(iX)
+	   iY = DesktopScaledY(iY)
+	   
+		iWidth = DesktopScaledX(iWidth)
+	   iHeight = DesktopScaledY(iHeight)
+	   
 		Protected *ObjectManager.ObjectManager : _ObjectManagerID_(*ObjectManager, iCanvasGadget, 0)
 		Protected *Object.Object, *Frame.Frame, *ParentObject.Object
 		
@@ -3215,15 +3220,15 @@ Module EditorFactory
 				If eType & (1<<iIndex)
 					*Object\aHandle(iIndex)\iImage     = iImage
 					*Object\aHandle(iIndex)\iImageID   = ImageID(iImage)
-					*Object\aHandle(iIndex)\iWidth     = ImageWidth(iImage)
-					*Object\aHandle(iIndex)\iHeight    = ImageHeight(iImage)
+					*Object\aHandle(iIndex)\iWidth     = DesktopScaledX(ImageWidth(iImage))
+					*Object\aHandle(iIndex)\iHeight    = DesktopScaledY(ImageHeight(iImage))
 					If eAlignment = #Alignment_Default
 						*Object\aHandle(iIndex)\eAlignment = PeekI(?DefaultAlignment+iIndex*SizeOf(Integer))
 					Else
 						*Object\aHandle(iIndex)\eAlignment = eAlignment
 					EndIf
-					*Object\aHandle(iIndex)\iX         = iX
-					*Object\aHandle(iIndex)\iY         = iY
+					*Object\aHandle(iIndex)\iX         = DesktopScaledX(iX)
+					*Object\aHandle(iIndex)\iY         = DesktopScaledY(iY)
 					*Object\aHandle(iIndex)\eCursor    = PeekI(?DefaultCursor+iIndex*SizeOf(Integer))
 				EndIf
 			Next
@@ -5894,10 +5899,10 @@ EndModule
 
 
 
-; IDE Options = PureBasic 6.00 Beta 1 (Windows - x64)
-; CursorPosition = 5872
-; FirstLine = 15
-; Folding = AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1360
+; FirstLine = 238
+; Folding = CAAAAAAAAAAAAAAAAAAgBwHCBAIAOAAAAAAAA-------------------------------------------------------------------
 ; EnableXP
 ; EnableCompileCount = 214
 ; EnableBuildCount = 0

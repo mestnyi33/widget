@@ -61,7 +61,7 @@ SetColor(root(), #__color_back, $ffffffff)
 SetAttach( *Object2, *Object1, 0 ) ; Прикрепите Object2 непосредственно к Object1, тогда позиция будет относительно Object1
 
 *Object3 = a_object(160, 170, 140, 100, "*Object3", RGBA(128, 0, 64, alpha1))
-SetAttach( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, но только к x-позиции
+SetAttach( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, но только к (1=x-позиции ; 2=y-позиции)
 
 
 ; --- Panel container ---
@@ -101,7 +101,7 @@ SetItemColor(*Object4, #PB_All, #__color_back, RGBA(64, 128, 192, alpha),2)
 ; Если вы присоединяете объект к другому объекту и устанавливаете его рамку обрезки, он действует как гаджет области прокрутки.
 ; Здесь вы также можете изменить видимую область с помощью ручек (стрелок) справа и снизу.
 
-*Object8 = ScrollArea( 850, 50, 300, 300,500, 500,1)
+*Object8 = ScrollArea( 850, 50, 300, 300,500, 500, 1)
 SetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
 SetColor(widget(), #__color_Frame, RGB(128, 192, 64))
 ; SetFrame(widget(), 2)
@@ -300,8 +300,8 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 36
+; CursorPosition = 63
+; FirstLine = 42
 ; Folding = +
 ; EnableXP
 ; DPIAware

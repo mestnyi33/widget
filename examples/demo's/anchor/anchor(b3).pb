@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets2.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
 
 UseWidgets( )
 Global alpha = 128

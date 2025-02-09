@@ -589,6 +589,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          
          Index.i         ; index widget
+         layer.i
          
          ; placing layout
          ;place\index
@@ -776,8 +777,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 34
+; CursorPosition = 591
+; FirstLine = 566
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

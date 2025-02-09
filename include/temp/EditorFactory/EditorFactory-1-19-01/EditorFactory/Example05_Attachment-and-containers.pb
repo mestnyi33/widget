@@ -347,10 +347,12 @@ DataSection
 EndDataSection
 
 
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; Folding = --
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 105
+; Folding = ----
 ; EnableThread
 ; EnableXP
-; EnableCompileCount = 474
+; EnableCompileCount = 477
 ; EnableBuildCount = 0
 ; EnableExeConstant
