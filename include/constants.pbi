@@ -139,6 +139,7 @@
       #__c_container = 3 ; container
       #__c_required  = 4 ; required
       #__c_window    = 5 ; window
+                         ;
       #__c_restore   = 6 ; 
       #__c_draw      = 7 ; clip screen
       #__c_idraw     = 8 ; clip inner
@@ -743,8 +744,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 298
-; FirstLine = 292
+; CursorPosition = 139
+; FirstLine = 128
 ; Folding = ----
 ; Optimizer
 ; EnableXP

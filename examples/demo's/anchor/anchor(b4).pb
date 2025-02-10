@@ -33,10 +33,10 @@ Procedure menu_events()
             SetPosition(CurrentObject, #PB_List_First) 
       EndSelect
       
-;       If StartEnum( root( ) )
-;          SetText( widget( ), "Layer = "+Str(widget( )\layer+1))
-;          StopEnum( )
-;       EndIf
+      If StartEnum( root( ) )
+         SetText( widget( ), "Layer = "+Str(widget( )\layer+1))
+         StopEnum( )
+      EndIf
       
       ReDraw( root() )
    EndIf
@@ -47,39 +47,6 @@ Procedure right_events()
    ; #EventType_RightMouseClick
    CurrentObject = a_entered( )
    DisplayPopupMenu(#Menu, WindowID(EventWindow())) ; The context menu is displayed.
-EndProcedure
-
-Procedure MyDrawingObject(*Object._s_WIDGET, Width.i, Height.i, iData.i) ; Runtime 
-   AddPathBox(0.5, 0.5, Width-1, Height-1)
-	VectorSourceColor(iData|$C0000000)
-	FillPath(#PB_Path_Preserve)
-	VectorSourceColor(iData|$FF000000)
-	StrokePath(1)
-	MovePathCursor(10, 10)
-	VectorSourceColor($FF000000)
-	VectorFont(FontID(#Font))
-	DrawVectorText("vector Layer = "+Str(*Object\layer+1))
-EndProcedure
-
-Procedure myDraw( )
-   MyDrawingObject(EventWidget( ), EventWidget( )\Width[#__c_frame], EventWidget( )\Height[#__c_frame], EventWidget( )\color\back)
-   ProcedureReturn #PB_Ignore
-EndProcedure
-
-Procedure SetTextXY( *this._s_WIDGET, X, Y )
-   *this\text\x = DesktopScaledX(X)
-   *this\text\y = DesktopScaledX(Y)
-   
-   ; 2DDrawing 
-   *this\root\drawmode | 1<<2
-   
-   ; VectorDrawing
-   *this\root\drawmode | 1<<1
-   *this\type = 0 
-   Bind( *this, @MyDraw( ), #__event_Draw )
-   
-   ; 
-   ; *this\container = 0
 EndProcedure
 
 If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (context menu via right click)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -109,8 +76,8 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
    WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 59
+; CursorPosition = 37
+; FirstLine = 41
 ; Folding = --
 ; EnableXP
 ; DPIAware

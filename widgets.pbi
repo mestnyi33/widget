@@ -1401,6 +1401,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.s GetClass( *this )
       Declare   SetClass( *this, class.s )
       
+      Declare   SetTextXY( *this._s_WIDGET, X.l, Y.l )
       Declare.s GetText( *this )
       Declare   SetText( *this, Text.s )
       Declare.s GetItemText( *this, Item.l, Column.l = 0 )
@@ -1511,7 +1512,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;
       Declare.i Send( *this, event.l, *button = #PB_All, *data = #Null )
       Declare.i Post( *this, event.l, *button = #PB_All, *data = #Null )
-      Declare.i Bind( *this, *callback, event.l = #PB_All, item.l = #PB_All )
+      Declare.i Bind( *this, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
       Declare.i Unbind( *this, *callback, event.l = #PB_All, item.l = #PB_All )
       ;
       Declare   Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
@@ -3275,6 +3276,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          ;*this._s_WIDGET = Text(X, Y, Width, Height, "", #__flag_nogadgets|#__flag_Transparent)
          *this._s_WIDGET = Container(X, Y, Width, Height, #__flag_nogadgets|#__flag_BorderLess) : *this\container = 0
+         ;*this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, 0, X, Y, Width, Height, #Null$, 0, 0, 0, 0, 0, 0, 0 )
          
          If Text
             SetText( *this, Text)
@@ -4024,13 +4026,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If _this_\type = #__type_Scroll
             If _this_\bar\vertical
-               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\width / 4 )) = _this_\frame_height( )
+               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_width( ) / 4 )) = _this_\frame_height( )
                   Line(_this_\frame_x( ), _this_\frame_y( ), 1, _this_\bar\page\len + 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
                Else
-                  Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\button[1]\round, 1, _this_\height - _this_\bar\button[1]\round - _this_\bar\button[2]\round, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+                  Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\button[1]\round, 1, _this_\frame_height( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
                EndIf
             Else
-               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\height / 4 )) = _this_\frame_width( )
+               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_height( ) / 4 )) = _this_\frame_width( )
                   Line(_this_\frame_x( ), _this_\frame_y( ), _this_\bar\page\len + 1, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF0000ff ) ;
                Else
                   Line(_this_\frame_x( ) + _this_\bar\button[1]\round, _this_\frame_y( ), _this_\frame_width( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
@@ -5027,11 +5029,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          If _this_\scroll And ( _this_\scroll\v Or _this_\scroll\h )
             ;clip_output_( _this_, [#__c_draw] )
             
-            If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And
+            If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\frame_width( ) And
                ( _this_\scroll\v\draw_width( ) > 0 And _this_\scroll\v\draw_height( ) > 0 )
                bar_draw_scroll( _this_\scroll\v )
             EndIf
-            If _this_\scroll\h And Not _this_\scroll\h\hide And _this_\scroll\h\height And
+            If _this_\scroll\h And Not _this_\scroll\h\hide And _this_\scroll\h\frame_height( ) And
                ( _this_\scroll\h\draw_width( ) > 0 And _this_\scroll\h\draw_height( ) > 0 )
                bar_draw_scroll( _this_\scroll\h )
             EndIf
@@ -5085,10 +5087,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             w = Bool( *this\scroll_width( ) > Width )
             h = Bool( *this\scroll_height( ) > Height )
             
-            \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
-            \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
+            \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\frame_height( ) )
+            \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\frame_width( ) )
             
-            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\height )
+            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ) )
             If \v\bar\page\len = iheight
                If \v\bar\thumb\len = \v\bar\thumb\end
                   bar_Update( \v, #True )
@@ -5107,7 +5109,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\width )
+            iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
             If \h\bar\page\len = iwidth
                bar_Update( \v, #True )
                If \h\bar\thumb\len = \h\bar\thumb\end
@@ -5131,25 +5133,25 @@ CompilerIf Not Defined( widget, #PB_Module )
             Height + Y
             
             
-            If \v\frame_x( ) = *this\inner_x( ) + (Width - \v\width)
+            If \v\frame_x( ) = *this\inner_x( ) + (Width - \v\frame_width( ))
                x1 = \v\frame_x( )
             Else
                resize_v = 1
-               x1 = *this\inner_x( ) + (Width - \v\width)
+               x1 = *this\inner_x( ) + (Width - \v\frame_width( ))
                ; Debug "         v "+\v\frame_x( ) +" "+ x1
             EndIf
             
-            If \h\frame_y( ) = *this\inner_y( ) + (Height - \h\height)
+            If \h\frame_y( ) = *this\inner_y( ) + (Height - \h\frame_height( ))
                y1 = \h\frame_y( )
             Else
                resize_h = 1
-               y1 = *this\inner_y( ) + (Height - \h\height)
+               y1 = *this\inner_y( ) + (Height - \h\frame_height( ))
                ;Debug "         h "+\h\frame_y( ) +" "+ y1
             EndIf
             
             If \v\bar\max > \v\bar\page\len
                resize_v     = 1
-               Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
+               Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\frame_height( ) / 4 ) )
                If \v\hide <> #False
                   \v\hide = #False
                   If \h\hide
@@ -5168,7 +5170,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If \h\bar\max > \h\bar\page\len
                resize_h    = 1
-               Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\width / 4 ))
+               Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
                If \h\hide <> #False
                   \h\hide = #False
                   If \v\hide
@@ -5270,10 +5272,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             w = Bool( *this\scroll_width( ) > Width )
             h = Bool( *this\scroll_height( ) > Height )
             
-            \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
-            \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
+            \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\frame_height( ) )
+            \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\frame_width( ) )
             
-            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\height )
+            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ) )
             If \v\bar\page\len = iheight
                If \v\bar\thumb\len = \v\bar\thumb\end
                   bar_Update( \v, #True )
@@ -5292,7 +5294,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\width )
+            iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
             If \h\bar\page\len = iwidth
                bar_Update( \v, #True )
                If \h\bar\thumb\len = \h\bar\thumb\end
@@ -5315,19 +5317,19 @@ CompilerIf Not Defined( widget, #PB_Module )
             Height + Y
             
             
-            If \v\frame_x( ) = *this\inner_x( ) + (Width - \v\width)
+            If \v\frame_x( ) = *this\inner_x( ) + (Width - \v\frame_width( ))
                x1 = \v\frame_x( )
             Else
                resize_v = 1
-               x1 = *this\inner_x( ) + (Width - \v\width)
+               x1 = *this\inner_x( ) + (Width - \v\frame_width( ))
                ; Debug "         v "+\v\frame_x( ) +" "+ x1
             EndIf
             
-            If \h\frame_y( ) = *this\inner_y( ) + (Height - \h\height)
+            If \h\frame_y( ) = *this\inner_y( ) + (Height - \h\frame_height( ))
                y1 = \h\frame_y( )
             Else
                resize_h = 1
-               y1 = *this\inner_y( ) + (Height - \h\height)
+               y1 = *this\inner_y( ) + (Height - \h\frame_height( ))
                ;Debug "         h "+\h\frame_y( ) +" "+ y1
             EndIf
             
@@ -5357,7 +5359,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not \h\hide[1]
                If \h\bar\max > \h\bar\page\len
                   resize_h    = 1
-                  Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\width / 4 ))
+                  Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
                   ;                If \h\hide <> #False
                   ;                   \h\hide = #False
                   If \v\hide
@@ -5605,21 +5607,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;Debug " h - " + Str( scroll_height - sy )
                   
                   ; if on the v - scroll
-                  If \h\bar\max > Width - \v\width
-                     \h\bar\page\len = Width - \v\width
-                     \v\bar\page\len = Height - \h\height
+                  If \h\bar\max > Width - \v\frame_width( )
+                     \h\bar\page\len = Width - \v\frame_width( )
+                     \v\bar\page\len = Height - \h\frame_height( )
                      scroll_width    = \h\bar\max
                      
                      If scroll_x <= X
                         \h\bar\page\pos = - ( scroll_x - X )
                      EndIf
-                     ;  Debug "h - " + \h\bar\max  + " " +  \h\width  + " " +  \h\bar\page\len
+                     ;  Debug "h - " + \h\bar\max  + " " +  \h\frame_width( )  + " " +  \h\bar\page\len
                   Else
-                     scroll_width = \h\bar\page\len - ( scroll_x - X ) - \v\width
+                     scroll_width = \h\bar\page\len - ( scroll_x - X ) - \v\frame_width( )
                   EndIf
                EndIf
                
-               \h\bar\page\len = Width - \v\width
+               \h\bar\page\len = Width - \v\frame_width( )
                If scroll_y <= Y
                   \v\bar\page\pos = - ( scroll_y - Y )
                   v_max           = 0
@@ -5634,7 +5636,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                \v\round And
                \h\bar\page\len < Width And
                \v\bar\page\len < Height
-               round = ( \h\height / 4 )
+               round = ( \h\frame_height( ) / 4 )
             EndIf
             
             ;Debug ""+*this\scroll_width( ) +" "+ scroll_width
@@ -5664,7 +5666,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               If \h\width <> \h\bar\page\len + round
+               If \h\frame_width( ) <> \h\bar\page\len + round
                   Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore )
                   *this\scroll\h\hide = Bool( *this\scroll\h\bar\max <= *this\scroll\h\bar\page\len )
                   result              = 1
@@ -5949,7 +5951,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
                         ScrollPos = *bar\max - *this\TabFocused( )\x
                         ;ScrollPos - *bar\thumb\end                                    ; to left
-                        ;ScrollPos - *this\TabFocused( )\width                         ; to right
+                        ;ScrollPos - *this\TabFocused( )\width                        ; to right
                         ScrollPos - ( *bar\thumb\end + *this\TabFocused( )\width ) / 2 ; to center
                         
                         ScrollPos     = bar_page_pos_( *bar, ScrollPos )
@@ -6450,10 +6452,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                
             Else
                If *this\split_1( ) > 0 And *this\split_1( ) <> *this
-                  If *this\split_1( )\x <> *BB1\x Or
-                     *this\split_1( )\y <> *BB1\y Or
-                     *this\split_1( )\width <> *BB1\width Or
-                     *this\split_1( )\height <> *BB1\height
+                  If *this\split_1( )\container_x( ) <> *BB1\x Or
+                     *this\split_1( )\container_y( ) <> *BB1\y Or
+                     *this\split_1( )\container_width( ) <> *BB1\width Or
+                     *this\split_1( )\container_height( ) <> *BB1\height
                      
                      If *this\split_1( )\type = #__type_window
                         Resize( *this\split_1( ),
@@ -6491,10 +6493,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                
             Else
                If *this\split_2( ) > 0 And *this\split_2( ) <> *this
-                  If *this\split_2( )\x <> *BB2\x Or
-                     *this\split_2( )\y <> *BB2\y Or
-                     *this\split_2( )\width <> *BB2\width Or
-                     *this\split_2( )\height <> *BB2\height
+                  If *this\split_2( )\container_x( ) <> *BB2\x Or
+                     *this\split_2( )\container_y( ) <> *BB2\y Or
+                     *this\split_2( )\container_width( ) <> *BB2\width Or
+                     *this\split_2( )\container_height( ) <> *BB2\height
                      
                      If *this\split_2( )\type = #__type_window
                         Resize( *this\split_2( ),
@@ -7897,8 +7899,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             *this\resize\width = Change_width
-            *this\frame_width( )     = Width
             *this\container_width( ) = iwidth
+            *this\frame_width( )     = Width
             *this\screen_width( )    = Width + ( *this\bs * 2 - *this\fs * 2 )
             If *this\container_width( ) < 0
                *this\container_width( ) = 0
@@ -7912,8 +7914,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             *this\resize\height = Change_height
-            *this\frame_height( )     = Height
             *this\container_height( ) = iheight
+            *this\frame_height( )     = Height
             *this\screen_height( )    = Height + ( *this\bs * 2 - *this\fs * 2 )
             If *this\container_height( ) < 0
                *this\container_height( ) = 0
@@ -8906,7 +8908,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ; custom object
          If *this\type = 0
-            ; ProcedureReturn *this\state
+            ProcedureReturn *this\state
          EndIf
          
          ;
@@ -9028,7 +9030,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ custom object
          If *this\type = 0
-            ; *this\state = state
+            *this\state = state
             ProcedureReturn #True
          EndIf
          
@@ -9573,6 +9575,15 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure   SetTextXY( *this._s_WIDGET, X.l, Y.l )
+         If Not X < 0
+            *this\text\x = DesktopScaledX(X)
+         EndIf
+         If Not Y < 0
+            *this\text\y = DesktopScaledX(Y)
+         EndIf
+      EndProcedure
+      
       Procedure.s GetText( *this._s_WIDGET );, column.l = 0 )
          If *this\type = #__type_Tree
             If *this\RowFocused( )
@@ -18104,6 +18115,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *this\root\drawmode & 1<<1
                            SaveVectorState( )
                            TranslateCoordinates( *this\x[#__c_frame], *this\y[#__c_frame] )
+                           
+                           CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                              VectorSourceColor( GetSysColor_( #COLOR_BTNFACE ) & $FFFFFF | 255 << 24 )
+                           CompilerEndIf
+                           
+                           ; FillVectorOutput()
                         EndIf
                         Send( *this, #__event_Draw )
                         If *this\root\drawmode & 1<<1
@@ -18380,7 +18397,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
             EndIf
             
-            
             ;
             ;\\ draw anchors (movable & sizable)
             If *root\drawmode & 1<<2
@@ -18495,7 +18511,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure   ReDraw( *this._s_WIDGET )
          If widget::__gui\DrawingRoot
-            Debug " ----REDRAW---- "
+           ; Debug " ----REDRAW---- "
          Else
             widget::StartDraw( *this\root )
          EndIf
@@ -22201,6 +22217,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If __gui\events( )\widget = *this And 
                         __gui\events( )\type = event And Not ( __gui\events( )\item >= 0 And __gui\events( )\item <> *button )
                         
+                        If __gui\events( )\data
+                           WidgetEventData( ) = __gui\events( )\data
+                        EndIf
+                        
                         result = __gui\events( )\function( )
                         If result = #PB_Ignore
                            Break
@@ -22260,7 +22280,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
+      Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
          ;
          If *this < 0
             PushMapPosition(roots( ))
@@ -22292,6 +22312,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                __gui\events( )\type     = event
                __gui\events( )\item     = item
                __gui\events( )\widget   = *this
+               __gui\events( )\data     = *data
                
                ; 
                If event = #__event_Draw
@@ -24625,9 +24646,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2654
-; FirstLine = 2628
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-8-f--D9----+8------------------------------------------------------------------------------------------------------------------------------------------------------------4-------8-------8-8---------------------------------------------84---8--------------------------------------------------------------------------------------------------------------
+; CursorPosition = 18513
+; FirstLine = 17688
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------48------------------------------------------------------------------------------------------------4----------------------------------------------------f-f--8-fg----4f-------------------------------------------------------------------------------------------------------------------------------------------------------------+------f-------f+-+-v-v-----------------------------------------+0---+--------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

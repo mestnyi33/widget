@@ -5900,9 +5900,9 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1360
-; FirstLine = 238
-; Folding = CAAAAAAAAAAAAAAAAAAgBwHCBAIAOAAAAAAAA-------------------------------------------------------------------
+; CursorPosition = 1510
+; FirstLine = 352
+; Folding = CABAAAAAAAAAAAAAAgBgBwHCBAIcO5fAAAgSA-------------------------------------------------------------------
 ; EnableXP
 ; EnableCompileCount = 214
 ; EnableBuildCount = 0

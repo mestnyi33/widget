@@ -232,10 +232,10 @@ ForEver
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
-; FirstLine = 81
+; CursorPosition = 36
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
-; EnableCompileCount = 176
+; EnableCompileCount = 177
 ; EnableBuildCount = 0
 ; EnableExeConstant

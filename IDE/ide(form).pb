@@ -1082,11 +1082,11 @@ Procedure widget_events( )
             Case #_DD_Group
                Debug " ----- DD_group ----- " + *e_widget\class
                
-            Case #_DD_reParent
-               Debug " ----- DD_move ----- " +PressedWidget( )\class +" "+ EnteredWidget( )\class
-               If SetParent( PressedWidget( ), EnteredWidget( ) )
-                  Protected i = 3 : Debug "re-parent "+ PressedWidget( )\parent\class +" "+ PressedWidget( )\x[i] +" "+ PressedWidget( )\y[i] +" "+ PressedWidget( )\width[i] +" "+ PressedWidget( )\height[i]
-               EndIf
+;             Case #_DD_reParent
+;                Debug " ----- DD_move ----- " +PressedWidget( )\class +" "+ EnteredWidget( )\class
+;                If SetParent( PressedWidget( ), EnteredWidget( ) )
+;                   Protected i = 3 : Debug "re-parent "+ PressedWidget( )\parent\class +" "+ PressedWidget( )\x[i] +" "+ PressedWidget( )\y[i] +" "+ PressedWidget( )\width[i] +" "+ PressedWidget( )\height[i]
+;                EndIf
                
             Case #_DD_CreateNew 
                Debug " ----- DD_new ----- "+ GetText( ide_inspector_elements ) +" "+ DDropX( ) +" "+ DDropY( ) +" "+ DDropWidth( ) +" "+ DDropHeight( )
@@ -1983,9 +1983,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1609
-; FirstLine = 1586
-; Folding = ----------------------4-------------
+; CursorPosition = 1087
+; FirstLine = 1076
+; Folding = -----------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

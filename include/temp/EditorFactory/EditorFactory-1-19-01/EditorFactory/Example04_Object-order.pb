@@ -66,7 +66,7 @@ OpenWindow(#Window, 0, 0, 800, 450, "Example 4: Changing the order of the object
     
 ; Create a canvas gadget
 CanvasGadget(#Canvas, 0, 0, WindowWidth(#Window), WindowHeight(#Window), #PB_Canvas_Keyboard)
-
+ 
 ; Initializes the object management for the canvas gadget
 If Not InitializeCanvasObjects(#Canvas, #Window)
 	Debug "Unable to initialize the object manager !"    
@@ -95,6 +95,11 @@ SetObjectDrawingCallback(#Object5, "MyDrawingObject()", RGB(128, 64, 192))
 
 ; Define different cursors to the objects
 AddObjectHandle(#Object_All, #Handle_Size | #Handle_Position)
+
+; If StartDrawing(CanvasOutput(#Canvas))
+;    Box(0, 0, 200, 200, #Red)
+;    StopDrawing()
+; EndIf
 
 Define CurrentObject.i 
 
@@ -149,12 +154,12 @@ ForEver
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 114
+; CursorPosition = 48
+; FirstLine = 31
 ; Folding = --
 ; EnableXP
 ; EnableUser
 ; EnableOnError
-; EnableCompileCount = 103
+; EnableCompileCount = 126
 ; EnableBuildCount = 0
 ; EnableExeConstant

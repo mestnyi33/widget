@@ -311,9 +311,11 @@ Repeat
 ForEver
 
 End
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; Folding = --
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 195
+; FirstLine = 116
+; Folding = 4----
 ; EnableXP
-; EnableCompileCount = 99
+; EnableCompileCount = 102
 ; EnableBuildCount = 0
 ; EnableExeConstant
