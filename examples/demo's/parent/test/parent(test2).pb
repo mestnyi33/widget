@@ -1,4 +1,4 @@
-﻿#IDE_path = "../../../"
+﻿#IDE_path = "../../../../"
 XIncludeFile #IDE_path + "widgets.pbi" 
 
 
@@ -251,7 +251,7 @@ CompilerIf #PB_Compiler_IsMainFile
         *param3 = 5
       EndIf
       
-      If a_transform( ) And mouse( )\steps
+      If  mouse( )\steps
         X = ( X/mouse( )\steps ) * mouse( )\steps
         Y = ( Y/mouse( )\steps ) * mouse( )\steps
         Width = ( Width/mouse( )\steps ) * mouse( )\steps + 1
@@ -297,7 +297,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
           
           ;  SetBackgroundImage( *new, Points( mouse( )\steps-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
-          EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
+          EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
         EndIf
         
         Class.s = "Form_"+GetClass( *new )+"_"+CountType( *new )
@@ -633,8 +633,8 @@ CompilerIf #PB_Compiler_IsMainFile
           ;             PostCanvasRepaint( *this\_root( ) )
         EndIf
         
-        If *this\scroll\state = #True
-          *this\scroll\state =- 1
+        If *this\row\autoscroll = #True
+          *this\row\autoscroll =- 1
         EndIf
         *this\countitems + 1
         *this\change = 1
@@ -687,10 +687,10 @@ CompilerIf #PB_Compiler_IsMainFile
             ; end new create
             SetState( id_elements_tree, 0 )
           Else
-            If SetParent( PressedWidget( ), EnteredWidget( ) )
+            If SetParent( Pressed( ), Entered( ) )
               Debug "re-parent"
-              Protected *new = PressedWidget( )
-              Protected *parent = EnteredWidget( )
+              Protected *new = Pressed( )
+              Protected *parent = Entered( )
               
               ;               ; get new add position & sublevel
               Protected i, CountItems, sublevel, position, sublevel2, position2
@@ -825,7 +825,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; ;     ; gadgets
     ; ;     id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
-    ; ;     ;EnableDDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
+    ; ;     ;EnableDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
     ; ;     
     ; ;     
     ; ;     ;id_design_form = Container( 0,0,0,0 ) : a_init( id_design_form ) : CloseList( )
@@ -908,8 +908,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 746
-; FirstLine = 716
+; CursorPosition = 827
+; FirstLine = 789
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

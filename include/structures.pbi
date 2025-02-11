@@ -301,9 +301,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          Data.w                  ; mouse moved state
          steps.a
-         press.b                 ; mouse buttons state
          click.a                 ; mouse clicked count
          buttons.a               ; mouse clicked button
+         press.b                 ; mouse buttons state
          
          anchors._s_TRANSFORM    ; a_anchors( )
          *selector._s_SELECTOR   ; mouse select frame
@@ -551,19 +551,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *attach._s_BOUNDATTACH
       EndStructure
       
-      ;--     EVENT
-      Structure _s_EVENTDATA
-         *widget._s_ROOT   ; eventWidget( )
-         *type             ; eventType( )
-         *item             ; eventItem( )
-         *data             ; eventData( )
-      EndStructure
-      Structure _s_HOOK Extends _s_EVENTDATA
-         *function.EventFunc
-         
-        ; Map *buttons( )
-      EndStructure
-      
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
          padding._s_point
@@ -637,8 +624,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
                                   ;                        ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
          ;
-         fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
          bs.a                     ; border size
+         fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
                                   ;                        ;
          tt._s_tt                 ; notification = уведомление
          *drop._s_DROP
@@ -735,37 +722,39 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *bar._s_ROOT
       EndStructure
       
-      ;--     STRUCT
-      Structure _s_STRUCT
-         Map *mapfontID( )  
-         
+      ;--     EVENT
+      Structure _s_EVENTDATA
+         *widget._s_ROOT   ; eventWidget( )
+         *type             ; eventType( )
+         *item             ; eventItem( )
+         *data             ; eventData( )
+      EndStructure
+      Structure _s_HOOK Extends _s_EVENTDATA
+         *function.EventFunc
+      EndStructure
+      Structure _s_EVENT Extends _s_EVENTDATA
+         quit.b                        ; quit from main loop
+         loop.b
+         exit.b
+         List *binds._s_HOOk( )
+         List *queues._s_EVENTDATA( )  ; __events( )
+      EndStructure
+      
+      ;--     GUI
+      Structure _s_GUI
          *fontID                       ; current drawing fontID
          *root._s_ROOT                 ; enumerate root
          *drawingroot._s_ROOT
          *opened._s_WIDGET             ; last opened-list element
-         *popup._s_WIDGET              
          *widget._s_WIDGET             ; enumerate widget
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
          sticky._s_STICKY              ; sticky( )\
+         event._s_EVENT
          
-         Map *_roots._s_ROOT( )   
-         List *_widgets._s_WIDGET( )    ; __widgets( )
-         
-         ;*drawingIMG
-         ;List *intersect._s_WIDGET( )
-         
-         ;\\ event\
-         event._s_EVENTDATA                ; __event( )\ 
-         eventquit.b                       ; quit from main loop
-         eventloop.b
-         eventexit.b
-         
-         ;Map *eventhook._s_HOOk( )
-         List *eventqueue._s_EVENTDATA( )  ; __events( )
-         
-         List *events._s_HOOk( )
+         Map *__roots._s_ROOT( )   
+         List *__widgets._s_WIDGET( )  ; __widgets( )
       EndStructure
       ;}
       
@@ -777,8 +766,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 591
-; FirstLine = 566
+; CursorPosition = 743
+; FirstLine = 726
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

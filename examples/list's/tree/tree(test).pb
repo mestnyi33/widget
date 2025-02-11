@@ -173,8 +173,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Repaints()
   EndProcedure  
   
-  Procedure TreeGadget_(gadget, x,y,width,height,flag=0)
-  Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
+  Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
+  Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
   If gadget =- 1 : gadget = g : EndIf
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -220,7 +220,7 @@ Define a
     Next
     
     ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ Type(*tree)
-    EnableDDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
+    EnableDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
     
     ;\\
     For a=0 To CountItems(*tree) : SetItemState(*tree, a, #PB_Tree_Collapsed) : Next
@@ -255,8 +255,8 @@ Define a
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 166
+; CursorPosition = 222
+; FirstLine = 162
 ; Folding = --yC--
 ; EnableXP
 ; DPIAware

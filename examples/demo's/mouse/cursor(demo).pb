@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             If EventWidget( ) = btn1
-               If DDragPrivate( #_DD_reParent )
+               If DragDropPrivate( #_DD_reParent )
                   ChangeCurrentCursor( btn1, #PB_Cursor_Arrows ) 
                EndIf
             EndIf
@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
                
                selectedIndex = GetState(EventWidget())           
                selectedText$ = GetItemText(EventWidget(), selectedIndex)
-               DDragText(selectedText$)   
+               DragDropText(selectedText$)   
                ;CurrentCursor( ) = GetCursor( Button_0 )
                ;ChangeCurrentCursor( Button_0, #PB_Cursor_Hand ) 
             EndIf
@@ -77,9 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile
       SetCursor( Button_1, #__cursor_Cross )
       SetCursor( Button_2, #__cursor_IBeam )
       
-      EnableDDrop(Button_1, #PB_Drop_Text, #PB_Drag_Copy)
-      EnableDDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
-      EnableDDrop(Button_5, #PB_Drop_Text, #PB_Drag_Copy)
+      EnableDrop(Button_1, #PB_Drop_Text, #PB_Drag_Copy)
+      EnableDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
+      EnableDrop(Button_5, #PB_Drop_Text, #PB_Drag_Copy)
       Bind( #PB_All, @events_widgets( ), #__event_DragStart )
       Bind( #PB_All, @events_widgets( ), #__event_Drop )
       
@@ -91,8 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 67
+; CursorPosition = 31
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware

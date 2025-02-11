@@ -598,6 +598,57 @@ EndProcedure
 
 
 ;-
+Procedure.S Help_elements(Class.s)
+  Protected Result.S
+  
+  Class = UCase(class)
+  
+  Select TypeFromClass(Class)
+    Case 0
+      Result.S = "[" +class+ "] - Элемент не выбран"
+      
+    Case #__type_Date
+      Result.S = "Первая строка"+#CRLF$+
+                 "Вторая строка"
+      
+    Case #__type_Window
+      Result.S = "[" +class+ "] - Это окно"
+      
+    Case #__type_Button
+      Result.S = "[" +class+ "] - Это кнопка"
+      
+    Case #__type_ButtonImage
+      Result.S = "[" +class+ "] - Это кнопка картинка"
+      
+    Case #__type_CheckBox
+      Result.S = "[" +class+ "] - Это переключатель"
+      
+    Case #__type_ComboBox
+      Result.S = "[" +class+ "] - Это выподающий список"
+      
+    Case #__type_Image
+      Result.S = "[" +class+ "] - Это картинка"
+      
+   Case #__type_Calendar
+      Result.S = "[" +class+ "] - Это календарь"
+      
+   Case #__type_Canvas
+      Result.S = "[" +class+ "] - Это холст для рисования"
+      
+    Case #__type_Container
+      Result.S = "[" +class+ "] - Это контейнер для других элементов"
+      
+    Case #__type_Editor
+      Result.S ="[" +class+ "] - Это многострочное поле ввода"
+      
+    Default
+      Result.S = "[" +class+ "] - не реализованно"
+      
+  EndSelect
+  
+  ProcedureReturn Result.S
+EndProcedure
+
 Procedure.s FlagFromFlag( Type, flag.i ) ; 
    Protected flags.S
    
@@ -930,11 +981,11 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          
          ;
          If IsContainer( *new )
-            EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
-            ;           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew )
-            ;           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_reParent )
-            ;           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
-            ;           EnableDDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
+            EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
+            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew )
+            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_reParent )
+            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
+            ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
             If is_window
                a_set(*new, #__a_full, (14))
             Else
@@ -1056,7 +1107,7 @@ Procedure widget_events( )
          
       Case #__event_DragStart
          If is_drag_move( )
-            If DDragPrivate( #_DD_reParent )
+            If DragDropPrivate( #_DD_reParent )
                ChangeCurrentCursor( *e_widget, #PB_Cursor_Arrows )
             EndIf
          Else
@@ -1064,11 +1115,11 @@ Procedure widget_events( )
                If MouseEnter( *e_widget )
                   If Not a_index( )
                      If GetState( ide_inspector_elements) > 0 
-                        If DDragPrivate( #_DD_CreateNew )
+                        If DragDropPrivate( #_DD_CreateNew )
                            ChangeCurrentCursor( *e_widget, #PB_Cursor_Cross )
                         EndIf
                      Else
-                        If DDragPrivate( #_DD_Group )
+                        If DragDropPrivate( #_DD_Group )
                            ChangeCurrentCursor( *e_widget, #PB_Cursor_Cross )
                         EndIf
                      EndIf
@@ -1078,28 +1129,28 @@ Procedure widget_events( )
          EndIf
          
       Case #__event_Drop
-         Select DDropPrivate( )
+         Select DropPrivate( )
             Case #_DD_Group
                Debug " ----- DD_group ----- " + *e_widget\class
                
 ;             Case #_DD_reParent
-;                Debug " ----- DD_move ----- " +PressedWidget( )\class +" "+ EnteredWidget( )\class
-;                If SetParent( PressedWidget( ), EnteredWidget( ) )
-;                   Protected i = 3 : Debug "re-parent "+ PressedWidget( )\parent\class +" "+ PressedWidget( )\x[i] +" "+ PressedWidget( )\y[i] +" "+ PressedWidget( )\width[i] +" "+ PressedWidget( )\height[i]
+;                Debug " ----- DD_move ----- " +Pressed( )\class +" "+ Entered(  )\class
+;                If SetParent( Pressed( ), Entered(  ) )
+;                   Protected i = 3 : Debug "re-parent "+ Pressed( )\parent\class +" "+ Pressed( )\x[i] +" "+ Pressed( )\y[i] +" "+ Pressed( )\width[i] +" "+ Pressed( )\height[i]
 ;                EndIf
                
             Case #_DD_CreateNew 
-               Debug " ----- DD_new ----- "+ GetText( ide_inspector_elements ) +" "+ DDropX( ) +" "+ DDropY( ) +" "+ DDropWidth( ) +" "+ DDropHeight( )
-               widget_add( *e_widget, GetText( ide_inspector_elements ), DDropX( ), DDropY( ), DDropWidth( ), DDropHeight( ) )
+               Debug " ----- DD_new ----- "+ GetText( ide_inspector_elements ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
+               widget_add( *e_widget, GetText( ide_inspector_elements ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
                
             Case #_DD_CreateCopy
-               Debug " ----- DD_copy ----- " + GetText( PressedWidget( ) )
+               Debug " ----- DD_copy ----- " + GetText( Pressed( ) )
                
-               ;            *new = widget_add( *e_widget, GetClass( PressedWidget( ) ), 
-               ;                         X( PressedWidget( ) ), Y( PressedWidget( ) ), Width( PressedWidget( ) ), Height( PressedWidget( ) ) )
+               ;            *new = widget_add( *e_widget, GetClass( Pressed( ) ), 
+               ;                         X( Pressed( ) ), Y( Pressed( ) ), Width( Pressed( ) ), Height( Pressed( ) ) )
                
-               *new = widget_add( *e_widget, DDropText( ), DDropX( ), DDropY( ), DDropWidth( ), DDropHeight( ) )
-               SetText( *new, "Copy_"+ DDropText( ) )
+               *new = widget_add( *e_widget, DropText( ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+               SetText( *new, "Copy_"+ DropText( ) )
                
          EndSelect
          
@@ -1115,6 +1166,12 @@ Procedure widget_events( )
       Case #__event_LeftUp
          ; then group select
          If IsContainer( *e_widget )
+            
+            If GetState( ide_inspector_view) >= 0
+               Debug " ----- new ----- "+ GetText( ide_inspector_elements ) 
+               widget_add( *e_widget, GetText( ide_inspector_elements ), GetMouseDeltaX( ), GetMouseDeltaY( ), 100,100 );   )mouse( )\x, mouse( )\y, 
+            EndIf
+            
             If mouse( )\selector And ListSize( a_group( ) )
                SetState( ide_inspector_view, - 1 )
                If IsGadget( ide_g_code )
@@ -1141,7 +1198,9 @@ Procedure widget_events( )
                      ResetCursor( *e_widget ) 
                   EndIf
                   If eventtype = #__event_MouseEnter
-                     SetCursor( *e_widget, #__Cursor_Cross, 1 )
+                     ; SetCursor( *e_widget, #__Cursor_Cross, 1 )
+                     SetCursor( *e_widget, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ), 1 )
+            
                   EndIf
                EndIf
             EndIf
@@ -1425,7 +1484,7 @@ Procedure ide_events( )
             SetState( *e_widget, WidgetEventItem( ))
             
             Debug " ------ drag ide_events() ----- "
-            If DDragPrivate( #_DD_CreateNew )
+            If DragDropPrivate( #_DD_CreateNew )
                ChangeCurrentCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, WidgetEventItem( ) ) ) ) )
             EndIf
          EndIf
@@ -1444,7 +1503,7 @@ Procedure ide_events( )
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
                EndIf
                If *e_widget = ide_inspector_elements
-                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+                  SetText( ide_help_view, Help_elements(GetItemText( *e_widget, e_item )) )
                EndIf
                If *e_widget = ide_inspector_properties
                   SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
@@ -1632,7 +1691,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    
    ;\\\ open inspector gadgets 
    ide_inspector_view = Tree( 0,0,0,0 ) : SetClass(ide_inspector_view, "ide_inspector_view" ) ;, #__flag_gridlines )
-   EnableDDrop( ide_inspector_view, #PB_Drop_Text, #PB_Drag_Link )
+   EnableDrop( ide_inspector_view, #PB_Drop_Text, #PB_Drag_Link )
    
    ; ide_inspector_view_splitter_panel_open
    ide_inspector_panel = Panel( 0,0,0,0 ) : SetClass(ide_inspector_panel, "ide_inspector_panel" )
@@ -1983,9 +2042,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1087
-; FirstLine = 1076
-; Folding = -----------------------------------
+; CursorPosition = 1486
+; FirstLine = 1450
+; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

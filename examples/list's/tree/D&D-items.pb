@@ -36,7 +36,7 @@ Global TargetItem, TargetLevel
 #ColSwp = 255
 #ColBar = 16777215
 
-Structure TAB
+Structure Tab
   Height.i
   Y.i
   OffsetMove   .i
@@ -514,7 +514,7 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   
   ; this enables dropping our private type with a move operation
   ; это позволяет переместить наш частный тип с помощью операции перемещения
-  EnableDDrop(*tree, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
+  EnableDrop(*tree, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
   
   ;Bind( *tree, @events( ) )
   
@@ -529,8 +529,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 432
-; FirstLine = 402
+; CursorPosition = 516
+; FirstLine = 491
 ; Folding = -----
 ; EnableXP
 ; DPIAware

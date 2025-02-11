@@ -27,7 +27,7 @@ Global TargetItem, TargetLevel
 #PrivateType = 0
 #PB_Item_Sublevel = #PB_Tree_SubLevel
 
-Procedure events( )
+Procedure Events( )
   Protected i, Text$, Level, CountItems
   
   If EventWidget( ) = *Panel                     
@@ -233,7 +233,7 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   
   ; this enables dropping our private type with a move operation
   ; это позволяет переместить наш частный тип с помощью операции перемещения
-  EnableDDrop(*Panel, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
+  EnableDrop(*Panel, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
   
   Bind( *Panel, @events( ) )
   Repeat
@@ -244,6 +244,6 @@ EndIf
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 235
-; FirstLine = 209
+; FirstLine = 203
 ; Folding = --
 ; EnableXP

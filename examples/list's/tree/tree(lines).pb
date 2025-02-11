@@ -249,7 +249,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     
-    splitter(230, 20, 210, th, *g6,*g5, #PB_Splitter_Vertical)                                         
+    Splitter(230, 20, 210, th, *g6,*g5, #PB_Splitter_Vertical)                                         
     
     
        ;  2_example
@@ -271,7 +271,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 14, "Tree_14", -1 )
     AddItem(*g, 15, "Tree_15", -1 )
 ; ;     ;Bind(*g, @events_tree_widget())
-; ;     DD::EnableDDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
+; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
     
  ;{  4_example

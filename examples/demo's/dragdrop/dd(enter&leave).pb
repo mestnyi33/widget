@@ -6,27 +6,27 @@ UseWidgets( )
 Global  *list1, *list2, *list3
 Global i, drop, source, appQuit, dropText$, selectedIndex, selectedText$
 
-Procedure event_widget()
+Procedure event_widget( )
   
-  Select WidgetEvent()
+  Select WidgetEvent( )
     Case #__event_DragStart      
       Debug "event( DRAGSTART )"
       
-      Select EventWidget()         
+      Select EventWidget( )         
         Case *list1, *list2, *list3       
-          source = EventWidget()
-          selectedIndex = GetState(EventWidget())           
-          selectedText$ = GetItemText(EventWidget(), selectedIndex)
-          DDragText(selectedText$)                                           
+          source = EventWidget( )
+          selectedIndex = GetState(EventWidget( ))           
+          selectedText$ = GetItemText(EventWidget( ), selectedIndex)
+          DragDropText(selectedText$)                                           
           
       EndSelect
       
     Case #__event_Drop
       Debug "event( DROP )"
-      drop = EventWidget()
+      drop = EventWidget( )
       
       If drop <> source
-        dropText$ = DDropText()
+        dropText$ = DropText()
         
         For i = 0 To CountItems(drop)-1
           If GetItemText(drop, i) = dropText$
@@ -71,9 +71,9 @@ AddItem(*list3, -1, "22JAN21#789")
 AddItem(*list3, -1, "28JAN21#123")
 AddItem(*list3, -1, "30JAN21#999")
 
-EnableDDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
-EnableDDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
-;EnableDDrop(*list3, #PB_Drop_Text, #PB_Drag_Copy)
+EnableDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
+EnableDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
+;EnableDrop(*list3, #PB_Drop_Text, #PB_Drag_Copy)
 
 Bind(*list1, @event_widget( ), #__event_DragStart)
 Bind(*list1, @event_widget( ), #__event_Drop)
@@ -96,8 +96,8 @@ WaitClose( )
 ;   
 ; Until appQuit
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 62
+; CursorPosition = 19
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
 ; DPIAware

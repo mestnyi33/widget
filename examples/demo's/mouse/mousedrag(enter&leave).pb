@@ -8,52 +8,52 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *r1, *g11, *g12, *g13, *g14, *g15
    Define *r2, *g21, *g22, *g23, *g24, *g25
    
-   Procedure Events()
+   Procedure Events( )
       Static drag, deltax, deltay
       
-      If EventWidget() <> root()
-         Select WidgetEvent()
+      If EventWidget( ) <> root( )
+         Select WidgetEvent( )
             Case #__event_down
-               deltax = mouse()\x-EventWidget()\x
-               deltay = mouse()\y-EventWidget()\y
-;                deltax = DesktopMouseX()-EventWidget()\x
-;                deltay = DesktopMouseY()-EventWidget()\y
-               SetColor(EventWidget(), #__color_frame, $ffff0000)
+               deltax = mouse( )\x-EventWidget( )\x
+               deltay = mouse( )\y-EventWidget( )\y
+;                deltax = DesktopMouseX( )-EventWidget( )\x
+;                deltay = DesktopMouseY( )-EventWidget( )\y
+               SetColor(EventWidget( ), #__color_frame, $ffff0000)
                
             Case #__event_dragstart
-               drag = EventWidget()
+               drag = EventWidget( )
                
-            Case #__event_up : Debug "up "+EventWidget()\class ;+" "+ enteredwidget()\class+" "+pressedwidget()\class
+            Case #__event_up : Debug "up "+EventWidget( )\class ;+" "+ Entered( )\class+" "+Pressed( )\class
                drag = 0
-               If EventWidget()\enter
-                  SetColor(EventWidget(), #__color_frame, $ff0000ff)
+               If EventWidget( )\enter
+                  SetColor(EventWidget( ), #__color_frame, $ff0000ff)
                Else
-                  SetColor(EventWidget(), #__color_frame, $ff00ff00)
+                  SetColor(EventWidget( ), #__color_frame, $ff00ff00)
                EndIf
                
-            Case #__event_mouseenter : Debug "enter "+EventWidget()\class 
-               If Not EventWidget()\press
-                  SetColor(EventWidget(), #__color_frame, $ff0000ff)
+            Case #__event_mouseenter : Debug "enter "+EventWidget( )\class 
+               If Not EventWidget( )\press
+                  SetColor(EventWidget( ), #__color_frame, $ff0000ff)
                EndIf
                
-            Case #__event_mouseleave : Debug "leave "+EventWidget()\class 
-               If Not EventWidget()\press
-                  SetColor(EventWidget(), #__color_frame, $ff00ff00)
+            Case #__event_mouseleave : Debug "leave "+EventWidget( )\class 
+               If Not EventWidget( )\press
+                  SetColor(EventWidget( ), #__color_frame, $ff00ff00)
                EndIf
                
                
             Case #__event_mousemove
                If drag
-                  ;Debug " "+eventwidget() +" "+ enteredwidget()+" "+pressedwidget()
-                  Resize(drag, DesktopUnscaledX(mouse()\x-deltax), DesktopUnscaledY(mouse()\y-deltay), #PB_Ignore, #PB_Ignore)
-               ;   Resize(drag,DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
+                  ;Debug " "+eventwidget( ) +" "+ Entered( )+" "+Pressed( )
+                  Resize(drag, DesktopUnscaledX(mouse( )\x-deltax), DesktopUnscaledY(mouse( )\y-deltay), #PB_Ignore, #PB_Ignore)
+               ;   Resize(drag,DesktopMouseX( )-deltax, DesktopMouseY( )-deltay, #PB_Ignore, #PB_Ignore)
                EndIf
                
             Case #__event_keyup
                drag = 0
             Case #__event_keydown
-               ;Debug " "+eventwidget() +" "+ enteredwidget()+" "+pressedwidget()
-               drag = enteredwidget()
+               ;Debug " "+eventwidget( ) +" "+ Entered( )+" "+Pressed( )
+               drag = Entered( )
                
                If drag
                   Resize(drag,X(drag)+1, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -111,12 +111,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(#PB_All, @events( ), #__event_keydown)
       Bind(#PB_All, @events( ), #__event_keyup)
       
-      Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+      Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 63
+; CursorPosition = 96
 ; Folding = --
 ; EnableXP
 ; DPIAware

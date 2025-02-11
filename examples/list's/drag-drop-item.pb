@@ -19,7 +19,7 @@ Procedure event_widget()
           selectedIndex = GetState(EventWidget())           
           selectedText$ = GetItemText(EventWidget(), selectedIndex)
           ; Debug selectedIndex 
-          DDragText(selectedText$)                                            
+          DragDropText(selectedText$)                                            
           
       EndSelect
       
@@ -28,7 +28,7 @@ Procedure event_widget()
       drop = EventWidget()
       
       If drop <> source
-        dropText$ = DDropText()
+        dropText$ = DropText()
         
         For i = 0 To CountItems(drop)-1
           If GetItemText(drop, i) = dropText$
@@ -64,8 +64,8 @@ AddItem(*list2, -1, "22JAN21#789")
 AddItem(*list2, -1, "28JAN21#123")
 AddItem(*list2, -1, "30JAN21#999")
 
-EnableDDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
-EnableDDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
+EnableDrop(*list1, #PB_Drop_Text, #PB_Drag_Copy)
+EnableDrop(*list2, #PB_Drop_Text, #PB_Drag_Copy)
 
 Bind(*list1, @event_widget( ), #__event_DragStart)
 Bind(*list1, @event_widget( ), #__event_Drop)
@@ -85,8 +85,8 @@ WaitClose()
 ;   
 ; Until appQuit
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 9
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
 ; DPIAware

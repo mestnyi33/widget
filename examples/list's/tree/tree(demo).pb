@@ -512,7 +512,7 @@ EndProcedure
     AddItem(*g, 13, "Tree_6", -1 )
     AddItem(*g, 14, "Tree_7", -1 )
 ; ;     ;Bind(*g, @events_tree_widget())
-; ;     DD::EnableDDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
+; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
   ;  For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Collapsed) : Next
     
@@ -586,8 +586,8 @@ EndProcedure
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 499
-; FirstLine = 322
+; CursorPosition = 514
+; FirstLine = 356
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware
