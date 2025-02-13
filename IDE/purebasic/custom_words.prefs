@@ -158,10 +158,11 @@ GetPosition
 GetRound
 SetRound
 
-IsItem
-IsContainer
 IsChild
+IsChildrens
+IsContainer
 
+IsItem
 DisableItem
 HideItem
 SelectItem
@@ -265,6 +266,7 @@ SetFont
 SetItemAttribute
 SetItemColor
 SetItemData
+GetImage
 SetImage
 SetItemImage
 GetItemImage

@@ -402,10 +402,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Macro DisableBarButton( _address_, _barbutton_, _state_ )
-         ; DisableItem( _address_, _button_, _state_ )
+         DisableItem( _address_, _barbutton_, _state_ )
       EndMacro
       
       Macro DisableBarItem( _address_, _baritem_, _state_ )
+         DisableItem( _address_, _baritem_, _state_ )
       EndMacro
       
       Macro GetBarTitleText( _address_, _title_ )
@@ -415,15 +416,19 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Macro SetBarItemState( _address_, _baritem_, _state_ )
+         SetItemState( _address_, _baritem_, _state_ )
       EndMacro
       
       Macro GetBarItemState( _address_, _baritem_ )
+         GetItemState( _address_, _baritem_ )
       EndMacro
       
       Macro SetBarItemText( _address_, _baritem_, _text_ )
+         SetItemText( _address_, _baritem_, _text_ )
       EndMacro
       
       Macro GetBarItemText( _address_, _baritem_ )
+         GetItemText( _address_, _baritem_ )
       EndMacro
       
       Macro BindBarEvent( _address_, _baritem_, _callback_ )
@@ -1357,13 +1362,15 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i ID( Index )
       Declare.l Index( *this )
       
-      Declare.l X( *this, mode.l = #__c_frame )
-      Declare.l Y( *this, mode.l = #__c_frame )
-      Declare.l Width( *this, mode.l = #__c_frame )
-      Declare.l Height( *this, mode.l = #__c_frame )
+      Declare.l X( *this, mode.l = #PB_Default )
+      Declare.l Y( *this, mode.l = #PB_Default )
+      Declare.l Width( *this, mode.l = #PB_Default )
+      Declare.l Height( *this, mode.l = #PB_Default )
       
       Declare   IsChild( *this, *parent )
+      Declare   IsChildrens( *this )
       Declare.b IsContainer( *this )
+      
       Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l, scale.b = 1 )
       Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
       Declare.i SetAttach( *this, *parent, mode.a )
@@ -1442,6 +1449,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   ChangeCursor( *this, *cursor )
       Declare   ChangeCurrentCursor( *this, *cursor )
       
+      Declare.i GetImage( *this )
       Declare   SetImage( *this, *image )
       Declare   SetBackgroundImage( *this, *image )
       Declare.i GetItemImage( *this, Item.l )
@@ -1470,10 +1478,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i HBar( *this )
       
       ;
-      Declare.i Create( *parent, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.f = 1.0 )
+      Declare.i Create( *parent, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
       
       ; bar
-      Declare.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, increment.f = 1.0 )
+      Declare.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, increment.d = 1.0 )
       Declare.i Tab( X.l, Y.l, Width.l, Height.l, flag.q = 0, round.l = 0 )
       Declare.i Scroll( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
       Declare.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = #__buttonround )
@@ -1922,7 +1930,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          Procedure.i BlendColor_(Color1.i, Color2.i, Scale.i = 50)
             Define.i R1, G1, B1, R2, G2, B2
-            Define.f Blend = Scale / 100
+            Define.d Blend = Scale / 100
             
             R1 = Red(Color1): G1 = Green(Color1): B1 = Blue(Color1)
             R2 = Red(Color2): G2 = Green(Color2): B2 = Blue(Color2)
@@ -5698,7 +5706,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          _focus =- _state_
       EndMacro
       Procedure.b bar_Update( *this._s_WIDGET, mode.b = 1 )
-         Protected fixed.l, ScrollPos.f, ThumbPos.i, Width, Height
+         Protected fixed.l, ScrollPos,d, ThumbPos.i, Width, Height
          
          ;\\
          If Not *this\bar
@@ -6852,7 +6860,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.b bar_ThumbChange( *this._s_WIDGET, ThumbPos.i )
          Protected *bar._s_BAR = *this\bar
-         Protected ScrollPos.f
+         Protected ScrollPos,d
          
          If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
          If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
@@ -7192,6 +7200,21 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure.b DisableItem( *this._s_widget, item.l, state.b )
+         If *this\type = #__type_panel
+            If *this\tabbar
+               SelectElement( *this\tabbar\__tabs( ), item )
+               *this\tabbar\__tabs( )\disable = state
+            EndIf
+         EndIf
+         If *this\type = #__type_Toolbar
+            If *this\__tabs( )
+               SelectElement( *this\__tabs( ), item )
+               *this\__tabs( )\disable = state
+            EndIf
+         EndIf
+      EndProcedure
+      
       Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default, flags.q = 0 )
          If State = #PB_Default : ProcedureReturn *this\hide[1] : EndIf
          
@@ -7211,16 +7234,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.b DisableItem( *this._s_widget, item.l, state.b )
-         If *this\type = #__type_panel
-            If *this\tabbar
-               SelectElement( *this\tabbar\__tabs( ), item )
-               *this\tabbar\__tabs( )\disable = state
-            EndIf
-         EndIf
-      EndProcedure
-      
       Procedure.b Disable( *this._s_WIDGET, State.b = #PB_Default )
+      
          If State = #PB_Default : ProcedureReturn *this\disable[1] : EndIf
          
          If *this\disable[1] <> State
@@ -7278,19 +7293,47 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.l X( *this._s_WIDGET, mode.l = #__c_frame )
+      Procedure.l X( *this._s_WIDGET, mode.l = #PB_Default )
+         If mode = #PB_Default
+            If is_window_( *this )
+               mode = #__c_frame
+            Else
+               mode = #__c_container
+            EndIf
+         EndIf
          ProcedureReturn DPIUnScaledX( *this\x[mode] ) 
       EndProcedure
       
-      Procedure.l Y( *this._s_WIDGET, mode.l = #__c_frame )
+      Procedure.l Y( *this._s_WIDGET, mode.l = #PB_Default )
+         If mode = #PB_Default
+            If is_window_( *this )
+               mode = #__c_frame
+            Else
+               mode = #__c_container
+            EndIf
+         EndIf
          ProcedureReturn DPIUnScaledY( *this\y[mode] )
       EndProcedure
       
-      Procedure.l Width( *this._s_WIDGET, mode.l = #__c_frame )
+      Procedure.l Width( *this._s_WIDGET, mode.l = #PB_Default )
+         If mode = #PB_Default
+            If is_window_( *this )
+               mode = #__c_inner
+            Else
+               mode = #__c_frame
+            EndIf
+         EndIf
          ProcedureReturn DPIUnScaledX( *this\width[mode] ) 
       EndProcedure
       
-      Procedure.l Height( *this._s_WIDGET, mode.l = #__c_frame )
+      Procedure.l Height( *this._s_WIDGET, mode.l = #PB_Default )
+         If mode = #PB_Default
+            If is_window_( *this )
+               mode = #__c_inner
+            Else
+               mode = #__c_frame
+            EndIf
+         EndIf
          ProcedureReturn DPIUnScaledY( *this\height[mode] ) 
       EndProcedure
       
@@ -7319,6 +7362,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.b IsContainer( *this._s_WIDGET )
          ProcedureReturn *this\container
+      EndProcedure
+      
+      Procedure   IsChildrens( *this._s_WIDGET )
+         ProcedureReturn *this\haschildren
       EndProcedure
       
       Procedure.i Sticky( *window._s_WIDGET = #PB_Default, state.b = #PB_Default )
@@ -8257,7 +8304,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ;\\ horizontal proportional
                            If ( widget( )\align\left < 0 And widget( )\align\right <= 0 ) Or
                               ( widget( )\align\right < 0 And widget( )\align\left <= 0 )
-                              Protected ScaleX.f = piw / widget( )\parent\align\width
+                              Protected ScaleX.d = piw / widget( )\parent\align\width
                               Width = ScaleX * widget( )\align\width
                               ;\\ center proportional
                               If widget( )\align\left < 0 And widget( )\align\right < 0
@@ -8310,7 +8357,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ;\\ vertical proportional
                            If ( widget( )\align\top < 0 And widget( )\align\bottom <= 0 ) Or
                               ( widget( )\align\bottom < 0 And widget( )\align\top <= 0 )
-                              Protected ScaleY.f = pih / widget( )\parent\align\height
+                              Protected ScaleY.d = pih / widget( )\parent\align\height
                               Height = ScaleY * widget( )\align\height
                               ;\\ center proportional
                               If widget( )\align\top < 0 And widget( )\align\bottom < 0
@@ -8771,6 +8818,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             _address_\height  = 0
          EndIf
       EndMacro
+      
+      Procedure.i GetImage( *this._s_WIDGET )
+         ProcedureReturn *this\img
+      EndProcedure
       
       Procedure SetImage( *this._s_WIDGET, *image );, mode.a = 0 )
          add_image( *this\img, *image )
@@ -9733,14 +9784,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             result = *this\__tabs( )\text\string
-         EndIf
          
-         If *this\countitems ; row count
+         Else
+            If *this\countitems ; row count
             If is_no_select_item_( *this\__rows( ), Item )
                ProcedureReturn ""
             EndIf
             
             result = *this\__rows( )\text\string
+         EndIf
          EndIf
          
          ProcedureReturn result
@@ -10616,7 +10668,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\parent <> *this\window
                typeCount( Str( *this\window + *this\type ) ) + 1
             EndIf
-            typeCount( Str( *this\parent + *this\type ) ) + 1
+            If *this\root <> *this\parent
+               typeCount( Str( *this\parent + *this\type ) ) + 1
+            EndIf
+            typeCount( Str( *this\root + *this\type ) ) + 1
+            *this\counttype = typeCount( ) - 1
+            
             ;
             ;\\ a_new( )
             If a_anchors( ) And a_main( ) And IsChild( *this, a_main( ))
@@ -12613,11 +12670,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   CountType( *this._s_WIDGET, mode.b = #False )
-         If mode
-            ProcedureReturn typeCount( Str( *this\parent + *this\type ) ) - 1
-         Else
-            ProcedureReturn typeCount( Str( *this\window + *this\type ) ) - 1
+         
+         If mode >= 0
+            If mode 
+               *this\CountType = typeCount( Str( *this\parent + *this\type ) ) - 1
+            Else
+               *this\CountType = typeCount( Str( *this\window + *this\type ) ) - 1
+            EndIf
          EndIf
+         
+         ProcedureReturn *this\CountType
       EndProcedure
       
       ;-
@@ -13511,7 +13573,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.l edit_make_caret_position( *this._s_WIDGET, *rowLine._s_ROWS )
          ; Get caret position
          Protected i.l, mouse_x.l, caret_x.l, caret.l = - 1
-         Protected Distance.f, MinDistance.f = Infinity( )
+         Protected Distance.d, MinDistance.d = Infinity( )
          
          If *rowLine 
             edit_redraw_font( *this )
@@ -15043,7 +15105,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;-  CREATEs
       ;-
-      Procedure.i Create( *parent._s_WIDGET, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.f = 1.0 )
+      Procedure.i Create( *parent._s_WIDGET, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
          Protected *root._s_root
          If *parent
             *root = *parent\root
@@ -15858,7 +15920,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Splitter, X, Y, Width, Height, #Null$, flag, First, Second, 0, 0, 0, 1 )
       EndProcedure
       
-      Procedure.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, Increment.f = 1.0 )
+      Procedure.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, Increment.d = 1.0 )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Spin, X, Y, Width, Height, #Null$, flag, min, max, 0, #__bar_button_size, round, Increment )
       EndProcedure
       
@@ -24574,9 +24636,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1364
-; FirstLine = 1334
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv-------------------------------------------------------------------------------------------------8----------------------------------------------------v-v--0-Pw----8v------------------------------------------------------------------------0-----------+v------V---------------------------------------------------------------f-------v-------P-f--4-4-------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 7331
+; FirstLine = 7249
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv-------------------4-------------------------------------------------------------------------------8----------------------------------------------------f-f--8-fg----4f------------------------------------------------------------------------4-----------8-+-----X0---0-8---------------------------------------------------------0-------+-------9-0-f-f-------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

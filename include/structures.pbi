@@ -226,7 +226,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          invert.b
          vertical.b
-         rotate.f
+         rotate.d
          
          ; char.c
          ; short._s_edit ; ".."
@@ -244,7 +244,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *imageID
          *image
-         rotate.f
+         rotate.d
          align._s_align
       EndStructure
       
@@ -450,7 +450,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          mirror.b 
          ;;; orient.b ; Поддерживаемые ориентации
          
-         percent.f
+         percent.d
          
          page._s_page
          area._s_page
@@ -465,7 +465,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          bars.b
          
          gadget.i[3]
-         increment.f      ; scrollarea
+         increment.d      ; scrollarea
          *v._s_WIDGET     ; vertical scrollbar
          *h._s_WIDGET     ; horizontal scrollbar
       EndStructure
@@ -553,6 +553,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
+         CountType.l
          padding._s_point
          ;indent.a
          
@@ -766,8 +767,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 743
-; FirstLine = 726
+; CursorPosition = 555
+; FirstLine = 553
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

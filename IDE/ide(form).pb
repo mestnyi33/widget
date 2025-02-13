@@ -1,6 +1,6 @@
 ﻿;- 
 #IDE_path = "../"
-;XIncludeFile #IDE_path + "../widgets_new.pbi"
+XIncludeFile #IDE_path + "IDE/ide(code).pb"
 XIncludeFile #IDE_path + "/widgets.pbi"
 XIncludeFile #IDE_path + "/include/newcreate/anchorbox.pbi"
 ;
@@ -160,7 +160,7 @@ Macro properties_update_text( _gadget_, _value_ )
 EndMacro
 
 Macro properties_update_class( _gadget_, _value_ )
-   Properties_SetItemText( _gadget_, #_pi_class,   Properties_GetItemText( _gadget_, #_pi_class )   +Chr( 10 )+UCase(GetText( _value_ ))); GetClass( _value_ )+"_"+CountType( _value_ ) )
+   Properties_SetItemText( _gadget_, #_pi_class,   Properties_GetItemText( _gadget_, #_pi_class )   +Chr( 10 )+UCase(GetClass( _value_ )))
 EndMacro
 
 Macro properties_update_hide( _gadget_, _value_ )
@@ -939,10 +939,6 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
             SetImage( *new, *imagelogo )
             Bind( *new, @widget_events( ) )
             
-            ; на тот случай если изменили 
-            ; формирование класса например "Window0;Window1"
-            SetClass( *new, UlCase(class))
-            
          Case "container"   
             *new = Container( X,Y,Width,Height, flag ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
@@ -970,14 +966,16 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
       If *new
          ;\\ первый метод формирования названия переменной
          newClass.s = class+"_"+CountType( *new )
+         
          ;\\ второй метод формирования названия переменной
-         ;         If *parent = ide_design_MDI
-         ;           newClass.s = GetClass( *new )+"_"+CountType( *new , 1 )
-         ;         Else
-         ;           newClass.s = GetClass( *parent )+"_"+CountType( *parent )+"_"+GetClass( *new )+"_"+CountType( *new , 1 )
-         ;         EndIf
+         ;          If *parent = ide_design_MDI
+         ;             newClass.s = GetClass( *new )+"_"+CountType( *new , 1 )
+         ;          Else
+         ;             newClass.s = GetClass( *parent )+"_"+CountType( *parent, 1 )+"_"+GetClass( *new )+"_"+CountType( *new , 1 )
+         ;          EndIf
          ;\\
          SetText( *new, newClass )
+         SetClass(  *new, Class ); new
          
          ;
          If IsContainer( *new )
@@ -2015,6 +2013,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetActiveGadget( ide_g_canvas )
    EndIf
    
+   Define code$ = GeneratePBCode( ide_design_MDI )
+      
+      SetText( ide_design_code, code$ )
+      
    ;\\ 
    WaitClose( )
 CompilerEndIf
@@ -2042,8 +2044,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1486
-; FirstLine = 1450
+; CursorPosition = 977
+; FirstLine = 963
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

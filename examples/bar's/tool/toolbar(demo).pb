@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ToolBarToolTip(0, 6, "Find a document")
       EndIf
       
-      DisableBarButton(0, 2, 1) ; Disable the button '2'
+      DisableToolBarButton(0, 2, 1) ; Disable the button '2'
       BindEvent( #PB_Event_Menu, @PB_ToolBarEvents( ))
    EndIf
    
@@ -128,8 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 57
+; CursorPosition = 58
+; FirstLine = 73
 ; Folding = --
 ; EnableXP
 ; DPIAware
