@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug 333
             If *this And *second\RowEntered( )
                SelectElement(*second\__rows( ), *second\RowEntered( )\index)
-               *this\noscale = 1
+               ;*this\noscale = 1
                ;Resize(*this, *second\x+*second\__rows( )\x, *second\y+*second\__rows( )\y, *second\__rows( )\width, *second\__rows( )\height )
                Resize(*this, *second\__rows( )\x, *second\__rows( )\y, *second\__rows( )\width, *second\__rows( )\height )
             EndIf
@@ -234,8 +234,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 71
+; CursorPosition = 49
+; FirstLine = 45
 ; Folding = ----
 ; Optimizer
 ; EnableXP

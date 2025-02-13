@@ -116,8 +116,11 @@ Global group_drag
 
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
 
+;- 
+Declare widget_events( )
 Declare Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
 Declare.s Properties_GetItemText( *splitter._s_WIDGET, item )
+
 
 ;-
 ;- PUBLICs
@@ -786,12 +789,83 @@ Procedure add_code( *new._s_widget, Class.s, Position.i, SubLevel.i )
       AddGadgetItem( ide_g_code, Position, code )
    Else
       AddItem( ide_design_code, Position, code )
+      AddItem( ide_debug_view, Position, code )
    EndIf
 EndProcedure
 
-
 ;-
-Declare widget_events( )
+Procedure code_edit_events( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
+   ;Debug ""+GetState(*this)+" change-["+*this\class+"]"
+   Protected q, startpos, stoppos
+   Protected X = #PB_Ignore, Y = #PB_Ignore
+   Protected Width = #PB_Ignore, Height = #PB_Ignore
+   
+   If event = #__event_Up
+     
+   EndIf
+   
+   If event = #__event_StatusChange
+     Debug 6543456789
+   EndIf
+   
+   If event = #__event_Change
+      ;Debug item ;
+      ; Debug  Left( *this\text\string, *this\text\caret\pos[1] )
+      Protected findstring.s = GetItemText( *this, item ) ; Left( *this\text\string, *this\text\caret\pos )
+      findstring.s = Left( findstring.s, *this\text\caret\pos )
+      Protected countstring = CountString( findstring, "," )
+      ; Debug ""+countstring +" ? "+ findstring
+      
+      Select countstring
+         Case 0, 1, 2, 3, 4, 5
+            For q = *this\text\edit[1]\len To *this\text\edit[1]\pos Step - 1
+               If Mid( *this\text\string, q, 1 ) = "(" Or 
+                  Mid( *this\text\string, q, 1 ) = ~"\"" Or
+                  Mid( *this\text\string, q, 1 ) = ","
+                  startpos = q + 1
+                  Break
+               EndIf
+            Next q
+            
+            For q = *this\text\edit[3]\pos To ( *this\text\edit[3]\pos + *this\text\edit[3]\len )
+               If Mid( *this\text\string, q, 1 ) = "," Or
+                  Mid( *this\text\string, q, 1 ) = ~"\"" Or
+                  Mid( *this\text\string, q, 1 ) = ")"
+                  stoppos = q
+                  Break
+               EndIf
+            Next q
+            
+            
+            If stoppos And stoppos - startpos
+               findstring = Mid( *this\text\string, startpos, stoppos - startpos )
+               ; countstring = CountString( findstring, "," )
+               ; Debug ""+startpos +" "+ stoppos +" ? "+ countstring ; findstring
+               
+               If countstring
+                  If countstring = 5
+                     SetText( a_focused( ), findstring )
+                  Else
+                     If countstring = 1
+                        X = Val( findstring )
+                     ElseIf countstring = 2
+                        Y = Val( findstring )
+                     ElseIf countstring = 3
+                        Width = Val( findstring )
+                     ElseIf countstring = 4
+                        Height = Val( findstring )
+                     EndIf
+                     
+                     Resize( a_focused( ), X, Y, Width, Height)
+                  EndIf
+               EndIf
+               
+            EndIf
+      EndSelect
+      
+      ; Debug Left( *this\text\string, *this\text\caret\pos ); GetState( ide_design_code )
+   EndIf
+EndProcedure
 
 ;-
 Macro widget_copy( )
@@ -939,6 +1013,11 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
             SetImage( *new, *imagelogo )
             Bind( *new, @widget_events( ) )
             
+            ; на тот случай если изменили 
+            ; формирование класса например "Window0;Window1"
+            SetClass( *new, UlCase(class))
+            
+         
          Case "container"   
             *new = Container( X,Y,Width,Height, flag ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
@@ -975,7 +1054,6 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          ;          EndIf
          ;\\
          SetText( *new, newClass )
-         SetClass(  *new, Class ); new
          
          ;
          If IsContainer( *new )
@@ -1513,6 +1591,16 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_Change
+         
+         If *e_widget = ide_design_panel
+            If e_item = 1
+               Define code$ = GeneratePBCode( ide_design_MDI )
+               
+               SetText( ide_design_code, code$ )
+               SetActive( ide_design_code )
+            EndIf
+         EndIf
+         
          If *e_widget = ide_inspector_view
             Debug ""+GetState(*e_widget)+" change-["+*e_widget\class+"]"
             ;PushListPosition(*e_widget\__rows())
@@ -1527,59 +1615,7 @@ Procedure ide_events( )
             properties_updates( ide_inspector_properties, a_focused( ) )
          EndIf
          
-         If *e_widget = ide_design_code
-            Protected q, startpos, stoppos
-            Protected X = #PB_Ignore, Y = #PB_Ignore
-            Protected Width = #PB_Ignore, Height = #PB_Ignore
-            
-            Protected findstring.s = Left( *e_widget\text\string, *e_widget\text\caret\pos )
-            Protected countstring = CountString( findstring, "," )
-            
-            Select countstring
-               Case 0, 1, 2, 3, 4
-                  For q = *e_widget\text\edit[1]\len To *e_widget\text\edit[1]\pos Step - 1
-                     If Mid( *e_widget\text\string, q, 1 ) = "(" Or 
-                        Mid( *e_widget\text\string, q, 1 ) = ~"\"" Or
-                        Mid( *e_widget\text\string, q, 1 ) = ","
-                        startpos = q + 1
-                        Break
-                     EndIf
-                  Next q
-                  
-                  For q = *e_widget\text\edit[3]\pos To ( *e_widget\text\edit[3]\pos + *e_widget\text\edit[3]\len )
-                     If Mid( *e_widget\text\string, q, 1 ) = "," Or
-                        Mid( *e_widget\text\string, q, 1 ) = ~"\"" Or
-                        Mid( *e_widget\text\string, q, 1 ) = ")"
-                        stoppos = q
-                        Break
-                     EndIf
-                  Next q
-                  
-                  If stoppos And stoppos - startpos
-                     findstring = Mid( *e_widget\text\string, startpos, stoppos - startpos )
-                     
-                     If countstring = 4
-                        SetText( a_focused( ), findstring )
-                     Else
-                        If countstring = 0
-                           X = Val( findstring )
-                        ElseIf countstring = 1
-                           Y = Val( findstring )
-                        ElseIf countstring = 2
-                           Width = Val( findstring )
-                        ElseIf countstring = 3
-                           Height = Val( findstring )
-                        EndIf
-                        
-                        Resize( a_focused( ), X, Y, Width, Height)
-                     EndIf
-                     
-                  EndIf
-            EndSelect
-            
-            ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetState( ide_design_code )
-         EndIf
-         
+          
       Case #__event_LeftClick
          ; ide_menu_events( *e_widget, WidgetEventItem( ) )
          
@@ -1594,6 +1630,15 @@ Procedure ide_events( )
          EndIf
          
    EndSelect
+   
+   If *e_widget = ide_design_code
+      If e_item = #__event_Up Or
+         e_item = #__event_Change Or
+         e_item = #__event_StatusChange
+         code_edit_events( *e_widget, e_type, e_item, WidgetEventData( ) )
+      EndIf
+   EndIf
+   
 EndProcedure
 
 Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
@@ -1669,7 +1714,8 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    a_init( ide_design_MDI);, 0 )
    
    AddItem( ide_design_panel, -1, "Code" )
-   ;ide_design_code = Editor( 0,0,0,0 ) : SetClass(ide_design_code, "ide_design_code" ) ; bug then move anchors window
+   ide_design_code = Editor( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_code, "ide_design_code" ) ; bug then move anchors window
+   SetBackgroundColor( ide_design_code, $FFDCF9F6)
    AddItem( ide_design_panel, -1, "Hiasm" )
    CloseList( )
    
@@ -1834,6 +1880,9 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    EndIf
    Bind( ide_inspector_view, @ide_events( ) )
    ;
+   Bind( ide_design_panel, @ide_events( ), #__event_Change )
+   ;
+   Bind( ide_design_code, @ide_events( ), #__event_Up )
    Bind( ide_design_code, @ide_events( ), #__event_Change )
    Bind( ide_design_code, @ide_events( ), #__event_StatusChange )
    ;
@@ -2013,9 +2062,6 @@ CompilerIf #PB_Compiler_IsMainFile
       SetActiveGadget( ide_g_canvas )
    EndIf
    
-   Define code$ = GeneratePBCode( ide_design_MDI )
-      
-      SetText( ide_design_code, code$ )
       
    ;\\ 
    WaitClose( )
@@ -2044,9 +2090,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 977
-; FirstLine = 963
-; Folding = ------------------------------------
+; CursorPosition = 1717
+; FirstLine = 1707
+; Folding = -------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

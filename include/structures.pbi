@@ -200,7 +200,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          len.i
          
          String.s
-         
       EndStructure
       
       ;       ;--     syntax
@@ -767,8 +766,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 555
-; FirstLine = 553
+; CursorPosition = 202
+; FirstLine = 183
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
