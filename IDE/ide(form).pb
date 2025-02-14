@@ -93,22 +93,21 @@ Global ide_root,
        ide_toolbar
 
 Global ide_design_splitter, 
+       ide_design_panel_splitter,
        ide_design_panel, 
-       ide_design_MDI,
-       ide_design_code
-
-Global ide_debug_splitter, 
-       ide_debug_view 
+       ide_design_panel_MDI,
+       ide_design_panel_CODE, 
+       ide_design_panel_HIASM, 
+       ide_design_DEBUG 
 
 Global ide_inspector_view_splitter, 
        ide_inspector_view, 
+       ide_inspector_panel_splitter,
        ide_inspector_panel,
        ide_inspector_elements,
        ide_inspector_properties, 
-       ide_inspector_events
-
-Global ide_inspector_panel_splitter,
-       ide_help_view
+       ide_inspector_events,
+       ide_inspector_HELP
 
 Global group_select
 Global group_drag
@@ -604,48 +603,48 @@ EndProcedure
 Procedure.S Help_elements(Class.s)
   Protected Result.S
   
-  Class = UCase(class)
+  Class = UCase(Class)
   
   Select TypeFromClass(Class)
     Case 0
-      Result.S = "[" +class+ "] - Элемент не выбран"
+      Result.S = "[" +Class+ "] - Элемент не выбран"
       
     Case #__type_Date
       Result.S = "Первая строка"+#CRLF$+
                  "Вторая строка"
       
     Case #__type_Window
-      Result.S = "[" +class+ "] - Это окно"
+      Result.S = "[" +Class+ "] - Это окно"
       
     Case #__type_Button
-      Result.S = "[" +class+ "] - Это кнопка"
+      Result.S = "[" +Class+ "] - Это кнопка"
       
     Case #__type_ButtonImage
-      Result.S = "[" +class+ "] - Это кнопка картинка"
+      Result.S = "[" +Class+ "] - Это кнопка картинка"
       
     Case #__type_CheckBox
-      Result.S = "[" +class+ "] - Это переключатель"
+      Result.S = "[" +Class+ "] - Это переключатель"
       
     Case #__type_ComboBox
-      Result.S = "[" +class+ "] - Это выподающий список"
+      Result.S = "[" +Class+ "] - Это выподающий список"
       
     Case #__type_Image
-      Result.S = "[" +class+ "] - Это картинка"
+      Result.S = "[" +Class+ "] - Это картинка"
       
    Case #__type_Calendar
-      Result.S = "[" +class+ "] - Это календарь"
+      Result.S = "[" +Class+ "] - Это календарь"
       
    Case #__type_Canvas
-      Result.S = "[" +class+ "] - Это холст для рисования"
+      Result.S = "[" +Class+ "] - Это холст для рисования"
       
     Case #__type_Container
-      Result.S = "[" +class+ "] - Это контейнер для других элементов"
+      Result.S = "[" +Class+ "] - Это контейнер для других элементов"
       
     Case #__type_Editor
-      Result.S ="[" +class+ "] - Это многострочное поле ввода"
+      Result.S ="[" +Class+ "] - Это многострочное поле ввода"
       
     Default
-      Result.S = "[" +class+ "] - не реализованно"
+      Result.S = "[" +Class+ "] - не реализованно"
       
   EndSelect
   
@@ -697,105 +696,29 @@ Procedure.s FlagFromFlag( Type, flag.i ) ;
    ProcedureReturn Trim( flags, "|" )
 EndProcedure
 
-Procedure$ add_line( *new._s_widget, Handle$ ) ; Ok
-   Protected ID$, Result$, param1$, param2$, param3$, Text$, flag$
+Procedure add_code( *new._s_widget, Name$, Position.i, SubLevel.i )
+   Protected Result$ 
+   Protected Space$ = Space( ( Level(*new) - Level(ide_design_panel_MDI) ) * 3 )
    
-   flag$ = FlagFromFlag( *new\type, *new\flag )
+   Result$ = GenerateCODE( *new, "FUNCTION", space$ )
    
-   Select Asc( Handle$ )
-      Case '#'        : ID$ = Handle$           : Handle$ = ""
-      Case '0' To '9' : ID$ = Chr( Asc( Handle$ ) ) : Handle$ = ""
-      Default         : ID$ = "#PB_Any"         : Handle$ + " = "
-   EndSelect
-   
-   Text$ = Chr( 34 )+*new\text\string+Chr( 34 )
-   
-   If *new\class = "Window"
-      Result$ = Handle$ +"Window( "+ *new\x +", "+ *new\y +", "+ *new\width +", "+ *new\height
-   Else
-      ; type_$ = "Gadget( "+ID$+", "
-      Result$ = Handle$ + *new\class +"( "+ *new\x +", "+ *new\y +", "+ *new\width +", "+ *new\height
-   EndIf
-   
-   Select *new\class
-      Case "Window" : Result$ +", "+ Text$                                                                          
-         If param1$ : Result$ +", "+ param1$ : EndIf 
-         
-      Case "ScrollArea"    : Result$ +", "+ param1$ +", "+ param2$    
-         If param3$ : Result$ +", "+ param3$ : EndIf 
-         
-      Case "Calendar"      
-         If param1$ : Result$ +", "+ param1$ : EndIf 
-         If param1$ : Result$ +", "+ param1$ : EndIf 
-         
-      Case "Button"        : Result$ +", "+ Text$                                                                               
-      Case "String"        : Result$ +", "+ Text$                                                                               
-      Case "Text"          : Result$ +", "+ Text$                                                                                 
-      Case "CheckBox"      : Result$ +", "+ Text$                                                                             
-      Case "Option"        : Result$ +", "+ Text$
-      Case "Frame"         : Result$ +", "+ Text$                                                                                
-      Case "Web"           : Result$ +", "+ Text$
-      Case "Date"          : Result$ +", "+ Text$              
-      Case "ExplorerList"  : Result$ +", "+ Text$                                                                         
-      Case "ExplorerTree"  : Result$ +", "+ Text$                                                                         
-      Case "ExplorerCombo" : Result$ +", "+ Text$                                                                        
-         
-      Case "HyperLink"     : Result$ +", "+ Text$ +", "+ param1$                                                       
-      Case "ListIcon"      : Result$ +", "+ Text$ +", "+ param1$                                                        
-         
-      Case "Image"         : Result$ +", "+ param1$   
-      Case "Scintilla"     : Result$ +", "+ param1$
-      Case "Shortcut"      : Result$ +", "+ param1$
-      Case "ButtonImage"   : Result$ +", "+ param1$                                                                                             
-         
-      Case "TrackBar"      : Result$ +", "+ param1$ +", "+ param2$                                                                         
-      Case "Spin"          : Result$ +", "+ param1$ +", "+ param2$                                                                             
-      Case "Splitter"      : Result$ +", "+ param1$ +", "+ param2$                                                                         
-      Case "MDI"           : Result$ +", "+ param1$ +", "+ param2$                                                                              
-      Case "ProgressBar"   : Result$ +", "+ param1$ +", "+ param2$                                                                      
-      Case "ScrollBar"     : Result$ +", "+ param1$ +", "+ param2$ +", "+ param3$                                                 
-   EndSelect
-   
-   If flag$ : Result$ +", "+ flag$ : EndIf 
-   
-   Result$+" )" 
-   
-   ProcedureReturn Result$
-EndProcedure
-
-Procedure add_code( *new._s_widget, Class.s, Position.i, SubLevel.i )
-   Protected code.s 
-   
-   ;   code = Space( ( *new\level-2 )*4 ) +
-   ;          Class +" = "+ 
-   ;          *new\class +"( " + 
-   ;          *new\x +", "+
-   ;          *new\y +", "+ 
-   ;          *new\width +", "+ 
-   ;          *new\height +", "+ 
-   ;          *new\text\string +", "+ 
-   ;          FlagFromFlag( *new\type, *new\flag )+
-   ;          " )"
-   
-   code = Space( ( Level(*new)-Level(ide_design_MDI) )*5 ) + add_line( *new._s_widget, Class.s )
-   
-   ;   ForEach widget( )
-   ;     If Child( widget( ), ide_design_MDI )
-   ;       Debug widget( )\class
-   ;     EndIf
-   ;   Next
+   Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any, ", "Window( ")
+   Result$ = ReplaceString( Result$, "OpenWindow( " + Name$, "Window( ")
+   Result$ = ReplaceString( Result$, "Gadget( #PB_Any, ", "( ")
+   Result$ = ReplaceString( Result$, "Gadget( " + Name$, "( ")
+   Result$ = ReplaceString( Result$, "Gadget", "")
    
    If IsGadget( ide_g_code )
-      AddGadgetItem( ide_g_code, Position, code )
+      AddGadgetItem( ide_g_code, Position, Result$ )
    Else
-      AddItem( ide_design_code, Position, code )
-      AddItem( ide_debug_view, Position, code )
+      AddItem( ide_design_panel_CODE, Position, Result$ )
+      AddItem( ide_design_DEBUG, Position, Result$ )
    EndIf
 EndProcedure
 
 ;-
 Procedure code_edit_events( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
-   ;Debug ""+GetState(*this)+" change-["+*this\class+"]"
+   ;Debug ""+GetState(*this)+" change-["+GetClass(*this)+"]"
    Protected q, startpos, stoppos
    Protected X = #PB_Ignore, Y = #PB_Ignore
    Protected Width = #PB_Ignore, Height = #PB_Ignore
@@ -863,7 +786,7 @@ Procedure code_edit_events( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
             EndIf
       EndSelect
       
-      ; Debug Left( *this\text\string, *this\text\caret\pos ); GetState( ide_design_code )
+      ; Debug Left( *this\text\string, *this\text\caret\pos ); GetState( ide_design_panel_CODE )
    EndIf
 EndProcedure
 
@@ -932,7 +855,7 @@ Procedure widget_delete( *this._s_WIDGET  )
    ;       ClearList( a_group( ) )
    ;    Else
    
-   If *this <> ide_design_MDI
+   If *this <> ide_design_panel_MDI
       item = GetData( *this )
       
       If item 
@@ -957,19 +880,19 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
+Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
    Protected *new._s_widget, *param1, *param2, *param3
    Protected is_window.b, flag.i ;= #__flag_NoFocus
    Protected newClass.s
    
    If *parent 
       OpenList( *parent, CountItems( *parent ) - 1 )
-      class.s = LCase( Trim( class ) )
+      Class.s = LCase( Trim( Class ) )
       
       ; defaul width&height
-      If class = "scrollarea" Or
-         class = "container" Or
-         class = "panel"
+      If Class = "scrollarea" Or
+         Class = "container" Or
+         Class = "panel"
          
          If Width = #PB_Ignore
             Width = 200
@@ -978,7 +901,7 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
             Height = 150
          EndIf
          
-         If class = "scrollarea"
+         If Class = "scrollarea"
             *param1 = Width
             *param2 = Height
             *param3 = 5
@@ -994,7 +917,7 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
       EndIf
       
       ; create elements
-      Select class
+      Select Class
          Case "window"    
             is_window = #True
             If Type( *parent ) = #__Type_MDI
@@ -1012,18 +935,13 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
             CompilerEndIf
             SetImage( *new, *imagelogo )
             Bind( *new, @widget_events( ) )
-            
-            ; на тот случай если изменили 
-            ; формирование класса например "Window0;Window1"
-            SetClass( *new, UlCase(class))
-            
          
          Case "container"   
             *new = Container( X,Y,Width,Height, flag ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "panel"       
-            *new = Panel( X,Y,Width,Height, flag ) : AddItem( *new, -1, class+"_item_0" ) : CloseList( )
+            *new = Panel( X,Y,Width,Height, flag ) : AddItem( *new, -1, Class+"_item_0" ) : CloseList( )
             SetColor( *new, #__color_back, $FFF1F1F1 )
             
          Case "scrollarea"  
@@ -1044,15 +962,16 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
       
       If *new
          ;\\ первый метод формирования названия переменной
-         newClass.s = class+"_"+CountType( *new )
+         newClass.s = Class+"_"+CountType( *new )
          
          ;\\ второй метод формирования названия переменной
-         ;          If *parent = ide_design_MDI
-         ;             newClass.s = GetClass( *new )+"_"+CountType( *new , 1 )
+         ;          If *parent = ide_design_panel_MDI
+         ;             newClass.s = Class( *new )+"_"+CountType( *new , 1 )
          ;          Else
-         ;             newClass.s = GetClass( *parent )+"_"+CountType( *parent, 1 )+"_"+GetClass( *new )+"_"+CountType( *new , 1 )
+         ;             newClass.s = Class( *parent )+"_"+CountType( *parent, 1 )+"_"+Class( *new )+"_"+CountType( *new , 1 )
          ;          EndIf
          ;\\
+         SetClass( *new, UCase(newClass) )
          SetText( *new, newClass )
          
          ;
@@ -1103,7 +1022,7 @@ Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          Protected img =- 1
          CountItems = CountItems( ide_inspector_elements )
          For i = 0 To CountItems - 1
-            If LCase(StringField( class.s, 1, "_" )) = LCase(GetItemText( ide_inspector_elements, i ))
+            If LCase(StringField( Class.s, 1, "_" )) = LCase(GetItemText( ide_inspector_elements, i ))
                img = GetItemData( ide_inspector_elements, i )
                Break
             EndIf
@@ -1147,7 +1066,7 @@ Procedure widget_events( )
          If a_focused( ) = *e_widget
             If GetActive( ) <> ide_inspector_view 
                SetActive( ide_inspector_view )
-               Debug "------------- active "+GetActive( )\class
+               Debug "------------- active "+GetClass(GetActive( ))
             EndIf
          EndIf
          
@@ -1207,12 +1126,12 @@ Procedure widget_events( )
       Case #__event_Drop
          Select DropPrivate( )
             Case #_DD_Group
-               Debug " ----- DD_group ----- " + *e_widget\class
+               Debug " ----- DD_group ----- " + GetClass(*e_widget)
                
 ;             Case #_DD_reParent
-;                Debug " ----- DD_move ----- " +Pressed( )\class +" "+ Entered(  )\class
+;                Debug " ----- DD_move ----- " +GetClass(Pressed( )) +" "+ Entered(  )\class
 ;                If SetParent( Pressed( ), Entered(  ) )
-;                   Protected i = 3 : Debug "re-parent "+ Pressed( )\parent\class +" "+ Pressed( )\x[i] +" "+ Pressed( )\y[i] +" "+ Pressed( )\width[i] +" "+ Pressed( )\height[i]
+;                   Protected i = 3 : Debug "re-parent "+ GetClass(Pressed( )\parent) +" "+ Pressed( )\x[i] +" "+ Pressed( )\y[i] +" "+ Pressed( )\width[i] +" "+ Pressed( )\height[i]
 ;                EndIf
                
             Case #_DD_CreateNew 
@@ -1566,26 +1485,26 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_StatusChange
-         If *e_widget = ide_design_code
-            ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetState( ide_design_code )
+         If *e_widget = ide_design_panel_CODE
+            ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetState( ide_design_panel_CODE )
          EndIf
          
          If e_item = - 1
-            SetText( ide_help_view, "help for the inspector" )
+            SetText( ide_inspector_HELP, "help for the inspector" )
          Else
             If WidgetEventData( ) < 0
                If *e_widget = ide_inspector_view
                   ; Debug ""+WidgetEventData( )+" i "+e_item
-                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+                  SetText( ide_inspector_HELP, GetItemText( *e_widget, e_item ) )
                EndIf
                If *e_widget = ide_inspector_elements
-                  SetText( ide_help_view, Help_elements(GetItemText( *e_widget, e_item )) )
+                  SetText( ide_inspector_HELP, Help_elements(GetItemText( *e_widget, e_item )) )
                EndIf
                If *e_widget = ide_inspector_properties
-                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+                  SetText( ide_inspector_HELP, GetItemText( *e_widget, e_item ) )
                EndIf
                If *e_widget = ide_inspector_events
-                  SetText( ide_help_view, GetItemText( *e_widget, e_item ) )
+                  SetText( ide_inspector_HELP, GetItemText( *e_widget, e_item ) )
                EndIf
             EndIf
          EndIf
@@ -1594,15 +1513,15 @@ Procedure ide_events( )
          
          If *e_widget = ide_design_panel
             If e_item = 1
-               Define code$ = GeneratePBCode( ide_design_MDI )
+               Define code$ = GeneratePBCode( ide_design_panel_MDI )
                
-               SetText( ide_design_code, code$ )
-               SetActive( ide_design_code )
+               SetText( ide_design_panel_CODE, code$ )
+               SetActive( ide_design_panel_CODE )
             EndIf
          EndIf
          
          If *e_widget = ide_inspector_view
-            Debug ""+GetState(*e_widget)+" change-["+*e_widget\class+"]"
+            Debug ""+GetState(*e_widget)+" change-["+GetClass(*e_widget)+"]"
             ;PushListPosition(*e_widget\__rows())
             ;Debug GetClass(GetItemData(*e_widget, GetState(*e_widget)))
             If a_set( GetItemData(*e_widget, GetState(*e_widget)), #__a_full )
@@ -1611,7 +1530,7 @@ Procedure ide_events( )
             ;PopListPosition(*e_widget\__rows())
          EndIf
          If *e_widget = ide_inspector_properties
-            ; Debug " 2 change-["+*e_widget\class+"]"
+            ; Debug " 2 change-["+GetClass(*e_widget)+"]"
             properties_updates( ide_inspector_properties, a_focused( ) )
          EndIf
          
@@ -1624,14 +1543,15 @@ Procedure ide_events( )
          If *e_widget\TabEntered( )
             ide_menu_events( *e_widget, *e_widget\TabEntered( )\index )
          Else
-            If GetClass( *e_widget ) = "ToolBar"
+            If Type( *e_widget ) = #__type_toolbar
                ide_menu_events( *e_widget, GetData( *e_widget ) )
             EndIf
          EndIf
          
    EndSelect
    
-   If *e_widget = ide_design_code
+   ;\\ CODE EVENTS
+   If *e_widget = ide_design_panel_CODE
       If e_item = #__event_Up Or
          e_item = #__event_Change Or
          e_item = #__event_StatusChange
@@ -1705,17 +1625,17 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ; gadgets
    
    ;\\\ 
-   Define ide_root2 ;= Open(1) : Define ide_g_canvas2 =  GetCanvasGadget(ide_root2)
+   Define ide_root2 ;= Open(1) : Define ide_design_g_canvas =  GetCanvasGadget(ide_root2)
    
    ide_design_panel = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__flag_Vertical ) : OpenList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
-   ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
-   SetColor( ide_design_MDI, #__color_back, RGBA(195, 156, 191, 255) )
-   a_init( ide_design_MDI);, 0 )
+   ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
+   SetColor( ide_design_panel_MDI, #__color_back, RGBA(195, 156, 191, 255) )
+   a_init( ide_design_panel_MDI);, 0 )
    
    AddItem( ide_design_panel, -1, "Code" )
-   ide_design_code = Editor( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_code, "ide_design_code" ) ; bug then move anchors window
-   SetBackgroundColor( ide_design_code, $FFDCF9F6)
+   ide_design_panel_CODE = Editor( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_CODE, "ide_design_panel_CODE" ) ; bug then move anchors window
+   SetBackgroundColor( ide_design_panel_CODE, $FFDCF9F6)
    AddItem( ide_design_panel, -1, "Hiasm" )
    CloseList( )
    
@@ -1724,13 +1644,13 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
       UseGadgetList( GadgetID(ide_g_canvas))
       OpenList(ide_root)
    Else
-      Define ide_g_canvas2 = ide_design_panel
+      Define ide_design_g_canvas = ide_design_panel
    EndIf
    
    ;
-   ide_debug_view = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_debug_view, "ide_debug_view" ) ; ListView( 0,0,0,0 ) 
-   If Not ide_design_code
-      ide_design_code = ide_debug_view
+   ide_design_DEBUG = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_design_DEBUG, "ide_design_DEBUG" ) ; ListView( 0,0,0,0 ) 
+   If Not ide_design_panel_CODE
+      ide_design_panel_CODE = ide_design_DEBUG
    EndIf
    
    ;\\\ open inspector gadgets 
@@ -1784,26 +1704,26 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    CloseList( )
    
    ; ide_inspector_ide_inspector_panel_splitter_text
-   ide_help_view  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_help_view, "ide_help_view" )
+   ide_inspector_HELP  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_inspector_HELP, "ide_inspector_HELP" )
    ;\\\ close inspector gadgets 
    
    ;
    ;\\\ ide splitters
    ;       ;
    ;       ; main splitter 1 example
-   ;       ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar_container,ide_g_canvas2, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
+   ;       ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
    ;       ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_panel, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_view_splitter, "ide_inspector_view_splitter" )
-   ;       ide_debug_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
-   ;       ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
-   ;       ide_splitter = Splitter( 0,0,0,0, ide_debug_splitter,ide_inspector_panel_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_splitter, "ide_splitter" )
+   ;       ide_design_panel_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_panel_splitter, "ide_design_panel_splitter" )
+   ;       ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
+   ;       ide_splitter = Splitter( 0,0,0,0, ide_design_panel_splitter,ide_inspector_panel_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_splitter, "ide_splitter" )
    ;       
    ;       ; set splitters default minimum size
    ;       SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
    ;       SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
    ;       SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_FirstMinimumSize, 230 )
    ;       SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-   ;       SetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   ;       SetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+   ;       SetAttribute( ide_design_panel_splitter, #PB_Splitter_FirstMinimumSize, 300 )
+   ;       SetAttribute( ide_design_panel_splitter, #PB_Splitter_SecondMinimumSize, 100 )
    ;       SetAttribute( ide_inspector_view_splitter, #PB_Splitter_FirstMinimumSize, 100 )
    ;       SetAttribute( ide_inspector_view_splitter, #PB_Splitter_SecondMinimumSize, 130 )
    ;       SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
@@ -1813,16 +1733,16 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;       ; set splitters dafault positions
    ;       SetState( ide_splitter, Width( ide_splitter )-200 )
    ;       SetState( ide_inspector_panel_splitter, Height( ide_inspector_panel_splitter )-80 )
-   ;       SetState( ide_debug_splitter, Height( ide_debug_splitter )-150 )
+   ;       SetState( ide_design_panel_splitter, Height( ide_design_panel_splitter )-150 )
    ;       SetState( ide_inspector_view_splitter, 200 )
    ;       SetState( ide_design_splitter, Height( ide_toolbar ) - 1 + 2 )
    ;    
    ;    ;
    ;    ;\\ main splitter 2 example 
    ;    ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_panel, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_view_splitter, "ide_inspector_view_splitter" )
-   ;    ide_debug_splitter = Splitter( 0,0,0,0, ide_g_canvas2,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
-   ;    ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
-   ;    ide_design_splitter = Splitter( 0,0,0,0, ide_inspector_panel_splitter, ide_debug_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
+   ;    ide_design_panel_splitter = Splitter( 0,0,0,0, ide_design_g_canvas,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_panel_splitter, "ide_design_panel_splitter" )
+   ;    ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
+   ;    ide_design_splitter = Splitter( 0,0,0,0, ide_inspector_panel_splitter, ide_design_panel_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
    ;    ide_splitter = Splitter( 0,0,0,0, ide_toolbar_container, ide_design_splitter,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_splitter, "ide_splitter" )
    ;    
    ;    ; set splitters default minimum size
@@ -1832,8 +1752,8 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;    SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 540 )
    ;    SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_FirstMinimumSize, 230 )
    ;    SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-   ;    SetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   ;    SetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+   ;    SetAttribute( ide_design_panel_splitter, #PB_Splitter_FirstMinimumSize, 300 )
+   ;    SetAttribute( ide_design_panel_splitter, #PB_Splitter_SecondMinimumSize, 100 )
    ;    SetAttribute( ide_inspector_view_splitter, #PB_Splitter_FirstMinimumSize, 100 )
    ;    SetAttribute( ide_inspector_view_splitter, #PB_Splitter_SecondMinimumSize, 130 )
    ;    
@@ -1841,16 +1761,16 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;    SetState( ide_splitter, Height( ide_toolbar ) )
    ;    SetState( ide_design_splitter, 200 )
    ;    SetState( ide_inspector_panel_splitter, Height( ide_inspector_panel_splitter )-80 )
-   ;    SetState( ide_debug_splitter, Height( ide_debug_splitter )-200 )
+   ;    SetState( ide_design_panel_splitter, Height( ide_design_panel_splitter )-200 )
    ;    SetState( ide_inspector_view_splitter, 230 )
    ;    
    
    ;
    ;\\ main splitter 2 example 
-   ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_panel,ide_help_view, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_view_splitter" )
+   ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_panel, ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_view_splitter" )
    ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view, ide_inspector_panel_splitter) : SetClass(ide_inspector_view_splitter, "ide_inspector_panel_splitter" )
-   ide_debug_splitter = Splitter( 0,0,0,0, ide_g_canvas2,ide_debug_view, #PB_Splitter_SecondFixed ) : SetClass(ide_debug_splitter, "ide_debug_splitter" )
-   ide_design_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter, ide_debug_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
+   ide_design_panel_splitter = Splitter( 0,0,0,0, ide_design_g_canvas, ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_panel_splitter, "ide_design_panel_splitter" )
+   ide_design_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter, ide_design_panel_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
    ide_splitter = Splitter( 0,0,0,0, ide_toolbar_container, ide_design_splitter,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_splitter, "ide_splitter" )
    
    ; set splitters default minimum size
@@ -1858,8 +1778,8 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_SecondMinimumSize, 30 )
    SetAttribute( ide_inspector_view_splitter, #PB_Splitter_FirstMinimumSize, 100 )
    SetAttribute( ide_inspector_view_splitter, #PB_Splitter_SecondMinimumSize, 200 )
-   SetAttribute( ide_debug_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   SetAttribute( ide_debug_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+   SetAttribute( ide_design_panel_splitter, #PB_Splitter_FirstMinimumSize, 300 )
+   SetAttribute( ide_design_panel_splitter, #PB_Splitter_SecondMinimumSize, 100 )
    SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 120 )
    SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 540 )
    SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 20 )
@@ -1868,7 +1788,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ; set splitters dafault positions
    SetState( ide_splitter, Height( ide_toolbar ))
    SetState( ide_design_splitter, 200 )
-   SetState( ide_debug_splitter, Height( ide_debug_splitter )-180 )
+   SetState( ide_design_panel_splitter, Height( ide_design_panel_splitter )-180 )
    ;SetState( ide_inspector_panel_splitter, 250 )
    SetState( ide_inspector_view_splitter, 200 )
    
@@ -1882,9 +1802,9 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;
    Bind( ide_design_panel, @ide_events( ), #__event_Change )
    ;
-   Bind( ide_design_code, @ide_events( ), #__event_Up )
-   Bind( ide_design_code, @ide_events( ), #__event_Change )
-   Bind( ide_design_code, @ide_events( ), #__event_StatusChange )
+   Bind( ide_design_panel_CODE, @ide_events( ), #__event_Up )
+   Bind( ide_design_panel_CODE, @ide_events( ), #__event_Change )
+   Bind( ide_design_panel_CODE, @ide_events( ), #__event_StatusChange )
    ;
    Bind( ide_inspector_events, @ide_events( ), #__event_Change )
    Bind( ide_inspector_events, @ide_events( ), #__event_StatusChange )
@@ -1911,16 +1831,16 @@ CompilerIf #PB_Compiler_IsMainFile
    
    SetState( ide_inspector_panel, 1 )
    
-   ;   ;OpenList(ide_design_MDI)
+   ;   ;OpenList(ide_design_panel_MDI)
    Define result, btn2, example = 3
    
    
-   ide_design_form = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
+   ide_design_form = widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
    
    If example = 2
       ;       widget_add( ide_design_form, "button", 10, 20, 100, 30 )
       ;       
-      ;       Debug ""+widget()\parent\class +" "+ widget()\x[0] +" "+ widget()\x[7] +" "+ widget()\width[0] +" "+ widget()\width[7]
+      ;       Debug ""+GetClass(widget()\parent) +" "+ widget()\x[0] +" "+ widget()\x[7] +" "+ widget()\width[0] +" "+ widget()\width[7]
       ;       Define *container = widget_add( ide_design_form, "container", 130, 20, 220, 140 )
       ;       widget_add( *container, "button", 10, 20, 30, 30 )
       ;       
@@ -1930,10 +1850,10 @@ CompilerIf #PB_Compiler_IsMainFile
       ; ; ;       AddItem(ide_inspector_view, -1, "container_0", -1, 1)
       ; ; ;       AddItem(ide_inspector_view, -1, "button_1", -1, 2)
       ; ; ;       
-      ; ;       Define *parent._s_WIDGET = ide_design_MDI
+      ; ;       Define *parent._s_WIDGET = ide_design_panel_MDI
       ; ;       ;PushListPosition(widgets())
       ; ;       If StartEnum( *parent ,0)
-      ; ;          Debug "99 "+ widget()\class +" "+ widget()\parent\class +" "+ Str(Level(widget()))+" "+Str(Level(*parent));IsChild(widget(), *parent )
+      ; ;          Debug "99 "+ GetClass(widget()) +" "+ GetClass(widget()\parent) +" "+ Str(Level(widget()))+" "+Str(Level(*parent));IsChild(widget(), *parent )
       ; ;          Select CountItems(ide_inspector_view)
       ; ;             Case 0 
       ; ;                AddItem(ide_inspector_view, -1, "window_0", -1, Level(widget())-Level(*parent)-1)
@@ -2004,7 +1924,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ;SetSizeBounds( *scrollarea )
       ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
       SetMoveBounds( ide_design_form, -1,-1,-1,-1 )
-      ;       ;SetChildrenBounds( ide_design_MDI )
+      ;       ;SetChildrenBounds( ide_design_panel_MDI )
       
    ElseIf example = 4
       ;\\ example 3
@@ -2043,18 +1963,18 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    Define._S_WIDGET *this, *parent
    ;    Debug "--- enumerate all gadgets ---"
    ;    If StartEnum( root( ) )
-   ;       Debug "     gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
+   ;       Debug "     gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\text\string +")"
    ;       StopEnum( )
    ;    EndIf
    ;    
    ;    Debug ""
    ;    *parent = *container
    ;    *this = GetPositionLast( *parent )
-   ;    Debug ""+*this\class +"           ("+ *parent\class +")" ;  +" - ("+ *this\text\string +")"
+   ;    Debug ""+GetClass(*this) +"           ("+ GetClass(*parent) +")" ;  +" - ("+ *this\text\string +")"
    ;    
    ;    
    ;    If StartEnum( *parent )
-   ;       Debug "   *parent  gadget - "+ widget( )\index +" "+ widget( )\class +"               ("+ widget( )\parent\class +") " ;+" - ("+ widget( )\text\string +")"
+   ;       Debug "   *parent  gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\text\string +")"
    ;       StopEnum( )
    ;    EndIf
    ;    
@@ -2090,9 +2010,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1717
-; FirstLine = 1707
-; Folding = -------------------------------------
+; CursorPosition = 702
+; FirstLine = 689
+; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

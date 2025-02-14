@@ -4,26 +4,24 @@ EnableExplicit
 DeclareModule Code
    EnableExplicit
    
-   Declare.S Code_EventType( Indent, Types.S )
-   Declare.S Code_EventGadget( Indent, Types.S )
+   Declare.S GenerateEventType( Indent, Types.S )
+   Declare.S GenerateEventGadget( Indent, Types.S )
+   Declare.S GenerateBindGadgetEvent( Indent, StringS.S, Mode = 1)
+   Declare.S GenerateBindGadgetEventProcedure( Indent, ProcedureName.S, Gadgets.S, Types.S = "")
    
-   Declare.S Code_BindGadgetEvent( Indent, StringS.S, Mode = 0)
-   Declare.S Code_BindGadgetEvent_Procedure( Indent, ProcedureName.S, Gadgets.S, Types.S = "")
+   Declare.S GenerateEvent( Indent, Names$, Events$, Functions$, WaitWindowEvent$ = "Event" )
+   Declare.S GenerateBindEvent( Indent, Events$, Names$ )
+   Declare.S GenerateBindEventProcedure( Indent, Names$, Events$, Functions$ )
    
-   Declare.S Code_BindEvent( Indent, Events.S, Windows.S )
-   Declare.S Code_Event( Indent, Windows.S, Events.S, Functions.S, WaitWindowEvent.S = "Event" )
-   Declare.S Code_Event_Procedure( Indent, Windows.S, Events.S, Functions.S )
-   
-   Declare.S Code_BindGadgetEventPost( Gadgets.S, Name.S )
 EndDeclareModule
 
 Module Code
    
-   Procedure.S Code_EventType( Indent, Types.S ) ; Ok
-      Protected Includes.S, Include.S, EventType.S, Type.S, II, I, Code.S, CountType = CountString( Types.S, "|" ) + (1)
+   Procedure.S GenerateEventType( Indent, Types.S ) ; Ok
+      Protected Includes.S, Include.S, EventType.S, Type.S, II, I, Result$, CountType = CountString( Types.S, "|" ) + (1)
       
       If Types.S And CountType
-         Code.S = Code.S + Space( Indent ) + "Select EventType( )" + #CRLF$
+         Result$ + Space( Indent ) + "Select EventType( )" + #CRLF$
          ;EndIf
          
          For I = (1) To CountType
@@ -33,38 +31,38 @@ Module Code
                EventType.S = Trim(Mid( Type.S, (1), FindString( Type.S, "=" )-(1)))
                
                If EventType.S 
-                  Code.S = Code.S + Space( Indent ) + Space( 2 ) + "Case " + EventType.S + #CRLF$ ;
+                  Result$ + Space( Indent ) + Space( 2 ) + "Case " + EventType.S + #CRLF$ ;
                   
                   Includes.S = Trim(Mid( Type.S, FindString( Type.S, "=" )+(1)))
                   
                   For II = (1) To CountString( Includes.S, "/" ) + (1)
                      Include.S = Trim( StringField( Includes.S, II, "/" ))
                      If Include.S 
-                        Code.S = Code.S + Space( Indent ) + Space( 4 ) + Include.S + #CRLF$
+                        Result$ + Space( Indent ) + Space( 4 ) + Include.S + #CRLF$
                      EndIf
                   Next
                   
                Else
-                  Code.S = Code.S + Space( Indent ) + Space( 2 ) + "Case " + Type.S + #CRLF$ ;
+                  Result$ + Space( Indent ) + Space( 2 ) + "Case " + Type.S + #CRLF$ ;
                EndIf
                
-               Code.S = Code.S + Space( Indent ) + Space( 4 ) + #CRLF$
+               Result$ + Space( Indent ) + Space( 4 ) + #CRLF$
             EndIf
          Next
          
          ;If Types.S And CountType
-         Code.S = Code.S + Space( Indent ) + "EndSelect" + #CRLF$
+         Result$ + Space( Indent ) + "EndSelect" + #CRLF$
       EndIf
       
-      ProcedureReturn Code.S
+      ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S Code_EventGadget( Indent, Types.S ) ; Ok
-      Protected I, Gadget.S, Type.S, Gadgets.S, Code.S, CountType = CountString( Types.S, "?" ) + (1)
+   Procedure.S GenerateEventGadget( Indent, Types.S ) ; Ok
+      Protected I, Gadget.S, Type.S, Gadgets.S, Result$, CountType = CountString( Types.S, "?" ) + (1)
       
       If Types.S And CountType
          ;If Types.S And CountType
-         Code.S = Code.S + Space( Indent ) + "Select EventGadget( )" + #CRLF$
+         Result$ + Space( Indent ) + "Select EventGadget( )" + #CRLF$
          ;EndIf
          
          For I = (1) To CountType
@@ -74,27 +72,27 @@ Module Code
                Gadget.S = Trim(Mid( Gadgets.S, (1), FindString( Gadgets.S, "\" )-(1)))
                
                If Gadget.S
-                  Code.S = Code.S + Space( Indent + ( 2 ) ) + "Case " + Gadget.S + #CRLF$ 
+                  Result$ + Space( Indent + ( 2 ) ) + "Case " + Gadget.S + #CRLF$ 
                   
                   Type.S = Trim(Mid( Gadgets.S, FindString( Gadgets.S, "\" )+(1)))
-                  Code.S = Code.S + Code_EventType( Indent + ( 4 ), Type.S) + #CRLF$ 
+                  Result$ + GenerateEventType( Indent + ( 4 ), Type.S) + #CRLF$ 
                Else
-                  Code.S = Code.S + Space( Indent + ( 2 ) ) + "Case " + Gadgets.S + #CRLF$ 
+                  Result$ + Space( Indent + ( 2 ) ) + "Case " + Gadgets.S + #CRLF$ 
                EndIf
                
             EndIf
          Next
          
          ;If Types.S And CountType
-         Code.S = Code.S + Space( Indent ) + "EndSelect" + #CRLF$
+         Result$ + Space( Indent ) + "EndSelect" + #CRLF$
          ;EndIf
       EndIf
       
-      ProcedureReturn Code.S
+      ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S Code_BindGadgetEvent( Indent, StringS.S, Mode = 0) ; Ok
-      Protected II, String.S, EventType.S, Gadget.S, Type.S, I, Code.S
+   Procedure.S GenerateBindGadgetEvent( Indent, StringS.S, Mode = 1) ; Ok
+      Protected II, String.S, EventType.S, Gadget.S, Type.S, I, Result$
       If StringS.S
          For I = (1) To CountString( StringS.S, "?" ) + (1)
             String.S = Trim( StringField( StringS.S, I, "?" ))
@@ -103,7 +101,7 @@ Module Code
                Gadget.S = Trim(Mid( String.S, (1), FindString( String.S, "\" )-(1)))
                
                If Gadget.S = ""
-                  Code.S = Code.S + Space( Indent ) + "BindGadgetEvent( " + String.S + ", @" + Trim( String.S, "#" ) + "_Event( ) )" + #CRLF$
+                  Result$ + Space( Indent ) + "BindGadgetEvent( " + String.S + ", @" + Trim( String.S, "#" ) + "_Event( ) )" + #CRLF$
                Else
                   If Mode
                      For II = (1) To CountString( String.S, "|" ) + (1)
@@ -111,7 +109,7 @@ Module Code
                         EventType.S = Trim(Mid( EventType.S, (1), FindString( EventType.S, "=" )-(1)))
                         EventType.S = Trim(Mid( EventType.S, FindString( EventType.S, "\" )+(1)))
                         
-                        Code.S = Code.S + Space( Indent ) + "BindGadgetEvent( " + Gadget.S + ", @" + Trim( Gadget.S, "#" ) + "_Event" + RemoveString(EventType.S,"#PB_EventType") + "( ), "+EventType.S+" )" + #CRLF$
+                        Result$ + Space( Indent ) + "BindGadgetEvent( " + Gadget.S + ", @" + Trim( Gadget.S, "#" ) + "_Event" + RemoveString(EventType.S,"#PB_EventType") + "( ), "+EventType.S+" )" + #CRLF$
                      Next
                   Else
                      Type.S = ""
@@ -122,7 +120,7 @@ Module Code
                         Type.S = Trim( Type.S +"|"+ EventType.S, "|")
                      Next
                      
-                     Code.S = Code.S + Space( Indent ) + "BindGadgetEvent( " + Gadget.S + ", @" + Trim( Gadget.S, "#" ) + "_Event( ), "+Type.S+" )" + #CRLF$
+                     Result$ + Space( Indent ) + "BindGadgetEvent( " + Gadget.S + ", @" + Trim( Gadget.S, "#" ) + "_Event( ), "+Type.S+" )" + #CRLF$
                   EndIf
                EndIf
             EndIf
@@ -133,11 +131,11 @@ Module Code
       EndIf
       
       
-      ProcedureReturn Code.S
+      ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S Code_BindGadgetEvent_Procedure( Indent, ProcedureName.S, Gadgets.S, Types.S = "") ; Ok
-      Protected Code.S
+   Procedure.S GenerateBindGadgetEventProcedure( Indent, ProcedureName.S, Gadgets.S, Types.S = "") ; Ok
+      Protected Result$
       If ProcedureName.S
          If Not ((Mid(ProcedureName.S, (1), (1)) = ".") Or 
                  (Mid(ProcedureName.S, (1), (1)) = "$"))
@@ -151,222 +149,212 @@ Module Code
             ProcedureName.S = " " + ProcedureName.S
          EndIf
          
-         Code.S = Space( Indent ) + "Procedure" + ProcedureName.S + #CRLF$
+         Result$ = Space( Indent ) + "Procedure" + ProcedureName.S + #CRLF$
          Indent = Indent  +  ( 2 )
       EndIf
       
       If Gadgets.S
-         Code.S = Code.S + Code_EventGadget( Indent, Gadgets.S )
+         Result$ + GenerateEventGadget( Indent, Gadgets.S )
       Else
-         Code.S = Code.S + Code_EventType( Indent, Types.S )
+         Result$ + GenerateEventType( Indent, Types.S )
       EndIf
       
       If ProcedureName.S
          Indent = Indent  -  ( 2 )
-         Code.S = Code.S + Space( Indent ) + "EndProcedure" + #CRLF$
+         Result$ + Space( Indent ) + "EndProcedure" + #CRLF$
       EndIf
       
-      ProcedureReturn Code.S
-   EndProcedure
-   
-   Procedure.S Code_BindGadgetEventPost( Gadgets.S, Name.S ) ; Gadgets.S =  ; Name.S = "Window name example(CodeForm)"
-      Protected Code.S, I, Gadget.S
-      For I = (1) To CountString( Gadgets.S, "?" ) + (1)
-         Gadget.S = Trim( StringField( Gadgets.S, I, "?" )) 
-         ;Debug Gadget.S
-         If Gadget.S
-            Code.S = Code.S + "BindGadgetEvent( " + Trim(Mid( Gadget.S, (1), FindString( Gadget.S, "\" )-(1))) + ", @" + Name.S + "_GadgetType_Event( ) )" + #CRLF$
-         EndIf
-      Next
-      ProcedureReturn Code.S
+      ProcedureReturn Result$
    EndProcedure
    
    ;-
-   Procedure.S Code_Event( Indent, Windows.S, Events.S, Functions.S, WaitWindowEvent.S = "Event" )
-      Protected Window.S, Code.S, Event.S, Space.S = Space( Indent )
-      Protected I, II, III, Function.S
+   Procedure.S GenerateEvent( Indent, Names$, Events$, Functions$, WaitWindowEvent$ = "Event" )
+      Protected Name$, Result$, Event$, Space$ = Space( Indent )
+      Protected I, II, III, Function$
       
-      Windows.S = Trim(Windows.S, "|")
-      Events.S = Trim(Events.S, "|")
-      Functions.S = Trim(Functions.S, "|")
+      Names$ = Trim(Names$, "|")
+      Events$ = Trim(Events$, "|")
+      Functions$ = Trim(Functions$, "|")
       
       
-      For I = 1 To CountString( Windows.S, "|") + (1)
-         Window.S = Trim( StringField( Windows.S, I, "|" )) 
+      For I = 1 To CountString( Names$, "|") + (1)
+         Name$ = Trim( StringField( Names$, I, "|" )) 
          
-         Code.S = Code.S + Space.S + "Case "+Window.S+#CRLF$
-         Code.S = Code.S + Space.S + "  Select " + WaitWindowEvent.S + #CRLF$
+         Result$ + Space$ + "Case "+Name$+#CRLF$
+         Result$ + Space$ + "  Select " + WaitWindowEvent$ + #CRLF$
          
-         For II = 1 To CountString( Events.S, "|") + (1)
-            Event.S = Trim( StringField( Events.S, II, "|" ))
+         For II = 1 To CountString( Events$, "|") + (1)
+            Event$ = Trim( StringField( Events$, II, "|" ))
             
-            Code.S = Code.S + Space.S + "    Case " + Event.S + #CRLF$
-            For III = 1 To CountString( Functions.S, "|") + (1)
+            Result$ + Space$ + "    Case " + Event$ + #CRLF$
+            For III = 1 To CountString( Functions$, "|") + (1)
                If II = III
-                  Function.S = Trim( StringField( Functions.S, III, "|" ))
+                  Function$ = Trim( StringField( Functions$, III, "|" ))
                   
-                  If Function.S
-                     Code.S = Code.S + Space.S + "      " + Function.S + #CRLF$
-                     Code.S = Code.S + Space.S + "      " + #CRLF$
+                  If Function$
+                     Result$ + Space$ + "      " + Function$ + #CRLF$
+                     Result$ + Space$ + "      " + #CRLF$
                   EndIf
                EndIf
             Next
             
          Next
          
-         Code.S = Code.S + Space.S + "  EndSelect " + #CRLF$
-         Code.S = Code.S + Space.S + "  " + #CRLF$
+         Result$ + Space$ + "  EndSelect " + #CRLF$
+         Result$ + Space$ + "  " + #CRLF$
       Next
       
-      ProcedureReturn Code.S
+      ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S Code_BindEvent( Indent, Events.S, Windows.S ) ; Events.S = "#PB_Event_ActivateWindow|#PB_Event_DeactivateWindow" ; Windows.S = "Window_0|Window_1"
-      Protected Space.S = Space( Indent )
-      Protected I, II, Window.S, Code.S, Event.S
-      ;Windows.S = "" ; Если нет окон 
-      Windows.S = Trim(Windows.S, "|")
-      Events.S = Trim(Events.S, "|")
-      ;Functions.S = Trim(Functions.S, "|")
-      
-      
-      For I = 1 To CountString( Windows.S, "|") + (1)
-         Window.S = Trim( StringField( Windows.S, I, "|" )) 
-         
-         For II = (1) To CountString( Events.S, "|" ) + (1)
-            Event.S = Trim( StringField( Events.S, II, "|" )) 
+   Procedure.S GenerateBindEvent( Indent, Events$, Names$ ) 
+      ; Name$ = "Window_0|Window_1"
+      ; Events$ = "#PB_Event_ActivateWindow|#PB_Event_DeactivateWindow"  
+      ; Names$ = "" ; проверка если нет окон 
+      Protected Space$ = Space( Indent )
+      Protected I, II, Name.S, Result$, Event$, CountNames, CountEvents
+      ;
+      Names$ = Trim(Names$, "|")
+      Events$ = Trim(Events$, "|")
+      CountNames = CountString( Names$, "|" ) + (1)
+      CountEvents = CountString( Events$, "|" ) + (1)
+      ;
+      For I = (1) To CountNames
+         Name = Trim( StringField( Names$, I, "|" )) 
+         ;
+         For II = (1) To CountEvents
+            Event$ = Trim( StringField( Events$, II, "|" )) 
             
-            If Window.S 
-               Code.S = Code.S + Space.S + "BindEvent( " + Event.S + ", @" + Trim( Window.S, "#" ) + RemoveString( Event.S, "#PB_Event" ) + "_Event(), " + Window.S + " )"+#CRLF$
+            If Name
+               Result$ + Space$ + "BindEvent( " + Event$ + ", @" + Trim( Name, "#" ) + RemoveString( Event$, "#PB_Event" ) + "_Event( ), " + Name + " )"+#CRLF$
             Else
-               Code.S = Code.S + Space.S + "BindEvent( " + Event.S + ", @All" + RemoveString( Event.S, "#PB_Event" ) + "_Event() )"+#CRLF$
+               Result$ + Space$ + "BindEvent( " + Event$ + ", @ALL" + RemoveString( Event$, "#PB_Event" ) + "_Event( ))"+#CRLF$
             EndIf
          Next
       Next
-      
-      ProcedureReturn Code.S
+      ;
+      ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S Code_Event_Procedure( Indent, Windows.S, Events.S, Functions.S )
-      Protected Window.S, Code.S, Event.S, Space.S = Space( Indent )
-      Protected I, II, III, Function.S
+   Procedure.S GenerateBindEventProcedure( Indent, Names$, Events$, Functions$ )
+      Protected Name$, Result$, Event$, Space$ = Space( Indent )
+      Protected I, II, III, Function$
       
-      Windows.S = Trim(Windows.S, "|")
-      Events.S = Trim(Events.S, "|")
-      Functions.S = Trim(Functions.S, "|")
+      Names$ = Trim(Names$, "|")
+      Events$ = Trim(Events$, "|")
+      Functions$ = Trim(Functions$, "|")
       
-      For I = 1 To CountString( Windows.S, "|") + (1)
-         Window.S = Trim( StringField( Windows.S, I, "|" )) 
+      For I = 1 To CountString( Names$, "|") + (1)
+         Name$ = Trim( StringField( Names$, I, "|" )) 
          
-         For II = 1 To CountString( Events.S, "|") + (1)
-            Event.S = Trim( StringField( Events.S, II, "|" ))
-            Code.S = Code.S + Space.S + "Procedure " + Trim( Window.S, "#" ) + RemoveString( Event, "#PB_Event" ) + "_Event( )"+#CRLF$
+         For II = 1 To CountString( Events$, "|") + (1)
+            Event$ = Trim( StringField( Events$, II, "|" ))
+            Result$ + Space$ + "Procedure " + Trim( Name$, "#" ) + RemoveString( Event$, "#PB_Event" ) + "_Event( )"+#CRLF$
             
-            Code.S = Code.S + Space.S + "  Protected Window = EventWindow( )"+#CRLF$
-            Select Event.S
+            Result$ + Space$ + "  Protected Window = EventWindow( )"+#CRLF$
+            Select Event$
                Case "#PB_Event_MoveWindow"
-                  Code.S = Code.S + Space.S + "  Protected X = WindowX( Window )"+#CRLF$ 
-                  Code.S = Code.S + Space.S + "  Protected Y = WindowY( Window )"+#CRLF$
+                  Result$ + Space$ + "  Protected X = WindowX( Window )"+#CRLF$ 
+                  Result$ + Space$ + "  Protected Y = WindowY( Window )"+#CRLF$
                   
                Case "#PB_Event_SizeWindow"
-                  Code.S = Code.S + Space.S + "  Protected Width = WindowWidth( Window )"+#CRLF$ 
-                  Code.S = Code.S + Space.S + "  Protected Height = WindowHeight( Window )"+#CRLF$
+                  Result$ + Space$ + "  Protected Width = WindowWidth( Window )"+#CRLF$ 
+                  Result$ + Space$ + "  Protected Height = WindowHeight( Window )"+#CRLF$
                   
                Case "#PB_Event_Gadget"
-                  Code.S = Code.S + Space.S + "  Protected Gadget = EventGadget( )"+#CRLF$ 
-                  Code.S = Code.S + Space.S + "  Protected Type = EventType( )"+#CRLF$
+                  Result$ + Space$ + "  Protected Gadget = EventGadget( )"+#CRLF$ 
+                  Result$ + Space$ + "  Protected Type = EventType( )"+#CRLF$
                   
                Case "#PB_Event_Menu"
-                  Code.S = Code.S + Space.S + "  Protected Menu = EventMenu( )"+#CRLF$ 
+                  Result$ + Space$ + "  Protected Menu = EventMenu( )"+#CRLF$ 
                   
             EndSelect
             
-            For III = 1 To CountString( Functions.S, "|") + (1)
+            For III = 1 To CountString( Functions$, "|") + (1)
                If II = III
-                  Function.S = Trim( StringField( Functions.S, III, "|" ))
+                  Function$ = Trim( StringField( Functions$, III, "|" ))
                   
-                  If Function.S
-                     Code.S = Code.S + Space.S + "    " + Function.S + #CRLF$
-                     Code.S = Code.S + Space.S + "    " + #CRLF$
+                  If Function$
+                     Result$ + Space$ + "    " + Function$ + #CRLF$
+                     Result$ + Space$ + "    " + #CRLF$
                   EndIf
                EndIf
             Next
             
-            Code.S = Code.S + Space.S + "  "+#CRLF$
-            Code.S = Code.S + Space.S + "EndProcedure "+#CRLF$
-            Code.S = Code.S + Space.S + ""+#CRLF$
+            Result$ + Space$ + "  "+#CRLF$
+            Result$ + Space$ + "EndProcedure "+#CRLF$
+            Result$ + Space$ + ""+#CRLF$
          Next
       Next
       
-      ProcedureReturn Code.S
+      ProcedureReturn Result$
    EndProcedure
    
 EndModule
 
-Procedure.S Add(Events.S, Text.S, Index)
-   Protected Code.S
+Procedure.S Add(Events$, Text.S, Index)
+   Protected Result$
    Protected I
-   For I = 1 To CountString( Events.S, "|") + (1)
+   For I = 1 To CountString( Events$, "|") + (1)
       If I = Index
-         Code.S = Code.S + Text.S + "|"
+         Result$ + Text.S + "|"
       Else
-         Code.S = Code.S + "|"
+         Result$ + "|"
       EndIf
       
    Next
-   ProcedureReturn Code.S
+   ProcedureReturn Result$
 EndProcedure
 
-Procedure.S Function(Events.S, Texts.S, Type.S)
-   Protected I, II, Text.S, Code.S
+Procedure.S Function(Events$, Texts.S, Type.S)
+   Protected I, II, Text.S, Result$
    
    ;   For I = 1 To CountString( Texts.S, "|") + (1)
    ;   ;  Text.S = Text.S + Trim( StringField( Texts.S, I, "|" )) + #CRLF$
    ;   Next
    Text.S = Texts.S
-   For II = 1 To CountString( Events.S, "|") + (1)
-      If Trim( StringField( Events.S, II, "|" )) = Trim(Type.S)
-         Code.S = Code.S + Text.S + "|"
+   For II = 1 To CountString( Events$, "|") + (1)
+      If Trim( StringField( Events$, II, "|" )) = Trim(Type.S)
+         Result$ + Text.S + "|"
       Else
-         Code.S = Code.S + "|"
+         Result$ + "|"
       EndIf
    Next
    
-   ProcedureReturn Code.S
+   ProcedureReturn Result$
 EndProcedure
 
 
 
 CompilerIf #PB_Compiler_IsMainFile
+   Define Indent = 0
    
    Define Types.S = "#PB_EventType_LeftClick = CloseWindow( #Form_0 ) | "+
                     "#PB_EventType_Change = UpdateList( ) | "+
                     "#PB_EventType_LostFocus = CallFunc1()/CallFunc2()/CallFunc3()"
+   ; demo
+   ;Debug Code::GenerateEventType( Indent, Types.S)
+   ;Debug Code::GenerateBindGadgetEventProcedure( Indent, "#Form_0_Button_0", Types.S )
    
-   Define Gadgets.S = "?#Form_0_Button_0\#PB_EventType_LeftClick = CloseWindow( #Form_0 )"+
+   Define Mask$ = "?#Form_0_Button_0\#PB_EventType_LeftClick = CloseWindow( #Form_0 )"+
                       "?#Form_0_String_0\#PB_EventType_Change = UpdateList( ) | #PB_EventType_LostFocus = CallFunc1()/CallFunc2()/CallFunc3()"
    
-   ;Debug Code::Code_EventType( Indent, Types.S)
-   ;Debug Code::Code_EventGadget( Indent, Gadgets.S)
-   ;Debug Code::Code_BindGadgetEvent_Procedure( Indent, "Window", Gadgets.S )
-   ;Debug Code::Code_BindGadgetEvent_Procedure( Indent, "#Form_0_Button_0", Types.S )
-   
-   ;Debug Code::Code_Event_Procedure( Gadgets.S, Types.S )
-   
-   ;Gadgets.S = "?#Form_0_Button_0\#PB_EventType_LeftClick = CloseWindow( #Form_0 )"
-   ;Debug Code::Code_BindGadgetEvent(  0, Gadgets.S )
-   
-   ;{ -Windows.S
-   Define Windows.S = "#Form_0|"+
+   ; demo
+   ;Debug Code::GenerateEventGadget( Indent, Mask$)
+    Debug Code::GenerateBindGadgetEvent(  0, Mask$ )
+   ;Debug Code::GenerateBindGadgetEventProcedure( Indent, "WINDOW", Mask$ )
+    
+   ;{ -Names$
+   Define Names$ = "#Form_0|"+
                       "#Form_1|"+
                       "#Form_2"
    ;}
    
-   ;{ -Events.S            
-   Define Events.S = "#PB_Event_CloseWindow|"+
+   ;{ -Events$            
+   Define Events$ = "#PB_Event_CloseWindow|"+
                      "#PB_Event_ActivateWindow|"+
                      "#PB_Event_DeactivateWindow|"+
-                     "#PB_Event_Repaint|"+
+                     ;"#PB_Event_Repaint|"+
                      "#PB_Event_SizeWindow|"+
                      "#PB_Event_MoveWindow|"+
                      "#PB_Event_LeftClick|"+
@@ -380,11 +368,11 @@ CompilerIf #PB_Compiler_IsMainFile
                      ;            "#PB_Event_WindowDrop|"+
                      ;            "#PB_Event_Menu|"+
                      ;            "#PB_Event_Gadget|"+ 
-   "#PB_Event_GadgetDrop" 
+"#PB_Event_GadgetDrop" 
    ;}
    
-   ;{ -Function.S
-   Define Function.S = "CloseWindow( #Form_0 )|"+
+   ;{ -Functions$
+   Define Functions$ = "CloseWindow( #Form_0 )|"+
                        "|"+
                        "|"+
                        "|"+
@@ -394,15 +382,14 @@ CompilerIf #PB_Compiler_IsMainFile
    ;}
    
    ;Demo
-   ;Debug Code::Code_BindEvent(0, Events.S, Windows.S)
-   ;Debug Code::Code_Event(0, Windows.S, Events.S, Function.S)
-   ;Debug Code::Code_Event_Procedure(0, Windows.S, Events.S, Function.S)
+   ;Debug Code::GenerateBindEvent(0, Events$, Names$)
+   ;Debug Code::GenerateEvent(0, Names$, Events$, Functions$)
+   ;Debug Code::GenerateBindEventProcedure(0, Names$, Events$, Functions$)
 CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 401
-; FirstLine = 340
+; CursorPosition = 10
 ; Folding = -------
 ; EnableXP
 ; DPIAware

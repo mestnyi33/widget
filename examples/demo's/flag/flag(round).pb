@@ -5,7 +5,7 @@ UseWidgets( )
 
 Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, w_type
 
-Procedure SetRound( *this._S_WIDGET, round.a )
+Procedure _SetRound( *this._S_WIDGET, round.a )
   *this\round = DesktopScaledX(round)
   ;
   If *this\type = #__type_Progress
@@ -73,8 +73,8 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 46
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -635,8 +635,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If widgets( )\parent = _parent_
             Repeat
-               If _mode_ And widgets( )\parent <> _parent_
-                  Continue
+               If widgets( )\parent = _parent_  
+                  If widgets( )\TabIndex( ) <> _item_
+                     If _item_ >= 0  
+                        Break
+                     EndIf
+                  EndIf
+               Else
+                  If _mode_
+                     Continue
+                  EndIf
                EndIf
                If widgets( ) = _parent_\AfterWidget( ) 
                   Break
@@ -647,14 +655,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                If  widgets( )\level < _parent_\level
                   Break
                EndIf
-               If _item_ >= 0  
-                  If widgets( )\parent = _parent_  
-                     If widgets( )\TabIndex( ) <> _item_
-                        Break
-                     EndIf
-                  EndIf
-               EndIf
-               
                ;
                If Not IsChild( widgets(), _parent_ )
                   Break
@@ -1341,7 +1341,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
       
       Declare.i PBEventType( event.i )
-      Declare.i TypeFromClass( class.s )
+      Declare.i TypeFromClass( Class.s )
       Declare.s ClassFromType( Type.w )
       Declare.s ClassFromEvent( event.i )
       Declare   SetBackgroundColor( *this, color.l )
@@ -1407,8 +1407,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.a GetFrame( *this, mode.b = 0 )
       Declare   SetFrame( *this, size.a, mode.b = 0 )
       
+      Declare.s Class( *this )
       Declare.s GetClass( *this )
-      Declare   SetClass( *this, class.s )
+      Declare   SetClass( *this, Class.s )
       
       Declare   SetTextXY( *this._s_WIDGET, X.l, Y.l )
       Declare.s GetText( *this )
@@ -1478,7 +1479,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i HBar( *this )
       
       ;
-      Declare.i Create( *parent, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+      Declare.i Create( *parent, Class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
       
       ; bar
       Declare.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, increment.d = 1.0 )
@@ -7235,7 +7236,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.b Disable( *this._s_WIDGET, State.b = #PB_Default )
-      
          If State = #PB_Default : ProcedureReturn *this\disable[1] : EndIf
          
          If *this\disable[1] <> State
@@ -8471,14 +8471,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure.s Class( *this._s_WIDGET )
+         ProcedureReturn ClassFromType( *this\type )
+      EndProcedure
+      
       Procedure.s GetClass( *this._s_WIDGET )
          ProcedureReturn *this\class
       EndProcedure
       
-      Procedure SetClass( *this._s_WIDGET, class.s )
+      Procedure SetClass( *this._s_WIDGET, Class.s )
          
-         If *this\class <> class
-            *this\class = class
+         If *this\class <> Class
+            *this\class = Class
             ;
             If *this\tabbar
                *this\tabbar\class = ClassFromType( *this\tabbar\type ) +"-"+ *this\class
@@ -14901,10 +14905,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.i TypeFromClass( class.s )
+      Procedure.i TypeFromClass( Class.s )
          Protected result.i
          
-         Select Trim( LCase( class.s ))
+         Select Trim( LCase( Class.s ))
             Case "popupmenu" : result = #__type_PopupBar
                ;case "property"       : result = #__type_Properties
             Case "window" : result = #__type_window
@@ -14953,48 +14957,45 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result.s
          
          Select Type
-            Case #__type_statusbar : result.s = "status"
-            Case #__type_PopupBar : result.s = "popupmenu"
-            Case #__type_ToolBar : result.s = "tool"
-            Case #__type_TabBar : result.s = "tab"
-            Case #__type_MenuBar : result.s = "menu"
+            Case #__type_StatusBar     : result.s = "Status"
+            Case #__type_PopupBar      : result.s = "PopupMenu"
+            Case #__type_ToolBar       : result.s = "ToolBar"
+            Case #__type_TabBar        : result.s = "Tab"
+            Case #__type_MenuBar       : result.s = "Menu"
+            Case #__type_Window        : result.s = "Window"
                
-            Case #__type_window : result.s = "window"
-            Case #__type_Unknown : result.s = "create"
-            Case #__type_Button : result.s = "button"
-            Case #__type_String : result.s = "string"
-            Case #__type_Text : result.s = "text"
-            Case #__type_CheckBox : result.s = "checkbox"
-            Case #__type_Option : result.s = "option"
-            Case #__type_ListView : result.s = "listview"
-            Case #__type_Frame : result.s = "frame"
-            Case #__type_ComboBox : result.s = "combobox"
-            Case #__type_Image : result.s = "image"
-            Case #__type_HyperLink : result.s = "hyperlink"
-            Case #__type_Container : result.s = "container"
-            Case #__type_ListIcon : result.s = "listicon"
-            Case #__type_IPAddress : result.s = "ipaddress"
-            Case #__type_Progress : result.s = "progress"
-            Case #__type_Scroll : result.s = "scroll"
-            Case #__type_ScrollArea : result.s = "scrollarea"
-            Case #__type_Track : result.s = "track"
-            Case #__type_Web : result.s = "web"
-            Case #__type_Calendar : result.s = "calendar"
-            Case #__type_Date : result.s = "date"
-            Case #__type_Editor : result.s = "editor"
-            Case #__type_ExplorerList : result.s = "explorerlist"
-            Case #__type_ExplorerTree : result.s = "explorertree"
-            Case #__type_ExplorerCombo : result.s = "explorercombo"
-            Case #__type_Spin : result.s = "spin"
-            Case #__type_Tree : result.s = "tree"
-            Case #__type_Panel : result.s = "panel"
-            Case #__type_Splitter : result.s = "splitter"
-            Case #__type_MDI : result.s = "mdi"
-            Case #__type_Scintilla : result.s = "scintilla"
-               ;Case #__type_Shortcut : result.s = "shortcut"
-               ;Case #__type_Canvas : result.s = "canvas"
+            Case #__type_Unknown       : result.s = "Create"
                
-               ;     case #__type_imagebutton    : result.s = "imagebutton"
+            Case #__type_Button        : result.s = "Button"
+            Case #__type_String        : result.s = "String"
+            Case #__type_Text          : result.s = "Text"
+            Case #__type_CheckBox      : result.s = "CheckBox"
+            Case #__type_Option        : result.s = "Option"
+            Case #__type_ListView      : result.s = "ListView"
+            Case #__type_Frame         : result.s = "Frame"
+            Case #__type_ComboBox      : result.s = "ComboBox"
+            Case #__type_Image         : result.s = "Image"
+            Case #__type_HyperLink     : result.s = "HyperLink"
+            Case #__type_Container     : result.s = "Container"
+            Case #__type_ListIcon      : result.s = "ListIcon"
+            Case #__type_IPAddress     : result.s = "IPAddress"
+            Case #__type_Progress      : result.s = "Progress"
+            Case #__type_Scroll        : result.s = "Scroll"
+            Case #__type_ScrollArea    : result.s = "ScrollArea"
+            Case #__type_Track         : result.s = "Track"
+            Case #__type_Web           : result.s = "Web"
+            Case #__type_Calendar      : result.s = "Calendar"
+            Case #__type_Date          : result.s = "Date"
+            Case #__type_Editor        : result.s = "Editor"
+            Case #__type_ExplorerList  : result.s = "ExplorerList"
+            Case #__type_ExplorerTree  : result.s = "ExplorerTree"
+            Case #__type_ExplorerCombo : result.s = "ExplorerCombo"
+            Case #__type_Spin          : result.s = "Spin"
+            Case #__type_Tree          : result.s = "Tree"
+            Case #__type_Panel         : result.s = "Panel"
+            Case #__type_Splitter      : result.s = "Splitter"
+            Case #__type_MDI           : result.s = "Mdi"
+            Case #__type_Scintilla     : result.s = "Scintilla"
          EndSelect
          
          ProcedureReturn result.s
@@ -15115,7 +15116,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;-  CREATEs
       ;-
-      Procedure.i Create( *parent._s_WIDGET, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+      Procedure.i Create( *parent._s_WIDGET, Class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
          Protected *root._s_root
          If *parent
             *root = *parent\root
@@ -15147,7 +15148,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\create = #True
          *this\color  = _get_colors_( )
          *this\type   = Type
-         *this\class  = class
+         *this\class  = Class
          *this\round  = DPIScaled( round )
          *this\child  = constants::BinaryFlag( Flag, #__flag_child )
          If constants::BinaryFlag( Flag, #__flag_NoFocus )
@@ -15539,9 +15540,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If is_integral_( *this )
                   If *this\bar\vertical
-                     *this\class = class + "-v"
+                     *this\class = Class + "-v"
                   Else
-                     *this\class = class + "-h"
+                     *this\class = Class + "-h"
                   EndIf
                EndIf
                
@@ -24646,9 +24647,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9796
-; FirstLine = 9577
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv-------------------4-------------------------------------------------------------v-----------------8-----------------------------------------------------0-0-v--B+---f-0-----------------------------------------------------------------------f-----------v-8-----f2---4-v---------------------------------------------------------4-------8-------z-4--0-0----------------------------------------------------------------f-------------------------------------------------------------------------------------------
+; CursorPosition = 7238
+; FirstLine = 7185
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv---------------------------------------------------------------------------------f-----------------4-----------------------------------------------------8-8-f--D9----+8------------------------------------------------------------------------+----------f-4------r---v-f---------------------------------------------------------v-------4-------n-v--8-8-----------------------------------------------------------------+------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

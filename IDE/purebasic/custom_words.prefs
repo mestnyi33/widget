@@ -1,7 +1,12 @@
 SetTextXY
+
 TypeFromClass
 ClassFromType
 ClassFromEvent
+
+Class
+SetClass
+GetClass
 
 CanvasMouseX
 CanvasMouseY
@@ -178,9 +183,6 @@ SetChildrenBounds
 
 SetFrame
 GetFrame
-
-SetClass
-GetClass
 
 SetItemFont
 GetItemFont
