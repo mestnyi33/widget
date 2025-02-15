@@ -1534,7 +1534,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Declare   Free( *this )
-      Declare   Delete( *this )
+      Declare   Delete( *this, mode = 0 )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
       Declare   EventHandler( Canvas.i = - 1, event.i = - 1, eventdata = 0 )
@@ -22205,7 +22205,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
-               
+               If event = #__event_Free
+                  result = #True
+               EndIf
+               If event = #__event_Close
+                  result = #True
+               EndIf
                ;
                ;\\
                If Not is_root_( *this )
@@ -22250,6 +22255,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ForEach __gui\event\binds( )
                         If __gui\event\binds( )\widget = *this\root And 
                            __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                           Debug ClassFromEvent(event)
                            result = __gui\event\binds( )\function( )
                         EndIf
                      Next
@@ -22263,7 +22269,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Case #PB_All
                            Free( #PB_All )
                            
-                        Case 0
+                        Case 1
                            Free( *this )
                            
                      EndSelect
@@ -23137,114 +23143,128 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;       EndProcedure
       
       ;-
-      Procedure  Delete( *this._s_WIDGET )
+      Procedure  Delete( *this._s_WIDGET, mode = 0 )
+         a_focused( ) = 0
+         a_entered( ) = 0
+         
          If LastElement(widgets( ))
             Repeat
-               If widgets( ) = *this Or 
+               If ( mode And widgets( ) = *this ) Or 
                   IsChild( widgets( ), *this )
-                  ;
-                  If widgets( )\root\haschildren > 0
-                     widgets( )\root\haschildren - 1
-                     
-                     If widgets( )\parent <> widgets( )\root
-                        widgets( )\parent\haschildren - 1
-                     EndIf
-                     
-                     If widgets( )\tabbar
-                        If widgets( )\tabbar = widgets( )
-                           If test_delete
-                              Debug "   free - tab " + widgets( )\tabbar\class
-                           EndIf
-                           FreeStructure( widgets( )\tabbar )
-                           widgets( )\tabbar = 0
-                        EndIf
-                        widgets( )\tabbar = #Null
-                     EndIf
-                     
-                     If widgets( )\scroll
-                        If widgets( )\scroll\v
-                           If test_delete
-                              Debug "   free - scroll-v " + widgets( )\scroll\v\class
-                           EndIf
-                           FreeStructure( widgets( )\scroll\v )
-                           widgets( )\scroll\v = 0
-                        EndIf
-                        If widgets( )\scroll\h
-                           If test_delete
-                              Debug "   free scroll-h - " + widgets( )\scroll\h\class
-                           EndIf
-                           FreeStructure( widgets( )\scroll\h )
-                           widgets( )\scroll\h = 0
-                        EndIf
-                        ; widgets( )\scroll = #Null
-                     EndIf
-                     
-                     If widgets( )\type = #__type_Splitter
-                        If widgets( )\split_1( ) > 0
-                           If test_delete
-                              Debug "   free - splitter - first " + widgets( )\split_1( )\class
-                           EndIf
-                           FreeStructure( widgets( )\split_1( ) )
-                           widgets( )\split_1( ) = 0
-                        EndIf
-                        If widgets( )\split_2( ) > 0
-                           If test_delete
-                              Debug "   free - splitter - second " + widgets( )\split_2( )\class
-                           EndIf
-                           FreeStructure( widgets( )\split_2( ) )
-                           widgets( )\split_2( ) = 0
-                        EndIf
-                     EndIf
-                     
-                     If widgets( )\bounds\attach
-                        ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
-                        widgets( )\bounds\attach\parent = 0
-                        FreeStructure( widgets( )\bounds\attach )
-                        widgets( )\bounds\attach = #Null
-                     EndIf
-                     
-                     If Pressed( ) = widgets( )
-                        Pressed( ) = #Null
-                     EndIf
-                     
-                     If widgets( )\BeforeWidget( )
-                        widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
-                     EndIf
-                     
-                     If widgets( )\AfterWidget( )
-                        widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
-                     EndIf
-                     
-                     widgets( )\parent  = #Null
-                     widgets( )\address = #Null
-                     
-                     If test_delete
-                        Debug " free - " + widgets( )\class
-                     EndIf
-                     
-                     If GetActive( ) = widgets( )
-                        GetActive( ) = 0
-                        If is_root_( *this )
-                           
+                  
+                  ; 
+                  If mode = 0 
+                     If Not Send( widgets( ), #__event_free )
+                        If PreviousElement( widgets( ))
+                           Continue
                         Else
-                           If *this\BeforeWidget( )
-                              SetActive( *this\BeforeWidget( ) )
+                           Break
+                        EndIf
+                     EndIf
+                  EndIf
+               
+                  If widgets( )\root\haschildren > 0
+                        widgets( )\root\haschildren - 1
+                        
+                        If widgets( )\parent <> widgets( )\root
+                           widgets( )\parent\haschildren - 1
+                        EndIf
+                        
+                        If widgets( )\tabbar
+                           If widgets( )\tabbar = widgets( )
+                              If test_delete
+                                 Debug "   free - tab " + widgets( )\tabbar\class
+                              EndIf
+                              FreeStructure( widgets( )\tabbar )
+                              widgets( )\tabbar = 0
+                           EndIf
+                           widgets( )\tabbar = #Null
+                        EndIf
+                        
+                        If widgets( )\scroll
+                           If widgets( )\scroll\v
+                              If test_delete
+                                 Debug "   free - scroll-v " + widgets( )\scroll\v\class
+                              EndIf
+                              FreeStructure( widgets( )\scroll\v )
+                              widgets( )\scroll\v = 0
+                           EndIf
+                           If widgets( )\scroll\h
+                              If test_delete
+                                 Debug "   free scroll-h - " + widgets( )\scroll\h\class
+                              EndIf
+                              FreeStructure( widgets( )\scroll\h )
+                              widgets( )\scroll\h = 0
+                           EndIf
+                           ; widgets( )\scroll = #Null
+                        EndIf
+                        
+                        If widgets( )\type = #__type_Splitter
+                           If widgets( )\split_1( ) > 0
+                              If test_delete
+                                 Debug "   free - splitter - first " + widgets( )\split_1( )\class
+                              EndIf
+                              FreeStructure( widgets( )\split_1( ) )
+                              widgets( )\split_1( ) = 0
+                           EndIf
+                           If widgets( )\split_2( ) > 0
+                              If test_delete
+                                 Debug "   free - splitter - second " + widgets( )\split_2( )\class
+                              EndIf
+                              FreeStructure( widgets( )\split_2( ) )
+                              widgets( )\split_2( ) = 0
+                           EndIf
+                        EndIf
+                        
+                        If widgets( )\bounds\attach
+                           ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
+                           widgets( )\bounds\attach\parent = 0
+                           FreeStructure( widgets( )\bounds\attach )
+                           widgets( )\bounds\attach = #Null
+                        EndIf
+                        
+                        If Pressed( ) = widgets( )
+                           Pressed( ) = #Null
+                        EndIf
+                        
+                        If widgets( )\BeforeWidget( )
+                           widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
+                        EndIf
+                        
+                        If widgets( )\AfterWidget( )
+                           widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
+                        EndIf
+                        
+                        widgets( )\parent  = #Null
+                        widgets( )\address = #Null
+                        
+                        If test_delete
+                           Debug " free - " + widgets( )\class
+                        EndIf
+                        
+                        If GetActive( ) = widgets( )
+                           GetActive( ) = 0
+                           If is_root_( *this )
+                              
                            Else
-                              If Not SetActive( *this\parent )
-                                 GetActive( ) = *this\parent
+                              If *this\BeforeWidget( )
+                                 SetActive( *this\BeforeWidget( ) )
+                              Else
+                                 If Not SetActive( *this\parent )
+                                    GetActive( ) = *this\parent
+                                 EndIf
+                              EndIf
+                           EndIf
+                           
+                           If test_focus_set
+                              If keyboard( )\deactive
+                                 Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
                               EndIf
                            EndIf
                         EndIf
                         
-                        If test_focus_set
-                           If keyboard( )\deactive
-                              Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
-                           EndIf
-                        EndIf
+                        DeleteElement( widgets( ), 1 )
                      EndIf
-                     
-                     DeleteElement( widgets( ), 1 )
-                  EndIf
                   
                   If *this\root\haschildren = 0
                      Break
@@ -23265,7 +23285,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i Free( *this._s_WIDGET )
          If *this > 0 
-            If Not Send( *this, #__event_free )
+            If Send( *this, #__event_free )
                If Opened( ) = *this
                   OpenList( *this\parent )
                EndIf
@@ -23282,7 +23302,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;
                ; delete all childrens
-               Delete( *this )
+               Delete( *this, #True )
                
                ;\\
                If PopupWindow( ) = *this
@@ -24647,9 +24667,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7238
-; FirstLine = 7185
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv---------------------------------------------------------------------------------f-----------------4-----------------------------------------------------8-8-f--D9----+8------------------------------------------------------------------------+----------f-4------r---v-f---------------------------------------------------------v-------4-------n-v--8-8-----------------------------------------------------------------+------------------------------------------------------------------------------------------
+; CursorPosition = 22164
+; FirstLine = 20540
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv---------------------------------------------------------------------------------------------------4-----------------------------------------------------8-8-f--D9----+8------------------------------------------------------------------------+----------f-4------v---v-f---------------------------------------------------------v-------4-------n-v--8-8-----------------------------------------------------------------+---------------------------------------------------------------------8----nB---------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

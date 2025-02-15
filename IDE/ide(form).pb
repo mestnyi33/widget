@@ -597,6 +597,71 @@ Procedure Properties_Create( X,Y,Width,Height, flag=0 )
 EndProcedure
 
 
+;-
+#File = 0
+Procedure IDE_OpenFile(Path$) ; Открытие файла
+   Protected Text$, String$
+   
+   If Path$
+      ClearDebugOutput()
+      Debug "Открываю файл '"+Path$+"'"
+      
+      If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
+                                  ; 
+                                  ; While Eof(#File) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
+                                  ;  String$ = ReadString(#File) ; Построчный просмотр содержимого файла
+                                  ; Wend
+         
+         ;
+         Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         
+         Protected *this._s_WIDGET = ide_design_panel_MDI
+         If StartEnum( *this )
+            *this = widget( )
+            Break
+            StopEnum( )
+         EndIf
+         
+         ;Debug *this\class
+         Delete( *this )
+         
+        ;
+         CloseFile(#File) ; Закрывает ранее открытый файл
+         Debug "..успешно"
+      Else
+         MessageRequester("Инфо", "Невозможно открыть файл!")
+      EndIf
+   EndIf 
+EndProcedure
+
+Procedure IDE_SaveFile(Path$) ; Процедура сохранения файла
+   Protected Space$, Text$
+   Protected len, Length, Position, Object
+   
+   If Path$
+      ClearDebugOutput()
+    Debug "Сохраняю файл '"+Path$+"'"
+    
+    Text$ = GeneratePBCode( ide_design_panel_MDI )
+    
+;     SetText( ide_design_panel_CODE, Text$ )
+;     Text$ = GetText( ide_design_panel_CODE )
+
+    If CreateFile( #File, Path$, #PB_UTF8 )
+      ; TruncateFile( #File )
+
+       WriteStringFormat( #File, #PB_UTF8 )
+       WriteString( #File, Text$, #PB_UTF8 )
+       CloseFile( #File )
+       
+       Debug "..успешно"
+    Else
+       MessageRequester( "Information","may not create the file!" )
+    EndIf
+  EndIf
+  
+  ProcedureReturn Bool(Path$)
+EndProcedure
 
 
 ;-
@@ -1059,6 +1124,12 @@ Procedure widget_events( )
    Protected *new, *e_widget._s_widget = EventWidget( )
    
    Select eventtype 
+      Case #__event_Free
+         Protected item = GetData( *e_widget ) 
+         RemoveItem( ide_inspector_view, item ) 
+         Debug "free "+item
+         ; ProcedureReturn 0
+         
       Case #__event_RightDown
          Debug "right"
          
@@ -1354,7 +1425,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
    ; Debug "ide_menu_events "+BarButton
    
    Select BarButton
-      Case 1
+      Case #_tb_group_select
          If Type( *e_widget ) = #__type_ToolBar
             If GetItemState( *e_widget, BarButton )  
                ; group
@@ -1381,14 +1452,28 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          Next
          
          
-      Case #_tb_file_open
-         Debug "#_tb_file_open"
-         ;          ClearItems( ide_inspector_view )
+      Case #_tb_file_new
+         Debug "#_tb_file_new"
+         ; ClearItems( ide_inspector_view )
          
+      Case #_tb_file_open
+         ; Debug "#_tb_file_open"
+         Protected StandardFile$, Pattern$, File$
+         StandardFile$ = "open_example.pb" 
+         Pattern$ = "PureBasic (*.pb)|*.pb;*.pbi;*.pbf"
+         File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
+         IDE_OpenFile( File$ )
          
       Case #_tb_file_save
-         Debug "#_tb_file_save"
+         ; Debug "#_tb_file_save"
+         StandardFile$ = "save_example.pbf" 
+         Pattern$ = "PureBasic (*.pb)|*.pb;*.pbi;*.pbf"
+         File$ = SaveFileRequester("Пожалуйста выберите файл для сохранения", StandardFile$, Pattern$, 0)
          
+         If Not IDE_SaveFile( StandardFile$ )
+            MessageRequester("Ошибка","Не удалось сохранить файл.", #PB_MessageRequester_Error)
+         EndIf
+          
       Case #_tb_widget_copy
          widget_copy( )
          
@@ -1470,7 +1555,7 @@ Procedure ide_events( )
                                                    #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                ProcedureReturn #PB_All
             Else
-               ProcedureReturn 1 ; no close
+               ProcedureReturn #False ; no close
             EndIf
          EndIf
          
@@ -1586,6 +1671,10 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    BarItem( #_tb_file_quit, "Quit" );+ Chr(9) + "Ctrl+Q")
    CloseSubBar( )
    ;
+   BarSeparator( )
+   BarItem( #_tb_file_new, "New" );+ Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_open, "Open" );+ Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_save, "Save" );+ Chr(9) + "Ctrl+S")
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) 
    ;
@@ -1891,7 +1980,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    ElseIf example = 3
       ;\\ example 3
-      Resize(ide_design_form, 30, 30, 500, 250)
+      Resize(ide_design_form, 10, 10, 500, 250)
       Disable(widget_add(ide_design_form, "button", 15, 25, 50, 30),1)
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
       btn2 = widget_add(ide_design_form, "button", 35, 65+40, 50, 30)
@@ -1992,13 +2081,10 @@ CompilerEndIf
 DataSection   
    IncludePath #IDE_path + "ide/include/images"
    
-   file_open:        : IncludeBinary "delete1.png"
-   file_save:        : IncludeBinary "paste.png"
-   
-   widget_delete:    : IncludeBinary "delete1.png"
-   widget_paste:     : IncludeBinary "paste.png"
-   widget_copy:      : IncludeBinary "copy.png"
-   widget_cut:       : IncludeBinary "cut.png"
+   widget_delete:    : IncludeBinary "16/delete.png"
+   widget_paste:     : IncludeBinary "16/paste.png"
+   widget_copy:      : IncludeBinary "16/copy.png"
+   widget_cut:       : IncludeBinary "16/cut.png"
    
    group:            : IncludeBinary "group/group.png"
    group_un:         : IncludeBinary "group/group_un.png"
@@ -2010,9 +2096,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 702
-; FirstLine = 689
-; Folding = ------------------------------------
+; CursorPosition = 1556
+; FirstLine = 1543
+; Folding = -----------------------------------f-
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

@@ -422,25 +422,33 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
       
       Code$ + #CRLF$
       
-      Code$ + Space$ + "Define Event" + #CRLF$
+      Code$ + Space$ + "Define event" + #CRLF$
       
       Code$ + Space$ + "While IsWindow( " + GetClass( *mainWindow ) + " )" + #CRLF$
-      Code$ + Space$ + Space$ + "Event = WaitWindowEvent( )" + #CRLF$ + #CRLF$
-      Code$ + Space$ + Space$ + "Select Event" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + "Case #PB_Event_CloseWindow" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + "CloseWindow( EventWindow( ) )" + #CRLF$
-      Code$ + Space$ + Space$ + "EndSelect" + #CRLF$ + #CRLF$
+      Code$ + Space$ + Space$ + "event = WaitWindowEvent( )" + #CRLF$
+      Code$ + Space$ + Space$ + "" + #CRLF$
       Code$ + Space$ + Space$ + "Select EventWindow( )" + #CRLF$
-      
       If StartEnum( *parent, 0 )
          If is_window_( widget( ) )
             Code$ + Space$ + Space$ + Space$ + "Case " + GetClass( widget( ) ) + #CRLF$
          EndIf
          StopEnum( )
       EndIf
-      
       Code$ + Space$ + Space$ + "EndSelect" + #CRLF$
-      Code$ + Space$ + "Wend" + #CRLF$ + #CRLF$
+      Code$ + Space$ + Space$ + "" + #CRLF$
+      Code$ + Space$ + Space$ + "Select event" + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + "Case #PB_Event_CloseWindow" + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + Space$ + "If EventWindow( ) = " + GetClass( *mainWindow ) + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + "If #PB_MessageRequester_Yes = MessageRequester( " + Chr( '"' ) + "Message" + Chr( '"' ) + ", " + #CRLF$ + 
+              Space$ + Space$ + Space$ + Space$ + Space$ + Space(Len("If #PB_MessageRequester_Yes = MessageRequester( ")) + Chr( '"' ) +"Are you sure you want To go out?"+ Chr( '"' ) + ", " + #CRLF$ + 
+              Space$ + Space$ + Space$ + Space$ + Space$ + Space(Len("If #PB_MessageRequester_Yes = MessageRequester( ")) + "#PB_MessageRequester_YesNo | #PB_MessageRequester_Info )" + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + Space$ + "CloseWindow( EventWindow( ) )" + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + "EndIf" + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + Space$ + "Else" + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + "CloseWindow( EventWindow( ) )" + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + Space$ + "EndIf" + #CRLF$
+      Code$ + Space$ + Space$ + "EndSelect" + #CRLF$
+      Code$ + Space$ + "Wend" + #CRLF$ 
       Code$ + Space$ + "End" + #CRLF$
       Code$ + "CompilerEndIf" + #CRLF$
       
@@ -597,8 +605,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 284
+; CursorPosition = 447
+; FirstLine = 384
 ; Folding = -------+-----
 ; EnableXP
 ; DPIAware

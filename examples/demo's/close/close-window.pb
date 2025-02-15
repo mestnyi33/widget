@@ -48,14 +48,14 @@ CompilerIf #PB_Compiler_IsMainFile
            If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
               ProcedureReturn #PB_All
            Else
-              ProcedureReturn 1
+              ProcedureReturn #False
            EndIf
            
         ElseIf GetTitle( EventWidget( ) ) = "window_0"
            If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-              ProcedureReturn 0
+              ProcedureReturn #True
            Else
-              ProcedureReturn 1
+              ProcedureReturn #False
            EndIf
         EndIf
         
@@ -97,7 +97,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
+; CursorPosition = 50
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware

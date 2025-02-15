@@ -93,14 +93,14 @@ CompilerIf #PB_Compiler_IsMainFile
                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                   ProcedureReturn #PB_All
                Else
-                  ProcedureReturn 1 ; no close
+                  ProcedureReturn #False ; no close
                EndIf
                
             ElseIf EventWindow( ) = 0
                If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                  ProcedureReturn 0
+                  ProcedureReturn #True
                Else
-                  ProcedureReturn 1 ; no close
+                  ProcedureReturn #False ; no close
                EndIf
             EndIf
             
@@ -109,13 +109,13 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "free - event " + EventWidget( )\class 
             
             ;             ;\\ to send not free
-            ;                      ProcedureReturn 1
+            ;                      ProcedureReturn #False
             
       EndSelect
    EndProcedure
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13
+; CursorPosition = 111
 ; Folding = ---
 ; EnableXP
