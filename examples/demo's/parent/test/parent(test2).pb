@@ -230,12 +230,12 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure widget_add( *parent._s_widget, class.s, X.l,Y.l, Width.l=0, Height.l=0 )
+  Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=0, Height.l=0 )
     Protected *new._s_widget, *param1, *param2, *param3
     Protected flag.i
     
     If *parent 
-      class.s = LCase( Trim( class ) )
+      Class.s = LCase( Trim( Class ) )
       OpenList( *parent, GetState( *parent ) ) 
       
       If Width < 5
@@ -245,7 +245,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Height = 100
       EndIf
       
-      If class = "scrollarea"
+      If Class = "scrollarea"
         *param1 = Width
         *param2 = Height
         *param3 = 5
@@ -259,7 +259,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ;Debug ( a_transform( )\pos + #__window_FrameSize )
         
-        If class = "window"
+        If Class = "window"
           Width + ( #__window_FrameSize * 2 )%mouse( )\steps
           Height + ( #__window_FrameSize * 2 + #__window_CaptionHeight )%mouse( )\steps
         EndIf
@@ -268,7 +268,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ; create elements
-      Select class
+      Select Class
         Case "window"    
           If Type( *parent ) = #PB_GadgetType_MDI
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
@@ -300,8 +300,8 @@ CompilerIf #PB_Compiler_IsMainFile
           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
         EndIf
         
-        Class.s = "Form_"+GetClass( *new )+"_"+CountType( *new )
-        SetText( *new, class )
+        Class.s = "Form_"+GetClass( *new )
+        SetText( *new, Class )
         
         
         ; get new add position & sublevel
@@ -342,7 +342,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Next  
         
         ; add to inspector
-        AddItem( id_inspector_tree, position, class.s, img, sublevel )
+        AddItem( id_inspector_tree, position, Class.s, img, sublevel )
         SetItemData( id_inspector_tree, position, *new )
         ; SetItemState( id_inspector_tree, position, #PB_tree_selected )
         SetState( id_inspector_tree, position )
@@ -891,10 +891,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ; include images
     IncludePath #IDE_path + "/ide/include/images"
     
-    widget_delete:    : IncludeBinary "delete1.png"
-    widget_paste:     : IncludeBinary "paste.png"
-    widget_copy:      : IncludeBinary "copy.png"
-    widget_cut:       : IncludeBinary "cut.png"
+    widget_delete:    : IncludeBinary "16/delete.png"
+    widget_paste:     : IncludeBinary "16/paste.png"
+    widget_copy:      : IncludeBinary "16/copy.png"
+    widget_cut:       : IncludeBinary "16/cut.png"
     
     group:            : IncludeBinary "group/group.png"
     group_un:         : IncludeBinary "group/group_un.png"
@@ -908,8 +908,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 827
-; FirstLine = 789
+; CursorPosition = 302
+; FirstLine = 298
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

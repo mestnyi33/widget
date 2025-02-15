@@ -2,16 +2,35 @@
 
 ; Shows using of several panels...
 EnableExplicit
+
+Procedure Children( *this._s_WIDGET )
+   ProcedureReturn *this\haschildren
+EndProcedure
+
+
 If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   Define i, *parent._s_Widget
+   Define i, *parent._s_Widget, *container
    
-   For i = 1 To 3
-      Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
-      Container(5, 5, 120+2,85+2, #PB_Container_Flat)                                                    
-      Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                    
-      Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                   
-      CloseList()                                                                                         
-   Next
+   i = 1
+   Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
+   *container = Container(5, 5, 120+2,85+2, #PB_Container_Flat)                                                    
+   Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                    
+   Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                   
+   CloseList()                                                                                         
+   
+   i = 2
+   Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
+   *container = Container(5, 5, 120+2,85+2, #PB_Container_Flat)                                                    
+   Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                    
+   Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                   
+   CloseList()                                                                                         
+   
+   i = 3
+   Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
+   *container = ScrollArea(5, 5, 120+2,85+2, 300,300,1, #PB_Container_Flat)                                                    
+   Button(10,10,100,30,"Button_" + Trim(Str(i+10)))                                                    
+   Button(10,45,100,30,"Button_" + Trim(Str(i+20)))                                                   
+   CloseList()                                                                                         
    
    i = 4
    Window(10+i*30, i*140-120, 150, 95+2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)  
@@ -73,12 +92,17 @@ If Open(0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Wi
       StopEnum( )
    EndIf
    
+   Debug ""
+   Debug "root childrens - " + Children(root( ))
+   Debug "panel childrens - " + Children(*parent)
+   Debug "container childrens - " + Children(*container)
+   
    
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 21
+; CursorPosition = 29
+; FirstLine = 6
 ; Folding = --
 ; EnableXP
 ; DPIAware

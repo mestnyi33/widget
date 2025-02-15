@@ -480,60 +480,72 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
    ProcedureReturn code$
 EndProcedure
 
-; - 
+;- 
 CompilerIf #PB_Compiler_IsMainFile
-   EnableExplicit
+   DisableExplicit
    
    If Open( 0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       Define i, *parent._s_Widget
       
-      i = 1
-      Window( 10 + i*30, i*140 - 120, 255, 95 + 2, "Window_" + Trim( Str( i ) ), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget )  
-      SetEventsString(widget( ), "#PB_Event_Gadget|#PB_Event_SizeWindow")
+;       i = 0
+;       Window( 10 + (i+1)*30, (i+1)*140 - 120, 255, 95 + 2, "Window_" + Trim( Str( i ) ), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget )  
+;       SetEventsString(widget( ), "#PB_Event_Gadget|#PB_Event_SizeWindow")
+;       
+;       Container( 5, 5, 120 + 2, 85 + 2, #PB_Container_Flat )                  
+;       Button( 10, 10, 100, 30, "Button_" + Trim( Str( i + 10 ) ) )                  
+;       Button( 10, 45, 100, 30, "Button_" + Trim( Str( i + 20 ) ) )                 
+;       CloseList( )                               
+;       Container( 127, 5, 120 + 2, 85 + 2, #PB_Container_Flat )                  
+;       Button( 10, 10, 100, 30, "Button_" + Trim( Str( i + 10 ) ) )                  
+;       Button( 10, 45, 100, 30, "Button_" + Trim( Str( i + 20 ) ) )                 
+;       CloseList( )                               
+;       
+;       i = 1 
+;       Window( 10 + (i+1)*30, (i+1)*140 - 120, 255, 95 + 2, "Window_" + Trim( Str( i ) ), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget )  
+;       *parent = Panel( 5, 5, 120 + 2, 85 + 2 ) 
+;       AddItem( *parent, - 1, "item - 1" )
+;       Button( 10, 10, 100, 30, "Button14" )                  
+;       Button( 10, 45, 100, 30, "Button15" )                  
+;       AddItem( *parent, - 1, "item - 2" )
+;       Button( 10, 10, 100, 30, "Button16" )                  
+;       Button( 10, 45, 100, 30, "Button17" )                  
+;       AddItem( *parent, - 1, "item - 3" )
+;       Button( 10, 10, 100, 30, "Button18" )                  
+;       Button( 10, 45, 100, 30, "Button19" )                  
+;       CloseList( )                               
+;       SetState( *parent, 1 )
+;       
+;       *parent = Panel( 127, 5, 120 + 2, 85 + 2 ) 
+;       AddItem( *parent, - 1, "item - 1" )
+;       Button( 10, 10, 100, 30, "Button14" )                  
+;       Button( 10, 45, 100, 30, "Button15" )                  
+;       AddItem( *parent, - 1, "item - 2" )
+;       Button( 10, 10, 100, 30, "Button16" )                  
+;       Button( 10, 45, 100, 30, "Button17" )                  
+;       AddItem( *parent, - 1, "item - 3" )
+;       Button( 10, 10, 100, 30, "Button18" )                  
+;       Button( 10, 45, 100, 30, "Button19" )                  
+;       CloseList( )                               
+;       SetState( *parent, 1 )
+;       
       
-      Container( 5, 5, 120 + 2, 85 + 2, #PB_Container_Flat )                  
-      Button( 10, 10, 100, 30, "Button_" + Trim( Str( i + 10 ) ) )                  
-      Button( 10, 45, 100, 30, "Button_" + Trim( Str( i + 20 ) ) )                 
-      CloseList( )                               
-      Container( 127, 5, 120 + 2, 85 + 2, #PB_Container_Flat )                  
-      Button( 10, 10, 100, 30, "Button_" + Trim( Str( i + 10 ) ) )                  
-      Button( 10, 45, 100, 30, "Button_" + Trim( Str( i + 20 ) ) )                 
-      CloseList( )                               
+      WINDOW_1 = Window( -70, 300, 498, 253, "window_1" )
+      BUTTON_8 = Button( 21, 14, 120, 64, "button_8" )
+      BUTTON_9 = Button( 21, 91, 120, 71, "button_9" )
+      BUTTON_10 = Button( 21, 175, 120, 64, "button_10" )
       
-      i = 2 
-      Window( 10 + i*30, i*140 - 120, 255, 95 + 2, "Window_" + Trim( Str( i ) ), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget )  
-      *parent = Panel( 5, 5, 120 + 2, 85 + 2 ) 
-      AddItem( *parent, - 1, "item - 1" )
-      Button( 10, 10, 100, 30, "Button14" )                  
-      Button( 10, 45, 100, 30, "Button15" )                  
-      AddItem( *parent, - 1, "item - 2" )
-      Button( 10, 10, 100, 30, "Button16" )                  
-      Button( 10, 45, 100, 30, "Button17" )                  
-      AddItem( *parent, - 1, "item - 3" )
-      Button( 10, 10, 100, 30, "Button18" )                  
-      Button( 10, 45, 100, 30, "Button19" )                  
-      CloseList( )                               
-      SetState( *parent, 1 )
+      CONTAINER_0 = Container( 154, 14, 330, 225 )
+      BUTTON_11 = Button( 14, 21, 141, 43, "button_11" )
+      BUTTON_12 = Button( 14, 77, 141, 71, "button_12" )
+      BUTTON_13 = Button( 14, 161, 141, 50, "button_13" )
       
-      *parent = Panel( 127, 5, 120 + 2, 85 + 2 ) 
-      AddItem( *parent, - 1, "item - 1" )
-      Button( 10, 10, 100, 30, "Button14" )                  
-      Button( 10, 45, 100, 30, "Button15" )                  
-      AddItem( *parent, - 1, "item - 2" )
-      Button( 10, 10, 100, 30, "Button16" )                  
-      Button( 10, 45, 100, 30, "Button17" )                  
-      AddItem( *parent, - 1, "item - 3" )
-      Button( 10, 10, 100, 30, "Button18" )                  
-      Button( 10, 45, 100, 30, "Button19" )                  
-      CloseList( )                               
-      SetState( *parent, 1 )
-      
-      If StartEnum( root( ) )
-         SetClass( widget( ), UCase(GetClassString( widget( ) )) + "_" + CountType( widget( ), - 1 ) )
-         ; SetClass( widget( ), GetClassString( widget( ) ) + "_" + CountType( widget( ), - 1 ) )
-         
-         StopEnum( )
-      EndIf
+      CONTAINER_1 = Container( 168, 21, 148, 183 )
+      BUTTON_14 = Button( 7, 14, 134, 29, "button_14" )
+      BUTTON_15 = Button( 7, 56, 134, 71, "button_15" )
+      BUTTON_16 = Button( 7, 140, 134, 36, "button_16" )
+      CloseList( )
+      CloseList( )
+
       
       ;   If StartEnum( root( ) )
       ;    Debug GetClass( widget( ) )
@@ -605,8 +617,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 447
-; FirstLine = 384
-; Folding = -------+-----
+; CursorPosition = 548
+; FirstLine = 298
+; Folding = ------4+-----
 ; EnableXP
 ; DPIAware

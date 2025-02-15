@@ -162,7 +162,7 @@ Macro properties_update_text( _gadget_, _value_ )
 EndMacro
 
 Macro properties_update_class( _gadget_, _value_ )
-   Properties_SetItemText( _gadget_, #_pi_class,   Properties_GetItemText( _gadget_, #_pi_class )   +Chr( 10 )+UCase(GetClass( _value_ )))
+   Properties_SetItemText( _gadget_, #_pi_class,   Properties_GetItemText( _gadget_, #_pi_class )   +Chr( 10 )+GetClass( _value_ ))
 EndMacro
 
 Macro properties_update_hide( _gadget_, _value_ )
@@ -615,17 +615,21 @@ Procedure IDE_OpenFile(Path$) ; Открытие файла
          ;
          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
          
-         Protected *this._s_WIDGET = ide_design_panel_MDI
-         If StartEnum( *this )
-            *this = widget( )
-            Break
-            StopEnum( )
-         EndIf
+          Protected *this._s_WIDGET = ide_design_panel_MDI
+;          If StartEnum( *this )
+;             *this = widget( )
+;             Break
+;             StopEnum( )
+;          EndIf
+;          
+;          ;Debug *this\class
+          
+         ; Debug *this\haschildren
          
-         ;Debug *this\class
-         Delete( *this )
+         Delete( ide_design_panel_MDI )
          
-        ;
+         ; Debug *this\haschildren
+         ;
          CloseFile(#File) ; Закрывает ранее открытый файл
          Debug "..успешно"
       Else
@@ -987,17 +991,18 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
             is_window = #True
             If Type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag | #__window_NoActivate )
-               Resize( *new, #PB_Ignore, #PB_Ignore, Width,Height )
+               Resize( *new, X, Y, Width,Height )
             Else
                flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
                *new = Window( X,Y,Width,Height, "", flag, *parent )
             EndIf
             
-            SetColor( *new, #__color_back, $FFECECEC )
             Protected *imagelogo = CatchImage( #PB_Any,?group_bottom )
             CompilerIf #PB_Compiler_DPIAware
                ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
             CompilerEndIf
+            
+            SetColor( *new, #__color_back, $FFECECEC )
             SetImage( *new, *imagelogo )
             Bind( *new, @widget_events( ) )
          
@@ -1031,9 +1036,9 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          
          ;\\ второй метод формирования названия переменной
          ;          If *parent = ide_design_panel_MDI
-         ;             newClass.s = Class( *new )+"_"+CountType( *new , 1 )
+         ;             newClass.s = Class( *new )+"_"+CountType( *new , 2 )
          ;          Else
-         ;             newClass.s = Class( *parent )+"_"+CountType( *parent, 1 )+"_"+Class( *new )+"_"+CountType( *new , 1 )
+         ;             newClass.s = Class( *parent )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
          ;          EndIf
          ;\\
          SetClass( *new, UCase(newClass) )
@@ -1127,7 +1132,7 @@ Procedure widget_events( )
       Case #__event_Free
          Protected item = GetData( *e_widget ) 
          RemoveItem( ide_inspector_view, item ) 
-         Debug "free "+item
+         ; Debug "free "+item
          ; ProcedureReturn 0
          
       Case #__event_RightDown
@@ -1454,8 +1459,12 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          
       Case #_tb_file_new
          Debug "#_tb_file_new"
-         ; ClearItems( ide_inspector_view )
+;          Delete( ide_design_panel_MDI )
+;          ide_design_form = widget_add( ide_design_panel_MDI, "window", 10, 10, 500, 250 )
          
+         Delete( ide_design_form )
+         SetState( ide_inspector_panel, 0 )
+   
       Case #_tb_file_open
          ; Debug "#_tb_file_open"
          Protected StandardFile$, Pattern$, File$
@@ -2096,9 +2105,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1556
-; FirstLine = 1543
-; Folding = -----------------------------------f-
+; CursorPosition = 1465
+; FirstLine = 1452
+; Folding = -------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

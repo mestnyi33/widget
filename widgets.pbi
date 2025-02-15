@@ -1396,7 +1396,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i GetCanvasWindow( *this = #Null )
       
       Declare.l Level( *this )
-      Declare.i CountType( *this, mode.b = #False )
+      Declare.i CountType( *this, mode.b = 0 )
       
       Declare.i SetActive( *this )
       Declare   SetForeground( *window )
@@ -1583,7 +1583,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.l Update_DrawVisibleRows( *this, List *rows._s_ROWS( ), visible_height.l = 0 )
       Declare   Draw_TreeRows( *this, List *rows._s_ROWS( ) )
       Declare   Update_DrawText( *this, textchange.b )
-      
       
       Declare   ReParent( *this, *parent )
       
@@ -10678,16 +10677,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             ReParent( *this, *parent )
             ;
-            ;\\ add type count
-            If *this\parent <> *this\window
-               typeCount( Str( *this\window + *this\type ) ) + 1
-            EndIf
-            If *this\root <> *this\parent
-               typeCount( Str( *this\parent + *this\type ) ) + 1
-            EndIf
-            typeCount( Str( *this\root + *this\type ) ) + 1
-            *this\counttype = typeCount( ) - 1
-            
+            ;\\ add count types
+            CountType( *this, 1 )
             ;
             ;\\ a_new( )
             If a_anchors( ) And a_main( ) And IsChild( *this, a_main( ))
@@ -10762,7 +10753,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure ReParent( *this._s_WIDGET, *parent._s_WIDGET )
          ;\\
          ;If *parent\container 
+         If Not is_integral_( *this )
             *parent\haschildren + 1
+         EndIf
          ;EndIf
          
          ;\\
@@ -12683,17 +12676,34 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure   CountType( *this._s_WIDGET, mode.b = #False )
+      Procedure   CountType( *this._s_WIDGET, mode.b = 0 )
+         Protected result
          
-         If mode >= 0
-            If mode 
-               *this\CountType = typeCount( Str( *this\parent + *this\type ) ) - 1
+         If mode 
+            If mode = 2
+               result = typeCount( Str( *this\parent + *this\type ) ) - 1
             Else
-               *this\CountType = typeCount( Str( *this\window + *this\type ) ) - 1
+               ; add mode = 1 
+               ; remove mode = - 1 
+               ;
+               If *this\parent <> *this\window
+                  typeCount( Str( *this\window + *this\type ) ) + mode
+               EndIf
+               If *this\root <> *this\parent
+                  typeCount( Str( *this\parent + *this\type ) ) + mode
+               EndIf
+               typeCount( Str( *this\root + *this\type ) ) + mode
+               
+               ;
+               If mode > 0
+                  *this\class = UCase( *this\class +"_"+ Str( typeCount( ) - 1 ))
+               EndIf   
             EndIf
+         Else
+            result = typeCount( Str( *this\window + *this\type ) ) - 1
          EndIf
          
-         ProcedureReturn *this\CountType
+         ProcedureReturn result
       EndProcedure
       
       ;-
@@ -23165,7 +23175,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                   If widgets( )\root\haschildren > 0
                         widgets( )\root\haschildren - 1
-                        
                         If widgets( )\parent <> widgets( )\root
                            widgets( )\parent\haschildren - 1
                         EndIf
@@ -23223,25 +23232,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                            widgets( )\bounds\attach = #Null
                         EndIf
                         
-                        If Pressed( ) = widgets( )
-                           Pressed( ) = #Null
-                        EndIf
-                        
-                        If widgets( )\BeforeWidget( )
-                           widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
-                        EndIf
-                        
-                        If widgets( )\AfterWidget( )
-                           widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
-                        EndIf
-                        
-                        widgets( )\parent  = #Null
-                        widgets( )\address = #Null
-                        
                         If test_delete
                            Debug " free - " + widgets( )\class
                         EndIf
                         
+                        ;\\
                         If GetActive( ) = widgets( )
                            GetActive( ) = 0
                            If is_root_( *this )
@@ -23262,6 +23257,32 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                            EndIf
                         EndIf
+                        
+                        ;\\ remove count types
+                        CountType( widgets( ), - 1 )
+                        
+                        ;\\
+                        If widgets( )\BeforeWidget( )
+                           widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
+                        EndIf
+                        If widgets( )\AfterWidget( )
+                           widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
+                        EndIf
+                        If *this\FirstWidget( ) = widgets( )
+                           *this\FirstWidget( ) = *this
+                        EndIf
+                        If *this\LastWidget( ) = widgets( )
+                           *this\LastWidget( ) = *this
+                        EndIf
+                        
+                        ;\\
+                        If Pressed( ) = widgets( )
+                           Pressed( ) = #Null
+                        EndIf
+                        
+                        ;\\
+                        widgets( )\parent  = #Null
+                        widgets( )\address = #Null
                         
                         DeleteElement( widgets( ), 1 )
                      EndIf
@@ -24667,9 +24688,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22164
-; FirstLine = 20540
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv---------------------------------------------------------------------------------------------------4-----------------------------------------------------8-8-f--D9----+8------------------------------------------------------------------------+----------f-4------v---v-f---------------------------------------------------------v-------4-------n-v--8-8-----------------------------------------------------------------+---------------------------------------------------------------------8----nB---------------
+; CursorPosition = 12678
+; FirstLine = 12228
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv---------------------------------------------------------------------------------------------------4-----------------------------------------------------0-0-v--B+---f-0------------------------------------------------------------------------8-----------0f-------+---+-0---------------------------------------------------------+------f-------f+-+-v-v-----------------------------------------------------------------8----------------------------------------------------------------------384--Zw---------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

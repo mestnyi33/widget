@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *Tree = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
     widget::AddItem(*Tree, #_pi_group_0, "common")
     widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
-    widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+CountType(Value), #__type_String, 1)
+    widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value), #__type_String, 1)
     widget::AddItem(*Tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #__type_String, 1)
     
     widget::AddItem(*Tree, #_pi_group_1, "layout")
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 42
-; FirstLine = 37
+; FirstLine = 31
 ; Folding = -
 ; Optimizer
 ; EnableXP

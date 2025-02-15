@@ -552,7 +552,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-         CountType.l
+         ;CountType.l
          padding._s_point
          ;indent.a
          
@@ -600,7 +600,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
                ; type[1] = grouptype
                ;
          Level.c
-         class.s
+         Class.s
          ;
          Create.b
          
@@ -766,8 +766,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 202
-; FirstLine = 183
+; CursorPosition = 554
+; FirstLine = 552
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
