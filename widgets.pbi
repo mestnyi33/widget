@@ -4145,6 +4145,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Else
                      If *tabs( ) <> *this\TabFocused( ) And 
                         *tabs( ) <> *this\TabEntered( )
+                        
+                        ; Debug *this\parent\class
                         ;                     ;
                         ;Debug ""+*BB1\hide +" "+ Str( *BB1\x ) +" "+ Str( x + *tabs( )\x ) +" - "+ *SB\width
                         ;Debug ""+*BB2\hide +" "+ Str( *BB2\x ) +" "+ Str( x + *tabs( )\x )
@@ -22099,8 +22101,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ; 
-               If Pressed( )\align 
-                  UpdateAlign( Pressed( ) )
+               If Pressed( ) 
+                  If Pressed( )\align 
+                     UpdateAlign( Pressed( ) )
+                  EndIf
+               Else
+                  Debug " УДАЛЕНО пока было нажато"
                EndIf
                
                Pressed( ) = 0
@@ -23562,6 +23568,53 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndSelect
       EndProcedure
       
+      Global igOpaque = RGBA(128,128,0,255)
+      Procedure SetLayeredWindow( Window, Color )
+         CompilerSelect #PB_Compiler_OS
+            CompilerCase #PB_OS_Windows
+               SetWindowLongPtr_(WindowID(Window), #GWL_EXSTYLE, #WS_EX_LAYERED) 
+               SetLayeredWindowAttributes_(WindowID(Window), RGBA( Red(Color), Green(Color), Blue(Color), 0), 0, #LWA_COLORKEY)
+               
+            CompilerCase #PB_OS_Linux
+               ;XShapeCombineMask_()
+               Protected *Widget.GtkWidget
+               *Widget = WindowID(Window)
+               *Widget = *Widget\object
+               ;       Protected *screen.GdkScreen = gtk_widget_get_screen_(*Widget)
+               ;       Protected *colormap.GdkColormap = gdk_screen_get_default_colormap_(*screen);gdk_screen_get_rgba_colormap_(gdk_screen_get_default_())
+               
+               ;       gtk_widget_set_colormap_(*Widget, *colormap)
+               ;       gtk_widget_shape_combine_mask_(*Widget, 0,0,0)
+               Protected FixedBox = GtkContainer(GtkWidget(GadgetID(0)));
+               
+               ;Protected FixedBox = g_list_nth_data_(gtk_container_get_children_(gtk_bin_get_child_(WindowID(Window))), 0) ; виджет привязанный к окну
+               Debug FixedBox
+               g_signal_connect(FixedBox, "expose-event", @RedrawWidget(), 0)                                              ; обработчик сигнала
+                                                                                                                           ; time = g_timeout_add_(60, @movie(), #Null)                                                           ; таймер движение окна
+               gtk_widget_set_app_paintable_(FixedBox, #True)                                                              ; разрешаем отрисовку в виджете
+               
+               
+               ; ----- Удалить GdkWindow ресурсы, чтобы иметь возможность изменить цветовую гамму
+               gtk_widget_unrealize_(WindowID(Window))
+               ;gtk_widget_unrealize_(GtkWidget(GadgetID(0)))
+               
+               ; ----- Поддержка альфа канала
+               Protected Screen = gtk_widget_get_screen_(WindowID(Window))
+               Protected Colormap = gdk_screen_get_rgba_colormap(Screen) ; RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color)) ;
+               
+               If Colormap
+                  gtk_widget_set_colormap_(WindowID(Window), Colormap)
+                  ;gtk_widget_set_colormap_(GtkWidget(GadgetID(0)), Colormap)
+               Else
+                  MessageRequester("Error", "Your current system configuration doesn't support transparency!")
+                  End
+               EndIf
+               
+               ;gtk_window_set_opacity(WindowID(Window), 0.3)
+               
+         CompilerEndSelect
+      EndProcedure
+      
       Procedure Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
          ; -1 стандартный динамик 
          ; MB_ICONASTERISK 
@@ -23602,6 +23655,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Else
             newflag | #PB_Window_WindowCentered
          EndIf
+         newflag = #PB_Window_BorderLess|#PB_Window_ScreenCentered
          
          Protected canvasID = *parent\root\canvas\gadgetID
          
@@ -23781,6 +23835,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          StickyWindow( *Message\root\canvas\window, #True )
          
          ;\\
+         SetLayeredWindow( *message\root\canvas\window, igOpaque )
+;          If StartDrawing( CanvasOutput( *message\root\canvas\gadget ))
+;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
+;             StopDrawing( )
+;          EndIf
+         SetBackgroundColor( *message\root, igOpaque )
+         ;\\
          ; ReDraw( *parent )
          ReDraw( *message )
          WaitQuit( *message )
@@ -23790,13 +23851,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          DisableWindow( *parent\canvas\window, #False )
          
          ;\\ close
-         FreeImage( img )
+         If IsImage(img)
+            FreeImage( img )
+         EndIf
          Free( *message )
          
-         ;          If IsWindow(*message\canvas\window)
-         ;             CloseWindow(*message\canvas\window)
-         ;             Debug "Close - Message window " + *message\canvas\window
-         ;          EndIf
+         If IsWindow(*message\canvas\window)
+            CloseWindow(*message\canvas\window)
+            Debug "Close - Message window " + *message\canvas\window
+         EndIf
          
          
          ;          ;Debug MapSize(roots())
@@ -24688,9 +24751,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10679
-; FirstLine = 10532
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv---------------------------------------------------------------------------------------------------4-----------------------------------------------------0-0-v--B+---f-0------------------------------------------------------------------------8-----------0f-------+---+-0---------------------------------------------------------+------f-------f+-+-v-v-----------------------------------------------------------------8----------------------------------------------------------------------384--Zw---------------
+; CursorPosition = 23841
+; FirstLine = 21992
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv---------------------------------------------------------------------------------------------------4-----------------------------------------------------0-0-v--B+---f-0------------------------------------------------------------------------8-----------0f-------+---+-0---------------------------------------------------------+------f-------f+-+-v-v-----------------------------------------------------------------8----------------------------------------------------------------------t4v--zg-----W----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

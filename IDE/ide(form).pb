@@ -757,6 +757,8 @@ Procedure IDE_OpenFile(Path$) ; Открытие файла
       Else
          ProcedureReturn 0
       EndIf
+   Else
+      ProcedureReturn 1
    EndIf 
 EndProcedure
 
@@ -781,12 +783,13 @@ Procedure IDE_SaveFile(Path$) ; Процедура сохранения файл
        CloseFile( #File )
        
        Debug "..успешно"
+       ProcedureReturn 1
     Else
-       MessageRequester( "Information","may not create the file!" )
+       ProcedureReturn 0
     EndIf
-  EndIf
-  
-  ProcedureReturn Bool(Path$)
+ Else
+    ProcedureReturn 1
+ EndIf
 EndProcedure
 
 
@@ -1579,6 +1582,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          
          
       Case #_tb_file_new
+         ClearItems( ide_design_DEBUG ) ; TEMP
          ; сначала удаляем всех детей 
          Delete( ide_design_panel_MDI )
          ; затем создаем новое окно
@@ -1593,7 +1597,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
          
          If Not IDE_OpenFile( File$ )
-            MessageRequester("Информация", "Не удалось открыть файл.")
+            Message("Информация", "Не удалось открыть файл.")
          EndIf
          
       Case #_tb_file_save
@@ -1602,7 +1606,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          File$ = SaveFileRequester("Пожалуйста выберите файл для сохранения", StandardFile$, Pattern$, 0)
          
          If Not IDE_SaveFile( File$ )
-            MessageRequester("Информация","Не удалось сохранить файл.", #PB_MessageRequester_Error)
+            Message("Информация","Не удалось сохранить файл.", #PB_MessageRequester_Error)
          EndIf
           
       Case #_tb_widget_copy
@@ -2227,8 +2231,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1598
-; FirstLine = 1579
+; CursorPosition = 789
+; FirstLine = 762
 ; Folding = ---------------------------------------
 ; EnableXP
 ; DPIAware
