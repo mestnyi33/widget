@@ -464,13 +464,13 @@
       ;-
       ;-\\ Bar
       ; attribute
-      #__Bar_Minimum           = 1
-      #__Bar_Maximum           = 2
-      #__Bar_PageLength        = 3
-      #__Bar_ScrollStep        = 5
-      #__Bar_ButtonSize        = 6
-      #__Bar_Direction         = 7
-      #__Bar_Invert            = #__flag_invert
+      #__bar_Minimum           = 1
+      #__bar_Maximum           = 2
+      #__bar_PageLength        = 3
+      #__bar_ScrollStep        = 5
+      #__bar_ButtonSize        = 6
+      #__bar_Direction         = 7
+      #__bar_Invert            = #__flag_invert
       
       ;-\\ Window
       ; constant
@@ -744,8 +744,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 128
+; CursorPosition = 466
+; FirstLine = 453
 ; Folding = ----
 ; Optimizer
 ; EnableXP

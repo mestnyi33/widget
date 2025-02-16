@@ -1,8 +1,9 @@
 ﻿;- 
 #IDE_path = "../"
-XIncludeFile #IDE_path + "IDE/ide(code).pb"
 XIncludeFile #IDE_path + "/widgets.pbi"
 XIncludeFile #IDE_path + "/include/newcreate/anchorbox.pbi"
+XIncludeFile #IDE_path + "IDE/include/parser.pbi"
+XIncludeFile #IDE_path + "IDE/ide(code).pb"
 ;
 EnableExplicit
 ;
@@ -599,7 +600,7 @@ EndProcedure
 
 
 ;-
-Declare  widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
+Declare  widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Flag$="" )
 
 Procedure.S IsFunctions( ReadString$ ) ; Ok
   Protected Finds.S, Type.S
@@ -646,10 +647,11 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
    Protected width$
    Protected height$
    Protected Text$
-   Protected Param1.S
-   Protected Param2.S
-   Protected Param3.S
-   Protected Flag.S
+   Protected Image$
+   Protected Param1$
+   Protected Param2$
+   Protected Param3$
+   Protected Flag$
    Protected CountString.I
    
    Static Parent =- 1
@@ -691,16 +693,39 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
       ;     height$ + ")"
       ;   EndIf
       
-      Text$ = Trim( StringField( Arguments$, 6, "," ))
-      Flag.S = Trim( StringField( Arguments$, 7, "," ))
+      
+      Select Class$
+         Case "Spin", "Track", "Progress", "Splitter", "MDI", "ListIcon", "Date", "HyperLink", "Scroll", "ScrollArea"
+            Param1$ = Trim( StringField( Arguments$, 6, "," ))
+            Param2$ = Trim( StringField( Arguments$, 7, "," ))
+            
+            Select Class$
+               Case "Scroll", "ScrollArea"
+                  Param3$ = Trim( StringField( Arguments$, 8, "," ))
+                  Flag$ = Trim( StringField( Arguments$, 9, "," ))
+               Default
+                  Flag$ = Trim( StringField( Arguments$, 8, "," ))
+            EndSelect  
+            
+         Default
+            Select Class$
+               Case "Image", "ButtonImage"
+                  Image$ = Trim( StringField( Arguments$, 6, "," ))
+               Default
+                  Text$ = Trim( StringField( Arguments$, 6, "," ))
+            EndSelect
+            
+            Flag$ = Trim( StringField( Arguments$, 7, "," ))
+            
+      EndSelect
       
       If CountString(Text$, Chr('"')) = 0
-         Flag.S = Text$
+         Flag$ = Text$
          Text$ = ""
       EndIf
       
-      Element = widget_add( Parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$) )
-      Debug ""+Name$+" = "+Class$+"( "+ x$+" "+y$+" "+width$+" "+height$ +" "+ Text$+" )"
+      Element = widget_add( Parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$), Flag$ )
+      ;Debug ""+Name$+" = "+Class$+"( "+ x$+" "+y$+" "+width$+" "+height$ +" "+ Text$+" )"
       
       If Element
          If Name$
@@ -713,6 +738,39 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
             EndIf
             
             SetText( Element, Text$ )
+         EndIf
+         
+         If Image$
+            SetImage( Element, Val(Image$) )
+         EndIf
+         
+         Select Class$
+            Case "Spin", "Track", "Progress", "Scroll"
+               If Param1$
+                  SetAttribute(Element, #__bar_Minimum, Val(Param1$) )
+               EndIf
+               If Param2$
+                  SetAttribute(Element, #__bar_Maximum, Val(Param2$) )
+               EndIf
+         EndSelect
+         
+         If Param3$
+            Select Class$
+               Case "Scroll"
+                  
+               Case "ScrollArea"
+                  
+            EndSelect  
+         EndIf
+         
+         If Param1$ And Param2$
+            Select Class$
+               Case "Splitter"
+                  Debug ""+ Param1$ +" "+ Param2$
+;                   SetAttribute(Element, #PB_Splitter_FirstGadget, Val(Param1$) )
+;                   SetAttribute(Element, #PB_Splitter_SecondGadget, Val(Param2$) )
+                  
+            EndSelect  
          EndIf
          
          If IsContainer(Element)
@@ -1074,9 +1132,9 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
+Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag$="" )
    Protected *new._s_widget, *param1, *param2, *param3
-   Protected is_window.b, flag.i ;= #__flag_NoFocus
+   Protected flag.i ;= #__flag_NoFocus
    Protected newClass.s
    
    If *parent 
@@ -1102,6 +1160,16 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          EndIf
          
       Else
+         If Class = "spin"
+            *param1 = 0
+            *param2 = 100
+         EndIf
+         
+         If Class = "progress"
+            *param1 = 0
+            *param2 = 100
+         EndIf
+         
          If Width = #PB_Ignore
             Width = 100
          EndIf
@@ -1113,7 +1181,6 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
       ; create elements
       Select Class
          Case "window"    
-            is_window = #True
             If Type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag | #__window_NoActivate )
                Resize( *new, X, Y, Width,Height )
@@ -1122,37 +1189,25 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
                *new = Window( X,Y,Width,Height, "", flag, *parent )
             EndIf
             
-            Protected *imagelogo = CatchImage( #PB_Any,?group_bottom )
-            CompilerIf #PB_Compiler_DPIAware
-               ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
-            CompilerEndIf
-            
-            SetColor( *new, #__color_back, $FFECECEC )
-            SetImage( *new, *imagelogo )
-            Bind( *new, @widget_events( ) )
-         
-         Case "container"   
-            *new = Container( X,Y,Width,Height, flag ) : CloseList( )
-            SetColor( *new, #__color_back, $FFF1F1F1 )
-            
-         Case "panel"       
-            *new = Panel( X,Y,Width,Height, flag ) : AddItem( *new, -1, Class+"_item_0" ) : CloseList( )
-            SetColor( *new, #__color_back, $FFF1F1F1 )
-            
-         Case "scrollarea"  
-            *new = ScrollArea( X,Y,Width,Height, *param1, *param2, *param3, flag ) : CloseList( )
-            SetColor( *new, #__color_back, $FFF1F1F1 )
+         Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, *param1, *param2, *param3, flag ) : CloseList( )
+         Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
+         Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
+            AddItem( *new, -1, Class+"_item_0" )
             
          Case "splitter"    : *new = Splitter( X,Y,Width,Height, *param1, *param2, flag )
+         Case "spin"        : *new = Spin( X,Y,Width,Height, *param1, *param2, flag )
+         Case "progress"    : *new = Progress( X,Y,Width,Height, *param1, *param2, flag ) 
+            
          Case "image"       : *new = Image( X,Y,Width,Height, img, flag )
          Case "buttonimage" : *new = ButtonImage( X,Y,Width,Height, img, flag )
-         Case "progress"    : *new = Progress( X,Y,Width,Height, 0,100, flag ) 
+            
+         Case "text"        : *new = Text( X,Y,Width,Height, "", flag )
+         Case "string"      : *new = String( X,Y,Width,Height, "", flag )
          Case "button"      : *new = Button( X,Y,Width,Height, "", flag ) 
          Case "option"      : *new = Option( X,Y,Width,Height, "", flag ) 
          Case "checkbox"    : *new = CheckBox( X,Y,Width,Height, "", flag ) 
+            
          Case "combobox"    : *new = ComboBox( X,Y,Width,Height, flag ) 
-         Case "string"      : *new = String( X,Y,Width,Height, "", flag )
-         Case "text"        : *new = Text( X,Y,Width,Height, "", flag )
       EndSelect
       
       If *new
@@ -1176,10 +1231,20 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_reParent )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
-            If is_window
+            If is_window_( *new )
+               Protected *imagelogo = CatchImage( #PB_Any,?group_bottom )
+               CompilerIf #PB_Compiler_DPIAware
+                  ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
+               CompilerEndIf
+               SetImage( *new, *imagelogo )
+               
                a_set(*new, #__a_full, (14))
+               SetBackgroundColor( *new, $FFECECEC )
+               ;
+               Bind( *new, @widget_events( ) )
             Else
                a_set(*new, #__a_full, (10))
+               SetBackgroundColor( *new, $FFF1F1F1 )
             EndIf  
          Else
             a_set(*new, #__a_full)
@@ -1511,13 +1576,15 @@ Procedure.i ide_add_image_list( *id, Directory$ )
                               Image = #PB_Any
                            ElseIf FindString( PackEntryName, "combobox" )
                               Image = #PB_Any
+                           ElseIf FindString( PackEntryName, "panel" )
+                              Image = #PB_Any
                            ElseIf FindString( PackEntryName, "container" )
                               Image = #PB_Any
                            ElseIf FindString( PackEntryName, "scrollarea" )
                               Image = #PB_Any
                            ElseIf FindString( PackEntryName, "splitter" )
                               Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "panel" )
+                           ElseIf FindString( PackEntryName, "spin" )
                               Image = #PB_Any
                            Else
                               ; Image = #PB_Any
@@ -1595,6 +1662,8 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          StandardFile$ = "open_example.pb" 
          Pattern$ = "PureBasic (*.pb)|*.pb;*.pbi;*.pbf"
          File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
+         
+         SetWindowTitle( EventWindow(), File$ )
          
          If Not IDE_OpenFile( File$ )
             Message("Информация", "Не удалось открыть файл.")
@@ -2231,9 +2300,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 789
-; FirstLine = 762
-; Folding = ---------------------------------------
+; CursorPosition = 5
+; Folding = ------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
