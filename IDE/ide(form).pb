@@ -99,6 +99,7 @@ Global ide_design_splitter,
        ide_design_panel_CODE, 
        ide_design_panel_HIASM, 
        ide_design_DEBUG 
+Global ide_design_FORM 
 
 Global ide_inspector_view_splitter, 
        ide_inspector_view, 
@@ -598,42 +599,163 @@ EndProcedure
 
 
 ;-
+Declare  widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore )
+
+Procedure.S IsFunctions( ReadString$ ) ; Ok
+  Protected Finds.S, Type.S
+  Restore Types
+  Read$ Type.S
+  
+  While Type.S 
+    If FindString(ReadString$, Type.S+"(") 
+      Finds.S = "Find >> "+ReadString$
+    EndIf
+    
+    If Finds.S
+      Break
+    EndIf
+    Read$ Type.S
+  Wend
+  
+  ProcedureReturn Finds.S
+  
+  DataSection
+    Types: 
+    Data$ "OpenWindow"
+    Data$ "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
+          "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
+          "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
+          "IPAddressGadget","ProgressBarGadget","ScrollBarGadget","ScrollAreaGadget",
+          "TrackBarGadget","WebGadget","ButtonImageGadget","CalendarGadget",
+          "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
+          "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
+          "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
+    Data$ ""
+  EndDataSection
+EndProcedure
+
+Procedure.S ParseFunctions( ReadString$ ) ;Ok
+   Protected I
+   Protected Count.I
+   Protected Arguments$
+   
+   Protected Name$
+   Protected Class$
+   Protected x$
+   Protected y$
+   Protected width$
+   Protected height$
+   Protected Text$
+   Protected Param1.S
+   Protected Param2.S
+   Protected Param3.S
+   Protected Flag.S
+   Protected CountString.I
+   
+   Static Parent =- 1
+   Protected Element
+   
+   
+   ReadString$ = Trim( ReadString$ )
+   ReadString$ = ReplaceString( ReadString$, "Open", "")
+   ReadString$ = ReplaceString( ReadString$, "Gadget", "")
+   ReadString$ = ReplaceString( ReadString$, "Find >>", "")
+   
+   ;
+   Arguments$ = Trim( StringField( ReadString$, (2), Chr('(')), Chr(')'))
+   
+   If Arguments$
+      Name$ = Trim( StringField(ReadString$, 1, Chr('=') ))  
+      
+      Class$ = Trim( StringField( ReadString$, (1), Chr('(') ))
+      Class$ = Trim( StringField( Class$, (2), Chr('=') ))
+      
+      If Parent =- 1 
+         Parent = ide_design_panel_MDI 
+         x$ = "10"
+         y$ = "10"
+      Else
+         x$ = Trim( StringField( Arguments$, 2, "," ))
+         y$ = Trim( StringField( Arguments$, 3, "," ))
+      EndIf
+      
+      width$ = Trim( StringField( Arguments$, 4, "," ))
+      ;   If width$ = StringField( width$, 1, "(")
+      ;   Else
+      ;     width$ + ")"
+      ;   EndIf
+      
+      height$ = Trim( StringField( Arguments$, 5, "," ))
+      ;   If height$ = StringField( height$, 1, "(")
+      ;   Else
+      ;     height$ + ")"
+      ;   EndIf
+      
+      Text$ = Trim( StringField( Arguments$, 6, "," ))
+      Flag.S = Trim( StringField( Arguments$, 7, "," ))
+      
+      If CountString(Text$, Chr('"')) = 0
+         Flag.S = Text$
+         Text$ = ""
+      EndIf
+      
+      Element = widget_add( Parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$) )
+      Debug ""+Name$+" = "+Class$+"( "+ x$+" "+y$+" "+width$+" "+height$ +" "+ Text$+" )"
+      
+      If Element
+         If Name$
+            SetClass( Element, Name$ )
+         EndIf
+         
+         If Text$
+            If FindString( Text$, Chr('"'))
+               Text$ = Trim( Text$, Chr('"'))
+            EndIf
+            
+            SetText( Element, Text$ )
+         EndIf
+         
+         If IsContainer(Element)
+            Parent = Element
+         EndIf
+      EndIf
+   EndIf
+EndProcedure
+
+;-
 #File = 0
 Procedure IDE_OpenFile(Path$) ; Открытие файла
    Protected Text$, String$
    
    If Path$
-      ClearDebugOutput()
+      ClearDebugOutput( )
       Debug "Открываю файл '"+Path$+"'"
       
+      Delete( ide_design_panel_MDI )
+      ReDraw( GetRoot( ide_design_panel_MDI ))   
+      
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
-                                  ; 
-                                  ; While Eof(#File) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
-                                  ;  String$ = ReadString(#File) ; Построчный просмотр содержимого файла
-                                  ; Wend
          
-         ;
-         Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
+            String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
+            
+            String$ = IsFunctions(String$)
+;             
+            If String$
+               ParseFunctions(String$)
+            EndIf
+         Wend
          
-          Protected *this._s_WIDGET = ide_design_panel_MDI
-;          If StartEnum( *this )
-;             *this = widget( )
-;             Break
-;             StopEnum( )
-;          EndIf
-;          
-;          ;Debug *this\class
-          
-         ; Debug *this\haschildren
+;          ;
+;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
          
-         Delete( ide_design_panel_MDI )
          
-         ; Debug *this\haschildren
          ;
          CloseFile(#File) ; Закрывает ранее открытый файл
          Debug "..успешно"
+         ProcedureReturn 1
       Else
-         MessageRequester("Инфо", "Невозможно открыть файл!")
+         ProcedureReturn 0
       EndIf
    EndIf 
 EndProcedure
@@ -1300,7 +1422,6 @@ Procedure widget_events( )
 EndProcedure
 
 
-Global ide_design_form ; TEMP
 Declare ide_events( )
 
 
@@ -1458,29 +1579,30 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          
          
       Case #_tb_file_new
-         Debug "#_tb_file_new"
-;          Delete( ide_design_panel_MDI )
-;          ide_design_form = widget_add( ide_design_panel_MDI, "window", 10, 10, 500, 250 )
-         
-         Delete( ide_design_form )
+         ; сначала удаляем всех детей 
+         Delete( ide_design_panel_MDI )
+         ; затем создаем новое окно
+         ide_design_form = widget_add( ide_design_panel_MDI, "window", 10, 10, 500, 250 )
+         ; и показываем гаджеты для добавления
          SetState( ide_inspector_panel, 0 )
    
       Case #_tb_file_open
-         ; Debug "#_tb_file_open"
          Protected StandardFile$, Pattern$, File$
          StandardFile$ = "open_example.pb" 
          Pattern$ = "PureBasic (*.pb)|*.pb;*.pbi;*.pbf"
          File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
-         IDE_OpenFile( File$ )
+         
+         If Not IDE_OpenFile( File$ )
+            MessageRequester("Информация", "Не удалось открыть файл.")
+         EndIf
          
       Case #_tb_file_save
-         ; Debug "#_tb_file_save"
          StandardFile$ = "save_example.pbf" 
          Pattern$ = "PureBasic (*.pb)|*.pb;*.pbi;*.pbf"
          File$ = SaveFileRequester("Пожалуйста выберите файл для сохранения", StandardFile$, Pattern$, 0)
          
-         If Not IDE_SaveFile( StandardFile$ )
-            MessageRequester("Ошибка","Не удалось сохранить файл.", #PB_MessageRequester_Error)
+         If Not IDE_SaveFile( File$ )
+            MessageRequester("Информация","Не удалось сохранить файл.", #PB_MessageRequester_Error)
          EndIf
           
       Case #_tb_widget_copy
@@ -2105,9 +2227,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1465
-; FirstLine = 1452
-; Folding = -------------------------------------
+; CursorPosition = 1598
+; FirstLine = 1579
+; Folding = ---------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
