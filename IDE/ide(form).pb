@@ -121,7 +121,8 @@ Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Tool
 Declare widget_events( )
 Declare Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
 Declare.s Properties_GetItemText( *splitter._s_WIDGET, item, mode = 0 )
-Declare  Properties_Updates( type$ )
+Declare   Properties_Updates( type$ )
+Declare.s CodeChange( code$, find$, replace$, type$ )
 
 ;-
 ;- PUBLICs
@@ -252,6 +253,11 @@ Procedure Properties_ButtonDisplay( *second._s_WIDGET )
                ;
                Select Type( *this )
                   Case #__type_String
+                     If GetData( *this ) = #_pi_class
+                        *this\text\upper = 1
+                     Else
+                        *this\text\upper = 0
+                     EndIf
                      SetText( *this, *row\text\string )
                      
                   Case #__type_Spin
@@ -302,7 +308,7 @@ Procedure Properties_ButtonEvents( )
             Case #__type_String
                Select GetData( EventWidget( ) ) 
                   Case #_pi_class  
-                     SetClass( a_focused( ), GetText( EventWidget( ) ) )
+                     SetClass( a_focused( ), UCase( GetText( EventWidget( ) )))
                      Properties_Updates( "Class" ) 
                   Case #_pi_text   
                      SetText( a_focused( ), GetText( EventWidget( ) ) )  
@@ -622,7 +628,7 @@ Procedure Properties_Updates( type$ )
 ;    
 ;    Debug find
    
-   ClearDebugOutput()
+ ;  ClearDebugOutput()
 ;    Protected *this._s_WIDGET = ide_design_panel_CODE
 ;    ForEach *this\__lines( )
 ;       If FindString( *this\__lines( )\text\string,  GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) ) )
@@ -637,38 +643,8 @@ Procedure Properties_Updates( type$ )
 ;    EndIf
    
    If type$ <> "Focus"
-;       Define code$ = GetText( ide_design_panel_CODE )
-;       If code$
-;          If type$ = "Class"
-;             code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
-;          Else
-;             name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
-;             Define pos = FindString( code$, name$ ) ; - Len(name$)
-;             Define len = FindString( code$, #CRLF$, pos ) - pos
-;             code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
-;             Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
-;          EndIf
-;          
-;          ; Debug CountItems( ide_design_panel_CODE )
-;          ; Debug code$
-;          ; Debug type$
-;          SetText( ide_design_panel_CODE, code$ )
-;       EndIf
-      Define code$ = GetText( ide_design_DEBUG )
+      Define code$ = CodeChange( GetText( ide_design_DEBUG ), find$, replace$, type$ )
       If code$
-         If type$ = "Class"
-            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
-         Else
-            name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
-            Define pos = FindString( code$, name$ ) ; - Len(name$)
-            Define len = FindString( code$, #CRLF$, pos ) - pos
-            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
-            Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
-         EndIf
-         
-         ; Debug CountItems( ide_design_panel_CODE )
-         ; Debug code$
-         ; Debug type$
          SetText( ide_design_DEBUG, code$ )
       EndIf
    EndIf 
@@ -680,6 +656,22 @@ Procedure Properties_Updates( type$ )
 Declare  widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Flag$="" )
 
 ;-
+Procedure.s CodeChange( code$, find$, replace$, type$ )
+   Protected name$
+   If code$
+      If type$ = "Class"
+         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+      Else
+         name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
+         Define pos = FindString( code$, name$ )
+         ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
+         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
+         ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
+      EndIf
+   EndIf
+   ProcedureReturn code$
+EndProcedure
+
 Procedure.S IsFunctions( ReadString$ ) ; Ok
   Protected Finds.S, Type.S
   Restore Types
@@ -1026,7 +1018,8 @@ Procedure.s FlagFromFlag( Type, flag.i ) ;
    ProcedureReturn Trim( flags, "|" )
 EndProcedure
 
-Procedure add_code( *new._s_widget, Name$, Position.i, SubLevel.i )
+;-
+Procedure add_code( *new._s_widget, Name$, item.i, SubLevel.i )
    Protected Result$ 
    Protected Space$ = Space( ( Level(*new) - Level(ide_design_panel_MDI) ) * 3 )
    
@@ -1039,14 +1032,14 @@ Procedure add_code( *new._s_widget, Name$, Position.i, SubLevel.i )
    Result$ = ReplaceString( Result$, "Gadget", "")
    
    If IsGadget( ide_g_code )
-      AddGadgetItem( ide_g_code, Position, Result$ )
+      AddGadgetItem( ide_g_code, item, Result$ )
    Else
-      AddItem( ide_design_panel_CODE, Position, Result$ )
-      AddItem( ide_design_DEBUG, Position, Result$ )
+      AddItem( ide_design_panel_CODE, item, Result$ )
+      AddItem( ide_design_DEBUG, item, Result$ )
+      SetItemData( ide_design_DEBUG, item, *new)
    EndIf
 EndProcedure
 
-;-
 Procedure code_edit_events( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
    ;Debug ""+GetState(*this)+" change-["+GetClass(*this)+"]"
    Protected q, startpos, stoppos
@@ -1058,10 +1051,14 @@ Procedure code_edit_events( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
    EndIf
    
    If event = #__event_StatusChange
-     Debug 6543456789
+     ; Debug 6543456789
    EndIf
    
    If event = #__event_Change
+      Protected object
+      object = GetItemData( ide_inspector_view, item )
+     ; Debug object
+      
       ;Debug item ;
       ; Debug  Left( *this\text\string, *this\text\caret\pos[1] )
       Protected findstring.s = GetItemText( *this, item ) ; Left( *this\text\string, *this\text\caret\pos )
@@ -1096,20 +1093,22 @@ Procedure code_edit_events( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
                ; Debug ""+startpos +" "+ stoppos +" ? "+ countstring ; findstring
                
                If countstring
-                  If countstring = 5
-                     SetText( a_focused( ), findstring )
-                  Else
-                     If countstring = 1
-                        X = Val( findstring )
-                     ElseIf countstring = 2
-                        Y = Val( findstring )
-                     ElseIf countstring = 3
-                        Width = Val( findstring )
-                     ElseIf countstring = 4
-                        Height = Val( findstring )
+                  If object
+                     If countstring = 5
+                        SetText( object, findstring )
+                     Else
+                        If countstring = 1
+                           X = Val( findstring )
+                        ElseIf countstring = 2
+                           Y = Val( findstring )
+                        ElseIf countstring = 3
+                           Width = Val( findstring )
+                        ElseIf countstring = 4
+                           Height = Val( findstring )
+                        EndIf
+                        
+                        Resize( object, X, Y, Width, Height)
                      EndIf
-                     
-                     Resize( a_focused( ), X, Y, Width, Height)
                   EndIf
                EndIf
                
@@ -1917,10 +1916,11 @@ Procedure ide_events( )
    EndSelect
    
    ;\\ CODE EVENTS
-   If *e_widget = ide_design_panel_CODE
-      If e_item = #__event_Up Or
-         e_item = #__event_Change Or
-         e_item = #__event_StatusChange
+   If *e_widget = ide_design_panel_CODE                      Or *e_widget = ide_design_DEBUG ; TEMP
+      If e_type = #__event_Up Or
+         e_type = #__event_Change Or
+         e_type = #__event_StatusChange
+         
          code_edit_events( *e_widget, e_type, e_item, WidgetEventData( ) )
       EndIf
    EndIf
@@ -2018,7 +2018,8 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    EndIf
    
    ;
-   ide_design_DEBUG = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_design_DEBUG, "ide_design_DEBUG" ) ; ListView( 0,0,0,0 ) 
+   ;ide_design_DEBUG = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_design_DEBUG, "ide_design_DEBUG" ) ; ListView( 0,0,0,0 ) 
+   ide_design_DEBUG = Editor( 0,0,0,0 ) : SetClass(ide_design_DEBUG, "ide_design_DEBUG" ) ; ListView( 0,0,0,0 ) 
    If Not ide_design_panel_CODE
       ide_design_panel_CODE = ide_design_DEBUG
    EndIf
@@ -2175,6 +2176,10 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    Bind( ide_design_panel_CODE, @ide_events( ), #__event_Up )
    Bind( ide_design_panel_CODE, @ide_events( ), #__event_Change )
    Bind( ide_design_panel_CODE, @ide_events( ), #__event_StatusChange )
+   ; TEMP
+   Bind( ide_design_DEBUG, @ide_events( ), #__event_Up )
+   Bind( ide_design_DEBUG, @ide_events( ), #__event_Change )
+   Bind( ide_design_DEBUG, @ide_events( ), #__event_StatusChange )
    ;
    Bind( ide_inspector_events, @ide_events( ), #__event_Change )
    Bind( ide_inspector_events, @ide_events( ), #__event_StatusChange )
@@ -2382,9 +2387,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 655
-; FirstLine = 616
-; Folding = -----9-----H--------4--------------4-------
+; CursorPosition = 1058
+; FirstLine = 1021
+; Folding = -----6-----P+-----------------------0------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

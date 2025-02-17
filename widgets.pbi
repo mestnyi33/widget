@@ -8903,6 +8903,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i GetItemData( *this._s_WIDGET, item.l )
          If *this\countitems
+            If *this\type = #__type_Editor
+               If is_no_select_item_( *this\__lines( ), item )
+                  ProcedureReturn #False
+               EndIf
+               
+               ProcedureReturn *this\__lines( )\data
+            EndIf
+            
             If is_no_select_item_( *this\__rows( ), item )
                ProcedureReturn #False
             EndIf
@@ -8913,11 +8921,20 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i SetItemData( *This._s_WIDGET, item.l, *data )
          If *this\countitems
+            If *this\type = #__type_Editor
+               If is_no_select_item_( *this\__lines( ), item )
+                  ProcedureReturn #False
+               EndIf
+               
+               *this\__lines( )\data = *data
+               ProcedureReturn 1
+            EndIf
+            
             If is_no_select_item_( *this\__rows( ), item )
                ProcedureReturn #False
             EndIf
             
-            *this\__rows( )\data = *data
+            *this\__rows( )\data = *data   
          EndIf
       EndProcedure
       
@@ -24751,9 +24768,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23841
-; FirstLine = 21992
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv---------------------------------------------------------------------------------------------------4-----------------------------------------------------0-0-v--B+---f-0------------------------------------------------------------------------8-----------0f-------+---+-0---------------------------------------------------------+------f-------f+-+-v-v-----------------------------------------------------------------8----------------------------------------------------------------------t4v--zg-----W----------
+; CursorPosition = 8929
+; FirstLine = 8876
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv----------------------------------------------------------------------------------------------------0----------------------------------------------------f-f--8-fg----4f-------------------------------------------------------------------------+----------f-4------v---v-f---------------------------------------------------------v-------4-------n-v--8-8-----------------------------------------------------------------+---------------------------------------------------------------------f808--M5----v2---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
