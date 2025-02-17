@@ -11,7 +11,7 @@ Declare Window_0_Events()
 
 Procedure Window_0_Open(ParentID.i=#False)
   If Not IsWindow(Window_0)
-    Window_0 = OpenWindow(#PB_Any, 289, 170, 502, 401, "Window_0", #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget, ParentID)                                                                                                                                                                                
+    Window_0 = OpenWindow(#PB_Any, 470, 230, 501, 401, "Window_0", #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget, ParentID)                                                                                                                                                                                
     Window_0_ScrollArea_0 = ScrollAreaGadget(#PB_Any, 0, 0, 241, 391, 0, 0, 0)  
     CloseGadgetList()
     Window_0_Tree_0 = TreeGadget(#PB_Any, 0, 0, 241, 192)   

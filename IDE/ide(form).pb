@@ -120,17 +120,17 @@ Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Tool
 ;- 
 Declare widget_events( )
 Declare Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
-Declare.s Properties_GetItemText( *splitter._s_WIDGET, item )
-
+Declare.s Properties_GetItemText( *splitter._s_WIDGET, item, mode = 0 )
+Declare  Properties_Updates( type$ )
 
 ;-
 ;- PUBLICs
 ;-
 ;-
 Procedure.s BoolToStr( val )
-   If val > 0
+   If (val) > 0
       ProcedureReturn "True"
-   ElseIf val = 0
+   Else ; If (val) = 0
       ProcedureReturn "False"
    EndIf
 EndProcedure
@@ -155,59 +155,10 @@ Procedure is_parent_item( *this._s_WIDGET, item )
 EndProcedure
 
 ;-
-Macro properties_update_id( _gadget_, _value_ )
-   Properties_SetItemText( _gadget_, #_pi_id,      Properties_GetItemText( _gadget_, #_pi_id )      +Chr( 10 )+Str( Index(_value_) - 25 ) )
-EndMacro
 
-Macro properties_update_text( _gadget_, _value_ )
-   Properties_SetItemText( _gadget_, #_pi_text,    Properties_GetItemText( _gadget_, #_pi_text )    +Chr( 10 )+GetText( _value_ ) )
-EndMacro
+  
 
-Macro properties_update_class( _gadget_, _value_ )
-   Properties_SetItemText( _gadget_, #_pi_class,   Properties_GetItemText( _gadget_, #_pi_class )   +Chr( 10 )+GetClass( _value_ ))
-EndMacro
 
-Macro properties_update_hide( _gadget_, _value_ )
-   Properties_SetItemText( _gadget_, #_pi_hide,    Properties_GetItemText( _gadget_, #_pi_hide )    +Chr( 10 )+BoolToStr( Hide( _value_ ) ) )
-EndMacro
-
-Macro properties_update_disable( _gadget_, _value_ )
-   Properties_SetItemText( _gadget_, #_pi_disable, Properties_GetItemText( _gadget_, #_pi_disable ) +Chr( 10 )+BoolToStr( Disable( _value_ ) ) )
-EndMacro
-
-Macro properties_update_coordinate( _gadget_, _value_ )
-   Properties_SetItemText( _gadget_, #_pi_x,       Properties_GetItemText( _gadget_, #_pi_x )       +Chr( 10 )+Str( X( _value_, #__c_container ) ) )
-   Properties_SetItemText( _gadget_, #_pi_y,       Properties_GetItemText( _gadget_, #_pi_y )       +Chr( 10 )+Str( Y( _value_, #__c_container ) ) )
-   Properties_SetItemText( _gadget_, #_pi_width,   Properties_GetItemText( _gadget_, #_pi_width )   +Chr( 10 )+Str( Width( _value_ ) ) )
-   Properties_SetItemText( _gadget_, #_pi_height,  Properties_GetItemText( _gadget_, #_pi_height )  +Chr( 10 )+Str( Height( _value_ ) ) )
-EndMacro
-
-Macro properties_updates( _gadget_, _value_ )
-   If _value_
-      properties_update_id( _gadget_, _value_ )
-      properties_update_class( _gadget_, _value_ )
-      
-      properties_update_text( _gadget_, _value_ )
-      properties_update_coordinate( _gadget_, _value_ )
-      
-      properties_update_disable( _gadget_, _value_ )
-      properties_update_hide( _gadget_, _value_ )
-      
-   Else
-      Properties_SetItemText( _gadget_, #_pi_id,      Properties_GetItemText( _gadget_, #_pi_id )      +Chr( 10 ) )
-      Properties_SetItemText( _gadget_, #_pi_class,   Properties_GetItemText( _gadget_, #_pi_class )   +Chr( 10 ))
-      
-      Properties_SetItemText( _gadget_, #_pi_text,    Properties_GetItemText( _gadget_, #_pi_text )    +Chr( 10 ) )
-      Properties_SetItemText( _gadget_, #_pi_x,       Properties_GetItemText( _gadget_, #_pi_x )       +Chr( 10 ) )
-      Properties_SetItemText( _gadget_, #_pi_y,       Properties_GetItemText( _gadget_, #_pi_y )       +Chr( 10 ) )
-      Properties_SetItemText( _gadget_, #_pi_width,   Properties_GetItemText( _gadget_, #_pi_width )   +Chr( 10 ) )
-      Properties_SetItemText( _gadget_, #_pi_height,  Properties_GetItemText( _gadget_, #_pi_height )  +Chr( 10 ) )
-      
-      Properties_SetItemText( _gadget_, #_pi_hide,    Properties_GetItemText( _gadget_, #_pi_hide )    +Chr( 10 ) )
-      Properties_SetItemText( _gadget_, #_pi_disable, Properties_GetItemText( _gadget_, #_pi_disable ) +Chr( 10 ) )
-      
-   EndIf
-EndMacro
 
 ;-
 Procedure Properties_ButtonHide( *second._s_WIDGET, state )
@@ -301,25 +252,20 @@ Procedure Properties_ButtonDisplay( *second._s_WIDGET )
                ;
                Select Type( *this )
                   Case #__type_String
-                     SetText( *this, (*row\text\string) )
+                     SetText( *this, *row\text\string )
                      
                   Case #__type_Spin
                      SetState( *this, Val(*row\text\string) )
                      
                   Case #__type_ComboBox
-                     ;                Select *row\text\string
-                     ;                   Case "false" : SetState( *this, 0)
-                     ;                   Case "true"  : SetState( *this, 1)
-                     ;                EndSelect
-                     
-                     Select GetData( *this ) 
-                        Case #_pi_disable : SetState( *this, Disable( a_focused( ) ))
-                        Case #_pi_hide    : SetState( *this, Hide( a_focused( ) ))
+                     Select LCase(*row\text\string)
+                        Case "false" : SetState( *this, 0)
+                        Case "true"  : SetState( *this, 1)
                      EndSelect
                      
                EndSelect
                
-               
+               ;
                Properties_ButtonResize( *second )
                ;SetActive( *this )
             EndIf
@@ -357,34 +303,50 @@ Procedure Properties_ButtonEvents( )
                Select GetData( EventWidget( ) ) 
                   Case #_pi_class  
                      SetClass( a_focused( ), GetText( EventWidget( ) ) )
-                     properties_update_class( ide_inspector_properties, a_focused( ))
+                     Properties_Updates( "Class" ) 
                   Case #_pi_text   
                      SetText( a_focused( ), GetText( EventWidget( ) ) )  
-                     properties_update_text( ide_inspector_properties, a_focused( ))
+                     Properties_Updates( "Text" ) 
                EndSelect
                
             Case #__type_Spin
+                
                Select GetData( EventWidget( ) ) 
-                  Case #_pi_x      : Resize( a_focused( ), GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  Case #_pi_x      : Resize( a_focused( ), GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
                   Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore )
                   Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore )
                   Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ) )
                EndSelect
-               ; properties_update_coordinate( ide_inspector_properties, a_focused( ))
-               
+                  
+                     
             Case #__type_ComboBox
                Select GetData( EventWidget( ) ) 
+                  Case #_pi_id
+                     If GetState( EventWidget( ) ) 
+                        If SetClass( a_focused( ), "#"+Trim( GetClass( a_focused( ) ), "#" ))
+                           Properties_Updates( "ID" ) 
+                           Properties_Updates( "Class" ) 
+                        EndIf
+                     Else
+                        If SetClass( a_focused( ), Trim( GetClass( a_focused( ) ), "#" ))
+                           Properties_Updates( "ID" ) 
+                           Properties_Updates( "Class" ) 
+                        EndIf
+                     EndIf
+                    
                   Case #_pi_disable 
                      If Disable( a_focused( ), GetState( EventWidget( ) ) )
-                        properties_update_disable( ide_inspector_properties, a_focused( ))
+                        Properties_Updates( "Disable" ) 
                      EndIf
+                     
                   Case #_pi_hide    
                      If Hide( a_focused( ), GetState( EventWidget( ) ) )
-                        properties_update_hide( ide_inspector_properties, a_focused( ))
+                        Properties_Updates( "Hide" ) 
                      EndIf
                EndSelect
-               ;
+               
          EndSelect
+       
    EndSelect
    
    ProcedureReturn #PB_Ignore
@@ -398,26 +360,28 @@ Procedure Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
       Case #__type_Spin
          ;          Select item
          ;             Case #_pi_x, #_pi_width
-         ;                *this = Create( *parent, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert|#__flag_vertical, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+         ;                *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, #Null$, flag|#__flag_invert|#__flag_vertical, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
          ;             Case #_pi_y, #_pi_height
-         ;                *this = Create( *parent, "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, flag|#__flag_invert, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+         ;                *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, #Null$, flag|#__flag_invert, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
          ;          EndSelect
          
-         *this = Create( *parent, "Spin", #__type_Spin, 0, 0, 0, 0, "", flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+         *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
          
          ;SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
+      Case #__type_CheckBox
+          *this = Create( *parent, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", flag, 0, 0, 0, 0, 0, 0 )
       Case #__type_String
-         *this = Create( *parent, "String", #__type_String, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *parent, "String", Type, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
          ;*this = Create( *parent, "String", #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_Button
          *this = AnchorBox::Create( *parent, 0,0,0,20 )
          
       Case #__type_ComboBox
-         *this = Create( *parent, "ComboBox", #__type_ComboBox, 0, 0, 0, 0, "", flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
+         *this = Create( *parent, "ComboBox", Type, 0, 0, 0, 0, "", flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
          AddItem(*this, -1, "False")
          AddItem(*this, -1, "True")
-         ; SetState(*this, 1)
+         SetState(*this, 0)
    EndSelect
    
    If *this
@@ -468,11 +432,15 @@ Procedure Properties_StatusChange( *this._s_WIDGET, item )
    
 EndProcedure
 
-Procedure.s Properties_GetItemText( *splitter._s_WIDGET, item )
+Procedure.s Properties_GetItemText( *splitter._s_WIDGET, item, mode = 0 )
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    ;
-   ProcedureReturn GetItemText( *first, item )
+   If mode = 0
+      ProcedureReturn GetItemText( *first, item )
+   Else
+      ProcedureReturn GetItemText( *second, item )
+   EndIf
 EndProcedure
 
 Procedure Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
@@ -598,10 +566,120 @@ Procedure Properties_Create( X,Y,Width,Height, flag=0 )
    ProcedureReturn *splitter
 EndProcedure
 
+Procedure Properties_Updates( type$ )
+   Protected find$, replace$, name$, class$
+   ; class$ = Properties_GetItemText( ide_inspector_properties, #_pi_class, 1 )
+   
+   If type$ = "Focus" Or type$ = "ID"
+      Properties_SetItemText( ide_inspector_properties, #_pi_id,     
+                              Properties_GetItemText( ide_inspector_properties, #_pi_id ) +
+                              Chr( 10 ) + BoolToStr( Bool( GetClass( a_focused( ) ) <> Trim( GetClass( a_focused( ) ), "#" ) )))
+   EndIf
+   If type$ = "Focus" Or type$ = "Hide"
+      Properties_SetItemText( ide_inspector_properties, #_pi_hide,    
+                              Properties_GetItemText( ide_inspector_properties, #_pi_hide ) + 
+                              Chr( 10 ) + BoolToStr( Hide( a_focused( ) )))
+   EndIf
+   If type$ = "Focus" Or type$ = "Disable"
+      Properties_SetItemText( ide_inspector_properties, #_pi_disable, 
+                              Properties_GetItemText( ide_inspector_properties, #_pi_disable ) +
+                              Chr( 10 ) + BoolToStr( Disable( a_focused( ) )))
+   EndIf
+   
+   If type$ = "Focus" Or type$ = "Class"
+      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_class, 1 )
+      replace$ = GetClass( a_focused( ) )
+      Properties_SetItemText( ide_inspector_properties, #_pi_class,  Properties_GetItemText( ide_inspector_properties, #_pi_class ) + Chr( 10 ) + replace$ )
+   EndIf
+   If type$ = "Focus" Or type$ = "Text"
+      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_text, 1 )
+      replace$ = GetText( a_focused( ) )
+      Properties_SetItemText( ide_inspector_properties, #_pi_text,   Properties_GetItemText( ide_inspector_properties, #_pi_text ) + Chr( 10 ) + replace$ )
+   EndIf
+   If type$ = "Focus" Or type$ = "Resize"
+      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x, 1 ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_y, 1 ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_width, 1 ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_height, 1 )
+      
+      Protected x$ = Str( X( a_focused( ) ))
+      Protected y$ = Str( Y( a_focused( ) ))
+      Protected width$ = Str( Width( a_focused( ) ))
+      Protected height$ = Str( Height( a_focused( ) ))
+      
+      replace$ = x$ +", "+ y$ +", "+ width$ +", "+ height$
+      
+      Properties_SetItemText( ide_inspector_properties, #_pi_x,      Properties_GetItemText( ide_inspector_properties, #_pi_x )      + Chr( 10 ) + x$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_y,      Properties_GetItemText( ide_inspector_properties, #_pi_y )      + Chr( 10 ) + y$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_width,  Properties_GetItemText( ide_inspector_properties, #_pi_width )  + Chr( 10 ) + width$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_height, Properties_GetItemText( ide_inspector_properties, #_pi_height ) + Chr( 10 ) + height$ )
+      
+      ;
+      Properties_ButtonChange( ide_inspector_properties )
+   EndIf
+   
+;    Define find = FindString( code$,  GetClass( a_focused( ) ) + " =" )
+;    
+;    Debug find
+   
+   ClearDebugOutput()
+;    Protected *this._s_WIDGET = ide_design_panel_CODE
+;    ForEach *this\__lines( )
+;       If FindString( *this\__lines( )\text\string,  GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) ) )
+;          *this\RowFocused( ) = *this\__lines( )
+;          Break
+;       EndIf
+;    Next
+;    
+;    If *this\RowFocused( ) 
+;       Debug "["+*this\RowFocused( )\text\pos +" - "+ *this\RowFocused( )\text\len +"] "+ *this\RowFocused( )\text\string
+;       ; SetCaret( *this)
+;    EndIf
+   
+   If type$ <> "Focus"
+;       Define code$ = GetText( ide_design_panel_CODE )
+;       If code$
+;          If type$ = "Class"
+;             code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+;          Else
+;             name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
+;             Define pos = FindString( code$, name$ ) ; - Len(name$)
+;             Define len = FindString( code$, #CRLF$, pos ) - pos
+;             code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
+;             Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
+;          EndIf
+;          
+;          ; Debug CountItems( ide_design_panel_CODE )
+;          ; Debug code$
+;          ; Debug type$
+;          SetText( ide_design_panel_CODE, code$ )
+;       EndIf
+      Define code$ = GetText( ide_design_DEBUG )
+      If code$
+         If type$ = "Class"
+            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+         Else
+            name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
+            Define pos = FindString( code$, name$ ) ; - Len(name$)
+            Define len = FindString( code$, #CRLF$, pos ) - pos
+            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
+            Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
+         EndIf
+         
+         ; Debug CountItems( ide_design_panel_CODE )
+         ; Debug code$
+         ; Debug type$
+         SetText( ide_design_DEBUG, code$ )
+      EndIf
+   EndIf 
+   
+ EndProcedure
+
 
 ;-
 Declare  widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Flag$="" )
 
+;-
 Procedure.S IsFunctions( ReadString$ ) ; Ok
   Protected Finds.S, Type.S
   Restore Types
@@ -1124,8 +1202,9 @@ Procedure widget_delete( *this._s_WIDGET  )
             Next 
             ;
             ; set anchor focus
-            If a_Set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
-               properties_updates( ide_inspector_properties, a_focused( ) )
+            If a_set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
+              ; Это не нужен так как a_set( ) мы получаем фокус выджета 
+              ; Properties_Updates( "Delete" )
             EndIf
          EndIf
       EndIf
@@ -1353,17 +1432,14 @@ Procedure widget_events( )
                SetState( ide_inspector_view, GetData( *e_widget ) )
             EndIf
             
-            properties_updates( ide_inspector_properties, *e_widget )
-            Properties_ButtonChange( ide_inspector_properties )
+            Properties_Updates( "Focus" )
          EndIf
          
       Case #__event_Resize
          If a_focused( ) = *e_widget
-            ; Debug ""+GetClass(*e_widget)+" resize"
-            properties_update_coordinate( ide_inspector_properties, a_focused( ) )
-            Properties_ButtonChange( ide_inspector_properties )
+            Properties_Updates( "Resize" )
             ;
-            SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
+            ; SetWindowTitle( GetCanvasWindow(*e_widget\root), Str(Width(*e_widget))+"x"+Str(Height(*e_widget) ) )
          EndIf
          
       Case #__event_DragStart
@@ -1810,20 +1886,21 @@ Procedure ide_events( )
          EndIf
          
          If *e_widget = ide_inspector_view
-            Debug ""+GetState(*e_widget)+" change-["+GetClass(*e_widget)+"]"
+            ; Debug ""+GetState(*e_widget)+" change-["+GetClass(*e_widget)+"]"
             ;PushListPosition(*e_widget\__rows())
             ;Debug GetClass(GetItemData(*e_widget, GetState(*e_widget)))
             If a_set( GetItemData(*e_widget, GetState(*e_widget)), #__a_full )
-               properties_updates( ide_inspector_properties, a_focused( ) )
+               ; Это не нужен так как a_set( ) мы получаем фокус выджета 
+               ; Properties_Updates( "ide_inspector_view_Change" )
             EndIf
             ;PopListPosition(*e_widget\__rows())
          EndIf
          If *e_widget = ide_inspector_properties
             ; Debug " 2 change-["+GetClass(*e_widget)+"]"
-            properties_updates( ide_inspector_properties, a_focused( ) )
+           ; Properties_Updates( "ide_inspector_properties_Change" )
          EndIf
          
-          
+           
       Case #__event_LeftClick
          ; ide_menu_events( *e_widget, WidgetEventItem( ) )
          
@@ -1965,7 +2042,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
    If ide_inspector_properties
       Properties_AddItem( ide_inspector_properties, #_pi_group_0,  "Common"+Chr(10) )
-      Properties_AddItem( ide_inspector_properties, #_pi_id,       "ID"      , #__Type_String, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_id,       "#ID"  , #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_class,    "Class"   , #__Type_String, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_text,     "Text"    , #__Type_String, 1 )
       
@@ -2271,11 +2348,16 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       StopEnum( )
    ;    EndIf
    ;    
+   
+;       Define code$ = GeneratePBCode( ide_design_panel_MDI )
+;       SetText( ide_design_panel_CODE, code$ )
+;       ;SetText( ide_design_DEBUG, code$ )
+;       ;ReDraw( GetRoot(ide_design_panel_CODE) )
+     
    If SetActive( ide_inspector_view )
       SetActiveGadget( ide_g_canvas )
    EndIf
-   
-      
+    
    ;\\ 
    WaitClose( )
 CompilerEndIf
@@ -2300,8 +2382,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; Folding = ------------------------------------------
+; CursorPosition = 655
+; FirstLine = 616
+; Folding = -----9-----H--------4--------------4-------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
