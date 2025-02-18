@@ -12427,9 +12427,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             If item >- 1 And Item < *this\countitems
                Protected String.s = StringField( *this\text\string, 1 + item, #LF$ )
                If String
-                  *this\text\string = RemoveString( *this\text\string, String + #LF$, 1,1 )
+                  *this\text\string = RemoveString( *this\text\string, String + #LF$ )
+                  If StringField( *this\text\string, *this\countitems, #LF$ )
+                     *this\text\string = RemoveString( *this\text\string, #LF$ + String )
+                  EndIf
                   *this\countitems - 1
-                  *this\TextChange( )   = 1
+                  *this\TextChange( ) = 1
                   *this\WidgetChange( ) = 1
                   ProcedureReturn 1
                EndIf
@@ -19854,7 +19857,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          With *this
             Select event
                Case #__event_KeyDown
-                  
+                  If *this\text\editable
                   Select keyboard( )\key
                      Case #PB_Shortcut_PageUp
                         If bar_PageChange( *this\scroll\v, 0 )
@@ -19957,7 +19960,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                   EndSelect
                   
-                  ;EndIf
+                  EndIf
                   
             EndSelect
          EndWith
@@ -24768,9 +24771,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8929
-; FirstLine = 8876
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv----------------------------------------------------------------------------------------------------0----------------------------------------------------f-f--8-fg----4f-------------------------------------------------------------------------+----------f-4------v---v-f---------------------------------------------------------v-------4-------n-v--8-8-----------------------------------------------------------------+---------------------------------------------------------------------f808--M5----v2---------
+; CursorPosition = 19859
+; FirstLine = 18343
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv----------------------------------------------------------------------------------------------------0----------------------------------------------------f-f--8-fg----4f-------------------------------------------------------------------------0-----------+v------f---f--+--------------------------------------------------------f-------v-------P-f--4-4-------------------------------------0---------------------------8----------------------------------------------------------------------t4v--zg-----W----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
