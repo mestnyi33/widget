@@ -1054,18 +1054,91 @@ Procedure code_edit_events( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
      ; Debug 6543456789
    EndIf
    
+   
    If event = #__event_Change
-      Protected object
+      Protected object, name$
       object = GetItemData( ide_inspector_view, item )
-     ; Debug object
+      ; Debug object
       
-      ;Debug item ;
-      ; Debug  Left( *this\text\string, *this\text\caret\pos[1] )
-      Protected findstring.s = GetItemText( *this, item ) ; Left( *this\text\string, *this\text\caret\pos )
-      findstring.s = Left( findstring.s, *this\text\caret\pos )
-      Protected countstring = CountString( findstring, "," )
-      ; Debug ""+countstring +" ? "+ findstring
+      ; 
+      Protected find$, replace$, type$
       
+      
+      
+      Protected findstring.s = *line\text\string
+      Protected countstring = CountString( Left( findstring.s, *this\text\caret\pos ), "," ) + 1
+      
+      ;
+      name$ = Trim(StringField( findstring.s, 1, "="))
+      If name$ = ""
+         name$ = Trim(StringField( findstring.s, 1, ","))
+      EndIf
+      
+      Debug name$
+      
+      ; 
+      Define *g._s_WIDGET = ide_design_panel_MDI
+      If StartEnum( *g )
+         If GetClass( widget( )) = name$
+            object = widget( )
+            Break
+         EndIf
+         StopEnum( )
+      EndIf
+      
+      ;
+      findstring.s = Trim( StringField( findstring.s, countstring, "," ))
+      If countstring = 1
+         countstring = CountString( Left( findstring.s, *this\text\caret\pos ), "(" )
+         If countstring
+            findstring.s = Trim( StringField( findstring.s, 2, "(" ))
+         Else
+            findstring.s = Trim( StringField( findstring.s, 1, "(" ))
+            findstring.s = Trim( StringField( findstring.s, 1, "=" ))
+         EndIf
+      EndIf
+      If *this = ide_design_DEBUG
+         If countstring
+            countstring + 1
+         EndIf
+      EndIf
+      findstring.s = Trim( findstring.s )
+      If countstring = 6
+        findstring.s = StringField( findstring.s, 1, ")" )
+        findstring.s = Trim( findstring.s )
+        findstring.s = Trim( findstring.s, Chr('"') )
+      EndIf
+      Debug ""+countstring +" ? "+ findstring
+      
+      Select countstring
+         Case 0 
+            
+;             If *this = ide_design_panel_CODE
+;                find$ = GetClass( object )
+;                replace$ = findstring.s
+;                Debug find$ +" "+ replace$
+;                
+; ;                Define code$ = CodeChange( GetText( ide_design_panel_CODE ), find$, replace$, "Class" )
+; ;                If code$
+; ;                   SetText( ide_design_panel_CODE, code$ )
+; ;                EndIf
+;             EndIf
+;             
+            If object
+               SetClass( object, findstring.s ) ; class
+            EndIf
+            
+            
+         Case 1                              ; id
+         Case 2 : Resize( object, Val( findstring.s ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
+         Case 3 : Resize( object, #PB_Ignore, Val( findstring.s ), #PB_Ignore, #PB_Ignore)
+         Case 4 : Resize( object, #PB_Ignore, #PB_Ignore, Val( findstring.s ), #PB_Ignore)
+         Case 5 : Resize( object, #PB_Ignore, #PB_Ignore, #PB_Ignore, Val( findstring.s ))
+         Case 6 : SetText( object, findstring.s )   
+      EndSelect
+
+      
+      ;findstring.s = *line\text\string
       Select countstring
          Case 0, 1, 2, 3, 4, 5
             For q = *this\text\edit[1]\len To *this\text\edit[1]\pos Step - 1
@@ -1091,29 +1164,16 @@ Procedure code_edit_events( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
                findstring = Mid( *this\text\string, startpos, stoppos - startpos )
                ; countstring = CountString( findstring, "," )
                ; Debug ""+startpos +" "+ stoppos +" ? "+ countstring ; findstring
-               
-               If countstring
-                  If object
-                     If countstring = 5
-                        SetText( object, findstring )
-                     Else
-                        If countstring = 1
-                           X = Val( findstring )
-                        ElseIf countstring = 2
-                           Y = Val( findstring )
-                        ElseIf countstring = 3
-                           Width = Val( findstring )
-                        ElseIf countstring = 4
-                           Height = Val( findstring )
-                        EndIf
-                        
-                        Resize( object, X, Y, Width, Height)
-                     EndIf
-                  EndIf
-               EndIf
-               
-            EndIf
+             EndIf
       EndSelect
+      
+      
+;       
+;       Define code$ = CodeChange( GetText( ide_design_DEBUG ), find$, replace$, type$ )
+;       If code$
+;          SetText( ide_design_DEBUG, code$ )
+;       EndIf
+   
       
       ; Debug Left( *this\text\string, *this\text\caret\pos ); GetState( ide_design_panel_CODE )
    EndIf
@@ -2387,9 +2447,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1058
-; FirstLine = 1021
-; Folding = -----6-----P+-----------------------0------
+; CursorPosition = 1077
+; FirstLine = 1039
+; Folding = -----6-----P+------------------------0------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
