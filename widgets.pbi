@@ -9669,122 +9669,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i SetText( *this._s_WIDGET, Text.s )
-         Protected result.i, i.i
-         
-         If *this\type = #__type_Window
-            *this\TitleText( )\string = Text
-         EndIf
-         
-         If *this\type = #__type_Tree
-            If *this\RowFocused( )
-               *this\RowFocused( )\text\string = Text
-            EndIf
-         EndIf
-         
-         If *this\type = #__type_ComboBox
-            If *this\stringbar
-               ProcedureReturn SetText( *this\stringbar, Text )
-            Else
-               ; ProcedureReturn SetText( *this, Text )
-               If *This\text\string.s <> Text.s
-                  *This\text\string.s = Text.s
-                  *this\TextChange( ) = #True
-                  result              = #True
-                  PostRepaint( *this\root )
-               EndIf
-            EndIf
-         EndIf
-         
-         If *this\type = #__type_Editor Or
-            *this\type = #__type_String Or
-            *this\type = #__type_text Or
-            *this\type = #__type_hyperlink Or
-            *this\type = #__type_Button
-            
-            Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
-            Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
-            Text.s = ReplaceString( Text.s, #CR$, #LF$ )
-            ;
-            If *this\text\multiline = 0
-               Text.s = edit_make_insert_text( *this, Text.s )
-               Text.s = RemoveString( Text.s, #LF$ )
-            EndIf
-            
-            If *This\text\string.s <> Text.s
-               *This\text\string.s = Text.s
-               ;
-               *this\scroll_width( )  = *this\padding\x * 2
-               *this\scroll_height( ) = *this\padding\y * 2
-               
-               ;                Protected enter_index = - 1: If *this\LineEntered( ): enter_index = *this\LineEntered( )\lindex: *this\LineEntered( ) = #Null: EndIf
-               ;                Protected focus_index = - 1: If *this\LineFocused( ): focus_index = *this\LineFocused( )\lindex: *this\LineFocused( ) = #Null: EndIf
-               ;                Protected press_index = - 1: If *this\LinePressed( ): press_index = *this\LinePressed( )\lindex: *this\LinePressed( ) = #Null: EndIf
-               
-               *this\text\len = 0
-               *this\countitems = 0
-               If *this\text\pass
-                  *this\text\strpass = *this\text\string
-               EndIf
-               ClearList( *this\__lines( ))
-               
-               Protected String.s = Text.s + #LF$
-               Protected *str.Character = @String
-               Protected *end.Character = @String
-               Protected len = Len( #LF$ )
-               
-               While *end\c
-                  If *end\c = #LF
-                     LastElement( *this\__lines( ))
-                     AddElement( *this\__lines( ))
-                     *this\__lines( )\lindex = ListIndex( *this\__lines( ))
-                     *this\__lines( )\text\len  = (*end - *str) >> #PB_Compiler_Unicode
-                     *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
-                     *this\__lines( )\text\pos = *this\text\len 
-                     *this\text\len + *this\__lines( )\text\len + len
-                     *this\countitems + 1
-                     
-                     
-                     ;                      ;
-                     ;                      If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
-                     ;                      If focus_index = *this\__lines( )\lindex: *this\LineFocused( ) = *this\__lines( ): EndIf
-                     ;                      If press_index = *this\__lines( )\lindex: *this\LinePressed( ) = *this\__lines( ): EndIf
-                     
-                     *str = *end + #__sOC
-                  EndIf
-                  *end + #__sOC
-               Wend
-               
-               ;
-               *this\text\len - len
-               *this\TextChange( )   = 1
-               *this\WidgetChange( ) = 1
-               
-               ProcedureReturn 1
-            EndIf
-         Else
-            ;         If *this\text\multiline = 0
-            ;           Text = RemoveString( Text, #LF$ )
-            ;         EndIf
-            
-            Text = ReplaceString( Text, #LFCR$, #LF$ )
-            Text = ReplaceString( Text, #CRLF$, #LF$ )
-            Text = ReplaceString( Text, #CR$, #LF$ )
-            ;Text + #LF$
-            
-            If *This\text\string.s <> Text.s
-               *This\text\string.s = Text.s
-               *this\TextChange( ) = #True
-               result              = #True
-               PostRepaint( *This\root )
-            EndIf
-         EndIf
-         
-         *this\WidgetChange( ) = 1
-         
-         ProcedureReturn result
-      EndProcedure
-      
       Procedure.s GetItemText( *this._s_WIDGET, Item.l, Column.l = 0 )
          Protected result.s
          
@@ -16236,7 +16120,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      ;; editor
                      *this\__lines( )\lindex = ListIndex( *this\__lines( ))
-                     
+                     ;
+                     If *this\LineFocusedIndex( ) = *this\__lines( )\lindex
+                        *this\LineFocused( ) = *this\__lines( )
+                     EndIf
+                     ;
                      *this\__lines( )\height = *this\__lines( )\text\height
                      *this\__lines( )\width  = *this\inner_width( )
                      *this\__lines( )\color  = _get_colors_( )
@@ -17222,11 +17110,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; then change text update cursor pos
                If *this\text\editable And *this\TextChange( ) =- 99 And *this\LineFocusedIndex( ) >= 0
                   ;
-                  Update_DrawText( *this, 1 )
-                  ;
-                  If Not ( *this\LineFocused( ) And *this\LineFocused( )\lindex = *this\LineFocusedIndex( ) )
-                     *this\LineFocused( ) = SelectElement( *this\__lines( ), *this\LineFocusedIndex( ) )
-                  EndIf
+                  Update_DrawText( *this, #True )
                   
                   If *this\LineFocused( )
                      ;                      *this\LineEntered( ) = *this\LineFocused( )
@@ -17297,6 +17181,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   draw_box_( *this\MarginLine( )\x, *this\MarginLine( )\y, *this\MarginLine( )\width, *this\MarginLine( )\height, *this\MarginLine( )\color\back )
                EndIf
                
+               
                ; Draw Lines text
                If *this\countitems
                   *this\RowFirstVisible( ) = 0
@@ -17331,7 +17216,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\WidgetChange( ) : *this\WidgetChange( ) = 0 : EndIf
             EndWith
          EndIf
-         
+       
       EndProcedure
       
       Procedure   Draw_Window( *this._s_WIDGET )
@@ -18492,7 +18377,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-                  ;                       
+                  
+                 
+         ;                       
                   StopEnum( )
                EndIf
                ;
@@ -18625,6 +18512,140 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure.i SetText( *this._s_WIDGET, Text.s )
+         Protected result.i, i.i
+         
+         If *this\type = #__type_Window
+            *this\TitleText( )\string = Text
+         EndIf
+         
+         If *this\type = #__type_Tree
+            If *this\RowFocused( )
+               *this\RowFocused( )\text\string = Text
+            EndIf
+         EndIf
+         
+         If *this\type = #__type_ComboBox
+            If *this\stringbar
+               ProcedureReturn SetText( *this\stringbar, Text )
+            Else
+               ; ProcedureReturn SetText( *this, Text )
+               If *This\text\string.s <> Text.s
+                  *This\text\string.s = Text.s
+                  *this\TextChange( ) = #True
+                  result              = #True
+                  PostRepaint( *this\root )
+               EndIf
+            EndIf
+         EndIf
+         
+         If *this\type = #__type_Editor Or
+            *this\type = #__type_String Or
+            *this\type = #__type_text Or
+            *this\type = #__type_hyperlink Or
+            *this\type = #__type_Button
+            
+            Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
+            Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
+            Text.s = ReplaceString( Text.s, #CR$, #LF$ )
+            ;
+            If *this\text\multiline = 0
+               Text.s = edit_make_insert_text( *this, Text.s )
+               Text.s = RemoveString( Text.s, #LF$ )
+            EndIf
+            
+            If *This\text\string.s <> Text.s
+               *This\text\string.s = Text.s
+               ;
+               If *this\text\pass
+                  *this\text\strpass = *this\text\string
+               EndIf
+               
+; ;                ;
+;                *this\scroll_width( )  = *this\padding\x * 2
+;                *this\scroll_height( ) = *this\padding\y * 2
+;                
+;                ;                Protected enter_index = - 1: If *this\LineEntered( ): enter_index = *this\LineEntered( )\lindex: *this\LineEntered( ) = #Null: EndIf
+;                ;                Protected focus_index = - 1: If *this\LineFocused( ): focus_index = *this\LineFocused( )\lindex: *this\LineFocused( ) = #Null: EndIf
+;                ;                Protected press_index = - 1: If *this\LinePressed( ): press_index = *this\LinePressed( )\lindex: *this\LinePressed( ) = #Null: EndIf
+;                
+;                *this\text\len = 0;Len(Text.s)
+;                *this\countitems = 0
+;                ClearList( *this\__lines( ))
+;                
+;                Protected String.s = Text.s + #LF$
+;                Protected *str.Character = @String
+;                Protected *end.Character = @String
+;                Protected len = Len( #LF$ )
+;                
+;                While *end\c
+;                   If *end\c = #LF
+;                      LastElement( *this\__lines( ))
+;                      AddElement( *this\__lines( ))
+;                      *this\__lines( )\lindex = ListIndex( *this\__lines( ))
+;                      *this\__lines( )\text\len  = (*end - *str) >> #PB_Compiler_Unicode
+;                      *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
+;                      *this\__lines( )\text\pos = *this\text\len 
+;                      *this\text\len + *this\__lines( )\text\len + len
+;                      *this\countitems + 1
+;                      
+;                      
+;                      ;                      ;
+;                      ;                      If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
+;                      ;                      If focus_index = *this\__lines( )\lindex: *this\LineFocused( ) = *this\__lines( ): EndIf
+;                      ;                      If press_index = *this\__lines( )\lindex: *this\LinePressed( ) = *this\__lines( ): EndIf
+;                      
+;                      *str = *end + #__sOC
+;                   EndIf
+;                   *end + #__sOC
+;                Wend
+;                
+;                ;
+;                *this\text\len - len
+               
+             ;; ReDraw(*this\root)
+               ;*this\TextChange( )   = 1
+               ;*this\WidgetChange( ) = 1
+               
+                ;edit_redraw_font( *this )
+               CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+                  If StartDraw( *this\root ) 
+                     If CurrentFontID( )
+                        DrawingFont(CurrentFontID( ))
+                     EndIf
+                  EndIf
+               CompilerEndIf
+               Update_DrawText( *this, 1 )
+               
+               If *this\LineFocused( )
+                  edit_sel_string_( *this, *this\LineFocused( ) )
+                  edit_sel_text_( *this, *this\LineFocused( ) )
+               EndIf
+               
+               ProcedureReturn 1
+            EndIf
+         Else
+            ;         If *this\text\multiline = 0
+            ;           Text = RemoveString( Text, #LF$ )
+            ;         EndIf
+            
+            Text = ReplaceString( Text, #LFCR$, #LF$ )
+            Text = ReplaceString( Text, #CRLF$, #LF$ )
+            Text = ReplaceString( Text, #CR$, #LF$ )
+            ;Text + #LF$
+            
+            If *This\text\string.s <> Text.s
+               *This\text\string.s = Text.s
+               *this\TextChange( ) = #True
+               result              = #True
+               PostRepaint( *This\root )
+            EndIf
+         EndIf
+         
+         *this\WidgetChange( ) = 1
+         
+         ProcedureReturn result
+      EndProcedure
       
       ;-
       Macro multi_select_rows_( _this_, _current_row_ )
@@ -22291,7 +22312,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ForEach __gui\event\binds( )
                         If __gui\event\binds( )\widget = *this\root And 
                            __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                           Debug ClassFromEvent(event)
+                          ; Debug ClassFromEvent(event)
                            result = __gui\event\binds( )\function( )
                         EndIf
                      Next
@@ -24771,9 +24792,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19859
-; FirstLine = 18343
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv----------------------------------------------------------------------------------------------------0----------------------------------------------------f-f--8-fg----4f-------------------------------------------------------------------------0-----------+v------f---f--+--------------------------------------------------------f-------v-------P-f--4-4-------------------------------------0---------------------------8----------------------------------------------------------------------t4v--zg-----W----------
+; CursorPosition = 17163
+; FirstLine = 16044
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv-------------------------------------------------------------------------------------------------------------------------------------------------------v-v--0-Pw----8v-------------------------------------------------------------------------+----------f-4------v---v-f----------------0----------------------------d-----------v-------4-------v-v--8-8---------------------------------------v---------------------------f----------------------------------------------------------------------v0+0-fG9----47---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

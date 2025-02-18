@@ -851,114 +851,66 @@ Procedure.s CodeChange( code$, find$, replace$, type$ )
    ProcedureReturn code$
 EndProcedure
 
-Procedure CodeAddLine( *new._s_widget, Name$, item.i, SubLevel.i )
-   Protected Result$ 
-   Protected Space$ = Space( ( Level(*new) - Level(ide_design_panel_MDI) ) * 3 )
-   
-   Result$ = GenerateCODE( *new, "FUNCTION", space$ )
-   
-   Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any, ", "Window( ")
-   Result$ = ReplaceString( Result$, "OpenWindow( " + Name$, "Window( ")
-   Result$ = ReplaceString( Result$, "Gadget( #PB_Any, ", "( ")
-   Result$ = ReplaceString( Result$, "Gadget( " + Name$, "( ")
-   Result$ = ReplaceString( Result$, "Gadget", "")
-   
-   If IsGadget( ide_g_code )
-      AddGadgetItem( ide_g_code, item, Result$ )
-   Else
-      AddItem( ide_design_panel_CODE, item, Result$ )
-      AddItem( ide_design_DEBUG, item, Result$ )
-      SetItemData( ide_design_DEBUG, item, *new)
-   EndIf
-EndProcedure
-
-Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
-   Static object  
+Procedure CodeReplace( *this._s_WIDGET, object, string$, caret )
    Protected q, startpos, stoppos
-   Protected find$, replace$, type$, name$, countstring 
+   Protected find$, replace$, text$, type$, name$, countstring, count
    
-   ;
-   If event = #__event_Up
-      name$ = Trim(StringField( *line\text\string, 1, "="))
-      If name$ = ""
-         name$ = Trim(StringField( *line\text\string, 1, ","))
-      EndIf
+   If object
+      text$ = GetText( *this )
+      countstring = CountString( Left( string$, caret ), "," ) + 1
       
-      ; 
-      object = 0
-      Define *g._s_WIDGET = ide_design_panel_MDI
-      If StartEnum( *g )
-         If GetClass( widget( )) = name$
-            object = widget( )
-            Break
-         EndIf
-         StopEnum( )
-      EndIf
+      ;
+      replace$ = StringField( string$, countstring, "," )
       
-      If object
-         *this\text\editable = 1 
-      Else
-         *this\text\editable = 0 
-      EndIf
-      ; Debug *this\text\editable
-   EndIf
-   
-   ;
-   If event = #__event_StatusChange
-      ; Debug 6543456789
-   EndIf
-   
-   ;
-   If event = #__event_Change
-      If object
-         replace$ = *line\text\string
-         countstring = CountString( Left( replace$, *this\text\caret\pos ), "," ) + 1
-         
-         ;
-         replace$ = Trim( StringField( replace$, countstring, "," ))
-         If countstring = 1
-            countstring = CountString( Left( replace$, *this\text\caret\pos ), "(" )
-            If countstring
-               replace$ = Trim( StringField( replace$, 2, "(" ))
+      If countstring = 1
+         countstring = CountString( Left( replace$, caret ), "(" )
+         If countstring
+            replace$ = StringField( replace$, 2, "(" )
+         Else
+            If CountString( Left( string$, caret ), "=" )
+               countstring =- 1
+               replace$ = ""
             Else
-               replace$ = Trim( StringField( replace$, 1, "(" ))
-               replace$ = Trim( StringField( replace$, 1, "=" ))
+               replace$ = StringField( replace$, 1, "(" )
+               replace$ = StringField( replace$, 1, "=" )
             EndIf
          EndIf
+      EndIf
+      
+      replace$ = Trim( replace$ )
+         
+      If replace$
          If *this = ide_design_DEBUG
             If countstring
                countstring + 1
             EndIf
          EndIf
-         replace$ = Trim( replace$ )
          If countstring = 6
             replace$ = StringField( replace$, 1, ")" )
             replace$ = Trim( replace$ )
             replace$ = Trim( replace$, Chr('"') )
          EndIf
-         Debug ""+countstring +" ? "+ replace$
+         Debug " "+countstring +" ? "+ replace$ ; +" @ "+ string$
          
          Select countstring
             Case 0 
                
                If *this = ide_design_panel_CODE
                   find$ = GetClass( object )
-                  Debug find$ +" "+ replace$
+                  count = CountString( Left( text$, *this\text\caret\pos[1] ), find$ )
                   
-                  Define code$ = CodeChange( GetText( ide_design_panel_CODE ), find$, replace$, "Class" )
-                  If code$
-                     
-                     ;ClearDebugOutput()
-                     Debug code$
-                     ;                   ; ReplaceString( )
-                     ClearItems(ide_design_panel_CODE)
-                     ReDraw( root( ) )
-                     *this = ide_design_panel_CODE
-                     
-                     
-                     
-                     ; *this\text = 0
-                     SetText( ide_design_panel_CODE, "ddddd");code$ )
+                  If keyboard( )\key = #PB_Shortcut_Back
+                     *this\text\caret\pos[1] - count
+                  Else
+                     *this\text\caret\pos[1] + count
+                  EndIf
+                  *this\text\caret\pos[2] = *this\text\caret\pos[1]
+                  ;Debug  keyboard( )\key ; #PB_Shortcut_Back
+                  Debug ""+ count +" "+ find$ +" "+ replace$ 
+                  
+                  text$ = ReplaceString( text$, find$, replace$, #PB_String_CaseSensitive )
+                  If text$
+                     SetText( *this, text$ )
                   EndIf
                EndIf
                
@@ -1014,6 +966,84 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
          
          
          ; Debug Left( *this\text\string, *this\text\caret\pos ); GetState( ide_design_panel_CODE )
+      EndIf
+   EndIf
+   
+   ProcedureReturn countstring
+EndProcedure
+
+Procedure CodeAddLine( *new._s_widget, Name$, item.i, SubLevel.i )
+   Protected Result$ 
+   Protected Space$ = Space( ( Level(*new) - Level(ide_design_panel_MDI) ) * 3 )
+   
+   Result$ = GenerateCODE( *new, "FUNCTION", space$ )
+   
+   Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any, ", "Window( ")
+   Result$ = ReplaceString( Result$, "OpenWindow( " + Name$, "Window( ")
+   Result$ = ReplaceString( Result$, "Gadget( #PB_Any, ", "( ")
+   Result$ = ReplaceString( Result$, "Gadget( " + Name$, "( ")
+   Result$ = ReplaceString( Result$, "Gadget", "")
+   
+   If IsGadget( ide_g_code )
+      AddGadgetItem( ide_g_code, item, Result$ )
+   Else
+      AddItem( ide_design_panel_CODE, item, Result$ )
+      AddItem( ide_design_DEBUG, item, Result$ )
+      SetItemData( ide_design_DEBUG, item, *new)
+   EndIf
+EndProcedure
+
+Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
+   Static object  
+   Protected name$
+   
+   ;
+   If event = #__event_Up
+      name$ = Trim(StringField( *line\text\string, 1, "="))
+      If name$ = ""
+         name$ = Trim(StringField( *line\text\string, 1, ","))
+      EndIf
+      
+      ; 
+      object = 0
+      Define *g._s_WIDGET = ide_design_panel_MDI
+      If StartEnum( *g )
+         If GetClass( widget( )) = name$
+            object = widget( )
+            Break
+         EndIf
+         StopEnum( )
+      EndIf
+      
+      ;Debug Str( *this\text\caret\pos[1] - *line\text\pos ) +" "+ *this\text\caret\pos
+      
+      Define code = CodeReplace( *this, object, *line\text\string, *this\text\caret\pos )
+      
+      If object And code >= 0
+         *this\text\editable = 1 
+      Else
+         *this\text\editable = 0 
+      EndIf
+      ; Debug *this\text\editable
+      
+      If code = 0
+         *this\text\upper = 1 
+      Else
+         *this\text\upper = 0 
+      EndIf
+      
+      ;Debug "ffddd "+code
+   EndIf
+   
+   ;
+   If event = #__event_StatusChange
+      ; Debug 6543456789
+   EndIf
+   
+   ;
+   If event = #__event_Change
+      If object
+         CodeReplace( *this, object, *line\text\string, *this\text\caret\pos )
       EndIf
    EndIf
 EndProcedure
@@ -2454,9 +2484,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 902
-; FirstLine = 873
-; Folding = ----------------------v+---------------------
+; CursorPosition = 1031
+; FirstLine = 825
+; Folding = -------------v-----f4--v+---------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

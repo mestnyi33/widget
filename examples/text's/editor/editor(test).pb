@@ -24,9 +24,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Event_s( )
      Select WidgetEvent( )
-        Case #__event_leftClick
-           SetGadgetText(10, "set   text")
-            SetText(g, "set   text")
+        Case #__event_Change
+           SetGadgetText(10, "set change text")
+           SetText(g, "set change text")
             
      EndSelect
   EndProcedure
@@ -84,8 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 48
+; CursorPosition = 48
+; FirstLine = 35
 ; Folding = --
 ; EnableXP
 ; DPIAware
