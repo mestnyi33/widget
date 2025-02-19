@@ -501,8 +501,8 @@ Module Cursor
   EndProcedure
 EndModule   
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 168
-; FirstLine = 156
+; CursorPosition = 77
+; FirstLine = 68
 ; Folding = ------------
 ; Optimizer
 ; EnableXP

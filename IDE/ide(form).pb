@@ -282,17 +282,17 @@ Procedure Properties_ButtonDisplay( *second._s_WIDGET )
 EndProcedure
 
 Procedure Properties_ButtonEvents( )
-   ; Debug ""+widget::ClassFromEvent(WidgetEvent( )) +" "+ widget::GetClass( EventWidget( ))
+  ; Debug ""+widget::ClassFromEvent(WidgetEvent( )) +" "+ widget::GetClass( EventWidget( ))
    
    Select WidgetEvent( )
       Case #__event_Down
          GetActive( )\gadget = EventWidget( )
-         ;
-         Select Type( EventWidget( ))
-            Case #__type_Spin     : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-            Case #__type_String   : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), GetText(EventWidget( )) )
-            Case #__type_ComboBox : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-         EndSelect
+;          ;
+;          Select Type( EventWidget( ))
+;             ;Case #__type_Spin     : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+;             ;Case #__type_String   : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), GetText(EventWidget( )) )
+;             Case #__type_ComboBox : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+;          EndSelect
          
       Case #__event_MouseWheel
          If WidgetEventItem( ) > 0
@@ -315,7 +315,6 @@ Procedure Properties_ButtonEvents( )
                EndSelect
                
             Case #__type_Spin
-               
                Select GetData( EventWidget( ) ) 
                   Case #_pi_x      : Resize( a_focused( ), GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
                   Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore )
@@ -602,6 +601,7 @@ Procedure Properties_Updates( type$ )
       Properties_SetItemText( ide_inspector_properties, #_pi_text,   Properties_GetItemText( ide_inspector_properties, #_pi_text ) + Chr( 10 ) + replace$ )
    EndIf
    If type$ = "Focus" Or type$ = "Resize"
+      ; Debug "---- "+type$
       find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x, 1 ) +", "+ 
               Properties_GetItemText( ide_inspector_properties, #_pi_y, 1 ) +", "+ 
               Properties_GetItemText( ide_inspector_properties, #_pi_width, 1 ) +", "+ 
@@ -628,14 +628,44 @@ Procedure Properties_Updates( type$ )
       Define code$ = GetText( ide_design_DEBUG )
       If type$ = "Class"
          code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+         
       Else
-         name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
-         Define pos = FindString( code$, name$ )
-         ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
-         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
-         ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
+         If find$
+            Debug find$ +" ? "+ replace$
+            name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
+            Define pos = FindString( code$, name$ )
+            ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
+            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
+            ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
+         EndIf
       EndIf
-   EndIf 
+      
+      If code$
+         SetText( ide_design_DEBUG, code$ )
+      EndIf 
+      
+      
+      ; If Not Hide( ide_design_panel_CODE )
+         Define code$ = GetText( ide_design_panel_CODE )
+         If type$ = "Class"
+            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+            
+         Else
+            If find$
+               Debug find$ +" ? "+ replace$
+               name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
+               Define pos = FindString( code$, name$ )
+               ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
+               code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
+               ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
+            EndIf
+         EndIf
+         
+         If code$
+            SetText( ide_design_panel_CODE, code$ )
+         EndIf 
+      ; EndIf
+   EndIf
    
 EndProcedure
 
@@ -1073,10 +1103,10 @@ Procedure IDE_SaveFile(Path$) ; Процедура сохранения файл
       ClearDebugOutput()
       Debug "Сохраняю файл '"+Path$+"'"
       
-      Text$ = GeneratePBCode( ide_design_panel_MDI )
+      ;Text$ = GeneratePBCode( ide_design_panel_MDI )
       
       ;     SetText( ide_design_panel_CODE, Text$ )
-      ;     Text$ = GetText( ide_design_panel_CODE )
+      Text$ = GetText( ide_design_panel_CODE )
       
       If CreateFile( #File, Path$, #PB_UTF8 )
          ; TruncateFile( #File )
@@ -1950,12 +1980,12 @@ Procedure ide_events( )
       Case #__event_Change
          
          If *e_widget = ide_design_panel
-            If e_item = 1
-               Define code$ = GeneratePBCode( ide_design_panel_MDI )
-               
-               SetText( ide_design_panel_CODE, code$ )
-               SetActive( ide_design_panel_CODE )
-            EndIf
+;             If e_item = 1
+;                Define code$ = GeneratePBCode( ide_design_panel_MDI )
+;                
+;                SetText( ide_design_panel_CODE, code$ )
+;                SetActive( ide_design_panel_CODE )
+;             EndIf
          EndIf
          
          If *e_widget = ide_inspector_view
@@ -2428,10 +2458,10 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    EndIf
    ;    
    
-   ;       Define code$ = GeneratePBCode( ide_design_panel_MDI )
-   ;       SetText( ide_design_panel_CODE, code$ )
-   ;       ;SetText( ide_design_DEBUG, code$ )
-   ;       ;ReDraw( GetRoot(ide_design_panel_CODE) )
+   Define code$ = GeneratePBCode( ide_design_panel_MDI )
+   SetText( ide_design_panel_CODE, code$ )
+   ;SetText( ide_design_DEBUG, code$ )
+   ;ReDraw( GetRoot(ide_design_panel_CODE) )
    
    If SetActive( ide_inspector_view )
       SetActiveGadget( ide_g_canvas )
@@ -2461,9 +2491,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 877
-; FirstLine = 867
-; Folding = --------------------0--r----------------------
+; CursorPosition = 1987
+; FirstLine = 1860
+; Folding = --------------------f---7---------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
