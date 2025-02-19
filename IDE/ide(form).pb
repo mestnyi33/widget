@@ -1028,6 +1028,7 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
       If StartEnum( *g )
          If GetClass( widget( )) = name$
             object = widget( )
+            a_set( object )
             Break
          EndIf
          StopEnum( )
@@ -1049,11 +1050,7 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
       Else
          *this\text\upper = 0 
       EndIf
-      
-      If object
-         a_set( object )
-      EndIf
-      ;Debug "ffddd "+code
+       ;Debug "ffddd "+code
    EndIf
    
    ;
@@ -1065,7 +1062,6 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
    If event = #__event_Change
       If object
          CodeReplace( *this, object, *line\text\string, *this\text\caret\pos )
-         ; Properties_Updates( object, "Focus" )
       EndIf
    EndIf
 EndProcedure
@@ -2328,7 +2324,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState( ide_inspector_panel, 1 )
    
    ;   ;OpenList(ide_design_panel_MDI)
-   Define result, btn2, example = 2
+   Define result, btn2, example = 3
    
    
    ide_design_form = widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
@@ -2512,9 +2508,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1851
-; FirstLine = 1704
-; Folding = -----------------ff4----r----------------------
+; CursorPosition = 982
+; FirstLine = 904
+; Folding = -----------------ff4----2---------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
