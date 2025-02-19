@@ -161,10 +161,17 @@ Procedure.s GenerateCODE( *this._s_WIDGET, FUNCTION$, Space$ = "" )
       EndIf
       
       ; Coordinate
-      Result$ + Str( X( *this ) ) + ", " + 
-                Str( Y( *this ) ) + ", " + 
-                Str( Width( *this ) ) + ", " + 
-                Str( Height( *this ) )
+      If is_window_( *this )
+         Result$ + Str( X( *this, #__c_container ) ) + ", " + 
+                   Str( Y( *this, #__c_container ) ) + ", " + 
+                   Str( Width( *this, #__c_inner ) ) + ", " + 
+                   Str( Height( *this, #__c_inner ) )
+      Else
+         Result$ + Str( X( *this ) ) + ", " + 
+                   Str( Y( *this ) ) + ", " + 
+                   Str( Width( *this ) ) + ", " + 
+                   Str( Height( *this ) )
+      EndIf
       
       ; Text
       Select *this\Type
@@ -617,8 +624,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 548
-; FirstLine = 298
-; Folding = ------4+-----
+; CursorPosition = 164
+; FirstLine = 154
+; Folding = -------0-----
 ; EnableXP
 ; DPIAware
