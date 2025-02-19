@@ -122,7 +122,6 @@ Declare widget_events( )
 Declare Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
 Declare.s Properties_GetItemText( *splitter._s_WIDGET, item, mode = 0 )
 Declare   Properties_Updates( type$ )
-Declare.s CodeChange( code$, find$, replace$, type$ )
 
 ;-
 ;- PUBLICs
@@ -624,28 +623,17 @@ Procedure Properties_Updates( type$ )
       Properties_ButtonChange( ide_inspector_properties )
    EndIf
    
-   ;    Define find = FindString( code$,  GetClass( a_focused( ) ) + " =" )
-   ;    
-   ;    Debug find
-   
-   ;  ClearDebugOutput()
-   ;    Protected *this._s_WIDGET = ide_design_panel_CODE
-   ;    ForEach *this\__lines( )
-   ;       If FindString( *this\__lines( )\text\string,  GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) ) )
-   ;          *this\RowFocused( ) = *this\__lines( )
-   ;          Break
-   ;       EndIf
-   ;    Next
-   ;    
-   ;    If *this\RowFocused( ) 
-   ;       Debug "["+*this\RowFocused( )\text\pos +" - "+ *this\RowFocused( )\text\len +"] "+ *this\RowFocused( )\text\string
-   ;       ; SetCaret( *this)
-   ;    EndIf
-   
+   ;\\
    If type$ <> "Focus"
-      Define code$ = CodeChange( GetText( ide_design_DEBUG ), find$, replace$, type$ )
-      If code$
-         SetText( ide_design_DEBUG, code$ )
+      Define code$ = GetText( ide_design_DEBUG )
+      If type$ = "Class"
+         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+      Else
+         name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
+         Define pos = FindString( code$, name$ )
+         ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
+         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
+         ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
       EndIf
    EndIf 
    
@@ -835,25 +823,9 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
 EndProcedure
 
 ;-
-Procedure.s CodeChange( code$, find$, replace$, type$ )
-   Protected name$
-   If code$
-      If type$ = "Class"
-         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
-      Else
-         name$ = GetClass( a_focused( ) ) + " = " + ClassFromType( Type( a_focused( )) )
-         Define pos = FindString( code$, name$ )
-         ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
-         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
-         ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
-      EndIf
-   EndIf
-   ProcedureReturn code$
-EndProcedure
-
 Procedure CodeReplace( *this._s_WIDGET, object, string$, caret )
    Protected q, startpos, stoppos
-   Protected find$, replace$, text$, type$, name$, countstring, count
+   Protected find$, replace$, text$, type$, name$, countstring
    
    If object
       text$ = GetText( *this )
@@ -897,14 +869,18 @@ Procedure CodeReplace( *this._s_WIDGET, object, string$, caret )
                
                If *this = ide_design_panel_CODE
                   find$ = GetClass( object )
-                  count = CountString( Left( text$, *this\text\caret\pos[1] ), find$ )
                   
-                  If keyboard( )\key = #PB_Shortcut_Back
-                     *this\text\caret\pos[1] - count
-                  Else
-                     *this\text\caret\pos[1] + count
+                  If  keyboard( )\key
+                     caret = GetCaret( *this )
+                     Define count = CountString( Left( text$, caret), find$ )
+                     
+                     If keyboard( )\key = #PB_Shortcut_Back
+                        SetCaret( *this, caret - count )
+                     Else
+                        SetCaret( *this, caret + count )
+                     EndIf
                   EndIf
-                  *this\text\caret\pos[2] = *this\text\caret\pos[1]
+                  
                   ;Debug  keyboard( )\key ; #PB_Shortcut_Back
                   Debug ""+ count +" "+ find$ +" "+ replace$ 
                   
@@ -957,13 +933,13 @@ Procedure CodeReplace( *this._s_WIDGET, object, string$, caret )
                EndIf
          EndSelect
          
-         
-         ;       
-         ;       Define code$ = CodeChange( GetText( ide_design_DEBUG ), find$, replace$, type$ )
-         ;       If code$
-         ;          SetText( ide_design_DEBUG, code$ )
-         ;       EndIf
-         
+;          If *this = ide_design_panel_CODE
+;             *this = ide_design_DEBUG
+;             *this\text\string = ReplaceString( GetText(ide_design_DEBUG), find$, replace$, #PB_String_CaseSensitive )
+; ;             If text$
+; ;                SetText( ide_design_DEBUG, text$ )
+; ;             EndIf
+;          EndIf
          
          ; Debug Left( *this\text\string, *this\text\caret\pos ); GetState( ide_design_panel_CODE )
       EndIf
@@ -1044,6 +1020,7 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
    If event = #__event_Change
       If object
          CodeReplace( *this, object, *line\text\string, *this\text\caret\pos )
+         Properties_Updates( "Focus" )
       EndIf
    EndIf
 EndProcedure
@@ -2484,9 +2461,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1031
-; FirstLine = 825
-; Folding = -------------v-----f4--v+---------------------
+; CursorPosition = 877
+; FirstLine = 867
+; Folding = --------------------0--r----------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

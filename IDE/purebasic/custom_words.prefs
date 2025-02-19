@@ -1,4 +1,6 @@
 SetTextXY
+GetCaret
+SetCaret
 
 TypeFromClass
 ClassFromType

@@ -1411,7 +1411,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.s GetClass( *this )
       Declare   SetClass( *this, Class.s )
       
-      Declare   SetTextXY( *this._s_WIDGET, X.l, Y.l )
+      Declare   SetTextXY( *this, X.l, Y.l )
+      Declare   GetCaret( *this, mode.a = 0 )
+      Declare   SetCaret( *this, position.i )
       Declare.s GetText( *this )
       Declare   SetText( *this, Text.s )
       Declare.s GetItemText( *this, Item.l, Column.l = 0 )
@@ -9648,6 +9650,23 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          If Not Y < 0
             *this\text\y = DesktopScaledX(Y)
+         EndIf
+      EndProcedure
+      
+      Procedure   GetCaret( *this._s_WIDGET, mode.a = 0 )
+         If mode
+            ProcedureReturn *this\edit_caret_0( )
+         Else
+            ProcedureReturn *this\edit_caret_1( )
+         EndIf
+      EndProcedure
+      
+      Procedure   SetCaret( *this._s_WIDGET, position.i )
+         If *this\edit_caret_1( ) <> position
+            *this\edit_caret_1( ) = position
+         EndIf
+         If *this\edit_caret_2( ) <> position
+            *this\edit_caret_2( ) = position
          EndIf
       EndProcedure
       
@@ -24792,9 +24811,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17163
-; FirstLine = 16044
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv-------------------------------------------------------------------------------------------------------------------------------------------------------v-v--0-Pw----8v-------------------------------------------------------------------------+----------f-4------v---v-f----------------0----------------------------d-----------v-------4-------v-v--8-8---------------------------------------v---------------------------f----------------------------------------------------------------------v0+0-fG9----47---------
+; CursorPosition = 1414
+; FirstLine = 1376
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv--------------------------------------------------------------------------------------------------------------------------------------------------------4-4--+-H5----04------------------------------------------------------------------------f-----------v-8------4---4-v----------------+----------------------------u-----------4-------8-------4-4--0-0---------------------------------------4---------------------------v----------------------------------------------------------------------4e-+-PD+----b0---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
