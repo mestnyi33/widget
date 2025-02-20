@@ -8533,6 +8533,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Static cursor_change_widget
          
          If CurrentCursor( ) <> *cursor
+            StopDraw( )
             If *cursor 
                cursor_change_widget = *this
             Else
@@ -8557,6 +8558,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             Cursor::Set( *this\root\canvas\gadget, *cursor ) 
+            StartDraw( *this\root )
          EndIf
          
          ProcedureReturn *cursor
@@ -13194,7 +13196,92 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       ;-  EDIT STRING
-      ;\\ Macro edit_row_caret_1_( _this_ ): _this_\text\caret\pos[3]: EndMacro
+     Procedure$  GetQuote( text$, len, caret ) ; Ok
+   Protected i, chr$, start, stop 
+   
+   For i = caret To 0 Step - 1
+      chr$ = Mid( text$, i, 1 )
+      If chr$ = ~"\"" 
+         start = i
+         
+         For i = caret + 1 To len 
+            chr$ = Mid( text$, i, 1 )
+            If chr$ = ~"\""
+               stop = i - start + 1
+               Break 2
+            EndIf
+         Next i
+         
+         Break
+      EndIf
+   Next i
+   
+   If stop 
+      ; Debug #PB_Compiler_Procedure +" ["+ start +" "+ stop +"]"
+      ProcedureReturn Mid( text$, start, stop )
+   EndIf
+EndProcedure
+ Procedure$  GetWord( text$, len, caret ) ; Ok
+   Protected i, chr$, start = 0, stop = len
+   
+   chr$ = GetQuote( text$, len, caret ) 
+   If chr$
+      ProcedureReturn chr$
+   EndIf
+   
+   For i = caret To 0 Step - 1
+      chr$ = Mid( text$, i, 1 )
+      If chr$ = " " Or 
+         chr$ = "(" Or 
+         chr$ = "[" Or 
+         chr$ = "{" Or 
+         chr$ = ")" Or 
+         chr$ = "]" Or 
+         chr$ = "}" Or 
+         chr$ = "=" Or 
+         chr$ = "'" Or 
+         ; chr$ = ~"\"" Or 
+         chr$ = "+" Or 
+         chr$ = "-" Or 
+         chr$ = "*" Or 
+         chr$ = "/" Or 
+         chr$ = "." Or 
+         chr$ = ","
+         start = i + 1
+         Break
+      EndIf
+   Next i
+   
+   For i = caret + 1 To len 
+      chr$ = Mid( text$, i, 1 )
+      If chr$ = " " Or 
+         chr$ = ")" Or 
+         chr$ = "]" Or 
+         chr$ = "}" Or 
+         chr$ = "(" Or 
+         chr$ = "[" Or 
+         chr$ = "{" Or 
+         chr$ = "=" Or 
+         chr$ = "'" Or 
+         ; chr$ = ~"\"" Or
+         chr$ = "+" Or 
+         chr$ = "-" Or 
+         chr$ = "*" Or 
+         chr$ = "/" Or 
+         chr$ = "." Or 
+         chr$ = "," 
+         stop = i - start 
+         Break
+      EndIf
+   Next i
+   
+   If stop
+      ; Debug #PB_Compiler_Procedure +" ["+ start +" "+ stop +"]"
+      ProcedureReturn Mid( text$, start, stop )
+   EndIf
+EndProcedure
+
+;\\ Macro edit_row_caret_1_( _this_ ): _this_\text\caret\pos[3]: EndMacro
       
       Macro edit_string_x_( _this_, _mode_ )
          ( row_x_( _this_, _this_\__lines( ) ) + _this_\__lines( )\text\edit#_mode_\x )
@@ -17176,6 +17263,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      ;
                      ; text change
+                     *this\text\caret\word = GetWord( *this\LineFocused( )\text\string, *this\LineFocused( )\text\len, *this\text\caret\pos[1]-*this\LineFocused( )\text\pos )
                      DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
                   EndIf
                EndIf
@@ -19822,6 +19910,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\LinePressedIndex( )            = *this\LineEntered( )\lindex ;????
                            *this\LineEntered( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineEntered( )\text\pos
                            
+                           ;
+                           *this\text\caret\word = GetWord( *this\LineEntered( )\text\string, *this\LineEntered( )\text\len, *this\text\caret\pos )
                            ;
                            edit_sel_reset_( *this )
                            
@@ -24808,9 +24898,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17198
-; FirstLine = 15439
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv--------------------------------f------------f202084v3-f4-----------------------------------------------------------------------------------------------4-4--+-H5----04------------------------------------------------------------------------v-----------4-0------8---8-4---------------f------------------------t---v8-----------+------f--------+-+-v-v----------------------------------------+---------------------------0----------------------------------------------------------------------384--Zw----fr----------
+; CursorPosition = 8540
+; FirstLine = 7851
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv--------------------------------f------------f202084v3-f4-----------------------------------------------------------------------------------------------4-4--+-H5----04--------------------------------------------------------------------------0-----------+v------f---f--+---------------8-----------------------v0---d-----------4-------8-------4-4--0-0---------------------------------------4---------------------------v----------------------------------------------------------------------4e-+-PD+----b0---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

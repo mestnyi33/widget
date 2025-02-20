@@ -15,6 +15,7 @@ UsePNGImageDecoder( )
 ; test_delete = 1
 ; test_focus_show = 1
 ; test_focus_set = 1
+; test_changecursor = 1
 
 ;
 ;- ENUMs
@@ -629,7 +630,7 @@ Procedure Properties_Updates( *object._s_WIDGET, type$ )
    
    ;\\
    If type$ <> "Focus"
-      Debug find$ +" ? "+ replace$
+      ; Debug find$ +" ? "+ replace$
       name$ = GetClass( *object ) + " = " + ClassFromType( Type( *object) )
       
       Define code$ = GetText( ide_design_DEBUG )
@@ -985,7 +986,7 @@ Procedure$  GetWord( text$, len, caret ) ; Ok
    EndIf
 EndProcedure
 
-Procedure$  GetArgument( text$, len, caret, mode.a = 0 ) 
+Procedure$  GetArgumentString( text$, len, caret, mode.a = 0 ) 
    Protected i, chr$, start = - 1, stop 
    
    For i = caret To 0 Step - 1
@@ -1024,6 +1025,47 @@ Procedure$  GetArgument( text$, len, caret, mode.a = 0 )
    Else
       ; Debug #PB_Compiler_Procedure +" ["+ start +" "+ stop +"]"
       ProcedureReturn Mid( text$, start, stop )
+   EndIf
+EndProcedure
+
+Procedure  GetArgumentIndex( text$, len, caret, mode.a = 0 ) 
+   Protected i, chr$, start = - 1, stop 
+   
+   For i = caret To 0 Step - 1
+      chr$ = Mid( text$, i, 1 )
+      If chr$ = "(" 
+         start = i
+         Break
+      EndIf
+   Next i
+   
+   For i = caret + 1 To len 
+      chr$ = Mid( text$, i, 1 )
+      If chr$ = ")"
+         stop = i - start + 1
+         Break
+      EndIf
+   Next i
+  
+   If mode
+      If start = - 1 
+         If stop 
+            For i = len To 0 Step - 1
+               chr$ = Mid( text$, i, 1 )
+               If chr$ = "(" 
+                  start = i
+                  stop - start - 1
+                  Break
+               EndIf
+            Next i
+         EndIf
+      EndIf  
+   EndIf
+
+   If start = - 1 Or stop = 0
+      ProcedureReturn 0
+   Else
+      ProcedureReturn CountString( Left( Mid( text$, start, stop ), caret - start ), "," ) + 1
    EndIf
 EndProcedure
 
@@ -1101,22 +1143,20 @@ Procedure CodeReplace( *this._s_WIDGET, *object._s_WIDGET, string$, caret )
          If countstring
             replace$ = StringField( replace$, 2, "(" )
          Else
-            If CountString( Left( string$, caret ), "=" )
+             If CountString( Left( string$, caret ), "=" )
                countstring =- 1
                replace$ = ""
             Else
                replace$ = StringField( replace$, 1, "(" )
                replace$ = StringField( replace$, 1, "=" )
-               replace$ = StringField( replace$, 2, " ")
-              ; replace$ = GetWord( string$, Len(string$), caret ) 
-      
-       
             EndIf
-         EndIf
+           ; replace$ = *this\text\caret\word
+            Debug ""+caret +" "+ "www "+replace$ ; Left( string$, caret )
+           EndIf
       EndIf
       
       replace$ = Trim( replace$ )
-      
+         
       If replace$
          If *this = ide_design_DEBUG
             If countstring
@@ -1126,7 +1166,71 @@ Procedure CodeReplace( *this._s_WIDGET, *object._s_WIDGET, string$, caret )
          
          ; Debug " "+countstring +" ? "+ replace$ ; +" @ "+ string$
          
-         ChangeArgument( *this, *object, countstring, replace$ )
+         Select countstring
+;             Case 0 
+;                find$ = GetClass( *object )
+;                
+;                ; caret update
+;                If  keyboard( )\key
+;                   caret = GetCaret( *this )
+;                   Define count = CountString( Left( GetText( *this ), caret), find$ )
+;                   
+;                   If keyboard( )\key = #PB_Shortcut_Back
+;                      SetCaret( *this, caret - count )
+;                   Else
+;                      SetCaret( *this, caret + count )
+;                   EndIf
+;                EndIf
+;                
+;                ;
+;                SetClass( *object, replace$ )
+;                ;
+;                Properties_Updates( *object, "Class" )
+;                
+;             Case 1                              ; id
+;             Case 2,3,4,5 
+;                If is_window_( *object )
+;                   find$ + Str( X( *object, #__c_container ) ) + ", " + 
+;                           Str( Y( *object, #__c_container ) ) + ", " + 
+;                           Str( Width( *object, #__c_inner ) ) + ", " + 
+;                           Str( Height( *object, #__c_inner ) )
+;                Else
+;                   find$ = Str( X( *object ) ) +", "+ 
+;                           Str( Y( *object ) ) +", "+
+;                           Str( Width( *object ) ) +", "+ 
+;                           Str( Height( *object ) )
+;                EndIf
+;                ;
+;                If is_window_( *object )
+;                   Select countstring
+;                      Case 2 : Resize( *object, Val( replace$ ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;                      Case 3 : Resize( *object, #PB_Ignore, Val( replace$ ), #PB_Ignore, #PB_Ignore)
+;                      Case 4 : Resize( *object, #PB_Ignore, #PB_Ignore, Val( replace$ )+145, #PB_Ignore)
+;                      Case 5 : Resize( *object, #PB_Ignore, #PB_Ignore, #PB_Ignore, Val( replace$ )+48)
+;                   EndSelect
+;                Else
+;                   Select countstring
+;                      Case 2 : Resize( *object, Val( replace$ ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;                      Case 3 : Resize( *object, #PB_Ignore, Val( replace$ ), #PB_Ignore, #PB_Ignore)
+;                      Case 4 : Resize( *object, #PB_Ignore, #PB_Ignore, Val( replace$ ), #PB_Ignore)
+;                      Case 5 : Resize( *object, #PB_Ignore, #PB_Ignore, #PB_Ignore, Val( replace$ ))
+;                   EndSelect
+;                EndIf
+;                
+;             Case 6 
+;                find$ = GetText( *object )  
+;                ; 
+;                replace$ = StringField( replace$, 1, ")" )
+;                replace$ = Trim( replace$ )
+;                replace$ = Trim( replace$, Chr('"') )
+;                ;
+;                SetText( *object, replace$ ) 
+;                ;
+;                Properties_Updates( *object, "Text" )
+;                
+         EndSelect
+         
+         ChangeArgument( *this, *object, countstring, replace$ ) ;*this\text\caret\word )       
       EndIf
    EndIf
    
@@ -1155,15 +1259,16 @@ Procedure CodeAddLine( *new._s_widget, Name$, item.i, SubLevel.i )
 EndProcedure
 
 Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
-   Static object  
-   Protected argument, name$
+   Static argument, object  
+   Protected name$
    
    ;
    If event = #__event_Up
       *this\text\numeric = 0 
       *this\text\editable = 0 
       
-      name$ = GetWord( *line\text\string, *line\text\len, *this\text\caret\pos ) 
+      name$ = *this\text\caret\word ; GetWord( *line\text\string, *line\text\len, *this\text\caret\pos[1] - *line\text\pos ) 
+      
       If name$
          object = ObjectFromClass( ide_design_panel_MDI, name$ )
          If Not object
@@ -1180,7 +1285,27 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
       
       ;
       If object
-         argument = CodeReplace( *this, object, *line\text\string, *this\text\caret\pos )
+         
+         ;argument =  CountString( Left( *line\text\string, *this\text\caret\pos[1] - *line\text\pos ), "," ) + 1 
+         argument = GetArgumentIndex( *line\text\string, *line\text\len, *this\text\caret\pos[1] - *line\text\pos ) 
+         name$ = *this\text\caret\word
+         If name$ <> GetClass( object )
+            If CountString( *line\text\string, "(" )
+               name$ = Trim( StringField( *line\text\string, 1, "(" ))
+               name$ = GetWord( name$, Len( name$ ), Len( name$ ) ) 
+            EndIf
+         EndIf
+         If argument
+            If name$ = ClassFromType( Type( object ))
+               argument + 1
+            EndIf
+            If name$ = GetClass( object )
+               argument - 1
+            EndIf
+         EndIf
+         Debug "?"+ argument +" "+ name$
+         
+         ;argument = CodeReplace( *this, object, *line\text\string, *this\text\caret\pos[1] - *line\text\pos )
          
          If argument > 1
             If argument < 6 ; coordinate
@@ -1189,20 +1314,18 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
             *this\text\editable = 1 
          EndIf
          
-         If GetClass( object ) = GetWord( *line\text\string, *line\text\len, *this\text\caret\pos )
+         If GetClass( object ) = *this\text\caret\word ; GetWord( *line\text\string, *line\text\len, *this\text\caret\pos[1] - *line\text\pos )
             *this\text\editable = 1
             *this\text\upper = 1 
          Else
             *this\text\upper = 0 
          EndIf
-         ;       Else
-         ;          *this\text\editable = 0 
       EndIf
       
       If *this\text\editable
-         SetBackgroundColor( *this, $CD9CC3A6 )
+         *line\color\back[1] = *this\color\back[1]
       Else
-         SetBackgroundColor( *this, $CD9CC3EE )
+         *line\color\back[1] = $CD9CC3EE
       EndIf
       
     EndIf
@@ -1210,9 +1333,13 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
    ;
    If event = #__event_Change
       If object
+         ;Debug *this\text\caret\word
          ;
-         CodeReplace( *this, object, *line\text\string, *this\text\caret\pos )
-         ; ChangeArgument( *this, object, 0, GetWord( *line\text\string, *line\text\len, *this\text\caret\pos )  )
+         ;Debug *this\text\caret\word
+         CodeReplace( *this, object, *line\text\string, *this\text\caret\pos[1] - *line\text\pos )
+         ;Debug argument
+         ;  ChangeArgument( *this, object, argument, *this\text\caret\word ) 
+         ;ChangeArgument( *this, object, argument, GetWord( *line\text\string, *line\text\len, *this\text\caret\pos[1] - *line\text\pos )  )
       EndIf
    EndIf
 EndProcedure
@@ -2659,9 +2786,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1202
-; FirstLine = 1034
-; Folding = -------------------d--+---------------------------
+; CursorPosition = 17
+; Folding = -------------------------f---------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

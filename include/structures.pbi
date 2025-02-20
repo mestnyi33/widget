@@ -187,6 +187,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CARET
       Structure _s_CARET Extends _s_COORDINATE
+         word.s ; слово под кареткой
          pos.i[3]
          
          ; mode.i
@@ -766,8 +767,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 554
-; FirstLine = 552
+; CursorPosition = 190
+; FirstLine = 187
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
