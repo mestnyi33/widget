@@ -12535,11 +12535,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\countitems       = 0
                *this\text\string      = ""
                ;          
-               If *this\text\editable
-                  *this\edit_caret_1( )     = 0
-                  *this\edit_caret_2( )     = 0
-                  *this\LinePressedIndex( ) = 0
-               EndIf
+               *this\edit_caret_1( )     = 0
+               *this\edit_caret_2( )     = 0
+               *this\LinePressedIndex( ) = 0
                ;
                *this\WidgetChange( )   = - 1
                *this\TextChange( )     = - 1
@@ -16987,7 +16985,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                Protected sel_width = *this\inner_width( ) - *this\text\y * 2
                Protected text_sel_width = e_rows( )\text\edit[2]\width
                
-               If *this\text\editable
                   ; Draw lines
                   ; Если для итема установили задный
                   ; фон отличный от заднего фона едитора
@@ -17016,7 +17013,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         draw_roundbox_( Text_x, Y, e_rows( )\text\width, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\back[1] )
                      EndIf
                   EndIf
-               EndIf
                
                ; Draw text string
                draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -17212,14 +17208,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ; Draw caret
-               If *this\text\editable 
+               ;If *this\text\editable 
                   If *this\focus = 2
                      ; If *this\edit_caret_0( ) >= 0
                      draw_mode_( #PB_2DDrawing_XOr )
                      draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
                      ; EndIf
                   EndIf
-               EndIf
+               ;EndIf
                
                ; Draw frames
                If *this\notify
@@ -24812,9 +24808,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8235
-; FirstLine = 7687
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv--------------------------------f------------f202084v3-f4-----------------------------------------------------------------------------------------------4-4--+-H5----04------------------------------------------------------------------------f-----------v-8------4---4-v----------------+----------------------------u-----------4-------8-------4-4--0-0---------------------------------------4---------------------------v----------------------------------------------------------------------4e-+-PD+----b0---------
+; CursorPosition = 17198
+; FirstLine = 15439
+; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv--------------------------------f------------f202084v3-f4-----------------------------------------------------------------------------------------------4-4--+-H5----04------------------------------------------------------------------------v-----------4-0------8---8-4---------------f------------------------t---v8-----------+------f--------+-+-v-v----------------------------------------+---------------------------0----------------------------------------------------------------------384--Zw----fr----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
