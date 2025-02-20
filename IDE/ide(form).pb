@@ -1107,7 +1107,7 @@ Procedure CodeReplace( *this._s_WIDGET, *object._s_WIDGET, string$, caret )
             Else
                replace$ = StringField( replace$, 1, "(" )
                replace$ = StringField( replace$, 1, "=" )
-               ; replace$ = StringField( replace$, 2, " ")
+               replace$ = StringField( replace$, 2, " ")
               ; replace$ = GetWord( string$, Len(string$), caret ) 
       
        
@@ -1198,6 +1198,13 @@ Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
          ;       Else
          ;          *this\text\editable = 0 
       EndIf
+      
+      If *this\text\editable
+         SetBackgroundColor( *this, $CD9CC3A6 )
+      Else
+         SetBackgroundColor( *this, $CD9CC3EE )
+      EndIf
+      
     EndIf
    
    ;
@@ -2652,9 +2659,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1162
-; FirstLine = 956
-; Folding = -------------------d--++--------------------------
+; CursorPosition = 1202
+; FirstLine = 1034
+; Folding = -------------------d--+---------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
