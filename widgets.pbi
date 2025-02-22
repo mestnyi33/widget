@@ -461,7 +461,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro ThumbChange( ): thumb\change: EndMacro ; temp
       Macro BarChange( ): bar\change: EndMacro     ; temp
       Macro ResizeChange( ): Resize\change: EndMacro      ; temp
-      Macro WidgetChange( ): change: EndMacro      ; temp
+      Macro WidgetChange( ): change: EndMacro             ; temp
       
       ;-\\
       ; Macro Firstroot( ): firstroot: EndMacro
@@ -1852,9 +1852,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             _this_\text\vertical = constants::BinaryFlag( _flag_, #__text_Vertical )
             
             If constants::BinaryFlag( _flag_, #__flag_Textwordwrap )
-               _this_\text\multiLine = - 1
-            ElseIf constants::BinaryFlag( _flag_, #__flag_Textmultiline )
                _this_\text\multiLine = 1
+            ElseIf constants::BinaryFlag( _flag_, #__flag_Textmultiline )
+               _this_\text\multiLine = - 1
             Else
                _this_\text\multiLine = 0
             EndIf
@@ -8241,151 +8241,151 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ then move and size parent
          ;\\ resize all children's
-            If *this\type <> #__type_Splitter
-               If *this\haschildren 
-                  ;Debug *this\class
-                  Protected pw, ph
-                  Protected piw, pih
-                  
-                  If StartEnum( *this )
-                     If widget( )\parent <> *this
-                        ; widget( )\resize\clip = #True
-                        Continue
-                     EndIf
-                     ;
-                     If Not is_scrollbars_( widget( ))
-                        If widget( )\align
-                           ;                            If is_root_( widget( )\parent )
-                           ;                               piw = DPIUnScaledX(widget( )\parent\inner_width( ))
-                           ;                               pih = DPIUnScaledY(widget( )\parent\inner_height( ))
-                           ;                            Else
-                           piw = (widget( )\parent\inner_width( ))
-                           pih = (widget( )\parent\inner_height( ))
-                           ;                            EndIf
-                           
-                           ;\\
-                           If widget( )\parent\align
-                              pw = ( piw - widget( )\parent\align\width )
-                              ph = ( pih - widget( )\parent\align\height )
-                           EndIf
-                           
-                           ;\\
-                           ;\\ horizontal
-                           ;\\
-                           If widget( )\align\left > 0
-                              X = widget( )\align\x
-                              If widget( )\align\right < 0
-                                 If widget( )\align\left = 0
-                                    X + pw / 2
-                                 EndIf
-                                 Width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - X
-                              EndIf
-                           EndIf
-                           If Not widget( )\align\right
-                              Width = widget( )\align\width
-                              
-                              If Not widget( )\align\left
-                                 X = widget( )\align\x
-                                 If widget( )\align\left = 0
-                                    X + pw / 2
-                                 EndIf
-                                 Width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - X
-                              EndIf
-                           EndIf
-                           If widget( )\align\right > 0
-                              X = widget( )\align\x
-                              If widget( )\align\left < 0
-                                 ;\\ ( left = proportional & right = 1 )
-                                 X     = widget( )\align\x + pw / 2
-                                 Width = (( widget( )\align\x + widget( )\align\width ) + pw ) - X
-                              Else
-                                 If widget( )\align\left = 0
-                                    X + pw
-                                 EndIf
-                                 Width = (( widget( )\align\x + widget( )\align\width ) + pw ) - X
-                              EndIf
-                           EndIf
-                           ;\\ horizontal proportional
-                           If ( widget( )\align\left < 0 And widget( )\align\right <= 0 ) Or
-                              ( widget( )\align\right < 0 And widget( )\align\left <= 0 )
-                              Protected ScaleX.d = piw / widget( )\parent\align\width
-                              Width = ScaleX * widget( )\align\width
-                              ;\\ center proportional
-                              If widget( )\align\left < 0 And widget( )\align\right < 0
-                                 X = ( piw - Width ) / 2
-                              ElseIf widget( )\align\left < 0 And widget( )\align\right = 0
-                                 ;\\ right proportional
-                                 X = piw - ( widget( )\parent\align\width - widget( )\align\x - widget( )\align\width ) - Width
-                              ElseIf ( widget( )\align\right < 0 And widget( )\align\left = 0 )
-                                 ;\\ left proportional
-                                 X = widget( )\align\x
-                              EndIf
-                           EndIf
-                           
-                           ;\\
-                           ;\\ vertical
-                           ;\\
-                           If widget( )\align\top > 0
-                              Y = widget( )\align\y
-                              If widget( )\align\bottom < 0
-                                 If widget( )\align\top = 0
-                                    Y + ph / 2
-                                 EndIf
-                                 Height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - Y
-                              EndIf
-                           EndIf
-                           If Not widget( )\align\bottom
-                              Height = widget( )\align\height
-                              
-                              If Not widget( )\align\top
-                                 Y = widget( )\align\y
-                                 If widget( )\align\top = 0
-                                    Y + ph / 2
-                                 EndIf
-                                 Height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - Y
-                              EndIf
-                           EndIf
-                           If widget( )\align\bottom > 0
-                              Y = widget( )\align\y
-                              If widget( )\align\top < 0
-                                 ;\\ ( top = proportional & bottom = 1 )
-                                 Y      = widget( )\align\y + ph / 2
-                                 Height = (( widget( )\align\y + widget( )\align\height ) + ph ) - Y
-                              Else
-                                 If widget( )\align\top = 0
-                                    Y + ph
-                                 EndIf
-                                 Height = (( widget( )\align\y + widget( )\align\height ) + ph ) - Y
-                              EndIf
-                           EndIf
-                           ;\\ vertical proportional
-                           If ( widget( )\align\top < 0 And widget( )\align\bottom <= 0 ) Or
-                              ( widget( )\align\bottom < 0 And widget( )\align\top <= 0 )
-                              Protected ScaleY.d = pih / widget( )\parent\align\height
-                              Height = ScaleY * widget( )\align\height
-                              ;\\ center proportional
-                              If widget( )\align\top < 0 And widget( )\align\bottom < 0
-                                 Y = ( pih - Height ) / 2
-                              ElseIf widget( )\align\top < 0 And widget( )\align\bottom = 0
-                                 ;\\ bottom proportional
-                                 Y = pih - ( widget( )\parent\align\height - widget( )\align\y - widget( )\align\height ) - Height
-                              ElseIf ( widget( )\align\bottom < 0 And widget( )\align\top = 0 )
-                                 ;\\ top proportional
-                                 Y = widget( )\align\y
-                              EndIf
-                           EndIf
-                           
-                           Resize( widget( ), (X), (Y), (Width), (Height), 0 )
-                        Else
-                           Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                        EndIf
-                     EndIf
-                     ;
-                     StopEnum( )
+         If *this\type <> #__type_Splitter
+            If *this\haschildren 
+               ;Debug *this\class
+               Protected pw, ph
+               Protected piw, pih
+               
+               If StartEnum( *this )
+                  If widget( )\parent <> *this
+                     ; widget( )\resize\clip = #True
+                     Continue
                   EndIf
-                  
+                  ;
+                  If Not is_scrollbars_( widget( ))
+                     If widget( )\align
+                        ;                            If is_root_( widget( )\parent )
+                        ;                               piw = DPIUnScaledX(widget( )\parent\inner_width( ))
+                        ;                               pih = DPIUnScaledY(widget( )\parent\inner_height( ))
+                        ;                            Else
+                        piw = (widget( )\parent\inner_width( ))
+                        pih = (widget( )\parent\inner_height( ))
+                        ;                            EndIf
+                        
+                        ;\\
+                        If widget( )\parent\align
+                           pw = ( piw - widget( )\parent\align\width )
+                           ph = ( pih - widget( )\parent\align\height )
+                        EndIf
+                        
+                        ;\\
+                        ;\\ horizontal
+                        ;\\
+                        If widget( )\align\left > 0
+                           X = widget( )\align\x
+                           If widget( )\align\right < 0
+                              If widget( )\align\left = 0
+                                 X + pw / 2
+                              EndIf
+                              Width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - X
+                           EndIf
+                        EndIf
+                        If Not widget( )\align\right
+                           Width = widget( )\align\width
+                           
+                           If Not widget( )\align\left
+                              X = widget( )\align\x
+                              If widget( )\align\left = 0
+                                 X + pw / 2
+                              EndIf
+                              Width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - X
+                           EndIf
+                        EndIf
+                        If widget( )\align\right > 0
+                           X = widget( )\align\x
+                           If widget( )\align\left < 0
+                              ;\\ ( left = proportional & right = 1 )
+                              X     = widget( )\align\x + pw / 2
+                              Width = (( widget( )\align\x + widget( )\align\width ) + pw ) - X
+                           Else
+                              If widget( )\align\left = 0
+                                 X + pw
+                              EndIf
+                              Width = (( widget( )\align\x + widget( )\align\width ) + pw ) - X
+                           EndIf
+                        EndIf
+                        ;\\ horizontal proportional
+                        If ( widget( )\align\left < 0 And widget( )\align\right <= 0 ) Or
+                           ( widget( )\align\right < 0 And widget( )\align\left <= 0 )
+                           Protected ScaleX.d = piw / widget( )\parent\align\width
+                           Width = ScaleX * widget( )\align\width
+                           ;\\ center proportional
+                           If widget( )\align\left < 0 And widget( )\align\right < 0
+                              X = ( piw - Width ) / 2
+                           ElseIf widget( )\align\left < 0 And widget( )\align\right = 0
+                              ;\\ right proportional
+                              X = piw - ( widget( )\parent\align\width - widget( )\align\x - widget( )\align\width ) - Width
+                           ElseIf ( widget( )\align\right < 0 And widget( )\align\left = 0 )
+                              ;\\ left proportional
+                              X = widget( )\align\x
+                           EndIf
+                        EndIf
+                        
+                        ;\\
+                        ;\\ vertical
+                        ;\\
+                        If widget( )\align\top > 0
+                           Y = widget( )\align\y
+                           If widget( )\align\bottom < 0
+                              If widget( )\align\top = 0
+                                 Y + ph / 2
+                              EndIf
+                              Height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - Y
+                           EndIf
+                        EndIf
+                        If Not widget( )\align\bottom
+                           Height = widget( )\align\height
+                           
+                           If Not widget( )\align\top
+                              Y = widget( )\align\y
+                              If widget( )\align\top = 0
+                                 Y + ph / 2
+                              EndIf
+                              Height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - Y
+                           EndIf
+                        EndIf
+                        If widget( )\align\bottom > 0
+                           Y = widget( )\align\y
+                           If widget( )\align\top < 0
+                              ;\\ ( top = proportional & bottom = 1 )
+                              Y      = widget( )\align\y + ph / 2
+                              Height = (( widget( )\align\y + widget( )\align\height ) + ph ) - Y
+                           Else
+                              If widget( )\align\top = 0
+                                 Y + ph
+                              EndIf
+                              Height = (( widget( )\align\y + widget( )\align\height ) + ph ) - Y
+                           EndIf
+                        EndIf
+                        ;\\ vertical proportional
+                        If ( widget( )\align\top < 0 And widget( )\align\bottom <= 0 ) Or
+                           ( widget( )\align\bottom < 0 And widget( )\align\top <= 0 )
+                           Protected ScaleY.d = pih / widget( )\parent\align\height
+                           Height = ScaleY * widget( )\align\height
+                           ;\\ center proportional
+                           If widget( )\align\top < 0 And widget( )\align\bottom < 0
+                              Y = ( pih - Height ) / 2
+                           ElseIf widget( )\align\top < 0 And widget( )\align\bottom = 0
+                              ;\\ bottom proportional
+                              Y = pih - ( widget( )\parent\align\height - widget( )\align\y - widget( )\align\height ) - Height
+                           ElseIf ( widget( )\align\bottom < 0 And widget( )\align\top = 0 )
+                              ;\\ top proportional
+                              Y = widget( )\align\y
+                           EndIf
+                        EndIf
+                        
+                        Resize( widget( ), (X), (Y), (Width), (Height), 0 )
+                     Else
+                        Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     EndIf
+                  EndIf
+                  ;
+                  StopEnum( )
                EndIf
+               
             EndIf
+         EndIf
          
          ;
          ProcedureReturn *this\root\repaint
@@ -8434,7 +8434,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
          EndIf
          If Not Y < 0
-           
+            
          EndIf
       EndProcedure
       
@@ -10393,7 +10393,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ChangeCurrentElement( widgets( ), *this\address )
                      MoveElement( widgets( ), #PB_List_After, *last\address )
                      widgets( )\layer = ListIndex( widgets( ) )
-                  
+                     
                      If *this\haschildren
                         While NextElement( widgets( ))
                            If IsChild( widgets( ), *this )
@@ -11235,12 +11235,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure UpdateAlign( *this._s_WIDGET )
          If *this\parent And *this\parent\align
             ;If Not *this\parent\align\width
-               *this\parent\align\x     = *this\parent\container_x( )
-               *this\parent\align\width = *this\parent\inner_width( )
+            *this\parent\align\x     = *this\parent\container_x( )
+            *this\parent\align\width = *this\parent\inner_width( )
             ;EndIf
             ;If Not *this\parent\align\height
-               *this\parent\align\y      = *this\parent\container_y( )
-               *this\parent\align\height = *this\parent\inner_height( )
+            *this\parent\align\y      = *this\parent\container_y( )
+            *this\parent\align\height = *this\parent\inner_height( )
             ;EndIf
             
             *this\align\x = *this\container_x( )
@@ -11471,19 +11471,19 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\parent
             If Not *this\parent\align
                *this\parent\align.allocate( ALIGN )
-                             
                
-;               ;\\ ?-надо тестировать
-;                If Not *this\parent\align\width
-                  *this\parent\align\x     = *this\parent\container_x( )
-                  *this\parent\align\width = *this\parent\inner_width( )
-;                EndIf
-;                If Not *this\parent\align\height
-                  *this\parent\align\y      = *this\parent\container_y( )
-                  *this\parent\align\height = *this\parent\inner_height( )
-;                EndIf
-;                
-
+               
+               ;               ;\\ ?-надо тестировать
+               ;                If Not *this\parent\align\width
+               *this\parent\align\x     = *this\parent\container_x( )
+               *this\parent\align\width = *this\parent\inner_width( )
+               ;                EndIf
+               ;                If Not *this\parent\align\height
+               *this\parent\align\y      = *this\parent\container_y( )
+               *this\parent\align\height = *this\parent\inner_height( )
+               ;                EndIf
+               ;                
+               
             EndIf
             
             If Not *this\align
@@ -11532,7 +11532,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\align\bottom = 0
                EndIf
                
-              ;\\
+               ;\\
                ; Debug ""+mode +" - "+ left+" "+top+" "+right+" "+bottom
                If mode = 0
                   *this\align\x = *this\container_x( )
@@ -13196,92 +13196,92 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       ;-  EDIT STRING
-     Procedure$  GetQuote( text$, len, caret ) ; Ok
-   Protected i, chr$, start, stop 
-   
-   For i = caret To 0 Step - 1
-      chr$ = Mid( text$, i, 1 )
-      If chr$ = ~"\"" 
-         start = i
+      Procedure$  GetQuote( text$, len, caret ) ; Ok
+         Protected i, chr$, start, stop 
          
-         For i = caret + 1 To len 
+         For i = caret To 0 Step - 1
             chr$ = Mid( text$, i, 1 )
-            If chr$ = ~"\""
-               stop = i - start + 1
-               Break 2
+            If chr$ = ~"\"" 
+               start = i
+               
+               For i = caret + 1 To len 
+                  chr$ = Mid( text$, i, 1 )
+                  If chr$ = ~"\""
+                     stop = i - start + 1
+                     Break 2
+                  EndIf
+               Next i
+               
+               Break
             EndIf
          Next i
          
-         Break
-      EndIf
-   Next i
-   
-   If stop 
-      ; Debug #PB_Compiler_Procedure +" ["+ start +" "+ stop +"]"
-      ProcedureReturn Mid( text$, start, stop )
-   EndIf
-EndProcedure
- Procedure$  GetWord( text$, len, caret ) ; Ok
-   Protected i, chr$, start = 0, stop = len
-   
-   chr$ = GetQuote( text$, len, caret ) 
-   If chr$
-      ProcedureReturn chr$
-   EndIf
-   
-   For i = caret To 0 Step - 1
-      chr$ = Mid( text$, i, 1 )
-      If chr$ = " " Or 
-         chr$ = "(" Or 
-         chr$ = "[" Or 
-         chr$ = "{" Or 
-         chr$ = ")" Or 
-         chr$ = "]" Or 
-         chr$ = "}" Or 
-         chr$ = "=" Or 
-         chr$ = "'" Or 
-         ; chr$ = ~"\"" Or 
-         chr$ = "+" Or 
-         chr$ = "-" Or 
-         chr$ = "*" Or 
-         chr$ = "/" Or 
-         chr$ = "." Or 
-         chr$ = ","
-         start = i + 1
-         Break
-      EndIf
-   Next i
-   
-   For i = caret + 1 To len 
-      chr$ = Mid( text$, i, 1 )
-      If chr$ = " " Or 
-         chr$ = ")" Or 
-         chr$ = "]" Or 
-         chr$ = "}" Or 
-         chr$ = "(" Or 
-         chr$ = "[" Or 
-         chr$ = "{" Or 
-         chr$ = "=" Or 
-         chr$ = "'" Or 
-         ; chr$ = ~"\"" Or
-         chr$ = "+" Or 
-         chr$ = "-" Or 
-         chr$ = "*" Or 
-         chr$ = "/" Or 
-         chr$ = "." Or 
-         chr$ = "," 
-         stop = i - start 
-         Break
-      EndIf
-   Next i
-   
-   If stop
-      ; Debug #PB_Compiler_Procedure +" ["+ start +" "+ stop +"]"
-      ProcedureReturn Mid( text$, start, stop )
-   EndIf
-EndProcedure
-
-;\\ Macro edit_row_caret_1_( _this_ ): _this_\text\caret\pos[3]: EndMacro
+         If stop 
+            ; Debug #PB_Compiler_Procedure +" ["+ start +" "+ stop +"]"
+            ProcedureReturn Mid( text$, start, stop )
+         EndIf
+      EndProcedure
+      Procedure$  GetWord( text$, len, caret ) ; Ok
+         Protected i, chr$, start = 0, stop = len
+         
+         chr$ = GetQuote( text$, len, caret ) 
+         If chr$
+            ProcedureReturn chr$
+         EndIf
+         
+         For i = caret To 0 Step - 1
+            chr$ = Mid( text$, i, 1 )
+            If chr$ = " " Or 
+               chr$ = "(" Or 
+               chr$ = "[" Or 
+               chr$ = "{" Or 
+               chr$ = ")" Or 
+               chr$ = "]" Or 
+               chr$ = "}" Or 
+               chr$ = "=" Or 
+               chr$ = "'" Or 
+               ; chr$ = ~"\"" Or 
+               chr$ = "+" Or 
+chr$ = "-" Or 
+chr$ = "*" Or 
+chr$ = "/" Or 
+chr$ = "." Or 
+chr$ = ","
+               start = i + 1
+               Break
+            EndIf
+         Next i
+         
+         For i = caret + 1 To len 
+            chr$ = Mid( text$, i, 1 )
+            If chr$ = " " Or 
+               chr$ = ")" Or 
+               chr$ = "]" Or 
+               chr$ = "}" Or 
+               chr$ = "(" Or 
+               chr$ = "[" Or 
+               chr$ = "{" Or 
+               chr$ = "=" Or 
+               chr$ = "'" Or 
+               ; chr$ = ~"\"" Or
+               chr$ = "+" Or 
+chr$ = "-" Or 
+chr$ = "*" Or 
+chr$ = "/" Or 
+chr$ = "." Or 
+chr$ = "," 
+               stop = i - start 
+               Break
+            EndIf
+         Next i
+         
+         If stop
+            ; Debug #PB_Compiler_Procedure +" ["+ start +" "+ stop +"]"
+            ProcedureReturn Mid( text$, start, stop )
+         EndIf
+      EndProcedure
+      
+      ;\\ Macro edit_row_caret_1_( _this_ ): _this_\text\caret\pos[3]: EndMacro
       
       Macro edit_string_x_( _this_, _mode_ )
          ( row_x_( _this_, _this_\__lines( ) ) + _this_\__lines( )\text\edit#_mode_\x )
@@ -13730,70 +13730,167 @@ EndProcedure
       EndProcedure
       
       ;-
-      Procedure.b edit_key_insert_text( *this._s_WIDGET, Chr.s )
-         Protected result.b, String.s, Count.i
+      Procedure edit_key_change_text( *this._s_WIDGET, Chr.s = "" ) ; Ok
+         Protected key = keyboard( )\key
          
-         If *this\notify
-            ProcedureReturn 0
-         EndIf
          If Not *this\text\editable
             ProcedureReturn 0
          EndIf
-         
-         Chr.s = edit_make_insert_text( *this, Chr.s)
+         If Not *this\LineFocused( )
+            ProcedureReturn 0
+         EndIf
          
          If Chr.s
-            If *this\LineFocused( )
-               If *this\edit_caret_1( ) > *this\edit_caret_2( )
-                  *this\edit_caret_1( ) = *this\edit_caret_2( )
+            Chr.s = edit_make_insert_text( *this, Chr.s)
+            
+            If Chr.s
+               If *this\LineFocused( )
+                  ; *this\text\edit\string = Chr.s
+                  
+                  If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                     *this\edit_caret_1( ) = *this\edit_caret_2( )
+                  EndIf
+                  
+                  *this\edit_caret_1( ) + Len( Chr.s )
+                  *this\edit_caret_2( ) = *this\edit_caret_1( )
+                  
+                  If *this\text\edit[2]\len
+                     If *this\edit_caret_2( ) > *this\LineFocused( )\text\pos
+                        Debug "bug insert "
+                        *this\LinePressedIndex( ) - CountString( *this\text\edit[2]\string, #LF$) 
+                     EndIf
+                  EndIf
+                  ;
+                  If *this\LineFocusedIndex( ) > *this\LinePressedIndex( )
+                     *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
+                  EndIf
+                  ;                
+                  *this\LineFocusedIndex( ) + CountString( Chr.s, #LF$)
+                  *this\LinePressedIndex( ) = *this\LineFocusedIndex( )
+                  
+                  
+                  ;  Debug ""+ *this\LineFocusedIndex( ) +" "+ *this\LinePressedIndex( ) +" "+ *this\LineFocused( )\lindex
+                  
+                  ;                *this\text\edit[2]\len = 0
+                  ;                *this\text\edit[2]\string.s = ""
+                  
+                  ;                *this\text\edit[1]\len + Len( Chr.s )
+                  ;                *this\text\edit[1]\string.s + Chr.s
+                  ;                               
+                  ;                *this\text\len = *this\text\edit[1]\len + *this\text\edit[3]\len
+                  ;                *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
+                  
+                  *this\text\string.s = *this\text\edit[1]\string + Chr.s + *this\text\edit[3]\string
+                  
+                  ;result             = 1
+                  
+                  *this\TextChange( ) =- 99
+                  
+                  *this\LineFocused( ) = 0
+                  *this\LinePressed( ) = 0
+                  *this\LineEntered( ) = 0
+                  
+                  *this\root\repaint = 1
                EndIf
-               
-               *this\edit_caret_1( ) + Len( Chr.s )
-               *this\edit_caret_2( ) = *this\edit_caret_1( )
-               
+            Else
+               *this\notify = 1
+            EndIf
+         Else
+            If key = #PB_Shortcut_X
                If *this\text\edit[2]\len
-                  If *this\edit_caret_1( ) > *this\LineFocused( )\text\pos
-                     Debug "bug insert "
-                     *this\LinePressedIndex( ) - CountString( *this\text\edit[2]\string, #LF$) 
+                  If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                     *this\edit_caret_1( ) = *this\edit_caret_2( )
+                  Else
+                     *this\edit_caret_2( ) = *this\edit_caret_1( )
+                  EndIf
+               Else
+                  *this\notify = key
+               EndIf
+            EndIf
+            
+            ; key_backup
+            If key = #PB_Shortcut_Back
+               If *this\text\edit[1]\string
+                  If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                     *this\edit_caret_1( ) = *this\edit_caret_2( )
+                  EndIf
+                  If Not *this\text\edit[2]\len
+                     *this\text\edit[1]\string = Left( *this\text\edit[1]\string, *this\text\edit[1]\len - 1 )
+                     *this\edit_caret_1( ) - 1
+                  EndIf
+                  *this\edit_caret_2( )    = *this\edit_caret_1( )
+               Else
+                  *this\notify = key
+               EndIf
+            EndIf
+            
+            ; key_delete
+            If key = #PB_Shortcut_Delete
+               If *this\text\edit[3]\string
+                  If Not *this\text\edit[2]\len
+                     *this\text\edit[3]\string = Right( *this\text\edit[3]\string, *this\text\edit[3]\len - 1 )
+                  EndIf
+                  ;
+                  If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                     *this\edit_caret_1( ) = *this\edit_caret_2( )
+                  Else
+                     *this\edit_caret_2( ) = *this\edit_caret_1( )
+                  EndIf
+               Else
+                  *this\notify = key
+               EndIf
+            EndIf
+            
+            If key = #PB_Shortcut_Return
+               If *this\text\multiline
+                  ; *this\text\edit\string = #LF$
+                  ;
+                  If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                     *this\edit_caret_1( ) = *this\edit_caret_2( )
+                  EndIf
+                  *this\edit_caret_1( )    + Len( #LF$ )
+                  *this\edit_caret_2( )    = *this\edit_caret_1( )
+               Else
+                  *this\notify = key
+               EndIf
+            EndIf
+            
+            ;
+            If Not *this\notify
+               If key = #PB_Shortcut_Return
+                  *this\text\string.s = *this\text\edit[1]\string + #LF$ + *this\text\edit[3]\string
+                  ;
+                  If *this\LinePressedIndex( ) > *this\LineFocused( )\lindex
+                     *this\LinePressedIndex( ) = *this\LineFocused( )\lindex + 1
+                  Else
+                     *this\LinePressedIndex( ) + 1
+                  EndIf
+               Else
+                  *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
+                  ;
+                  If *this\text\edit[2]\len
+                     If *this\LinePressedIndex( ) > *this\LineFocused( )\lindex
+                        *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
+                     EndIf
+                  Else
+                     If *this\edit_caret_2( ) < *this\LineFocused( )\text\pos
+                        *this\LinePressedIndex( ) - 1
+                     EndIf
                   EndIf
                EndIf
                ;
-               If *this\LineFocusedIndex( ) > *this\LinePressedIndex( )
-                  *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
-               EndIf
-               ;                
-               *this\LineFocusedIndex( ) + CountString( Chr.s, #LF$)
-               *this\LinePressedIndex( ) = *this\LineFocusedIndex( )
-               
-               
-               ;  Debug ""+ *this\LineFocusedIndex( ) +" "+ *this\LinePressedIndex( ) +" "+ *this\LineFocused( )\lindex
-               
-               ;                *this\text\edit[2]\len = 0
-               ;                *this\text\edit[2]\string.s = ""
-               
-               ;                *this\text\edit[1]\len + Len( Chr.s )
-               ;                *this\text\edit[1]\string.s + Chr.s
-               ;                               
-               ;                *this\text\len = *this\text\edit[1]\len + *this\text\edit[3]\len
-               ;                *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
-               
-               *this\text\string.s = *this\text\edit[1]\string + Chr.s + *this\text\edit[3]\string
-               
-               ;result             = 1
-               
+               *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
+               ;
                *this\TextChange( ) =- 99
-               
-               *this\LineFocused( ) = 0
-               *this\LinePressed( ) = 0
+               ;
                *this\LineEntered( ) = 0
+               *this\LinePressed( ) = 0
+               *this\LineFocused( ) = 0
                
-               *this\root\repaint = 1
+               ProcedureReturn - 1
             EndIf
-         Else
-            *this\notify = 1
-         EndIf
-         
-         ProcedureReturn result
+            
+         EndIf  
       EndProcedure
       
       Procedure edit_key_page_up_down_( *this._s_WIDGET, wheel, index_select_row )
@@ -13937,106 +14034,6 @@ EndProcedure
          ProcedureReturn result
       EndProcedure
       
-      Procedure edit_key_remove( *this._s_WIDGET, key ) ; Ok
-         If Not *this\text\editable
-            ProcedureReturn 0
-         EndIf
-         If Not *this\LineFocused( )
-            ProcedureReturn 0
-         EndIf
-         
-         If key = #PB_Shortcut_X
-            If *this\text\edit[2]\len
-               If *this\edit_caret_1( ) > *this\edit_caret_2( )
-                  *this\edit_caret_1( ) = *this\edit_caret_2( )
-               Else
-                  *this\edit_caret_2( ) = *this\edit_caret_1( )
-               EndIf
-            Else
-               *this\notify = key
-            EndIf
-         EndIf
-         
-         ; key_backup
-         If key = #PB_Shortcut_Back
-            If *this\text\edit[1]\string
-               If *this\edit_caret_1( ) > *this\edit_caret_2( )
-                  *this\edit_caret_1( ) = *this\edit_caret_2( )
-               EndIf
-               If Not *this\text\edit[2]\len
-                  *this\text\edit[1]\string = Left( *this\text\edit[1]\string, *this\text\edit[1]\len - 1 )
-                  *this\edit_caret_1( ) - 1
-               EndIf
-               *this\edit_caret_2( )    = *this\edit_caret_1( )
-            Else
-               *this\notify = key
-            EndIf
-         EndIf
-         
-         ; key_delete
-         If key = #PB_Shortcut_Delete
-            If *this\text\edit[3]\string
-               If Not *this\text\edit[2]\len
-                  *this\text\edit[3]\string = Right( *this\text\edit[3]\string, *this\text\edit[3]\len - 1 )
-               EndIf
-               ;
-               If *this\edit_caret_1( ) > *this\edit_caret_2( )
-                  *this\edit_caret_1( ) = *this\edit_caret_2( )
-               Else
-                  *this\edit_caret_2( ) = *this\edit_caret_1( )
-               EndIf
-            Else
-               *this\notify = key
-            EndIf
-         EndIf
-         
-         If key = #PB_Shortcut_Return
-            If *this\text\multiline
-               If *this\edit_caret_1( ) > *this\edit_caret_2( )
-                  *this\edit_caret_1( ) = *this\edit_caret_2( )
-               EndIf
-               *this\edit_caret_1( )    + Len( #LF$ )
-               *this\edit_caret_2( )    = *this\edit_caret_1( )
-            Else
-               *this\notify = key
-            EndIf
-         EndIf
-         
-         ;
-         If Not *this\notify
-            If key = #PB_Shortcut_Return
-               *this\text\string.s = *this\text\edit[1]\string + #LF$ + *this\text\edit[3]\string
-               ;
-               If *this\LinePressedIndex( ) > *this\LineFocused( )\lindex
-                  *this\LinePressedIndex( ) = *this\LineFocused( )\lindex + 1
-               Else
-                  *this\LinePressedIndex( ) + 1
-               EndIf
-            Else
-               *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
-               ;
-               If *this\text\edit[2]\len
-                  If *this\LinePressedIndex( ) > *this\LineFocused( )\lindex
-                     *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
-                  EndIf
-               Else
-                  If *this\edit_caret_1( ) < *this\LineFocused( )\text\pos
-                     *this\LinePressedIndex( ) - 1
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            *this\LineFocusedIndex( ) = *this\LinePressedIndex( )
-            ;
-            *this\TextChange( ) =- 99
-            ;
-            *this\LineEntered( ) = 0
-            *this\LinePressed( ) = 0
-            *this\LineFocused( ) = 0
-            
-            ProcedureReturn - 1
-         EndIf
-      EndProcedure
       
       
       ;-
@@ -14723,8 +14720,8 @@ EndProcedure
                EndIf
                
             Case #__type_Button
-               If constants::BinaryFlag( Flag, #__flag_Textwordwrap ) 
-                  flags & ~ #__flag_Textwordwrap
+               If constants::BinaryFlag( Flag, #__flag_TextMultiLine ) 
+                  flags & ~ #__flag_TextMultiLine
                   flag | #PB_Button_MultiLine
                EndIf
                If constants::BinaryFlag( Flag, #__text_Left ) 
@@ -14829,7 +14826,7 @@ EndProcedure
             Case #__type_Button ; ok
                If constants::BinaryFlag( Flag, #PB_Button_MultiLine ) 
                   flags & ~ #PB_Button_MultiLine
-                  flags | #__flag_Textwordwrap
+                  flags | #__flag_TextMultiLine
                EndIf
                If constants::BinaryFlag( Flag, #PB_Button_Left ) 
                   flags & ~ #PB_Button_Left
@@ -17072,34 +17069,34 @@ EndProcedure
                Protected sel_width = *this\inner_width( ) - *this\text\y * 2
                Protected text_sel_width = e_rows( )\text\edit[2]\width
                
-                  ; Draw lines
-                  ; Если для итема установили задный
-                  ; фон отличный от заднего фона едитора
-                  If e_rows( )\color\back
-                     ;                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                     ;                     draw_roundbox_( sel_x,Y,sel_width ,e_rows( )\height, e_rows( )\round,e_rows( )\round, e_rows( )\color\back[0] )
-                     
-                     If *this\color\back And
-                        *this\color\back <> e_rows( )\color\back
-                        ; Draw margin back color
-                        If *this\MarginLine( )\width > 0
-                           ; то рисуем вертикальную линию на границе поля нумерации и начало итема
-                           draw_mode_alpha_( #PB_2DDrawing_Default )
-                           draw_box_( *this\MarginLine( )\x, e_rows( )\y, *this\MarginLine( )\width, e_rows( )\height, *this\MarginLine( )\color\back )
-                           Line( *this\inner_x( ) + *this\MarginLine( )\width, e_rows( )\y, 1, e_rows( )\height, *this\color\back ) ; $FF000000 );
-                        EndIf
-                     EndIf
-                  EndIf
+               ; Draw lines
+               ; Если для итема установили задный
+               ; фон отличный от заднего фона едитора
+               If e_rows( )\color\back
+                  ;                     draw_mode_alpha_( #PB_2DDrawing_Default )
+                  ;                     draw_roundbox_( sel_x,Y,sel_width ,e_rows( )\height, e_rows( )\round,e_rows( )\round, e_rows( )\color\back[0] )
                   
-                  ;\\
-                  If *this\focus = 2
-                     If e_rows( ) = *this\LinePressed( ) Or 
-                        e_rows( ) = *this\LineFocused( )
-                        
+                  If *this\color\back And
+                     *this\color\back <> e_rows( )\color\back
+                     ; Draw margin back color
+                     If *this\MarginLine( )\width > 0
+                        ; то рисуем вертикальную линию на границе поля нумерации и начало итема
                         draw_mode_alpha_( #PB_2DDrawing_Default )
-                        draw_roundbox_( Text_x, Y, e_rows( )\text\width, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\back[1] )
+                        draw_box_( *this\MarginLine( )\x, e_rows( )\y, *this\MarginLine( )\width, e_rows( )\height, *this\MarginLine( )\color\back )
+                        Line( *this\inner_x( ) + *this\MarginLine( )\width, e_rows( )\y, 1, e_rows( )\height, *this\color\back ) ; $FF000000 );
                      EndIf
                   EndIf
+               EndIf
+               
+               ;\\
+               If *this\focus = 2
+                  If e_rows( ) = *this\LinePressed( ) Or 
+                     e_rows( ) = *this\LineFocused( )
+                     
+                     draw_mode_alpha_( #PB_2DDrawing_Default )
+                     draw_roundbox_( Text_x, Y, e_rows( )\text\width, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\back[1] )
+                  EndIf
+               EndIf
                
                ; Draw text string
                draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -17212,15 +17209,11 @@ EndProcedure
                ;
                ; then change text update cursor pos
                If *this\text\editable And *this\TextChange( ) =- 99 And *this\LineFocusedIndex( ) >= 0
-                  ;
                   Update_DrawText( *this, #True )
                   
                   If *this\LineFocused( )
                      ;                      *this\LineEntered( ) = *this\LineFocused( )
                      ;                      *this\LinePressed( ) = *this\LineFocused( )
-                     
-                     edit_sel_string_( *this, *this\LineFocused( ) )
-                     edit_sel_text_( *this, *this\LineFocused( ) )
                      
                      If test_edit_text
                         Debug "----- " + *this\text\string
@@ -17265,6 +17258,24 @@ EndProcedure
                      ; text change
                      *this\text\caret\word = GetWord( *this\LineFocused( )\text\string, *this\LineFocused( )\text\len, *this\text\caret\pos[1]-*this\LineFocused( )\text\pos )
                      DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
+                     
+                     ;                      If *this\edit_caret_1( ) > *this\edit_caret_2( )
+                     ;                         *this\edit_caret_1( ) = *this\edit_caret_2( )
+                     ;                      EndIf
+                     ;                      If keyboard( )\key = #PB_Shortcut_Back
+                     ;                         If Not *this\text\edit[2]\len
+                     ;                            *this\edit_caret_1( ) - 1
+                     ;                         EndIf
+                     ;                      Else
+                     ;                         If *this\text\edit\string
+                     ;                            *this\edit_caret_1( ) + Len( *this\text\edit\string )
+                     ;                            *this\text\edit\string = ""
+                     ;                         EndIf
+                     ;                      EndIf
+                     ;                      *this\edit_caret_2( ) = *this\edit_caret_1( )
+                     
+                     edit_sel_string_( *this, *this\LineFocused( ) )
+                     edit_sel_text_( *this, *this\LineFocused( ) )
                   EndIf
                EndIf
                
@@ -17297,12 +17308,12 @@ EndProcedure
                
                ; Draw caret
                ;If *this\text\editable 
-                  If *this\focus = 2
-                     ; If *this\edit_caret_0( ) >= 0
-                     draw_mode_( #PB_2DDrawing_XOr )
-                     draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
-                     ; EndIf
-                  EndIf
+               If *this\focus = 2
+                  ; If *this\edit_caret_0( ) >= 0
+                  draw_mode_( #PB_2DDrawing_XOr )
+                  draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
+                  ; EndIf
+               EndIf
                ;EndIf
                
                ; Draw frames
@@ -17320,7 +17331,7 @@ EndProcedure
                If *this\WidgetChange( ) : *this\WidgetChange( ) = 0 : EndIf
             EndWith
          EndIf
-       
+         
       EndProcedure
       
       Procedure   Draw_Window( *this._s_WIDGET )
@@ -17730,11 +17741,11 @@ EndProcedure
             ;\\ backcolor
             If *this\color\back <> - 1
                draw_mode_alpha_( #PB_2DDrawing_Default )
-;                If *this\fs
-                  draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-;                Else
-;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-;                EndIf
+               ;                If *this\fs
+               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+                                                                                                                                                           ;                Else
+                                                                                                                                                           ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+                                                                                                                                                           ;                EndIf
             EndIf
             
             ;
@@ -18482,8 +18493,8 @@ EndProcedure
                      EndIf
                   EndIf
                   
-                 
-         ;                       
+                  
+                  ;                       
                   StopEnum( )
                EndIf
                ;
@@ -18603,7 +18614,7 @@ EndProcedure
       
       Procedure   ReDraw( *this._s_WIDGET )
          If widget::__gui\DrawingRoot
-           ; Debug " ----REDRAW---- "
+            ; Debug " ----REDRAW---- "
          Else
             widget::StartDraw( *this\root )
          EndIf
@@ -18665,53 +18676,53 @@ EndProcedure
                   *this\text\strpass = *this\text\string
                EndIf
                
-; ;                ;
-;                *this\scroll_width( )  = *this\padding\x * 2
-;                *this\scroll_height( ) = *this\padding\y * 2
-;                
-;                ;                Protected enter_index = - 1: If *this\LineEntered( ): enter_index = *this\LineEntered( )\lindex: *this\LineEntered( ) = #Null: EndIf
-;                ;                Protected focus_index = - 1: If *this\LineFocused( ): focus_index = *this\LineFocused( )\lindex: *this\LineFocused( ) = #Null: EndIf
-;                ;                Protected press_index = - 1: If *this\LinePressed( ): press_index = *this\LinePressed( )\lindex: *this\LinePressed( ) = #Null: EndIf
-;                
-;                *this\text\len = 0;Len(Text.s)
-;                *this\countitems = 0
-;                ClearList( *this\__lines( ))
-;                
-;                Protected String.s = Text.s + #LF$
-;                Protected *str.Character = @String
-;                Protected *end.Character = @String
-;                Protected len = Len( #LF$ )
-;                
-;                While *end\c
-;                   If *end\c = #LF
-;                      LastElement( *this\__lines( ))
-;                      AddElement( *this\__lines( ))
-;                      *this\__lines( )\lindex = ListIndex( *this\__lines( ))
-;                      *this\__lines( )\text\len  = (*end - *str) >> #PB_Compiler_Unicode
-;                      *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
-;                      *this\__lines( )\text\pos = *this\text\len 
-;                      *this\text\len + *this\__lines( )\text\len + len
-;                      *this\countitems + 1
-;                      
-;                      
-;                      ;                      ;
-;                      ;                      If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
-;                      ;                      If focus_index = *this\__lines( )\lindex: *this\LineFocused( ) = *this\__lines( ): EndIf
-;                      ;                      If press_index = *this\__lines( )\lindex: *this\LinePressed( ) = *this\__lines( ): EndIf
-;                      
-;                      *str = *end + #__sOC
-;                   EndIf
-;                   *end + #__sOC
-;                Wend
-;                
-;                ;
-;                *this\text\len - len
+               ; ;                ;
+               ;                *this\scroll_width( )  = *this\padding\x * 2
+               ;                *this\scroll_height( ) = *this\padding\y * 2
+               ;                
+               ;                ;                Protected enter_index = - 1: If *this\LineEntered( ): enter_index = *this\LineEntered( )\lindex: *this\LineEntered( ) = #Null: EndIf
+               ;                ;                Protected focus_index = - 1: If *this\LineFocused( ): focus_index = *this\LineFocused( )\lindex: *this\LineFocused( ) = #Null: EndIf
+               ;                ;                Protected press_index = - 1: If *this\LinePressed( ): press_index = *this\LinePressed( )\lindex: *this\LinePressed( ) = #Null: EndIf
+               ;                
+               ;                *this\text\len = 0;Len(Text.s)
+               ;                *this\countitems = 0
+               ;                ClearList( *this\__lines( ))
+               ;                
+               ;                Protected String.s = Text.s + #LF$
+               ;                Protected *str.Character = @String
+               ;                Protected *end.Character = @String
+               ;                Protected len = Len( #LF$ )
+               ;                
+               ;                While *end\c
+               ;                   If *end\c = #LF
+               ;                      LastElement( *this\__lines( ))
+               ;                      AddElement( *this\__lines( ))
+               ;                      *this\__lines( )\lindex = ListIndex( *this\__lines( ))
+               ;                      *this\__lines( )\text\len  = (*end - *str) >> #PB_Compiler_Unicode
+               ;                      *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
+               ;                      *this\__lines( )\text\pos = *this\text\len 
+               ;                      *this\text\len + *this\__lines( )\text\len + len
+               ;                      *this\countitems + 1
+               ;                      
+               ;                      
+               ;                      ;                      ;
+               ;                      ;                      If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
+               ;                      ;                      If focus_index = *this\__lines( )\lindex: *this\LineFocused( ) = *this\__lines( ): EndIf
+               ;                      ;                      If press_index = *this\__lines( )\lindex: *this\LinePressed( ) = *this\__lines( ): EndIf
+               ;                      
+               ;                      *str = *end + #__sOC
+               ;                   EndIf
+               ;                   *end + #__sOC
+               ;                Wend
+               ;                
+               ;                ;
+               ;                *this\text\len - len
                
-             ;; ReDraw(*this\root)
+               ;; ReDraw(*this\root)
                ;*this\TextChange( )   = 1
                ;*this\WidgetChange( ) = 1
                
-                ;edit_redraw_font( *this )
+               ;edit_redraw_font( *this )
                CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
                   If StartDraw( *this\root ) 
                      If CurrentFontID( )
@@ -19237,7 +19248,7 @@ EndProcedure
                Case #__event_Input ; - Input ( key )
                   If Not keyboard( )\key[1] & #PB_Canvas_Control
                      If keyboard( )\input
-                        edit_key_insert_text( *this, Chr( keyboard( )\input ))
+                        edit_key_change_text( *this, Chr( keyboard( )\input ))
                      EndIf
                   EndIf
                   
@@ -19460,17 +19471,17 @@ EndProcedure
                         
                      Case #PB_Shortcut_Back
                         If Not *this\notify
-                           edit_key_remove( *this, keyboard( )\key )
+                           edit_key_change_text( *this )
                         EndIf
                         
                      Case #PB_Shortcut_Delete
                         If Not *this\notify
-                           edit_key_remove( *this, keyboard( )\key )
+                           edit_key_change_text( *this )
                         EndIf
                         
                      Case #PB_Shortcut_Return   ; Ok
                         If Not *this\notify
-                           edit_key_remove( *this, keyboard( )\key )
+                           edit_key_change_text( *this )
                         EndIf
                         
                         
@@ -19493,7 +19504,7 @@ EndProcedure
                            EndIf
                            
                            If keyboard( )\key = #PB_Shortcut_X
-                              edit_key_remove( *this, keyboard( )\key )
+                              edit_key_change_text( *this )
                            EndIf
                         EndIf
                         
@@ -19509,7 +19520,7 @@ EndProcedure
                                  Text = RemoveString( Text, #LF$ )
                               EndIf
                               
-                              edit_key_insert_text( *this, Text )
+                              edit_key_change_text( *this, Text )
                            EndIf
                         EndIf
                         
@@ -19985,108 +19996,108 @@ EndProcedure
             Select event
                Case #__event_KeyDown
                   If *this\text\editable
-                  Select keyboard( )\key
-                     Case #PB_Shortcut_PageUp
-                        If bar_PageChange( *this\scroll\v, 0 )
-                           *this\WidgetChange( ) = 1
-                           result                = 1
-                        EndIf
-                        
-                     Case #PB_Shortcut_PageDown
-                        If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\end )
-                           *this\WidgetChange( ) = 1
-                           result                = 1
-                        EndIf
-                        
-                     Case #PB_Shortcut_Up,
-                          #PB_Shortcut_Home
-                        If *this\RowFocused( )
-                           If ( keyboard( )\key[1] & #PB_Canvas_Alt ) And
-                              ( keyboard( )\key[1] & #PB_Canvas_Control )
-                              If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - DPIScaled(18) )
-                                 *this\WidgetChange( ) = 1
-                                 result                = 1
-                              EndIf
-                              
-                           ElseIf *this\RowFocused( )\rindex > 0
-                              ; select modifiers key
-                              If ( keyboard( )\key = #PB_Shortcut_Home Or
-                                   ( keyboard( )\key[1] & #PB_Canvas_Alt ))
-                                 SelectElement( *rows( ), 0 )
-                              Else
-                                 ; select prev rows
-                                 If SelectElement( *rows( ), *this\RowFocused( )\rindex - 1 )
-                                    If *rows( )\hide
-                                       While PreviousElement( *rows( ) )
-                                          If Not *rows( )\hide
-                                             Break
-                                          EndIf
-                                       Wend
+                     Select keyboard( )\key
+                        Case #PB_Shortcut_PageUp
+                           If bar_PageChange( *this\scroll\v, 0 )
+                              *this\WidgetChange( ) = 1
+                              result                = 1
+                           EndIf
+                           
+                        Case #PB_Shortcut_PageDown
+                           If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\end )
+                              *this\WidgetChange( ) = 1
+                              result                = 1
+                           EndIf
+                           
+                        Case #PB_Shortcut_Up,
+                             #PB_Shortcut_Home
+                           If *this\RowFocused( )
+                              If ( keyboard( )\key[1] & #PB_Canvas_Alt ) And
+                                 ( keyboard( )\key[1] & #PB_Canvas_Control )
+                                 If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - DPIScaled(18) )
+                                    *this\WidgetChange( ) = 1
+                                    result                = 1
+                                 EndIf
+                                 
+                              ElseIf *this\RowFocused( )\rindex > 0
+                                 ; select modifiers key
+                                 If ( keyboard( )\key = #PB_Shortcut_Home Or
+                                      ( keyboard( )\key[1] & #PB_Canvas_Alt ))
+                                    SelectElement( *rows( ), 0 )
+                                 Else
+                                    ; select prev rows
+                                    If SelectElement( *rows( ), *this\RowFocused( )\rindex - 1 )
+                                       If *rows( )\hide
+                                          While PreviousElement( *rows( ) )
+                                             If Not *rows( )\hide
+                                                Break
+                                             EndIf
+                                          Wend
+                                       EndIf
                                     EndIf
                                  EndIf
+                                 
+                                 ;
+                                 result = SetState( *this, *rows( )\rindex )
                               EndIf
-                              
-                              ;
-                              result = SetState( *this, *rows( )\rindex )
                            EndIf
-                        EndIf
-                        
-                     Case #PB_Shortcut_Down,
-                          #PB_Shortcut_End
-                        If *this\RowFocused( )
+                           
+                        Case #PB_Shortcut_Down,
+                             #PB_Shortcut_End
+                           If *this\RowFocused( )
+                              If ( keyboard( )\key[1] & #PB_Canvas_Alt ) And
+                                 ( keyboard( )\key[1] & #PB_Canvas_Control )
+                                 
+                                 If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + DPIScaled(18) )
+                                    *this\WidgetChange( ) = 1
+                                    result                = 1
+                                 EndIf
+                                 
+                              ElseIf *this\RowFocused( )\rindex < ( *this\countitems - 1 )
+                                 ; select modifiers key
+                                 If ( keyboard( )\key = #PB_Shortcut_End Or
+                                      ( keyboard( )\key[1] & #PB_Canvas_Alt ))
+                                    SelectElement( *rows( ), ( *this\countitems - 1 ))
+                                 Else
+                                    ; select next rows
+                                    If SelectElement( *rows( ), *this\RowFocused( )\rindex + 1 )
+                                       If *rows( )\hide
+                                          While NextElement( *rows( ) )
+                                             If Not *rows( )\hide
+                                                Break
+                                             EndIf
+                                          Wend
+                                       EndIf
+                                    EndIf
+                                 EndIf
+                                 
+                                 ;
+                                 result = SetState( *this, *rows( )\rindex )
+                              EndIf
+                           EndIf
+                           
+                        Case #PB_Shortcut_Left
                            If ( keyboard( )\key[1] & #PB_Canvas_Alt ) And
                               ( keyboard( )\key[1] & #PB_Canvas_Control )
                               
-                              If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + DPIScaled(18) )
+                              If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - ( *this\scroll\h\bar\page\end / DPIScaled(10) ))
                                  *this\WidgetChange( ) = 1
-                                 result                = 1
                               EndIf
+                              result = 1
+                           EndIf
+                           
+                        Case #PB_Shortcut_Right
+                           If ( keyboard( )\key[1] & #PB_Canvas_Alt ) And
+                              ( keyboard( )\key[1] & #PB_Canvas_Control )
                               
-                           ElseIf *this\RowFocused( )\rindex < ( *this\countitems - 1 )
-                              ; select modifiers key
-                              If ( keyboard( )\key = #PB_Shortcut_End Or
-                                   ( keyboard( )\key[1] & #PB_Canvas_Alt ))
-                                 SelectElement( *rows( ), ( *this\countitems - 1 ))
-                              Else
-                                 ; select next rows
-                                 If SelectElement( *rows( ), *this\RowFocused( )\rindex + 1 )
-                                    If *rows( )\hide
-                                       While NextElement( *rows( ) )
-                                          If Not *rows( )\hide
-                                             Break
-                                          EndIf
-                                       Wend
-                                    EndIf
-                                 EndIf
+                              If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos + ( *this\scroll\h\bar\page\end / DPIScaled(10) ))
+                                 *this\WidgetChange( ) = 1
                               EndIf
-                              
-                              ;
-                              result = SetState( *this, *rows( )\rindex )
+                              result = 1
                            EndIf
-                        EndIf
-                        
-                     Case #PB_Shortcut_Left
-                        If ( keyboard( )\key[1] & #PB_Canvas_Alt ) And
-                           ( keyboard( )\key[1] & #PB_Canvas_Control )
                            
-                           If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - ( *this\scroll\h\bar\page\end / DPIScaled(10) ))
-                              *this\WidgetChange( ) = 1
-                           EndIf
-                           result = 1
-                        EndIf
-                        
-                     Case #PB_Shortcut_Right
-                        If ( keyboard( )\key[1] & #PB_Canvas_Alt ) And
-                           ( keyboard( )\key[1] & #PB_Canvas_Control )
-                           
-                           If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos + ( *this\scroll\h\bar\page\end / DPIScaled(10) ))
-                              *this\WidgetChange( ) = 1
-                           EndIf
-                           result = 1
-                        EndIf
-                        
-                  EndSelect
-                  
+                     EndSelect
+                     
                   EndIf
                   
             EndSelect
@@ -21578,8 +21589,8 @@ EndProcedure
                            a_index( )  = #__a_moved
                         EndIf
                      EndIf
-                  
-                  ;
+                     
+                     ;
                      If Not Entered( )\autosize 
                         If mouse( )\steps
                            mouse( )\delta\x + ( mouse( )\delta\x % mouse( )\steps )
@@ -21593,7 +21604,7 @@ EndProcedure
                      EndIf
                   EndIf
                   ;
-                     
+                  
                   If EnteredButton( ) > 0
                      If Not Entered( )\anchors 
                         If Entered( )\bar 
@@ -21601,10 +21612,8 @@ EndProcedure
                            mouse( )\delta\y - Entered( )\bar\thumb\pos
                         EndIf
                      EndIf
-                  
-                  ElseIf Entered( )\autosize 
-                     Debug Entered( )\anchors 
                      
+                  ElseIf Entered( )\autosize 
                      If Entered( )\parent
                         mouse( )\delta\x - Entered( )\parent\container_x( )
                         mouse( )\delta\y - Entered( )\parent\container_y( )
@@ -22379,10 +22388,10 @@ EndProcedure
                If Not is_root_( *this )
                   ;\\ 1 call (current-widget) bind event function
                   ForEach __gui\event\binds( )
-;                      If event = #__event_StatusChange
-;                         Debug ""+__gui\event\binds( )\widget +" "+ __gui\event\binds( )\type +" "+ event +" "+ __gui\event\binds( )\item +" "+ *button
-;                         ; Debug " send StatusChange"
-;                      EndIf
+                     ;                      If event = #__event_StatusChange
+                     ;                         Debug ""+__gui\event\binds( )\widget +" "+ __gui\event\binds( )\type +" "+ event +" "+ __gui\event\binds( )\item +" "+ *button
+                     ;                         ; Debug " send StatusChange"
+                     ;                      EndIf
                      If __gui\event\binds( )\widget = *this And 
                         __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
                         
@@ -22418,7 +22427,7 @@ EndProcedure
                      ForEach __gui\event\binds( )
                         If __gui\event\binds( )\widget = *this\root And 
                            __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                          ; Debug ClassFromEvent(event)
+                           ; Debug ClassFromEvent(event)
                            result = __gui\event\binds( )\function( )
                         EndIf
                      Next
@@ -22464,7 +22473,10 @@ EndProcedure
             If event < 0 
                Define i
                For i = 0 To #__event - 1
-                  If i = #__event_Draw And Not is_root_( *this )
+                  If i = #__event_Draw ; And Not is_root_( *this )
+                     Continue
+                  EndIf
+                  If i = #__event_Resize
                      Continue
                   EndIf
                   
@@ -22529,192 +22541,192 @@ EndProcedure
          EndIf
       EndProcedure
       
-;       Procedure.i Send( *this._s_root, event.l, *button = #PB_All, *data = #Null )
-;          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
-;          
-;          If *this > 0
-;             If __gui\event\exit = 0
-;                Post( *this, event, *button, *data )
-;                
-;             ElseIf __gui\event\exit > 0
-;                If is_bar_( *this )
-;                   If event = #__event_LeftClick Or
-;                      event = #__event_Change
-;                      If *this\TabEntered( )
-;                         *button = *this\TabEntered( )\tindex
-;                      EndIf
-;                   EndIf
-;                   ;
-;                   If *button < 0
-;                      ProcedureReturn 0
-;                   EndIf
-;                EndIf
-;                
-;                ;\\ 
-;                __widget = EventWidget( )
-;                __event   = WidgetEvent( )
-;                __item   = WidgetEventItem( )
-;                __data   = WidgetEventData( )
-;                
-;                ;\\
-;                EventWidget( )     = *this
-;                WidgetEvent( )     = event
-;                WidgetEventItem( ) = *button
-;                WidgetEventData( ) = *data
-;                
-;                ;\\ menu send bind event
-;                If is_bar_( *this ) 
-;                   If *this\popupbar
-;                      While *this\popupbar
-;                         *this = *this\popupbar
-;                      Wend
-;                      EventWidget( )     = *this
-;                   EndIf
-;                EndIf
-;                
-;                ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
-;                
-;                ;
-;                ;\\
-;                If Not is_root_( *this )
-;                   ;\\ 1 call (current-widget) bind event function
-;                   If __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(*button))
-;                      result = __gui\eventhook( )\function( )
-;                   ElseIf __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(#PB_All)) 
-;                      result = __gui\eventhook( )\function( )
-;                   EndIf
-;                   
-;                   ;\\ 2 call (current-widget-window) bind event function
-;                   If result <> #PB_Ignore
-;                      If *this\window 
-;                         If Not is_root_( *this\window )
-;                            If __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(*button)) 
-;                               result = __gui\eventhook( )\function( )
-;                            ElseIf __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(#PB_All)) 
-;                               result = __gui\eventhook( )\function( )
-;                            EndIf
-;                         EndIf
-;                      EndIf
-;                   EndIf
-;                EndIf
-;                
-;                ;\\ 3 call (current-widget-root) bind event function
-;                If result <> #PB_Ignore
-;                   If *this\root
-;                      If __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(*button)) 
-;                         result = __gui\eventhook( )\function( )
-;                      ElseIf __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(#PB_All)) 
-;                         result = __gui\eventhook( )\function( )
-;                      EndIf
-;                   EndIf
-;                EndIf
-;                
-;                ;\\
-;                If event = #__event_Close
-;                   If result <> #PB_Ignore
-;                      Select result
-;                         Case #PB_All
-;                            Free( #PB_All )
-;                            
-;                         Case 0
-;                            Free( *this )
-;                            
-;                      EndSelect
-;                   EndIf
-;                EndIf
-;                
-;                ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
-;                EventWidget( )       = __widget
-;                WidgetEvent( )   = __event
-;                WidgetEventItem( )   = __item
-;                WidgetEventData( )   = __data
-;             EndIf
-;          EndIf
-;          
-;          ProcedureReturn result
-;       EndProcedure
-;       
-;       Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-;          ;
-;          If *this < 0
-;             PushMapPosition(roots( ))
-;             ForEach roots( )
-;                Bind( roots( ), *callback, event, item )
-;             Next
-;             PopMapPosition(roots( ))
-;             ProcedureReturn #PB_All
-;             ;
-;          Else
-;             If event < 0 
-;                Define i
-;                For i = 0 To #__event - 1
-;                   If i = #__event_Draw And Not is_root_( *this )
-;                      Continue
-;                   EndIf
-;                   
-;                   ; set defaul widget events
-;                   Bind( *this, *callback, i, item )
-;                Next
-;                ;
-;             Else
-;                If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
-;                   Debug "eventhook"
-;                   
-;                   If Not __gui\eventhook( )
-;                      Debug "not EVENTHOOK"
-;                      ProcedureReturn 0
-;                   EndIf
-;                Else
-;                   AddMapElement(__gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
-;                   __gui\eventhook.allocate( HOOK, ( ))
-;                EndIf
-;                
-;                __gui\eventhook( )\function = *callback
-;                __gui\eventhook( )\type     = event
-;                __gui\eventhook( )\item     = item
-;                __gui\eventhook( )\widget   = *this
-;                
-;                ; 
-;                If event = #__event_Draw
-;                   *this\binddraw = 1
-;                EndIf
-;                If event = #__event_Resize
-;                   *this\bindresize = 1
-;                EndIf
-;                If event = #__event_CursorChange
-;                   *this\bindcursor = 1
-;                EndIf
-;             EndIf
-;          EndIf
-;          
-;       EndProcedure
-;       
-;       Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-;          If *this < 0
-;             PushMapPosition(roots( ))
-;             ForEach roots( )
-;                Unbind( roots( ), *callback, event, item )
-;             Next
-;             PopMapPosition(roots( ))
-;             ProcedureReturn #PB_All
-;             ;
-;          Else
-;             If event < 0
-;                Define i
-;                For i = 0 To #__event - 1
-;                   Unbind( *this, *callback, i, item )
-;                Next
-;                ;
-;             Else
-;                If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
-;                   If Not ( *callback > 0 And __gui\eventhook( )\function <> *callback )
-;                      DeleteMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
-;                   EndIf
-;                EndIf
-;             EndIf
-;          EndIf
-;       EndProcedure
-;       
+      ;       Procedure.i Send( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+      ;          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
+      ;          
+      ;          If *this > 0
+      ;             If __gui\event\exit = 0
+      ;                Post( *this, event, *button, *data )
+      ;                
+      ;             ElseIf __gui\event\exit > 0
+      ;                If is_bar_( *this )
+      ;                   If event = #__event_LeftClick Or
+      ;                      event = #__event_Change
+      ;                      If *this\TabEntered( )
+      ;                         *button = *this\TabEntered( )\tindex
+      ;                      EndIf
+      ;                   EndIf
+      ;                   ;
+      ;                   If *button < 0
+      ;                      ProcedureReturn 0
+      ;                   EndIf
+      ;                EndIf
+      ;                
+      ;                ;\\ 
+      ;                __widget = EventWidget( )
+      ;                __event   = WidgetEvent( )
+      ;                __item   = WidgetEventItem( )
+      ;                __data   = WidgetEventData( )
+      ;                
+      ;                ;\\
+      ;                EventWidget( )     = *this
+      ;                WidgetEvent( )     = event
+      ;                WidgetEventItem( ) = *button
+      ;                WidgetEventData( ) = *data
+      ;                
+      ;                ;\\ menu send bind event
+      ;                If is_bar_( *this ) 
+      ;                   If *this\popupbar
+      ;                      While *this\popupbar
+      ;                         *this = *this\popupbar
+      ;                      Wend
+      ;                      EventWidget( )     = *this
+      ;                   EndIf
+      ;                EndIf
+      ;                
+      ;                ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
+      ;                
+      ;                ;
+      ;                ;\\
+      ;                If Not is_root_( *this )
+      ;                   ;\\ 1 call (current-widget) bind event function
+      ;                   If __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(*button))
+      ;                      result = __gui\eventhook( )\function( )
+      ;                   ElseIf __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(#PB_All)) 
+      ;                      result = __gui\eventhook( )\function( )
+      ;                   EndIf
+      ;                   
+      ;                   ;\\ 2 call (current-widget-window) bind event function
+      ;                   If result <> #PB_Ignore
+      ;                      If *this\window 
+      ;                         If Not is_root_( *this\window )
+      ;                            If __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(*button)) 
+      ;                               result = __gui\eventhook( )\function( )
+      ;                            ElseIf __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(#PB_All)) 
+      ;                               result = __gui\eventhook( )\function( )
+      ;                            EndIf
+      ;                         EndIf
+      ;                      EndIf
+      ;                   EndIf
+      ;                EndIf
+      ;                
+      ;                ;\\ 3 call (current-widget-root) bind event function
+      ;                If result <> #PB_Ignore
+      ;                   If *this\root
+      ;                      If __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(*button)) 
+      ;                         result = __gui\eventhook( )\function( )
+      ;                      ElseIf __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(#PB_All)) 
+      ;                         result = __gui\eventhook( )\function( )
+      ;                      EndIf
+      ;                   EndIf
+      ;                EndIf
+      ;                
+      ;                ;\\
+      ;                If event = #__event_Close
+      ;                   If result <> #PB_Ignore
+      ;                      Select result
+      ;                         Case #PB_All
+      ;                            Free( #PB_All )
+      ;                            
+      ;                         Case 0
+      ;                            Free( *this )
+      ;                            
+      ;                      EndSelect
+      ;                   EndIf
+      ;                EndIf
+      ;                
+      ;                ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
+      ;                EventWidget( )       = __widget
+      ;                WidgetEvent( )   = __event
+      ;                WidgetEventItem( )   = __item
+      ;                WidgetEventData( )   = __data
+      ;             EndIf
+      ;          EndIf
+      ;          
+      ;          ProcedureReturn result
+      ;       EndProcedure
+      ;       
+      ;       Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
+      ;          ;
+      ;          If *this < 0
+      ;             PushMapPosition(roots( ))
+      ;             ForEach roots( )
+      ;                Bind( roots( ), *callback, event, item )
+      ;             Next
+      ;             PopMapPosition(roots( ))
+      ;             ProcedureReturn #PB_All
+      ;             ;
+      ;          Else
+      ;             If event < 0 
+      ;                Define i
+      ;                For i = 0 To #__event - 1
+      ;                   If i = #__event_Draw And Not is_root_( *this )
+      ;                      Continue
+      ;                   EndIf
+      ;                   
+      ;                   ; set defaul widget events
+      ;                   Bind( *this, *callback, i, item )
+      ;                Next
+      ;                ;
+      ;             Else
+      ;                If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
+      ;                   Debug "eventhook"
+      ;                   
+      ;                   If Not __gui\eventhook( )
+      ;                      Debug "not EVENTHOOK"
+      ;                      ProcedureReturn 0
+      ;                   EndIf
+      ;                Else
+      ;                   AddMapElement(__gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
+      ;                   __gui\eventhook.allocate( HOOK, ( ))
+      ;                EndIf
+      ;                
+      ;                __gui\eventhook( )\function = *callback
+      ;                __gui\eventhook( )\type     = event
+      ;                __gui\eventhook( )\item     = item
+      ;                __gui\eventhook( )\widget   = *this
+      ;                
+      ;                ; 
+      ;                If event = #__event_Draw
+      ;                   *this\binddraw = 1
+      ;                EndIf
+      ;                If event = #__event_Resize
+      ;                   *this\bindresize = 1
+      ;                EndIf
+      ;                If event = #__event_CursorChange
+      ;                   *this\bindcursor = 1
+      ;                EndIf
+      ;             EndIf
+      ;          EndIf
+      ;          
+      ;       EndProcedure
+      ;       
+      ;       Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
+      ;          If *this < 0
+      ;             PushMapPosition(roots( ))
+      ;             ForEach roots( )
+      ;                Unbind( roots( ), *callback, event, item )
+      ;             Next
+      ;             PopMapPosition(roots( ))
+      ;             ProcedureReturn #PB_All
+      ;             ;
+      ;          Else
+      ;             If event < 0
+      ;                Define i
+      ;                For i = 0 To #__event - 1
+      ;                   Unbind( *this, *callback, i, item )
+      ;                Next
+      ;                ;
+      ;             Else
+      ;                If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
+      ;                   If Not ( *callback > 0 And __gui\eventhook( )\function <> *callback )
+      ;                      DeleteMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
+      ;                   EndIf
+      ;                EndIf
+      ;             EndIf
+      ;          EndIf
+      ;       EndProcedure
+      ;       
       ;-
       Procedure.i CloseList( )
          Protected *open._s_WIDGET
@@ -23325,120 +23337,120 @@ EndProcedure
                         EndIf
                      EndIf
                   EndIf
-               
+                  
                   If widgets( )\root\haschildren > 0
-                        widgets( )\root\haschildren - 1
-                        If widgets( )\parent <> widgets( )\root
-                           widgets( )\parent\haschildren - 1
-                        EndIf
-                        
-                        If widgets( )\tabbar
-                           If widgets( )\tabbar = widgets( )
-                              If test_delete
-                                 Debug "   free - tab " + widgets( )\tabbar\class
-                              EndIf
-                              FreeStructure( widgets( )\tabbar )
-                              widgets( )\tabbar = 0
-                           EndIf
-                           widgets( )\tabbar = #Null
-                        EndIf
-                        
-                        If widgets( )\scroll
-                           If widgets( )\scroll\v
-                              If test_delete
-                                 Debug "   free - scroll-v " + widgets( )\scroll\v\class
-                              EndIf
-                              FreeStructure( widgets( )\scroll\v )
-                              widgets( )\scroll\v = 0
-                           EndIf
-                           If widgets( )\scroll\h
-                              If test_delete
-                                 Debug "   free scroll-h - " + widgets( )\scroll\h\class
-                              EndIf
-                              FreeStructure( widgets( )\scroll\h )
-                              widgets( )\scroll\h = 0
-                           EndIf
-                           ; widgets( )\scroll = #Null
-                        EndIf
-                        
-                        If widgets( )\type = #__type_Splitter
-                           If widgets( )\split_1( ) > 0
-                              If test_delete
-                                 Debug "   free - splitter - first " + widgets( )\split_1( )\class
-                              EndIf
-                              FreeStructure( widgets( )\split_1( ) )
-                              widgets( )\split_1( ) = 0
-                           EndIf
-                           If widgets( )\split_2( ) > 0
-                              If test_delete
-                                 Debug "   free - splitter - second " + widgets( )\split_2( )\class
-                              EndIf
-                              FreeStructure( widgets( )\split_2( ) )
-                              widgets( )\split_2( ) = 0
-                           EndIf
-                        EndIf
-                        
-                        If widgets( )\bounds\attach
-                           ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
-                           widgets( )\bounds\attach\parent = 0
-                           FreeStructure( widgets( )\bounds\attach )
-                           widgets( )\bounds\attach = #Null
-                        EndIf
-                        
-                        If test_delete
-                           Debug " free - " + widgets( )\class
-                        EndIf
-                        
-                        ;\\
-                        If GetActive( ) = widgets( )
-                           GetActive( ) = 0
-                           If is_root_( *this )
-                              
-                           Else
-                              If *this\BeforeWidget( )
-                                 SetActive( *this\BeforeWidget( ) )
-                              Else
-                                 If Not SetActive( *this\parent )
-                                    GetActive( ) = *this\parent
-                                 EndIf
-                              EndIf
-                           EndIf
-                           
-                           If test_focus_set
-                              If keyboard( )\deactive
-                                 Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
-                              EndIf
-                           EndIf
-                        EndIf
-                        
-                        ;\\ remove count types
-                        CountType( widgets( ), - 1 )
-                        
-                        ;\\
-                        If widgets( )\BeforeWidget( )
-                           widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
-                        EndIf
-                        If widgets( )\AfterWidget( )
-                           widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
-                        EndIf
-                        If *this\FirstWidget( ) = widgets( )
-                           *this\FirstWidget( ) = *this
-                        EndIf
-                        If *this\LastWidget( ) = widgets( )
-                           *this\LastWidget( ) = *this
-                        EndIf
-                        
-                        ;\\
-                        If Pressed( ) = widgets( )
-                           Pressed( ) = #Null
-                        EndIf
-                        
-                        ;\\
-                        widgets( )\parent  = #Null
-                        widgets( )\address = #Null
-                        
-                        DeleteElement( widgets( ), 1 )
+                     widgets( )\root\haschildren - 1
+                     If widgets( )\parent <> widgets( )\root
+                        widgets( )\parent\haschildren - 1
                      EndIf
+                     
+                     If widgets( )\tabbar
+                        If widgets( )\tabbar = widgets( )
+                           If test_delete
+                              Debug "   free - tab " + widgets( )\tabbar\class
+                           EndIf
+                           FreeStructure( widgets( )\tabbar )
+                           widgets( )\tabbar = 0
+                        EndIf
+                        widgets( )\tabbar = #Null
+                     EndIf
+                     
+                     If widgets( )\scroll
+                        If widgets( )\scroll\v
+                           If test_delete
+                              Debug "   free - scroll-v " + widgets( )\scroll\v\class
+                           EndIf
+                           FreeStructure( widgets( )\scroll\v )
+                           widgets( )\scroll\v = 0
+                        EndIf
+                        If widgets( )\scroll\h
+                           If test_delete
+                              Debug "   free scroll-h - " + widgets( )\scroll\h\class
+                           EndIf
+                           FreeStructure( widgets( )\scroll\h )
+                           widgets( )\scroll\h = 0
+                        EndIf
+                        ; widgets( )\scroll = #Null
+                     EndIf
+                     
+                     If widgets( )\type = #__type_Splitter
+                        If widgets( )\split_1( ) > 0
+                           If test_delete
+                              Debug "   free - splitter - first " + widgets( )\split_1( )\class
+                           EndIf
+                           FreeStructure( widgets( )\split_1( ) )
+                           widgets( )\split_1( ) = 0
+                        EndIf
+                        If widgets( )\split_2( ) > 0
+                           If test_delete
+                              Debug "   free - splitter - second " + widgets( )\split_2( )\class
+                           EndIf
+                           FreeStructure( widgets( )\split_2( ) )
+                           widgets( )\split_2( ) = 0
+                        EndIf
+                     EndIf
+                     
+                     If widgets( )\bounds\attach
+                        ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
+                        widgets( )\bounds\attach\parent = 0
+                        FreeStructure( widgets( )\bounds\attach )
+                        widgets( )\bounds\attach = #Null
+                     EndIf
+                     
+                     If test_delete
+                        Debug " free - " + widgets( )\class
+                     EndIf
+                     
+                     ;\\
+                     If GetActive( ) = widgets( )
+                        GetActive( ) = 0
+                        If is_root_( *this )
+                           
+                        Else
+                           If *this\BeforeWidget( )
+                              SetActive( *this\BeforeWidget( ) )
+                           Else
+                              If Not SetActive( *this\parent )
+                                 GetActive( ) = *this\parent
+                              EndIf
+                           EndIf
+                        EndIf
+                        
+                        If test_focus_set
+                           If keyboard( )\deactive
+                              Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
+                           EndIf
+                        EndIf
+                     EndIf
+                     
+                     ;\\ remove count types
+                     CountType( widgets( ), - 1 )
+                     
+                     ;\\
+                     If widgets( )\BeforeWidget( )
+                        widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
+                     EndIf
+                     If widgets( )\AfterWidget( )
+                        widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
+                     EndIf
+                     If *this\FirstWidget( ) = widgets( )
+                        *this\FirstWidget( ) = *this
+                     EndIf
+                     If *this\LastWidget( ) = widgets( )
+                        *this\LastWidget( ) = *this
+                     EndIf
+                     
+                     ;\\
+                     If Pressed( ) = widgets( )
+                        Pressed( ) = #Null
+                     EndIf
+                     
+                     ;\\
+                     widgets( )\parent  = #Null
+                     widgets( )\address = #Null
+                     
+                     DeleteElement( widgets( ), 1 )
+                  EndIf
                   
                   If *this\root\haschildren = 0
                      Break
@@ -23983,10 +23995,10 @@ EndProcedure
          
          ;\\
          SetLayeredWindow( *message\root\canvas\window, igOpaque )
-;          If StartDrawing( CanvasOutput( *message\root\canvas\gadget ))
-;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
-;             StopDrawing( )
-;          EndIf
+         ;          If StartDrawing( CanvasOutput( *message\root\canvas\gadget ))
+         ;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
+         ;             StopDrawing( )
+         ;          EndIf
          SetBackgroundColor( *message\root, igOpaque )
          ;\\
          ; ReDraw( *parent )
@@ -24898,9 +24910,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8540
-; FirstLine = 7851
-; Folding = --9------------------------------------------------------------------------------------------------------------------------------------------------------fv--------------------------------f------------f202084v3-f4-----------------------------------------------------------------------------------------------4-4--+-H5----04--------------------------------------------------------------------------0-----------+v------f---f--+---------------8-----------------------v0---d-----------4-------8-------4-4--0-0---------------------------------------4---------------------------v----------------------------------------------------------------------4e-+-PD+----b0---------
+; CursorPosition = 24881
+; FirstLine = 24870
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

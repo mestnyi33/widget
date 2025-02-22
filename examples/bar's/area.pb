@@ -45,6 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
       Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
+      Bind( root( ), _callback_, #__event_Draw )
       Bind( root( ), _callback_ )
    EndMacro
    
@@ -395,7 +396,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 68
+; CursorPosition = 48
+; FirstLine = 45
 ; Folding = ---------
 ; EnableXP

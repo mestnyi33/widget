@@ -1,7 +1,7 @@
 ﻿;- 
 #IDE_path = "../"
-XIncludeFile #IDE_path + "/widgets.pbi"
-XIncludeFile #IDE_path + "/include/newcreate/anchorbox.pbi"
+XIncludeFile #IDE_path + "widgets.pbi"
+XIncludeFile #IDE_path + "include/newcreate/anchorbox.pbi"
 XIncludeFile #IDE_path + "IDE/include/parser.pbi"
 XIncludeFile #IDE_path + "IDE/ide(code).pb"
 ;
@@ -114,7 +114,7 @@ Global ide_inspector_view_splitter,
 
 Global group_select
 Global group_drag
-
+Global ide_editable_text$
 
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
 
@@ -136,10 +136,10 @@ Procedure.s BoolToStr( val )
    EndIf
 EndProcedure
 
-Procedure StrToBool( str.s )
-   If str = "True"
+Procedure StrToBool( STR.s )
+   If STR = "True"
       ProcedureReturn 1
-   ElseIf str = "False"
+   ElseIf STR = "False"
       ProcedureReturn 0
    EndIf
 EndProcedure
@@ -156,6 +156,362 @@ Procedure is_parent_item( *this._s_WIDGET, item )
 EndProcedure
 
 ;-
+Procedure$ MakeFlagString( type$, flag.q ) ; 
+   Protected result$
+   
+   Select type$
+      Case "Window"
+         If flag & #PB_Window_SystemMenu
+            flag &~ #PB_Window_SystemMenu
+            result$ + " #PB_Window_SystemMenu |"
+         EndIf
+         If flag & #PB_Window_SizeGadget
+            ;flag &~ #PB_Window_SizeGadget
+            result$ + " #PB_Window_SizeGadget |"
+         EndIf
+         If flag & #PB_Window_ScreenCentered
+            result$ + " #PB_Window_ScreenCentered |"
+         EndIf
+         If flag & #PB_Window_Invisible
+            result$ + " #PB_Window_Invisible |"
+         EndIf
+;          If flag & #PB_Window_MaximizeGadget
+;             ;flag &~ #PB_Window_MaximizeGadget
+;             result$ + " #PB_Window_MaximizeGadget |"
+;          EndIf
+;          If flag & #PB_Window_MinimizeGadget
+;             ;flag &~ #PB_Window_MinimizeGadget
+;             result$ + " #PB_Window_MinimizeGadget |"
+;          EndIf
+;          If flag & #PB_Window_NoActivate = #PB_Window_NoActivate
+;             result$ + " #PB_Window_NoActivate |"
+;          EndIf
+         If flag & #PB_Window_BorderLess
+            result$ + " #PB_Window_BorderLess |"
+         EndIf
+         If flag & #PB_Window_NoGadgets
+            result$ + " #PB_Window_NoGadgets |"
+         EndIf
+         If flag & #PB_Window_TitleBar = #PB_Window_TitleBar
+            result$ + " #PB_Window_TitleBar |"
+         EndIf
+            If flag & #PB_Window_Tool 
+            result$ + " #PB_Window_Tool |"
+         EndIf
+         If flag & #PB_Window_WindowCentered
+            result$ + " #PB_Window_WindowCentered |"
+         EndIf
+         
+      Case "Text"
+         If flag & #__Text_Center
+            result$ + " #PB_Text_Center |"
+         EndIf
+         If flag & #__Text_Right
+            result$ + " #PB_Button_Right |"
+         EndIf
+         If flag & #__flag_BorderFlat
+            result$ + " #PB_Text_Border |"
+         EndIf
+         
+      Case "Button"
+         If flag
+            If flag & #PB_Button_Left
+               result$ + " #PB_Button_Left |"
+            EndIf
+            If flag & #PB_Button_Right
+               result$ + " #PB_Button_Right |"
+            EndIf
+            If flag & #PB_Button_MultiLine
+               result$ + " #PB_Button_MultiLine |"
+            EndIf
+            If flag & #PB_Button_Toggle
+               result$ + " #PB_Button_Toggle |"
+            EndIf
+            If flag & #PB_Button_Default
+               result$ + " #PB_Button_Default |"
+            EndIf
+            
+            If flag & #__text_Left = #__text_Left
+               result$ + " #PB_Button_Left |"
+            EndIf
+            If flag & #__text_Right = #__text_Right
+               result$ + " #PB_Button_Right |"
+            EndIf
+            If flag & #__flag_TextMultiLine = #__flag_TextMultiLine
+               result$ + " #PB_Button_MultiLine |"
+            EndIf
+            If flag & #__flag_TextWordWrap = #__flag_TextWordWrap
+               result$ + " #PB_Button_MultiLine |"
+            EndIf
+            If flag & #__flag_ButtonToggle = #__flag_ButtonToggle
+               result$ + " #PB_Button_Toggle |"
+            EndIf
+            If flag & #__flag_ButtonDefault = #__flag_ButtonDefault
+               result$ + " #PB_Button_Default |"
+            EndIf
+         EndIf
+         
+      Case "Container"
+         If flag
+            If flag & #PB_Container_Flat
+               result$ + " #PB_Container_Flat |"
+            EndIf
+            If flag & #PB_Container_Raised
+               result$ + " #PB_Container_Raised |"
+            EndIf
+            If flag & #PB_Container_Single
+               result$ + " #PB_Container_Single |"
+            EndIf
+            If flag & #PB_Container_BorderLess
+               result$ + " #PB_Container_BorderLess |"
+            EndIf
+            
+            If flag & #__flag_BorderFlat = #__flag_BorderFlat
+               result$ + " #PB_Container_Flat |"
+            EndIf
+            If flag & #__flag_BorderRaised = #__flag_BorderRaised
+               result$ + " #PB_Container_Raised |"
+            EndIf
+            If flag & #__flag_BorderSingle = #__flag_BorderSingle
+               result$ + " #PB_Container_Single |"
+            EndIf
+            If flag & #__flag_BorderLess = #__flag_BorderLess
+               result$ + " #PB_Container_BorderLess |"
+            EndIf
+         EndIf
+         
+      Case "ScrollArea"
+         If flag
+            If flag & #PB_ScrollArea_Flat
+               result$ + " #PB_ScrollArea_Flat |"
+            EndIf
+            If flag & #PB_ScrollArea_Raised
+               result$ + " #PB_ScrollArea_Raised |"
+            EndIf
+            If flag & #PB_ScrollArea_Single
+               result$ + " #PB_ScrollArea_Single |"
+            EndIf
+            If flag & #PB_ScrollArea_BorderLess
+               result$ + " #PB_ScrollArea_BorderLess |"
+            EndIf
+            If flag & #PB_ScrollArea_Center
+               result$ + " #PB_ScrollArea_Center |"
+            EndIf
+            
+            If flag & #__flag_BorderFlat = #__flag_BorderFlat
+               result$ + " #PB_ScrollArea_Flat |"
+            EndIf
+            If flag & #__flag_BorderRaised = #__flag_BorderRaised
+               result$ + " #PB_ScrollArea_Raised |"
+            EndIf
+            If flag & #__flag_BorderSingle = #__flag_BorderSingle
+               result$ + " #PB_ScrollArea_Single |"
+            EndIf
+            If flag & #__flag_BorderLess = #__flag_BorderLess
+               result$ + " #PB_ScrollArea_BorderLess |"
+            EndIf
+            If flag & #__flag_Center = #__flag_Center
+               result$ + " #PB_ScrollArea_Center |"
+            EndIf
+         EndIf
+         
+   EndSelect
+   
+   ProcedureReturn Trim( result$, "|" )
+EndProcedure
+
+Procedure$ MakeFunctionName( id$, type$ )
+   Protected result$
+   
+   If Trim( id$, "#" ) <> id$
+      If type$ = "Window"
+         result$ = "Open" + type$
+      Else
+         Select type$
+            Case "Scroll", "Progress", "Track"
+               result$ = type$ + "BarGadget"
+            Default
+               result$ = type$ + "Gadget"
+         EndSelect
+      EndIf
+      result$ + "( " + id$ + ", "
+   Else
+      If type$ = "Window"
+         result$ = id$+" = Open" + type$
+      Else
+         Select type$
+            Case "Scroll", "Progress", "Track"
+               result$ = id$ + " = " + type$ + "BarGadget"
+            Default
+               result$ = id$ + " = " + type$ + "Gadget"
+         EndSelect
+      EndIf
+      result$ + "( #PB_Any, "
+   EndIf
+   
+   ProcedureReturn result$
+EndProcedure
+
+Procedure$ MakeFunctionString( type$, function$, x$, y$, width$, height$, caption$, param1$, param2$, param3$, flag$ ) ; Ok
+   Protected result$
+   
+   Select type$
+      Case "Window"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                   
+      Case "Button"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                                 
+      Case "String"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                                 
+      Case "Text"          : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                                   
+      Case "CheckBox"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                               
+      Case "Option"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')
+      Case "Web"           : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')
+      Case "ExplorerList"  : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                           
+      Case "ExplorerTree"  : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                           
+      Case "ExplorerCombo" : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                          
+      Case "Frame"         : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                                  
+         
+      Case "HyperLink"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')+", " + param1$+", " + param2$                                                          
+      Case "ListIcon"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')+", " + param1$+", " + param2$                                                       
+         
+      Case "ScrollArea"    : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$    
+      Case "Scroll"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$+", " + param3$                                                               
+      Case "Progress"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                       
+      Case "Track"         : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                                      
+      Case "Spin"          : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                             
+      Case "Splitter"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                         
+      Case "MDI"           : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                              
+      Case "Image"         : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$                                                                                                     
+      Case "Scintilla"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$
+      Case "Shortcut"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$
+      Case "ButtonImage"   : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$                                                                                                 
+         
+      Case "ListView"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                       
+      Case "ComboBox"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                       
+      Case "Container"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                      
+      Case "IPAddress"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$
+      Case "Calendar"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                     
+      Case "Editor"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                          
+      Case "Date"          : result$ = function$ + x$+", " + y$+", " + width$+", " + height$               
+      Case "Tree"          : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                            
+      Case "Panel"         : result$ = function$ + x$+", " + y$+", " + width$+", " + height$ 
+      Case "Canvas"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                          
+   EndSelect
+   
+   Select type$
+      Case "ScrollArea"    
+         If param3$ : result$ +", " + param3$ : EndIf     
+      Case "Calendar"
+         If param1$ : result$ +", " + param1$ : EndIf 
+      Case "Date"         
+         If caption$ : result$ +", "+ Chr('"') + caption$+Chr('"') : EndIf
+         If param1$ : result$ +", " + param1$ : EndIf 
+   EndSelect
+   
+   If flag$
+      Select type$
+         Case "Window", 
+              "Scroll", "Track", "Progress", "Spin", "Web", "OpenGL",
+              "Text", "String", "Editor", "Button", "CheckBox", "HyperLink", 
+              "Tree", "ListIcon", "ListView", "ComboBox", "Image", "ButtonImage",
+              "Date", "Calendar", "ExplorerCombo", "ExplorerList", "ExplorerTree",
+              "Container", "ScrollArea", "Splitter", "MDI", "Canvas", "Frame"  
+            
+            result$ +", " + flag$ 
+      EndSelect
+   EndIf
+   
+   result$ + " )" 
+   
+   ProcedureReturn result$
+EndProcedure
+
+Procedure$ MakeObjectFunctionString( *object._s_WIDGET )
+   Protected result$, x$, y$, width$, height$, caption$, param1$, param2$, param3$, flag$
+   Protected type$ = ClassFromType( Type(*object) )
+   
+   If is_window_( *object )
+      x$ = Str( X(*object, #__c_container) )
+      y$ = Str( Y(*object, #__c_container) )
+      width$ = Str( Width(*object, #__c_inner) )
+      height$ = Str( Height(*object, #__c_inner) )
+   Else
+      x$ = Str( X(*object) )
+      y$ = Str( Y(*object) )
+      width$ = Str( Width(*object) )
+      height$ = Str( Height(*object) )
+   EndIf
+   
+   result$ = MakeFunctionString( type$, MakeFunctionName( GetClass(*object), type$ ), x$, y$, width$, height$, GetText( *object ), "","","", MakeFlagString( type$, *object\flag ))
+   
+   ProcedureReturn result$
+EndProcedure
+
+Procedure ReplaceText( *this._s_WIDGET, find$, replace$, *object = 0 )
+   If find$
+      Define code$ = GetText( *this )
+      
+      If *object
+         Define name$ = GetClass( *object ) + " = " + ClassFromType( Type( *object) )
+         Define pos = FindString( code$, name$ )
+         ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
+         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
+         ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
+      Else
+         Define caret1 = FindString( code$, replace$ )
+         Define caret2 = GetCaret( *this )
+         
+         ; количество слов для замены до позиции коретки
+         Define count = CountString( Left( code$, caret1), find$ )
+         
+         Debug "caret "+caret1 +" "+ Str(caret2 - Len( find$ ))
+         
+         ; если коретка в конце слова Ok
+         If caret1 = caret2 - Len( find$ )
+            code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
+            
+            ;             If Len( replace$ ) > Len( find$ )
+            ;                SetCaret( *this, caret1 - (Len( replace$ ) - Len( find$ )))
+            ;             EndIf
+         Else
+            ; если коретка в начале слова
+            If caret1 = caret2
+               code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
+            EndIf
+         EndIf
+         
+         ; caret update
+         If count
+            If  keyboard( )\key
+               If keyboard( )\key = #PB_Shortcut_Back
+                  If *this\text\edit[2]\len
+                     SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
+                  Else
+                     SetCaret( *this, caret2 - count )
+                  EndIf
+               Else
+                  SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
+               EndIf
+            EndIf
+         EndIf
+         
+         ;
+         code$ = ReplaceString( code$, " "+find$+" ", " "+replace$+" ", #PB_String_CaseSensitive )
+      EndIf
+      
+      
+      If code$
+         SetText( *this, code$ )
+         ;
+         If *this = ide_design_DEBUG
+            If Not Hide( ide_design_panel_CODE )
+               SetText( ide_design_panel_CODE, ReplaceString( GetText( ide_design_panel_CODE ), find$, replace$, #PB_String_CaseSensitive ))
+            EndIf
+         EndIf 
+         If *this = ide_design_panel_CODE
+            SetText( ide_design_DEBUG, ReplaceString( GetText( ide_design_DEBUG ), find$, replace$, #PB_String_CaseSensitive ))
+         EndIf
+      EndIf
+   EndIf
+   
+EndProcedure
 
 
 ;-
@@ -280,51 +636,55 @@ Procedure Properties_ButtonDisplay( *second._s_WIDGET )
 EndProcedure
 
 Procedure Properties_ButtonEvents( )
-   ; Debug ""+widget::ClassFromEvent(WidgetEvent( )) +" "+ widget::GetClass( EventWidget( ))
+   Protected *g._s_WIDGET = EventWidget( )
+   Protected __event = WidgetEvent( )
+   Protected __item = WidgetEventItem( )
+   Protected __data = WidgetEventData( )
+   ; Debug ""+widget::ClassFromEvent(__event) +" "+ widget::GetClass( *g)
    
-   Select WidgetEvent( )
+   Select __event
       Case #__event_Down
-         GetActive( )\gadget = EventWidget( )
+         GetActive( )\gadget = *g
          ;          ;
-         ;          Select Type( EventWidget( ))
-         ;             ;Case #__type_Spin     : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
-         ;             ;Case #__type_String   : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), GetText(EventWidget( )) )
-         ;             Case #__type_ComboBox : SetItemText(EventWidget( )\parent, GetData(EventWidget( )), Str(GetState(EventWidget( ))) )
+         ;          Select Type( *g)
+         ;             ;Case #__type_Spin     : SetItemText(*g\parent, GetData(*g), Str(GetState(*g)) )
+         ;             ;Case #__type_String   : SetItemText(*g\parent, GetData(*g), GetText(*g) )
+         ;             Case #__type_ComboBox : SetItemText(*g\parent, GetData(*g), Str(GetState(*g)) )
          ;          EndSelect
          
       Case #__event_MouseWheel
-         If WidgetEventItem( ) > 0
-            SetState(EventWidget( )\scroll\v, GetState( EventWidget( )\scroll\v ) - WidgetEventData( ) )
+         If __item > 0
+            SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
          EndIf
          
       Case #__event_Change
-         Select Type( EventWidget( ) )
+         Select Type(*g)
             Case #__type_Button
                ; Debug 555
                
             Case #__type_String
-               Select GetData( EventWidget( ) ) 
+               Select GetData(*g) 
                   Case #_pi_class  
-                     SetClass( a_focused( ), UCase( GetText( EventWidget( ) )))
+                     SetClass( a_focused( ), UCase( GetText(*g)))
                      Properties_Updates( a_focused( ), "Class" ) 
                   Case #_pi_text   
-                     SetText( a_focused( ), GetText( EventWidget( ) ) )  
+                     SetText( a_focused( ), GetText(*g) )  
                      Properties_Updates( a_focused( ), "Text" ) 
                EndSelect
                
             Case #__type_Spin
-               Select GetData( EventWidget( ) ) 
-                  Case #_pi_x      : Resize( a_focused( ), GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
-                  Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore, #PB_Ignore )
-                  Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ), #PB_Ignore )
-                  Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState( EventWidget( ) ) )
+               Select GetData(*g) 
+                  Case #_pi_x      : Resize( a_focused( ), GetState(*g), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
+                  Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState(*g), #PB_Ignore, #PB_Ignore )
+                  Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState(*g), #PB_Ignore )
+                  Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(*g) )
                EndSelect
                
                
             Case #__type_ComboBox
-               Select GetData( EventWidget( ) ) 
+               Select GetData(*g) 
                   Case #_pi_id
-                     If GetState( EventWidget( ) ) 
+                     If GetState(*g) 
                         If SetClass( a_focused( ), "#"+Trim( GetClass( a_focused( ) ), "#" ))
                            Properties_Updates( a_focused( ), "ID" ) 
                            Properties_Updates( a_focused( ), "Class" ) 
@@ -337,12 +697,12 @@ Procedure Properties_ButtonEvents( )
                      EndIf
                      
                   Case #_pi_disable 
-                     If Disable( a_focused( ), GetState( EventWidget( ) ) )
+                     If Disable( a_focused( ), GetState(*g) )
                         Properties_Updates( a_focused( ), "Disable" ) 
                      EndIf
                      
                   Case #_pi_hide    
-                     If Hide( a_focused( ), GetState( EventWidget( ) ) )
+                     If Hide( a_focused( ), GetState(*g) )
                         Properties_Updates( a_focused( ), "Hide" ) 
                      EndIf
                EndSelect
@@ -397,21 +757,23 @@ EndProcedure
 
 ;-
 Procedure Properties_StatusChange( *this._s_WIDGET, item )
+   Protected *g._s_WIDGET = EventWidget( )
+   
    If GetState( *this ) = item
       ProcedureReturn 0
    EndIf 
    
-   ;    If GetState( EventWidget( ) ) = item
+   ;    If GetState(*g) = item
    ;       ProcedureReturn 0
    ;    EndIf 
    
-   PushListPosition(EventWidget( )\__rows( ))
-   SelectElement( EventWidget( )\__rows( ), item )
+   PushListPosition(*g\__rows( ))
+   SelectElement( *g\__rows( ), item )
    ;
-   If EventWidget( )\__rows( ) 
+   If *g\__rows( ) 
       PushListPosition( *this\__rows( ) )
-      SelectElement( *this\__rows( ), EventWidget( )\__rows( )\index)
-      *this\__rows( )\color = EventWidget( )\__rows( )\color
+      SelectElement( *this\__rows( ), *g\__rows( )\index)
+      *this\__rows( )\color = *g\__rows( )\color
       
       If *this\__rows( )\colorState( ) = #__s_2
          If *this\RowFocused( )
@@ -423,12 +785,12 @@ Procedure Properties_StatusChange( *this._s_WIDGET, item )
       
       PopListPosition( *this\__rows( ) )
    EndIf
-   PopListPosition(EventWidget( )\__rows( ))
+   PopListPosition(*g\__rows( ))
    
-   ;    If WidgetEventData( ) = 3
-   ;       If GetActive( ) <> EventWidget( )
-   ;          Debug "set active "+GetClass(EventWidget( ))
-   ;          SetActive( EventWidget( ))
+   ;    If __data = 3
+   ;       If GetActive( ) <> *g
+   ;          Debug "set active "+GetClass(*g)
+   ;          SetActive( *g)
    ;       EndIf
    ;    EndIf
    
@@ -472,60 +834,65 @@ Procedure Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0
 EndProcedure
 
 Procedure Properties_Events( )
-   Protected *first._s_WIDGET = GetAttribute( EventWidget( )\parent, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute( EventWidget( )\parent, #PB_Splitter_SecondGadget)
+   Protected *g._s_WIDGET = EventWidget( )
+   Protected __event = WidgetEvent( )
+   Protected __item = WidgetEventItem( )
+   Protected __data = WidgetEventData( )
+   
+   Protected *first._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_FirstGadget)
+   Protected *second._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_SecondGadget)
    ;  
-   Select WidgetEvent( )
+   Select __event
       Case #__event_Down
-         If is_parent_item( EventWidget( ), WidgetEventItem( ) )
+         If is_parent_item( *g, __item )
             Properties_ButtonHide( *second, #True)
          EndIf
          If Not EnteredButton( )
-            SetState( EventWidget( ), WidgetEventItem( ))
+            SetState( *g, __item)
          EndIf
          
       Case #__event_Change
-         Select EventWidget( )
-            Case *first : SetState(*second, GetState(EventWidget( )))
-            Case *second : SetState(*first, GetState(EventWidget( )))
+         Select *g
+            Case *first : SetState(*second, GetState(*g))
+            Case *second : SetState(*first, GetState(*g))
          EndSelect
          
          ; create PropertiesButton
          Properties_ButtonDisplay( *second )
          
       Case #__event_StatusChange
-         If EventWidget( ) = *first
-            If WidgetEventData( ) = #PB_Tree_Expanded Or
-               WidgetEventData( ) = #PB_Tree_Collapsed
+         If *g = *first
+            If __data = #PB_Tree_Expanded Or
+               __data = #PB_Tree_Collapsed
                ;
-               SetItemState( *second, WidgetEventItem( ), WidgetEventData( ))
+               SetItemState( *second, __item, __data)
             EndIf
          EndIf
          
-         Select EventWidget( ) 
-            Case *first : Properties_StatusChange( *second, WidgetEventItem( ) )
-            Case *second : Properties_StatusChange( *first, WidgetEventItem( ) )
+         Select*g
+            Case *first : Properties_StatusChange( *second, __item )
+            Case *second : Properties_StatusChange( *first, __item )
          EndSelect
          
       Case #__event_ScrollChange
-         If EventWidget( ) = *first 
-            If GetState( *second\scroll\v ) <> WidgetEventData( )
-               SetState(*second\scroll\v, WidgetEventData( ) )
+         If *g = *first 
+            If GetState( *second\scroll\v ) <> __data
+               SetState(*second\scroll\v, __data )
             EndIf
          EndIf   
          
-         If EventWidget( ) = *second
-            If GetState( *first\scroll\v ) <> WidgetEventData( )
-               SetState(*first\scroll\v, WidgetEventData( ) )
+         If *g = *second
+            If GetState( *first\scroll\v ) <> __data
+               SetState(*first\scroll\v, __data )
             EndIf
          EndIf
          
    EndSelect
    
    ;
-   Select WidgetEvent( )
+   Select __event
       Case #__event_resize, #__event_ScrollChange
-         If EventWidget( ) = *second
+         If *g = *second
             Properties_ButtonResize( *second )
          EndIf
          
@@ -542,6 +909,7 @@ Procedure Properties_Create( X,Y,Width,Height, flag=0 )
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
+   ;
    *splitter\bar\button\size = DPIScaled(2)
    *splitter\bar\button\round = 0;  DPIScaled(1)
                                  ;SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
@@ -600,11 +968,6 @@ Procedure Properties_Updates( *object._s_WIDGET, type$ )
    EndIf
    If type$ = "Focus" Or type$ = "Resize"
       ; Debug "---- "+type$
-      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x, 1 ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_y, 1 ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_width, 1 ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_height, 1 )
-      
       If is_window_( *object )
          x$ = Str( X( *object, #__c_container ))
          y$ = Str( Y( *object, #__c_container ))
@@ -617,6 +980,10 @@ Procedure Properties_Updates( *object._s_WIDGET, type$ )
          height$ = Str( Height( *object ))
       EndIf
       
+      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x, 1 ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_y, 1 ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_width, 1 ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_height, 1 )
       replace$ = x$ +", "+ y$ +", "+ width$ +", "+ height$
       
       Properties_SetItemText( ide_inspector_properties, #_pi_x,      Properties_GetItemText( ide_inspector_properties, #_pi_x )      + Chr( 10 ) + x$ )
@@ -630,52 +997,22 @@ Procedure Properties_Updates( *object._s_WIDGET, type$ )
    
    ;\\
    If type$ <> "Focus"
-      ; Debug find$ +" ? "+ replace$
-      name$ = GetClass( *object ) + " = " + ClassFromType( Type( *object) )
       
-      Define code$ = GetText( ide_design_DEBUG )
       If type$ = "Class"
-         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
-         
+        ReplaceText( GetActive( ), find$, replace$ ) 
       Else
-         If find$
-            Define pos = FindString( code$, name$ )
-            ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
-            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
-            ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
-         EndIf
+        ReplaceText( GetActive( ), find$, replace$, *object ) 
       EndIf
       
-      If code$
-         SetText( ide_design_DEBUG, code$ )
-      EndIf 
-      
-      
-      ;
-      Define code$ = GetText( ide_design_panel_CODE )
-      If type$ = "Class"
-         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
-         
-      Else
-         If find$
-            Define pos = FindString( code$, name$ )
-            ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
-            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
-            ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
-         EndIf
-      EndIf
-      
-      If code$
-         SetText( ide_design_panel_CODE, code$ )
-      EndIf 
    EndIf
    
 EndProcedure
 
 
 ;-
-Declare  widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Flag$="" )
+Declare  widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 
+;-
 ;-
 Procedure.S IsFunctions( ReadString$ ) ; Ok
    Protected Finds.S, Type.S
@@ -799,12 +1136,12 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
          Text$ = ""
       EndIf
       
-      Element = widget_add( Parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$), Flag$ )
+      Element = widget_add( Parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$), Val(Flag$) )
       ;Debug ""+Name$+" = "+Class$+"( "+ x$+" "+y$+" "+width$+" "+height$ +" "+ Text$+" )"
       
       If Element
          If Name$
-            SetClass( Element, Name$ )
+            SetClass( Element, UCase(Name$) )
          EndIf
          
          If Text$
@@ -860,6 +1197,8 @@ Procedure ObjectFromClass( *parent._s_WIDGET, class$ )
    Protected result
    
    If StartEnum( *parent )
+      ;Debug ""+GetClass( widget( )) +" "+ class$
+      
       If GetClass( widget( )) = class$
          result = widget( )
          Break
@@ -891,7 +1230,7 @@ Procedure$ GetLine( text$, len, caret )
          Break
       EndIf
    Next i
-     
+   
    If stop = 0
       ProcedureReturn #LF$
    Else
@@ -947,11 +1286,11 @@ Procedure$  GetWord( text$, len, caret ) ; Ok
          chr$ = "'" Or 
          ; chr$ = ~"\"" Or 
          chr$ = "+" Or 
-         chr$ = "-" Or 
-         chr$ = "*" Or 
-         chr$ = "/" Or 
-         chr$ = "." Or 
-         chr$ = ","
+chr$ = "-" Or 
+chr$ = "*" Or 
+chr$ = "/" Or 
+chr$ = "." Or 
+chr$ = ","
          start = i + 1
          Break
       EndIf
@@ -970,11 +1309,11 @@ Procedure$  GetWord( text$, len, caret ) ; Ok
          chr$ = "'" Or 
          ; chr$ = ~"\"" Or
          chr$ = "+" Or 
-         chr$ = "-" Or 
-         chr$ = "*" Or 
-         chr$ = "/" Or 
-         chr$ = "." Or 
-         chr$ = "," 
+chr$ = "-" Or 
+chr$ = "*" Or 
+chr$ = "/" Or 
+chr$ = "." Or 
+chr$ = "," 
          stop = i - start 
          Break
       EndIf
@@ -1004,7 +1343,7 @@ Procedure$  GetArgumentString( text$, len, caret, mode.a = 0 )
          Break
       EndIf
    Next i
-  
+   
    If mode
       If start = - 1 
          If stop 
@@ -1019,7 +1358,7 @@ Procedure$  GetArgumentString( text$, len, caret, mode.a = 0 )
          EndIf
       EndIf  
    EndIf
-
+   
    If start = - 1 Or stop = 0
       ProcedureReturn ""
    Else
@@ -1046,7 +1385,7 @@ Procedure  GetArgumentIndex( text$, len, caret, mode.a = 0 )
          Break
       EndIf
    Next i
-  
+   
    If mode
       If start = - 1 
          If stop 
@@ -1061,7 +1400,7 @@ Procedure  GetArgumentIndex( text$, len, caret, mode.a = 0 )
          EndIf
       EndIf  
    EndIf
-
+   
    If start = - 1 Or stop = 0
       ProcedureReturn 0
    Else
@@ -1075,37 +1414,30 @@ Procedure ChangeArgument( *this._s_WIDGET, *object._s_WIDGET, argument, replace$
    Select argument
       Case 0 
          find$ = GetClass( *object )
-         
-         ; caret update
-         If  keyboard( )\key
-            caret = GetCaret( *this )
-            count = CountString( Left( GetText( *this ), caret), find$ )
-            
-            If keyboard( )\key = #PB_Shortcut_Back
-               SetCaret( *this, caret - count )
-            Else
-               SetCaret( *this, caret + count )
-            EndIf
-         EndIf
-         
+;          caret = GetCaret( *this )
+;          ;
+;          ; caret update
+;          If  keyboard( )\key
+;             count = CountString( Left( GetText( *this ), caret), find$ )
+;             
+;             If keyboard( )\key = #PB_Shortcut_Back
+;                If *this\text\edit[2]\len
+;                   SetCaret( *this, caret - count - (*this\text\edit[2]\len*(count))+2 )
+;                Else
+;                   SetCaret( *this, caret - count )
+;                EndIf
+;             Else
+;                SetCaret( *this, caret + count - (*this\text\edit[2]\len*count) )
+;             EndIf
+;          EndIf
          ;
          SetClass( *object, replace$ )
+         
          ;
          Properties_Updates( *object, "Class" )
          
       Case 1                              ; id
       Case 2,3,4,5 
-         If is_window_( *object )
-            find$ + Str( X( *object, #__c_container ) ) + ", " + 
-                    Str( Y( *object, #__c_container ) ) + ", " + 
-                    Str( Width( *object, #__c_inner ) ) + ", " + 
-                    Str( Height( *object, #__c_inner ) )
-         Else
-            find$ = Str( X( *object ) ) +", "+ 
-                    Str( Y( *object ) ) +", "+
-                    Str( Width( *object ) ) +", "+ 
-                    Str( Height( *object ) )
-         EndIf
          ;
          Select argument
             Case 2 : Resize( *object, Val( replace$ ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -1115,8 +1447,6 @@ Procedure ChangeArgument( *this._s_WIDGET, *object._s_WIDGET, argument, replace$
          EndSelect
          
       Case 6 
-         find$ = GetText( *object )  
-         ; 
          replace$ = StringField( replace$, 1, ")" )
          replace$ = Trim( replace$ )
          replace$ = Trim( replace$, Chr('"') )
@@ -1143,20 +1473,21 @@ Procedure CodeReplace( *this._s_WIDGET, *object._s_WIDGET, string$, caret )
          If countstring
             replace$ = StringField( replace$, 2, "(" )
          Else
-             If CountString( Left( string$, caret ), "=" )
+            If CountString( Left( string$, caret ), "=" )
                countstring =- 1
                replace$ = ""
             Else
                replace$ = StringField( replace$, 1, "(" )
                replace$ = StringField( replace$, 1, "=" )
             EndIf
-           ; replace$ = *this\text\caret\word
+            replace$ = *this\text\caret\word
             Debug ""+caret +" "+ "www "+replace$ ; Left( string$, caret )
-           EndIf
+         EndIf
       EndIf
       
       replace$ = Trim( replace$ )
-         
+      Debug "replace$ " + replace$
+      
       If replace$
          If *this = ide_design_DEBUG
             If countstring
@@ -1167,69 +1498,69 @@ Procedure CodeReplace( *this._s_WIDGET, *object._s_WIDGET, string$, caret )
          ; Debug " "+countstring +" ? "+ replace$ ; +" @ "+ string$
          
          Select countstring
-;             Case 0 
-;                find$ = GetClass( *object )
-;                
-;                ; caret update
-;                If  keyboard( )\key
-;                   caret = GetCaret( *this )
-;                   Define count = CountString( Left( GetText( *this ), caret), find$ )
-;                   
-;                   If keyboard( )\key = #PB_Shortcut_Back
-;                      SetCaret( *this, caret - count )
-;                   Else
-;                      SetCaret( *this, caret + count )
-;                   EndIf
-;                EndIf
-;                
-;                ;
-;                SetClass( *object, replace$ )
-;                ;
-;                Properties_Updates( *object, "Class" )
-;                
-;             Case 1                              ; id
-;             Case 2,3,4,5 
-;                If is_window_( *object )
-;                   find$ + Str( X( *object, #__c_container ) ) + ", " + 
-;                           Str( Y( *object, #__c_container ) ) + ", " + 
-;                           Str( Width( *object, #__c_inner ) ) + ", " + 
-;                           Str( Height( *object, #__c_inner ) )
-;                Else
-;                   find$ = Str( X( *object ) ) +", "+ 
-;                           Str( Y( *object ) ) +", "+
-;                           Str( Width( *object ) ) +", "+ 
-;                           Str( Height( *object ) )
-;                EndIf
-;                ;
-;                If is_window_( *object )
-;                   Select countstring
-;                      Case 2 : Resize( *object, Val( replace$ ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;                      Case 3 : Resize( *object, #PB_Ignore, Val( replace$ ), #PB_Ignore, #PB_Ignore)
-;                      Case 4 : Resize( *object, #PB_Ignore, #PB_Ignore, Val( replace$ )+145, #PB_Ignore)
-;                      Case 5 : Resize( *object, #PB_Ignore, #PB_Ignore, #PB_Ignore, Val( replace$ )+48)
-;                   EndSelect
-;                Else
-;                   Select countstring
-;                      Case 2 : Resize( *object, Val( replace$ ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;                      Case 3 : Resize( *object, #PB_Ignore, Val( replace$ ), #PB_Ignore, #PB_Ignore)
-;                      Case 4 : Resize( *object, #PB_Ignore, #PB_Ignore, Val( replace$ ), #PB_Ignore)
-;                      Case 5 : Resize( *object, #PB_Ignore, #PB_Ignore, #PB_Ignore, Val( replace$ ))
-;                   EndSelect
-;                EndIf
-;                
-;             Case 6 
-;                find$ = GetText( *object )  
-;                ; 
-;                replace$ = StringField( replace$, 1, ")" )
-;                replace$ = Trim( replace$ )
-;                replace$ = Trim( replace$, Chr('"') )
-;                ;
-;                SetText( *object, replace$ ) 
-;                ;
-;                Properties_Updates( *object, "Text" )
-;                
+               ;             Case 0 
+               ;                find$ = GetClass( *object )
+               ;                
+               ;                ; caret update
+               ;                If  keyboard( )\key
+               ;                   caret = GetCaret( *this )
+               ;                   Define count = CountString( Left( GetText( *this ), caret), find$ )
+               ;                   
+               ;                   If keyboard( )\key = #PB_Shortcut_Back
+               ;                      SetCaret( *this, caret - count )
+               ;                   Else
+               ;                      SetCaret( *this, caret + count )
+               ;                   EndIf
+               ;                EndIf
+               ;                
+               ;                ;
+               ;                SetClass( *object, replace$ )
+               ;                ;
+               ;                Properties_Updates( *object, "Class" )
+               ;                
+               ;             Case 1                              ; id
+               ;             Case 2,3,4,5 
+               ;                If is_window_( *object )
+               ;                   find$ + Str( X( *object, #__c_container ) ) + ", " + 
+               ;                           Str( Y( *object, #__c_container ) ) + ", " + 
+               ;                           Str( Width( *object, #__c_inner ) ) + ", " + 
+               ;                           Str( Height( *object, #__c_inner ) )
+               ;                Else
+               ;                   find$ = Str( X( *object ) ) +", "+ 
+               ;                           Str( Y( *object ) ) +", "+
+               ;                           Str( Width( *object ) ) +", "+ 
+               ;                           Str( Height( *object ) )
+               ;                EndIf
+               ;                ;
+               ;                If is_window_( *object )
+               ;                   Select countstring
+               ;                      Case 2 : Resize( *object, Val( replace$ ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
+               ;                      Case 3 : Resize( *object, #PB_Ignore, Val( replace$ ), #PB_Ignore, #PB_Ignore)
+               ;                      Case 4 : Resize( *object, #PB_Ignore, #PB_Ignore, Val( replace$ )+145, #PB_Ignore)
+               ;                      Case 5 : Resize( *object, #PB_Ignore, #PB_Ignore, #PB_Ignore, Val( replace$ )+48)
+               ;                   EndSelect
+               ;                Else
+               ;                   Select countstring
+               ;                      Case 2 : Resize( *object, Val( replace$ ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
+               ;                      Case 3 : Resize( *object, #PB_Ignore, Val( replace$ ), #PB_Ignore, #PB_Ignore)
+               ;                      Case 4 : Resize( *object, #PB_Ignore, #PB_Ignore, Val( replace$ ), #PB_Ignore)
+               ;                      Case 5 : Resize( *object, #PB_Ignore, #PB_Ignore, #PB_Ignore, Val( replace$ ))
+               ;                   EndSelect
+               ;                EndIf
+               ;                
+               ;             Case 6 
+               ;                find$ = GetText( *object )  
+               ;                ; 
+               ;                replace$ = StringField( replace$, 1, ")" )
+               ;                replace$ = Trim( replace$ )
+               ;                replace$ = Trim( replace$, Chr('"') )
+               ;                ;
+               ;                SetText( *object, replace$ ) 
+               ;                ;
+               ;                Properties_Updates( *object, "Text" )
+               ;                
          EndSelect
-         
+        
          ChangeArgument( *this, *object, countstring, replace$ ) ;*this\text\caret\word )       
       EndIf
    EndIf
@@ -1260,92 +1591,121 @@ EndProcedure
 
 Procedure CodeEvents( *this._s_WIDGET, event.i, item.i, *line._s_ROWS )
    Static argument, object  
-   Protected name$
-   
+   Protected name$, text$, len, caret
    ;
    If event = #__event_Up
-      *this\text\numeric = 0 
-      *this\text\editable = 0 
+      ide_editable_text$ = GetText( *this )
       
-      name$ = *this\text\caret\word ; GetWord( *line\text\string, *line\text\len, *this\text\caret\pos[1] - *line\text\pos ) 
+      text$ = *line\text\string
+      len = *line\text\len
+      caret = *this\text\caret\pos[1] - *line\text\pos
       
-      If name$
-         object = ObjectFromClass( ide_design_panel_MDI, name$ )
-         If Not object
-            If CountString( *line\text\string, "=" )
-               name$ = Trim( StringField( *line\text\string, 1, "=" ))
-               If CountString( name$, " " )
-                  name$ = Trim( StringField( name$, 2, " " ))
+      
+      If text$
+         *this\text\numeric = 0 
+         *this\text\editable = 0 
+         
+         name$ = *this\text\caret\word ; GetWord( text$, len, caret ) 
+        
+         If name$
+            object = ObjectFromClass( ide_design_panel_MDI, name$ )
+            If Not object
+               If CountString( text$, "=" )
+                  name$ = Trim( StringField( text$, 1, "=" ))
+                  If CountString( name$, " " )
+                     name$ = Trim( StringField( name$, 2, " " ))
+                  EndIf
+               EndIf
+               
+               object = ObjectFromClass( ide_design_panel_MDI, name$ )
+            EndIf
+         EndIf
+         
+         ;
+         If object
+           
+            ;argument =  CountString( Left( text$, caret ), "," ) + 1 
+            argument = GetArgumentIndex( text$, len, caret ) 
+            name$ = *this\text\caret\word
+            If name$ <> GetClass( object )
+               If CountString( text$, "(" )
+                  name$ = Trim( StringField( text$, 1, "(" ))
+                  name$ = GetWord( name$, Len( name$ ), Len( name$ ) ) 
                EndIf
             EndIf
+            If argument
+               If name$ = ClassFromType( Type( object ))
+                  argument + 1
+               EndIf
+               If name$ = GetClass( object )
+                  argument - 1
+               EndIf
+            EndIf
+            Debug "?"+ argument +" "+ name$
             
-            object = ObjectFromClass( ide_design_panel_MDI, name$ )
-         EndIf
-      EndIf
-      
-      ;
-      If object
-         
-         ;argument =  CountString( Left( *line\text\string, *this\text\caret\pos[1] - *line\text\pos ), "," ) + 1 
-         argument = GetArgumentIndex( *line\text\string, *line\text\len, *this\text\caret\pos[1] - *line\text\pos ) 
-         name$ = *this\text\caret\word
-         If name$ <> GetClass( object )
-            If CountString( *line\text\string, "(" )
-               name$ = Trim( StringField( *line\text\string, 1, "(" ))
-               name$ = GetWord( name$, Len( name$ ), Len( name$ ) ) 
+            ;argument = CodeReplace( *this, object, text$, caret )
+            
+            If argument > 1
+               If argument < 6 ; coordinate
+                  *this\text\numeric = 1 
+               EndIf
+               *this\text\editable = 1 
+            EndIf
+            
+            If GetClass( object ) = *this\text\caret\word ; GetWord( text$, len, caret )
+               *this\text\editable = 1
+               *this\text\upper = 1 
+            Else
+               *this\text\upper = 0 
             EndIf
          EndIf
-         If argument
-            If name$ = ClassFromType( Type( object ))
-               argument + 1
-            EndIf
-            If name$ = GetClass( object )
-               argument - 1
-            EndIf
-         EndIf
-         Debug "?"+ argument +" "+ name$
          
-         ;argument = CodeReplace( *this, object, *line\text\string, *this\text\caret\pos[1] - *line\text\pos )
-         
-         If argument > 1
-            If argument < 6 ; coordinate
-              *this\text\numeric = 1 
-            EndIf
-            *this\text\editable = 1 
-         EndIf
-         
-         If GetClass( object ) = *this\text\caret\word ; GetWord( *line\text\string, *line\text\len, *this\text\caret\pos[1] - *line\text\pos )
-            *this\text\editable = 1
-            *this\text\upper = 1 
+         If *this\text\editable
+            *line\color\back[1] = *this\color\back[1]
          Else
-            *this\text\upper = 0 
+            *line\color\back[1] = $CD9CC3EE
          EndIf
       EndIf
-      
-      If *this\text\editable
-         *line\color\back[1] = *this\color\back[1]
-      Else
-         *line\color\back[1] = $CD9CC3EE
-      EndIf
-      
-    EndIf
+   EndIf
    
    ;
    If event = #__event_Change
       If object
+         text$ = *line\text\string
+         len = *line\text\len
+         caret = *this\text\caret\pos[1] - *line\text\pos
+      
          ;Debug *this\text\caret\word
          ;
          ;Debug *this\text\caret\word
-         CodeReplace( *this, object, *line\text\string, *this\text\caret\pos[1] - *line\text\pos )
+           CodeReplace( *this, object, text$, caret )
          ;Debug argument
-         ;  ChangeArgument( *this, object, argument, *this\text\caret\word ) 
-         ;ChangeArgument( *this, object, argument, GetWord( *line\text\string, *line\text\len, *this\text\caret\pos[1] - *line\text\pos )  )
+        ; ChangeArgument( *this, object, argument, text$ ) ; *this\text\caret\word ) 
+         ;ChangeArgument( *this, object, argument, GetWord( text$, len, caret )  )
       EndIf
    EndIf
 EndProcedure
 
 ;-
 #File = 0
+Procedure IDE_NewFile( )
+   ; удаляем всех детей MDI
+   Delete( ide_design_panel_MDI )
+   ; Очишаем текст
+   ClearItems( ide_design_DEBUG ) 
+   ; затем создаем новое окно
+   ide_design_form = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
+   ; и показываем гаджеты для добавления
+   SetState( ide_inspector_panel, 0 )
+   
+   If Not Hide( ide_design_panel_CODE )
+      SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+      ;                SetActive( ide_design_panel_CODE )
+   EndIf
+   ; SetText( ide_design_DEBUG, GeneratePBCode( ide_design_panel_MDI ) )
+   
+EndProcedure
+
 Procedure IDE_OpenFile(Path$) ; Открытие файла
    Protected Text$, String$
    
@@ -1372,6 +1732,11 @@ Procedure IDE_OpenFile(Path$) ; Открытие файла
          ;          ;
          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
          
+         ;
+         If Not Hide( ide_design_panel_CODE )
+            SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+            ;                SetActive( ide_design_panel_CODE )
+         EndIf
          
          ;
          CloseFile(#File) ; Закрывает ранее открытый файл
@@ -1468,51 +1833,6 @@ Procedure.S Help_elements(Class.s)
    ProcedureReturn Result.S
 EndProcedure
 
-Procedure.s FlagFromFlag( Type, flag.i ) ; 
-   Protected flags.S
-   
-   Select Type
-      Case #__Type_Text
-         If flag & #__text_Center
-            flags + "#PB_Text_Center | "
-         EndIf
-         If flag & #__text_Right
-            flags + "#PB_Button_Right | "
-         EndIf
-         ;         If flag & #__flag_Textborder
-         ;           flags + "#PB_Text_Border | "
-         ;         EndIf
-         
-      Case #__Type_Button
-         If flag & #PB_Button_Left
-            flags + "#PB_Button_Left | "
-         EndIf
-         If flag & #PB_Button_Right
-            flags + "#PB_Button_Right | "
-         EndIf
-         If flag & #PB_Button_MultiLine
-            flags + "#PB_Button_MultiLine | "
-         EndIf
-         If flag & #PB_Button_Toggle
-            flags + "#PB_Button_Toggle | "
-         EndIf
-         If flag & #PB_Button_Default
-            flags + "#PB_Button_Default | "
-         EndIf
-         
-      Case #__Type_Container
-         If flag & #__flag_borderless
-            flags + "#PB_Container_BorderLess | "
-         EndIf
-         ;         If flag & #__flag_flat
-         ;           flags + "#PB_Container_Border | "
-         ;         EndIf
-         
-   EndSelect
-   
-   ProcedureReturn Trim( flags, "|" )
-EndProcedure
-
 ;-
 Macro widget_copy( )
    ClearList( *copy( ) )
@@ -1604,9 +1924,9 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag$="" )
-   Protected *new._s_widget, *param1, *param2, *param3
-   Protected flag.i ;= #__flag_NoFocus
+Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+   Protected *new._s_widget, Param1, Param2, Param3
+   ; flag.i | #__flag_NoFocus
    Protected newClass.s
    
    If *parent 
@@ -1626,20 +1946,20 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
          EndIf
          
          If Class = "scrollarea"
-            *param1 = Width
-            *param2 = Height
-            *param3 = 5
+            Param1 = Width
+            Param2 = Height
+            Param3 = 5
          EndIf
          
       Else
          If Class = "spin"
-            *param1 = 0
-            *param2 = 100
+            Param1 = 0
+            Param2 = 100
          EndIf
          
          If Class = "progress"
-            *param1 = 0
-            *param2 = 100
+            Param1 = 0
+            Param2 = 100
          EndIf
          
          If Width = #PB_Ignore
@@ -1663,25 +1983,48 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
             
             Properties_Updates( *new, "Resize" )
             
-         Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, *param1, *param2, *param3, flag ) : CloseList( )
+         Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
             AddItem( *new, -1, Class+"_item_0" )
             
-         Case "splitter"    : *new = Splitter( X,Y,Width,Height, *param1, *param2, flag )
-         Case "spin"        : *new = Spin( X,Y,Width,Height, *param1, *param2, flag )
-         Case "progress"    : *new = Progress( X,Y,Width,Height, *param1, *param2, flag ) 
+         Case "button"        : *new = Button(       X, Y, Width, Height, "", flag ) 
+         Case "string"        : *new = String(       X, Y, Width, Height, "", flag )
+         Case "text"          : *new = Text(         X, Y, Width, Height, "", flag )
+         Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, "", flag ) 
+            ; Case "web"           : *new = Web(          X, Y, Width, Height, "", flag )
+         Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, "", flag )                                                                           
+            ; Case "explorertree"  : *new = ExplorerTree( X, Y, Width, Height, "", flag )                                                                           
+            ; Case "explorercombo" : *new = ExplorerCombo(X, Y, Width, Height, "", flag )                                                                          
+         Case "frame"         : *new = Frame(        X, Y, Width, Height, "", flag )                                                                                  
             
-         Case "image"       : *new = Image( X,Y,Width,Height, img, flag )
-         Case "buttonimage" : *new = ButtonImage( X,Y,Width,Height, img, flag )
+            ; Case "date"          : *new = Date(         X, Y, Width, Height, "", Param1, flag )         ; 2            
+         Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, "", Param1, flag )                                                          
+         Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, "", Param1, flag )                                                       
             
-         Case "text"        : *new = Text( X,Y,Width,Height, "", flag )
-         Case "string"      : *new = String( X,Y,Width,Height, "", flag )
-         Case "button"      : *new = Button( X,Y,Width,Height, "", flag ) 
-         Case "option"      : *new = Option( X,Y,Width,Height, "", flag ) 
-         Case "checkbox"    : *new = CheckBox( X,Y,Width,Height, "", flag ) 
+         Case "scroll"        : *new = Scroll(       X, Y, Width, Height, Param1, Param2, Param3, flag )  ; bar                                                             
             
-         Case "combobox"    : *new = ComboBox( X,Y,Width,Height, flag ) 
+         Case "progress"      : *new = Progress(     X, Y, Width, Height, Param1, Param2, flag )          ; bar                                                           
+         Case "track"         : *new = Track(        X, Y, Width, Height, Param1, Param2, flag )          ; bar                                                                           
+         Case "spin"          : *new = Spin(         X, Y, Width, Height, Param1, Param2, flag )                                                                             
+         Case "splitter"      : *new = Splitter(     X, Y, Width, Height, Param1, Param2, flag )                                                                         
+         Case "mdi"           : *new = MDI(          X, Y, Width, Height, flag )  ;  , Param1, Param2                                                                          
+         Case "image"         : *new = Image(        X, Y, Width, Height, Param1, flag )                                                                                                     
+         Case "buttonimage"   : *new = ButtonImage(  X, Y, Width, Height, Param1, flag )                                                                                                 
+            
+            ; Case "calendar"      : *new = Calendar(     X, Y, Width, Height, Param1, flag )                 ; 1                                                 
+            
+         Case "listview"      : *new = ListView(     X, Y, Width, Height, flag )                                                                                                                       
+         Case "combobox"      : *new = ComboBox(     X, Y, Width, Height, flag ) 
+         Case "editor"        : *new = Editor(       X, Y, Width, Height, flag )                                                                                                                          
+         Case "tree"          : *new = Tree(         X, Y, Width, Height, flag )                                                                                                                            
+            ; Case "canvas"        : *new = Canvas(       X, Y, Width, Height, flag )                                                                                                                          
+            
+         Case "option"        : *new = Option(       X, Y, Width, Height, "" )
+            ; Case "scintilla"     : *new = Scintilla(    X, Y, Width, Height, Param1 )
+            ; Case "shortcut"      : *new = Shortcut(     X, Y, Width, Height, Param1 )
+         Case "ipaddress"     : *new = IPAddress(    X, Y, Width, Height )
+            
       EndSelect
       
       If *new
@@ -1712,17 +2055,25 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
                CompilerEndIf
                SetImage( *new, *imagelogo )
                
-               a_set(*new, #__a_full, (14))
+               If Not flag & #__flag_NoFocus 
+                  a_set(*new, #__a_full, (14))
+               EndIf
                SetBackgroundColor( *new, $FFECECEC )
                ;
                Bind( *new, @widget_events( ) )
             Else
-               a_set(*new, #__a_full, (10))
+               If Not flag & #__flag_NoFocus 
+                  a_set(*new, #__a_full, (10))
+               EndIf
                SetBackgroundColor( *new, $FFF1F1F1 )
             EndIf  
          Else
-            a_set(*new, #__a_full)
+            If Not flag & #__flag_NoFocus 
+               a_set(*new, #__a_full)
+            EndIf
          EndIf
+            Bind( *new, @widget_events( ), #__event_Resize )
+            
          ;
          ; get new add position & sublevel
          Protected i, CountItems, sublevel, position = GetData( *parent ) 
@@ -1789,12 +2140,15 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
 EndProcedure
 
 Procedure widget_events( )
-   Protected eventtype = WidgetEvent( ) 
-   Protected *new, *e_widget._s_widget = EventWidget( )
+   Protected *new
+   Protected *g._s_WIDGET = EventWidget( )
+   Protected __event = WidgetEvent( )
+   Protected __item = WidgetEventItem( )
+   Protected __data = WidgetEventData( )
    
-   Select eventtype 
+   Select __event 
       Case #__event_Free
-         Protected item = GetData( *e_widget ) 
+         Protected item = GetData(*g) 
          RemoveItem( ide_inspector_view, item ) 
          ; Debug "free "+item
          ; ProcedureReturn 0
@@ -1803,7 +2157,7 @@ Procedure widget_events( )
          Debug "right"
          
       Case #__event_Down
-         If a_focused( ) = *e_widget
+         If a_focused( ) = *g
             If GetActive( ) <> ide_inspector_view 
                SetActive( ide_inspector_view )
                Debug "------------- active "+GetClass(GetActive( ))
@@ -1811,46 +2165,46 @@ Procedure widget_events( )
          EndIf
          
       Case #__event_LostFocus
-         If a_focused( ) = *e_widget
-            ; Debug "LOSTFOCUS "+GetClass(*e_widget)
+         If a_focused( ) = *g
+            ; Debug "LOSTFOCUS "+GetClass(*g)
             SetState( ide_inspector_view, - 1 )
          EndIf
          
       Case #__event_Focus
-         If a_focused( ) = *e_widget
-            ; Debug "FOCUS "+GetClass(*e_widget)
+         If a_focused( ) = *g
+            ; Debug "FOCUS "+GetClass(*g)
             
-            If GetData( *e_widget ) >= 0
+            If GetData(*g) >= 0
                If IsGadget( ide_g_code )
-                  SetGadgetState( ide_g_code, GetData( *e_widget ) )
+                  SetGadgetState( ide_g_code, GetData(*g) )
                EndIf
-               SetState( ide_inspector_view, GetData( *e_widget ) )
+               SetState( ide_inspector_view, GetData(*g) )
             EndIf
             
             Properties_Updates( a_focused( ), "Focus" )
          EndIf
          
       Case #__event_Resize
-         If a_focused( ) = *e_widget
+         If a_focused( ) = *g
             Properties_Updates( a_focused( ), "Resize" )
          EndIf
          
       Case #__event_DragStart
          If is_drag_move( )
             If DragDropPrivate( #_DD_reParent )
-               ChangeCurrentCursor( *e_widget, #PB_Cursor_Arrows )
+               ChangeCurrentCursor( *g, #PB_Cursor_Arrows )
             EndIf
          Else
-            If IsContainer( *e_widget ) 
-               If MouseEnter( *e_widget )
+            If IsContainer(*g) 
+               If MouseEnter(*g)
                   If Not a_index( )
                      If GetState( ide_inspector_elements) > 0 
                         If DragDropPrivate( #_DD_CreateNew )
-                           ChangeCurrentCursor( *e_widget, #PB_Cursor_Cross )
+                           ChangeCurrentCursor( *g, #PB_Cursor_Cross )
                         EndIf
                      Else
                         If DragDropPrivate( #_DD_Group )
-                           ChangeCurrentCursor( *e_widget, #PB_Cursor_Cross )
+                           ChangeCurrentCursor( *g, #PB_Cursor_Cross )
                         EndIf
                      EndIf
                   EndIf
@@ -1861,7 +2215,7 @@ Procedure widget_events( )
       Case #__event_Drop
          Select DropPrivate( )
             Case #_DD_Group
-               Debug " ----- DD_group ----- " + GetClass(*e_widget)
+               Debug " ----- DD_group ----- " + GetClass(*g)
                
                ;             Case #_DD_reParent
                ;                Debug " ----- DD_move ----- " +GetClass(Pressed( )) +" "+ Entered(  )\class
@@ -1871,21 +2225,21 @@ Procedure widget_events( )
                
             Case #_DD_CreateNew 
                Debug " ----- DD_new ----- "+ GetText( ide_inspector_elements ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
-               widget_add( *e_widget, GetText( ide_inspector_elements ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+               widget_add( *g, GetText( ide_inspector_elements ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
                
             Case #_DD_CreateCopy
                Debug " ----- DD_copy ----- " + GetText( Pressed( ) )
                
-               ;            *new = widget_add( *e_widget, GetClass( Pressed( ) ), 
+               ;            *new = widget_add( *g, GetClass( Pressed( ) ), 
                ;                         X( Pressed( ) ), Y( Pressed( ) ), Width( Pressed( ) ), Height( Pressed( ) ) )
                
-               *new = widget_add( *e_widget, DropText( ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+               *new = widget_add( *g, DropText( ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
                SetText( *new, "Copy_"+ DropText( ) )
                
          EndSelect
          
       Case #__event_LeftDown
-         If IsContainer( *e_widget )
+         If IsContainer(*g)
             If mouse( )\selector
                If GetState( ide_inspector_elements) > 0 
                   mouse( )\selector\dotted = 0
@@ -1895,15 +2249,9 @@ Procedure widget_events( )
          
       Case #__event_LeftUp
          ; then group select
-         If IsContainer( *e_widget )
-            
-            If GetState( ide_inspector_view) >= 0
-               Debug " ----- new ----- "+ GetText( ide_inspector_elements ) 
-               widget_add( *e_widget, GetText( ide_inspector_elements ), GetMouseDeltaX( ), GetMouseDeltaY( ), 100,100 );   )mouse( )\x, mouse( )\y, 
-            EndIf
-            
+         If IsContainer(*g)
             If mouse( )\selector And ListSize( a_group( ) )
-               SetState( ide_inspector_view, - 1 )
+               SetState( ide_inspector_view, - 1 ) 
                If IsGadget( ide_g_code )
                   SetGadgetState( ide_g_code, - 1 )
                EndIf
@@ -1922,14 +2270,14 @@ Procedure widget_events( )
            #__event_MouseMove
          ;
          If Not MouseButtonPress( )
-            If IsContainer( *e_widget ) 
+            If IsContainer(*g) 
                If GetState( ide_inspector_elements ) > 0 
-                  If eventtype = #__event_MouseLeave
-                     ResetCursor( *e_widget ) 
+                  If __event = #__event_MouseLeave
+                     ResetCursor(*g) 
                   EndIf
-                  If eventtype = #__event_MouseEnter
-                     ; SetCursor( *e_widget, #__Cursor_Cross, 1 )
-                     SetCursor( *e_widget, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ), 1 )
+                  If __event = #__event_MouseEnter
+                     ; SetCursor( *g, #__Cursor_Cross, 1 )
+                     SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ), 1 )
                      
                   EndIf
                EndIf
@@ -1938,22 +2286,35 @@ Procedure widget_events( )
          ;
    EndSelect
    
+   ;
+   If  __event = #__event_LeftUp
+      If IsContainer(*g)
+         If GetState( ide_inspector_elements) > 0
+            widget_add( *g, GetText( ide_inspector_elements ), GetMouseX( ) - X(*g, #__c_inner), GetMouseY( ) - Y(*g, #__c_inner))
+         EndIf
+      EndIf
+      
+      If keyboard( )\key[1]
+         ProcedureReturn #PB_Ignore
+      EndIf
+   EndIf
+   
    ;\\
-   If eventtype = #__event_Drop Or 
-      eventtype = #__event_LeftUp Or 
-      eventtype = #__event_RightUp 
+   If __event = #__event_Drop  Or 
+      __event = #__event_RightUp Or
+      __event = #__event_LeftUp
       
       ; end new create
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
          
-         ; ChangeCursor( *e_widget, GetCursor( *e_widget ))
-         If ResetCursor( *e_widget ) 
+         ; ChangeCursor( *g, GetCursor(*g))
+         If ResetCursor(*g) 
          EndIf
       EndIf
    EndIf
    
-   ; отключаем дальнейшую обработку всех событий
+      ; отключаем дальнейшую обработку всех событий
    ; а также события кнопок окна (Close, Maximize, Minimize)
    ProcedureReturn #PB_Ignore
 EndProcedure
@@ -2083,7 +2444,7 @@ Procedure.i ide_add_image_list( *id, Directory$ )
    EndIf
 EndProcedure
 
-Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
+Procedure ide_menu_events( *g._s_WIDGET, BarButton )
    Protected transform, move_x, move_y
    Static NewList *copy._s_a_group( )
    
@@ -2091,20 +2452,20 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
    
    Select BarButton
       Case #_tb_group_select
-         If Type( *e_widget ) = #__type_ToolBar
-            If GetItemState( *e_widget, BarButton )  
+         If Type(*g) = #__type_ToolBar
+            If GetItemState( *g, BarButton )  
                ; group
-               group_select = *e_widget
-               ; SetAtributte( *e_widget, #PB_Button_PressedImage )
+               group_select = *g
+               ; SetAtributte( *g, #PB_Button_PressedImage )
             Else
                ; un group
                group_select = 0
             EndIf
          Else
-            If GetState( *e_widget )  
+            If GetState(*g)  
                ; group
-               group_select = *e_widget
-               ; SetAtributte( *e_widget, #PB_Button_PressedImage )
+               group_select = *g
+               ; SetAtributte( *g, #PB_Button_PressedImage )
             Else
                ; un group
                group_select = 0
@@ -2118,14 +2479,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          
          
       Case #_tb_file_new
-         ; удаляем всех детей MDI
-         Delete( ide_design_panel_MDI )
-         ; Очишаем текст
-         ClearItems( ide_design_DEBUG ) 
-         ; затем создаем новое окно
-         ide_design_form = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
-         ; и показываем гаджеты для добавления
-         SetState( ide_inspector_panel, 0 )
+         IDE_NewFile( )
          
       Case #_tb_file_open
          Protected StandardFile$, Pattern$, File$
@@ -2209,7 +2563,7 @@ Procedure ide_menu_events( *e_widget._s_WIDGET, BarButton )
          EndIf
          
          ;       Case #_tb_menu
-         ;          DisplayPopupBar( *e_widget )
+         ;          DisplayPopupBar(*g)
          
    EndSelect
    
@@ -2217,13 +2571,15 @@ EndProcedure
 
 Procedure ide_events( )
    Protected *this._s_widget
-   Protected e_type = WidgetEvent( )
-   Protected e_item = WidgetEventItem( )
-   Protected *e_widget._s_widget = EventWidget( )
+   Protected *g._s_WIDGET = EventWidget( )
+   Protected __event = WidgetEvent( )
+   Protected __item = WidgetEventItem( )
+   Protected __data = WidgetEventData( )
+   ; Debug ""+ClassFromEvent(__event) +" "+ GetClass(*g)
    
-   Select e_type
+   Select __event
       Case #__event_Close
-         If *e_widget = ide_root
+         If *g = ide_root
             If #PB_MessageRequester_Yes = Message( "Message", 
                                                    "Are you sure you want to go out?",
                                                    #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
@@ -2234,89 +2590,88 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_DragStart
-         If *e_widget = ide_inspector_elements
-            SetState( *e_widget, WidgetEventItem( ))
-            
-            Debug " ------ drag ide_events() ----- "
-            If DragDropPrivate( #_DD_CreateNew )
-               ChangeCurrentCursor( *e_widget, Cursor::Create( ImageID( GetItemData( *e_widget, WidgetEventItem( ) ) ) ) )
+         If *g = ide_inspector_elements
+            If __item >= 0
+               SetState( *g, __item)
+               
+               Debug " ------ drag ide_events() ----- "
+               If DragDropPrivate( #_DD_CreateNew )
+                  ChangeCurrentCursor( *g, Cursor::Create( ImageID( GetItemData( *g, __item ) ) ) )
+               EndIf
             EndIf
          EndIf
          
       Case #__event_StatusChange
-         If *e_widget = ide_design_panel_CODE
-            ; Debug Left( *e_widget\text\string, *e_widget\text\caret\pos ); GetState( ide_design_panel_CODE )
-         EndIf
-         
-         If e_item = - 1
+         If __item = - 1
             SetText( ide_inspector_HELP, "help for the inspector" )
          Else
-            If WidgetEventData( ) < 0
-               If *e_widget = ide_inspector_view
-                  ; Debug ""+WidgetEventData( )+" i "+e_item
-                  SetText( ide_inspector_HELP, GetItemText( *e_widget, e_item ) )
+            If __data < 0
+               If *g = ide_inspector_view
+                  ; Debug ""+__data+" i "+__item
+                  SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
-               If *e_widget = ide_inspector_elements
-                  SetText( ide_inspector_HELP, Help_elements(GetItemText( *e_widget, e_item )) )
+               If *g = ide_inspector_elements
+                  SetText( ide_inspector_HELP, Help_elements(GetItemText( *g, __item )) )
                EndIf
-               If *e_widget = ide_inspector_properties
-                  SetText( ide_inspector_HELP, GetItemText( *e_widget, e_item ) )
+               If *g = ide_inspector_properties
+                  SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
-               If *e_widget = ide_inspector_events
-                  SetText( ide_inspector_HELP, GetItemText( *e_widget, e_item ) )
+               If *g = ide_inspector_events
+                  SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
             EndIf
          EndIf
          
       Case #__event_Change
-         
-         If *e_widget = ide_design_panel
-            ;             If e_item = 1
-            ;                Define code$ = GeneratePBCode( ide_design_panel_MDI )
-            ;                
-            ;                SetText( ide_design_panel_CODE, code$ )
-            ;                SetActive( ide_design_panel_CODE )
-            ;             EndIf
+         If *g = ide_inspector_view
+            a_set( GetItemData( *g, GetState(*g) ))
          EndIf
          
-         If *e_widget = ide_inspector_view
-            ; Debug ""+GetState(*e_widget)+" change-["+GetClass(*e_widget)+"]"
-            ;PushListPosition(*e_widget\__rows())
-            ;Debug GetClass(GetItemData(*e_widget, GetState(*e_widget)))
-            If a_set( GetItemData(*e_widget, GetState(*e_widget)), #__a_full )
-               ; Это не нужен так как a_set( ) мы получаем фокус выджета 
-               ; Properties_Updates( "ide_inspector_view_Change" )
+         If *g = ide_design_panel
+            If __item = 1
+               SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+               SetActive( ide_design_panel_CODE )
             EndIf
-            ;PopListPosition(*e_widget\__rows())
-         EndIf
-         If *e_widget = ide_inspector_properties
-            ; Debug " 2 change-["+GetClass(*e_widget)+"]"
-            ; Properties_Updates( "ide_inspector_properties_Change" )
          EndIf
          
+      Case #__event_Left2Click
+         ; Debug "2click"
+         If a_focused( )
+            If IsContainer(a_focused( ))
+               If GetState( ide_inspector_elements) > 0
+                  Static _x_, _y_
+                  widget_add( a_focused( ), GetText( ide_inspector_elements ), _x_ + mouse( )\steps, _y_ + mouse( )\steps, #PB_Ignore, #PB_Ignore, #__flag_NoFocus )
+                  ;a_set( a_focused( )\parent )
+                  _x_ + mouse( )\steps
+                  _y_ + mouse( )\steps
+                  SetState( ide_inspector_elements, 0 )
+               EndIf
+            EndIf  
+         EndIf  
+            
+      Case #__event_LeftClick 
+         ; ide_menu_events( *g, __item )
          
-      Case #__event_LeftClick
-         ; ide_menu_events( *e_widget, WidgetEventItem( ) )
+         ; Debug *g\TabEntered( )
          
-         ; Debug *e_widget\TabEntered( )
-         
-         If *e_widget\TabEntered( )
-            ide_menu_events( *e_widget, *e_widget\TabEntered( )\index )
+         If *g\TabEntered( )
+            ide_menu_events( *g, *g\TabEntered( )\index )
          Else
-            If Type( *e_widget ) = #__type_toolbar
-               ide_menu_events( *e_widget, GetData( *e_widget ) )
+            If Type(*g) = #__type_toolbar
+               ide_menu_events( *g, GetData(*g) )
             EndIf
          EndIf
          
    EndSelect
    
    ;\\ CODE EVENTS
-   If *e_widget = ide_design_panel_CODE                      Or *e_widget = ide_design_DEBUG ; TEMP
-      If e_type = #__event_Up Or
-         e_type = #__event_Change Or
-         e_type = #__event_StatusChange
+   If *g = ide_design_panel_CODE                      Or *g = ide_design_DEBUG ; TEMP
+      If __event = #__event_Down Or
+         __event = #__event_Up Or
+         __event = #__event_Change Or
+         __event = #__event_StatusChange
          
-         CodeEvents( *e_widget, e_type, e_item, WidgetEventData( ) )
+         CodeEvents( *g, __event, __item, __data )
       EndIf
    EndIf
    
@@ -2568,10 +2923,12 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;
    Bind( ide_design_panel, @ide_events( ), #__event_Change )
    ;
+   Bind( ide_design_panel_CODE, @ide_events( ), #__event_Down )
    Bind( ide_design_panel_CODE, @ide_events( ), #__event_Up )
    Bind( ide_design_panel_CODE, @ide_events( ), #__event_Change )
    Bind( ide_design_panel_CODE, @ide_events( ), #__event_StatusChange )
    ; TEMP
+   Bind( ide_design_DEBUG, @ide_events( ), #__event_Down )
    Bind( ide_design_DEBUG, @ide_events( ), #__event_Up )
    Bind( ide_design_DEBUG, @ide_events( ), #__event_Change )
    Bind( ide_design_DEBUG, @ide_events( ), #__event_StatusChange )
@@ -2584,6 +2941,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;
    Bind( ide_inspector_elements, @ide_events( ), #__event_Change )
    Bind( ide_inspector_elements, @ide_events( ), #__event_StatusChange )
+   Bind( ide_inspector_elements, @ide_events( ), #__event_Left2Click )
    Bind( ide_inspector_elements, @ide_events( ), #__event_LeftClick )
    Bind( ide_inspector_elements, @ide_events( ), #__event_MouseEnter )
    Bind( ide_inspector_elements, @ide_events( ), #__event_MouseLeave )
@@ -2591,6 +2949,8 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;
    ;
    Bind( ide_root, @ide_events( ), #__event_Close )
+   
+   ;Bind( #PB_All, @ide_events( ) )
    ProcedureReturn ide_window
 EndProcedure
 
@@ -2665,13 +3025,13 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\ example 3
       Resize(ide_design_form, #PB_Ignore, #PB_Ignore, 500, 250)
       
-      Disable(widget_add(ide_design_form, "button", 15, 25, 50, 30),1)
+      Disable(widget_add(ide_design_form, "button", 15, 25, 50, 30, #PB_Button_MultiLine),1)
       widget_add(ide_design_form, "text", 25, 65, 50, 30)
       btn2 = widget_add(ide_design_form, "button", 35, 65+40, 50, 30)
       widget_add(ide_design_form, "string", 45, 65+40*2, 50, 30)
       ;widget_add(ide_design_form, "button", 45, 65+40*2, 50, 30)
       
-      Define *scrollarea = widget_add(ide_design_form, "scrollarea", 120, 25, 165, 175)
+      Define *scrollarea = widget_add(ide_design_form, "scrollarea", 120, 25, 165, 175, #PB_ScrollArea_Flat )
       widget_add(*scrollarea, "button", 15, 25, 30, 30)
       widget_add(*scrollarea, "text", 25, 65, 50, 30)
       widget_add(*scrollarea, "button", 35, 65+40, 80, 30)
@@ -2683,7 +3043,7 @@ CompilerIf #PB_Compiler_IsMainFile
       widget_add(*panel, "button", 35, 65+40, 80, 30)
       widget_add(*panel, "text", 45, 65+40*2, 50, 30)
       
-      AddItem( *panel, -1, "pane_item_1" )
+      AddItem( *panel, -1, "panel_item_1" )
       ;OpenList( *panel, 1 )
       widget_add(*panel, "button", 115, 25, 30, 30)
       widget_add(*panel, "text", 125, 65, 50, 30)
@@ -2754,9 +3114,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    a_set( ide_design_form )
    
-   Define code$ = GeneratePBCode( ide_design_panel_MDI )
-   SetText( ide_design_panel_CODE, code$ )
-   ; SetText( ide_design_DEBUG, code$ )
+   ;Define code$ = GeneratePBCode( ide_design_panel_MDI )
+   ; SetText( ide_design_panel_CODE, code$ )
+   ;SetText( ide_design_DEBUG, code$ )
    
    If SetActive( ide_inspector_view )
       SetActiveGadget( ide_g_canvas )
@@ -2786,8 +3146,11 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17
-; Folding = -------------------------f---------------------------
+; CursorPosition = 495
+; FirstLine = 470
+; Folding = -------------------------v-----------+--------------------------
+; Optimizer
+; EnableAsm
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe

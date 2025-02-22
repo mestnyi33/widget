@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure Events( )
+  Procedure Events_( )
     Debug "window "+EventWindow( )+" widget "+EventGadget( )+" eventtype "+EventType( )+" eventdata "+EventData( )
   EndProcedure
   
@@ -76,12 +76,12 @@ CompilerIf #PB_Compiler_IsMainFile
       BindGadgetEvent( i, @events_gadgets( ) )
     Next
     
-    Button( 10+222, 10, 200, 20, "Standard button", #__flag_ButtonDefault,-1,8 )
+    Button( 10+222, 10, 200, 20, "Standard button", #__flag_ButtonDefault,8 )
     Button( 10+222, 40, 200, 20, "Left button", #__text_left )
     Button( 10+222, 70, 200, 20, "Right button", #__text_Right )
-    Button( 10+222,100, 200, 60, "Default button and change font", #__flag_ButtonDefault, -1,4 )
+    Button( 10+222,100, 200, 60, "Default button and change font", #__flag_ButtonDefault,4 )
     SetFont(widget(), FontID(0))
-    Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline, -1,4 )
+    Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline,4 )
     Button( 10+222,170+70, 200, 25, "Toggle button", #__flag_ButtonToggle )
     
     SetState( ID( 5 ), 1 )
@@ -143,8 +143,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 76
+; CursorPosition = 83
+; FirstLine = 74
 ; Folding = ---
 ; Optimizer
 ; EnableXP
