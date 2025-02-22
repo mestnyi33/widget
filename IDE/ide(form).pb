@@ -643,74 +643,21 @@ Procedure   GetArgIndex( text$, len, caret, mode.a = 0 )
 EndProcedure
 
 ;-
-Procedure   ReplaceText( *this._s_WIDGET, find$, replace$, *object = 0 )
-   If find$
-      Define code$ = GetText( *this )
-      
-      If *object
-         Define name$ = GetClass( *object ) + " = " + ClassFromType( Type( *object) )
-         Define pos = FindString( code$, name$ )
-         ; Define len = (FindString( code$, #CRLF$, pos ) - pos)
-         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, pos, 1 )
-         ;Debug "["+pos +" "+ len +"] "+ find$ +" "+ replace$
-      Else
-         Define caret1 = FindString( code$, replace$ )
-         Define caret2 = GetCaret( *this )
-         
-         ; количество слов для замены до позиции коретки
-         Define count = CountString( Left( code$, caret1), find$ )
-         
-         Debug "caret "+caret1 +" "+ Str(caret2 - Len( find$ ))
-         
-         ; если коретка в конце слова Ok
-         If caret1 = caret2 - Len( find$ )
-            code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
-            
-            ;             If Len( replace$ ) > Len( find$ )
-            ;                SetCaret( *this, caret1 - (Len( replace$ ) - Len( find$ )))
-            ;             EndIf
-         Else
-            ; если коретка в начале слова
-            If caret1 = caret2
-               code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
-            EndIf
-         EndIf
-         
-         ; caret update
-         If count
-            If  keyboard( )\key
-               If keyboard( )\key = #PB_Shortcut_Back
-                  If *this\text\edit[2]\len
-                     SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
-                  Else
-                     SetCaret( *this, caret2 - count )
-                  EndIf
-               Else
-                  SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
-               EndIf
-            EndIf
-         EndIf
-         
-         ;
-        ; code$ = ReplaceString( code$, " "+find$+" ", " "+replace$+" ", #PB_String_CaseSensitive )
-         code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
-      EndIf
-      
-      
-      If code$
-         SetText( *this, code$ )
-         ;
-         If *this = ide_design_DEBUG
-            If Not Hide( ide_design_panel_CODE )
-               SetText( ide_design_panel_CODE, ReplaceString( GetText( ide_design_panel_CODE ), find$, replace$, #PB_String_CaseSensitive ))
-            EndIf
-         EndIf 
-         If *this = ide_design_panel_CODE
-            SetText( ide_design_DEBUG, ReplaceString( GetText( ide_design_DEBUG ), find$, replace$, #PB_String_CaseSensitive ))
-         EndIf
-      EndIf
+Procedure ReplaceText( *this._s_WIDGET, find$, replace$, NbOccurrences = 0 )
+   Protected caret
+   Protected code$ = GetText( *this )
+   
+   If NbOccurrences
+      caret = FindString( code$, find$ )
+   Else
+      caret = 1
    EndIf
    
+   code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, caret, NbOccurrences )
+   
+   If code$
+      SetText( *this, code$ )
+   EndIf
 EndProcedure
 
 Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
@@ -1411,13 +1358,74 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    
    ;\\
    If type$ <> "Focus"
+      Protected NbOccurrences
+      Protected *this._s_WIDGET = GetActive( )
       
-      If type$ = "Class"
-        ReplaceText( GetActive( ), find$, replace$ ) 
-      Else
-        ReplaceText( GetActive( ), find$, replace$, *object ) 
+      If find$
+         If type$ = "Class"
+            Define code$ = GetText( *this )
+            
+            Define caret1 = FindString( code$, replace$ )
+            Define caret2 = GetCaret( *this )
+            
+            ; количество слов для замены до позиции коретки
+            Define count = CountString( Left( code$, caret1), find$ )
+            
+            Debug "caret "+caret1 +" "+ Str(caret2 - Len( find$ ))
+            
+            ; если коретка в конце слова Ok
+            If caret1 = caret2 - Len( find$ )
+               code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
+               
+               ;             If Len( replace$ ) > Len( find$ )
+               ;                SetCaret( *this, caret1 - (Len( replace$ ) - Len( find$ )))
+               ;             EndIf
+            Else
+               ; если коретка в начале слова
+               If caret1 = caret2
+                  code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
+               EndIf
+            EndIf
+            
+            ; caret update
+            If count
+               If  keyboard( )\key
+                  If keyboard( )\key = #PB_Shortcut_Back
+                     If *this\text\edit[2]\len
+                        SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
+                     Else
+                        SetCaret( *this, caret2 - count )
+                     EndIf
+                  Else
+                     SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;
+            ; code$ = ReplaceString( code$, " "+find$+" ", " "+replace$+" ", #PB_String_CaseSensitive )
+            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+            If code$
+               SetText( *this, code$ )
+            EndIf
+            
+            ; Меняем все найденные слова 
+            NbOccurrences = 0
+         Else
+            ; Меняем первое одно найденное слово 
+            NbOccurrences = 1
+         EndIf
+         
+         ;
+         If *this = ide_design_panel_CODE
+            ReplaceText( ide_design_DEBUG, find$, replace$, NbOccurrences )
+         EndIf
+         If *this = ide_design_DEBUG
+            If Not Hide( ide_design_panel_CODE )
+               ReplaceText( ide_design_panel_CODE, find$, replace$, NbOccurrences )
+            EndIf 
+         EndIf
       EndIf
-      
    EndIf
    
 EndProcedure
@@ -1473,7 +1481,9 @@ Procedure   IDE_NewFile( )
    ClearItems( ide_design_DEBUG ) 
    ; затем создаем новое окно
    ide_design_form = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
+   
    ; и показываем гаджеты для добавления
+   SetState( ide_design_panel, 0 )
    SetState( ide_inspector_panel, 0 )
    
    If Not Hide( ide_design_panel_CODE )
@@ -2444,17 +2454,14 @@ Procedure ide_events( )
    
    ;-\\ EDIT CODE EVENTS
    If *g = ide_design_panel_CODE                      Or *g = ide_design_DEBUG ; TEMP
-      If __event = #__event_Down Or
-         __event = #__event_Up Or
-         __event = #__event_Change Or
-         __event = #__event_StatusChange
-         
-         Static argument, object  
-         Protected name$, text$, len, caret
-         Protected *line._s_ROWS  = __data
-         
-         ;
-         If __event = #__event_Down
+      Static argument, object  
+      Protected name$, text$, len, caret
+      Protected *line._s_ROWS
+      
+      ;
+      If __event = #__event_Down
+         If __data
+            *line._s_ROWS  = __data
             text$ = *line\text\string
             len = *line\text\len
             caret = *g\text\caret\pos[1] - *line\text\pos
@@ -2525,13 +2532,13 @@ Procedure ide_events( )
                EndIf
             EndIf
          EndIf
-         
-         ;
-         If __event = #__event_Change
-            If object
-               ReplaceArg( object, argument, *g\text\caret\word ) 
-               ; ReplaceArg( object, argument, GetWord( *line\text\string, *line\text\len, *g\text\caret\pos[1] - *line\text\pos )  )
-            EndIf
+      EndIf
+      
+      ;
+      If __event = #__event_Change
+         If object
+            ReplaceArg( object, argument, *g\text\caret\word ) 
+            ; ReplaceArg( object, argument, GetWord( *line\text\string, *line\text\len, *g\text\caret\pos[1] - *line\text\pos )  )
          EndIf
       EndIf
    EndIf
@@ -3009,9 +3016,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2456
-; FirstLine = 1824
-; Folding = ------------------4----300f-f8V--6--7t-------------------------
+; CursorPosition = 1360
+; FirstLine = 934
+; Folding = ----------------f----b44-0-tX0-4----4b-------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
