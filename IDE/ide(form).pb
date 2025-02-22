@@ -126,7 +126,9 @@ Declare   widget_events( )
 Declare   Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
 Declare.s Properties_GetItemText( *splitter._s_WIDGET, item, mode = 0 )
 Declare   Properties_Updates( *object._s_WIDGET, type$ )
+Declare   widget_Create( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+Declare   add_line( *new._s_widget, newClass.s )
 
 ;- PUBLICs
 Procedure.s BoolToStr( val )
@@ -643,17 +645,14 @@ Procedure   GetArgIndex( text$, len, caret, mode.a = 0 )
 EndProcedure
 
 ;-
-Procedure ReplaceText( *this._s_WIDGET, find$, replace$, NbOccurrences = 0 )
-   Protected caret
+Procedure ReplaceText( *this._s_WIDGET, find$, replace$, NbOccurrences.b = 0 )
    Protected code$ = GetText( *this )
-   
+            
    If NbOccurrences
-      caret = FindString( code$, find$ )
+      code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, FindString( code$, find$ ), NbOccurrences )
    Else
-      caret = 1
+      code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
    EndIf
-   
-   code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive, caret, NbOccurrences )
    
    If code$
       SetText( *this, code$ )
@@ -748,8 +747,8 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
    Protected Flag$
    Protected CountString.I
    
-   Static Parent =- 1
-   Protected Element
+   Static *parent =- 1
+   Protected *new._s_WIDGET
    
    
    ReadString$ = Trim( ReadString$ )
@@ -766,8 +765,8 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
       Class$ = Trim( StringField( ReadString$, (1), Chr('(') ))
       Class$ = Trim( StringField( Class$, (2), Chr('=') ))
       
-      If Parent =- 1 
-         Parent = ide_design_panel_MDI 
+      If *parent =- 1 
+         *parent = ide_design_panel_MDI 
          x$ = "10"
          y$ = "10"
       Else
@@ -818,12 +817,12 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
          Text$ = ""
       EndIf
       
-      Element = widget_add( Parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$), Val(Flag$) )
       ;Debug ""+Name$+" = "+Class$+"( "+ x$+" "+y$+" "+width$+" "+height$ +" "+ Text$+" )"
-      
-      If Element
+         *new = widget_Create( *parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$), Val(Flag$) )
+       
+      If *new
          If Name$
-            SetClass( Element, UCase(Name$) )
+            SetClass( *new, UCase(Name$) )
          EndIf
          
          If Text$
@@ -831,20 +830,20 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
                Text$ = Trim( Text$, Chr('"'))
             EndIf
             
-            SetText( Element, Text$ )
+            SetText( *new, Text$ )
          EndIf
          
          If Image$
-            SetImage( Element, Val(Image$) )
+            SetImage( *new, Val(Image$) )
          EndIf
          
          Select Class$
             Case "Spin", "Track", "Progress", "Scroll"
                If Param1$
-                  SetAttribute(Element, #__bar_Minimum, Val(Param1$) )
+                  SetAttribute(*new, #__bar_Minimum, Val(Param1$) )
                EndIf
                If Param2$
-                  SetAttribute(Element, #__bar_Maximum, Val(Param2$) )
+                  SetAttribute(*new, #__bar_Maximum, Val(Param2$) )
                EndIf
          EndSelect
          
@@ -861,14 +860,17 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
             Select Class$
                Case "Splitter"
                   Debug ""+ Param1$ +" "+ Param2$
-                  ;                   SetAttribute(Element, #PB_Splitter_FirstGadget, Val(Param1$) )
-                  ;                   SetAttribute(Element, #PB_Splitter_SecondGadget, Val(Param2$) )
+                  ;                   SetAttribute(*new, #PB_Splitter_FirstGadget, Val(Param1$) )
+                  ;                   SetAttribute(*new, #PB_Splitter_SecondGadget, Val(Param2$) )
                   
             EndSelect  
          EndIf
          
-         If IsContainer(Element)
-            Parent = Element
+         
+         add_line( *new, GetClass( *new ))
+         
+         If IsContainer(*new)
+            *Parent = *new
          EndIf
       EndIf
    EndIf
@@ -1363,52 +1365,55 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       
       If find$
          If type$ = "Class"
-            Define code$ = GetText( *this )
-            
-            Define caret1 = FindString( code$, replace$ )
-            Define caret2 = GetCaret( *this )
-            
-            ; количество слов для замены до позиции коретки
-            Define count = CountString( Left( code$, caret1), find$ )
-            
-            Debug "caret "+caret1 +" "+ Str(caret2 - Len( find$ ))
-            
-            ; если коретка в конце слова Ok
-            If caret1 = caret2 - Len( find$ )
-               code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
+            If *this = ide_design_panel_CODE Or 
+               *this = ide_design_DEBUG
+               ;
+               Define code$ = GetText( *this )
                
-               ;             If Len( replace$ ) > Len( find$ )
-               ;                SetCaret( *this, caret1 - (Len( replace$ ) - Len( find$ )))
-               ;             EndIf
-            Else
-               ; если коретка в начале слова
-               If caret1 = caret2
+               Define caret1 = FindString( code$, replace$ )
+               Define caret2 = GetCaret( *this )
+               
+               ; количество слов для замены до позиции коретки
+               Define count = CountString( Left( code$, caret1), find$ )
+               
+               Debug "caret "+caret1 +" "+ Str(caret2 - Len( find$ ))
+               
+               ; если коретка в конце слова Ok
+               If caret1 = caret2 - Len( find$ )
                   code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
-               EndIf
-            EndIf
-            
-            ; caret update
-            If count
-               If  keyboard( )\key
-                  If keyboard( )\key = #PB_Shortcut_Back
-                     If *this\text\edit[2]\len
-                        SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
-                     Else
-                        SetCaret( *this, caret2 - count )
-                     EndIf
-                  Else
-                     SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
+                  
+                  ;             If Len( replace$ ) > Len( find$ )
+                  ;                SetCaret( *this, caret1 - (Len( replace$ ) - Len( find$ )))
+                  ;             EndIf
+               Else
+                  ; если коретка в начале слова
+                  If caret1 = caret2
+                     code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
                   EndIf
                EndIf
+               
+               ; caret update
+               If count
+                  If  keyboard( )\key
+                     If keyboard( )\key = #PB_Shortcut_Back
+                        If *this\text\edit[2]\len
+                           SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
+                        Else
+                           SetCaret( *this, caret2 - count )
+                        EndIf
+                     Else
+                        SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
+                     EndIf
+                  EndIf
+               EndIf
+               
+               ;
+               ; code$ = ReplaceString( code$, " "+find$+" ", " "+replace$+" ", #PB_String_CaseSensitive )
+               code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+               If code$
+                  SetText( *this, code$ )
+               EndIf
             EndIf
-            
-            ;
-            ; code$ = ReplaceString( code$, " "+find$+" ", " "+replace$+" ", #PB_String_CaseSensitive )
-            code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
-            If code$
-               SetText( *this, code$ )
-            EndIf
-            
             ; Меняем все найденные слова 
             NbOccurrences = 0
          Else
@@ -1417,10 +1422,10 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          EndIf
          
          ;
-         If *this = ide_design_panel_CODE
+         If *this <> ide_design_DEBUG
             ReplaceText( ide_design_DEBUG, find$, replace$, NbOccurrences )
          EndIf
-         If *this = ide_design_DEBUG
+         If *this <> ide_design_panel_CODE
             If Not Hide( ide_design_panel_CODE )
                ReplaceText( ide_design_panel_CODE, find$, replace$, NbOccurrences )
             EndIf 
@@ -1502,6 +1507,9 @@ Procedure   IDE_OpenFile(Path$) ; Открытие файла
       ClearItems( ide_design_DEBUG )
       Debug "Открываю файл '"+Path$+"'"
       
+      SetState( ide_design_panel, 0 )
+      SetState( ide_inspector_panel, 0 )
+   
       Delete( ide_design_panel_MDI )
       ReDraw( GetRoot( ide_design_panel_MDI ))   
       
@@ -1546,11 +1554,14 @@ Procedure   IDE_SaveFile(Path$) ; Процедура сохранения фай
       ClearDebugOutput()
       Debug "Сохраняю файл '"+Path$+"'"
       
-      ;Text$ = GeneratePBCode( ide_design_panel_MDI )
+      ;
+      If Hide( ide_design_panel_CODE )
+         Text$ = GeneratePBCode( ide_design_panel_MDI )
+      Else
+         Text$ = GetText( ide_design_panel_CODE )
+      EndIf
       
-      ;     SetText( ide_design_panel_CODE, Text$ )
-      Text$ = GetText( ide_design_panel_CODE )
-      
+      ;
       If CreateFile( #File, Path$, #PB_UTF8 )
          ; TruncateFile( #File )
          
@@ -1712,7 +1723,7 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+Procedure widget_Create( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
    Protected *new._s_widget, Param1, Param2, Param3
    ; flag.i | #__flag_NoFocus
    Protected newClass.s
@@ -1860,68 +1871,93 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
                a_set(*new, #__a_full)
             EndIf
          EndIf
-            Bind( *new, @widget_events( ), #__event_Resize )
-            
-         ;
-         ; get new add position & sublevel
-         Protected i, CountItems, sublevel, position = GetData( *parent ) 
-         CountItems = CountItems( ide_inspector_view )
-         For i = 0 To CountItems - 1
-            Position = ( i+1 )
-            
-            If *parent = GetItemData( ide_inspector_view, i ) 
-               SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
-               Continue
-            EndIf
-            
-            If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
-               Position = i
-               Break
-            EndIf
-         Next 
          
-         ; set new widget data
-         SetData( *new, position )
-         
-         ; update new widget data item ;????
-         If CountItems > position
-            For i = position To CountItems - 1
-               SetData( GetItemData( ide_inspector_view, i ), i + 1 )
-            Next 
-         EndIf
-         
-         
-         ; get image associated with class
-         Protected img =- 1
-         CountItems = CountItems( ide_inspector_elements )
-         For i = 0 To CountItems - 1
-            If LCase(StringField( Class.s, 1, "_" )) = LCase(GetItemText( ide_inspector_elements, i ))
-               img = GetItemData( ide_inspector_elements, i )
-               Break
-            EndIf
-         Next  
-         
-         ; add to inspector
-         AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
-         SetItemData( ide_inspector_view, position, *new )
-         ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
-         
-         ; Debug " "+position
-         SetState( ide_inspector_view, position )
-         
-         If IsGadget( ide_g_code )
-            AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
-            SetGadgetItemData( ide_g_code, position, *new )
-            ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
-            SetGadgetState( ide_g_code, position ) ; Bug
-         EndIf
-         
-         ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
-         CodeAddLine( *new, newClass.s, position, sublevel )
-         
+         Bind( *new, @widget_events( ), #__event_Resize )
       EndIf
       
       CloseList( ) 
+   EndIf
+   
+   ProcedureReturn *new
+EndProcedure
+
+Procedure add_line( *new._s_widget, newClass.s )
+   Protected *parent._s_widget, Param1, Param2, Param3
+   
+   If *new
+      *parent = GetParent( *new )
+      ;
+      ; get new add position & sublevel
+      Protected i, CountItems, sublevel, position = GetData( *parent ) 
+      CountItems = CountItems( ide_inspector_view )
+      For i = 0 To CountItems - 1
+         Position = ( i+1 )
+         
+         If *parent = GetItemData( ide_inspector_view, i ) 
+            SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
+            Continue
+         EndIf
+         
+         If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
+            Position = i
+            Break
+         EndIf
+      Next 
+      
+      ; set new widget data
+      SetData( *new, position )
+      
+      ; update new widget data item ;????
+      If CountItems > position
+         For i = position To CountItems - 1
+            SetData( GetItemData( ide_inspector_view, i ), i + 1 )
+         Next 
+      EndIf
+      
+      
+      ; get image associated with class
+      Protected img =- 1
+      CountItems = CountItems( ide_inspector_elements )
+      For i = 0 To CountItems - 1
+         If LCase(newClass.s) = LCase(GetItemText( ide_inspector_elements, i ))
+            img = GetItemData( ide_inspector_elements, i )
+            Break
+         EndIf
+      Next  
+      
+      ; add to inspector
+      AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
+      SetItemData( ide_inspector_view, position, *new )
+      ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
+      
+      ; Debug " "+position
+      SetState( ide_inspector_view, position )
+      
+      If IsGadget( ide_g_code )
+         AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
+         SetGadgetItemData( ide_g_code, position, *new )
+         ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
+         SetGadgetState( ide_g_code, position ) ; Bug
+      EndIf
+      
+      ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
+      CodeAddLine( *new, newClass.s, position, sublevel )
+      
+   EndIf
+   
+   ProcedureReturn *new
+EndProcedure
+
+Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+   Protected *new._s_widget
+   ; flag.i | #__flag_NoFocus
+    
+   If *parent 
+      *new = widget_Create( *parent, Class.s, X,Y, Width, Height, flag )
+      
+      If *new
+         add_line( *new, GetClass( *new ))
+      EndIf
    EndIf
    
    ProcedureReturn *new
@@ -3016,9 +3052,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1360
-; FirstLine = 934
-; Folding = ----------------f----b44-0-tX0-4----4b-------------------------
+; CursorPosition = 869
+; FirstLine = 847
+; Folding = ---------------------b44-0-0X0-4------0---f---------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
