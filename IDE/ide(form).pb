@@ -285,6 +285,9 @@ Procedure  MakeObject( type$, id$, x$, y$, width$, height$, param1$, param2$, pa
    ;
    If type$ = "CloseGadgetList"
       *Parent = GetParent( *Parent )
+   ElseIf type$ = "AddGadgetItem"
+     ;*Parent = GetParent( *Parent )
+     Debug GenerateCODE( *Parent, type$, "" )
    Else
       ; Debug "vvv "+param1 +" "+ param2
       *new = widget_Create( *parent, type$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
@@ -1532,6 +1535,13 @@ Procedure   IDE_OpenFile(Path$) ; Открытие файла
                   Continue
                Else
                   If type$ = "CloseGadgetList"
+                     ; Debug type$ +"("+ arg$ +")"
+                     
+                     MakeObject( type$, "","","","","","","","","" )
+                     
+                     
+                  EndIf
+                   If type$ = "AddGadgetItem"
                      ; Debug type$ +"("+ arg$ +")"
                      
                      MakeObject( type$, "","","","","","","","","" )
@@ -3073,12 +3083,12 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 157
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 289
+; FirstLine = 263
 ; Folding = ------------------------------------------------------------
-; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
+; Optimizer

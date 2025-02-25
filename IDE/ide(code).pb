@@ -668,6 +668,18 @@ Procedure.s GenerateCODE( *this._s_WIDGET, FUNCTION$, Space$ = "" )
             Result$ + Space$
          EndIf
       EndIf
+      If *this\tabbar
+         If TabIndex <> *this\TabIndex( ) 
+            TabIndex = *this\TabIndex( ) 
+            
+            Result$ + FUNCTION$ + "( " + GetClass( *this ) + 
+                      ", - 1" + 
+                      ", " + Chr( '"' ) + GetItemText( *this, TabIndex ) + Chr( '"' ) + 
+                      " )  " + #CRLF$
+            
+            Result$ + Space$
+         EndIf
+      EndIf
    EndIf
    
    
@@ -1131,9 +1143,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 615
-; FirstLine = 559
-; Folding = ----------0-f------+----
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 671
+; FirstLine = 601
+; Folding = ----------0-f------8-----
 ; EnableXP
 ; DPIAware
