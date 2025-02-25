@@ -17,8 +17,6 @@ Procedure Window_0_Open(ParentID.i=#False)
     Window_0_Tree_0 = TreeGadget(#PB_Any, 0, 0, 241, 192)   
     Window_0_Panel_0 = PanelGadget(#PB_Any, 0, 199, 241, 192)  
     CloseGadgetList()
-    Window_0_Splitter_0 = SplitterGadget(#PB_Any, 250, 0, 241, 391, Window_0_Tree_0, Window_0_Panel_0, #PB_Splitter_Separator)                  
-    Window_0_Splitter_1 = SplitterGadget(#PB_Any, 5, 5, 491, 391, Window_0_ScrollArea_0, Window_0_Splitter_0, #PB_Splitter_Vertical|#PB_Splitter_Separator)                                                                                                                     
     
     BindEvent(#PB_Event_Gadget, @Window_0_Events(), Window_0)
   EndIf
@@ -54,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21
+; CursorPosition = 16
 ; Folding = --
 ; EnableXP
-; CompileSourceDirectory
+; DPIAware

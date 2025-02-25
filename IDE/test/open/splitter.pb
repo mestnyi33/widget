@@ -1,36 +1,39 @@
 ﻿EnableExplicit
 
-Global WINDOW_1 =-1, 
-       Window_0_ScrollArea_0 =-1, 
-       Window_0_Tree_0 =-1, 
-       Window_0_Panel_0 =-1, 
-       Window_0_Splitter_0 =-1, 
-       Window_0_Splitter_1 =-1
+Global WINDOW_0 = - 1
 
+Global WINDOW_0_SCROLLAREA_0 = - 1
+Global WINDOW_0_TREE_0 = - 1
+Global WINDOW_0_PANEL_0 = - 1
+Global WINDOW_0_SPLITTER_0 = - 1
+Global WINDOW_0_SPLITTER_1 = - 1
 
-Procedure Open_WINDOW_1( )
-   
-   WINDOW_1 = OpenWindow(#PB_Any, 470, 230, 501, 401, "Window_0", #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget )                                                                                                                                                                                
-   Window_0_ScrollArea_0 = ScrollAreaGadget(#PB_Any, 0, 0, 241, 391, 0, 0, 0)  
-   CloseGadgetList()
-   Window_0_Tree_0 = TreeGadget(#PB_Any, 0, 0, 241, 192)   
-    
+Procedure Open_WINDOW_0( )
+   WINDOW_0 = OpenWindow( #PB_Any, 7, 7, 505, 400, "WINDOW_0",  #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered  )
+      WINDOW_0_SCROLLAREA_0 = ScrollAreaGadget( #PB_Any, 0, 0, 241, 393, 241, 391, 0 )
+      CloseGadgetList( )
+      WINDOW_0_TREE_0 = TreeGadget( #PB_Any, 0, 0, 241, 192 )
+      WINDOW_0_PANEL_0 = PanelGadget( #PB_Any, 0, 201, 241, 192 )
+      CloseGadgetList( )
+         
+      WINDOW_0_SPLITTER_0 = SplitterGadget( #PB_Any, 250, 0, 241, 393, WINDOW_0_TREE_0, WINDOW_0_PANEL_0 )
+      WINDOW_0_SPLITTER_1 = SplitterGadget( #PB_Any, 7, 7, 491, 386, WINDOW_0_SCROLLAREA_0, WINDOW_0_SPLITTER_0, #PB_Splitter_Vertical )
 EndProcedure
 
 CompilerIf #PB_Compiler_IsMainFile
-   Open_WINDOW_1( )
+   Open_WINDOW_0( )
 
    Define event
-   While IsWindow( WINDOW_1 )
+   While IsWindow( WINDOW_0 )
       event = WaitWindowEvent( )
       
       Select EventWindow( )
-         Case WINDOW_1
+         Case WINDOW_0
       EndSelect
       
       Select event
          Case #PB_Event_CloseWindow
-            If EventWindow( ) = WINDOW_1
+            If EventWindow( ) = WINDOW_0
                If #PB_MessageRequester_Yes = MessageRequester( "Message", 
                                                                "Are you sure you want To go out?", 
                                                                #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
@@ -47,7 +50,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15
+; CursorPosition = 20
 ; Folding = --
 ; EnableXP
 ; DPIAware
