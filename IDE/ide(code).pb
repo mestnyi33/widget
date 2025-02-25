@@ -620,13 +620,13 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
             result$ + space$ + "CloseGadgetList" + "( )" + #CRLF$ 
             result$ + space$ + #CRLF$
          EndIf
-      EndIf 
-      ;\\
-      If IsContainer(*g) > 0 
-         If Not is_window_( *g )
-            ;result$ + space$ + #CRLF$
-           ; result$ + space$ 
-         EndIf
+      Else
+         ;\\
+         If IsContainer(*g) > 0 
+            If Not is_window_( *g )
+               result$ + space$ + #CRLF$
+            EndIf
+         EndIf 
       EndIf
    EndIf
    
@@ -953,7 +953,7 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
       Code$ + Space$ + Space$ + "" + #CRLF$
       Code$ + Space$ + Space$ + "Select event" + #CRLF$
       Code$ + Space$ + Space$ + Space$ + "Case #PB_Event_CloseWindow" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + Space$ + "If EventWindow( ) = " + GetClass( *mainWindow ) + #CRLF$
+      Code$ + Space$ + Space$ + Space$ + Space$ + "If " + GetClass( *mainWindow ) + " = EventWindow( )" + #CRLF$
       Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + "If #PB_MessageRequester_Yes = MessageRequester( " + Chr( '"' ) + "Message" + Chr( '"' ) + ", " + #CRLF$ + 
               Space$ + Space$ + Space$ + Space$ + Space$ + Space(Len("If #PB_MessageRequester_Yes = MessageRequester( ")) + Chr( '"' ) +"Are you sure you want To go out?"+ Chr( '"' ) + ", " + #CRLF$ + 
               Space$ + Space$ + Space$ + Space$ + Space$ + Space(Len("If #PB_MessageRequester_Yes = MessageRequester( ")) + "#PB_MessageRequester_YesNo | #PB_MessageRequester_Info )" + #CRLF$
@@ -1132,8 +1132,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 569
-; FirstLine = 535
-; Folding = ----------0-f-----------
+; CursorPosition = 615
+; FirstLine = 559
+; Folding = ----------0-f------+----
 ; EnableXP
 ; DPIAware

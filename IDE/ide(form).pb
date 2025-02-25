@@ -126,7 +126,7 @@ Declare   widget_events( )
 Declare   Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
 Declare.s Properties_GetItemText( *splitter._s_WIDGET, item, mode = 0 )
 Declare   Properties_Updates( *object._s_WIDGET, type$ )
-Declare   widget_Create( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Declare   widget_Create( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   add_line( *new._s_widget )
 Declare   ObjectFromClass( class$ )
@@ -227,9 +227,9 @@ Procedure  MakeObject( type$, id$, x$, y$, width$, height$, param1$, param2$, pa
            "ExplorerList", "ExplorerTree", "ExplorerCombo"
          
          If param1$
-            If FindString( param1$, Chr('"'))
+            ;If FindString( param1$, Chr('"'))
                text$ = Trim( param1$, Chr('"'))
-            EndIf
+            ;EndIf
          EndIf
    EndSelect
    
@@ -286,8 +286,8 @@ Procedure  MakeObject( type$, id$, x$, y$, width$, height$, param1$, param2$, pa
    If type$ = "CloseGadgetList"
       *Parent = GetParent( *Parent )
    Else
-      Debug "vvv "+param1 +" "+ param2
-      *new = widget_Create( *parent, type$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
+      ; Debug "vvv "+param1 +" "+ param2
+      *new = widget_Create( *parent, type$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
       
       If *new
          ;             If flag$
@@ -297,6 +297,8 @@ Procedure  MakeObject( type$, id$, x$, y$, width$, height$, param1$, param2$, pa
          If id$
             SetClass( *new, UCase(id$) )
          EndIf
+         
+         SetText( *new, text$ )
          
          ;
          If IsContainer( *new ) > 0
@@ -760,7 +762,7 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
       EndIf
       
       ; Debug ""+Name$+" = "+Class$+"( "+ x$+" "+y$+" "+width$+" "+height$ +" "+ Text$+" )"
-      *new = widget_Create( *parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$), "", 0,100,0, Val(Flag$) )
+      *new = widget_Create( *parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$), 0,100,0, Val(Flag$) )
       
       If *new
          If Name$
@@ -1751,7 +1753,7 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Param1=0, Param2=0, Param3=0, flag.q = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    Protected newtype$
@@ -1793,11 +1795,11 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
       Select type$
          Case "window"    
             If Type( *parent ) = #__Type_MDI
-               *new = AddItem( *parent, #PB_Any, text$, - 1, flag | #__window_NoActivate )
+               *new = AddItem( *parent, #PB_Any, "", - 1, flag | #__window_NoActivate )
                Resize( *new, X, Y, Width,Height )
             Else
                flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
-               *new = Window( X,Y,Width,Height, text$, flag, *parent )
+               *new = Window( X,Y,Width,Height, "", flag, *parent )
             EndIf
             
             Properties_Updates( *new, "Resize" )
@@ -1807,19 +1809,19 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
             AddItem( *new, -1, type$+"_item_0" )
             
-         Case "button"        : *new = Button(       X, Y, Width, Height, text$, flag ) 
-         Case "string"        : *new = String(       X, Y, Width, Height, text$, flag )
-         Case "text"          : *new = Text(         X, Y, Width, Height, text$, flag )
-         Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, text$, flag ) 
-            ; Case "web"           : *new = Web(          X, Y, Width, Height, text$, flag )
-         Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, text$, flag )                                                                           
-            ; Case "explorertree"  : *new = ExplorerTree( X, Y, Width, Height, text$, flag )                                                                           
-            ; Case "explorercombo" : *new = ExplorerCombo(X, Y, Width, Height, text$, flag )                                                                          
-         Case "frame"         : *new = Frame(        X, Y, Width, Height, text$, flag )                                                                                  
+         Case "button"        : *new = Button(       X, Y, Width, Height, "", flag ) 
+         Case "string"        : *new = String(       X, Y, Width, Height, "", flag )
+         Case "text"          : *new = Text(         X, Y, Width, Height, "", flag )
+         Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, "", flag ) 
+            ; Case "web"           : *new = Web(          X, Y, Width, Height, "", flag )
+         Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, "", flag )                                                                           
+            ; Case "explorertree"  : *new = ExplorerTree( X, Y, Width, Height, "", flag )                                                                           
+            ; Case "explorercombo" : *new = ExplorerCombo(X, Y, Width, Height, "", flag )                                                                          
+         Case "frame"         : *new = Frame(        X, Y, Width, Height, "", flag )                                                                                  
             
-            ; Case "date"          : *new = Date(         X, Y, Width, Height, text$, Param1, flag )         ; 2            
-         Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, text$, Param1, flag )                                                          
-         Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, text$, Param1, flag )                                                       
+            ; Case "date"          : *new = Date(         X, Y, Width, Height, "", Param1, flag )         ; 2            
+         Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, "", Param1, flag )                                                          
+         Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, "", Param1, flag )                                                       
             
          Case "scroll"        : *new = Scroll(       X, Y, Width, Height, Param1, Param2, Param3, flag )  ; bar                                                             
             
@@ -1839,7 +1841,7 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
          Case "tree"          : *new = Tree(         X, Y, Width, Height, flag )                                                                                                                            
             ; Case "canvas"        : *new = Canvas(       X, Y, Width, Height, flag )                                                                                                                          
             
-         Case "option"        : *new = Option(       X, Y, Width, Height, text$ )
+         Case "option"        : *new = Option(       X, Y, Width, Height, "" )
             ; Case "scintilla"     : *new = Scintilla(    X, Y, Width, Height, Param1 )
             ; Case "shortcut"      : *new = Shortcut(     X, Y, Width, Height, Param1 )
          Case "ipaddress"     : *new = IPAddress(    X, Y, Width, Height )
@@ -1858,10 +1860,8 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
          ;          EndIf
          ;\\
          SetClass( *new, UCase(newtype$) )
+         SetText( *new, newtype$ )
          
-         If text$ = ""
-            SetText( *new, newtype$ )
-         EndIf
          ;
          If IsContainer( *new )
             EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
@@ -1974,7 +1974,7 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
    ; flag.i | #__flag_NoFocus
    
    If *parent 
-      *new = widget_Create( *parent, Class.s, X,Y, Width, Height, "",0,100,0, flag )
+      *new = widget_Create( *parent, Class.s, X,Y, Width, Height, 0,100,0, flag )
       
       If *new
          add_line( *new )
@@ -3074,8 +3074,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 3046
-; FirstLine = 3012
+; CursorPosition = 167
+; FirstLine = 157
 ; Folding = ------------------------------------------------------------
 ; Optimizer
 ; EnableAsm
