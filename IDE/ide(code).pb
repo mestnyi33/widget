@@ -414,115 +414,8 @@ Procedure.q MakeFlag( Flag_Str.s )
    ProcedureReturn Flag
 EndProcedure
 
-Procedure$  MakeFunctionName( id$, type$ )
-   Protected result$
-   
-   If Trim( id$, "#" ) <> id$
-      If type$ = "Window"
-         result$ = "Open" + type$
-      Else
-         Select type$
-            Case "Scroll", "Progress", "Track"
-               result$ = type$ + "BarGadget"
-            Default
-               result$ = type$ + "Gadget"
-         EndSelect
-      EndIf
-      result$ + "( " + id$ + ", "
-   Else
-      If type$ = "Window"
-         result$ = id$+" = Open" + type$
-      Else
-         Select type$
-            Case "Scroll", "Progress", "Track"
-               result$ = id$ + " = " + type$ + "BarGadget"
-            Default
-               result$ = id$ + " = " + type$ + "Gadget"
-         EndSelect
-      EndIf
-      result$ + "( #PB_Any, "
-   EndIf
-   
-   ProcedureReturn result$
-EndProcedure
-
-Procedure$  MakeFunctionString( type$, function$, x$, y$, width$, height$, caption$, param1$, param2$, param3$, flag$ ) ; Ok
-   Protected result$
-   
-   Select type$
-      Case "Window"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                   
-      Case "Button"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                                 
-      Case "String"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                                 
-      Case "Text"          : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                                   
-      Case "CheckBox"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                               
-      Case "Option"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')
-      Case "Web"           : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')
-      Case "ExplorerList"  : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                           
-      Case "ExplorerTree"  : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                           
-      Case "ExplorerCombo" : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                          
-      Case "Frame"         : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')                                                                                  
-         
-      Case "HyperLink"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')+", " + param1$+", " + param2$                                                          
-      Case "ListIcon"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ Chr('"') + caption$+Chr('"')+", " + param1$+", " + param2$                                                       
-         
-      Case "ScrollArea"    : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$    
-      Case "Scroll", 
-           "ScrollBar"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$+", " + param3$                                                               
-      Case "Progress",
-           "ProgressBar"   : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                       
-      Case "Track", 
-           "TrackBar"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                                      
-      Case "Spin"          : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                             
-      Case "Splitter"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                         
-      Case "MDI"           : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                              
-      Case "Image"         : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$                                                                                                     
-      Case "Scintilla"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$
-      Case "Shortcut"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$
-      Case "ButtonImage"   : result$ = function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$                                                                                                 
-         
-      Case "ListView"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                       
-      Case "ComboBox"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                       
-      Case "Container"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                      
-      Case "IPAddress"     : result$ = function$ + x$+", " + y$+", " + width$+", " + height$
-      Case "Calendar"      : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                     
-      Case "Editor"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                          
-      Case "Date"          : result$ = function$ + x$+", " + y$+", " + width$+", " + height$               
-      Case "Tree"          : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                            
-      Case "Panel"         : result$ = function$ + x$+", " + y$+", " + width$+", " + height$ 
-      Case "Canvas"        : result$ = function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                          
-   EndSelect
-   
-   Select type$
-      Case "ScrollArea"    
-         If param3$ : result$ +", " + param3$ : EndIf     
-      Case "Calendar"
-         If param1$ : result$ +", " + param1$ : EndIf 
-      Case "Date"         
-         If caption$ : result$ +", "+ Chr('"') + caption$+Chr('"') : EndIf
-         If param1$ : result$ +", " + param1$ : EndIf 
-   EndSelect
-   
-   If flag$
-      Select type$
-         Case "Window", 
-              "Scroll", "Track", "Progress", "Spin", "Web", "OpenGL",
-              "Text", "String", "Editor", "Button", "CheckBox", "HyperLink", 
-              "Tree", "ListIcon", "ListView", "ComboBox", "Image", "ButtonImage",
-              "Date", "Calendar", "ExplorerCombo", "ExplorerList", "ExplorerTree",
-              "Container", "ScrollArea", "Splitter", "MDI", "Canvas", "Frame"  
-            
-            result$ +", " + flag$ 
-      EndSelect
-   EndIf
-   
-   result$ + " )" 
-   
-   ProcedureReturn result$
-EndProcedure
-
-
 Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
-   Protected result$, x$, y$, width$, height$, caption$, param1$, param2$, param3$, flag$
+   Protected result$, function$, x$, y$, width$, height$, text$, param1$, param2$, param3$, flag$, quotetext$
    Protected type$ = ClassFromType( Type(*g) )
    Protected id$ = GetClass(*g)
    
@@ -546,7 +439,8 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
            "HyperLink", "ListIcon", "Web", "Date",
            "ExplorerList", "ExplorerTree", "ExplorerCombo"
          
-         caption$ = GetText( *g )
+         text$ = GetText( *g )
+         quotetext$ = Chr('"') + text$ + Chr('"')
    EndSelect
    
    ; Param1
@@ -631,8 +525,110 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
       EndIf
    EndIf
    
-   result$ + space$ + MakeFunctionString( type$, MakeFunctionName( id$, type$ ), x$, y$, width$, height$, caption$, param1$,param2$,param3$, flag$ )
-   
+   ;
+   result$ + space$
+   ;
+   ;\\ make function string
+   ;
+   If Trim( id$, "#" ) <> id$
+      If type$ = "Window"
+         function$ = "Open" + type$
+      Else
+         Select type$
+            Case "Scroll", "Progress", "Track"
+               function$ = type$ + "BarGadget"
+            Default
+               function$ = type$ + "Gadget"
+         EndSelect
+      EndIf
+      ;
+      function$ + "( " + id$ + ", "
+   Else
+      If type$ = "Window"
+         function$ = id$+" = Open" + type$
+      Else
+         Select type$
+            Case "Scroll", "Progress", "Track"
+               function$ = id$ + " = " + type$ + "BarGadget"
+            Default
+               function$ = id$ + " = " + type$ + "Gadget"
+         EndSelect
+      EndIf
+      ;
+      function$ + "( #PB_Any, "
+   EndIf
+   ;
+   ;\\ make object string
+   ;
+   Select type$
+      Case "Window"        : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                   
+      Case "Button"        : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                                 
+      Case "String"        : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                                 
+      Case "Text"          : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                                   
+      Case "CheckBox"      : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                               
+      Case "Option"        : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$
+      Case "Web"           : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$
+      Case "ExplorerList"  : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                           
+      Case "ExplorerTree"  : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                           
+      Case "ExplorerCombo" : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                          
+      Case "Frame"         : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$                                                                                  
+         
+      Case "HyperLink"     : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$+", " + param1$+", " + param2$                                                          
+      Case "ListIcon"      : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ quotetext$+", " + param1$+", " + param2$                                                       
+         
+      Case "ScrollArea"    : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$    
+      Case "Scroll", 
+           "ScrollBar"     : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$+", " + param3$                                                               
+      Case "Progress",
+           "ProgressBar"   : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                       
+      Case "Track", 
+           "TrackBar"      : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                                      
+      Case "Spin"          : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                             
+      Case "Splitter"      : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                         
+      Case "MDI"           : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$+", " + param2$                                                                              
+      Case "Image"         : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$                                                                                                     
+      Case "Scintilla"     : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$
+      Case "Shortcut"      : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$
+      Case "ButtonImage"   : result$ + function$ + x$+", " + y$+", " + width$+", " + height$+", "+ param1$                                                                                                 
+         
+      Case "ListView"      : result$ + function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                       
+      Case "ComboBox"      : result$ + function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                       
+      Case "Container"     : result$ + function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                      
+      Case "IPAddress"     : result$ + function$ + x$+", " + y$+", " + width$+", " + height$
+      Case "Calendar"      : result$ + function$ + x$+", " + y$+", " + width$+", " + height$                                                     
+      Case "Editor"        : result$ + function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                          
+      Case "Date"          : result$ + function$ + x$+", " + y$+", " + width$+", " + height$               
+      Case "Tree"          : result$ + function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                            
+      Case "Panel"         : result$ + function$ + x$+", " + y$+", " + width$+", " + height$ 
+      Case "Canvas"        : result$ + function$ + x$+", " + y$+", " + width$+", " + height$                                                                                                                          
+   EndSelect
+   ;
+   Select type$
+      Case "ScrollArea"    
+         If param3$ : result$ +", " + param3$ : EndIf     
+      Case "Calendar"
+         If param1$ : result$ +", " + param1$ : EndIf 
+      Case "Date"         
+         If text$ : result$ +", "+ quotetext$ : EndIf
+         If param1$ : result$ +", " + param1$ : EndIf 
+   EndSelect
+   ;
+   If flag$
+      Select type$
+         Case "Window", 
+              "ScrollBar", "TrackBar", "ProgressBar", 
+              "Scroll", "Track", "Progress", "Spin", "Web", "OpenGL",
+              "Text", "String", "Editor", "Button", "CheckBox", "HyperLink", 
+              "Tree", "ListIcon", "ListView", "ComboBox", "Image", "ButtonImage",
+              "Date", "Calendar", "ExplorerCombo", "ExplorerList", "ExplorerTree",
+              "Container", "ScrollArea", "Splitter", "MDI", "Canvas", "Frame"  
+            
+            result$ +", " + flag$ 
+      EndSelect
+   EndIf
+   ;
+   result$ + " )" 
+   ;
    ProcedureReturn result$
 EndProcedure
 
@@ -1138,8 +1134,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 594
-; FirstLine = 535
-; Folding = ----------0-f-----v-----
+; CursorPosition = 416
+; FirstLine = 416
+; Folding = ------------------8-----
 ; EnableXP
 ; DPIAware
