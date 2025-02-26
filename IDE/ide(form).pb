@@ -129,7 +129,7 @@ Declare   Properties_Updates( *object._s_WIDGET, type$ )
 Declare   widget_Create( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   add_line( *new._s_widget )
-Declare   ObjectFromClass( class$ )
+Declare   MakeObject( class$ )
 
 ;- PUBLICs
 Procedure.s BoolToStr( val )
@@ -160,15 +160,17 @@ Procedure   is_parent_item( *this._s_WIDGET, item )
 EndProcedure
 
 ;-
-Procedure   CodeAddLine( *new._s_widget, item.l )
+Procedure   CodeAddLine( *new._s_widget, function$, item.l = - 1 )
    ;    Debug *new\class
    ;    ProcedureReturn 
    Protected Result$, Name$ = GetClass( *new )
    Protected Space$ = Space( ( Level(*new) - Level(ide_design_panel_MDI) ) * 3 )
-   ; Result$ = GenerateCODE( *new, "FUNCTION", space$ )
-   AddParseObject( *new )
-   Result$ = MakeObjectString( *new, Space$ )
-   ; Debug Name$
+   
+   If function$ = "object"
+      AddParseObject( *new )
+   EndIf
+   
+   Result$ = GenerateCODE( *new, function$, space$ )
    
    Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any, ", "Window( ")
    Result$ = ReplaceString( Result$, "OpenWindow( " + Name$, "Window( ")
@@ -183,139 +185,6 @@ Procedure   CodeAddLine( *new._s_widget, item.l )
       AddItem( ide_design_DEBUG, item, Result$ )
       SetItemData( ide_design_DEBUG, item, *new)
    EndIf
-EndProcedure
-
-;-
-Procedure MakeCoordinate( string$ ) ; 
-   Protected result
-   
-   Select Asc( string$ )
-      Case '0' To '9'
-         result = Val(string$) ; Если строка такого рода "10"
-         
-      Default
-;          result = GetVal(string$) ; Если строка такого рода "GadgetX(#Gadget)"
-;          If result = 0
-;             result = Val(GetVarValue(string$)) ; Если строка такого рода "x"
-;          EndIf
-         
-   EndSelect
-   
-   ProcedureReturn result
-EndProcedure
-
-Procedure  MakeObject( type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$ ) ; Ok
-   Protected text$, flag$
-   Protected param1, param2, param3, flags.q
-   
-   Static *parent =- 1
-   Protected *new._s_WIDGET
-   
-   ;
-   If *parent =- 1 
-      *parent = ide_design_panel_MDI 
-      x$ = "10"
-      y$ = "10"
-   EndIf
-   
-   
-   ; Text
-   Select type$
-      Case "Window", "Web", "Frame",
-           "Text", "String", "Button", "CheckBox",
-           "Option", "HyperLink", "ListIcon", "Date",
-           "ExplorerList", "ExplorerTree", "ExplorerCombo"
-         
-         If param1$
-            ;If FindString( param1$, Chr('"'))
-               text$ = Trim( param1$, Chr('"'))
-            ;EndIf
-         EndIf
-   EndSelect
-   
-   ; param1
-   Select type$
-      Case "Track", "Progress", "Scroll", "TrackBar", "ProgressBar", "ScrollBar", "ScrollArea"
-         param1 = Val( param1$ )
-         
-      Case "Splitter" 
-         param1 = ObjectFromClass(UCase(Param1$))
-         
-   EndSelect
-   
-   ; param2
-   Select type$
-      Case "Track", "Progress", "Scroll", "TrackBar", "ProgressBar", "ScrollBar", "ScrollArea"
-         param2 = Val( param2$ )
-         
-      Case "Splitter" 
-         param2 = ObjectFromClass(UCase(Param2$))
-         
-   EndSelect
-   
-   ; param3
-   Select type$
-      Case "Scroll", "ScrollBar", "ScrollArea"
-         param3 = Val( param3$ )
-   EndSelect
-   
-   ; flag
-   Select type$
-      Case "Date", "Calendar", "Container", 
-           "Tree", "ListView", "ComboBox", "Editor"
-         flag$ = param1$
-         
-      Case "Window", "Web", "Frame",
-           "Text", "String", "Button", "CheckBox", 
-           "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
-         flag$ = param2$
-         
-      Case "Track", "Progress", "TrackBar", "ProgressBar", 
-           "Spin", "OpenGL", "Splitter", "MDI", "Canvas"
-         flag$ = param3$
-         
-      Case "Scroll", "ScrollBar", "ScrollArea", "HyperLink", "ListIcon"  
-         flag$ = param4$
-         
-   EndSelect
-   If flag$
-      flags = MakeFlag(Flag$)
-   EndIf
-   
-   ;
-   If type$ = "CloseGadgetList"
-      *Parent = GetParent( *Parent )
-   ElseIf type$ = "AddGadgetItem"
-     ;*Parent = GetParent( *Parent )
-     Debug GenerateCODE( *Parent, type$, "" )
-   Else
-      ; Debug "vvv "+param1 +" "+ param2
-      *new = widget_Create( *parent, type$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
-      
-      If *new
-         ;             If flag$
-         ;                SetFlagsString( *new, flag$ )
-         ;             EndIf
-         
-         If id$
-            SetClass( *new, UCase(id$) )
-         EndIf
-         
-         SetText( *new, text$ )
-         
-         ;
-         If IsContainer( *new ) > 0
-            *Parent = *new
-         EndIf
-         
-         ; 
-         add_line( *new )
-      EndIf
-   EndIf
-   
-   
-   ;Debug MakeFunctionString( type$, MakeFunctionName( id$, type$ ), x$, y$, width$, height$, text$, param1$, param2$, param3$, flag$ )
-   ProcedureReturn *new
 EndProcedure
 
 ;-
@@ -627,13 +496,31 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
 EndProcedure
 
 ;-
-Procedure   ObjectFromClass( class$ )
+Procedure MakeCoordinate( string$ ) ; 
+   Protected result
+   
+   Select Asc( string$ )
+      Case '0' To '9'
+         result = Val(string$) ; Если строка такого рода "10"
+         
+      Default
+;          result = GetVal(string$) ; Если строка такого рода "GadgetX(#Gadget)"
+;          If result = 0
+;             result = Val(GetVarValue(string$)) ; Если строка такого рода "x"
+;          EndIf
+         
+   EndSelect
+   
+   ProcedureReturn result
+EndProcedure
+
+Procedure   MakeObject( class$ )
    Protected result, *parent._s_WIDGET = ide_design_panel_MDI
    ;class$ = Trim(class$)
    ;class$ = UCase(class$)
    
    If StartEnum( *parent )
-      ;Debug ""+GetClass( widget( )) +" "+ class$
+      ; Debug ""+GetClass( widget( )) +" "+ class$
       If GetClass( widget( )) = class$
          result = widget( )
          Break
@@ -675,6 +562,204 @@ Procedure IsFunctions( String$ ) ; Ok
    EndDataSection
 EndProcedure
 
+Procedure MakeCallFunction( str$, arg$, findtext$ )
+   Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
+   Protected param1, param2, param3, flags.q
+   
+   Define type$ = FindFunctions( str$, Len( str$ ))
+               
+   ;
+   If IsFunctions( type$ )
+      Static *parent =- 1
+      Protected *new._s_WIDGET
+      
+      ;
+      If *parent =- 1 
+         *parent = ide_design_panel_MDI 
+         x$ = "10"
+         y$ = "10"
+      EndIf
+      
+      If FindString( str$, "=" )
+         Define id$ = Trim( StringField( str$, 1, "=" ))
+      Else
+         Define id$ = Trim( StringField( arg$, 1, "," ))
+      EndIf   
+      
+      ;
+      type$ = ReplaceString( type$, "Gadget", "")
+      type$ = ReplaceString( type$, "Open", "")
+      
+      Define x$ = Trim(StringField( arg$, 2, ","))
+      Select Asc(x$)
+         Case '0' To '9'
+         Default   
+            x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
+      EndSelect
+      Define y$ = Trim(StringField( arg$, 3, ","))
+      Select Asc(y$)
+         Case '0' To '9'
+         Default   
+            y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
+      EndSelect
+      Define width$ = Trim(StringField( arg$, 4, ","))
+      Select Asc(width$)
+         Case '0' To '9'
+         Default   
+            width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
+      EndSelect
+      Define height$ = Trim(StringField( arg$, 5, ","))
+      Select Asc(height$)
+         Case '0' To '9'
+         Default   
+            height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
+      EndSelect
+      
+      ;
+      param1$ = Trim(StringField( arg$, 6, ","))
+      param2$ = Trim(StringField( arg$, 7, ","))
+      param3$ = Trim(StringField( arg$, 8, ",")) 
+      param4$ = Trim(StringField( arg$, 9, ","))
+      
+      ; param1
+      Select type$
+         Case "Track", "Progress", "Scroll", "ScrollArea",
+               "TrackBar","ProgressBar", "ScrollBar"
+            param1 = Val( param1$ )
+            
+         Case "Splitter" 
+            param1 = MakeObject(UCase(Param1$))
+            
+         Case "Window", "Web", "Frame",
+              "Text", "String", "Button", "CheckBox",
+              "Option", "HyperLink", "ListIcon", "Date",
+              "ExplorerList", "ExplorerTree", "ExplorerCombo"
+            
+            If FindString( param1$, Chr('"'))
+               text$ = Trim( param1$, Chr('"'))
+            Else
+               text$ = Trim(StringField( StringField( Mid( findtext$, FindString( findtext$, param1$ ) ), 1, ")" ), 2, "=" ))
+            EndIf
+            If text$
+               ;If FindString( text$, Chr('"'))
+               text$ = Trim( text$, Chr('"'))
+               ;EndIf
+            EndIf
+            
+      EndSelect
+      
+      ; param2
+      Select type$
+         Case "Track", "Progress", "Scroll", "TrackBar", "ProgressBar", "ScrollBar", "ScrollArea"
+            param2 = Val( param2$ )
+            
+         Case "Splitter" 
+            param2 = MakeObject(UCase(Param2$))
+            
+      EndSelect
+      
+      ; param3
+      Select type$
+         Case "Scroll", "ScrollBar", "ScrollArea"
+            param3 = Val( param3$ )
+      EndSelect
+      
+      ; param4
+      Select type$
+         Case "Date", "Calendar", "Container", 
+              "Tree", "ListView", "ComboBox", "Editor"
+            flag$ = param1$
+            
+         Case "Window", "Web", "Frame",
+              "Text", "String", "Button", "CheckBox", 
+              "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
+            flag$ = param2$
+            
+         Case "Track", "Progress", "TrackBar", "ProgressBar", 
+              "Spin", "OpenGL", "Splitter", "MDI", "Canvas"
+            flag$ = param3$
+            
+         Case "Scroll", "ScrollBar", "ScrollArea", "HyperLink", "ListIcon"  
+            flag$ = param4$
+            
+      EndSelect
+      
+      ; flag
+      If flag$
+         flags = MakeFlag(Flag$)
+      EndIf
+      
+      ; Debug "vvv "+param1 +" "+ param2
+      *new = widget_Create( *parent, type$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
+      
+      If *new
+;          If type$ = "Panel"
+;             RemoveItem( *new, 0 )
+;             ; ClearItems( *new )
+;          EndIf
+         ;             If flag$
+         ;                SetFlagsString( *new, flag$ )
+         ;             EndIf
+         
+         If id$
+            SetClass( *new, UCase(id$) )
+         EndIf
+         
+         SetText( *new, text$ )
+         
+         ;
+         If IsContainer( *new ) > 0
+            *Parent = *new
+         EndIf
+         
+         ; 
+         add_line( *new )
+      EndIf
+      
+   Else
+      If type$ = "CloseGadgetList"
+         *Parent = GetParent( *Parent )
+         ; CloseList( ) 
+         ; CodeAddLine( *Parent, - 1 )
+      EndIf
+      If type$ = "AddGadgetItem"
+         ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
+         
+         id$ = Trim( StringField( arg$, 1, "," ))
+         param1$ = Trim( StringField( arg$, 2, "," ))
+         param2$ = Trim( StringField( arg$, 3, "," ))
+         param3$ = Trim( StringField( arg$, 4, "," ))
+         flag$ = Trim( StringField( arg$, 5, "," ))
+         ;
+         If param1$ = "- 1" Or 
+            param1$ = "-1"
+            param1 = - 1
+         Else
+            param1 = Val(param1$)
+         EndIf
+         text$ = Trim( param2$, Chr('"'))
+         param3 = Val(param3$)
+         Flags = MakeFlag( flag$ )
+         
+         *Parent = MakeObject( id$ ) 
+         ;
+         Static CountItems
+         If CountItems = 0
+            SetItemText( *parent, 0, text$ ) 
+         Else
+            AddItem( *Parent, param1, text$, param3, Flags )
+         EndIf
+         CountItems + 1
+         
+         ; CodeAddLine( *Parent, type$ )
+      
+      EndIf
+      
+   EndIf
+   
+EndProcedure
+
+;-
 Procedure.S ParseFunctions( ReadString$ ) ;Ok
    Protected I
    Protected Count.I
@@ -806,8 +891,8 @@ Procedure.S ParseFunctions( ReadString$ ) ;Ok
          If Param1$ And Param2$
             Select Class$
                Case "Splitter"
-                  SetAttribute(*new, #PB_Splitter_FirstGadget, ObjectFromClass(Trim(Param1$)) )
-                  SetAttribute(*new, #PB_Splitter_SecondGadget, ObjectFromClass(Trim(Param2$)) )
+                  SetAttribute(*new, #PB_Splitter_FirstGadget, MakeObject(Trim(Param1$)) )
+                  SetAttribute(*new, #PB_Splitter_SecondGadget, MakeObject(Trim(Param2$)) )
                   
             EndSelect  
          EndIf
@@ -1466,91 +1551,8 @@ Procedure   IDE_OpenFile(Path$) ; Открытие файла
                   Continue
                EndIf   
                
-               Define type$ = FindFunctions( str$, Len( str$ ))
-               
                ;
-               If IsFunctions( type$ )
-                  If FindString( str$, "=" )
-                     Define id$ = Trim( StringField( str$, 1, "=" ))
-                  Else
-                     Define id$ = Trim( StringField( arg$, 1, "," ))
-                  EndIf   
-                  
-                  ;
-                  type$ = ReplaceString( type$, "Gadget", "")
-                  type$ = ReplaceString( type$, "Open", "")
-                  
-                  Define x$ = Trim(StringField( arg$, 2, ","))
-                  Select Asc(x$)
-                     Case '0' To '9'
-                     Default   
-                        x$ = StringField( StringField( Mid( Text$, FindString( Text$, x$ ) ), 1, "," ), 2, "=" )
-                  EndSelect
-                  Define y$ = Trim(StringField( arg$, 3, ","))
-                  Select Asc(y$)
-                     Case '0' To '9'
-                     Default   
-                        y$ = StringField( StringField( Mid( Text$, FindString( Text$, y$ ) ), 1, "," ), 2, "=" )
-                  EndSelect
-                  Define width$ = Trim(StringField( arg$, 4, ","))
-                  Select Asc(width$)
-                     Case '0' To '9'
-                     Default   
-                        width$ = StringField( StringField( Mid( Text$, FindString( Text$, width$ ) ), 1, "," ), 2, "=" )
-                  EndSelect
-                  Define height$ = Trim(StringField( arg$, 5, ","))
-                  Select Asc(height$)
-                     Case '0' To '9'
-                     Default   
-                        height$ = StringField( StringField( Mid( Text$, FindString( Text$, height$ ) ), 1, "," ), 2, "=" )
-                  EndSelect
-                  
-                  Define param1$ = Trim(StringField( arg$, 6, ","))
-                  Select type$
-                     Case "Window", "Web", "Frame",
-                          "Text", "String", "Button", "CheckBox",
-                          "Option", "HyperLink", "ListIcon", "Date",
-                          "ExplorerList", "ExplorerTree", "ExplorerCombo"
-                        
-                        If FindString( param1$, Chr('"'))
-                           param1$ = Trim( param1$, Chr('"'))
-                        Else
-                           param1$ = Trim(StringField( StringField( Mid( Text$, FindString( Text$, param1$ ) ), 1, ")" ), 2, "=" ))
-                        EndIf
-                  EndSelect
-                  
-                  ;
-                  MakeObject( type$,
-                              id$, 
-                              x$,
-                              y$,
-                              width$,
-                              height$, 
-                              param1$,
-                              Trim(StringField( arg$, 7, ",")), 
-                              Trim(StringField( arg$, 8, ",")), 
-                              Trim(StringField( arg$, 9, ",")))
-                  
-                  
-                  Continue
-               Else
-                  If type$ = "CloseGadgetList"
-                     ; Debug type$ +"("+ arg$ +")"
-                     
-                     MakeObject( type$, "","","","","","","","","" )
-                     
-                     
-                  EndIf
-                   If type$ = "AddGadgetItem"
-                     ; Debug type$ +"("+ arg$ +")"
-                     
-                     MakeObject( type$, "","","","","","","","","" )
-                     
-                     
-                  EndIf
-                  Continue
-               EndIf
-               
+               MakeCallFunction( str$, arg$, Text$ )
                
                
                ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
@@ -1817,7 +1819,7 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
          Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
-            AddItem( *new, -1, type$+"_item_0" )
+           AddItem( *new, -1, type$+"_item_0" )
             
          Case "button"        : *new = Button(       X, Y, Width, Height, "", flag ) 
          Case "string"        : *new = String(       X, Y, Width, Height, "", flag )
@@ -1973,7 +1975,7 @@ Procedure add_line( *new._s_widget )
       EndIf
       
       ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
-      CodeAddLine( *new, position );, sublevel )
+      CodeAddLine( *new, "object", position );, sublevel )
    EndIf
    
    ProcedureReturn *new
@@ -1984,11 +1986,17 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
    ; flag.i | #__flag_NoFocus
    
    If *parent 
+      ; OpenList( *parent, CountItems( *parent ) - 1 )
       *new = widget_Create( *parent, Class.s, X,Y, Width, Height, 0,100,0, flag )
       
       If *new
+;          If LCase(Class.s) = "panel"
+;             AddItem( *new, -1, Class.s+"_item_0" )
+;          EndIf
+         
          add_line( *new )
       EndIf
+      ; CloseList( )
    EndIf
    
    ProcedureReturn *new
@@ -2541,7 +2549,7 @@ Procedure ide_events( )
                name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
                
                If name$
-                  object = ObjectFromClass( name$ )
+                  object = MakeObject( name$ )
                   If Not object
                      If CountString( text$, "=" )
                         name$ = Trim( StringField( text$, 1, "=" ))
@@ -2550,7 +2558,7 @@ Procedure ide_events( )
                         EndIf
                      EndIf
                      
-                     object = ObjectFromClass( name$ )
+                     object = MakeObject( name$ )
                   EndIf
                EndIf
                
@@ -3083,12 +3091,12 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 289
-; FirstLine = 263
-; Folding = ------------------------------------------------------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 753
+; FirstLine = 684
+; Folding = ------------G-----------------------------------------------
+; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
-; Optimizer

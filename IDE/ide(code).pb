@@ -636,7 +636,7 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
 EndProcedure
 
 ;- 
-Procedure.s GenerateCODE( *this._s_WIDGET, FUNCTION$, Space$ = "" )
+Procedure.s GenerateCODE( *this._s_WIDGET, type$, Space$ = "" )
    Protected Result$, ID$, param1$, param2$, param3$, Text$, flag$, Class$, Name$
    Static TabIndex =- 1
    If Not *this
@@ -647,43 +647,34 @@ Procedure.s GenerateCODE( *this._s_WIDGET, FUNCTION$, Space$ = "" )
       ProcedureReturn ""
    EndIf
    
-   If FUNCTION$ = "CloseGadgetList"
+   If type$ = "CloseGadgetList"
       If IsContainer( *this ) > 0 
          If Not is_window_( *this )
-            Result$ + Space$ + FUNCTION$ + "( )" + #CRLF$
+            Result$ + Space$ + type$ + "( )" + #CRLF$
          EndIf
       EndIf 
    EndIf
    
-   If FUNCTION$ = "AddGadgetItem"
+   If type$ = "AddGadgetItem"
       If *this\parent\tabbar
          If TabIndex <> *this\TabIndex( ) 
             TabIndex = *this\TabIndex( ) 
             
-            Result$ + FUNCTION$ + "( " + GetClass( *this\parent ) + 
+            If TabIndex > 0
+               Result$ + Space$ + #LF$
+            EndIf
+            
+            Result$ + Space$ + type$ + "( " + GetClass( *this\parent ) + 
                       ", - 1" + 
                       ", " + Chr( '"' ) + GetItemText( *this\parent, TabIndex ) + Chr( '"' ) + 
                       " )  " + #CRLF$
             
-            Result$ + Space$
-         EndIf
-      EndIf
-      If *this\tabbar
-         If TabIndex <> *this\TabIndex( ) 
-            TabIndex = *this\TabIndex( ) 
-            
-            Result$ + FUNCTION$ + "( " + GetClass( *this ) + 
-                      ", - 1" + 
-                      ", " + Chr( '"' ) + GetItemText( *this, TabIndex ) + Chr( '"' ) + 
-                      " )  " + #CRLF$
-            
-            Result$ + Space$
          EndIf
       EndIf
    EndIf
    
    
-   If FUNCTION$ = "STATE"
+   If type$ = "STATE"
       Name$ = GetClass( *this )
       ;
       If Hide( *this)
@@ -705,39 +696,41 @@ Procedure.s GenerateCODE( *this._s_WIDGET, FUNCTION$, Space$ = "" )
       EndIf
    EndIf
    
-   If FUNCTION$ = "FUNCTION"
+   If type$ = "object"
       ;flag$ = FlagFromFlag( *this\type, *this\flag )
       Class$ = GetClassString( *this )
       Name$ = GetClass( *this )
-      Result$ + Space$
-      
-      ; Debug "--- "+Name$
-      ;    Select Asc( Class$ )
-      ;       Case '#'        : ID$ = Class$              
-      ;       Case '0' To '9' : ID$ = Chr( Asc( Class$ ) ) 
-      ;       Default         : ID$ = "#PB_Any"             
-      ;    EndSelect
-      ;    
-      
-      ;\\ close last list
-      If *this\BeforeWidget( )
-         Result$ + GenerateCODE( *this\BeforeWidget( ), "CloseGadgetList" )
-;          If IsContainer( *this\BeforeWidget( ) ) > 0 
-;             If Not is_window_( *this\BeforeWidget( ) )
-;                Result$ + Space$ + "CloseGadgetList" + "( )" + #CRLF$
+;       Result$ + Space$
+;       
+;       ; Debug "--- "+Name$
+;       ;    Select Asc( Class$ )
+;       ;       Case '#'        : ID$ = Class$              
+;       ;       Case '0' To '9' : ID$ = Chr( Asc( Class$ ) ) 
+;       ;       Default         : ID$ = "#PB_Any"             
+;       ;    EndSelect
+;       ;    
+;       
+;       ;\\ close last list
+;       If *this\BeforeWidget( )
+;          Result$ + GenerateCODE( *this\BeforeWidget( ), "CloseGadgetList" )
+; ;          If IsContainer( *this\BeforeWidget( ) ) > 0 
+; ;             If Not is_window_( *this\BeforeWidget( ) )
+; ;                Result$ + Space$ + "CloseGadgetList" + "( )" + #CRLF$
+; ;             EndIf
+; ;          EndIf 
+;          ;\\
+;          If IsContainer(*this) > 0 
+;             If Not is_window_( *this )
+;                Result$ + Space$ + #CRLF$
+;                Result$ + Space$ 
 ;             EndIf
-;          EndIf 
-         ;\\
-         If IsContainer(*this) > 0 
-            If Not is_window_( *this )
-               Result$ + Space$ + #CRLF$
-               Result$ + Space$ 
-            EndIf
-         EndIf
-      EndIf
+;          EndIf
+;       EndIf
       
       ;\\ add parent item
       Result$ + GenerateCODE( *this, "AddGadgetItem", Space$ ) 
+      
+      Result$ + MakeObjectString( *this, Space$ )
    EndIf
    
    ProcedureReturn Result$
@@ -865,15 +858,15 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
             Code$ + "Procedure Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #CRLF$
             
             ;\\ 
-            ; Code$ + GenerateCODE( *w, "FUNCTION", Space( ( Level(*w) - Level(*parent) ) * space) ) + #CRLF$
-            Code$ + MakeObjectString( *w, Space( ( Level(*w) - Level(*parent) ) * space )) + #CRLF$
+            Code$ + GenerateCODE( *w, "object", Space( ( Level(*w) - Level(*parent) ) * space) ) + #CRLF$
+            ; Code$ + MakeObjectString( *w, Space( ( Level(*w) - Level(*parent) ) * space )) + #CRLF$
             
             PushListPosition( ParseObject( ))
             ForEach ParseObject( )
                *g = ParseObject( )
                If IsChild( *g, *w )
-                  ; Code$ + GenerateCODE( *g, "FUNCTION", Space( ( Level(*g) - Level(*parent) ) * space) ) + #CRLF$
-                  Code$ + MakeObjectString( *g, Space( ( Level(*g) - Level(*parent) ) * space )) + #CRLF$
+                  Code$ + GenerateCODE( *g, "object", Space( ( Level(*g) - Level(*parent) ) * space) ) + #CRLF$
+                  ; Code$ + MakeObjectString( *g, Space( ( Level(*g) - Level(*parent) ) * space )) + #CRLF$
                EndIf
             Next
             PopListPosition( ParseObject( ))
@@ -1143,9 +1136,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 671
-; FirstLine = 601
-; Folding = ----------0-f------8-----
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 662
+; FirstLine = 598
+; Folding = ----------0-f-----v-----
 ; EnableXP
 ; DPIAware
