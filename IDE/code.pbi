@@ -337,6 +337,14 @@ Procedure   GetArgIndex( text$, len, caret, mode.a = 0 )
 EndProcedure
 
 ;-
+Procedure NumericString( string$ )
+   Select Asc( string$ )
+      Case '0' To '9'
+         ProcedureReturn #True
+   EndSelect
+EndProcedure
+
+;-
 Procedure$  MakeFlagString( type$, flag.q ) ; 
    Protected result$
    
@@ -747,46 +755,44 @@ Procedure MakeCallFunction( str$, arg$, findtext$ )
             y$ = "10"
          EndIf
          
-         If FindString( str$, "=" )
-            Define id$ = Trim( StringField( str$, 1, "=" ))
-         Else
-            Define id$ = Trim( StringField( arg$, 1, "," ))
-         EndIf   
-         
          ;
          type$ = ReplaceString( type$, "Gadget", "")
          type$ = ReplaceString( type$, "Open", "")
          
-         Define x$ = Trim(StringField( arg$, 2, ","))
-         Select Asc(x$)
-            Case '0' To '9'
-            Default   
-               x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
-         EndSelect
-         Define y$ = Trim(StringField( arg$, 3, ","))
-         Select Asc(y$)
-            Case '0' To '9'
-            Default   
-               y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
-         EndSelect
-         Define width$ = Trim(StringField( arg$, 4, ","))
-         Select Asc(width$)
-            Case '0' To '9'
-            Default   
-               width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
-         EndSelect
-         Define height$ = Trim(StringField( arg$, 5, ","))
-         Select Asc(height$)
-            Case '0' To '9'
-            Default   
-               height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
-         EndSelect
-         
+         ;
+         If FindString( str$, "=" )
+            Define id$ = Trim( StringField( str$, 1, "=" ))
+         Else
+            Define id$ = Trim( StringField( arg$, 1, "," ))
+            
+;             If NumericString( id$ )
+;                id$ = "#" + type$ +"_"+ id$
+;             EndIf
+         EndIf   
+         ;
+         x$      = Trim(StringField( arg$, 2, ","))
+         y$      = Trim(StringField( arg$, 3, ","))
+         width$  = Trim(StringField( arg$, 4, ","))
+         height$ = Trim(StringField( arg$, 5, ","))
          ;
          param1$ = Trim(StringField( arg$, 6, ","))
          param2$ = Trim(StringField( arg$, 7, ","))
          param3$ = Trim(StringField( arg$, 8, ",")) 
          param4$ = Trim(StringField( arg$, 9, ","))
+         
+         ;
+         If Not NumericString( x$ )  
+            x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
+         EndIf
+         If Not NumericString( y$ )  
+            y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
+         EndIf
+         If Not NumericString( width$ )  
+            width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
+         EndIf
+         If Not NumericString( height$ )  
+            height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
+         EndIf
          
          ; param1
          Select type$
@@ -884,6 +890,10 @@ Procedure MakeCallFunction( str$, arg$, findtext$ )
          EndIf
          
       Case "CloseGadgetList"
+         If Not *parent
+            Debug "ERROR "+type$
+            ProcedureReturn 
+         EndIf
          *Parent = GetParent( *Parent )
          ; CloseList( ) 
          ; CodeAddLine( *Parent, - 1 )
@@ -907,7 +917,17 @@ Procedure MakeCallFunction( str$, arg$, findtext$ )
          param3 = Val(param3$)
          Flags = MakeFlag( flag$ )
          
+         
+;          Select Asc(id$)
+;             Case '0' To '9'
+;                id$ = "#" + type$ +"_"+ id$
+;          EndSelect
+         
          *Parent = MakeObject( id$ ) 
+         If Not *parent
+            Debug "ERROR "+type$
+            ProcedureReturn 
+         EndIf
          ;
          Static CountItems
          If CountItems = 0
@@ -1380,14 +1400,12 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
             
             ;\\ 
             Code$ + GenerateCODE( *w, "object", Space( ( Level(*w) - Level(*parent) ) * space) ) + #CRLF$
-            ; Code$ + MakeObjectString( *w, Space( ( Level(*w) - Level(*parent) ) * space )) + #CRLF$
             
             PushListPosition( ParseObject( ))
             ForEach ParseObject( )
                *g = ParseObject( )
                If IsChild( *g, *w )
                   Code$ + GenerateCODE( *g, "object", Space( ( Level(*g) - Level(*parent) ) * space) ) + #CRLF$
-                  ; Code$ + MakeObjectString( *g, Space( ( Level(*g) - Level(*parent) ) * space )) + #CRLF$
                EndIf
             Next
             PopListPosition( ParseObject( ))
@@ -1614,8 +1632,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1425
-; FirstLine = 1409
-; Folding = ----------------------------------+
+; CursorPosition = 345
+; FirstLine = 329
+; Folding = ----------------------------------v-
 ; EnableXP
 ; DPIAware

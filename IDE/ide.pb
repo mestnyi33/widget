@@ -251,156 +251,6 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
 EndProcedure
 
 ;-
-
-;-
-Procedure.S ParseFunctions( ReadString$ ) ;Ok
-   Protected I
-   Protected Count.I
-   Protected Arguments$
-   
-   Protected Name$
-   Protected Class$
-   Protected x$
-   Protected y$
-   Protected width$
-   Protected height$
-   Protected Text$
-   Protected Image$
-   Protected Param1$
-   Protected Param2$
-   Protected Param3$
-   Protected Flag$
-   Protected CountString.I
-   
-   Static *parent =- 1
-   Protected *new._s_WIDGET
-   
-   
-   ReadString$ = Trim( ReadString$ )
-   ReadString$ = ReplaceString( ReadString$, "Open", "")
-   ReadString$ = ReplaceString( ReadString$, "Gadget", "")
-   ReadString$ = ReplaceString( ReadString$, "Find >>", "")
-   
-   ;
-   Arguments$ = Trim( StringField( ReadString$, (2), Chr('(')), Chr(')'))
-   
-   If Arguments$
-      Name$ = Trim( StringField(ReadString$, 1, Chr('=') ))  
-      
-      Class$ = Trim( StringField( ReadString$, (1), Chr('(') ))
-      Class$ = Trim( StringField( Class$, (2), Chr('=') ))
-      
-      If *parent =- 1 
-         *parent = ide_design_panel_MDI 
-         x$ = "10"
-         y$ = "10"
-      Else
-         x$ = Trim( StringField( Arguments$, 2, "," ))
-         y$ = Trim( StringField( Arguments$, 3, "," ))
-      EndIf
-      
-      width$ = Trim( StringField( Arguments$, 4, "," ))
-      ;   If width$ = StringField( width$, 1, "(")
-      ;   Else
-      ;     width$ + ")"
-      ;   EndIf
-      
-      height$ = Trim( StringField( Arguments$, 5, "," ))
-      ;   If height$ = StringField( height$, 1, "(")
-      ;   Else
-      ;     height$ + ")"
-      ;   EndIf
-      
-      
-      Select Class$
-         Case "Spin", "Track", "Progress", "Splitter", "MDI", "ListIcon", "Date", "HyperLink", "Scroll", "ScrollArea"
-            Param1$ = Trim( StringField( Arguments$, 6, "," ))
-            Param2$ = Trim( StringField( Arguments$, 7, "," ))
-            
-            Select Class$
-               Case "Scroll", "ScrollArea"
-                  Param3$ = Trim( StringField( Arguments$, 8, "," ))
-                  Flag$ = Trim( StringField( Arguments$, 9, "," ))
-               Default
-                  Flag$ = Trim( StringField( Arguments$, 8, "," ))
-            EndSelect  
-            
-         Default
-            Select Class$
-               Case "Image", "ButtonImage"
-                  Image$ = Trim( StringField( Arguments$, 6, "," ))
-               Default
-                  Text$ = Trim( StringField( Arguments$, 6, "," ))
-            EndSelect
-            
-            Flag$ = Trim( StringField( Arguments$, 7, "," ))
-            
-      EndSelect
-      
-      If CountString(Text$, Chr('"')) = 0
-         Flag$ = Text$
-         Text$ = ""
-      EndIf
-      
-      ; Debug ""+Name$+" = "+Class$+"( "+ x$+" "+y$+" "+width$+" "+height$ +" "+ Text$+" )"
-      *new = widget_Create( *parent, Class$, Val(x$), Val(y$), Val(width$), Val(height$), 0,100,0, Val(Flag$) )
-      
-      If *new
-         If Name$
-            SetClass( *new, UCase(Name$) )
-         EndIf
-         
-         If Text$
-            If FindString( Text$, Chr('"'))
-               Text$ = Trim( Text$, Chr('"'))
-            EndIf
-            
-            SetText( *new, Text$ )
-         EndIf
-         
-         If Image$
-            SetImage( *new, Val(Image$) )
-         EndIf
-         
-         Select Class$
-            Case "Spin", "Track", "Progress", "Scroll"
-               If Param1$
-                  SetAttribute(*new, #__bar_Minimum, Val(Param1$) )
-               EndIf
-               If Param2$
-                  SetAttribute(*new, #__bar_Maximum, Val(Param2$) )
-               EndIf
-         EndSelect
-         
-         If Param3$
-            Select Class$
-               Case "Scroll"
-                  
-               Case "ScrollArea"
-                  
-            EndSelect  
-         EndIf
-         
-         If Param1$ And Param2$
-            Select Class$
-               Case "Splitter"
-                  SetAttribute(*new, #PB_Splitter_FirstGadget, MakeObject(Trim(Param1$)) )
-                  SetAttribute(*new, #PB_Splitter_SecondGadget, MakeObject(Trim(Param2$)) )
-                  
-            EndSelect  
-         EndIf
-         
-         If IsContainer(*new)
-            *Parent = *new
-         EndIf
-         ; Debug *new\class
-         add_line( *new )
-      EndIf
-   EndIf
-EndProcedure
-
-
-;-
 Procedure   Properties_ButtonHide( *second._s_WIDGET, state )
    Protected *this._s_WIDGET
    Protected *row._s_ROWS
@@ -1054,12 +904,6 @@ Procedure   IDE_OpenFile(Path$) ; Открытие файла
             EndIf
             start = 0
             stop = 0
-            ; spacecount = 0 "+spacecount + " 
-            
-            ;             
-            ;             If IsFunctions(String$)
-            ;                ParseFunctions(String$)
-            ;             EndIf
          Wend
          
          ;          ;          ;
@@ -2587,9 +2431,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 997
-; FirstLine = 969
-; Folding = ------------------------------------------------
+; CursorPosition = 906
+; FirstLine = 867
+; Folding = ---------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
