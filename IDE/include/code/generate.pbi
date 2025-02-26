@@ -389,7 +389,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
+; CursorPosition = 7
 ; Folding = -------
 ; EnableXP
 ; DPIAware

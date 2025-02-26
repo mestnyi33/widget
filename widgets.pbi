@@ -12623,13 +12623,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf   
             EndIf
          Else
-            result = typeCount( Str( *this\window + *this\type ) ) 
-            If result 
-               result - 1
-            EndIf
+            result = typeCount( Str( *this\window + *this\type ) ) - 1 
          EndIf
-         
-         ProcedureReturn result
+         If result > 0
+            ProcedureReturn result
+         EndIf
       EndProcedure
       
       ;-
@@ -24916,8 +24914,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15482
-; FirstLine = 15318
+; CursorPosition = 12625
+; FirstLine = 12601
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
