@@ -28,7 +28,7 @@ Procedure Open_WINDOW_0( )
       BUTTON_1 = ButtonGadget( #PB_Any, 35, 105, 50, 29, "button_1" )
       STRING_0 = StringGadget( #PB_Any, 42, 147, 50, 29, "string_0" )
       
-      SCROLLAREA_0 = ScrollAreaGadget( #PB_Any, 119, 28, 169, 176, 165, 175, 0,  #PB_ScrollArea_Flat  )
+      SCROLLAREA_0 = ScrollAreaGadget( #PB_Any, 119, 28, 169, 176, 165, 175, 1,  #PB_ScrollArea_Flat  )
          BUTTON_2 = ButtonGadget( #PB_Any, 14, 28, 29, 29, "button_2" )
          TEXT_1 = TextGadget( #PB_Any, 28, 63, 50, 29, "text_1" )
          BUTTON_3 = ButtonGadget( #PB_Any, 35, 105, 78, 29, "button_3" )
@@ -83,8 +83,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 18
+; CursorPosition = 30
 ; Folding = --
 ; EnableXP
 ; DPIAware

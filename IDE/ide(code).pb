@@ -591,7 +591,8 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
    
    ; Param3
    Select type$
-      Case "Scroll"     : param3$ = Str( GetAttribute( *g, #PB_ScrollBar_PageLength ))
+      Case "Scroll",
+           "ScrollBar"  : param3$ = Str( GetAttribute( *g, #PB_ScrollBar_PageLength ))
       Case "ScrollArea" : param3$ = Str( GetAttribute( *g, #PB_ScrollArea_ScrollStep ))
    EndSelect
    
@@ -1137,8 +1138,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 662
-; FirstLine = 598
+; CursorPosition = 594
+; FirstLine = 535
 ; Folding = ----------0-f-----v-----
 ; EnableXP
 ; DPIAware
