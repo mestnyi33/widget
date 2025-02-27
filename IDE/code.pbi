@@ -1,9 +1,4 @@
-﻿; GLOBALs
-Global NewMap FlagsString.s( )
-Global NewMap EventsString.s( )
-Global NewMap ImagePuchString.s( )
-Global NewMap ClassString.s( )
-Global NewList ParseObject( )
+﻿;- GLOBALs
 
 ;
 ;- INCLUDEs
@@ -17,12 +12,15 @@ XIncludeFile "include/code/generate.pbi"
 ;- USES
 UseWidgets( )
 
+
+Global parentlevel 
+
 ;
 ;- PUBLICs
-Procedure AddParseObject( *this._s_WIDGET )
+Procedure AddParseObject( *g._s_WIDGET )
    LastElement( ParseObject( ) )
    AddElement( ParseObject( ) )
-   ParseObject( ) = *this
+   ParseObject( ) = *g
 EndProcedure
 
 ;
@@ -192,7 +190,7 @@ chr$ = ","
    EndIf
 EndProcedure
 
-Procedure$ FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+Procedure$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
    Protected i, chr$, start, stop, spacecount
    
    For i = len To 0 Step - 1
@@ -708,6 +706,10 @@ Procedure MakeCoordinate( string$ ) ;
 EndProcedure
 
 Procedure   MakeObject( class$ )
+   If FindMapElement( GetObject( ), class$ )
+      class$ = GetObject( )
+   EndIf
+   
    Protected result, *parent._s_WIDGET = ide_design_panel_MDI
    ;class$ = Trim(class$)
    ;class$ = UCase(class$)
@@ -725,222 +727,6 @@ Procedure   MakeObject( class$ )
       a_set( result )
    EndIf      
    ProcedureReturn result
-EndProcedure
-
-Procedure MakeCallFunction( str$, arg$, findtext$ )
-   Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
-   Protected param1, param2, param3, flags.q
-   
-   Define type$ = FindFunctions( str$, Len( str$ ))
-   
-   ;
-   Select type$
-      Case "OpenWindow",
-           "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
-           "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
-           "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
-           "IPAddressGadget","ProgressBarGadget","ScrollBarGadget","ScrollAreaGadget",
-           "TrackBarGadget","WebGadget","ButtonImageGadget","CalendarGadget",
-           "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
-           "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
-           "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
-         
-         Static *parent =- 1
-         Protected *new._s_WIDGET
-         
-         ;
-         If *parent =- 1 
-            *parent = ide_design_panel_MDI 
-            x$ = "10"
-            y$ = "10"
-         EndIf
-         
-         ;
-         type$ = ReplaceString( type$, "Gadget", "")
-         type$ = ReplaceString( type$, "Open", "")
-         
-         ;
-         If FindString( str$, "=" )
-            Define id$ = Trim( StringField( str$, 1, "=" ))
-         Else
-            Define id$ = Trim( StringField( arg$, 1, "," ))
-            
-;             If NumericString( id$ )
-;                id$ = "#" + type$ +"_"+ id$
-;             EndIf
-         EndIf   
-         ;
-         x$      = Trim(StringField( arg$, 2, ","))
-         y$      = Trim(StringField( arg$, 3, ","))
-         width$  = Trim(StringField( arg$, 4, ","))
-         height$ = Trim(StringField( arg$, 5, ","))
-         ;
-         param1$ = Trim(StringField( arg$, 6, ","))
-         param2$ = Trim(StringField( arg$, 7, ","))
-         param3$ = Trim(StringField( arg$, 8, ",")) 
-         param4$ = Trim(StringField( arg$, 9, ","))
-         
-         ;
-         If Not NumericString( x$ )  
-            x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
-         EndIf
-         If Not NumericString( y$ )  
-            y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
-         EndIf
-         If Not NumericString( width$ )  
-            width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
-         EndIf
-         If Not NumericString( height$ )  
-            height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
-         EndIf
-         
-         ; param1
-         Select type$
-            Case "Track", "Progress", "Scroll", "ScrollArea",
-                 "TrackBar","ProgressBar", "ScrollBar"
-               param1 = Val( param1$ )
-               
-            Case "Splitter" 
-               param1 = MakeObject(UCase(Param1$))
-               
-            Case "Window", "Web", "Frame",
-                 "Text", "String", "Button", "CheckBox",
-                 "Option", "HyperLink", "ListIcon", "Date",
-                 "ExplorerList", "ExplorerTree", "ExplorerCombo"
-               
-               If FindString( param1$, Chr('"'))
-                  text$ = Trim( param1$, Chr('"'))
-               Else
-                  text$ = Trim(StringField( StringField( Mid( findtext$, FindString( findtext$, param1$ ) ), 1, ")" ), 2, "=" ))
-               EndIf
-               If text$
-                  ;If FindString( text$, Chr('"'))
-                  text$ = Trim( text$, Chr('"'))
-                  ;EndIf
-               EndIf
-               
-         EndSelect
-         
-         ; param2
-         Select type$
-            Case "Track", "Progress", "Scroll", "TrackBar", "ProgressBar", "ScrollBar", "ScrollArea"
-               param2 = Val( param2$ )
-               
-            Case "Splitter" 
-               param2 = MakeObject(UCase(Param2$))
-               
-         EndSelect
-         
-         ; param3
-         Select type$
-            Case "Scroll", "ScrollBar", "ScrollArea"
-               param3 = Val( param3$ )
-         EndSelect
-         
-         ; param4
-         Select type$
-            Case "Date", "Calendar", "Container", 
-                 "Tree", "ListView", "ComboBox", "Editor"
-               flag$ = param1$
-               
-            Case "Window", "Web", "Frame",
-                 "Text", "String", "Button", "CheckBox", 
-                 "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
-               flag$ = param2$
-               
-            Case "Track", "Progress", "TrackBar", "ProgressBar", 
-                 "Spin", "OpenGL", "Splitter", "MDI", "Canvas"
-               flag$ = param3$
-               
-            Case "Scroll", "ScrollBar", "ScrollArea", "HyperLink", "ListIcon"  
-               flag$ = param4$
-               
-         EndSelect
-         
-         ; flag
-         If flag$
-            flags = MakeFlag(Flag$)
-         EndIf
-         
-         ; Debug "vvv "+param1 +" "+ param2
-         *new = widget_Create( *parent, type$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
-         
-         If *new
-            ;          If type$ = "Panel"
-            ;             RemoveItem( *new, 0 )
-            ;             ; ClearItems( *new )
-            ;          EndIf
-            ;             If flag$
-            ;                SetFlagsString( *new, flag$ )
-            ;             EndIf
-            
-            If id$
-               SetClass( *new, UCase(id$) )
-            EndIf
-            
-            SetText( *new, text$ )
-            
-            ;
-            If IsContainer( *new ) > 0
-               *Parent = *new
-            EndIf
-            
-            ; 
-            add_line( *new )
-         EndIf
-         
-      Case "CloseGadgetList"
-         If Not *parent
-            Debug "ERROR "+type$
-            ProcedureReturn 
-         EndIf
-         *Parent = GetParent( *Parent )
-         ; CloseList( ) 
-         ; CodeAddLine( *Parent, - 1 )
-         
-      Case "AddGadgetItem"
-         ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
-         
-         id$ = Trim( StringField( arg$, 1, "," ))
-         param1$ = Trim( StringField( arg$, 2, "," ))
-         param2$ = Trim( StringField( arg$, 3, "," ))
-         param3$ = Trim( StringField( arg$, 4, "," ))
-         flag$ = Trim( StringField( arg$, 5, "," ))
-         ;
-         If param1$ = "- 1" Or 
-            param1$ = "-1"
-            param1 = - 1
-         Else
-            param1 = Val(param1$)
-         EndIf
-         text$ = Trim( param2$, Chr('"'))
-         param3 = Val(param3$)
-         Flags = MakeFlag( flag$ )
-         
-         
-;          Select Asc(id$)
-;             Case '0' To '9'
-;                id$ = "#" + type$ +"_"+ id$
-;          EndSelect
-         
-         *Parent = MakeObject( id$ ) 
-         If Not *parent
-            Debug "ERROR "+type$
-            ProcedureReturn 
-         EndIf
-         ;
-         Static CountItems
-         If CountItems = 0
-            SetItemText( *parent, 0, text$ ) 
-         Else
-            AddItem( *Parent, param1, text$, param3, Flags )
-         EndIf
-         CountItems + 1
-         
-         ; CodeAddLine( *Parent, type$ )
-         
-   EndSelect
-   
 EndProcedure
 
 Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
@@ -1026,33 +812,33 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
          Flag$ = MakeFlagString( type$, *g\flag )
    EndSelect
    
-   ; close list
-   If *g\BeforeWidget( )
-      If IsContainer( *g\BeforeWidget( ) ) > 0 
-         If Not is_window_( *g\BeforeWidget( ) )
-            If *g\BeforeWidget( )\LastWidget( )
-               If IsContainer( *g\BeforeWidget( )\LastWidget( ) ) > 0 
-                  If Not is_window_( *g\BeforeWidget( )\LastWidget( ) )
-                     ; Debug ""+*g\BeforeWidget( )\LastWidget( )\class +" "+ *g\class
-                     If *g\BeforeWidget( )\LastWidget( )\parent <> *g\parent
-                        result$ + space$ +"   "+ "CloseGadgetList" + "( )" + #CRLF$ 
-                     EndIf
-                  EndIf
-               EndIf 
-            EndIf
-            
-            result$ + space$ + "CloseGadgetList" + "( )" + #CRLF$ 
-            result$ + space$ + #CRLF$
+      ; close list
+      If *g\BeforeWidget( )
+         If IsContainer( *g\BeforeWidget( ) ) > 0 
+;             If Not is_window_( *g\BeforeWidget( ) )
+;                If *g\BeforeWidget( )\LastWidget( )
+;                   If IsContainer( *g\BeforeWidget( )\LastWidget( ) ) > 0 
+;                      If Not is_window_( *g\BeforeWidget( )\LastWidget( ) )
+;                         ; Debug ""+*g\BeforeWidget( )\LastWidget( )\class +" "+ *g\class
+;                         If *g\BeforeWidget( )\LastWidget( )\parent <> *g\parent
+;                            result$ + space$ +"   "+ "CloseGadgetList" + "( ) ;" + GetClass(*g\BeforeWidget( )\LastWidget( ))  + #LF$ 
+;                         EndIf
+;                      EndIf
+;                   EndIf 
+;                EndIf
+;                
+;                result$ + space$ + "CloseGadgetList" + "( ) ;" + GetClass(*g\BeforeWidget( ))  + #LF$ 
+;                result$ + space$ + #LF$
+;             EndIf
+         Else
+            ;\\
+            If IsContainer(*g) > 0 
+               If Not is_window_( *g )
+                  result$ + space$ + #LF$
+               EndIf
+            EndIf 
          EndIf
-      Else
-         ;\\
-         If IsContainer(*g) > 0 
-            If Not is_window_( *g )
-               result$ + space$ + #CRLF$
-            EndIf
-         EndIf 
       EndIf
-   EndIf
    
    ;
    result$ + space$
@@ -1162,115 +948,123 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
 EndProcedure
 
 ;- 
-Procedure.s GenerateCODE( *this._s_WIDGET, type$, Space$ = "" )
-   Protected Result$, ID$, param1$, param2$, param3$, Text$, flag$, Class$, Name$
-   Static TabIndex =- 1
-   If Not *this
+Procedure.s GenerateCODE( *g._s_WIDGET, type$, indent, Level.l = 0 )
+   Protected result$, ID$, param1$, param2$, param3$, Text$, flag$, Class$, Name$
+   Static TabIndex =- 1, tabparent
+   
+   If ide_design_panel_MDI
+      parentlevel = Level(ide_design_panel_MDI)
+   EndIf
+
+   If Not *g
       ProcedureReturn ""
    EndIf
    
-   If Not *this\parent
+   If Not *g\parent
       ProcedureReturn ""
    EndIf
    
    If type$ = "CloseGadgetList"
-      If IsContainer( *this ) > 0 
-         If Not is_window_( *this )
-            Result$ + Space$ + type$ + "( )" + #CRLF$
+      While Not is_window_(*g )
+         If IsContainer( *g ) > 0 
+            If indent
+               result$ + Space((Level(*g) - parentlevel) * indent)
+            EndIf
+            result$ + type$ + "( ) ; " + GetClass(*g) + #LF$ 
+         EndIf 
+         If Level = *g\level
+            If IsContainer( *g ) > 0 
+               result$ + #LF$
+            EndIf
+            Break
          EndIf
-      EndIf 
+         *g = *g\parent
+      Wend
+      ProcedureReturn result$
+   Else
+      If indent
+         Protected Space$ = Space((Level(*g) - parentlevel) * indent)
+      EndIf
    EndIf
-   
+    
    If type$ = "AddGadgetItem"
-      If *this\parent\tabbar
-         If TabIndex <> *this\TabIndex( ) 
-            TabIndex = *this\TabIndex( ) 
+      If *g\parent\tabbar
+         If tabparent<>*g\parent
+            tabparent=*g\parent
+            TabIndex =- 1
+         EndIf
+         If TabIndex <> *g\TabIndex( ) 
+            TabIndex = *g\TabIndex( ) 
             
             If TabIndex > 0
-               Result$ + Space$ + #LF$
+               result$ + Space$ + #LF$
             EndIf
             
-            Result$ + Space$ + type$ + "( " + GetClass( *this\parent ) + 
+            result$ + Space$ + type$ + "( " + GetClass( *g\parent ) + 
                       ", - 1" + 
-                      ", " + Chr( '"' ) + GetItemText( *this\parent, TabIndex ) + Chr( '"' ) + 
-                      " )  " + #CRLF$
+                      ", " + Chr( '"' ) + GetItemText( *g\parent, TabIndex ) + Chr( '"' ) + 
+                      " )  " + #LF$
             
          EndIf
       EndIf
    EndIf
    
-   
    If type$ = "STATE"
-      Name$ = GetClass( *this )
+      Name$ = GetClass( *g )
       ;
-      If Hide( *this)
-         Result$ + Space$ + "HideGadget( " + Name$ + ", #True )" + #CRLF$
+      If Hide( *g)
+         result$ + Space$ 
+         result$ + "HideGadget( " + Name$ + ", #True )" + #LF$
       EndIf
-      If Disable( *this)
-         Result$ + Space$ + "DisableGadget( " + Name$ + ", #True )" + #CRLF$
+      If Disable( *g)
+         result$ + Space$ 
+         result$ + "DisableGadget( " + Name$ + ", #True )" + #LF$
       EndIf
-      If GetState( *this) > 0
-         Result$ + Space$ + "SetGadgetState( " + Name$ + ", "+ GetState( *this) + " )" + #CRLF$
+      If GetState( *g) > 0
+         result$ + Space$ 
+         result$ + "SetGadgetState( " + Name$ + ", "+ GetState( *g) + " )" + #LF$
       Else
          ; Это для тех кто гаджетов которые принимают [0]
-         Select *this\Type 
+         Select *g\Type 
             Case #__type_Panel
-               If GetState( *this) = 0
-                  Result$ + Space$ + "SetGadgetState( " + Name$ + ", "+ GetState( *this) + " )" + #CRLF$
+               If GetState( *g) = 0
+                  result$ + Space$ 
+                  result$ + "SetGadgetState( " + Name$ + ", "+ GetState( *g) + " )" + #LF$
                EndIf
          EndSelect
       EndIf
    EndIf
    
    If type$ = "object"
-      ;flag$ = FlagFromFlag( *this\type, *this\flag )
-      Class$ = GetClassString( *this )
-      Name$ = GetClass( *this )
-      ;       Result$ + Space$
-      ;       
-      ;       ; Debug "--- "+Name$
-      ;       ;    Select Asc( Class$ )
-      ;       ;       Case '#'        : ID$ = Class$              
-      ;       ;       Case '0' To '9' : ID$ = Chr( Asc( Class$ ) ) 
-      ;       ;       Default         : ID$ = "#PB_Any"             
-      ;       ;    EndSelect
-      ;       ;    
-      ;       
-      ;       ;\\ close last list
-      ;       If *this\BeforeWidget( )
-      ;          Result$ + GenerateCODE( *this\BeforeWidget( ), "CloseGadgetList" )
-      ; ;          If IsContainer( *this\BeforeWidget( ) ) > 0 
-      ; ;             If Not is_window_( *this\BeforeWidget( ) )
-      ; ;                Result$ + Space$ + "CloseGadgetList" + "( )" + #CRLF$
-      ; ;             EndIf
-      ; ;          EndIf 
-      ;          ;\\
-      ;          If IsContainer(*this) > 0 
-      ;             If Not is_window_( *this )
-      ;                Result$ + Space$ + #CRLF$
-      ;                Result$ + Space$ 
-      ;             EndIf
-      ;          EndIf
-      ;       EndIf
+      If *g\BeforeWidget( )
+         PushListPosition( widgets( ))
+         If ChangeCurrentElement( widgets( ), *g\address )
+            PreviousElement( widgets( ))
+            result$ + GenerateCODE( widgets( ), "CloseGadgetList", indent, *g\BeforeWidget( )\level ); ) 
+         EndIf     
+         PopListPosition( widgets( ))
+      EndIf
       
       ;\\ add parent item
-      Result$ + GenerateCODE( *this, "AddGadgetItem", Space$ ) 
+      result$ + GenerateCODE( *g, "AddGadgetItem", indent ) 
       
-      Result$ + MakeObjectString( *this, Space$ )
+      ;result$ + Space((Level(*g)) * indent)
+      result$ + MakeObjectString( *g, Space$ )
+      
    EndIf
    
-   ProcedureReturn Result$
+   ProcedureReturn result$
 EndProcedure
 
-Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
+Procedure.s GeneratePBCode( *parent._s_WIDGET, indent = 3 )
    Protected Type
    Protected Count
    Protected Image
    Protected Parent
-   Protected Space$ = Space(space)
-   Protected Name$, Class$, Code$, Gadgets$, Windows$, Events$, Functions$
+   Protected Space$ = Space(indent)
+   Protected Name$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
    Protected GlobalWindow$, GlobalGadget$, EnumWindow$, EnumGadget$
-      
+   
    Static JPEGPlugin$, JPEG2000Plugin$, PNGPlugin$, TGAPlugin$, TIFFPlugin$
    Protected *g._s_WIDGET
    Protected *w._s_WIDGET
@@ -1278,7 +1072,7 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
    
    ; is *g
    If ListSize( ParseObject( )) 
-      Code$ + "EnableExplicit" + #CRLF$
+      result$ + "EnableExplicit" + #LF$
       
       ForEach ParseObject( )
          *w = ParseObject( )
@@ -1291,24 +1085,24 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
                *mainWindow = *w
             EndIf
          EndIf
-            
+         
          ;
          ;\\
          ;
          If Trim( Name$, "#" ) = Name$
             If is_window_( *w )
-               GlobalWindow$ + "Global " + Name$ + " = - 1" + #CRLF$
+               GlobalWindow$ + "Global " + Name$ + " = - 1" + #LF$
             Else
-               GlobalGadget$ + "Global " + Name$ + " = - 1" + #CRLF$
+               GlobalGadget$ + "Global " + Name$ + " = - 1" + #LF$
             EndIf
          Else
             If is_window_( *w )
-               EnumWindow$ + Space$ + Name$ + #CRLF$
+               EnumWindow$ + Space$ + Name$ + #LF$
             Else
-               EnumGadget$ + Space$ + Name$ + #CRLF$
+               EnumGadget$ + Space$ + Name$ + #LF$
             EndIf
          EndIf
-          
+         
          ;
          ;\\ UseIMAGEDecoder
          ;
@@ -1317,27 +1111,27 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
                Case #PB_ImagePlugin_JPEG
                   If JPEGPlugin$ <> "UseJPEGImageDecoder( )"
                      JPEGPlugin$ = "UseJPEGImageDecoder( )"
-                     Code$ + "UseJPEGImageDecoder( )" + #CRLF$
+                     result$ + "UseJPEGImageDecoder( )" + #LF$
                   EndIf
                Case #PB_ImagePlugin_JPEG2000
                   If JPEG2000Plugin$ <> "UseJPEG2000ImageDecoder( )"
                      JPEG2000Plugin$ = "UseJPEG2000ImageDecoder( )"
-                     Code$ + "UseJPEG2000ImageDecoder( )" + #CRLF$
+                     result$ + "UseJPEG2000ImageDecoder( )" + #LF$
                   EndIf
                Case #PB_ImagePlugin_PNG
                   If PNGPlugin$ <> "UsePNGImageDecoder( )"
                      PNGPlugin$ = "UsePNGImageDecoder( )"
-                     Code$ + "UsePNGImageDecoder( )" + #CRLF$
+                     result$ + "UsePNGImageDecoder( )" + #LF$
                   EndIf
                Case #PB_ImagePlugin_TGA
                   If TGAPlugin$ <> "UseTGAImageDecoder( )"
                      TGAPlugin$ = "UseTGAImageDecoder( )"
-                     Code$ + "UseTGAImageDecoder( )" + #CRLF$
+                     result$ + "UseTGAImageDecoder( )" + #LF$
                   EndIf
                Case #PB_ImagePlugin_TIFF
                   If TIFFPlugin$ <> "UseTIFFImageDecoder( )"
                      TIFFPlugin$ = "UseTIFFImageDecoder( )"
-                     Code$ + "UseTIFFImageDecoder( )" + #CRLF$
+                     result$ + "UseTIFFImageDecoder( )" + #LF$
                   EndIf
                Case #PB_ImagePlugin_BMP
                   
@@ -1345,7 +1139,7 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
                   
             EndSelect
             
-            Code$ + "LoadImage( " + Image + ", " + #DQUOTE$ + ImagePuchString( Str( Image ) ) + #DQUOTE$ + " )" + #CRLF$
+            result$ + "LoadImage( " + Image + ", " + #DQUOTE$ + ImagePuchString( Str( Image ) ) + #DQUOTE$ + " )" + #LF$
          EndIf
       Next
       
@@ -1353,40 +1147,40 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
       ;\\ enumeration windows
       ;
       If EnumWindow$
-         Code$ + #CRLF$
-         Code$ + "Enumeration FormWindow" + #CRLF$
-         Code$ + EnumWindow$
-         Code$ + "EndEnumeration" + #CRLF$
+         result$ + #LF$
+         result$ + "Enumeration FormWindow" + #LF$
+         result$ + EnumWindow$
+         result$ + "EndEnumeration" + #LF$
       EndIf
       ; 
       If EnumGadget$
-         Code$ + #CRLF$
-         Code$ + "Enumeration FormGadget" + #CRLF$
-         Code$ + EnumGadget$
-         Code$ + "EndEnumeration" + #CRLF$
+         result$ + #LF$
+         result$ + "Enumeration FormGadget" + #LF$
+         result$ + EnumGadget$
+         result$ + "EndEnumeration" + #LF$
       EndIf
       
       ;
       ;\\ global windows
       ;
       If GlobalWindow$
-         Code$ + #CRLF$
-         Code$ + GlobalWindow$
+         result$ + #LF$
+         result$ + GlobalWindow$
       EndIf
       ; 
       If GlobalGadget$
-         Code$ + #CRLF$
-         Code$ + GlobalGadget$
+         result$ + #LF$
+         result$ + GlobalGadget$
       EndIf
       
-      Code$ + #CRLF$
+      result$ + #LF$
       
       ForEach ParseObject( )
          *g = ParseObject( )
          ;If Not is_window_( *g )
          Events$ = GetEventsString( *g )
          If Events$
-            Code$ + Code::GenerateBindEventProcedure( 0, Trim( GetClass( *g ), "#" ) , Events$, "" ) 
+            result$ + Code::GenerateBindEventProcedure( 0, Trim( GetClass( *g ), "#" ) , Events$, "" ) 
          EndIf
          ;EndIf
       Next
@@ -1396,40 +1190,48 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
          If is_window_( *w )
             
             ;\\
-            Code$ + "Procedure Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #CRLF$
+            result$ + "Procedure Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #LF$
             
             ;\\ 
-            Code$ + GenerateCODE( *w, "object", Space( ( Level(*w) - Level(*parent) ) * space) ) + #CRLF$
+            ;result$ + Space(( Level(*w) - parentlevel ) * indent ) 
+            result$ + GenerateCODE( *w, "object", indent ) + #LF$
             
             PushListPosition( ParseObject( ))
             ForEach ParseObject( )
                *g = ParseObject( )
                If IsChild( *g, *w )
-                  Code$ + GenerateCODE( *g, "object", Space( ( Level(*g) - Level(*parent) ) * space) ) + #CRLF$
+                  
+                  
+                  ;
+                  ;result$ + Space((Level(*g) - parentlevel) * indent) 
+                  result$ + GenerateCODE( *g, "object", indent ) + #LF$
+                  
+                  If ClassFromType( *g\type ) = "Panel"
+                     If Not *g\haschildren
+                        If *g\tabbar
+                           result$ + Space$ + Space( ( Level(*g) - parentlevel ) * indent) + "AddGadgetItem( " + GetClass( *g ) + 
+                                     ", - 1" + 
+                                     ", " + Chr( '"' ) + GetItemText( *g, GetState(*g\tabbar) ) + Chr( '"' ) + 
+                                     " )  " + #LF$
+                           result$ + Space$ + Space( ( Level(*g) - parentlevel ) * indent) + #LF$
+                        EndIf
+                     EndIf
+                  EndIf
+                  
                EndIf
             Next
             PopListPosition( ParseObject( ))
             
-            ;\\
-            ;             If *parent\LastWidget( ) And 
-            ;                *parent\LastWidget( )\LastWidget( )
-            ;                Debug *parent\LastWidget( )\LastWidget( )\class
-            ;                Code$ + GenerateCODE( *parent\LastWidget( )\LastWidget( ), "CloseGadgetList", Space( ( Level(*parent\LastWidget( )\LastWidget( )) - Level(*parent) ) * space) )
-            ;             EndIf
-            If *w\LastWidget( ) And 
-               *w\LastWidget( )\LastWidget( )
-               ; Debug *w\LastWidget( )\LastWidget( )\class
-               Code$ + GenerateCODE( *w\LastWidget( )\LastWidget( ), "CloseGadgetList", Space( ( Level(*w\LastWidget( )\LastWidget( )) - Level(*parent) ) * space) )
-               Code$ + GenerateCODE( *w\LastWidget( ), "CloseGadgetList", Space( ( Level(*w\LastWidget( )) - Level(*parent) ) * space) )
-            EndIf
+            ;result$ + Space((Level(*g) - parentlevel) * indent)
+            result$ + GenerateCODE( *g, "CloseGadgetList", indent )
             
             ;\\
             PushListPosition( ParseObject( ))
             ForEach ParseObject( )
                *g = ParseObject( )
                If IsChild( *g, *w )
-                  If GenerateCODE( *g, "STATE" )
-                     Code$ + Space$ + #CRLF$
+                  If GenerateCODE( *g, "STATE", 0 )
+                     result$ + Space$ + #LF$
                      Break
                   EndIf
                EndIf
@@ -1441,14 +1243,13 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
             ForEach ParseObject( )
                *g = ParseObject( )
                If IsChild( *g, *w )
-                  Code$ + GenerateCODE( *g, "STATE", Space( ( Level(*g) - Level(*parent) ) * (space)) )
-                  
+                  result$ + GenerateCODE( *g, "STATE", indent )
                   
                   ;        ;     Events$ = GetEventsString( *g )
                   ;        ;     Gadgets$ + GetClassString( *g )
                   ;        ;     
                   ;        ;     If Events$
-                  ;        ;       Code$ + Code::GenerateBindGadgetEvent( 3, Events$, 0 );Gadgets$ )
+                  ;        ;       result$ + Code::GenerateBindGadgetEvent( 3, Events$, 0 );Gadgets$ )
                   ;        ;     EndIf
                EndIf
             Next
@@ -1457,69 +1258,69 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
             Select *w\Type 
                Case #__type_Window
                   If GetEventsString( *w )
-                     Code$ + #CRLF$
-                     Code$ + Code::GenerateBindEvent( ( Level(*w) - Level(*parent) ) * space, GetEventsString( *w ), GetClass( *w ) )
+                     result$ + #LF$
+                     result$ + Code::GenerateBindEvent( ( Level(*w) - parentlevel ) * indent, GetEventsString( *w ), GetClass( *w ) )
                   EndIf
                Default
             EndSelect
             
-            Code$ + "EndProcedure" + #CRLF$
-            Code$ + #CRLF$
+            result$ + "EndProcedure" + #LF$
+            result$ + #LF$
             
          EndIf
       Next
       
-      Code$ + "CompilerIf #PB_Compiler_IsMainFile" + #CRLF$
-      ; Code$ + "  Open_" + Trim( GetClass( *mainWindow ), "#" ) + "( )" + #CRLF$
+      result$ + "CompilerIf #PB_Compiler_IsMainFile" + #LF$
+      ; result$ + "  Open_" + Trim( GetClass( *mainWindow ), "#" ) + "( )" + #lf$
       
       ForEach ParseObject( )
          *w = ParseObject( )
          If is_window_( *w )
-            Code$ + Space$ + "Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #CRLF$
+            result$ + Space$ + "Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #LF$
          EndIf
       Next
       
-      Code$ + #CRLF$
+      result$ + #LF$
       
-      Code$ + Space$ + "Define event" + #CRLF$
+      result$ + Space$ + "Define event" + #LF$
       
-      Code$ + Space$ + "While IsWindow( " + GetClass( *mainWindow ) + " )" + #CRLF$
-      Code$ + Space$ + Space$ + "event = WaitWindowEvent( )" + #CRLF$
-      Code$ + Space$ + Space$ + "" + #CRLF$
-      Code$ + Space$ + Space$ + "Select EventWindow( )" + #CRLF$
+      result$ + Space$ + "While IsWindow( " + GetClass( *mainWindow ) + " )" + #LF$
+      result$ + Space$ + Space$ + "event = WaitWindowEvent( )" + #LF$
+      result$ + Space$ + Space$ + "" + #LF$
+      result$ + Space$ + Space$ + "Select EventWindow( )" + #LF$
       ForEach ParseObject( )
          *w = ParseObject( )
          If is_window_( *w )
-            Code$ + Space$ + Space$ + Space$ + "Case " + GetClass( *w ) + #CRLF$
+            result$ + Space$ + Space$ + Space$ + "Case " + GetClass( *w ) + #LF$
          EndIf
       Next
-      Code$ + Space$ + Space$ + "EndSelect" + #CRLF$
-      Code$ + Space$ + Space$ + "" + #CRLF$
-      Code$ + Space$ + Space$ + "Select event" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + "Case #PB_Event_CloseWindow" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + Space$ + "If " + GetClass( *mainWindow ) + " = EventWindow( )" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + "If #PB_MessageRequester_Yes = MessageRequester( " + Chr( '"' ) + "Message" + Chr( '"' ) + ", " + #CRLF$ + 
-              Space$ + Space$ + Space$ + Space$ + Space$ + Space(Len("If #PB_MessageRequester_Yes = MessageRequester( ")) + Chr( '"' ) +"Are you sure you want To go out?"+ Chr( '"' ) + ", " + #CRLF$ + 
-              Space$ + Space$ + Space$ + Space$ + Space$ + Space(Len("If #PB_MessageRequester_Yes = MessageRequester( ")) + "#PB_MessageRequester_YesNo | #PB_MessageRequester_Info )" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + Space$ + "CloseWindow( EventWindow( ) )" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + "EndIf" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + Space$ + "Else" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + Space$ + Space$ + "CloseWindow( EventWindow( ) )" + #CRLF$
-      Code$ + Space$ + Space$ + Space$ + Space$ + "EndIf" + #CRLF$
-      Code$ + Space$ + Space$ + "EndSelect" + #CRLF$
-      Code$ + Space$ + "Wend" + #CRLF$ 
-      Code$ + Space$ + "End" + #CRLF$
-      Code$ + "CompilerEndIf" + #CRLF$
+      result$ + Space$ + Space$ + "EndSelect" + #LF$
+      result$ + Space$ + Space$ + "" + #LF$
+      result$ + Space$ + Space$ + "Select event" + #LF$
+      result$ + Space$ + Space$ + Space$ + "Case #PB_Event_CloseWindow" + #LF$
+      result$ + Space$ + Space$ + Space$ + Space$ + "If " + GetClass( *mainWindow ) + " = EventWindow( )" + #LF$
+      result$ + Space$ + Space$ + Space$ + Space$ + Space$ + "If #PB_MessageRequester_Yes = MessageRequester( " + Chr( '"' ) + "Message" + Chr( '"' ) + ", " + #LF$ + 
+                Space$ + Space$ + Space$ + Space$ + Space$ + Space(Len("If #PB_MessageRequester_Yes = MessageRequester( ")) + Chr( '"' ) +"Are you sure you want To go out?"+ Chr( '"' ) + ", " + #LF$ + 
+                Space$ + Space$ + Space$ + Space$ + Space$ + Space(Len("If #PB_MessageRequester_Yes = MessageRequester( ")) + "#PB_MessageRequester_YesNo | #PB_MessageRequester_Info )" + #LF$
+      result$ + Space$ + Space$ + Space$ + Space$ + Space$ + Space$ + "CloseWindow( EventWindow( ) )" + #LF$
+      result$ + Space$ + Space$ + Space$ + Space$ + Space$ + "EndIf" + #LF$
+      result$ + Space$ + Space$ + Space$ + Space$ + "Else" + #LF$
+      result$ + Space$ + Space$ + Space$ + Space$ + Space$ + "CloseWindow( EventWindow( ) )" + #LF$
+      result$ + Space$ + Space$ + Space$ + Space$ + "EndIf" + #LF$
+      result$ + Space$ + Space$ + "EndSelect" + #LF$
+      result$ + Space$ + "Wend" + #LF$ 
+      result$ + Space$ + "End" + #LF$
+      result$ + "CompilerEndIf" + #LF$
       
       
-      Code$ + #CRLF$ + #CRLF$
+      result$ + #LF$ + #LF$
       
-      ;   ;   SetClipboardText( Code$ )
+      ;   ;   SetClipboardText( result$ )
       ;   
       ;   If IsGadget( IDE_Scintilla_Gadget )
-      ;   ScintillaSendMessage( IDE_Scintilla_Gadget, #SCI_SETTEXT, 0, UTF8( Code$ ) )
+      ;   ScintillaSendMessage( IDE_Scintilla_Gadget, #SCI_SETTEXT, 0, UTF8( result$ ) )
       ;   Else
-      ;   SetElementText( IDE_Scintilla_0, Code$ )
+      ;   SetElementText( IDE_Scintilla_0, result$ )
       ;   EndIf
       ;   
       ; 
@@ -1536,7 +1337,7 @@ Procedure.s GeneratePBCode( *parent._s_WIDGET, Space = 3 )
       
    EndIf
    
-   ProcedureReturn code$
+   ProcedureReturn result$
 EndProcedure
 
 ;- 
@@ -1589,22 +1390,62 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       
       
       WINDOW_1 = Window( -70, 300, 498, 253, "window_1" ) : SetClass( widget( ), "WINDOW_1")
-      BUTTON_8 = Button( 21, 14, 120, 64, "button_8" )
-      BUTTON_9 = Button( 21, 91, 120, 71, "button_9" )
-      BUTTON_10 = Button( 21, 175, 120, 64, "button_10" )
+      ;       BUTTON_8 = Button( 21, 14, 120, 64, "button_8" )
+      ;       BUTTON_9 = Button( 21, 91, 120, 71, "button_9" )
+      ;       BUTTON_10 = Button( 21, 175, 120, 64, "button_10" )
+      ;       
+      ;       CONTAINER_0 = Container( 154, 14, 330, 225 )
+      ;       BUTTON_11 = Button( 14, 21, 141, 43, "button_11" )
+      ;       BUTTON_12 = Button( 14, 77, 141, 71, "button_12" )
+      ;       BUTTON_13 = Button( 14, 161, 141, 50, "button_13" )
+      ;       
+      ;       PANEL_0 = Panel( 168, 21, 148, 183 )
+      ;       AddItem( PANEL_0, -1, "tab_0")
+      ;       BUTTON_14 = Button( 7, 14, 134, 29, "button_14" )
+      ;       AddItem( PANEL_0, -1, "tab_1")
+      ;       BUTTON_15 = Button( 7, 56, 134, 71, "button_15" )
+      ;       AddItem( PANEL_0, -1, "tab_2")
+      ;       BUTTON_16 = Button( 7, 140, 134, 36, "button_16" )
+      ;       CloseList( )
+      ;       CloseList( )
       
-      CONTAINER_0 = Container( 154, 14, 330, 225 )
-      BUTTON_11 = Button( 14, 21, 141, 43, "button_11" )
-      BUTTON_12 = Button( 14, 77, 141, 71, "button_12" )
-      BUTTON_13 = Button( 14, 161, 141, 50, "button_13" )
+      ;       PANEL_0=Panel(8, 8, 356, 203)
+      ;       AddItem(PANEL_0, -1, "Панель 1")
+      ;       PANEL_1=Panel( 5, 30, 340, 166)
+      ;       AddItem(PANEL_1, -1, "Под-Панель 1")
+      ;       PANEL_2=Panel( 5, 30, 340, 166)
+      ;       AddItem(PANEL_2, -1, "Под-Под-Панель 1")
       
-      PANEL_0 = Panel( 168, 21, 148, 183 )
-      AddItem( PANEL_0, -1, "tab_0")
-      BUTTON_14 = Button( 7, 14, 134, 29, "button_14" )
-      AddItem( PANEL_0, -1, "tab_1")
-      BUTTON_15 = Button( 7, 56, 134, 71, "button_15" )
-      AddItem( PANEL_0, -1, "tab_2")
-      BUTTON_16 = Button( 7, 140, 134, 36, "button_16" )
+      ;
+      R1 = Container(7, 7, 568, 568,  #PB_Container_Single  )
+      R1Y1 = Container(7, 7, 274, 274,  #PB_Container_Single  )
+      
+      R1Y1G1 = Container(7, 7, 127, 127,  #PB_Container_Single  )
+      R1Y1G1B1 = Container(7, 7, 50, 50,  #PB_Container_Single  )
+      R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
+      R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
+      R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
+      CloseList( )
+      R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
+      CloseList( )
+      CloseList( )
+      CloseList( )
+      CloseList( )
+      CloseList( )
+      
+      R1Y1G1 = Container(7, 7, 127, 127,  #PB_Container_Single  )
+      ;                R1Y1G1B1 = Container(7, 7, 50, 50,  #PB_Container_Single  )
+      ;                   R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
+      ;                      R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
+      ;                         R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
+      ;                         CloseList( )
+      ;                         R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
+      ;                         CloseList( )
+      ;                      CloseList( )
+      ;                   CloseList( )
+      ;                CloseList( )
+      CloseList( )
+      
       CloseList( )
       CloseList( )
       
@@ -1613,7 +1454,7 @@ CompilerIf #PB_Compiler_IsMainFile
          AddParseObject( widget( ))
          StopEnum( )
       EndIf
-     
+      
    EndIf
    
    Define *root = root( )
@@ -1632,8 +1473,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 345
-; FirstLine = 329
-; Folding = ----------------------------------v-
+; CursorPosition = 978
+; FirstLine = 956
+; Folding = ---------------------------------
 ; EnableXP
 ; DPIAware

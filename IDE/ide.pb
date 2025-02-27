@@ -97,6 +97,7 @@ Global ide_inspector_view_splitter,
 
 Global group_select
 Global group_drag
+Global enumerations
 
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
 
@@ -108,6 +109,28 @@ Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Tool
 ; test_focus_set = 1
 ; test_changecursor = 1
 
+Global NewMap FlagsString.s( )
+Global NewMap EventsString.s( )
+Global NewMap ImagePuchString.s( )
+Global NewMap ClassString.s( )
+Global NewMap GetObject.s( )
+Global NewList ParseObject( )
+
+Structure _s_LINE
+   type$
+   pos.i
+   len.i
+   String.s
+   
+   id$
+   func$
+   arg$
+EndStructure
+Structure _s_PARSER
+   List *line._s_LINE( )
+EndStructure
+Global *parser._s_PARSER = AllocateStructure( _s_PARSER )
+;*parser\Line( ) = AllocateStructure( _s_LINE )
 
 ;
 ;- DECLAREs
@@ -117,23 +140,26 @@ Declare.s Properties_GetItemText( *splitter, item, mode = 0 )
 Declare   Properties_Updates( *object, type$ )
 Declare   widget_Create( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
-Declare   add_line( *new )
+Declare   ide_addline( *new )
 Declare   MakeObject( class$ )
 ;
 Declare   AddParseObject( *this )
-Declare.s GenerateCODE( *this, type$, Space$ = "" )
+Declare.s GenerateCODE( *this, type$, indent, Level.l = 0 )
 Declare.s GeneratePBCode( *parent, Space = 3 )
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   MakeCallFunction( str$, arg$, findtext$ )
 Declare   GetArgIndex( text$, len, caret, mode.a = 0 )
 Declare$  GetWord( text$, len, caret )
-
+;
+Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+Declare   NumericString( string$ )
+Declare.q MakeFlag( Flag_Str.s )
 
 ;
 ;- INCLUDEs
-#IDE_path = "../"
-XIncludeFile #IDE_path + "widgets.pbi"
-XIncludeFile #IDE_path + "include/newcreate/anchorbox.pbi"
+#ide_path = "../"
+XIncludeFile #ide_path + "widgets.pbi"
+XIncludeFile #ide_path + "include/newcreate/anchorbox.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "code.pbi"
 CompilerEndIf
@@ -177,19 +203,35 @@ Procedure   CodeAddLine( *new._s_widget, function$, item.l = - 1 )
    ;    Debug *new\class
    ;    ProcedureReturn 
    Protected Result$, Name$ = GetClass( *new )
-   Protected Space$ = Space( ( Level(*new) - Level(ide_design_panel_MDI) ) * 3 )
    
    If function$ = "object"
       AddParseObject( *new )
    EndIf
    
-   Result$ = GenerateCODE( *new, function$, space$ )
+   Result$ = GenerateCODE( *new, function$, 3 )
    
+   Result$ = ReplaceString( Result$, "OpenWindow( " + Name$ + ", ", "Window( ")
+   Result$ = ReplaceString( Result$, "OpenWindow( " + Name$ + ",", "Window( ")
    Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any, ", "Window( ")
-   Result$ = ReplaceString( Result$, "OpenWindow( " + Name$, "Window( ")
+   Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any,", "Window( ")
+   Result$ = ReplaceString( Result$, "Gadget( " + Name$ + ", ", "( ")
+   Result$ = ReplaceString( Result$, "Gadget( " + Name$ + ",", "( ")
    Result$ = ReplaceString( Result$, "Gadget( #PB_Any, ", "( ")
-   Result$ = ReplaceString( Result$, "Gadget( " + Name$, "( ")
+   Result$ = ReplaceString( Result$, "Gadget( #PB_Any,", "( ")
+   ;
+   Result$ = ReplaceString( Result$, "#PB_Window_SizeGadget", "#PB_Window_Size_")
+   Result$ = ReplaceString( Result$, "#PB_Window_MaximizeGadget", "#PB_Window_Maximize_")
+   Result$ = ReplaceString( Result$, "#PB_Window_MinimizeGadget", "#PB_Window_Minimize_")
    Result$ = ReplaceString( Result$, "Gadget", "")
+   Result$ = ReplaceString( Result$, "#PB_Window_Size_", "#PB_Window_SizeGadget")
+   Result$ = ReplaceString( Result$, "#PB_Window_Maximize_", "#PB_Window_MaximizeGadget")
+   Result$ = ReplaceString( Result$, "#PB_Window_Minimize_", "#PB_Window_MinimizeGadget")
+   
+   Define id$ = GetClass(*new)
+   
+   If Trim( id$, "#" ) <> id$
+      Result$ = ReplaceString( Result$, ClassFromType(Type(*new)), Trim(id$, "#") +" = "+ ClassFromType(Type(*new)) )
+   EndIf
    
    If IsGadget( ide_g_code )
       AddGadgetItem( ide_g_code, item, Result$ )
@@ -198,6 +240,72 @@ Procedure   CodeAddLine( *new._s_widget, function$, item.l = - 1 )
       AddItem( ide_design_DEBUG, item, Result$ )
       SetItemData( ide_design_DEBUG, item, *new)
    EndIf
+EndProcedure
+
+Procedure ide_addline( *new._s_widget )
+   Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
+   
+   If *new
+      *parent = GetParent( *new )
+      ;
+      ; get new add position & sublevel
+      Protected i, CountItems, sublevel, position = GetData( *parent ) 
+      CountItems = CountItems( ide_inspector_view )
+      For i = 0 To CountItems - 1
+         Position = ( i+1 )
+         
+         If *parent = GetItemData( ide_inspector_view, i ) 
+            SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
+            Continue
+         EndIf
+         
+         If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
+            Position = i
+            Break
+         EndIf
+      Next 
+      
+      ; set new widget data
+      SetData( *new, position )
+      
+      ; update new widget data item ;????
+      If CountItems > position
+         For i = position To CountItems - 1
+            SetData( GetItemData( ide_inspector_view, i ), i + 1 )
+         Next 
+      EndIf
+      
+      
+      ; get image associated with class
+      Protected img =- 1
+      CountItems = CountItems( ide_inspector_elements )
+      For i = 0 To CountItems - 1
+         If LCase(newClass.s) = LCase(GetItemText( ide_inspector_elements, i ))
+            img = GetItemData( ide_inspector_elements, i )
+            Break
+         EndIf
+      Next  
+      
+      ; add to inspector
+      AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
+      SetItemData( ide_inspector_view, position, *new )
+      ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
+      
+      ; Debug " "+position
+      SetState( ide_inspector_view, position )
+      
+      If IsGadget( ide_g_code )
+         AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
+         SetGadgetItemData( ide_g_code, position, *new )
+         ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
+         SetGadgetState( ide_g_code, position ) ; Bug
+      EndIf
+      
+      ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
+      CodeAddLine( *new, "object", position );, sublevel )
+   EndIf
+   
+   ProcedureReturn *new
 EndProcedure
 
 ;-
@@ -808,12 +916,278 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    
 EndProcedure
 
+;-
+Procedure MakeLine( str$, arg$, findtext$ )
+   Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
+   Protected param1, param2, param3, flags.q
+   
+   If FindString( str$, ";" )
+      ProcedureReturn 
+   EndIf
+        
+   LastElement( *parser\Line( ))
+   If AddElement( *parser\Line( ))
+      *parser\Line( ) = AllocateStructure( _s_LINE )
+      
+      With *parser\Line( )
+         \arg$ = arg$
+         \func$ = FindFunctions( str$, Len( str$ ))
+         \string = str$ + arg$
+            
+         
+         \pos = FindString( str$, "Declare" )
+         If \pos
+            \type$ = "Declare"
+            ProcedureReturn 
+         EndIf
+         
+         \pos = FindString( str$, "Procedure" )
+         If \pos
+            \type$ = "Procedure"
+            ProcedureReturn 
+         EndIf
+         
+        \pos = FindString( str$, "Select" )
+         If \pos
+            \type$ = "Select"
+            ProcedureReturn 
+         EndIf
+         
+         \pos = FindString( str$, "While" )
+         If \pos
+            \type$ = "While"
+            ProcedureReturn 
+         EndIf
+         
+         \pos = FindString( str$, "Repeat" )
+         If \pos
+            \type$ = "Repeat"
+            ProcedureReturn 
+         EndIf
+         
+          \pos = FindString( str$, "If" )
+         If \pos
+            \type$ = "If"
+            ; ProcedureReturn 
+         EndIf
+         
+         ;
+         Select \func$
+            Case "OpenWindow",
+                 "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
+                 "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
+                 "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
+                 "IPAddressGadget","ProgressBarGadget","ScrollBarGadget","ScrollAreaGadget",
+                 "TrackBarGadget","WebGadget","ButtonImageGadget","CalendarGadget",
+                 "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
+                 "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
+                 "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
+               
+               Static *parent =- 1
+               Protected *new._s_WIDGET
+               
+               ;
+               If *parent =- 1 
+                  *parent = ide_design_panel_MDI 
+                  x$ = "10"
+                  y$ = "10"
+               EndIf
+               
+               ;
+               \func$ = ReplaceString( \func$, "Gadget", "")
+               \func$ = ReplaceString( \func$, "Open", "")
+               
+               ;
+               If FindString( str$, "=" )
+                  \id$ = Trim( StringField( str$, 1, "=" ))
+               Else
+                  \id$ = Trim( StringField( arg$, 1, "," ))
+                  
+                  If NumericString( \id$ )
+                     AddMapElement( GetObject( ), \id$ )
+                     \id$ = "#" + \func$ +"_"+ \id$
+                     GetObject( ) = UCase(\id$)
+                  EndIf
+               EndIf   
+               
+               ; 
+               If Not enumerations
+                  \id$ = Trim( \id$, "#" )
+               EndIf
+               
+               ;
+               x$      = Trim(StringField( arg$, 2, ","))
+               y$      = Trim(StringField( arg$, 3, ","))
+               width$  = Trim(StringField( arg$, 4, ","))
+               height$ = Trim(StringField( arg$, 5, ","))
+               ;
+               param1$ = Trim(StringField( arg$, 6, ","))
+               param2$ = Trim(StringField( arg$, 7, ","))
+               param3$ = Trim(StringField( arg$, 8, ",")) 
+               param4$ = Trim(StringField( arg$, 9, ","))
+               
+               ;
+               If Not NumericString( x$ )  
+                  x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
+               EndIf
+               If Not NumericString( y$ )  
+                  y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
+               EndIf
+               If Not NumericString( width$ )  
+                  width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
+               EndIf
+               If Not NumericString( height$ )  
+                  height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
+               EndIf
+               
+               ; param1
+               Select \func$
+                  Case "Track", "Progress", "Scroll", "ScrollArea",
+                       "TrackBar","ProgressBar", "ScrollBar"
+                     param1 = Val( param1$ )
+                     
+                  Case "Splitter" 
+                     param1 = MakeObject(UCase(Param1$))
+                     
+                  Case "Window", "Web", "Frame",
+                       "Text", "String", "Button", "CheckBox",
+                       "Option", "HyperLink", "ListIcon", "Date",
+                       "ExplorerList", "ExplorerTree", "ExplorerCombo"
+                     
+                     If FindString( param1$, Chr('"'))
+                        text$ = Trim( param1$, Chr('"'))
+                     Else
+                        text$ = Trim(StringField( StringField( Mid( findtext$, FindString( findtext$, param1$ ) ), 1, ")" ), 2, "=" ))
+                     EndIf
+                     If text$
+                        ;If FindString( text$, Chr('"'))
+                        text$ = Trim( text$, Chr('"'))
+                        ;EndIf
+                     EndIf
+                     
+               EndSelect
+               
+               ; param2
+               Select \func$
+                  Case "Track", "Progress", "Scroll", "TrackBar", "ProgressBar", "ScrollBar", "ScrollArea"
+                     param2 = Val( param2$ )
+                     
+                  Case "Splitter" 
+                     param2 = MakeObject(UCase(Param2$))
+                     
+               EndSelect
+               
+               ; param3
+               Select \func$
+                  Case "Scroll", "ScrollBar", "ScrollArea"
+                     param3 = Val( param3$ )
+               EndSelect
+               
+               ; param4
+               Select \func$
+                  Case "Date", "Calendar", "Container", 
+                       "Tree", "ListView", "ComboBox", "Editor"
+                     flag$ = param1$
+                     
+                  Case "Window", "Web", "Frame",
+                       "Text", "String", "Button", "CheckBox", 
+                       "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
+                     flag$ = param2$
+                     
+                  Case "Track", "Progress", "TrackBar", "ProgressBar", 
+                       "Spin", "OpenGL", "Splitter", "MDI", "Canvas"
+                     flag$ = param3$
+                     
+                  Case "Scroll", "ScrollBar", "ScrollArea", "HyperLink", "ListIcon"  
+                     flag$ = param4$
+                     
+               EndSelect
+               
+               ; flag
+               If flag$
+                  flags = MakeFlag(Flag$)
+               EndIf
+               
+               ; Debug "vvv "+param1 +" "+ param2
+               *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
+               
+               If *new
+                  ;          If \func$ = "Panel"
+                  ;             RemoveItem( *new, 0 )
+                  ;             ; ClearItems( *new )
+                  ;          EndIf
+                  ;             If flag$
+                  ;                SetFlagsString( *new, flag$ )
+                  ;             EndIf
+                  
+                  If \id$
+                     SetClass( *new, UCase(\id$) )
+                  EndIf
+                  
+                  SetText( *new, text$ )
+                  
+                  ;
+                  If IsContainer( *new ) > 0
+                     *Parent = *new
+                  EndIf
+                  
+                  ; 
+                  ide_addline( *new )
+               EndIf
+               
+            Case "CloseGadgetList"
+               If Not *parent
+                  Debug "ERROR "+\func$
+                  ProcedureReturn 
+               EndIf
+               *Parent = GetParent( *Parent )
+               ; CloseList( ) 
+                ;CodeAddLine( *Parent, \func$ )
+               
+            Case "AddGadgetItem"
+               ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
+               
+               \id$ = Trim( StringField( arg$, 1, "," ))
+               param1$ = Trim( StringField( arg$, 2, "," ))
+               param2$ = Trim( StringField( arg$, 3, "," ))
+               param3$ = Trim( StringField( arg$, 4, "," ))
+               flag$ = Trim( StringField( arg$, 5, "," ))
+               ;
+               If param1$ = "- 1" Or 
+                  param1$ = "-1"
+                  param1 = - 1
+               Else
+                  param1 = Val(param1$)
+               EndIf
+               text$ = Trim( param2$, Chr('"'))
+               param3 = Val(param3$)
+               Flags = MakeFlag( flag$ )
+               
+               
+               ;          Select Asc(\id$)
+               ;             Case '0' To '9'
+               ;                \id$ = "#" + \func$ +"_"+ \id$
+               ;          EndSelect
+               
+               *Parent = MakeObject( \id$ ) 
+               If Not *parent
+                  Debug "ERROR " + \func$ +" "+ \id$ 
+                  ProcedureReturn 
+               EndIf
+               ;
+               AddItem( *Parent, param1, text$, param3, Flags )
+               
+               ; CodeAddLine( *Parent, \func$ )
+               
+         EndSelect
+      EndWith
+   EndIf
+EndProcedure
+
 
 ;-
 #File = 0
-Procedure   IDE_NewFile( )
-   ClearList( ParseObject( ))
-   ;
+Procedure   ide_NewFile( )
    ; удаляем всех детей MDI
    Delete( ide_design_panel_MDI )
    ; Очишаем текст
@@ -833,12 +1207,10 @@ Procedure   IDE_NewFile( )
    
 EndProcedure
 
-Procedure   IDE_OpenFile(Path$) ; Открытие файла
+Procedure   ide_OpenFile(Path$) ; Открытие файла
    Protected Text$, String$
    
    If Path$
-      ClearList( ParseObject( ) )
-      ;
       ClearDebugOutput( )
       ClearItems( ide_design_DEBUG )
       Debug "Открываю файл '"+Path$+"'"
@@ -859,6 +1231,9 @@ Procedure   IDE_OpenFile(Path$) ; Открытие файла
             Define start, stop, arg$ = FindArguments( string$, Len( String$ ), @start, @stop ) 
             If arg$
                Define str$ = Mid( String$, 1, start - 1 - 1 ) ; исключаем открывающую скобку '('
+               
+               MakeLine( str$, arg$, Text$ )
+               
                
                ; эсли это комментарии то пропускаем строку
                If FindString( str$, ";" ) 
@@ -897,7 +1272,7 @@ Procedure   IDE_OpenFile(Path$) ; Открытие файла
                EndIf   
                
                ;
-               MakeCallFunction( str$, arg$, Text$ )
+               ;MakeCallFunction( str$, arg$, Text$ )
                
                
                ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
@@ -905,6 +1280,12 @@ Procedure   IDE_OpenFile(Path$) ; Открытие файла
             start = 0
             stop = 0
          Wend
+         
+         
+         
+         ForEach *parser\Line()
+            Debug *parser\Line()\string
+         Next
          
          ;          ;          ;
          ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -927,7 +1308,7 @@ Procedure   IDE_OpenFile(Path$) ; Открытие файла
    EndIf 
 EndProcedure
 
-Procedure   IDE_SaveFile(Path$) ; Процедура сохранения файла
+Procedure   ide_SaveFile(Path$) ; Процедура сохранения файла
    Protected Space$, Text$
    Protected len, Length, Position, Object
    
@@ -1145,20 +1526,17 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
       ; create elements
       Select type$
          Case "window"    
-            If Type( *parent ) = #__Type_MDI
+;             If Type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag | #__window_NoActivate )
                Resize( *new, X, Y, Width,Height )
-            Else
-               flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
-               *new = Window( X,Y,Width,Height, "", flag, *parent )
-            EndIf
-            
-            Properties_Updates( *new, "Resize" )
+;             Else
+;                flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
+;                *new = Window( X,Y,Width,Height, "", flag, *parent )
+;             EndIf
             
          Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
-           AddItem( *new, -1, type$+"_item_0" )
             
          Case "button"        : *new = Button(       X, Y, Width, Height, "", flag ) 
          Case "string"        : *new = String(       X, Y, Width, Height, "", flag )
@@ -1232,6 +1610,7 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
                EndIf
                SetBackgroundColor( *new, $FFECECEC )
                ;
+               Properties_Updates( *new, "Resize" )
                Bind( *new, @widget_events( ) )
             Else
                If Not flag & #__flag_NoFocus 
@@ -1254,72 +1633,6 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
    ProcedureReturn *new
 EndProcedure
 
-Procedure add_line( *new._s_widget )
-   Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
-   
-   If *new
-      *parent = GetParent( *new )
-      ;
-      ; get new add position & sublevel
-      Protected i, CountItems, sublevel, position = GetData( *parent ) 
-      CountItems = CountItems( ide_inspector_view )
-      For i = 0 To CountItems - 1
-         Position = ( i+1 )
-         
-         If *parent = GetItemData( ide_inspector_view, i ) 
-            SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
-            Continue
-         EndIf
-         
-         If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
-            Position = i
-            Break
-         EndIf
-      Next 
-      
-      ; set new widget data
-      SetData( *new, position )
-      
-      ; update new widget data item ;????
-      If CountItems > position
-         For i = position To CountItems - 1
-            SetData( GetItemData( ide_inspector_view, i ), i + 1 )
-         Next 
-      EndIf
-      
-      
-      ; get image associated with class
-      Protected img =- 1
-      CountItems = CountItems( ide_inspector_elements )
-      For i = 0 To CountItems - 1
-         If LCase(newClass.s) = LCase(GetItemText( ide_inspector_elements, i ))
-            img = GetItemData( ide_inspector_elements, i )
-            Break
-         EndIf
-      Next  
-      
-      ; add to inspector
-      AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
-      SetItemData( ide_inspector_view, position, *new )
-      ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
-      
-      ; Debug " "+position
-      SetState( ide_inspector_view, position )
-      
-      If IsGadget( ide_g_code )
-         AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
-         SetGadgetItemData( ide_g_code, position, *new )
-         ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
-         SetGadgetState( ide_g_code, position ) ; Bug
-      EndIf
-      
-      ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
-      CodeAddLine( *new, "object", position );, sublevel )
-   EndIf
-   
-   ProcedureReturn *new
-EndProcedure
-
 Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
@@ -1329,11 +1642,11 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
       *new = widget_Create( *parent, Class.s, X,Y, Width, Height, 0,100,0, flag )
       
       If *new
-;          If LCase(Class.s) = "panel"
-;             AddItem( *new, -1, Class.s+"_item_0" )
-;          EndIf
+         If LCase(Class.s) = "panel"
+            AddItem( *new, -1, Class.s+"_item_0" )
+         EndIf
          
-         add_line( *new )
+         ide_addline( *new )
       EndIf
       ; CloseList( )
    EndIf
@@ -1352,6 +1665,12 @@ Procedure widget_events( )
       Case #__event_Free
          Protected item = GetData(*g) 
          RemoveItem( ide_inspector_view, item ) 
+         
+         ;
+         DeleteElement( ParseObject( ), 1 )
+         DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
+         ;
+      
          ; Debug "free "+item
          ; ProcedureReturn 0
          
@@ -1681,7 +2000,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          
          
       Case #_tb_file_new
-         IDE_NewFile( )
+         ide_NewFile( )
          
       Case #_tb_file_open
          Protected StandardFile$, Pattern$, File$
@@ -1691,7 +2010,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          
          SetWindowTitle( EventWindow(), File$ )
          
-         If Not IDE_OpenFile( File$ )
+         If Not ide_OpenFile( File$ )
             Message("Информация", "Не удалось открыть файл.")
          EndIf
          
@@ -1700,7 +2019,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          Pattern$ = "PureBasic (*.pb)|*.pb;*.pbi;*.pbf"
          File$ = SaveFileRequester("Пожалуйста выберите файл для сохранения", StandardFile$, Pattern$, 0)
          
-         If Not IDE_SaveFile( File$ )
+         If Not ide_SaveFile( File$ )
             Message("Информация","Не удалось сохранить файл.", #PB_MessageRequester_Error)
          EndIf
          
@@ -2414,7 +2733,7 @@ CompilerEndIf
 
 ;\\ include images
 DataSection   
-   IncludePath #IDE_path + "ide/include/images"
+   IncludePath #ide_path + "ide/include/images"
    
    widget_delete:    : IncludeBinary "16/delete.png"
    widget_paste:     : IncludeBinary "16/paste.png"
@@ -2431,9 +2750,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 906
-; FirstLine = 867
-; Folding = ---------------------------------------------
+; CursorPosition = 205
+; FirstLine = 201
+; Folding = ------------------fg-------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
