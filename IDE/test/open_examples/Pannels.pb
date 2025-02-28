@@ -9,17 +9,18 @@ If OpenWindow(10, 0, 0, 422, 220, "Гаджет Панель", #PB_Window_System
                AddGadgetItem(151, -1, "Под-Под-Панель 1")
           
                AddGadgetItem(151, -1, "Под-Под-Панель 2")
-               ButtonGadget(115, 5, 5, 55, 22,"кнопка 15")
+               ButtonGadget(115, 5, 5, 155, 22,"Под-Под-Панель 2")
           
                AddGadgetItem(151, -1, "Под-Под-Панель 3")
             CloseGadgetList()
         
             AddGadgetItem(51, -1, "Под-Панель 2")
-            ButtonGadget(15, 5, 5, 55, 22,"кнопка 15")
+            ButtonGadget(15, 5, 25, 155, 22,"Под-Панель 2")
          
             AddGadgetItem(51, -1, "Под-Панель 3")
          CloseGadgetList()
-      ButtonGadget(5, 5, 5, 55, 22,"Панель 2 1")
+         
+      ButtonGadget(5, 5, 5, 155, 22,"Панель 2 1")
         
       AddGadgetItem (50, -1,"Панель 3")
       ButtonGadget(2, 10, 15, 80, 24,"Панель 3 1")
@@ -29,7 +30,7 @@ If OpenWindow(10, 0, 0, 422, 220, "Гаджет Панель", #PB_Window_System
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21
+; CursorPosition = 22
 ; Folding = -
 ; EnableXP
 ; CompileSourceDirectory

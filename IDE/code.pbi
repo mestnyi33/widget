@@ -812,24 +812,24 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
          Flag$ = MakeFlagString( type$, *g\flag )
    EndSelect
    
-   ; close list
-   If *g\BeforeWidget( )
-      If IsContainer( *g\BeforeWidget( ) ) > 0 
-         
-         PushListPosition( widgets( ))
-         If ChangeCurrentElement( widgets( ), *g\address )
-            PreviousElement( widgets( ))
-            result$ + GenerateCODE( widgets( ), "CloseGadgetList", *g\BeforeWidget( ) ); ) 
-         EndIf     
-         PopListPosition( widgets( ))
-      
-      Else
-         ;\\
-         If IsContainer(*g) > 0 
-            result$ + space$ + #LF$
-         EndIf 
-      EndIf
-   EndIf
+;    ; close list
+;    If *g\BeforeWidget( )
+;       If IsContainer( *g\BeforeWidget( ) ) > 3 
+;          
+;          PushListPosition( widgets( ))
+;          If ChangeCurrentElement( widgets( ), *g\address )
+;             PreviousElement( widgets( ))
+;             result$ + GenerateCODE( widgets( ), "CloseGadgetList", *g\BeforeWidget( ) ); ) 
+;          EndIf     
+;          PopListPosition( widgets( ))
+;       
+;       Else
+;          ;\\
+;          If IsContainer(*g) > 3 
+;             result$ + space$ + #LF$
+;          EndIf 
+;       EndIf
+;    EndIf
    
    ;
    result$ + space$
@@ -938,6 +938,26 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
    ProcedureReturn result$
 EndProcedure
 
+Procedure$ MakeAddItem( *g._s_WIDGET, Space$, item =- 1 )
+   Protected result$
+   Protected id$ = GetClass( *g )
+   Protected i, count = CountItems( *g ) - 1
+   
+   For i = 0 To count
+      result$ + Space$ + "AddGadgetItem( " + id$ + 
+                ", - 1" + 
+                ", " + Chr( '"' ) + GetItemText( *g, i ) + Chr( '"' ) + 
+                " )  " + #LF$
+      
+      
+      If item = i
+         Break
+      EndIf
+   Next
+   
+   ProcedureReturn result$
+EndProcedure
+
 ;- 
 Procedure.s GenerateCODE( *g._s_WIDGET, type$, *data = 0 )
    Protected result$, ID$, param1$, param2$, param3$, Text$, flag$, Class$, Name$
@@ -957,14 +977,14 @@ Procedure.s GenerateCODE( *g._s_WIDGET, type$, *data = 0 )
    
    If type$ = "CloseGadgetList"
       While Not is_window_(*g )
-         If IsContainer( *g ) > 0 
+         If IsContainer( *g ) > 3 
             If codeindent
                result$ + Space((Level(*g) - parentlevel) * codeindent)
             EndIf
             result$ + type$ + "( ) ; " + GetClass(*g) + #LF$ 
          EndIf 
          If *data = *g
-            If IsContainer( *g ) > 0 
+            If IsContainer( *g ) > 3 
                result$ + #LF$
             EndIf
             Break
@@ -979,35 +999,35 @@ Procedure.s GenerateCODE( *g._s_WIDGET, type$, *data = 0 )
    EndIf
     
    If type$ = "AddGadgetItem"
-      If *g\parent\tabbar
-         If tabparent<>*g\parent
-            tabparent=*g\parent
-            TabIndex =- 1
-         EndIf
-         If TabIndex <> *g\TabIndex( ) 
-            TabIndex = *g\TabIndex( ) 
-            
-            If TabIndex > 0
-               result$ + Space$ + #LF$
-            EndIf
-            
-            result$ + Space$ + type$ + "( " + GetClass( *g\parent ) + 
-                      ", - 1" + 
-                      ", " + Chr( '"' ) + GetItemText( *g\parent, TabIndex ) + Chr( '"' ) + 
-                      " )  " + #LF$
-            
-         EndIf
-      EndIf
+;       If *g\parent\tabbar
+;          If tabparent<>*g\parent
+;             tabparent=*g\parent
+;             TabIndex =- 1
+;          EndIf
+;          If TabIndex <> *g\TabIndex( ) 
+;             TabIndex = *g\TabIndex( ) 
+;             
+;             If TabIndex > 0
+;                result$ + Space$ + #LF$
+;             EndIf
+;             
+;             result$ + Space$ + type$ + "( " + GetClass( *g\parent ) + 
+;                       ", - 1" + 
+;                       ", " + Chr( '"' ) + GetItemText( *g\parent, TabIndex ) + Chr( '"' ) + 
+;                       " )  " + #LF$
+;             
+;          EndIf
+;       EndIf
    EndIf
    
    If type$ = "STATE"
       Name$ = GetClass( *g )
       ;
-      If Hide( *g)
+      If Hide( *g) > 0
          result$ + Space$ 
          result$ + "HideGadget( " + Name$ + ", #True )" + #LF$
       EndIf
-      If Disable( *g)
+      If Disable( *g) > 0
          result$ + Space$ 
          result$ + "DisableGadget( " + Name$ + ", #True )" + #LF$
       EndIf
@@ -1015,100 +1035,120 @@ Procedure.s GenerateCODE( *g._s_WIDGET, type$, *data = 0 )
          result$ + Space$ 
          result$ + "SetGadgetState( " + Name$ + ", "+ GetState( *g) + " )" + #LF$
       Else
-         ; Это для тех кто гаджетов которые принимают [0]
-         Select *g\Type 
-            Case #__type_Panel
-               If GetState( *g) > 0
-                  result$ + Space$ 
-                  result$ + "SetGadgetState( " + Name$ + ", "+ GetState( *g) + " )" + #LF$
-               EndIf
-         EndSelect
+;          ; Это для тех кто гаджетов которые принимают [0]
+;          Select *g\Type 
+;             Case #__type_Panel
+;                If GetState( *g) = 0
+;                   result$ + Space$ 
+;                   result$ + "SetGadgetState( " + Name$ + ", "+ GetState( *g) + " )" + #LF$
+;                EndIf
+;          EndSelect
       EndIf
    EndIf
    
    If type$ = "object"
+      
+      ; close list
       If *g\BeforeWidget( )
-;          PushListPosition( widgets( ))
-;          If ChangeCurrentElement( widgets( ), *g\address )
-;             PreviousElement( widgets( ))
-;             result$ + GenerateCODE( widgets( ), "CloseGadgetList", *g\BeforeWidget( ) ); ) 
-;          EndIf     
-;          PopListPosition( widgets( ))
-      EndIf
-      
-      ;\\ add parent item
-      ;result$ + GenerateCODE( *g, "AddGadgetItem" ) 
-      
-      If *g\parent And *g\parent\type = #__type_Panel
-         Define i
-         If *g\parent\haschildren
+         If IsContainer( *g\BeforeWidget( ) ) > 3 
             
-               For i = 0 To *g\parent\tabbar\countitems - 1
-                  ; result$ + GenerateCODE( *g, "AddGadgetItem", i ) 
-                  result$ + Space$ + "AddGadgetItem( " + GetClass( *g\parent ) + 
-                            ", - 1" + 
-                            ", " + Chr( '"' ) + GetItemText( *g\parent, i ) + Chr( '"' ) + 
-                      " )  " + #LF$
-                  
-                  If *g\TabIndex( ) = i
-                     Break
-                  EndIf
-                  
-               Next
-           result$ + #LF$
-             Debug "has "+*g\parent\tabbar\countitems
-         EndIf
-      EndIf
-      
-      ;result$ + Space((Level(*g)) * codeindent)
-      result$ + MakeObjectString( *g, Space$ )
-      
-      If *g\type = #__type_Panel
-         Define i
-         If *g\haschildren
-;             
-;             result$ + #LF$
-;                For i = 0 To *g\tabbar\countitems - 1
-;                   ; result$ + GenerateCODE( *g, "AddGadgetItem", i ) 
-;                   result$ + Space$ + Space(codeindent) + "AddGadgetItem( " + GetClass( *g ) + 
-;                             ", - 1" + 
-;                             ", " + Chr( '"' ) + GetItemText( *g, i ) + Chr( '"' ) + 
-;                       " )  " + #LF$
-;           
-;                Next
-;             Debug "has "+*g\tabbar\countitems
+            PushListPosition( widgets( ))
+            If ChangeCurrentElement( widgets( ), *g\address )
+               PreviousElement( widgets( ))
+               result$ + GenerateCODE( widgets( ), "CloseGadgetList", *g\BeforeWidget( ) ); ) 
+            EndIf     
+            PopListPosition( widgets( ))
+            
          Else
-            If *g\tabbar\countitems
-               result$ + #LF$
-               For i = 0 To *g\tabbar\countitems - 1
-                  ; result$ + GenerateCODE( *g, "AddGadgetItem", i ) 
-                  result$ + Space$ + "AddGadgetItem( " + GetClass( *g ) + 
-                            ", - 1" + 
-                            ", " + Chr( '"' ) + GetItemText( *g, i ) + Chr( '"' ) + 
-                      " )  " + #LF$
-          
-               Next
+            ;\\
+            If IsContainer(*g) > 3 
+               result$ + space$ + #LF$
+            EndIf 
+         EndIf
+      EndIf
+   
+   
+      ;\\ add parent item
+      ; result$ + GenerateCODE( *g, "AddGadgetItem" ) 
+      
+      If *g\parent\tabbar
+         If tabparent<>*g\parent
+           ; result$ + Space$ + "AddGadgetItem" + #LF$
+            
+            tabparent=*g\parent
+            TabIndex =- 1
+         EndIf
+         If TabIndex <> *g\TabIndex( ) 
+            id$ = GetClass( *g\parent )
+            Protected i, count = CountItems( *g\parent ) - 1
+            
+            If *g\BeforeWidget( )
+               If *g\TabIndex( ) <> *g\BeforeWidget( )\TabIndex( )
+                  TabIndex = *g\BeforeWidget( )\TabIndex( ) + 1
+                  Debug ""+TabIndex +" "+ count
+;                   If TabIndex > count - 1
+;                      TabIndex = count - 1
+;                   EndIf
+               EndIf
+               
+               If IsContainer(*g\BeforeWidget( )) = 3
+                  If *g\TabIndex( ) <> *g\BeforeWidget( )\TabIndex( )
+               For i = TabIndex To CountItems( *g\BeforeWidget( ) ) - 1
+                     If i > 0
+                        result$ + Space$ + #LF$
+                     EndIf
+                     If codeindent
+                        result$ + Space(((Level(*g\BeforeWidget( ))+1) - parentlevel) * codeindent)
+                     EndIf
+                     result$ + "AddGadgetItem( " + GetClass( *g\BeforeWidget( ) ) + 
+                               ", - 1" + 
+                               ", " + Chr( '"' ) + GetItemText( *g\BeforeWidget( ), i ) + Chr( '"' ) + 
+                               " )" + #LF$
+                     
+                     If *g\TabIndex( ) = i
+                        Break
+                     EndIf
+                  Next
+               EndIf
+               
+                  If codeindent
+                     result$ + Space((Level(*g) - parentlevel) * codeindent)
+                  EndIf
+                  result$ + "CloseGadgetList( ) ; " + GetClass(*g\BeforeWidget( )) + #LF$ 
+               EndIf
+               
+               If *g\TabIndex( ) = *g\BeforeWidget( )\TabIndex( )
+                  ; Debug ""+*g\class +" "+ *g\BeforeWidget( )\class
+                  TabIndex = - 1
+                  result$ + Space$ + #LF$
+               Else
+                  TabIndex = *g\BeforeWidget( )\TabIndex( ) + 1 
+               EndIf
+            Else
+               TabIndex = 0;*g\TabIndex( )
             EndIf
-         EndIf
-      EndIf
-      
-      
-      If *g\parent And *g\parent\type = #__type_Panel
-         Define i
-         If *g\parent\haschildren
-            result$ + #LF$
-           
-               For i = *g\TabIndex( ) + 1 To *g\parent\tabbar\countitems - 1
-                  ; result$ + GenerateCODE( *g, "AddGadgetItem", i ) 
-                  result$ + Space$ + "AddGadgetItem( " + GetClass( *g\parent ) + 
-                            ", - 1" + 
-                            ", " + Chr( '"' ) + GetItemText( *g\parent, i ) + Chr( '"' ) + 
-                      " )  " + #LF$
-                 Next
-             Debug "has "+*g\parent\tabbar\countitems
-         EndIf
-      EndIf
-      
+             
+             If Not TabIndex = - 1
+               For i = TabIndex To count
+                   If i > 0
+                      result$ + Space$ + #LF$
+                   EndIf
+                   result$ + Space$ + "AddGadgetItem( " + id$ + 
+                             ", - 1" + 
+                             ", " + Chr( '"' ) + GetItemText( *g\parent, i ) + Chr( '"' ) + 
+                             " )" + #LF$
+                   
+                   If *g\TabIndex( ) = i
+                      Break
+                   EndIf
+                Next
+             EndIf
+             
+             TabIndex = *g\TabIndex( ) 
+          EndIf
+       EndIf
+       
+      result$ + MakeObjectString( *g, Space$ )
       
    EndIf
    
@@ -1278,9 +1318,45 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
             Next
             PopListPosition( ParseObject( ))
             
+            ;- ADD LIST
+            If *g\parent
+               If *g\parent\type = #__type_Panel
+                  If *g\TabIndex( ) + 1 < *g\parent\tabbar\countitems
+                     Debug "ADD"
+                     Define i
+                     For i = *g\TabIndex( ) + 1 To *g\parent\tabbar\countitems - 1
+                        
+                        result$ + #LF$
+                        result$ + Space((Level(*g) - Level( *mdi )) * codeindent)
+                        result$ + "AddGadgetItem( " + GetClass( *g\parent ) + 
+                                  ", - 1" + 
+                                  ", " + Chr( '"' ) + GetItemText( *g\parent, i ) + Chr( '"' ) + 
+                                  " )" + #LF$
+                     Next
+                     
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;- CLOSE LIST
             ;result$ + Space((Level(*g) - Level( *mdi )) * codeindent)
             result$ + GenerateCODE( *g, "CloseGadgetList" )
-            
+            While Not is_window_(*g )
+               If IsContainer( *g ) = 3 
+                  If codeindent
+                     result$ + Space((Level(*g) - parentlevel) * codeindent)
+                  EndIf
+                  result$ + "CloseGadgetList( ) ; " + GetClass(*g) + #LF$ 
+               EndIf 
+;                If *data = *g
+;                   If IsContainer( *g ) = 3 
+;                      result$ + #LF$
+;                   EndIf
+;                   Break
+;                EndIf
+               *g = *g\parent
+            Wend
+      
             ;\\
             PushListPosition( ParseObject( ))
             ForEach ParseObject( )
@@ -1465,24 +1541,34 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       CloseList( )
       ;       CloseList( )
       
-            PANEL_0=Panel(8, 8, 356, 203)
-            AddItem(PANEL_0, -1, "Панель 1")
-            AddItem(PANEL_0, -1, "Панель 2")
-            AddItem(PANEL_0, -1, "Панель 3")
-            ;SetState( PANEL_0, 1 )
-             PANEL_1=Panel( 5, 30, 340, 166)
-            AddItem(PANEL_1, -1, "Под-Панель 1")
-            AddItem(PANEL_1, -1, "Под-Панель 2")
-            AddItem(PANEL_1, -1, "Под-Панель 3")
-            SetState( PANEL_1, 2 )
-            
-            AddItem(PANEL_0, -1, "Панель 4")
-            
-;             PANEL_2=Panel( 5, 30, 340, 166)
-;             AddItem(PANEL_2, -1, "Под-Под-Панель 1")
-;             AddItem(PANEL_2, -1, "Под-Под-Панель 2")
-;             AddItem(PANEL_2, -1, "Под-Под-Панель 3")
-             
+      PANEL_0=Panel(8, 8, 356, 203)
+      AddItem(PANEL_0, -1, "Панель 1")
+      Button( 10,10,50,30, "1")
+      AddItem(PANEL_0, -1, "Панель 2")
+      
+      PANEL_1=Panel( 5, 30, 340, 166)
+      AddItem(PANEL_1, -1, "Под-Панель 1")
+      ;Button( 10,10,50,30, "1")
+      AddItem(PANEL_1, -1, "Под-Панель 2")
+      Button( 10,10,50,30, "2")
+;       
+;       PANEL_2=Panel( 5, 30, 340, 166)
+;       AddItem(PANEL_2, -1, "Под-Под-Панель 1")
+;       Button( 10,10,50,30, "1")
+;       AddItem(PANEL_2, -1, "Под-Под-Панель 2")
+;       AddItem(PANEL_2, -1, "Под-Под-Панель 3")
+;       AddItem(PANEL_2, -1, "Под-Под-Панель 4")
+;       Button( 10,10,50,30, "3")
+;       
+      AddItem(PANEL_1, -1, "Под-Панель 3")
+      AddItem(PANEL_1, -1, "Под-Панель 4")
+      ;Button( 10,10,50,30, "3")
+      
+      AddItem(PANEL_0, -1, "Панель 3")
+      AddItem(PANEL_0, -1, "Панель 4")
+      Button( 10,10,50,30, "")
+      
+      
             If PANEL_1
                SetBackgroundColor( PANEL_1, $BA54EDDE )
             EndIf
@@ -1543,8 +1629,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1480
-; FirstLine = 1327
-; Folding = -----------------------880--v0D---
+; CursorPosition = 1104
+; FirstLine = 1016
+; Folding = -----------------------+9----3P9---
 ; EnableXP
 ; DPIAware

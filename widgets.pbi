@@ -2932,7 +2932,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure a_remove( *this._s_WIDGET )
          Protected a_index
-         If *this\container <> 3
+         If *this\container < 3
             *this\bindresize = #False
          EndIf
          For a_index = 0 To #__a_moved
@@ -2953,7 +2953,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *CURSORDATA._s_CURSORDATA = ?CURSORDATA
          
          If Not a_index( )
-            If *this\container <> 3
+            If *this\container < 3
                *this\bindresize = #True
             EndIf
             ; Debug "a_show_add "+*this\class
@@ -15470,8 +15470,12 @@ chr$ = ","
             
             If *this\type = #__type_Frame
                *this\container = - 1
-            Else
+            ElseIf *this\type = #__type_Panel
                *this\container = 3
+            ElseIf *this\type = #__type_MDI
+               *this\container = 4
+            Else
+               *this\container = 5
                *this\bindresize = #True
             EndIf
             *this\color\back = $FFF9F9F9
@@ -24919,8 +24923,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 23345
-; FirstLine = 23180
+; CursorPosition = 2936
+; FirstLine = 2931
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
