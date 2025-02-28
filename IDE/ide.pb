@@ -1783,11 +1783,11 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          Wend
          
          
-         
-         ForEach *parser\Line()
-            Debug *parser\Line()\string
-         Next
-         
+         ; 
+;          ForEach *parser\Line()
+;             Debug *parser\Line()\string
+;          Next
+;          
          ;          ;          ;
          ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
          ;          
@@ -2751,8 +2751,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 129
+; CursorPosition = 1785
+; FirstLine = 1742
 ; Folding = ------------------fg-----------------v-------------
 ; Optimizer
 ; EnableAsm
