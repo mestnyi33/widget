@@ -225,6 +225,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_anchors
       Global test_docursor, test_changecursor,test_setcursor
       
+      Global window_pos_x.l, window_pos_y.l
+         
       Global DrawingDC = 0
       
       Global __gui._s_GUI
@@ -23056,8 +23058,6 @@ chr$ = ","
             Protected *root._s_root = Opened( )\root
          EndIf
          
-         Static pos_x.l, pos_y.l
-         
          Protected *this._s_WIDGET
          If MapSize( roots( ) )
             If Not ListSize( widgets( ) ) And
@@ -23093,13 +23093,13 @@ chr$ = ","
          
          ;\\
          If X = #PB_Ignore
-            X = pos_x + mouse( )\steps
+            X = window_pos_x + mouse( )\steps
          EndIf
          If Y = #PB_Ignore
-            Y = pos_y + mouse( )\steps
+            Y = window_pos_y + mouse( )\steps
          EndIf
-         pos_x = X + fs
-         pos_y = Y + fs + barHeight
+         window_pos_x = X + fs
+         window_pos_y = Y + fs + barHeight
          
          ;\\
          If constants::BinaryFlag( Flag, #__flag_child )
@@ -23341,6 +23341,11 @@ chr$ = ","
                         EndIf
                      EndIf
                   EndIf
+                  
+;                   If is_widget_( widgets( ))
+;                      window_pos_x = mouse( )\steps - widgets( )\fs
+;                      window_pos_y = mouse( )\steps - widgets( )\fs ;- widgets( )\fs[2]
+;                   EndIf
                   
                   If widgets( )\root\haschildren > 0
                      widgets( )\root\haschildren - 1
@@ -24914,8 +24919,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12625
-; FirstLine = 12601
+; CursorPosition = 23345
+; FirstLine = 23180
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

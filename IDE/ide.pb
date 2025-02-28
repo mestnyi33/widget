@@ -144,8 +144,8 @@ Declare   ide_addline( *new )
 Declare   MakeObject( class$ )
 ;
 Declare   AddParseObject( *this )
-Declare.s GenerateCODE( *this, type$, indent, Level.l = 0 )
-Declare.s GeneratePBCode( *parent, Space = 3 )
+Declare.s GenerateCODE( *this, type$, *data = 0 )
+Declare.s GeneratePBCode( *parent )
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   MakeCallFunction( str$, arg$, findtext$ )
 Declare   GetArgIndex( text$, len, caret, mode.a = 0 )
@@ -208,7 +208,7 @@ Procedure   CodeAddLine( *new._s_widget, function$, item.l = - 1 )
       AddParseObject( *new )
    EndIf
    
-   Result$ = GenerateCODE( *new, function$, 3 )
+   Result$ = GenerateCODE( *new, function$ )
    
    Result$ = ReplaceString( Result$, "OpenWindow( " + Name$ + ", ", "Window( ")
    Result$ = ReplaceString( Result$, "OpenWindow( " + Name$ + ",", "Window( ")
@@ -1006,14 +1006,17 @@ Procedure MakeLine( str$, arg$, findtext$ )
                   If NumericString( \id$ )
                      AddMapElement( GetObject( ), \id$ )
                      \id$ = "#" + \func$ +"_"+ \id$
+                     If Not enumerations
+                        \id$ = Trim( \id$, "#" )
+                     EndIf
                      GetObject( ) = UCase(\id$)
+                  Else
+                     If Not enumerations
+                        \id$ = Trim( \id$, "#" )
+                     EndIf
                   EndIf
                EndIf   
                
-               ; 
-               If Not enumerations
-                  \id$ = Trim( \id$, "#" )
-               EndIf
                
                ;
                x$      = Trim(StringField( arg$, 2, ","))
@@ -1181,163 +1184,6 @@ Procedure MakeLine( str$, arg$, findtext$ )
                
          EndSelect
       EndWith
-   EndIf
-EndProcedure
-
-
-;-
-#File = 0
-Procedure   ide_NewFile( )
-   ; удаляем всех детей MDI
-   Delete( ide_design_panel_MDI )
-   ; Очишаем текст
-   ClearItems( ide_design_DEBUG ) 
-   ; затем создаем новое окно
-   ide_design_form = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
-   
-   ; и показываем гаджеты для добавления
-   SetState( ide_design_panel, 0 )
-   SetState( ide_inspector_panel, 0 )
-   
-   If Not Hide( ide_design_panel_CODE )
-      SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
-      ;                SetActive( ide_design_panel_CODE )
-   EndIf
-   ; SetText( ide_design_DEBUG, GeneratePBCode( ide_design_panel_MDI ) )
-   
-EndProcedure
-
-Procedure   ide_OpenFile(Path$) ; Открытие файла
-   Protected Text$, String$
-   
-   If Path$
-      ClearDebugOutput( )
-      ClearItems( ide_design_DEBUG )
-      Debug "Открываю файл '"+Path$+"'"
-      ;
-      SetState( ide_design_panel, 0 )
-      SetState( ide_inspector_panel, 0 )
-      ;
-      Delete( ide_design_panel_MDI )
-      ReDraw( GetRoot( ide_design_panel_MDI ))   
-      
-      If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
-         Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         FileSeek( #File, 0 )
-         
-         While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
-            String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
-            
-            Define start, stop, arg$ = FindArguments( string$, Len( String$ ), @start, @stop ) 
-            If arg$
-               Define str$ = Mid( String$, 1, start - 1 - 1 ) ; исключаем открывающую скобку '('
-               
-               MakeLine( str$, arg$, Text$ )
-               
-               
-               ; эсли это комментарии то пропускаем строку
-               If FindString( str$, ";" ) 
-                  ; Debug " find comment "
-                  Continue
-               EndIf
-               
-               If FindString( str$, "Declare" ) 
-                  ; Debug " find declare "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "Procedure" ) 
-                  ; Debug " find procedure "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "If" )
-                  ; Debug " find if "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "Select" )
-                  ; Debug " find select "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "While" )
-                  ; Debug " find loop "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "Repeat" )
-                  ; Debug " find loop "
-                  Continue
-               EndIf   
-               
-               ;
-               ;MakeCallFunction( str$, arg$, Text$ )
-               
-               
-               ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
-            EndIf
-            start = 0
-            stop = 0
-         Wend
-         
-         
-         
-         ForEach *parser\Line()
-            Debug *parser\Line()\string
-         Next
-         
-         ;          ;          ;
-         ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         ;          
-         ;          ; bug hides
-         ;          If Not Hide( ide_design_panel_CODE )
-         ;             SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
-         ;             ;                SetActive( ide_design_panel_CODE )
-         ;          EndIf
-         
-         ;
-         CloseFile(#File) ; Закрывает ранее открытый файл
-         Debug "..успешно"
-         ProcedureReturn 1
-      Else
-         ProcedureReturn 0
-      EndIf
-   Else
-      ProcedureReturn 1
-   EndIf 
-EndProcedure
-
-Procedure   ide_SaveFile(Path$) ; Процедура сохранения файла
-   Protected Space$, Text$
-   Protected len, Length, Position, Object
-   
-   If Path$
-      ClearDebugOutput()
-      Debug "Сохраняю файл '"+Path$+"'"
-      
-      ;
-      If Hide( ide_design_panel_CODE )
-         Text$ = GeneratePBCode( ide_design_panel_MDI )
-      Else
-         Text$ = GetText( ide_design_panel_CODE )
-      EndIf
-      
-      ;
-      If CreateFile( #File, Path$, #PB_UTF8 )
-         ; TruncateFile( #File )
-         
-         WriteStringFormat( #File, #PB_UTF8 )
-         WriteString( #File, Text$, #PB_UTF8 )
-         CloseFile( #File )
-         
-         Debug "..успешно"
-         ProcedureReturn 1
-      Else
-         ProcedureReturn 0
-      EndIf
-   Else
-      ProcedureReturn 1
    EndIf
 EndProcedure
 
@@ -1528,7 +1374,7 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
          Case "window"    
 ;             If Type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, "", - 1, flag | #__window_NoActivate )
-               Resize( *new, X, Y, Width,Height )
+               Resize( *new, mouse( )\steps, mouse( )\steps, Width,Height )
 ;             Else
 ;                flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
 ;                *new = Window( X,Y,Width,Height, "", flag, *parent )
@@ -1840,8 +1686,163 @@ Procedure widget_events( )
    ProcedureReturn #PB_Ignore
 EndProcedure
 
+;-
+#File = 0
+Procedure   ide_NewFile( )
+   ; удаляем всех детей MDI
+   Delete( ide_design_panel_MDI )
+   ; Очишаем текст
+   ClearItems( ide_design_DEBUG ) 
+   ; затем создаем новое окно
+   ide_design_form = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
+   
+   ; и показываем гаджеты для добавления
+   SetState( ide_design_panel, 0 )
+   SetState( ide_inspector_panel, 0 )
+   
+   If Not Hide( ide_design_panel_CODE )
+      SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+      ;                SetActive( ide_design_panel_CODE )
+   EndIf
+   ; SetText( ide_design_DEBUG, GeneratePBCode( ide_design_panel_MDI ) )
+   
+EndProcedure
 
-Declare ide_events( )
+Procedure   ide_OpenFile(Path$) ; Открытие файла
+   Protected Text$, String$
+   
+   If Path$
+      ClearDebugOutput( )
+      ClearItems( ide_design_DEBUG )
+      Debug "Открываю файл '"+Path$+"'"
+      ;
+      SetState( ide_design_panel, 0 )
+      SetState( ide_inspector_panel, 0 )
+      ;
+      Delete( ide_design_panel_MDI )
+      ReDraw( GetRoot( ide_design_panel_MDI ))   
+      
+      If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
+         Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         FileSeek( #File, 0 )
+         
+         While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
+            String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
+            
+            Define start, stop, arg$ = FindArguments( string$, Len( String$ ), @start, @stop ) 
+            If arg$
+               Define str$ = Mid( String$, 1, start - 1 - 1 ) ; исключаем открывающую скобку '('
+               
+               MakeLine( str$, arg$, Text$ )
+               
+               
+               ; эсли это комментарии то пропускаем строку
+               If FindString( str$, ";" ) 
+                  ; Debug " find comment "
+                  Continue
+               EndIf
+               
+               If FindString( str$, "Declare" ) 
+                  ; Debug " find declare "
+                  Continue
+               EndIf   
+               
+               If FindString( str$, "Procedure" ) 
+                  ; Debug " find procedure "
+                  Continue
+               EndIf   
+               
+               If FindString( str$, "If" )
+                  ; Debug " find if "
+                  Continue
+               EndIf   
+               
+               If FindString( str$, "Select" )
+                  ; Debug " find select "
+                  Continue
+               EndIf   
+               
+               If FindString( str$, "While" )
+                  ; Debug " find loop "
+                  Continue
+               EndIf   
+               
+               If FindString( str$, "Repeat" )
+                  ; Debug " find loop "
+                  Continue
+               EndIf   
+               
+               ;
+               ;MakeCallFunction( str$, arg$, Text$ )
+               
+               
+               ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
+            EndIf
+            start = 0
+            stop = 0
+         Wend
+         
+         
+         
+         ForEach *parser\Line()
+            Debug *parser\Line()\string
+         Next
+         
+         ;          ;          ;
+         ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         ;          
+         ;          ; bug hides
+         ;          If Not Hide( ide_design_panel_CODE )
+         ;             SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+         ;             ;                SetActive( ide_design_panel_CODE )
+         ;          EndIf
+         
+         ;
+         CloseFile(#File) ; Закрывает ранее открытый файл
+         Debug "..успешно"
+         ProcedureReturn 1
+      Else
+         ProcedureReturn 0
+      EndIf
+   Else
+      ProcedureReturn 1
+   EndIf 
+EndProcedure
+
+Procedure   ide_SaveFile(Path$) ; Процедура сохранения файла
+   Protected Space$, Text$
+   Protected len, Length, Position, Object
+   
+   If Path$
+      ClearDebugOutput()
+      Debug "Сохраняю файл '"+Path$+"'"
+      
+      ;
+      If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
+                                                    " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
+                                                    " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
+         Text$ = GeneratePBCode( ide_design_panel_MDI )
+      Else
+         Text$ = GetText( ide_design_panel_CODE )
+      EndIf
+      
+      ;
+      If CreateFile( #File, Path$, #PB_UTF8 )
+         ; TruncateFile( #File )
+         
+         WriteStringFormat( #File, #PB_UTF8 )
+         WriteString( #File, Text$, #PB_UTF8 )
+         CloseFile( #File )
+         
+         Debug "..успешно"
+         ProcedureReturn 1
+      Else
+         ProcedureReturn 0
+      EndIf
+   Else
+      ProcedureReturn 1
+   EndIf
+EndProcedure
 
 
 ;-
@@ -2750,9 +2751,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 205
-; FirstLine = 201
-; Folding = ------------------fg-------------------------------
+; CursorPosition = 146
+; FirstLine = 129
+; Folding = ------------------fg-----------------v-------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
