@@ -229,7 +229,7 @@ Procedure$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 )
          start = i + 1
          For i = len To start Step - 1
             chr$ = Mid( string$, i, 1 )
-            If chr$ = ")"
+            If chr$ = ")" 
                stop = i - start ; + 1
                If *start
                   *start\i = start
@@ -958,13 +958,14 @@ Procedure$ MakeAddItem( *g._s_WIDGET, Space$, item =- 1 )
    ProcedureReturn result$
 EndProcedure
 
-Procedure$ make( *g._s_WIDGET, start )
+Procedure$ Make( *g._s_WIDGET, start, stop = - 1 )
    Protected i, result$
+   ;
    If IsContainer(*g) = 3
       If *g\LastWidget( ) And *g\LastWidget( ) <> *g
          result$ + make( *g\LastWidget( ), *g\LastWidget( )\TabIndex( ) )
       EndIf
-      
+      ;
       For i = start To CountItems( *g ) - 1
          If i > 0
             result$ + #LF$
@@ -976,13 +977,19 @@ Procedure$ make( *g._s_WIDGET, start )
                    ", - 1" + 
                    ", " + Chr( '"' ) + GetItemText( *g, i ) + Chr( '"' ) + 
                    " )" + #LF$
+         If stop = i
+            Break
+         EndIf
       Next
-      
-      If codeindent
-         result$ + Space((Level(*g) - parentlevel) * codeindent)
+      ;
+      If stop = - 1
+         If codeindent
+            result$ + Space((Level(*g) - parentlevel) * codeindent)
+         EndIf
+         result$ + "CloseGadgetList( ) ; " + GetClass(*g) + #LF$ 
       EndIf
-      result$ + "CloseGadgetList( ) ; " + GetClass(*g) + #LF$ 
    EndIf
+   ;
    ProcedureReturn result$
 EndProcedure
 
@@ -1050,6 +1057,8 @@ Procedure.s GenerateCODE( *g._s_WIDGET, type$, *data = 0 )
    
    If type$ = "STATE"
       Name$ = GetClass( *g )
+      
+      Debug Bool(*g\color = _get_colors_( ))
       ;
       If Hide( *g) > 0
          result$ + Space$ 
@@ -1107,9 +1116,6 @@ Procedure.s GenerateCODE( *g._s_WIDGET, type$, *data = 0 )
             TabIndex = - 1
          EndIf
          If TabIndex <> *g\TabIndex( ) 
-            id$ = GetClass( *g\parent )
-            Protected i, count = CountItems( *g\parent ) - 1
-            
             If *g\BeforeWidget( )
                If *g\BeforeWidget( )\lastWidget( )
                   result$ + make( *g\BeforeWidget( ), *g\BeforeWidget( )\lastWidget( )\TabIndex( ) + 1 )
@@ -1122,28 +1128,32 @@ Procedure.s GenerateCODE( *g._s_WIDGET, type$, *data = 0 )
                   TabIndex = - 1
                   result$ + Space$ + #LF$
                Else
-                  TabIndex = *g\BeforeWidget( )\TabIndex( ) + 1 
+                  ;                   TabIndex = *g\BeforeWidget( )\TabIndex( ) + 1 
+                   result$ + make( *g\parent, *g\BeforeWidget( )\TabIndex( ) + 1, *g\TabIndex( ) )
                EndIf
             Else
-               TabIndex = 0;*g\TabIndex( )
+               ;                TabIndex = 0
+                result$ + make( *g\parent, 0 , *g\TabIndex( ) )
             EndIf
             
             If Not TabIndex = - 1
-               For i = TabIndex To count
-                  If i > 0
-                     result$ + Space$ + #LF$
-                  EndIf
-                  result$ + Space$ + "Add|GadgetItem( " + id$ + 
-                            ", - 1" + 
-                            ", " + Chr( '"' ) + GetItemText( *g\parent, i ) + Chr( '"' ) + 
-                            " )" + #LF$
-                  
-                  If *g\TabIndex( ) = i
-                     Break
-                  EndIf
-               Next
-               
-               ; result$ + make( *g\parent, TabIndex )
+;                id$ = GetClass( *g\parent )
+;                Protected i, count = CountItems( *g\parent ) - 1
+;                
+;             
+;                For i = TabIndex To count
+;                   If i > 0
+;                      result$ + Space$ + #LF$
+;                   EndIf
+;                   result$ + Space$ + "Add|GadgetItem( " + id$ + 
+;                             ", - 1" + 
+;                             ", " + Chr( '"' ) + GetItemText( *g\parent, i ) + Chr( '"' ) + 
+;                             " )" + #LF$
+;                   
+;                   If *g\TabIndex( ) = i
+;                      Break
+;                   EndIf
+;                Next
             EndIf
             
             TabIndex = *g\TabIndex( ) 
@@ -1606,8 +1616,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1326
-; FirstLine = 1187
-; Folding = ------------------------+9---3P9---
+; CursorPosition = 1132
+; FirstLine = 1095
+; Folding = -------------------------8---3P9---
 ; EnableXP
 ; DPIAware

@@ -199,7 +199,7 @@ Procedure   is_parent_item( *this._s_WIDGET, item )
 EndProcedure
 
 ;-
-Procedure   CodeAddLine( *new._s_widget, function$, item.l = - 1 )
+Procedure   ide_addline_code( *new._s_widget, function$, item.l = - 1 )
    ;    Debug *new\class
    ;    ProcedureReturn 
    Protected Result$, Name$ = GetClass( *new )
@@ -302,7 +302,7 @@ Procedure ide_addline( *new._s_widget )
       EndIf
       
       ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
-      CodeAddLine( *new, "object", position );, sublevel )
+      ide_addline_code( *new, "object", position );, sublevel )
    EndIf
    
    ProcedureReturn *new
@@ -917,274 +917,471 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
 EndProcedure
 
 ;-
-Procedure MakeLine( str$, arg$, findtext$ )
+Procedure$  MakeValArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+  Protected i, chr$, start, stop 
+  Static ii
+  
+   For i = 0 To len
+      chr$ = Mid( string$, i, 1 )
+      If chr$ = "(" 
+         start = i + 1
+         For i = len To start Step - 1
+            chr$ = Mid( string$, i, 1 )
+            If chr$ = ")" 
+               stop = i - start
+               
+               For i = start + 1 To len
+                  chr$ = Mid( Mid( string$, start, stop ), i, 1 )
+                  If chr$ = ")" 
+                     ii + 1
+                   EndIf
+                   
+                  If chr$ = ")" 
+                     stop = i - 1 + Bool(ii)
+                     Break 
+                  EndIf
+               Next i
+               
+               If *start
+                  *start\i = start
+               EndIf
+               If *stop
+                  *stop\i = stop
+               EndIf
+               If Not stop
+                  ProcedureReturn " "
+               Else
+                  ; Debug Mid( string$, start, stop )
+                  ProcedureReturn Mid( string$, start, stop )
+               EndIf 
+               Break
+            EndIf
+         Next i
+         
+         Break
+      EndIf
+   Next i
+EndProcedure
+
+Procedure$  MakeValFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+   Protected i, chr$, start, stop
+   
+   For i = 0 To len
+      chr$ = Mid( string$, i, 1 )
+      If chr$ = "(" 
+         stop = i - 1
+         ;Debug Mid( string$, start, stop )
+         If *start
+            *start\i = start
+         EndIf
+         If *stop
+            *stop\i = stop
+         EndIf
+         If Not stop
+            ProcedureReturn " "
+         Else
+            ; Debug Mid( string$, start, stop )
+            ProcedureReturn Mid( string$, start, stop )
+         EndIf 
+         Break
+      EndIf
+   Next i
+   
+EndProcedure
+
+Procedure MakeVal( string$ )
+   Protected result, len = Len( string$ ) 
+   
+   Define arg$ = MakeValArguments( string$, len )
+   Define func$ = MakeValFunctions( string$, len )
+   
+   Select Trim( func$ )
+      Case "RGB"
+         result = RGB( Val(Trim(StringField( arg$, 1, ","))), 
+                       Val(Trim(StringField( arg$, 2, ","))),
+                       Val(Trim(StringField( arg$, 3, ","))) )
+      Case "RGBA"
+         result = RGBA( Val(Trim(StringField( arg$, 1, ","))), 
+                        Val(Trim(StringField( arg$, 2, ","))),
+                        Val(Trim(StringField( arg$, 3, ","))),
+                        Val(Trim(StringField( arg$, 4, ","))) )
+   EndSelect
+   
+   ProcedureReturn result
+EndProcedure
+
+;-
+Procedure$  _FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+  Protected i, chr$, start, stop 
+  Static ii
+  
+   For i = 0 To len
+      chr$ = Mid( string$, i, 1 )
+      If chr$ = "(" 
+         start = i + 1
+         For i = len To start Step - 1
+            chr$ = Mid( string$, i, 1 )
+            If chr$ = ")" 
+               stop = i - start
+               
+               For i = start + 1 To len
+                  chr$ = Mid( Mid( string$, start, stop ), i, 1 )
+                  If chr$ = ")" 
+                     ii + 1
+                   EndIf
+                   
+                  If chr$ = ")" 
+                     stop = i - 1 + Bool(ii)
+                     Break 
+                  EndIf
+               Next i
+               
+               If *start
+                  *start\i = start
+               EndIf
+               If *stop
+                  *stop\i = stop
+               EndIf
+               If Not stop
+                  ProcedureReturn " "
+               Else
+                  ; Debug Mid( string$, start, stop )
+                  ProcedureReturn Mid( string$, start, stop )
+               EndIf 
+               Break
+            EndIf
+         Next i
+         
+         Break
+      EndIf
+   Next i
+EndProcedure
+
+Procedure MakeLine( string$, findtext$ )
    Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
    Protected param1, param2, param3, flags.q
    
-   If FindString( str$, ";" )
-      ProcedureReturn 
-   EndIf
-        
-   LastElement( *parser\Line( ))
-   If AddElement( *parser\Line( ))
-      *parser\Line( ) = AllocateStructure( _s_LINE )
+   Define arg_start, arg_stop, arg$ = _FindArguments( string$, Len( String$ ), @arg_start, @arg_stop ) 
+   If arg$
+     ; Debug arg$ +" "+ arg_start
+      Define str$ = Mid( String$, 1, arg_start - 1 - 1 ) ; исключаем открывающую скобку '('
       
-      With *parser\Line( )
-         \arg$ = arg$
-         \func$ = FindFunctions( str$, Len( str$ ))
-         \string = str$ + arg$
+      If FindString( str$, ";" )
+         ProcedureReturn 
+      EndIf
+      
+      LastElement( *parser\Line( ))
+      If AddElement( *parser\Line( ))
+         *parser\Line( ) = AllocateStructure( _s_LINE )
+         
+         With *parser\Line( )
+            \arg$ = arg$
+            \func$ = FindFunctions( str$, Len( str$ ))
+            \string = str$ + arg$
             
-         
-         \pos = FindString( str$, "Declare" )
-         If \pos
-            \type$ = "Declare"
-            ProcedureReturn 
-         EndIf
-         
-         \pos = FindString( str$, "Procedure" )
-         If \pos
-            \type$ = "Procedure"
-            ProcedureReturn 
-         EndIf
-         
-        \pos = FindString( str$, "Select" )
-         If \pos
-            \type$ = "Select"
-            ProcedureReturn 
-         EndIf
-         
-         \pos = FindString( str$, "While" )
-         If \pos
-            \type$ = "While"
-            ProcedureReturn 
-         EndIf
-         
-         \pos = FindString( str$, "Repeat" )
-         If \pos
-            \type$ = "Repeat"
-            ProcedureReturn 
-         EndIf
-         
-          \pos = FindString( str$, "If" )
-         If \pos
-            \type$ = "If"
-            ; ProcedureReturn 
-         EndIf
-         
-         ;
-         Select \func$
-            Case "OpenWindow",
-                 "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
-                 "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
-                 "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
-                 "IPAddressGadget","ProgressBarGadget","ScrollBarGadget","ScrollAreaGadget",
-                 "TrackBarGadget","WebGadget","ButtonImageGadget","CalendarGadget",
-                 "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
-                 "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
-                 "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
-               
-               Static *parent =- 1
-               Protected *new._s_WIDGET
-               
-               ;
-               If *parent =- 1 
-                  *parent = ide_design_panel_MDI 
-                  x$ = "10"
-                  y$ = "10"
-               EndIf
-               
-               ;
-               \func$ = ReplaceString( \func$, "Gadget", "")
-               \func$ = ReplaceString( \func$, "Open", "")
-               
-               ;
-               If FindString( str$, "=" )
-                  \id$ = Trim( StringField( str$, 1, "=" ))
-               Else
-                  \id$ = Trim( StringField( arg$, 1, "," ))
+            
+            \pos = FindString( str$, "Declare" )
+            If \pos
+               \type$ = "Declare"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "Procedure" )
+            If \pos
+               \type$ = "Procedure"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "Select" )
+            If \pos
+               \type$ = "Select"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "While" )
+            If \pos
+               \type$ = "While"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "Repeat" )
+            If \pos
+               \type$ = "Repeat"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "If" )
+            If \pos
+               \type$ = "If"
+               ; ProcedureReturn 
+            EndIf
+            
+            ;
+            Select \func$
+               Case "OpenWindow",
+                    "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
+                    "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
+                    "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
+                    "IPAddressGadget","ProgressBarGadget","ScrollBarGadget","ScrollAreaGadget",
+                    "TrackBarGadget","WebGadget","ButtonImageGadget","CalendarGadget",
+                    "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
+                    "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
+                    "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
                   
-                  If NumericString( \id$ )
-                     AddMapElement( GetObject( ), \id$ )
-                     \id$ = "#" + \func$ +"_"+ \id$
-                     If Not enumerations
-                        \id$ = Trim( \id$, "#" )
-                     EndIf
-                     GetObject( ) = UCase(\id$)
-                  Else
-                     If Not enumerations
-                        \id$ = Trim( \id$, "#" )
-                     EndIf
-                  EndIf
-               EndIf   
-               
-               
-               ;
-               x$      = Trim(StringField( arg$, 2, ","))
-               y$      = Trim(StringField( arg$, 3, ","))
-               width$  = Trim(StringField( arg$, 4, ","))
-               height$ = Trim(StringField( arg$, 5, ","))
-               ;
-               param1$ = Trim(StringField( arg$, 6, ","))
-               param2$ = Trim(StringField( arg$, 7, ","))
-               param3$ = Trim(StringField( arg$, 8, ",")) 
-               param4$ = Trim(StringField( arg$, 9, ","))
-               
-               ;
-               If Not NumericString( x$ )  
-                  x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
-               EndIf
-               If Not NumericString( y$ )  
-                  y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
-               EndIf
-               If Not NumericString( width$ )  
-                  width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
-               EndIf
-               If Not NumericString( height$ )  
-                  height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
-               EndIf
-               
-               ; param1
-               Select \func$
-                  Case "Track", "Progress", "Scroll", "ScrollArea",
-                       "TrackBar","ProgressBar", "ScrollBar"
-                     param1 = Val( param1$ )
-                     
-                  Case "Splitter" 
-                     param1 = MakeObject(UCase(Param1$))
-                     
-                  Case "Window", "Web", "Frame",
-                       "Text", "String", "Button", "CheckBox",
-                       "Option", "HyperLink", "ListIcon", "Date",
-                       "ExplorerList", "ExplorerTree", "ExplorerCombo"
-                     
-                     If FindString( param1$, Chr('"'))
-                        text$ = Trim( param1$, Chr('"'))
-                     Else
-                        text$ = Trim(StringField( StringField( Mid( findtext$, FindString( findtext$, param1$ ) ), 1, ")" ), 2, "=" ))
-                     EndIf
-                     If text$
-                        ;If FindString( text$, Chr('"'))
-                        text$ = Trim( text$, Chr('"'))
-                        ;EndIf
-                     EndIf
-                     
-               EndSelect
-               
-               ; param2
-               Select \func$
-                  Case "Track", "Progress", "Scroll", "TrackBar", "ProgressBar", "ScrollBar", "ScrollArea"
-                     param2 = Val( param2$ )
-                     
-                  Case "Splitter" 
-                     param2 = MakeObject(UCase(Param2$))
-                     
-               EndSelect
-               
-               ; param3
-               Select \func$
-                  Case "Scroll", "ScrollBar", "ScrollArea"
-                     param3 = Val( param3$ )
-               EndSelect
-               
-               ; param4
-               Select \func$
-                  Case "Date", "Calendar", "Container", 
-                       "Tree", "ListView", "ComboBox", "Editor"
-                     flag$ = param1$
-                     
-                  Case "Window", "Web", "Frame",
-                       "Text", "String", "Button", "CheckBox", 
-                       "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
-                     flag$ = param2$
-                     
-                  Case "Track", "Progress", "TrackBar", "ProgressBar", 
-                       "Spin", "OpenGL", "Splitter", "MDI", "Canvas"
-                     flag$ = param3$
-                     
-                  Case "Scroll", "ScrollBar", "ScrollArea", "HyperLink", "ListIcon"  
-                     flag$ = param4$
-                     
-               EndSelect
-               
-               ; flag
-               If flag$
-                  flags = MakeFlag(Flag$)
-               EndIf
-               
-               ; Debug "vvv "+param1 +" "+ param2
-               *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
-               
-               If *new
-                  ;          If \func$ = "Panel"
-                  ;             RemoveItem( *new, 0 )
-                  ;             ; ClearItems( *new )
-                  ;          EndIf
-                  ;             If flag$
-                  ;                SetFlagsString( *new, flag$ )
-                  ;             EndIf
-                  
-                  If \id$
-                     SetClass( *new, UCase(\id$) )
-                  EndIf
-                  
-                  SetText( *new, text$ )
+                  Static *parent =- 1
+                  Protected *new._s_WIDGET
                   
                   ;
-                  If IsContainer( *new ) > 0
-                     *Parent = *new
+                  If *parent =- 1 
+                     *parent = ide_design_panel_MDI 
+                     x$ = "10"
+                     y$ = "10"
                   EndIf
                   
-                  ; 
-                  ide_addline( *new )
-               EndIf
-               
-            Case "CloseGadgetList"
-               If Not *parent
-                  Debug "ERROR "+\func$
-                  ProcedureReturn 
-               EndIf
-               *Parent = GetParent( *Parent )
-               ; CloseList( ) 
-                ;CodeAddLine( *Parent, \func$ )
-               
-            Case "AddGadgetItem"
-               ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
-               
-               \id$ = Trim( StringField( arg$, 1, "," ))
-               param1$ = Trim( StringField( arg$, 2, "," ))
-               param2$ = Trim( StringField( arg$, 3, "," ))
-               param3$ = Trim( StringField( arg$, 4, "," ))
-               flag$ = Trim( StringField( arg$, 5, "," ))
-               ;
-               If param1$ = "- 1" Or 
-                  param1$ = "-1"
-                  param1 = - 1
-               Else
-                  param1 = Val(param1$)
-               EndIf
-               text$ = Trim( param2$, Chr('"'))
-               param3 = Val(param3$)
-               Flags = MakeFlag( flag$ )
-               
-               
-               ;          Select Asc(\id$)
-               ;             Case '0' To '9'
-               ;                \id$ = "#" + \func$ +"_"+ \id$
-               ;          EndSelect
-               
-               *Parent = MakeObject( \id$ ) 
-               If Not *parent
-                  Debug "ERROR " + \func$ +" "+ \id$ 
-                  ProcedureReturn 
-               EndIf
-               ;
-               AddItem( *Parent, param1, text$, param3, Flags )
-               
-               ; CodeAddLine( *Parent, \func$ )
-               
-         EndSelect
-      EndWith
+                  ;
+                  \func$ = ReplaceString( \func$, "Gadget", "")
+                  \func$ = ReplaceString( \func$, "Open", "")
+                  
+                  ; id$
+                  If FindString( str$, "=" )
+                     \id$ = Trim( StringField( str$, 1, "=" ))
+                  Else
+                     \id$ = Trim( StringField( arg$, 1, "," ))
+                     
+                     If NumericString( \id$ )
+                        AddMapElement( GetObject( ), \id$ )
+                        \id$ = "#" + \func$ +"_"+ \id$
+                        If Not enumerations
+                           \id$ = Trim( \id$, "#" )
+                        EndIf
+                        GetObject( ) = UCase(\id$)
+                     Else
+                        If Not enumerations
+                           \id$ = Trim( \id$, "#" )
+                        EndIf
+                     EndIf
+                  EndIf   
+                  
+                  ;
+                  x$      = Trim(StringField( arg$, 2, ","))
+                  y$      = Trim(StringField( arg$, 3, ","))
+                  width$  = Trim(StringField( arg$, 4, ","))
+                  height$ = Trim(StringField( arg$, 5, ","))
+                  ;
+                  param1$ = Trim(StringField( arg$, 6, ","))
+                  param2$ = Trim(StringField( arg$, 7, ","))
+                  param3$ = Trim(StringField( arg$, 8, ",")) 
+                  param4$ = Trim(StringField( arg$, 9, ","))
+                  
+                  ;
+                  If Not NumericString( x$ )  
+                     x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  If Not NumericString( y$ )  
+                     y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  If Not NumericString( width$ )  
+                     width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  If Not NumericString( height$ )  
+                     height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  
+                  ; param1
+                  Select \func$
+                     Case "Track", "Progress", "Scroll", "ScrollArea",
+                          "TrackBar","ProgressBar", "ScrollBar"
+                        param1 = Val( param1$ )
+                        
+                     Case "Splitter" 
+                        param1 = MakeObject(UCase(Param1$))
+                        
+                     Case "Window", "Web", "Frame",
+                          "Text", "String", "Button", "CheckBox",
+                          "Option", "HyperLink", "ListIcon", "Date",
+                          "ExplorerList", "ExplorerTree", "ExplorerCombo"
+                        
+                        If FindString( param1$, Chr('"'))
+                           text$ = Trim( param1$, Chr('"'))
+                        Else
+                           text$ = Trim(StringField( StringField( Mid( findtext$, FindString( findtext$, param1$ ) ), 1, ")" ), 2, "=" ))
+                        EndIf
+                        If text$
+                           ;If FindString( text$, Chr('"'))
+                           text$ = Trim( text$, Chr('"'))
+                           ;EndIf
+                        EndIf
+                        
+                  EndSelect
+                  
+                  ; param2
+                  Select \func$
+                     Case "Track", "Progress", "Scroll", "TrackBar", "ProgressBar", "ScrollBar", "ScrollArea"
+                        param2 = Val( param2$ )
+                        
+                     Case "Splitter" 
+                        param2 = MakeObject(UCase(Param2$))
+                        
+                  EndSelect
+                  
+                  ; param3
+                  Select \func$
+                     Case "Scroll", "ScrollBar", "ScrollArea"
+                        param3 = Val( param3$ )
+                  EndSelect
+                  
+                  ; param4
+                  Select \func$
+                     Case "Date", "Calendar", "Container", 
+                          "Tree", "ListView", "ComboBox", "Editor"
+                        flag$ = param1$
+                        
+                     Case "Window", "Web", "Frame",
+                          "Text", "String", "Button", "CheckBox", 
+                          "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
+                        flag$ = param2$
+                        
+                     Case "Track", "Progress", "TrackBar", "ProgressBar", 
+                          "Spin", "OpenGL", "Splitter", "MDI", "Canvas"
+                        flag$ = param3$
+                        
+                     Case "Scroll", "ScrollBar", "ScrollArea", "HyperLink", "ListIcon"  
+                        flag$ = param4$
+                        
+                  EndSelect
+                  
+                  ; flag
+                  If flag$
+                     flags = MakeFlag(Flag$)
+                  EndIf
+                  
+                  ; Debug "vvv "+param1 +" "+ param2
+                  *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
+                  
+                  If *new
+                     ;          If \func$ = "Panel"
+                     ;             RemoveItem( *new, 0 )
+                     ;             ; ClearItems( *new )
+                     ;          EndIf
+                     ;             If flag$
+                     ;                SetFlagsString( *new, flag$ )
+                     ;             EndIf
+                     
+                     If \id$
+                        SetClass( *new, UCase(\id$) )
+                     EndIf
+                     
+                     SetText( *new, text$ )
+                     
+                     ;
+                     If IsContainer( *new ) > 0
+                        *Parent = *new
+                     EndIf
+                     
+                     ; 
+                     ide_addline( *new )
+                  EndIf
+                  
+               Case "SetGadgetColor"
+                  \id$ = Trim( StringField( arg$, 1, "," ))
+                  param1$ = Trim( StringField( arg$, 2, "," ))
+                  param2$ = Trim( StringField( arg$, 3, "," ))
+                  ;\ID = MakeObject( \id$ )
+                  
+                  Select param1$
+                     Case "#PB_Gadget_FrontColor"      : Param1 = #PB_Gadget_FrontColor      ; Цвет текста гаджета
+                     Case "#PB_Gadget_BackColor"       : Param1 = #PB_Gadget_BackColor       ; Фон гаджета
+                     Case "#PB_Gadget_LineColor"       : Param1 = #PB_Gadget_LineColor       ; Цвет линий сетки
+                     Case "#PB_Gadget_TitleFrontColor" : Param1 = #PB_Gadget_TitleFrontColor ; Цвет текста в заголовке    (для гаджета CalendarGadget())
+                     Case "#PB_Gadget_TitleBackColor"  : Param1 = #PB_Gadget_TitleBackColor  ; Цвет фона в заголовке 	 (для гаджета CalendarGadget())
+                     Case "#PB_Gadget_GrayTextColor"   : Param1 = #PB_Gadget_GrayTextColor   ; Цвет для серого текста     (для гаджета CalendarGadget())
+                  EndSelect
+                  
+                   Debug arg$
+                   ;Debug StringField( arg$, 2, "," )
+                  param2 = MakeVal( param2$ )
+                  Debug ""+param2$
+                  
+                  SetColor( MakeObject( \id$ ), param1, param2 )
+                  
+;                   Select Index
+;                      Case 1 : \id$ = \Args$
+;                      Case 2 
+;                         Select \Args$
+;                            Case "#PB_Gadget_FrontColor"      : \Param1 = #PB_Gadget_FrontColor      ; Цвет текста гаджета
+;                            Case "#PB_Gadget_BackColor"       : \Param1 = #PB_Gadget_BackColor       ; Фон гаджета
+;                            Case "#PB_Gadget_LineColor"       : \Param1 = #PB_Gadget_LineColor       ; Цвет линий сетки
+;                            Case "#PB_Gadget_TitleFrontColor" : \Param1 = #PB_Gadget_TitleFrontColor ; Цвет текста в заголовке    (для гаджета CalendarGadget())
+;                            Case "#PB_Gadget_TitleBackColor"  : \Param1 = #PB_Gadget_TitleBackColor  ; Цвет фона в заголовке 	 (для гаджета CalendarGadget())
+;                            Case "#PB_Gadget_GrayTextColor"   : \Param1 = #PB_Gadget_GrayTextColor   ; Цвет для серого текста     (для гаджета CalendarGadget())
+;                         EndSelect
+;                         
+;                      Case 3
+;                         \Param2 = Val(\Args$)
+;                         Result = GetVal(\Args$)
+;                         If Result
+;                            \Param2 = Result
+;                         EndIf
+;                   EndSelect
+;                   
+                  
+               Case "CloseGadgetList"
+                  If Not *parent
+                     Debug "ERROR "+\func$
+                     ProcedureReturn 
+                  EndIf
+                  *Parent = GetParent( *Parent )
+                  ; CloseList( ) 
+                  
+               Case "AddGadgetItem"
+                  ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
+                  
+                  \id$ = Trim( StringField( arg$, 1, "," ))
+                  param1$ = Trim( StringField( arg$, 2, "," ))
+                  param2$ = Trim( StringField( arg$, 3, "," ))
+                  param3$ = Trim( StringField( arg$, 4, "," ))
+                  flag$ = Trim( StringField( arg$, 5, "," ))
+                  ;
+                  If param1$ = "- 1" Or 
+                     param1$ = "-1"
+                     param1 = - 1
+                  Else
+                     param1 = Val(param1$)
+                  EndIf
+                  text$ = Trim( param2$, Chr('"'))
+                  param3 = Val(param3$)
+                  Flags = MakeFlag( flag$ )
+                  
+                  
+                  ;          Select Asc(\id$)
+                  ;             Case '0' To '9'
+                  ;                \id$ = "#" + \func$ +"_"+ \id$
+                  ;          EndSelect
+                  
+                  *Parent = MakeObject( \id$ ) 
+                  If Not *parent
+                     Debug "ERROR " + \func$ +" "+ \id$ 
+                     ProcedureReturn 
+                  EndIf
+                  ;
+                  AddItem( *Parent, param1, text$, param3, Flags )
+                  
+                  
+            EndSelect
+         EndWith
+      EndIf
+      
+      
+      ; если строка такого ввида "containergadget() : closegadgetlist()" 
+      Define lines$ = Trim( Mid( String$, arg_start+arg_stop + 1 ), ":" )
+      If lines$
+         MakeLine( lines$, findtext$ )
+      EndIf
+      
+      
+      ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
    EndIf
+   
 EndProcedure
 
 
@@ -1729,57 +1926,7 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
             
-            Define start, stop, arg$ = FindArguments( string$, Len( String$ ), @start, @stop ) 
-            If arg$
-               Define str$ = Mid( String$, 1, start - 1 - 1 ) ; исключаем открывающую скобку '('
-               
-               MakeLine( str$, arg$, Text$ )
-               
-               
-               ; эсли это комментарии то пропускаем строку
-               If FindString( str$, ";" ) 
-                  ; Debug " find comment "
-                  Continue
-               EndIf
-               
-               If FindString( str$, "Declare" ) 
-                  ; Debug " find declare "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "Procedure" ) 
-                  ; Debug " find procedure "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "If" )
-                  ; Debug " find if "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "Select" )
-                  ; Debug " find select "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "While" )
-                  ; Debug " find loop "
-                  Continue
-               EndIf   
-               
-               If FindString( str$, "Repeat" )
-                  ; Debug " find loop "
-                  Continue
-               EndIf   
-               
-               ;
-               ;MakeCallFunction( str$, arg$, Text$ )
-               
-               
-               ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
-            EndIf
-            start = 0
-            stop = 0
+            MakeLine( String$, Text$ )
          Wend
          
          
@@ -2751,9 +2898,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1785
-; FirstLine = 1742
-; Folding = ------------------fg-----------------v-------------
+; CursorPosition = 991
+; FirstLine = 938
+; Folding = ------------------8-f-fg94g-------------v-------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
