@@ -154,7 +154,7 @@ Declare$  GetWord( text$, len, caret )
 Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   NumericString( string$ )
 Declare.q MakeFlag( Flag_Str.s )
-
+Declare.q MakeConstants( string$ )
 ;
 ;- INCLUDEs
 #ide_path = "../"
@@ -930,14 +930,11 @@ Procedure$  MakeValArguments( string$, len, *start.Integer = 0, *stop.Integer = 
             If chr$ = ")" 
                stop = i - start
                
-               For i = start + 1 To len
+               For i = start To len
                   chr$ = Mid( Mid( string$, start, stop ), i, 1 )
+                  
                   If chr$ = ")" 
-                     ii + 1
-                   EndIf
-                   
-                  If chr$ = ")" 
-                     stop = i - 1 + Bool(ii)
+                     stop = i - Bool(FindString( string$, ":" ))
                      Break 
                   EndIf
                Next i
@@ -1010,9 +1007,24 @@ Procedure MakeVal( string$ )
    ProcedureReturn result
 EndProcedure
 
+Procedure MakeFunctions( string$, Index )
+   Protected result, result$
+   Debug string$
+   result$ = StringField(StringField(string$, 1, "("), Index, ",") +"("+ StringField(string$, 2, "(")
+   result = MakeVal( result$ )
+   
+   ProcedureReturn result
+EndProcedure
+
 ;-
 Procedure$  _FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
-  Protected i, chr$, start, stop 
+   Protected result$
+   ;Debug FindArguments( string$, len, *start, *stop )
+   result$ = MakeValArguments( string$, len, *start, *stop )
+   ; Debug result$
+   ProcedureReturn result$; MakeValFunctions( string$, len, *start, *stop )
+   
+   Protected i, chr$, start, stop 
   Static ii
   
    For i = 0 To len
@@ -1284,46 +1296,16 @@ Procedure MakeLine( string$, findtext$ )
                   
                Case "SetGadgetColor"
                   \id$ = Trim( StringField( arg$, 1, "," ))
+                  Define ID = MakeObject( \id$ )
+                  
                   param1$ = Trim( StringField( arg$, 2, "," ))
-                  param2$ = Trim( StringField( arg$, 3, "," ))
-                  ;\ID = MakeObject( \id$ )
+                  ;param2$ = Trim( StringField( arg$, 3, "," ))
                   
-                  Select param1$
-                     Case "#PB_Gadget_FrontColor"      : Param1 = #PB_Gadget_FrontColor      ; Цвет текста гаджета
-                     Case "#PB_Gadget_BackColor"       : Param1 = #PB_Gadget_BackColor       ; Фон гаджета
-                     Case "#PB_Gadget_LineColor"       : Param1 = #PB_Gadget_LineColor       ; Цвет линий сетки
-                     Case "#PB_Gadget_TitleFrontColor" : Param1 = #PB_Gadget_TitleFrontColor ; Цвет текста в заголовке    (для гаджета CalendarGadget())
-                     Case "#PB_Gadget_TitleBackColor"  : Param1 = #PB_Gadget_TitleBackColor  ; Цвет фона в заголовке 	 (для гаджета CalendarGadget())
-                     Case "#PB_Gadget_GrayTextColor"   : Param1 = #PB_Gadget_GrayTextColor   ; Цвет для серого текста     (для гаджета CalendarGadget())
-                  EndSelect
+                  Debug ""+\id$ +" "+ ID ; +" "+ StringField( arg$, 1, "," );arg$
                   
-                   Debug arg$
-                   ;Debug StringField( arg$, 2, "," )
-                  param2 = MakeVal( param2$ )
-                  Debug ""+param2$
-                  
-                  SetColor( MakeObject( \id$ ), param1, param2 )
-                  
-;                   Select Index
-;                      Case 1 : \id$ = \Args$
-;                      Case 2 
-;                         Select \Args$
-;                            Case "#PB_Gadget_FrontColor"      : \Param1 = #PB_Gadget_FrontColor      ; Цвет текста гаджета
-;                            Case "#PB_Gadget_BackColor"       : \Param1 = #PB_Gadget_BackColor       ; Фон гаджета
-;                            Case "#PB_Gadget_LineColor"       : \Param1 = #PB_Gadget_LineColor       ; Цвет линий сетки
-;                            Case "#PB_Gadget_TitleFrontColor" : \Param1 = #PB_Gadget_TitleFrontColor ; Цвет текста в заголовке    (для гаджета CalendarGadget())
-;                            Case "#PB_Gadget_TitleBackColor"  : \Param1 = #PB_Gadget_TitleBackColor  ; Цвет фона в заголовке 	 (для гаджета CalendarGadget())
-;                            Case "#PB_Gadget_GrayTextColor"   : \Param1 = #PB_Gadget_GrayTextColor   ; Цвет для серого текста     (для гаджета CalendarGadget())
-;                         EndSelect
-;                         
-;                      Case 3
-;                         \Param2 = Val(\Args$)
-;                         Result = GetVal(\Args$)
-;                         If Result
-;                            \Param2 = Result
-;                         EndIf
-;                   EndSelect
-;                   
+                  If ID
+                     SetColor( ID, MakeConstants( param1$ ), MakeFunctions( arg$, 3 ))
+                  EndIf
                   
                Case "CloseGadgetList"
                   If Not *parent
@@ -2898,9 +2880,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 991
-; FirstLine = 938
-; Folding = ------------------8-f-fg94g-------------v-------------
+; CursorPosition = 156
+; FirstLine = 135
+; Folding = -------------------4--fg94w-------------v-------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
