@@ -58,6 +58,7 @@ Enumeration
    #_tb_widget_copy
    #_tb_widget_cut
    
+   #_tb_file_run
    #_tb_file_new
    #_tb_file_open
    #_tb_file_save
@@ -961,59 +962,43 @@ Procedure$  MakeArgString( string$, len, *start.Integer = 0, *stop.Integer = 0 )
 EndProcedure
 
 Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
-   Protected i, chr$, start, stop
+   Protected i, result$, str$, start, stop
+   Protected space, pos = FindString( string$, "=" )
    
-   For i = 0 To len
-      chr$ = Mid( string$, i, 1 )
-      If chr$ = "(" 
+   If pos
+      If pos > FindString( string$, "(" )
+         pos = 0
+      Else
+         string$ = Mid( string$, pos + 1, len - pos )
+      EndIf
+   Else
+      pos = FindString( string$, ":" )
+      If pos
+         string$ = StringField( string$, 2, ":" )
+      EndIf
+   EndIf
+   
+   For i = 1 To len
+      If Mid( string$, i, 1 ) = "(" 
          stop = i - 1
-         ;Debug Mid( string$, start, stop )
+         str$ = Mid( string$, start, stop )
+         result$ = Trim( str$ )
+         space = FindString( str$, result$ )
+         If space 
+            start + space
+            stop - space
+         EndIf
          If *start
-            *start\i = start
+            *start\i = pos + start
          EndIf
          If *stop
-            *stop\i = stop
+            *stop\i = stop + 1
          EndIf
-         If Not stop
-            ProcedureReturn " "
-         Else
-            Define str$ = Mid( string$, start, stop )
-            Define find = FindString( str$, "=" )
-            
-            If find
-               str$ = StringField( str$, 2, "=" )
-               start = find + CountString( str$, " " ) + 1
-               str$ = Trim( str$ )
-               stop = Len( str$ )
-               ; Debug "find|"+Mid( string$, start, stop )
-               ProcedureReturn str$
-            Else
-               If FindString( str$, " " )
-                  len = stop
-                  For i = len To 0 Step - 1
-                     chr$ = Mid( string$, i, 1 )
-                     If chr$ = " "
-                        start = i + 1
-                        stop - i
-                        If *start
-                           *start\i = start
-                        EndIf
-                        If *stop
-                           *stop\i = stop
-                        EndIf
-                        ProcedureReturn Mid( string$, start, stop )
-                        Break
-                     EndIf
-                  Next i
-               Else
-                  ProcedureReturn str$
-               EndIf
-            EndIf
-         EndIf 
          Break
       EndIf
    Next i
    
+   ProcedureReturn result$
 EndProcedure
 
 Procedure MakeVal( string$ )
@@ -1021,6 +1006,7 @@ Procedure MakeVal( string$ )
    
    Define arg$ = MakeArgString( string$, len )
    Define func$ = MakeFuncString( string$, len )
+   Debug "[MakeVal]"+func$ 
    
    Select Trim( func$ )
       Case "RGB"
@@ -1039,8 +1025,8 @@ EndProcedure
 
 Procedure MakeFunc( string$, Index )
    Protected result, result$
-   Debug "[MakeFunc]"+string$
    result$ = StringField(StringField(string$, 1, "("), Index, ",") +"("+ StringField(string$, 2, "(")
+   Debug "[MakeFunc]"+result$
    result = MakeVal( result$ )
    
    ProcedureReturn result
@@ -1069,7 +1055,6 @@ Procedure MakeLine( string$, findtext$ )
             \arg$ = arg$
             \string = string$
             \func$ = MakeFuncString( string$, string_len )
-            
             
             ;
             \pos = FindString( str$, "Declare" )
@@ -1108,7 +1093,7 @@ Procedure MakeLine( string$, findtext$ )
                ; ProcedureReturn 
             EndIf
             
-            ;Debug \func$;arg$
+             Debug "[Make]"+\func$;arg$
        
             ;
             Select \func$
@@ -1122,7 +1107,7 @@ Procedure MakeLine( string$, findtext$ )
                     "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
                     "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
                   
-                  Static *parent =- 1
+                  Static *parent
                   Protected *new._s_WIDGET
                   
                   ;
@@ -1254,7 +1239,8 @@ Procedure MakeLine( string$, findtext$ )
                   If \func$ = "Window"
                      If param3$
                         *Parent = MakeObject( param3$ )
-                     Else
+                     EndIf
+                     If Not *Parent
                         *Parent = ide_design_panel_MDI
                      EndIf
                      
@@ -1512,8 +1498,8 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    Protected newtype$
-   
-   If *parent 
+     
+   If *parent > 0 
       OpenList( *parent, CountItems( *parent ) - 1 )
       type$ = LCase( Trim( type$ ) )
       
@@ -2127,6 +2113,12 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          Next
          
          
+      Case #_tb_file_run
+         Debug "run "+#PB_Compiler_Home
+;          ;result = RunProgram(Filename$ [, Parameter$, WorkingDirectory$ [, Flags [, SenderProgram]]])
+;         Define  Compiler = RunProgram(#PB_Compiler_Home+"/PureBasic.exe", "/EXE "+GetText( ide_design_panel_CODE ), "", #PB_Program_Open | #PB_Program_Read)
+;         Debug Compiler
+        
       Case #_tb_file_new
          ide_NewFile( )
          
@@ -2423,18 +2415,25 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    SetColor(ide_toolbar, #__color_back, $fffefefe )
    
    OpenSubBar("Menu")
-   BarItem( #_tb_file_new, "New" );+ Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_open, "Open" );+ Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_save, "Save" );+ Chr(9) + "Ctrl+S")
+   BarItem( #_tb_file_new, "New" + Space(9) + Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_open, "Open" + Space(9) + Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_save, "Save" + Space(9) + Chr(9) + "Ctrl+S")
    BarItem( #_tb_file_save_as, "Save as...")
    BarSeparator( )
    BarItem( #_tb_file_quit, "Quit" );+ Chr(9) + "Ctrl+Q")
    CloseSubBar( )
    ;
    BarSeparator( )
-   BarItem( #_tb_file_new, "New" );+ Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_open, "Open" );+ Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_save, "Save" );+ Chr(9) + "Ctrl+S")
+   BarItem( #_tb_file_new, "New" )
+   BarItem( #_tb_file_open, "Open" )
+   BarItem( #_tb_file_save, "Save" )
+   BarSeparator( )
+   BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
+   BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
+   BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
+   BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+   BarSeparator( )
+   BarItem( #_tb_file_run, "[RUN]" )
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) 
    ;
@@ -2459,16 +2458,11 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;    CloseSubBar( )
    
    BarSeparator( )
-   BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
-   BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
-   BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
-   BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
-   BarSeparator( )
-   BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-   BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-   BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-   BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-   BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+;    BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+;    BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+;    BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+;    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+;    BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
    CloseList( )
    
    ; gadgets
@@ -2878,9 +2872,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1261
-; FirstLine = 1155
-; Folding = ------------------84--------------------v-------------
+; CursorPosition = 1109
+; FirstLine = 1016
+; Folding = ------------------84----------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

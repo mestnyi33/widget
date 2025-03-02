@@ -50,7 +50,8 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
+; CursorPosition = 19
+; FirstLine = 3
 ; Folding = --
 ; EnableXP
 ; DPIAware
