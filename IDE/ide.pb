@@ -138,7 +138,7 @@ Declare   widget_events( )
 Declare   Properties_SetItemText( *splitter, item, Text.s )
 Declare.s Properties_GetItemText( *splitter, item, mode = 0 )
 Declare   Properties_Updates( *object, type$ )
-Declare   widget_Create( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Declare   widget_Create( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   ide_addline( *new )
 Declare   MakeObject( class$ )
@@ -917,7 +917,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
 EndProcedure
 
 ;-
-Procedure$  MakeValArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+Procedure$  MakeArgString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
   Protected i, chr$, start, stop 
   Static ii
   
@@ -960,7 +960,7 @@ Procedure$  MakeValArguments( string$, len, *start.Integer = 0, *stop.Integer = 
    Next i
 EndProcedure
 
-Procedure$  MakeValFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
    Protected i, chr$, start, stop
    
    For i = 0 To len
@@ -977,8 +977,38 @@ Procedure$  MakeValFunctions( string$, len, *start.Integer = 0, *stop.Integer = 
          If Not stop
             ProcedureReturn " "
          Else
-            ; Debug Mid( string$, start, stop )
-            ProcedureReturn Mid( string$, start, stop )
+            Define str$ = Mid( string$, start, stop )
+            Define find = FindString( str$, "=" )
+            
+            If find
+               str$ = StringField( str$, 2, "=" )
+               start = find + CountString( str$, " " ) + 1
+               str$ = Trim( str$ )
+               stop = Len( str$ )
+               ; Debug "find|"+Mid( string$, start, stop )
+               ProcedureReturn str$
+            Else
+               If FindString( str$, " " )
+                  len = stop
+                  For i = len To 0 Step - 1
+                     chr$ = Mid( string$, i, 1 )
+                     If chr$ = " "
+                        start = i + 1
+                        stop - i
+                        If *start
+                           *start\i = start
+                        EndIf
+                        If *stop
+                           *stop\i = stop
+                        EndIf
+                        ProcedureReturn Mid( string$, start, stop )
+                        Break
+                     EndIf
+                  Next i
+               Else
+                  ProcedureReturn str$
+               EndIf
+            EndIf
          EndIf 
          Break
       EndIf
@@ -989,8 +1019,8 @@ EndProcedure
 Procedure MakeVal( string$ )
    Protected result, len = Len( string$ ) 
    
-   Define arg$ = MakeValArguments( string$, len )
-   Define func$ = MakeValFunctions( string$, len )
+   Define arg$ = MakeArgString( string$, len )
+   Define func$ = MakeFuncString( string$, len )
    
    Select Trim( func$ )
       Case "RGB"
@@ -1007,9 +1037,9 @@ Procedure MakeVal( string$ )
    ProcedureReturn result
 EndProcedure
 
-Procedure MakeFunctions( string$, Index )
+Procedure MakeFunc( string$, Index )
    Protected result, result$
-   Debug string$
+   Debug "[MakeFunc]"+string$
    result$ = StringField(StringField(string$, 1, "("), Index, ",") +"("+ StringField(string$, 2, "(")
    result = MakeVal( result$ )
    
@@ -1017,63 +1047,12 @@ Procedure MakeFunctions( string$, Index )
 EndProcedure
 
 ;-
-Procedure$  _FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
-   Protected result$
-   ;Debug FindArguments( string$, len, *start, *stop )
-   result$ = MakeValArguments( string$, len, *start, *stop )
-   ; Debug result$
-   ProcedureReturn result$; MakeValFunctions( string$, len, *start, *stop )
-   
-   Protected i, chr$, start, stop 
-  Static ii
-  
-   For i = 0 To len
-      chr$ = Mid( string$, i, 1 )
-      If chr$ = "(" 
-         start = i + 1
-         For i = len To start Step - 1
-            chr$ = Mid( string$, i, 1 )
-            If chr$ = ")" 
-               stop = i - start
-               
-               For i = start + 1 To len
-                  chr$ = Mid( Mid( string$, start, stop ), i, 1 )
-                  If chr$ = ")" 
-                     ii + 1
-                   EndIf
-                   
-                  If chr$ = ")" 
-                     stop = i - 1 + Bool(ii)
-                     Break 
-                  EndIf
-               Next i
-               
-               If *start
-                  *start\i = start
-               EndIf
-               If *stop
-                  *stop\i = stop
-               EndIf
-               If Not stop
-                  ProcedureReturn " "
-               Else
-                  ; Debug Mid( string$, start, stop )
-                  ProcedureReturn Mid( string$, start, stop )
-               EndIf 
-               Break
-            EndIf
-         Next i
-         
-         Break
-      EndIf
-   Next i
-EndProcedure
-
 Procedure MakeLine( string$, findtext$ )
    Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
    Protected param1, param2, param3, flags.q
    
-   Define arg_start, arg_stop, arg$ = _FindArguments( string$, Len( String$ ), @arg_start, @arg_stop ) 
+   Define string_len = Len( String$ )
+   Define arg_start, arg_stop, arg$ = MakeArgString( string$, string_len, @arg_start, @arg_stop ) 
    If arg$
      ; Debug arg$ +" "+ arg_start
       Define str$ = Mid( String$, 1, arg_start - 1 - 1 ) ; исключаем открывающую скобку '('
@@ -1088,10 +1067,11 @@ Procedure MakeLine( string$, findtext$ )
          
          With *parser\Line( )
             \arg$ = arg$
-            \func$ = FindFunctions( str$, Len( str$ ))
-            \string = str$ + arg$
+            \string = string$
+            \func$ = MakeFuncString( string$, string_len )
             
             
+            ;
             \pos = FindString( str$, "Declare" )
             If \pos
                \type$ = "Declare"
@@ -1128,6 +1108,8 @@ Procedure MakeLine( string$, findtext$ )
                ; ProcedureReturn 
             EndIf
             
+            ;Debug \func$;arg$
+       
             ;
             Select \func$
                Case "OpenWindow",
@@ -1144,16 +1126,9 @@ Procedure MakeLine( string$, findtext$ )
                   Protected *new._s_WIDGET
                   
                   ;
-                  If *parent =- 1 
-                     *parent = ide_design_panel_MDI 
-                     x$ = "10"
-                     y$ = "10"
-                  EndIf
-                  
-                  ;
                   \func$ = ReplaceString( \func$, "Gadget", "")
                   \func$ = ReplaceString( \func$, "Open", "")
-                  
+                       
                   ; id$
                   If FindString( str$, "=" )
                      \id$ = Trim( StringField( str$, 1, "=" ))
@@ -1199,15 +1174,8 @@ Procedure MakeLine( string$, findtext$ )
                      height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
                   EndIf
                   
-                  ; param1
+                  ; text
                   Select \func$
-                     Case "Track", "Progress", "Scroll", "ScrollArea",
-                          "TrackBar","ProgressBar", "ScrollBar"
-                        param1 = Val( param1$ )
-                        
-                     Case "Splitter" 
-                        param1 = MakeObject(UCase(Param1$))
-                        
                      Case "Window", "Web", "Frame",
                           "Text", "String", "Button", "CheckBox",
                           "Option", "HyperLink", "ListIcon", "Date",
@@ -1226,9 +1194,24 @@ Procedure MakeLine( string$, findtext$ )
                         
                   EndSelect
                   
+                  ; param1
+                  Select \func$
+                     Case "Track", "Progress", "Scroll", "ScrollArea",
+                          "TrackBar","ProgressBar", "ScrollBar"
+                        param1 = Val( param1$ )
+                        
+                     Case "Splitter" 
+                        param1 = MakeObject(UCase(Param1$))
+                        
+                     Case "ListIcon"
+                        param1 = Val( param2$ ) ; *this\columns( )\width
+                        
+                  EndSelect
+                  
                   ; param2
                   Select \func$
-                     Case "Track", "Progress", "Scroll", "TrackBar", "ProgressBar", "ScrollBar", "ScrollArea"
+                     Case "Track", "Progress", "Scroll", "TrackBar", 
+                          "ProgressBar", "ScrollBar", "ScrollArea"
                         param2 = Val( param2$ )
                         
                      Case "Splitter" 
@@ -1267,8 +1250,20 @@ Procedure MakeLine( string$, findtext$ )
                      flags = MakeFlag(Flag$)
                   EndIf
                   
+                  ; window parent ID
+                  If \func$ = "Window"
+                     If param3$
+                        *Parent = MakeObject( param3$ )
+                     Else
+                        *Parent = ide_design_panel_MDI
+                     EndIf
+                     
+                     x$ = Str(Val(x$)+10)
+                     y$ = Str(Val(y$)+10)
+                  EndIf
+                  
                   ; Debug "vvv "+param1 +" "+ param2
-                  *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), param1, param2, param3, flags )
+                  *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
                   
                   If *new
                      ;          If \func$ = "Panel"
@@ -1304,7 +1299,7 @@ Procedure MakeLine( string$, findtext$ )
                   Debug ""+\id$ +" "+ ID ; +" "+ StringField( arg$, 1, "," );arg$
                   
                   If ID
-                     SetColor( ID, MakeConstants( param1$ ), MakeFunctions( arg$, 3 ))
+                     SetColor( ID, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
                   EndIf
                   
                Case "CloseGadgetList"
@@ -1319,6 +1314,7 @@ Procedure MakeLine( string$, findtext$ )
                   ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
                   
                   \id$ = Trim( StringField( arg$, 1, "," ))
+                  ID = MakeObject( \id$ ) 
                   param1$ = Trim( StringField( arg$, 2, "," ))
                   param2$ = Trim( StringField( arg$, 3, "," ))
                   param3$ = Trim( StringField( arg$, 4, "," ))
@@ -1340,15 +1336,17 @@ Procedure MakeLine( string$, findtext$ )
                   ;                \id$ = "#" + \func$ +"_"+ \id$
                   ;          EndSelect
                   
-                  *Parent = MakeObject( \id$ ) 
-                  If Not *parent
-                     Debug "ERROR " + \func$ +" "+ \id$ 
-                     ProcedureReturn 
-                  EndIf
                   ;
-                  AddItem( *Parent, param1, text$, param3, Flags )
+                  AddItem( ID, param1, text$, param3, Flags )
                   
-                  
+                  If IsContainer( ID ) > 0
+                     *parent = ID 
+                     If Not *parent
+                        Debug "ERROR " + \func$ +" "+ \id$ 
+                        ProcedureReturn 
+                     EndIf
+                  EndIf
+               
             EndSelect
          EndWith
       EndIf
@@ -1510,7 +1508,7 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    Protected newtype$
@@ -1552,30 +1550,30 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
       Select type$
          Case "window"    
 ;             If Type( *parent ) = #__Type_MDI
-               *new = AddItem( *parent, #PB_Any, "", - 1, flag | #__window_NoActivate )
-               Resize( *new, mouse( )\steps, mouse( )\steps, Width,Height )
+               *new = AddItem( *parent, #PB_Any, text$, - 1, flag | #__window_NoActivate )
+               Resize( *new, X, Y, Width, Height )
 ;             Else
 ;                flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
-;                *new = Window( X,Y,Width,Height, "", flag, *parent )
+;                *new = Window( X,Y,Width,Height, text$, flag, *parent )
 ;             EndIf
             
          Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
             
-         Case "button"        : *new = Button(       X, Y, Width, Height, "", flag ) 
-         Case "string"        : *new = String(       X, Y, Width, Height, "", flag )
-         Case "text"          : *new = Text(         X, Y, Width, Height, "", flag )
-         Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, "", flag ) 
-            ; Case "web"           : *new = Web(          X, Y, Width, Height, "", flag )
-         Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, "", flag )                                                                           
-            ; Case "explorertree"  : *new = ExplorerTree( X, Y, Width, Height, "", flag )                                                                           
-            ; Case "explorercombo" : *new = ExplorerCombo(X, Y, Width, Height, "", flag )                                                                          
-         Case "frame"         : *new = Frame(        X, Y, Width, Height, "", flag )                                                                                  
+         Case "button"        : *new = Button(       X, Y, Width, Height, text$, flag ) 
+         Case "string"        : *new = String(       X, Y, Width, Height, text$, flag )
+         Case "text"          : *new = Text(         X, Y, Width, Height, text$, flag )
+         Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, text$, flag ) 
+            ; Case "web"           : *new = Web(          X, Y, Width, Height, text$, flag )
+         Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, text$, flag )                                                                           
+            ; Case "explorertree"  : *new = ExplorerTree( X, Y, Width, Height, text$, flag )                                                                           
+            ; Case "explorercombo" : *new = ExplorerCombo(X, Y, Width, Height, text$, flag )                                                                          
+         Case "frame"         : *new = Frame(        X, Y, Width, Height, text$, flag )                                                                                  
             
-            ; Case "date"          : *new = Date(         X, Y, Width, Height, "", Param1, flag )         ; 2            
-         Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, "", Param1, flag )                                                          
-         Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, "", Param1, flag )                                                       
+            ; Case "date"          : *new = Date(         X, Y, Width, Height, text$, Param1, flag )         ; 2            
+         Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, text$, Param1, flag )                                                          
+         Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, text$, Param1, flag )                                                       
             
          Case "scroll"        : *new = Scroll(       X, Y, Width, Height, Param1, Param2, Param3, flag )  ; bar                                                             
             
@@ -1595,7 +1593,7 @@ Procedure widget_Create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
          Case "tree"          : *new = Tree(         X, Y, Width, Height, flag )                                                                                                                            
             ; Case "canvas"        : *new = Canvas(       X, Y, Width, Height, flag )                                                                                                                          
             
-         Case "option"        : *new = Option(       X, Y, Width, Height, "" )
+         Case "option"        : *new = Option(       X, Y, Width, Height, text$ )
             ; Case "scintilla"     : *new = Scintilla(    X, Y, Width, Height, Param1 )
             ; Case "shortcut"      : *new = Shortcut(     X, Y, Width, Height, Param1 )
          Case "ipaddress"     : *new = IPAddress(    X, Y, Width, Height )
@@ -1664,7 +1662,7 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
    
    If *parent 
       ; OpenList( *parent, CountItems( *parent ) - 1 )
-      *new = widget_Create( *parent, Class.s, X,Y, Width, Height, 0,100,0, flag )
+      *new = widget_Create( *parent, Class.s, X,Y, Width, Height, "", 0,100,0, flag )
       
       If *new
          If LCase(Class.s) = "panel"
@@ -1912,11 +1910,11 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          Wend
          
          
-         ; 
+         
 ;          ForEach *parser\Line()
-;             Debug *parser\Line()\string
+;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
 ;          Next
-;          
+         
          ;          ;          ;
          ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
          ;          
@@ -2880,9 +2878,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 156
-; FirstLine = 135
-; Folding = -------------------4--fg94w-------------v-------------
+; CursorPosition = 1261
+; FirstLine = 1155
+; Folding = ------------------84--------------------v-------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

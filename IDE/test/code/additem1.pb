@@ -3,8 +3,9 @@ XIncludeFile "../../code.pbi"
 ;- 
 CompilerIf #PB_Compiler_IsMainFile
    DisableExplicit
+   Define Width = 350
    
-   If Open( 0, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+   If Open( 0, 0, 0, Width, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
       TEST = Window( 0, 0, 582, 582, "",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
       PANEL_0=Panel(8, 8, 356, 203)
@@ -40,9 +41,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    Define *root = root( )
-   If Open( 1, 0, 0, 322, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      ResizeWindow( 0, WindowX( 0 ) - WindowWidth( 0 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-      ResizeWindow( 1, WindowX( 1 ) + WindowWidth( 1 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+   If Open( 1, 0, 0, Width*2, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+      ResizeWindow( 0, WindowX( 0 ) - WindowWidth( 1 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      ResizeWindow( 1, WindowX( 1 ) + WindowWidth( 0 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
       
       Define *g = Editor( 0, 0, 0, 0, #__flag_autosize )
       
@@ -55,8 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 3
+; CursorPosition = 30
+; FirstLine = 9
 ; Folding = -
 ; EnableXP
 ; DPIAware

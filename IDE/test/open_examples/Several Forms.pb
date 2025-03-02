@@ -32,7 +32,7 @@ Gadget_4_2=StringGadget(#PB_Any, 0, 34, 600, 30, "Строка в четвёрт
 
 
 Repeat : Until WaitWindowEvent()=#PB_Event_CloseWindow
-; IDE Options = PureBasic 5.60 (Windows - x86)
-; CursorPosition = 12
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 30
 ; EnableXP
 ; CompileSourceDirectory
