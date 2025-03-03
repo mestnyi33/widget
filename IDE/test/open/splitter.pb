@@ -16,9 +16,9 @@ Procedure Open_WINDOW_0( )
       PANEL_0 = PanelGadget( #PB_Any, 0, 201, 241, 192 )
       CloseGadgetList( )
          
-       SPLITTER_0 = SplitterGadget( #PB_Any, 250, 0, 241, 393, TREE_0, 0 )
-;       SPLITTER_0 = SplitterGadget( #PB_Any, 250, 0, 241, 393, TREE_0, PANEL_0 )
-;       SPLITTER_1 = SplitterGadget( #PB_Any, 7, 7, 491, 386, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
+     ;  SPLITTER_0 = SplitterGadget( #PB_Any, 250, 0, 241, 393, TREE_0, 0 )
+      SPLITTER_0 = SplitterGadget( #PB_Any, 250, 0, 241, 393, TREE_0, PANEL_0 )
+      SPLITTER_1 = SplitterGadget( #PB_Any, 7, 7, 491, 386, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
 EndProcedure
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -51,7 +51,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
+; CursorPosition = 19
 ; FirstLine = 3
 ; Folding = --
 ; EnableXP

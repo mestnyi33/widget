@@ -115,7 +115,6 @@ Global NewMap EventsString.s( )
 Global NewMap ImagePuchString.s( )
 Global NewMap ClassString.s( )
 Global NewMap GetObject.s( )
-Global NewList ParseObject( )
 
 Structure _s_LINE
    type$
@@ -144,7 +143,6 @@ Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#P
 Declare   ide_addline( *new )
 Declare   MakeObject( class$ )
 ;
-Declare   AddParseObject( *this )
 Declare.s GenerateCODE( *this, type$, *data = 0 )
 Declare.s GeneratePBCode( *parent )
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
@@ -204,10 +202,6 @@ Procedure   ide_addline_code( *new._s_widget, function$, item.l = - 1 )
    ;    Debug *new\class
    ;    ProcedureReturn 
    Protected Result$, Name$ = GetClass( *new )
-   
-   If function$ = "object"
-      AddParseObject( *new )
-   EndIf
    
    Result$ = GenerateCODE( *new, function$ )
    
@@ -1678,7 +1672,6 @@ Procedure widget_events( )
          RemoveItem( ide_inspector_view, item ) 
          
          ;
-         DeleteElement( ParseObject( ), 1 )
          DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
          ;
       
@@ -2873,9 +2866,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1898
-; FirstLine = 1797
-; Folding = ------------------84----------------------------------
+; CursorPosition = 205
+; FirstLine = 196
+; Folding = ------------------08----------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
