@@ -867,8 +867,12 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
            "ScrollBar",
            "ProgressBar": param2$ = Str( *g\bar\min )
       Case "HyperLink" : param1$ = Str( *g\Color\Back )
-      Case "Splitter" : param1$ = GetClass( GetAttribute( *g, #PB_Splitter_FirstGadget ))
       Case "ScrollArea" : param1$ = Str( GetAttribute( *g, #PB_ScrollArea_InnerWidth ))
+      Case "Splitter" 
+         Define first = GetAttribute( *g, #PB_Splitter_FirstGadget )
+         If first 
+            param1$ = GetClass( first )
+         EndIf
       Case "Image", "ButtonImage"
          If IsImage( *g\Img\Image )
             param1$ = "ImageID( " + *g\Img\Image + " )"
@@ -888,7 +892,11 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
            "ScrollBar",
            "ProgressBar": param2$ = Str( *g\bar\max )
       Case "ScrollArea" : param2$ = Str( GetAttribute( *g, #PB_ScrollArea_InnerHeight ))
-      Case "Splitter"   : param2$ = GetClass( GetAttribute( *g, #PB_Splitter_SecondGadget ))
+      Case "Splitter"  
+         Define second = GetAttribute( *g, #PB_Splitter_SecondGadget )
+         If second
+            param2$ = GetClass( second )
+         EndIf
    EndSelect
    
    ; Param3
@@ -1155,6 +1163,7 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
          Name$ = GetClass( *w )
          Image = GetImage( *w )
          
+         Debug GetClass( GetParent(*w)) +" "+ GetClass( *w)
          ;
          If Not *mainWindow
             If is_window_( *w )
@@ -1486,37 +1495,16 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       CloseList( )
       ;       CloseList( )
       
-      PANEL_0=Panel(8, 8, 356, 203)
-      AddItem(PANEL_0, -1, "Панель 1")
-      ;Button( 10,10,50,30, "1")
-      AddItem(PANEL_0, -1, "Панель 2")
+      SCROLLAREA_0 = ScrollArea( 0, 0, 241, 393, 241, 391, 0 )
+      CloseList( )
+      TREE_0 = Tree( 0, 0, 241, 192 )
+      PANEL_0 = Panel( 0, 201, 241, 192 )
+      CloseList( )
       
-      PANEL_1=Panel( 5, 30, 340, 166)
-      AddItem(PANEL_1, -1, "Под-Панель 1")
-      ;Button( 10,10,50,30, "1")
-      AddItem(PANEL_1, -1, "Под-Панель 2")
-      ;Button( 10,10,50,30, "2")
-     ;       
-;       PANEL_2=Panel( 5, 30, 340, 166)
-;       AddItem(PANEL_2, -1, "Под-Под-Панель 1")
-;       Button( 10,10,50,30, "1")
-;       AddItem(PANEL_2, -1, "Под-Под-Панель 2")
-;       AddItem(PANEL_2, -1, "Под-Под-Панель 3")
-;       AddItem(PANEL_2, -1, "Под-Под-Панель 4")
-;       Button( 10,10,50,30, "3")
-;       
-      AddItem(PANEL_1, -1, "Под-Панель 3")
-      AddItem(PANEL_1, -1, "Под-Панель 4")
-      ;Button( 10,10,50,30, "3")
-      
-      AddItem(PANEL_0, -1, "Панель 3")
-      Button( 10,10,50,30, "")
-      AddItem(PANEL_0, -1, "Панель 4")
-      
-      
-            If PANEL_1
-               SetBackgroundColor( PANEL_1, $BA54EDDE )
-            EndIf
+      SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, 0 )
+      ;       SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, PANEL_0 )
+      ;       SPLITTER_1 = Splitter( 7, 7, 491, 386, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
+    
 ;       ;
 ;       R1 = Container(7, 7, 568, 568,  #PB_Container_Single  )
 ;       R1Y1 = Container(7, 7, 274, 274,  #PB_Container_Single  )
@@ -1574,8 +1562,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 998
-; FirstLine = 959
-; Folding = -----------------------8---8-3P9--
+; CursorPosition = 1506
+; FirstLine = 1372
+; Folding = -----------------------v---v-b-w---
 ; EnableXP
 ; DPIAware

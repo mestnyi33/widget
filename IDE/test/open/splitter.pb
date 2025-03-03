@@ -2,22 +2,23 @@
 
 Global WINDOW_0 = - 1
 
-Global WINDOW_0_SCROLLAREA_0 = - 1
-Global WINDOW_0_TREE_0 = - 1
-Global WINDOW_0_PANEL_0 = - 1
-Global WINDOW_0_SPLITTER_0 = - 1
-Global WINDOW_0_SPLITTER_1 = - 1
+Global SCROLLAREA_0 = - 1
+Global TREE_0 = - 1
+Global PANEL_0 = - 1
+Global SPLITTER_0 = - 1
+Global SPLITTER_1 = - 1
 
 Procedure Open_WINDOW_0( )
    WINDOW_0 = OpenWindow( #PB_Any, 7, 7, 505, 400, "WINDOW_0",  #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered  )
-      WINDOW_0_SCROLLAREA_0 = ScrollAreaGadget( #PB_Any, 0, 0, 241, 393, 241, 391, 0 )
+      SCROLLAREA_0 = ScrollAreaGadget( #PB_Any, 0, 0, 241, 393, 241, 391, 0 )
       CloseGadgetList( )
-      WINDOW_0_TREE_0 = TreeGadget( #PB_Any, 0, 0, 241, 192 )
-      WINDOW_0_PANEL_0 = PanelGadget( #PB_Any, 0, 201, 241, 192 )
+      TREE_0 = TreeGadget( #PB_Any, 0, 0, 241, 192 )
+      PANEL_0 = PanelGadget( #PB_Any, 0, 201, 241, 192 )
       CloseGadgetList( )
          
-      WINDOW_0_SPLITTER_0 = SplitterGadget( #PB_Any, 250, 0, 241, 393, WINDOW_0_TREE_0, WINDOW_0_PANEL_0 )
-      WINDOW_0_SPLITTER_1 = SplitterGadget( #PB_Any, 7, 7, 491, 386, WINDOW_0_SCROLLAREA_0, WINDOW_0_SPLITTER_0, #PB_Splitter_Vertical )
+       SPLITTER_0 = SplitterGadget( #PB_Any, 250, 0, 241, 393, TREE_0, 0 )
+;       SPLITTER_0 = SplitterGadget( #PB_Any, 250, 0, 241, 393, TREE_0, PANEL_0 )
+;       SPLITTER_1 = SplitterGadget( #PB_Any, 7, 7, 491, 386, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
 EndProcedure
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -50,7 +51,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19
+; CursorPosition = 20
 ; FirstLine = 3
 ; Folding = --
 ; EnableXP

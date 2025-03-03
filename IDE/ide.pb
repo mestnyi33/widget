@@ -1044,7 +1044,7 @@ Procedure MakeLine( string$, findtext$ )
       Define str$ = Mid( String$, 1, arg_start - 1 - 1 ) ; исключаем открывающую скобку '('
       
       If FindString( str$, ";" )
-         ProcedureReturn 
+         ProcedureReturn 0
       EndIf
       
       LastElement( *parser\Line( ))
@@ -1273,6 +1273,7 @@ Procedure MakeLine( string$, findtext$ )
                      
                      ; 
                      ide_addline( *new )
+                     ProcedureReturn 1
                   EndIf
                   
                Case "SetGadgetColor"
@@ -1587,6 +1588,7 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
       EndSelect
       
       If *new
+         ; Debug ""+*parent\class +" "+ *new\class
          ;\\ первый метод формирования названия переменной
          newtype$ = type$+"_"+CountType( *new )
          
@@ -1887,16 +1889,15 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         FileSeek( #File, 0 )
+         FileSeek( #File, 0 ) ; 
          
          While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
             
             MakeLine( String$, Text$ )
          Wend
-         
-         
-         
+
+;          
 ;          ForEach *parser\Line()
 ;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
 ;          Next
@@ -2872,8 +2873,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1109
-; FirstLine = 1016
+; CursorPosition = 1898
+; FirstLine = 1797
 ; Folding = ------------------84----------------------------------
 ; Optimizer
 ; EnableAsm
