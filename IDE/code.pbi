@@ -784,36 +784,66 @@ Procedure   MakeObject( class$ )
    ProcedureReturn result
 EndProcedure
 
+Procedure$ AddCloseList( *g._s_WIDGET, Level=0 )
+   Protected result$
+   
+   If IsContainer(*g) > 2
+      If *g\tabbar
+         If *g\tabbar\countitems
+            If *g = *g\LastWidget( )
+               result$ + MakeAddObjectItemString( *g, 0, *g\tabbar\countitems - 1 )
+            Else
+               If *g\LastWidget( )\TabIndex( ) = *g\tabbar\countitems - 1
+                  ; result$ + #LF$
+               Else
+                  result$ + MakeAddObjectItemString( *g, *g\LastWidget( )\TabIndex( ) + 1, *g\tabbar\countitems - 1 )
+                  ;  Debug ""+*g\class +" > "+ *g\LastWidget( )\class +" "+ *g\LastWidget( )\TabIndex( ) +" "+ *g\tabbar\countitems
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+      
+      If codeindent
+         result$ + Space(((Level(*g) + Level) - parentlevel) * codeindent)
+      EndIf
+      result$ + "CloseGadgetList( ) ; " + GetClass(*g) + #LF$ 
+   EndIf
+   
+   ProcedureReturn result$
+EndProcedure
+
 Procedure$ MakeCloseList( *g._s_WIDGET, *before = 0 )
    Protected result$
    ;
    While Not is_window_(*g) 
-      ; Panel; Container; ScrollArea
-      If IsContainer( *g ) > 2
-         ; Panel
-         If *g\tabbar
-            If *g\tabbar\countitems
-               If *g = *g\LastWidget( )
-                  result$ + MakeAddObjectItemString( *g, 0, *g\tabbar\countitems - 1 )
-               Else
-                  If *g\LastWidget( )\TabIndex( ) = *g\tabbar\countitems - 1
-                     ; result$ + #LF$
-                  Else
-                     result$ + MakeAddObjectItemString( *g, *g\LastWidget( )\TabIndex( ) + 1, *g\tabbar\countitems - 1 )
-                     ;  Debug ""+*g\class +" > "+ *g\LastWidget( )\class +" "+ *g\LastWidget( )\TabIndex( ) +" "+ *g\tabbar\countitems
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
+      ;; Panel; Container; ScrollArea
+      ;If IsContainer( *g ) > 2
          If *g\parent And *g\parent\type = #__type_Splitter
+            
          Else
-            ;
-            If codeindent
-               result$ + Space((Level(*g) - parentlevel) * codeindent)
-            EndIf
-            result$ + "CloseGadgetList( ) ; " + GetClass(*g) + #LF$ 
+            result$ + AddCloseList( *g )
+;             ; Panel
+;             If *g\tabbar
+;                If *g\tabbar\countitems
+;                   If *g = *g\LastWidget( )
+;                      result$ + MakeAddObjectItemString( *g, 0, *g\tabbar\countitems - 1 )
+;                   Else
+;                      If *g\LastWidget( )\TabIndex( ) = *g\tabbar\countitems - 1
+;                         ; result$ + #LF$
+;                      Else
+;                         result$ + MakeAddObjectItemString( *g, *g\LastWidget( )\TabIndex( ) + 1, *g\tabbar\countitems - 1 )
+;                         ;  Debug ""+*g\class +" > "+ *g\LastWidget( )\class +" "+ *g\LastWidget( )\TabIndex( ) +" "+ *g\tabbar\countitems
+;                      EndIf
+;                   EndIf
+;                EndIf
+;             EndIf
+;             ;
+;             If codeindent
+;                result$ + Space((Level(*g) - parentlevel) * codeindent)
+;             EndIf
+;             result$ + "CloseGadgetList( ) ; " + GetClass(*g) + #LF$ 
          EndIf
-      EndIf 
+      ;EndIf 
       ;
       If *before = *g
          ; result$ + #LF$
@@ -963,30 +993,12 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
       Define Second = GetAttribute( *g, #PB_Splitter_SecondGadget )
       result$ + #LF$
       If first
-         If codeindent
-            result$ + Space((Level(*g) - parentlevel) * codeindent)
-         EndIf
-         result$ + GenerateCODE( first, "object" ) + #LF$
-         If IsContainer(first) > 2
-            If codeindent
-               result$ + Space((Level(*g) - parentlevel) * codeindent)
-               result$ + Space((Level(first) - parentlevel) * codeindent)
-            EndIf
-            result$ + "CloseGadgetList( ) ; " + GetClass(first) + #LF$ 
-         EndIf
+         result$ + MakeObjectString( first, Space$ ) + #LF$
+         result$ + AddCloseList( first, - 1 )
       EndIf
       If Second
-         If codeindent
-            result$ + Space((Level(*g) - parentlevel) * codeindent)
-         EndIf
-         result$ + GenerateCODE( Second, "object" ) + #LF$
-         If IsContainer(Second) > 2
-            If codeindent
-               result$ + Space((Level(*g) - parentlevel) * codeindent)
-               result$ + Space((Level(Second) - parentlevel) * codeindent)
-            EndIf
-            result$ + "CloseGadgetList( ) ; " + GetClass(Second) + #LF$ 
-         EndIf
+         result$ + MakeObjectString( second, Space$ ) + #LF$
+         result$ + AddCloseList( Second, - 1 )
       EndIf
    EndIf  
    ;
@@ -1114,22 +1126,22 @@ Procedure.s GenerateCODE( *g._s_WIDGET, type$, *data = 0 )
    EndIf
    
    If type$ = "CloseGadgetList"
-      While Not is_window_(*g )
-         If IsContainer( *g ) > 3 
-            If codeindent
-               result$ + Space((Level(*g) - parentlevel) * codeindent)
-            EndIf
-            result$ + type$ + "( ) ; " + GetClass(*g) + #LF$ 
-         EndIf 
-         If *data = *g
-            If IsContainer( *g ) > 3 
-               result$ + #LF$
-            EndIf
-            Break
-         EndIf
-         *g = *g\parent
-      Wend
-      ProcedureReturn result$
+;       While Not is_window_(*g )
+;          If IsContainer( *g ) > 3 
+;             If codeindent
+;                result$ + Space((Level(*g) - parentlevel) * codeindent)
+;             EndIf
+;             result$ + type$ + "( ) ; " + GetClass(*g) + #LF$ 
+;          EndIf 
+;          If *data = *g
+;             If IsContainer( *g ) > 3 
+;                result$ + #LF$
+;             EndIf
+;             Break
+;          EndIf
+;          *g = *g\parent
+;       Wend
+;       ProcedureReturn result$
    Else
       If codeindent
          Protected Space$ = Space((Level(*g) - parentlevel) * codeindent)
@@ -1534,11 +1546,13 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       TREE_0 = Tree( 0, 0, 241, 192 )
       PANEL_0 = Panel( 0, 201, 241, 192 )
+      AddItem( PANEL_0, -1, "tab_1")
+      AddItem( PANEL_0, -1, "tab_2")
       CloseList( )
       
       ; SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, 0 )
             SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, PANEL_0 )
-             SPLITTER_1 = Splitter( 7, 7, 491, 386, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
+             SPLITTER_1 = Splitter( 7, 7, Width-30-14, 253-14, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
       
       ;       ;
       ;       R1 = Container(7, 7, 568, 568,  #PB_Container_Single  )
@@ -1596,8 +1610,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 527
-; FirstLine = 495
-; Folding = --------------------8-----------------
+; CursorPosition = 972
+; FirstLine = 900
+; Folding = ----------------------s+------f-w---
 ; EnableXP
 ; DPIAware

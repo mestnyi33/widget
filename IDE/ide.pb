@@ -1233,16 +1233,19 @@ Procedure MakeLine( string$, findtext$ )
                   If \func$ = "Window"
                      If param3$
                         *Parent = MakeObject( param3$ )
-                     EndIf
-                     If Not *Parent
+                        If Not *Parent
+                           Debug "window ParentID"
+                           *Parent = ide_design_panel_MDI
+                        EndIf
+                     Else
                         *Parent = ide_design_panel_MDI
                      EndIf
+
                      
                      x$ = Str(Val(x$)+10)
                      y$ = Str(Val(y$)+10)
                   EndIf
                   
-                  ; Debug "vvv "+param1 +" "+ param2
                   *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
                   
                   If *new
@@ -1530,13 +1533,13 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
       ; create elements
       Select type$
          Case "window"    
-;             If Type( *parent ) = #__Type_MDI
+            If Type( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, text$, - 1, flag | #__window_NoActivate )
                Resize( *new, X, Y, Width, Height )
-;             Else
-;                flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
-;                *new = Window( X,Y,Width,Height, text$, flag, *parent )
-;             EndIf
+            Else
+               flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
+               *new = Window( X,Y,Width,Height, text$, flag, *parent )
+            EndIf
             
          Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
@@ -2866,8 +2869,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 205
-; FirstLine = 196
+; CursorPosition = 1236
+; FirstLine = 1133
 ; Folding = ------------------08----------------------------------
 ; Optimizer
 ; EnableAsm
