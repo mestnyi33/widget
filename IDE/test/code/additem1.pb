@@ -23,10 +23,10 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(PANEL_0, -1, "Панель 4")
       
       
-      If StartEnum( root( ) )
-         AddParseObject( widget( ))
-         StopEnum( )
-      EndIf
+;       If StartEnum( root( ) )
+;          AddParseObject( widget( ))
+;          StopEnum( )
+;       EndIf
      
    EndIf
    
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
+; CursorPosition = 28
 ; FirstLine = 6
 ; Folding = -
 ; EnableXP

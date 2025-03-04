@@ -34,10 +34,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       SetBackgroundColor( _1, $BA54EDDE )
       
-      If StartEnum( root( ) )
-         AddParseObject( widget( ))
-         StopEnum( )
-      EndIf
+;       If StartEnum( root( ) )
+;          AddParseObject( widget( ))
+;          StopEnum( )
+;       EndIf
      
    EndIf
    
@@ -57,8 +57,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 16
+; CursorPosition = 39
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
 ; DPIAware

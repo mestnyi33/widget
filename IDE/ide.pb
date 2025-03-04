@@ -143,7 +143,7 @@ Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#P
 Declare   ide_addline( *new )
 Declare   MakeObject( class$ )
 ;
-Declare.s GenerateCODE( *this, type$, *data = 0 )
+Declare.s GenerateCODE( *this, type$, mode.a = 0 )
 Declare.s GeneratePBCode( *parent )
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   MakeCallFunction( str$, arg$, findtext$ )
@@ -203,7 +203,9 @@ Procedure   ide_addline_code( *new._s_widget, function$, item.l = - 1 )
    ;    ProcedureReturn 
    Protected Result$, Name$ = GetClass( *new )
    
-   Result$ = GenerateCODE( *new, function$ )
+   Result$ + GenerateCODE( *new, "CloseGadgetList" )
+   Result$ + GenerateCODE( *new, "AddGadgetItem" ) 
+   Result$ + GenerateCODE( *new, function$ )
    
    Result$ = ReplaceString( Result$, "OpenWindow( " + Name$ + ", ", "Window( ")
    Result$ = ReplaceString( Result$, "OpenWindow( " + Name$ + ",", "Window( ")
@@ -1028,6 +1030,7 @@ EndProcedure
 
 ;-
 Procedure MakeLine( string$, findtext$ )
+   Protected result
    Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
    Protected param1, param2, param3, flags.q
    
@@ -1084,6 +1087,7 @@ Procedure MakeLine( string$, findtext$ )
             \pos = FindString( str$, "If" )
             If \pos
                \type$ = "If"
+               \func$ = Trim( StringField( \func$, 2, " " ))
                ; ProcedureReturn 
             EndIf
             
@@ -1241,7 +1245,6 @@ Procedure MakeLine( string$, findtext$ )
                         *Parent = ide_design_panel_MDI
                      EndIf
 
-                     
                      x$ = Str(Val(x$)+10)
                      y$ = Str(Val(y$)+10)
                   EndIf
@@ -1270,7 +1273,7 @@ Procedure MakeLine( string$, findtext$ )
                      
                      ; 
                      ide_addline( *new )
-                     ProcedureReturn 1
+                     result = 1
                   EndIf
                   
                Case "SetGadgetColor"
@@ -1295,54 +1298,58 @@ Procedure MakeLine( string$, findtext$ )
                   ; CloseList( ) 
                   
                Case "AddGadgetItem"
-                  ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
-                  
-                  \id$ = Trim( StringField( arg$, 1, "," ))
-                  ID = MakeObject( \id$ ) 
-                  param1$ = Trim( StringField( arg$, 2, "," ))
-                  param2$ = Trim( StringField( arg$, 3, "," ))
-                  param3$ = Trim( StringField( arg$, 4, "," ))
-                  flag$ = Trim( StringField( arg$, 5, "," ))
-                  ;
-                  If param1$ = "- 1" Or 
-                     param1$ = "-1"
-                     param1 = - 1
-                  Else
-                     param1 = Val(param1$)
-                  EndIf
-                  text$ = Trim( param2$, Chr('"'))
-                  param3 = Val(param3$)
-                  Flags = MakeFlag( flag$ )
-                  
-                  
-                  ;          Select Asc(\id$)
-                  ;             Case '0' To '9'
-                  ;                \id$ = "#" + \func$ +"_"+ \id$
-                  ;          EndSelect
-                  
-                  ;
-                  AddItem( ID, param1, text$, param3, Flags )
-                  
-                  If IsContainer( ID ) > 0
-                     *parent = ID 
-                     If Not *parent
-                        Debug "ERROR " + \func$ +" "+ \id$ 
-                        ProcedureReturn 
+                  If *parent
+                     ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
+                     
+                     \id$ = Trim( StringField( arg$, 1, "," ))
+                     ID = MakeObject( \id$ ) 
+                     param1$ = Trim( StringField( arg$, 2, "," ))
+                     param2$ = Trim( StringField( arg$, 3, "," ))
+                     param3$ = Trim( StringField( arg$, 4, "," ))
+                     flag$ = Trim( StringField( arg$, 5, "," ))
+                     ;
+                     If param1$ = "- 1" Or 
+                        param1$ = "-1"
+                        param1 = - 1
+                     Else
+                        param1 = Val(param1$)
+                     EndIf
+                     text$ = Trim( param2$, Chr('"'))
+                     param3 = Val(param3$)
+                     Flags = MakeFlag( flag$ )
+                     
+                     
+                     ;          Select Asc(\id$)
+                     ;             Case '0' To '9'
+                     ;                \id$ = "#" + \func$ +"_"+ \id$
+                     ;          EndSelect
+                     
+                     ;
+                     If ID
+                        AddItem( ID, param1, text$, param3, Flags )
+                        
+                        If IsContainer( ID ) > 0
+                           *parent = ID 
+                           If Not *parent
+                              Debug "ERROR " + \func$ +" "+ \id$ 
+                              ProcedureReturn 
+                           EndIf
+                        EndIf
                      EndIf
                   EndIf
-               
+                  
             EndSelect
          EndWith
       EndIf
       
-      
+       ; Mid( String$, arg_start+arg_stop + 1 )
       ; если строка такого ввида "containergadget() : closegadgetlist()" 
       Define lines$ = Trim( Mid( String$, arg_start+arg_stop + 1 ), ":" )
       If lines$
          MakeLine( lines$, findtext$ )
       EndIf
       
-      
+      ProcedureReturn result
       ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
    EndIf
    
@@ -2869,9 +2876,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1236
-; FirstLine = 1133
-; Folding = ------------------08----------------------------------
+; CursorPosition = 1340
+; FirstLine = 1192
+; Folding = -----------------------ubg0---------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

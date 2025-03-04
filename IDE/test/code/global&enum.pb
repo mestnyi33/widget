@@ -19,10 +19,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Button( 21, 91, 120, 71, "button_5" ) : SetClass( widget( ), "#BUTTON_5")
       
       
-      If StartEnum( root( ) )
-         AddParseObject( widget( ))
-         StopEnum( )
-      EndIf
+;       If StartEnum( root( ) )
+;          AddParseObject( widget( ))
+;          StopEnum( )
+;       EndIf
      
    EndIf
    
@@ -42,6 +42,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 24
+; FirstLine = 2
 ; Folding = -
 ; EnableXP
 ; DPIAware

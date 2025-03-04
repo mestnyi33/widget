@@ -97,7 +97,7 @@ Procedure OpenWindow_RegexTest()
       AddGadgetItem(#Gadget_RegexFlags, 2, "_MultiLine")  : SetGadgetItemData(Gadget_RegexFlags, 2, #PB_RegularExpression_MultiLine)
       AddGadgetItem(#Gadget_RegexFlags, 3, "_AnyNewLine") : SetGadgetItemData(Gadget_RegexFlags, 3, #PB_RegularExpression_AnyNewLine)
       AddGadgetItem(#Gadget_RegexFlags, 4, "_NoCase")     : SetGadgetItemData(Gadget_RegexFlags, 4, #PB_RegularExpression_NoCase)
-      ;]
+      ]
       
     EditorGadget(#Gadget_Pattern, 250, 0, 250, 80, #PB_Editor_WordWrap)
     EditorGadget(#Gadget_Text, 250, 80, 250, 400)
@@ -140,8 +140,9 @@ While IsWindow(#Window_RegexTest)
   WaitWindowEvent()
 Wend
 
-; IDE Options = PureBasic 5.60 (Windows - x86)
-; CursorPosition = 24
-; Folding = --
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 99
+; FirstLine = 84
+; Folding = ---
 ; EnableXP
 ; CompileSourceDirectory

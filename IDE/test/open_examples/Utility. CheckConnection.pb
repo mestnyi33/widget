@@ -1,5 +1,5 @@
 ﻿Procedure CheckConnection(IPAddress)
-  Connection=OpenNetworkConnection(IPString(IPAddress), 80)
+  Connection=OpenNetworkConnection(IPString(IPAddress), 6832)
   If Connection
     Result=#True
     
@@ -9,7 +9,7 @@
   ProcedureReturn Result
 EndProcedure
 
-InitNetwork()
+;InitNetwork()
 OpenWindow(0, #PB_Ignore, #PB_Ignore, 160, 120, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 IPAddressGadget(0, 0, 0, 160, 20)
 ButtonGadget(1, 0, 20, 160, 20, "Проверить соединение")
@@ -33,8 +33,8 @@ Repeat
       
   EndSelect
 Until Event=#PB_Event_CloseWindow
-; IDE Options = PureBasic 5.60 (Windows - x86)
-; CursorPosition = 28
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
 ; Executable = C:\Users\Андреич\Desktop\Новая папка (11)\Новая папка\Пинг.exe
