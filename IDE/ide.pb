@@ -98,7 +98,7 @@ Global ide_inspector_view_splitter,
 
 Global group_select
 Global group_drag
-Global enumerations
+Global enumerations 
 
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
 
@@ -143,7 +143,7 @@ Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#P
 Declare   ide_addline( *new )
 Declare   MakeObject( class$ )
 ;
-Declare.s GenerateCODE( *this, type$, mode.a = 0 )
+Declare.s GenerateGUICODE( *mdi, mode.a = 0 )
 Declare.s GeneratePBCode( *parent )
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   MakeCallFunction( str$, arg$, findtext$ )
@@ -198,47 +198,6 @@ Procedure   is_parent_item( *this._s_WIDGET, item )
 EndProcedure
 
 ;-
-Procedure   ide_addline_code( *new._s_widget, function$, item.l = - 1 )
-   ;    Debug *new\class
-   ;    ProcedureReturn 
-   Protected Result$, Name$ = GetClass( *new )
-   
-   Result$ + GenerateCODE( *new, "CloseGadgetList" )
-   Result$ + GenerateCODE( *new, "AddGadgetItem" ) 
-   Result$ + GenerateCODE( *new, function$ )
-   
-   Result$ = ReplaceString( Result$, "OpenWindow( " + Name$ + ", ", "Window( ")
-   Result$ = ReplaceString( Result$, "OpenWindow( " + Name$ + ",", "Window( ")
-   Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any, ", "Window( ")
-   Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any,", "Window( ")
-   Result$ = ReplaceString( Result$, "Gadget( " + Name$ + ", ", "( ")
-   Result$ = ReplaceString( Result$, "Gadget( " + Name$ + ",", "( ")
-   Result$ = ReplaceString( Result$, "Gadget( #PB_Any, ", "( ")
-   Result$ = ReplaceString( Result$, "Gadget( #PB_Any,", "( ")
-   ;
-   Result$ = ReplaceString( Result$, "#PB_Window_SizeGadget", "#PB_Window_Size_")
-   Result$ = ReplaceString( Result$, "#PB_Window_MaximizeGadget", "#PB_Window_Maximize_")
-   Result$ = ReplaceString( Result$, "#PB_Window_MinimizeGadget", "#PB_Window_Minimize_")
-   Result$ = ReplaceString( Result$, "Gadget", "")
-   Result$ = ReplaceString( Result$, "#PB_Window_Size_", "#PB_Window_SizeGadget")
-   Result$ = ReplaceString( Result$, "#PB_Window_Maximize_", "#PB_Window_MaximizeGadget")
-   Result$ = ReplaceString( Result$, "#PB_Window_Minimize_", "#PB_Window_MinimizeGadget")
-   
-   Define id$ = GetClass(*new)
-   
-   If Trim( id$, "#" ) <> id$
-      Result$ = ReplaceString( Result$, ClassFromType(Type(*new)), Trim(id$, "#") +" = "+ ClassFromType(Type(*new)) )
-   EndIf
-   
-   If IsGadget( ide_g_code )
-      AddGadgetItem( ide_g_code, item, Result$ )
-   Else
-      AddItem( ide_design_panel_CODE, item, Result$ )
-      AddItem( ide_design_DEBUG, item, Result$ )
-      SetItemData( ide_design_DEBUG, item, *new)
-   EndIf
-EndProcedure
-
 Procedure ide_addline( *new._s_widget )
    Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
    
@@ -299,7 +258,6 @@ Procedure ide_addline( *new._s_widget )
       EndIf
       
       ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
-      ide_addline_code( *new, "object", position );, sublevel )
    EndIf
    
    ProcedureReturn *new
@@ -2274,6 +2232,7 @@ Procedure ide_events( )
          
          If *g = ide_design_panel
             If __item = 1
+               AddItem( ide_design_panel_CODE, 0, "" ) ; BUG 
                SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
                SetActive( ide_design_panel_CODE )
             EndIf
@@ -2841,6 +2800,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    
    
    a_set( ide_design_form )
+   Define code$ = GenerateGUICODE( ide_design_panel_MDI )
+   SetText( ide_design_DEBUG, code$ )
    
    ;Define code$ = GeneratePBCode( ide_design_panel_MDI )
    ; SetText( ide_design_panel_CODE, code$ )
@@ -2876,9 +2837,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1340
-; FirstLine = 1192
-; Folding = -----------------------ubg0---------------------------
+; CursorPosition = 260
+; FirstLine = 251
+; Folding = -----------------------dDs----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

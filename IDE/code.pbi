@@ -808,11 +808,11 @@ Procedure$ MakeCloseGadgetList( *g._s_WIDGET, *before = 0 )
    While Not is_window_(*g) 
       ;; Panel; Container; ScrollArea
       ;If IsContainer( *g ) > 2
-         If *g\parent And *g\parent\type = #__type_Splitter
-            
-         Else
-            result$ + AddCloseList( *g, Space(((Level(*g) ) - parentlevel) * codeindent) )
-         EndIf
+      If *g\parent And *g\parent\type = #__type_Splitter
+         
+      Else
+         result$ + AddCloseList( *g, Space(((Level(*g) ) - parentlevel) * codeindent) )
+      EndIf
       ;EndIf 
       ;
       If *before = *g
@@ -915,7 +915,7 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
       Default
          Flag$ = MakeFlagString( type$, *g\flag )
    EndSelect
-    
+   
    ;
    ;\\ close list
    If *g\BeforeWidget( )
@@ -1085,35 +1085,209 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
 EndProcedure
 
 ;- 
-Procedure.s GenerateCODE( *g._s_WIDGET, type$, mode.a = 0 )
-   Protected result$, ID$, param1$, param2$, param3$, Text$, flag$, Class$, Name$
+Procedure.s GenerateGUICODE( *mdi._s_WIDGET, mode.a = 0 )
+   Protected result$, param1$, param2$, param3$, Text$, flag$, Class$, id$
    
-   If ide_design_panel_MDI
-      parentlevel = Level(ide_design_panel_MDI)
-   EndIf
-   
-   If Not *g
-      ProcedureReturn ""
-   EndIf
-   
-   If Not *g\parent
-      ProcedureReturn ""
-   EndIf
-   
+   Protected Space$, *w._s_WIDGET, *g._s_WIDGET
    
    If codeindent
-      Protected Space$ = Space((Level(*g) - parentlevel) * codeindent)
-   EndIf
-      
- 
-   
- If type$ = "object"
-      
-      If Type(GetParent(*g)) = #__type_Splitter
-      Else
-         result$ + MakeObjectString( *g, Space$ )
+         Space$ = Space(codeindent)
       EndIf
       
+   If StartEnum( *mdi )
+      *w = widgets( )
+      If is_window_( *w )
+         id$ = GetClass( *w )
+         
+         ;\\
+         result$ + "Procedure Open_" + Trim( id$, "#" ) + "( )" + #LF$
+         
+         ;\\ 
+         ;result$ + Space(( Level(*w) - Level( *mdi ) ) * codeindent ) 
+         result$ + MakeObjectString( *w, Space(( Level(*w) - Level( *mdi ) ) * codeindent )) + #LF$
+         If mode = 0
+            Result$ = ReplaceString( Result$, "OpenWindow( " + id$ + ", ", "Window( ")
+            Result$ = ReplaceString( Result$, "OpenWindow( " + id$ + ",", "Window( ")
+            Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any, ", "Window( ")
+            Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any,", "Window( ")
+            
+            If Trim( id$, "#" ) <> id$
+               Result$ = ReplaceString( Result$, ClassFromType(Type(*w)), Trim(id$, "#") +" = "+ ClassFromType(Type(*w)) )
+            EndIf
+            
+         EndIf
+         
+         If StartEnum( *w )
+            *g = widgets( )
+            If Type(GetParent(*g)) = #__type_Splitter
+            Else
+               result$ + MakeObjectString( *g, Space(( Level(*g) - Level( *mdi ) ) * codeindent )) + #LF$
+               If mode = 0
+                  id$ = GetClass(*g)
+                  Result$ = ReplaceString( Result$, "Gadget( " + id$ + ", ", "( ")
+                  Result$ = ReplaceString( Result$, "Gadget( " + id$ + ",", "( ")
+                  Result$ = ReplaceString( Result$, "Gadget( #PB_Any, ", "( ")
+                  Result$ = ReplaceString( Result$, "Gadget( #PB_Any,", "( ")
+                  
+                  If Trim( id$, "#" ) <> id$
+                     Result$ = ReplaceString( Result$, ClassFromType(Type(*g)), Trim(id$, "#") +" = "+ ClassFromType(Type(*g)) )
+                  EndIf
+                  
+               EndIf
+            EndIf
+            
+            ;                   If ClassFromType( *g\type ) = "Panel"
+            ;                      If Not *g\haschildren
+            ;                         If *g\tabbar
+            ;                            result$ + Space$ + Space( ( Level(*g) - Level( *mdi ) ) * codeindent) + "AddGadgetItem( " + GetClass( *g ) + 
+            ;                                      ", - 1" + 
+            ;                                      ", " + Chr( '"' ) + GetItemText( *g, GetState(*g\tabbar) ) + Chr( '"' ) + 
+            ;                                      " )  " + #LF$
+            ;                            result$ + Space$ + Space( ( Level(*g) - Level( *mdi ) ) * codeindent) + #LF$
+            ;                         EndIf
+            ;                      EndIf
+            ;                   EndIf
+            
+            StopEnum( )
+         EndIf
+         
+         ;\\
+         result$ + MakeCloseGadgetList( *g ) 
+         
+         Define line_break
+         ;\\ COLOR
+         ;line_break = 0
+         If StartEnum( *w )
+            *g = widgets( )
+            id$ = GetClass( *g )
+            
+            Select ClassFromType( *g\type )
+               Case "Calendar" ,
+                    "Container",
+                    "Date",
+                    "Editor",
+                    "ExplorerList",
+                    "ExplorerTree",
+                    "HyperLink",
+                    "ListView",
+                    "ListIcon",
+                    "MDI",
+                    "ProgressBar",
+                    "ScrollArea",
+                    "Spin",
+                    "String",
+                    "Text",
+                    "Tree"
+                  
+                  If Bool(*g\color\back <> _get_colors_( )\back)
+                     If line_break = 0 
+                        line_break = 1
+                        result$ + Space$ + #LF$
+                     EndIf
+                     result$ + Space$ + "SetGadgetColor( " + id$ + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+                  EndIf
+            EndSelect
+            StopEnum( )
+         EndIf
+         
+         ;\\ HIDE
+         ;line_break = 0
+         If StartEnum( *w )
+            *g = widgets( )
+            ;
+            If Hide(*g) > 0
+               If line_break = 0 
+                  line_break = 1
+                  result$ + Space$ + #LF$
+               EndIf
+               
+               result$ + Space$ + "HideGadget( " + GetClass( *g ) + ", #True )" + #LF$
+            EndIf
+            StopEnum( )
+         EndIf
+         
+         ;\\ DISABLE
+         ;line_break = 0
+         If StartEnum( *w )
+            *g = widgets( )
+            ;
+            If Disable(*g) > 0
+               If line_break = 0 
+                  line_break = 1
+                  result$ + Space$ + #LF$
+               EndIf
+               
+               result$ + Space$ + "DisableGadget( " + GetClass( *g ) + ", #True )" + #LF$
+            EndIf
+            StopEnum( )
+         EndIf
+         
+         ;\\ STATE
+         ;line_break = 0
+         If StartEnum( *w )
+            *g = widgets( )
+            ;
+            If GetState(*g) > 0
+               If line_break = 0 
+                  line_break = 1
+                  result$ + Space$ + #LF$
+               EndIf
+               
+               result$ + Space$ + "SetGadgetState( " + GetClass( *g ) + ", "+ GetState(*g) + " )" + #LF$
+            EndIf
+            StopEnum( )
+         EndIf
+         
+         ;\\ bind event
+         ;line_break = 0
+         If StartEnum( *w )
+            *g = widgets( )
+            ;        ;     Events$ = GetEventsString( *g )
+            ;        ;     Gadgets$ + GetClassString( *g )
+            ;        ;     
+            ;        ;     If Events$
+            ;        ;       result$ + Code::GenerateBindGadgetEvent( 3, Events$, 0 );Gadgets$ )
+            ;        ;     EndIf
+            StopEnum( )
+         EndIf
+         
+         ;
+         Select *w\Type 
+            Case #__type_Window
+               If GetEventsString( *w )
+                  result$ + #LF$
+                  result$ + Code::GenerateBindEvent( ( Level(*w) - Level( *mdi ) ) * codeindent, GetEventsString( *w ), GetClass( *w ) )
+               EndIf
+            Default
+         EndSelect
+         
+         result$ + "EndProcedure" + #LF$
+         result$ + #LF$
+         
+      EndIf
+      StopEnum( )
+   EndIf
+   
+   If mode = 0
+      ;          Result$ = ReplaceString( Result$, "OpenWindow( " + id$ + ", ", "Window( ")
+      ;          Result$ = ReplaceString( Result$, "OpenWindow( " + id$ + ",", "Window( ")
+      ;          Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any, ", "Window( ")
+      ;          Result$ = ReplaceString( Result$, "OpenWindow( #PB_Any,", "Window( ")
+      ;          Result$ = ReplaceString( Result$, "Gadget( " + id$ + ", ", "( ")
+      ;          Result$ = ReplaceString( Result$, "Gadget( " + id$ + ",", "( ")
+      ;          Result$ = ReplaceString( Result$, "Gadget( #PB_Any, ", "( ")
+      ;          Result$ = ReplaceString( Result$, "Gadget( #PB_Any,", "( ")
+      ;
+      Result$ = ReplaceString( Result$, "#PB_Window_SizeGadget", "#PB_Window_Size_")
+      Result$ = ReplaceString( Result$, "#PB_Window_MaximizeGadget", "#PB_Window_Maximize_")
+      Result$ = ReplaceString( Result$, "#PB_Window_MinimizeGadget", "#PB_Window_Minimize_")
+      Result$ = ReplaceString( Result$, "#PB_Gadget_BackColor", "#PB___BackColor")
+      Result$ = ReplaceString( Result$, "Gadget", "")
+      Result$ = ReplaceString( Result$, "#PB___BackColor", "#PB_Gadget_BackColor")
+      Result$ = ReplaceString( Result$, "#PB_Window_Size_", "#PB_Window_SizeGadget")
+      Result$ = ReplaceString( Result$, "#PB_Window_Maximize_", "#PB_Window_MaximizeGadget")
+      Result$ = ReplaceString( Result$, "#PB_Window_Minimize_", "#PB_Window_MinimizeGadget")
+      ;Result$ = ReplaceString( Result$, "#PB__", "#__")
    EndIf
    
    ProcedureReturn result$
@@ -1121,13 +1295,18 @@ EndProcedure
 
 Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ; 
    Protected Type, Count, Image, Parent
-   Protected Space$, Name$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
+   Protected Space$, id$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
    Protected GlobalWindow$, GlobalGadget$, EnumWindow$, EnumGadget$
    
    Static JPEGPlugin$, JPEG2000Plugin$, PNGPlugin$, TGAPlugin$, TIFFPlugin$
    Protected *g._s_WIDGET
    Protected *w._s_WIDGET
    Protected *mainWindow._s_WIDGET
+   
+   If ide_design_panel_MDI
+      parentlevel = Level(ide_design_panel_MDI)
+   EndIf
+   
    
    ; is *g
    If *mdi
@@ -1138,7 +1317,7 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
       
       If StartEnum( *mdi )
          *w = widgets( )
-         Name$ = GetClass( *w )
+         id$ = GetClass( *w )
          Image = GetImage( *w )
          
          ; Debug GetClass( GetParent(*w)) +" "+ GetClass( *w)
@@ -1152,17 +1331,17 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
          ;
          ;\\
          ;
-         If Trim( Name$, "#" ) = Name$
+         If Trim( id$, "#" ) = id$
             If is_window_( *w )
-               GlobalWindow$ + "Global " + Name$ + " = - 1" + #LF$
+               GlobalWindow$ + "Global " + id$ + " = - 1" + #LF$
             Else
-               GlobalGadget$ + "Global " + Name$ + " = - 1" + #LF$
+               GlobalGadget$ + "Global " + id$ + " = - 1" + #LF$
             EndIf
          Else
             If is_window_( *w )
-               EnumWindow$ + Space$ + Name$ + #LF$
+               EnumWindow$ + Space$ + id$ + #LF$
             Else
-               EnumGadget$ + Space$ + Name$ + #LF$
+               EnumGadget$ + Space$ + id$ + #LF$
             EndIf
          EndIf
          
@@ -1259,14 +1438,12 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
             
             ;\\ 
             ;result$ + Space(( Level(*w) - Level( *mdi ) ) * codeindent ) 
-            ;result$ + GenerateCODE( *w, "object" )
             result$ + MakeObjectString( *w, Space(( Level(*w) - Level( *mdi ) ) * codeindent )) + #LF$
             
             If StartEnum( *w )
                *g = widgets( )
                If Type(GetParent(*g)) = #__type_Splitter
                Else
-                  ;result$ + GenerateCODE( *g, "object" ) + #LF$
                   result$ + MakeObjectString( *g, Space(( Level(*g) - Level( *mdi ) ) * codeindent )) + #LF$
                EndIf
                
@@ -1285,7 +1462,6 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
                StopEnum( )
             EndIf
             
-            
             ;- CLOSE LIST
             result$ + MakeCloseGadgetList( *g ) 
             
@@ -1294,7 +1470,7 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
             ;line_break = 0
             If StartEnum( *w )
                *g = widgets( )
-               Name$ = GetClass( *g )
+               id$ = GetClass( *g )
                
                Select ClassFromType( *g\type )
                   Case "Calendar" ,
@@ -1319,7 +1495,7 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
                            line_break = 1
                            result$ + Space$ + #LF$
                         EndIf
-                        result$ + Space$ + "SetGadgetColor( " + Name$ + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+                        result$ + Space$ + "SetGadgetColor( " + id$ + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
                      EndIf
                EndSelect
                StopEnum( )
@@ -1461,13 +1637,13 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
       ;   
       ;   
       ; ;   Debug GetCurrentDirectory( )
-      ; ;   Protected Name$ = ElementClass( CheckType ) + "_" + Str( CountElementType( CheckType ) )
-      ; ;   Debug #PB_Compiler_Home + "Compilers\pbcompiler";Name$  ;     Puth$ = GetCurrentDirectory( ) + "Create_GenerateExample\"
+      ; ;   Protected id$ = ElementClass( CheckType ) + "_" + Str( CountElementType( CheckType ) )
+      ; ;   Debug #PB_Compiler_Home + "Compilers\pbcompiler";id$  ;     Puth$ = GetCurrentDirectory( ) + "Create_GenerateExample\"
       ; ;                   ;     Debug GetPathPart( Puth$ )
       ; ;                   ;CLI> pbcompiler "C:\Project\Source\DLLSource.pb" /EXEChr( 34 ) + + Chr( 34 )
-      ; ;                   ;RunProgram( #PB_Compiler_Home + "/Compilers/pbcompiler", Puth$ + " /QUIET /XP /UNICODE /ADMINISTRATOR /EXE " + ArrayWindow( 0 )\Name$ + ".exe" , GetPathPart( Puth$ ), #PB_Program_Open | #PB_Program_Read | #PB_Program_Hide )
-      ; ;   RunProgram( #PB_Compiler_Home + "Compilers\pbcompiler", "/QUIET /XP /ADMINISTRATOR " + "" + Name$ + ".pb /EXE " + Name$ + ".exe", GetCurrentDirectory( ), #PB_Program_Open | #PB_Program_Read | #PB_Program_Hide )
-      ; ;   RunProgram( "C:\" + Name$ + ".exe" )
+      ; ;                   ;RunProgram( #PB_Compiler_Home + "/Compilers/pbcompiler", Puth$ + " /QUIET /XP /UNICODE /ADMINISTRATOR /EXE " + ArrayWindow( 0 )\id$ + ".exe" , GetPathPart( Puth$ ), #PB_Program_Open | #PB_Program_Read | #PB_Program_Hide )
+      ; ;   RunProgram( #PB_Compiler_Home + "Compilers\pbcompiler", "/QUIET /XP /ADMINISTRATOR " + "" + id$ + ".pb /EXE " + id$ + ".exe", GetCurrentDirectory( ), #PB_Program_Open | #PB_Program_Read | #PB_Program_Hide )
+      ; ;   RunProgram( "C:\" + id$ + ".exe" )
       
    EndIf
    
@@ -1553,8 +1729,8 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       
       ; SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, 0 )
-            SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, PANEL_0 )
-             SPLITTER_1 = Splitter( 7, 7, Width-30-14, 253-14, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
+      SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, PANEL_0 )
+      SPLITTER_1 = Splitter( 7, 7, Width-30-14, 253-14, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
       
       ;       ;
       ;       R1 = Container(7, 7, 568, 568,  #PB_Container_Single  )
@@ -1590,9 +1766,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       CloseList( )
       
       
-;       If StartEnum( root( ) )
-;          StopEnum( )
-;       EndIf
+      ;       If StartEnum( root( ) )
+      ;          StopEnum( )
+      ;       EndIf
       
    EndIf
    
@@ -1612,8 +1788,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 743
-; FirstLine = 734
-; Folding = ------------------------------+h-----
+; CursorPosition = 1090
+; FirstLine = 1087
+; Folding = -------------------------------0v4-------
 ; EnableXP
 ; DPIAware
