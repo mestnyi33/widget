@@ -2108,8 +2108,8 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
                   Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " -e " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$, "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
                CompilerElse
                   ProgramName = GetFilePart(sFilePath, #PB_FileSystem_NoExtension) + ".exe"
-                  Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " /EXE " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$ + " /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
-                  ;Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " -e " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$ + " /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+                  Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " /EXE " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$ + " /DPIAWARE /XP", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+                  ;Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " -e " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$ + " /DPIAWARE /XP", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
                CompilerEndIf
                
                If Compiler
@@ -2905,12 +2905,12 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2088
-; FirstLine = 1956
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 2111
+; FirstLine = 1962
 ; Folding = -----------------------dDs-----------------0-----------
-; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
 ; Executable = ..\widgets-ide.app.exe
+; Optimizer
