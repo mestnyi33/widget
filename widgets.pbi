@@ -226,7 +226,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_docursor, test_changecursor,test_setcursor
       
       Global window_pos_x.l, window_pos_y.l
-         
+      
       Global DrawingDC = 0
       
       Global __gui._s_GUI
@@ -13755,7 +13755,7 @@ chr$ = ","
                   If *this\text\edit[2]\len
                      If *this\edit_caret_2( ) > *this\LineFocused( )\text\pos
                         Debug "bug insert "
-                       *this\LinePressedIndex( ) - CountString( *this\text\edit[2]\string, #LF$) 
+                        *this\LinePressedIndex( ) - CountString( *this\text\edit[2]\string, #LF$) 
                      EndIf
                   EndIf
                   ;
@@ -23346,10 +23346,10 @@ chr$ = ","
                      EndIf
                   EndIf
                   
-;                   If is_widget_( widgets( ))
-;                      window_pos_x = mouse( )\steps - widgets( )\fs
-;                      window_pos_y = mouse( )\steps - widgets( )\fs ;- widgets( )\fs[2]
-;                   EndIf
+                  ;                   If is_widget_( widgets( ))
+                  ;                      window_pos_x = mouse( )\steps - widgets( )\fs
+                  ;                      window_pos_y = mouse( )\steps - widgets( )\fs ;- widgets( )\fs[2]
+                  ;                   EndIf
                   
                   If widgets( )\root\haschildren > 0
                      widgets( )\root\haschildren - 1
@@ -24923,9 +24923,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2936
-; FirstLine = 2931
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24923
+; FirstLine = 24883
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

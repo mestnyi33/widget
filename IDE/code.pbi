@@ -1095,9 +1095,9 @@ Procedure.s GenerateGUICODE( *mdi._s_WIDGET, mode.a = 0 )
    EndIf
    
    If codeindent
-         Space$ = Space(codeindent)
-      EndIf
-      
+      Space$ = Space(codeindent)
+   EndIf
+   
    If StartEnum( *mdi )
       *w = widgets( )
       If is_window_( *w )
@@ -1792,8 +1792,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1095
-; FirstLine = 1000
-; Folding = -------------------------09+---8fv-------
+; CursorPosition = 1792
+; FirstLine = 1753
+; Folding = -----------------------------------------
 ; EnableXP
 ; DPIAware

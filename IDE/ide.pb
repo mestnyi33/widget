@@ -160,7 +160,7 @@ Declare.q MakeConstants( string$ )
 XIncludeFile #ide_path + "widgets.pbi"
 XIncludeFile #ide_path + "include/newcreate/anchorbox.pbi"
 CompilerIf #PB_Compiler_IsMainFile
-  XIncludeFile "code.pbi"
+   XIncludeFile "code.pbi"
 CompilerEndIf
 
 ;
@@ -171,45 +171,45 @@ UsePNGImageDecoder( )
 Global PreviewRunning, PreviewProgramName$
 
 Procedure RunPreview(SourceCode$)
-  If SourceCode$ = "" : ProcedureReturn : EndIf
-  Protected TempFileName$, hTempFile
-  Protected CompilerPath$, CompilPreview, CompilPreviewOutput$
-
-  CompilerPath$ = #PB_Compiler_Home + "Compilers\pbcompiler.exe"
-  If FileSize(CompilerPath$)
-    TempFileName$ = "~preview.pb"
-    hTempFile = CreateFile(#PB_Any, TempFileName$, #PB_UTF8)
-    If hTempFile
-      WriteStringN(hTempFile, SourceCode$)
-      CloseFile(hTempFile)
-      
-      PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension) + ".exe"
-      CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " /EXE " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /XP /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
-      If CompilPreview
-        While ProgramRunning(CompilPreview)
-          If AvailableProgramOutput(CompilPreview)
-            CompilPreviewOutput$ = ReadProgramString(CompilPreview)
-          EndIf
-        Wend
-        If ProgramExitCode(CompilPreview)
-          CloseProgram(CompilPreview)
-          MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe %Temp%\" + GetFilePart(TempFileName$) + " /EXE %Temp%\" + GetFilePart(PreviewProgramName$) + #CRLF$+#CRLF$+ CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
-        Else
-          CloseProgram(CompilPreview)
-          If FileSize(PreviewProgramName$)
-            DeleteFile(TempFileName$)
-            PreviewRunning = RunProgram(PreviewProgramName$, "", "", #PB_Program_Open)
-          Else
+   If SourceCode$ = "" : ProcedureReturn : EndIf
+   Protected TempFileName$, hTempFile
+   Protected CompilerPath$, CompilPreview, CompilPreviewOutput$
+   
+   CompilerPath$ = #PB_Compiler_Home + "Compilers\pbcompiler.exe"
+   If FileSize(CompilerPath$)
+      TempFileName$ = "~preview.pb"
+      hTempFile = CreateFile(#PB_Any, TempFileName$, #PB_UTF8)
+      If hTempFile
+         WriteStringN(hTempFile, SourceCode$)
+         CloseFile(hTempFile)
+         
+         PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension) + ".exe"
+         CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " /EXE " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /XP /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+         If CompilPreview
+            While ProgramRunning(CompilPreview)
+               If AvailableProgramOutput(CompilPreview)
+                  CompilPreviewOutput$ = ReadProgramString(CompilPreview)
+               EndIf
+            Wend
+            If ProgramExitCode(CompilPreview)
+               CloseProgram(CompilPreview)
+               MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe %Temp%\" + GetFilePart(TempFileName$) + " /EXE %Temp%\" + GetFilePart(PreviewProgramName$) + #CRLF$+#CRLF$+ CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+            Else
+               CloseProgram(CompilPreview)
+               If FileSize(PreviewProgramName$)
+                  DeleteFile(TempFileName$)
+                  PreviewRunning = RunProgram(PreviewProgramName$, "", "", #PB_Program_Open)
+               Else
+                  MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe %Temp%\" + GetFilePart(TempFileName$) + " /EXE %Temp%\" + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+               EndIf
+            EndIf
+         Else
             MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe %Temp%\" + GetFilePart(TempFileName$) + " /EXE %Temp%\" + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
-          EndIf
-        EndIf
-      Else
-        MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe %Temp%\" + GetFilePart(TempFileName$) + " /EXE %Temp%\" + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+         EndIf
       EndIf
-    EndIf
-  Else
-    MessageRequester("Preview Error", "PBcompiler.exe was not found in Compilers folder", #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
-  EndIf
+   Else
+      MessageRequester("Preview Error", "PBcompiler.exe was not found in Compilers folder", #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+   EndIf
 EndProcedure
 
 ;
@@ -917,9 +917,9 @@ EndProcedure
 
 ;-
 Procedure$  MakeArgString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
-  Protected i, chr$, start, stop 
-  Static ii
-  
+   Protected i, chr$, start, stop 
+   Static ii
+   
    For i = 0 To len
       chr$ = Mid( string$, i, 1 )
       If chr$ = "(" 
@@ -1039,7 +1039,7 @@ Procedure MakeLine( string$, findtext$ )
    Define string_len = Len( String$ )
    Define arg_start, arg_stop, arg$ = MakeArgString( string$, string_len, @arg_start, @arg_stop ) 
    If arg$
-     ; Debug arg$ +" "+ arg_start
+      ; Debug arg$ +" "+ arg_start
       Define str$ = Mid( String$, 1, arg_start - 1 - 1 ) ; исключаем открывающую скобку '('
       
       If FindString( str$, ";" )
@@ -1093,11 +1093,11 @@ Procedure MakeLine( string$, findtext$ )
                ; ProcedureReturn 
             EndIf
             
-             Debug "[Make]"+\func$;arg$
-       
+            Debug "[Make]"+\func$;arg$
+            
             ;
             Select \func$
-               Case "OpenWindow",
+               Case "OpenWindow", "﻿OpenWindow",
                     "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
                     "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
                     "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
@@ -1107,13 +1107,14 @@ Procedure MakeLine( string$, findtext$ )
                     "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
                     "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
                   
+                  
                   Static *parent
                   Protected *new._s_WIDGET
                   
                   ;
                   \func$ = ReplaceString( \func$, "Gadget", "")
                   \func$ = ReplaceString( \func$, "Open", "")
-                       
+                  
                   ; id$
                   If FindString( str$, "=" )
                      \id$ = Trim( StringField( str$, 1, "=" ))
@@ -1134,6 +1135,8 @@ Procedure MakeLine( string$, findtext$ )
                      EndIf
                   EndIf   
                   
+                 Debug \func$
+                   
                   ;
                   x$      = Trim(StringField( arg$, 2, ","))
                   y$      = Trim(StringField( arg$, 3, ","))
@@ -1161,7 +1164,8 @@ Procedure MakeLine( string$, findtext$ )
                   
                   ; text
                   Select \func$
-                     Case "Window", "Web", "Frame",
+                     Case "Window",
+                          "Web", "Frame",
                           "Text", "String", "Button", "CheckBox",
                           "Option", "HyperLink", "ListIcon", "Date",
                           "ExplorerList", "ExplorerTree", "ExplorerCombo"
@@ -1216,7 +1220,8 @@ Procedure MakeLine( string$, findtext$ )
                           "Tree", "ListView", "ComboBox", "Editor"
                         flag$ = param1$
                         
-                     Case "Window", "Web", "Frame",
+                     Case "Window",
+                          "Web", "Frame",
                           "Text", "String", "Button", "CheckBox", 
                           "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
                         flag$ = param2$
@@ -1246,18 +1251,15 @@ Procedure MakeLine( string$, findtext$ )
                      Else
                         *Parent = ide_design_panel_MDI
                      EndIf
-
+                     
                      x$ = Str(Val(x$)+10)
                      y$ = Str(Val(y$)+10)
                   EndIf
                   
+                  
                   *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
                   
                   If *new
-                     ;          If \func$ = "Panel"
-                     ;             RemoveItem( *new, 0 )
-                     ;             ; ClearItems( *new )
-                     ;          EndIf
                      ;             If flag$
                      ;                SetFlagsString( *new, flag$ )
                      ;             EndIf
@@ -1344,7 +1346,7 @@ Procedure MakeLine( string$, findtext$ )
          EndWith
       EndIf
       
-       ; Mid( String$, arg_start+arg_stop + 1 )
+      ; Mid( String$, arg_start+arg_stop + 1 )
       ; если строка такого ввида "containergadget() : closegadgetlist()" 
       Define lines$ = Trim( Mid( String$, arg_start+arg_stop + 1 ), ":" )
       If lines$
@@ -1505,7 +1507,7 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    Protected newtype$
-     
+   
    If *parent > 0 
       OpenList( *parent, CountItems( *parent ) - 1 )
       type$ = LCase( Trim( type$ ) )
@@ -1686,7 +1688,7 @@ Procedure widget_events( )
          ;
          DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
          ;
-      
+         
          ; Debug "free "+item
          ; ProcedureReturn 0
          
@@ -1894,7 +1896,7 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         FileSeek( #File, 0 ) ; 
+         FileSeek( #File, 0 )                                   ; 
          
          While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
@@ -1903,10 +1905,10 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          Wend
          
          
-;          
-;          ForEach *parser\Line()
-;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
-;          Next
+         ;          
+         ;          ForEach *parser\Line()
+         ;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
+         ;          Next
          
          ;          ;          ;
          ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -1943,8 +1945,8 @@ Procedure   ide_SaveFile(Path$) ; Процедура сохранения фай
       
       ;
       If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
-                                                    " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
-                                                    " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
+                                            " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
+                                            " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
          Text$ = GeneratePBCode( ide_design_panel_MDI )
       Else
          Text$ = GetText( ide_design_panel_CODE )
@@ -2123,7 +2125,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
             
          Next
          
-        ;-  RUN
+         ;-  RUN
       Case #_tb_file_run
          Define Code.s = GeneratePBCode( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
          Protected sFilePath.s, hFile.i, CompilerPath.s, ProgramName.s
@@ -2501,11 +2503,11 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;    CloseSubBar( )
    
    BarSeparator( )
-;    BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-;    BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-;    BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-;    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-;    BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+   ;    BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
+   ;    BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
+   ;    BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
+   ;    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
+   ;    BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
    CloseList( )
    
    ; gadgets
@@ -2918,9 +2920,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2258
-; FirstLine = 2119
-; Folding = ------------------------4Nw+----------------4-----------
+; CursorPosition = 1262
+; FirstLine = 1270
+; Folding = --------------------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
