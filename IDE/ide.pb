@@ -2255,6 +2255,11 @@ Procedure ide_events( )
                PreviewRunning = 0
             EndIf
          EndIf
+         If Not PreviewProgramName$ = "" And
+            FileSize(PreviewProgramName$)
+            DeleteFile(PreviewProgramName$)
+            PreviewProgramName$ = ""
+         EndIf
          
       Case #__event_Close
          If *g = ide_root
@@ -2913,9 +2918,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2247
-; FirstLine = 2122
-; Folding = ------------------------4Nw+----------------4----------
+; CursorPosition = 2258
+; FirstLine = 2119
+; Folding = ------------------------4Nw+----------------4-----------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

@@ -1090,6 +1090,10 @@ Procedure.s GenerateGUICODE( *mdi._s_WIDGET, mode.a = 0 )
    
    Protected Space$, *w._s_WIDGET, *g._s_WIDGET
    
+   If *mdi
+      parentlevel = Level(*mdi)
+   EndIf
+   
    If codeindent
          Space$ = Space(codeindent)
       EndIf
@@ -1103,8 +1107,8 @@ Procedure.s GenerateGUICODE( *mdi._s_WIDGET, mode.a = 0 )
          result$ + "Procedure Open_" + Trim( id$, "#" ) + "( )" + #LF$
          
          ;\\ 
-         ;result$ + Space(( Level(*w) - Level( *mdi ) ) * codeindent ) 
-         result$ + MakeObjectString( *w, Space(( Level(*w) - Level( *mdi ) ) * codeindent )) + #LF$
+         ;result$ + Space(( Level(*w) - parentlevel ) * codeindent ) 
+         result$ + MakeObjectString( *w, Space(( Level(*w) - parentlevel ) * codeindent )) + #LF$
          If mode = 0
             Result$ = ReplaceString( Result$, "OpenWindow( " + id$ + ", ", "Window( ")
             Result$ = ReplaceString( Result$, "OpenWindow( " + id$ + ",", "Window( ")
@@ -1121,7 +1125,7 @@ Procedure.s GenerateGUICODE( *mdi._s_WIDGET, mode.a = 0 )
             *g = widgets( )
             If Type(GetParent(*g)) = #__type_Splitter
             Else
-               result$ + MakeObjectString( *g, Space(( Level(*g) - Level( *mdi ) ) * codeindent )) + #LF$
+               result$ + MakeObjectString( *g, Space(( Level(*g) - parentlevel ) * codeindent )) + #LF$
                If mode = 0
                   id$ = GetClass(*g)
                   Result$ = ReplaceString( Result$, "Gadget( " + id$ + ", ", "( ")
@@ -1139,11 +1143,11 @@ Procedure.s GenerateGUICODE( *mdi._s_WIDGET, mode.a = 0 )
             ;                   If ClassFromType( *g\type ) = "Panel"
             ;                      If Not *g\haschildren
             ;                         If *g\tabbar
-            ;                            result$ + Space$ + Space( ( Level(*g) - Level( *mdi ) ) * codeindent) + "AddGadgetItem( " + GetClass( *g ) + 
+            ;                            result$ + Space$ + Space( ( Level(*g) - parentlevel ) * codeindent) + "AddGadgetItem( " + GetClass( *g ) + 
             ;                                      ", - 1" + 
             ;                                      ", " + Chr( '"' ) + GetItemText( *g, GetState(*g\tabbar) ) + Chr( '"' ) + 
             ;                                      " )  " + #LF$
-            ;                            result$ + Space$ + Space( ( Level(*g) - Level( *mdi ) ) * codeindent) + #LF$
+            ;                            result$ + Space$ + Space( ( Level(*g) - parentlevel ) * codeindent) + #LF$
             ;                         EndIf
             ;                      EndIf
             ;                   EndIf
@@ -1256,7 +1260,7 @@ Procedure.s GenerateGUICODE( *mdi._s_WIDGET, mode.a = 0 )
             Case #__type_Window
                If GetEventsString( *w )
                   result$ + #LF$
-                  result$ + Code::GenerateBindEvent( ( Level(*w) - Level( *mdi ) ) * codeindent, GetEventsString( *w ), GetClass( *w ) )
+                  result$ + Code::GenerateBindEvent( ( Level(*w) - parentlevel ) * codeindent, GetEventsString( *w ), GetClass( *w ) )
                EndIf
             Default
          EndSelect
@@ -1303,8 +1307,8 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
    Protected *w._s_WIDGET
    Protected *mainWindow._s_WIDGET
    
-   If ide_design_panel_MDI
-      parentlevel = Level(ide_design_panel_MDI)
+   If *mdi
+      parentlevel = Level(*mdi)
    EndIf
    
    
@@ -1438,13 +1442,13 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
             
             ;\\ 
             ;result$ + Space(( Level(*w) - Level( *mdi ) ) * codeindent ) 
-            result$ + MakeObjectString( *w, Space(( Level(*w) - Level( *mdi ) ) * codeindent )) + #LF$
+            result$ + MakeObjectString( *w, Space(( Level(*w) - parentlevel ) * codeindent )) + #LF$
             
             If StartEnum( *w )
                *g = widgets( )
                If Type(GetParent(*g)) = #__type_Splitter
                Else
-                  result$ + MakeObjectString( *g, Space(( Level(*g) - Level( *mdi ) ) * codeindent )) + #LF$
+                  result$ + MakeObjectString( *g, Space(( Level(*g) - parentlevel ) * codeindent )) + #LF$
                EndIf
                
                ;                   If ClassFromType( *g\type ) = "Panel"
@@ -1567,7 +1571,7 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
                Case #__type_Window
                   If GetEventsString( *w )
                      result$ + #LF$
-                     result$ + Code::GenerateBindEvent( ( Level(*w) - Level( *mdi ) ) * codeindent, GetEventsString( *w ), GetClass( *w ) )
+                     result$ + Code::GenerateBindEvent( ( Level(*w) - parentlevel ) * codeindent, GetEventsString( *w ), GetClass( *w ) )
                   EndIf
                Default
             EndSelect
@@ -1788,8 +1792,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1090
-; FirstLine = 1087
-; Folding = -------------------------------0v4-------
+; CursorPosition = 1095
+; FirstLine = 1000
+; Folding = -------------------------09+---8fv-------
 ; EnableXP
 ; DPIAware
