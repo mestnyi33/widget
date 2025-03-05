@@ -1,4 +1,5 @@
-﻿;
+﻿#ide_path = "../"
+;
 EnableExplicit
 ;
 ;- ENUMs
@@ -156,7 +157,6 @@ Declare.q MakeFlag( Flag_Str.s )
 Declare.q MakeConstants( string$ )
 ;
 ;- INCLUDEs
-#ide_path = "../"
 XIncludeFile #ide_path + "widgets.pbi"
 XIncludeFile #ide_path + "include/newcreate/anchorbox.pbi"
 CompilerIf #PB_Compiler_IsMainFile
@@ -2074,13 +2074,82 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
             
          Next
          
-         
+        ;-  RUN
       Case #_tb_file_run
-         Debug "run "+#PB_Compiler_Home
-;          ;result = RunProgram(Filename$ [, Parameter$, WorkingDirectory$ [, Flags [, SenderProgram]]])
-;         Define  Compiler = RunProgram(#PB_Compiler_Home+"/PureBasic.exe", "/EXE "+GetText( ide_design_panel_CODE ), "", #PB_Program_Open | #PB_Program_Read)
-;         Debug Compiler
-        
+         Define Code.s = GeneratePBCode( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
+         Protected sFilePath.s, hFile.i, CompilerPath.s, ProgramName.s
+         Protected Compiler.i, LastProgramString.s, SavTitle.s
+         
+         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+            CompilerPath = #PB_Compiler_Home + "Compilers\pbcompiler.exe"
+         CompilerElse
+            CompilerPath = #PB_Compiler_Home + "pbcompiler"
+         CompilerEndIf
+         
+         Debug "run "+CompilerPath
+         
+         If FileSize(CompilerPath)
+            sFilePath  = "~compiler"
+             
+            hFile = CreateFile(#PB_Any, sFilePath)
+            If hFile
+               WriteStringFormat(hFile, #PB_UTF8)
+               WriteStringN(hFile, Code)
+               CloseFile(hFile)
+               
+               SavTitle = GetWindowTitle(EventWindow())
+               SetWindowTitle(EventWindow(), "*****  Выполняется компиляция  *****")
+               
+               CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+                  ProgramName = GetFilePart(sFilePath, #PB_FileSystem_NoExtension)
+                  Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " -e " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$, "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+               CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS   ;Not tested
+                  ProgramName = GetFilePart(sFilePath, #PB_FileSystem_NoExtension) + ".exe"
+                  Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " -e " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$, "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+               CompilerElse
+                  ProgramName = GetFilePart(sFilePath, #PB_FileSystem_NoExtension) + ".exe"
+                  Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " /EXE " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$ + " /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+                  ;Compiler = RunProgram(CompilerPath, #DQUOTE$ + sFilePath + #DQUOTE$ + " -e " + #DQUOTE$ + GetPathPart(sFilePath) + ProgramName +#DQUOTE$ + " /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+               CompilerEndIf
+               
+               If Compiler
+                  While ProgramRunning(Compiler)
+                     If AvailableProgramOutput(Compiler)
+                        LastProgramString = ReadProgramString(Compiler)
+                     EndIf
+                  Wend
+                  
+                  If ProgramExitCode(Compiler) <> 0
+                     CloseProgram(Compiler)
+                     MessageRequester("Предупреждение компилятора", "Не удалось скомпилировать:" +#CRLF$+ "pbcompiler.exe Temp\" + GetFilePart(sFilePath) + " -e Temp\" + ProgramName + #CRLF$+#CRLF$+ LastProgramString, #PB_MessageRequester_Warning|#PB_MessageRequester_Ok)
+                  Else
+                     CloseProgram(Compiler)
+                     
+                     If FileSize(GetPathPart(sFilePath) + ProgramName)
+                        DeleteFile(sFilePath, #PB_FileSystem_Force)
+                        SetWindowTitle(EventWindow(), SavTitle + "     *****  Закройте окно воспроизведения, чтобы продолжить  *****")
+                        RunProgram(GetPathPart(sFilePath) + ProgramName, "", "", #PB_Program_Wait)
+                        Delay(250)
+                        DeleteFile(GetPathPart(sFilePath) + ProgramName, #PB_FileSystem_Force)
+                     Else
+                        MessageRequester("Предупреждение компилятора", "Fail to Compile:" +#CRLF$+ "pbcompiler.exe Temp\" + GetFilePart(sFilePath) + " -e Temp\" + ProgramName, #PB_MessageRequester_Warning|#PB_MessageRequester_Ok)
+                     EndIf
+                  EndIf
+               Else
+                  MessageRequester("Предупреждение компилятора", "Fail to Compile:" +#CRLF$+ "pbcompiler.exe Temp\" + GetFilePart(sFilePath) + " -e Temp\" + ProgramName, #PB_MessageRequester_Warning|#PB_MessageRequester_Ok)
+               EndIf
+               
+               SetWindowTitle(EventWindow(), SavTitle)
+            EndIf
+         Else
+            MessageRequester("Предупреждение компилятора", "pbcompiler.exe не был найден в папке Compilers", #PB_MessageRequester_Warning|#PB_MessageRequester_Ok)
+         EndIf
+         
+         
+         
+         
+         
+         
       Case #_tb_file_new
          ide_NewFile( )
          
@@ -2837,9 +2906,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 260
-; FirstLine = 251
-; Folding = -----------------------dDs----------------------------
+; CursorPosition = 2088
+; FirstLine = 1956
+; Folding = -----------------------dDs-----------------0-----------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
