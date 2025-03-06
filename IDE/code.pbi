@@ -1156,8 +1156,10 @@ Procedure.s GenerateGUICODE( *mdi._s_WIDGET, mode.a = 0 )
          EndIf
          
          ;\\
-         result$ + MakeCloseGadgetList( *g ) 
-         
+         If *g
+            result$ + MakeCloseGadgetList( *g ) 
+         EndIf
+      
          Define line_break
          ;\\ COLOR
          ;line_break = 0
@@ -1467,7 +1469,9 @@ Procedure.s GeneratePBCode( *mdi._s_WIDGET ) ;
             EndIf
             
             ;- CLOSE LIST
-            result$ + MakeCloseGadgetList( *g ) 
+            If *g
+               result$ + MakeCloseGadgetList( *g ) 
+            EndIf
             
             Define line_break
             ;\\ COLOR
@@ -1792,8 +1796,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1792
-; FirstLine = 1753
+; CursorPosition = 1474
+; FirstLine = 1457
 ; Folding = -----------------------------------------
 ; EnableXP
 ; DPIAware

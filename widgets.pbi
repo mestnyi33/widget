@@ -12608,14 +12608,17 @@ CompilerIf Not Defined( widget, #PB_Module )
             If mode = 2
                result = typeCount( Str( *this\parent + *this\type ) ) - 1
             Else
+               ;Debug *this\class
                ; add mode = 1 
                ; remove mode = - 1 
                ;
-               If *this\parent <> *this\window
-                  typeCount( Str( *this\window + *this\type ) ) + mode
-               EndIf
-               If *this\root <> *this\parent
-                  typeCount( Str( *this\parent + *this\type ) ) + mode
+               If *this\root <> *this\window
+                  If *this\root <> *this\parent
+                     typeCount( Str( *this\parent + *this\type ) ) + mode
+                  EndIf
+                  If *this\parent <> *this\window
+                     typeCount( Str( *this\window + *this\type ) ) + mode
+                  EndIf
                EndIf
                typeCount( Str( *this\root + *this\type ) ) + mode
                
@@ -23123,13 +23126,13 @@ chr$ = ","
             *parent = *root
          EndIf
          
+         
          ;\\
          *this\type            = #__type_window
          *this\frame_x( )      = #PB_Ignore
          *this\frame_y( )      = #PB_Ignore
          *this\frame_width( )  = #PB_Ignore
          *this\frame_height( ) = #PB_Ignore
-         
          
          ;\\ replace pb flag
          flag = FromPBFlag( *this\type, flag )
@@ -23241,6 +23244,10 @@ chr$ = ","
                EndIf
             EndIf
          EndIf
+         
+         ;
+         ;\\ add count types
+         CountType( *this, 1 )
          
          ;\\
          If constants::BinaryFlag( *this\flag, #PB_Window_SizeGadget&~#PB_Window_TitleBar )
@@ -24923,8 +24930,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24923
-; FirstLine = 24883
+; CursorPosition = 12616
+; FirstLine = 12603
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

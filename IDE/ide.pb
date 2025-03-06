@@ -1036,7 +1036,7 @@ Procedure MakeLine( string$, findtext$ )
    Protected result
    Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
    Protected param1, param2, param3, flags.q
-   
+            
    Define string_len = Len( String$ )
    Define arg_start, arg_stop, arg$ = MakeArgString( string$, string_len, @arg_start, @arg_stop ) 
    If arg$
@@ -1055,6 +1055,7 @@ Procedure MakeLine( string$, findtext$ )
             \arg$ = arg$
             \string = string$
             \func$ = MakeFuncString( string$, string_len )
+            ;\func$ = RemoveString(\func$, "﻿" )
             
             ;
             \pos = FindString( str$, "Declare" )
@@ -1095,6 +1096,7 @@ Procedure MakeLine( string$, findtext$ )
             EndIf
             
             Debug "[Make]"+\func$;arg$
+            ;; \func$ = RemoveString( \func$, "" )
             
             ;
             Select \func$
@@ -1122,7 +1124,13 @@ Procedure MakeLine( string$, findtext$ )
                   Else
                      \id$ = Trim( StringField( arg$, 1, "," ))
                      
-                     If NumericString( \id$ )
+                     If \id$ = "#PB_Any" 
+                        \id$ = ""
+                     ElseIf FindString( \id$, "-" )
+                        ;  Если идентификатор просто - 1
+                        \id$ = ""
+                     ElseIf NumericString( \id$ )
+                        ; Если идентификатор просто цифры
                         AddMapElement( GetObject( ), \id$ )
                         \id$ = "#" + \func$ +"_"+ \id$
                         If Not enumerations
@@ -1136,8 +1144,6 @@ Procedure MakeLine( string$, findtext$ )
                      EndIf
                   EndIf   
                   
-                 Debug ""+\func$ +" "+ Bool(\func$ = "Window") +" "+ Bool(\func$ = "﻿Window") +" "
-                   
                   ;
                   x$      = Trim(StringField( arg$, 2, ","))
                   y$      = Trim(StringField( arg$, 3, ","))
@@ -1600,7 +1606,7 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
          ; Debug ""+*parent\class +" "+ *new\class
          ;\\ первый метод формирования названия переменной
          newtype$ = type$+"_"+CountType( *new )
-         
+         ;Debug ""+*parent +" "+ newtype$
          ;\\ второй метод формирования названия переменной
          ;          If *parent = ide_design_panel_MDI
          ;             newtype$ = Class( *new )+"_"+CountType( *new , 2 )
@@ -1901,7 +1907,8 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          
          While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
-            
+            String$ = RemoveString( String$, "﻿" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
+   
             MakeLine( String$, Text$ )
          Wend
          
@@ -2921,8 +2928,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1139
-; FirstLine = 1127
+; CursorPosition = 1129
+; FirstLine = 1118
 ; Folding = --------------------------------------------------------
 ; Optimizer
 ; EnableAsm
