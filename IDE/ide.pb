@@ -178,7 +178,7 @@ Procedure RunPreview(SourceCode$)
    CompilerPath$ = #PB_Compiler_Home + "Compilers\pbcompiler.exe"
    If FileSize(CompilerPath$)
       TempFileName$ = "~preview.pb"
-      hTempFile = CreateFile(#PB_Any, TempFileName$, #PB_UTF8)
+      hTempFile = CreateFile(#PB_Any, TempFileName$, #PB_Ascii)
       If hTempFile
          WriteStringN(hTempFile, SourceCode$)
          CloseFile(hTempFile)
@@ -193,18 +193,18 @@ Procedure RunPreview(SourceCode$)
             Wend
             If ProgramExitCode(CompilPreview)
                CloseProgram(CompilPreview)
-               MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe %Temp%\" + GetFilePart(TempFileName$) + " /EXE %Temp%\" + GetFilePart(PreviewProgramName$) + #CRLF$+#CRLF$+ CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+               MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe " + GetFilePart(TempFileName$) + " /EXE " + GetFilePart(PreviewProgramName$) + #CRLF$+#CRLF$+ CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
             Else
                CloseProgram(CompilPreview)
                If FileSize(PreviewProgramName$)
                   DeleteFile(TempFileName$)
                   PreviewRunning = RunProgram(PreviewProgramName$, "", "", #PB_Program_Open)
                Else
-                  MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe %Temp%\" + GetFilePart(TempFileName$) + " /EXE %Temp%\" + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+                  MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe " + GetFilePart(TempFileName$) + " /EXE " + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
                EndIf
             EndIf
          Else
-            MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe %Temp%\" + GetFilePart(TempFileName$) + " /EXE %Temp%\" + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+            MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe " + GetFilePart(TempFileName$) + " /EXE " + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
          EndIf
       EndIf
    Else
@@ -2920,8 +2920,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1262
-; FirstLine = 1270
+; CursorPosition = 180
+; FirstLine = 155
 ; Folding = --------------------------------------------------------
 ; Optimizer
 ; EnableAsm
