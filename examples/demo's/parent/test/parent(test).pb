@@ -186,7 +186,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #PB_EventType_Change)
   
   ;*DESKTOP = Button(30,150,160,20,"Button >>(Desktop)") 
-  *CANVASCONTAINER = Container(30,180,200,160) : SetColor(*CANVASCONTAINER, #__color_back, $ffffffff) : SetText(*CANVASCONTAINER, "*CANVASCONTAINER" ) ; Canvas(30,180,200,160,#PB_Canvas_Container) 
+  *CANVASCONTAINER = Container(30,180,200,160) : SetColor(*CANVASCONTAINER, #pb_gadget_backcolor, $ffffffff) : SetText(*CANVASCONTAINER, "*CANVASCONTAINER" ) ; Canvas(30,180,200,160,#PB_Canvas_Container) 
   *_11 = Button(30,90,160,30,">>(Canvas)") 
   CloseList()
    
@@ -207,6 +207,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 188
+; FirstLine = 176
 ; Folding = --
 ; EnableXP
 ; DPIAware

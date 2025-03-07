@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndEnumeration
   
   If Open(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
     
     Container( 100,100,200,100, #__flag_BorderFlat ) ; #__flag_BorderSingle ; #__flag_borderDouble
     
@@ -94,7 +94,7 @@ DataSection
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 30
+; CursorPosition = 36
+; FirstLine = 32
 ; Folding = -
 ; EnableXP

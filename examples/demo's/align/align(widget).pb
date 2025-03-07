@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *root = Open( 1, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
-    SetColor(*root, #__color_back, $FFACE3FF )
+    SetColor(*root, #pb_gadget_backcolor, $FFACE3FF )
     
     wlist(Hex(2)) = Button(55, 5, 80, 20, "center")   ; center \2     align_proportional_horizontal
     wlist(Hex(3)) = Button(55, 25, 80, 20, "right")   ; right         #right
@@ -493,8 +493,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 37
+; CursorPosition = 73
+; FirstLine = 69
 ; Folding = --R-
 ; Optimizer
 ; EnableXP

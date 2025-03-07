@@ -146,14 +146,17 @@
       #__c           = 9
       
       ;-\\ Color
-      #__color_Front      = 1
-      #__color_Back       = 2
-      #__color_Line       = 3
-      #__color_titlefront = 4
-      #__color_titleback  = 5
-      #__color_graytext   = 6
-      #__color_Frame      = 7
-      #__color_Fore       = 8
+;       #__color_Front      = 1
+;       #__color_Back       = 2
+;       #__color_Line       = 3
+;       #__color_titlefront = 4
+;       #__color_titleback  = 5
+;       #__color_graytext   = 6
+;       #__color_Frame      = 7
+;       #__color_Fore       = 8
+      
+      #__ForeColor        = 8
+      #__FrameColor       = 7
       
       ;- 
       ;-\\ state
@@ -744,8 +747,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 466
-; FirstLine = 453
+; CursorPosition = 155
+; FirstLine = 141
 ; Folding = ----
 ; Optimizer
 ; EnableXP

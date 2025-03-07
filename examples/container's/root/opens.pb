@@ -208,7 +208,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Container( 70,180, 80,80): CloseList( )
   
   *w = Tree( 100,30, 100,260-20+300, #__flag_borderless)
-  SetColor( *w, #__color_back, $FF07EAF6 )
+  SetColor( *w, #pb_gadget_backcolor, $FF07EAF6 )
   For i=1 To 10;00000
     AddItem(*w, i, "text-"+Str(i))
   Next
@@ -238,8 +238,8 @@ CompilerIf #PB_Compiler_IsMainFile
   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 94
+; CursorPosition = 210
+; FirstLine = 204
 ; Folding = -
 ; EnableXP
 ; DPIAware

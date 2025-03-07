@@ -111,13 +111,13 @@ CompilerIf #PB_Compiler_IsMainFile
     c2 = GetCanvasGadget( root( ) )
     
     *Button_0 = Button( 15, 42, 250,  60, "Button (Horisontal)", #__flag_Textmultiline,-1 )
-;     SetColor( *Button_0, #__Color_fore, $0000FF )
-;     SetColor( *Button_0, #__Color_Back, $00FF00 )
-     SetColor( *Button_0, #__Color_Front, $4919D5 ) 
+;     SetColor( *Button_0, #__ForeColor, $0000FF )
+;     SetColor( *Button_0, #pb_gadget_backcolor, $00FF00 )
+     SetColor( *Button_0, #PB_Gadget_FrontColor, $4919D5 ) 
 ;     SetFont( *Button_0, FontID( 10 ) )
     
     *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #__flag_Textmultiline|#__text_Vertical|#__text_Invert )
-     SetColor( *Button_1, #__Color_Front, $FFD56F1A )
+     SetColor( *Button_1, #PB_Gadget_FrontColor, $FFD56F1A )
 ;     SetFont( *Button_1, FontID( 10 ) )
     
     
@@ -143,8 +143,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 74
+; CursorPosition = 113
+; FirstLine = 106
 ; Folding = ---
 ; Optimizer
 ; EnableXP

@@ -95,14 +95,14 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   Progress(10+330, 110, 250,  30, 0, 200, #PB_ProgressBar_Smooth, 17)
   SetState(widget( ), 50)   ;  set 2nd progressbar (ID = 1) to 50 of 200
   
-  SetColor(widget( ), #__color_back, $ff00ff00)
-  SetColor(widget( ), #__color_fore, $FFC1FFBC)
+  SetColor(widget( ), #PB_Gadget_BackColor, $ff00ff00)
+  SetColor(widget( ), #__ForeColor, $FFC1FFBC)
   
-  SetColor(widget( ), #__Color_Fore,  $FFBCBFFF, #__color_state_selected)
-  SetColor(widget( ), #__Color_Back,  $ff0000ff, #__color_state_selected)
+  SetColor(widget( ), #__ForeColor,  $FFBCBFFF, #__color_state_selected)
+  SetColor(widget( ), #PB_Gadget_BackColor,  $ff0000ff, #__color_state_selected)
   
-  ; SetColor(widget( ), #__color_frame, $ff0000ff)
-  ; SetColor(widget( ), #__Color_Frame,  $ffff0000, #__color_state_selected)
+  ; SetColor(widget( ), #__FrameColor, $ff0000ff)
+  ; SetColor(widget( ), #__FrameColor,  $ffff0000, #__color_state_selected)
   
   
   ;\\
@@ -134,8 +134,8 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 111
+; CursorPosition = 100
+; FirstLine = 94
 ; Folding = --
 ; Optimizer
 ; EnableXP

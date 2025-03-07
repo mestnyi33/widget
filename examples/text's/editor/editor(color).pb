@@ -31,35 +31,37 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetItemFont(*w, 7, font2)
     
 ;     ; index-3 item default text-color 
-;     SetItemColor(*w, 3, #__Color_Front, $FF00FF00)
+;     SetItemColor(*w, 3, #PB_Gadget_FrontColor, $FF00FF00)
     
     ; index-3 item default frame-color
-    SetItemColor(*w, 3, #__Color_Frame,  $FF0000f0)
+    SetItemColor(*w, 3, #__FrameColor,  $FF0000f0)
     
     ; index-3 item default frame-color
-    SetItemColor(*w, 3, #__Color_Back,  $FF00FFFF)
+    SetItemColor(*w, 3, #PB_Gadget_BackColor,  $FF00FFFF)
     
     ; index-7 item default back-color
-    SetItemColor(*w, 7, #__Color_Back,  $FFFFFF00)
+    SetItemColor(*w, 7, #PB_Gadget_BackColor,  $FFFFFF00)
     
     ; all default item's text-color 
-    SetItemColor(*w, #PB_All, #__Color_Front, $FF0000FF)
+    SetItemColor(*w, #PB_All, #PB_Gadget_FrontColor, $FF0000FF) 
     
     ; all selected item's text-color 
-    SetItemColor(*w, #PB_All, #__Color_Front,  $FF00FFFF, 2);#__color_state_selected)
+    SetItemColor(*w, #PB_All, #PB_Gadget_FrontColor,  $FF00FFFF, 2);#__color_state_selected)
     
     ; all selected item's back-color 
-    SetItemColor(*w, #PB_All, #__Color_Back,  $FF3F00F0, 2);#__color_state_selected)
+    SetItemColor(*w, #PB_All, #PB_Gadget_BackColor,  $FF3F00F0, 2);#__color_state_selected)
     
     ; all entered item's back-color
-    SetItemColor(*w, #PB_All, #__Color_Back,  $FF3Ff0F0, 1);#__color_state_entered)
+    SetItemColor(*w, #PB_All, #PB_Gadget_BackColor,  $FF3Ff0F0, 1);#__color_state_entered)
     
     ; vertical and horizontal line back-color
-    SetItemColor(*w, #PB_All, #__Color_Line,  $C03AD55A)
+    SetItemColor(*w, #PB_All, #PB_Gadget_LineColor,  $C03AD55A) 
     
     WaitClose( )
   EndIf
   CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 23
 ; Folding = -
 ; EnableXP

@@ -461,7 +461,7 @@ EndProcedure
    If Not Open( #Window );, #Canvas )
       Debug "Unable to initialize the object manager !"    
    EndIf
-   SetColor(root( ), #__color_back, $FFF0F0F0 )
+   SetColor(root( ), #pb_gadget_backcolor, $FFF0F0F0 )
    a_init(root( ), 0)
    
    ; 2DDrawing 
@@ -516,8 +516,8 @@ EndProcedure
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 516
-; FirstLine = 479
+; CursorPosition = 463
+; FirstLine = 459
 ; Folding = -------
 ; EnableXP
 ; DPIAware

@@ -232,7 +232,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tree, -1, "Form_0")
     widget::AddItem(*Tree, -1, "Form_0")
     widget::AddItem(*Tree, -1, "Form_0")
-    ;SetItemColor(*Tree,  #PB_All, #__color_line,  $FF00f000)
+    ;SetItemColor(*Tree,  #PB_All, #PB_Gadget_LineColor,  $FF00f000)
     
     AddItem(Button_1, -1, "window_5") 
     Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#__Window_titleBar|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget, Button_1) 
@@ -320,7 +320,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 69
+; CursorPosition = 234
+; FirstLine = 230
 ; Folding = --
 ; EnableXP

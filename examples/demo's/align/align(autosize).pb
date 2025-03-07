@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 0, 0, 600, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   If Open(0, 30, 30, 540, 340)
-    SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+    SetColor(root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
     ;a_init(root(), 20 )
     
     Define vfs = #__window_CaptionHeight+#__window_FrameSize*2
@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;ScrollArea(50,50,440,240, 800,500)
     ;Panel(50,50,440,240) : AddItem(widget(), -1, "panel")
     ;a_init(widget())
-    ;SetColor(widget( ), #__color_back, $ff00ff00 )
+    ;SetColor(widget( ), #pb_gadget_backcolor, $ff00ff00 )
     
     ;
     ;String(0,0,0,0,"", #__flag_autosize);|#__flag_transparent)
@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize, widget())
     ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize|#__flag_child, widget())
     ;MDI(0,0,0,0, #__flag_autosize)
-    ;SetColor(widget( ), #__color_back, -1 )
+    ;SetColor(widget( ), #pb_gadget_backcolor, -1 )
     
     Debug ""+ Width(widget()) +" "+ Height(widget())
     
@@ -35,8 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 3
+; CursorPosition = 29
 ; Folding = -
 ; EnableXP
 ; DPIAware

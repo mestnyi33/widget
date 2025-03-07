@@ -30,36 +30,36 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList( )
     
     Container( 220,10,200,100, #PB_Container_BorderLess ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 220,120,200,100, #PB_Container_Flat ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 220,230,200,100, #PB_Container_Single ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 220,340,200,100, #PB_Container_Double ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 220,450,200,100, #PB_Container_Raised ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     
        
     Container( 430,10,200,100, #__flag_BorderLess ) : widget( )\round = 20
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 430,120,200,100, #__flag_BorderFlat ) : widget( )\round = 20 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 430,230,200,100, #__flag_BorderSingle ) : widget( )\round = 20 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 430,340,200,100, #__flag_BorderDouble ) : widget( )\round = 20 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 430,450,200,100, #__flag_BorderRaised ) : widget( )\round = 20 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
     CloseList( )
     
     
@@ -68,8 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 37
+; CursorPosition = 61
+; FirstLine = 28
 ; Folding = -
 ; Optimizer
 ; EnableXP

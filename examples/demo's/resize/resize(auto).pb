@@ -38,11 +38,11 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    ; String(10, 10, 200, 65, "string gadget text");, #__flag_autosize)
 ;   
 ; ;     If ListSize(widget())
-;       SetColor(widget(), #__color_back, $ff00ff00)
-;       SetColor(widget(), #__color_frame, $ff0000ff)
+;       SetColor(widget(), #pb_gadget_backcolor, $ff00ff00)
+;       SetColor(widget(), #__FrameColor, $ff0000ff)
 ; ;     Else
-; ;       SetColor(root(), #__color_back, $ff00ffff)
-; ;       SetColor(root(), #__color_frame, $ff00ff00)
+; ;       SetColor(root(), #pb_gadget_backcolor, $ff00ffff)
+; ;       SetColor(root(), #__FrameColor, $ff00ff00)
 ; ;     EndIf
     
     Repeat
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 12
+; CursorPosition = 44
+; FirstLine = 18
 ; Folding = -
 ; EnableXP

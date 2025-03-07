@@ -212,15 +212,15 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+X*2, Height+Y*2 ) )
-   SetColor(root(), #__color_back, $ffffffff)
+   SetColor(root(), #PB_Gadget_BackColor, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
    
    *mdi = MDI(X,Y,Width,Height);, #__flag_autosize)
                                ;a_init( *mdi )
-   SetColor(*mdi, #__color_back, $ffffffff)
-   ;SetColor(*mdi, #__color_frame, $ffffffff)
+   SetColor(*mdi, #PB_Gadget_BackColor, $ffffffff)
+   ;SetColor(*mdi, #__FrameColor, $ffffffff)
    
    Define b=(19);20        
    *mdi\scroll\v\round = (11)
@@ -250,7 +250,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 111
+; CursorPosition = 222
+; FirstLine = 212
 ; Folding = ----
 ; EnableXP

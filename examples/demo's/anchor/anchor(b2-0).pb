@@ -13,7 +13,7 @@ Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
   ;;*this\_a_set = mode  
   SetFrame(*this, size)
   If color <> #SelectionStyle_None
-    SetColor(*this, #__color_frame, Color&$FFFFFF | 255<<24)
+    SetColor(*this, #__FrameColor, Color&$FFFFFF | 255<<24)
   EndIf    
 EndProcedure
 
@@ -21,8 +21,8 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   ;
   Define *g = Container(0,0,0,0, #__flag_autosize)
   a_init(*g, 8)
-  ;SetColor(*g, #__color_back, RGBA(128, 192, 64, alpha))
-  ;SetColor(root( ), #__color_back, RGBA(255, 255, 255, 255))
+  ;SetColor(*g, #pb_gadget_backcolor, RGBA(128, 192, 64, alpha))
+  ;SetColor(root( ), #pb_gadget_backcolor, RGBA(255, 255, 255, 255))
   
   ; Create five different objects
   *Object1 = a_object(20, 20, 200, 100, "", RGBA(64, 128, 192, alpha)) 
@@ -58,8 +58,8 @@ If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, curso
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9
-; FirstLine = 3
+; CursorPosition = 15
+; FirstLine = 11
 ; Folding = -
 ; EnableXP
 ; DPIAware

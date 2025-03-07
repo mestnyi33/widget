@@ -93,15 +93,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(5, 5, 80, 20, "Butt_9_0")
     
   
-    SetColor(*f_4, #__color_back, $CA00D7FF)
-    SetColor(*f_5, #__color_back, $CA00D7FF)
-    SetColor(*f_6, #__color_back, $CA00D7FF)
+    SetColor(*f_4, #PB_Gadget_BackColor, $CA00D7FF)
+    SetColor(*f_5, #PB_Gadget_BackColor, $CA00D7FF)
+    SetColor(*f_6, #pb_gadget_backcolor, $CA00D7FF)
 
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 70
+; CursorPosition = 97
+; FirstLine = 66
 ; Folding = -
 ; EnableXP

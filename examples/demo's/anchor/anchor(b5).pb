@@ -47,8 +47,8 @@ UsePNGImageDecoder()
 ; Определите свойства объектов по умолчанию:
 ;AddObjectHandle(#Object_Default, #Handle_Position | #Handle_Size)
 a_init(root(), 0)
-SetColor(root(), #__color_back, $ffffffff)
-;SetColor(root(), #__color_back, RGBA(64, 128, 192, alpha))
+SetColor(root(), #PB_Gadget_BackColor, $ffffffff)
+;SetColor(root(), #pb_gadget_backcolor, RGBA(64, 128, 192, alpha))
   
 
 
@@ -69,10 +69,10 @@ SetAttach( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, н
 ; Здесь вы также можете переключаться между различными кадрами с помощью маленьких ручек вверху слева и вверху справа.
 
 *Object4 = Panel(450, 50, 300, 300);, ""
-SetColor(*Object4, #__color_back, RGBA(64, 128, 192, alpha))
-SetColor(*Object4, #__color_Frame, RGB(64, 128, 192))
-;;SetColor(*Object4, #__color_frame, RGBa(64, 128, 192, alpha))
-;SetColor(widget()\tab\widget, #__color_back, RGBA(64, 128, 192, alpha))
+SetColor(*Object4, #PB_Gadget_BackColor, RGBA(64, 128, 192, alpha))
+SetColor(*Object4, #__FrameColor, RGB(64, 128, 192))
+;;SetColor(*Object4, #__FrameColor, RGBa(64, 128, 192, alpha))
+;SetColor(widget()\tab\widget, #pb_gadget_backcolor, RGBA(64, 128, 192, alpha))
 SetFrame(*Object4, 1)
 
 AddItem( *Object4, 0, "panel-item-0" )
@@ -87,14 +87,14 @@ SetBounds(*Object7)
 CloseList( )
 SetState(*Object4, 2)
 
-SetItemColor(*Object4, #PB_All, #__color_fore, RGBA(64, 128, 192, alpha))
-SetItemColor(*Object4, #PB_All, #__color_back, RGBA(64, 128, 192, alpha))
+SetItemColor(*Object4, #PB_All, #__ForeColor, RGBA(64, 128, 192, alpha))
+SetItemColor(*Object4, #PB_All, #PB_Gadget_BackColor, RGBA(64, 128, 192, alpha))
 
-SetItemColor(*Object4, #PB_All, #__color_fore, RGBA(64, 128, 192, alpha),1)
-SetItemColor(*Object4, #PB_All, #__color_back, RGBA(64, 128, 192, alpha),1)
+SetItemColor(*Object4, #PB_All, #__ForeColor, RGBA(64, 128, 192, alpha),1)
+SetItemColor(*Object4, #PB_All, #PB_Gadget_BackColor, RGBA(64, 128, 192, alpha),1)
 
-SetItemColor(*Object4, #PB_All, #__color_fore, RGBA(64, 128, 192, alpha),2)
-SetItemColor(*Object4, #PB_All, #__color_back, RGBA(64, 128, 192, alpha),2)
+SetItemColor(*Object4, #PB_All, #__ForeColor, RGBA(64, 128, 192, alpha),2)
+SetItemColor(*Object4, #PB_All, #PB_Gadget_BackColor, RGBA(64, 128, 192, alpha),2)
 
 
 ; --- Scroll area ---
@@ -102,8 +102,8 @@ SetItemColor(*Object4, #PB_All, #__color_back, RGBA(64, 128, 192, alpha),2)
 ; Здесь вы также можете изменить видимую область с помощью ручек (стрелок) справа и снизу.
 
 *Object8 = ScrollArea( 850, 50, 300, 300,500, 500, 1)
-SetColor(widget(), #__color_back, RGBA(128, 192, 64, alpha))
-SetColor(widget(), #__color_Frame, RGB(128, 192, 64))
+SetColor(widget(), #PB_Gadget_BackColor, RGBA(128, 192, 64, alpha))
+SetColor(widget(), #__FrameColor, RGB(128, 192, 64))
 ; SetFrame(widget(), 2)
 
 ; Attach some objects to #Object8
@@ -300,8 +300,8 @@ DataSection
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 42
+; CursorPosition = 95
+; FirstLine = 85
 ; Folding = +
 ; EnableXP
 ; DPIAware

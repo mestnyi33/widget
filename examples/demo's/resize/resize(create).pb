@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
       DesktopUnscaledY( mouse( )\y - mouse( )\delta\y )
    EndMacro
    
-   Procedure Events()
+   Procedure _Events()
       Static DraggedGadget
       
       Protected eventobject = EventWidget( )
@@ -118,13 +118,13 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+      SetColor(root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
       SetClass(root( ), "[main-root]" )
       ;a_init( root())
       
 ; ;       ;\\
 ;       *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
-;       SetColor( *menu, #__color_back, $FFF7FEE2 )
+;       SetColor( *menu, #pb_gadget_backcolor, $FFF7FEE2 )
 ;       
 ;       BarTitle("Title-1")
 ;       BarItem(1, "title-1-item-1")
@@ -191,15 +191,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;Resize(widget, 50,50,150,150)
       
-      ;Bind( widget, @Events())
-      Bind( #PB_All, @Events())
+      ;Bind( widget, @_Events())
+      Bind( #PB_All, @_Events())
       
       WaitClose( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 79
-; Folding = --
+; CursorPosition = 193
+; FirstLine = 130
+; Folding = f-
 ; EnableXP
 ; DPIAware

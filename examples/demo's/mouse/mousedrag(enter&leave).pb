@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
                deltay = mouse( )\y-EventWidget( )\y
 ;                deltax = DesktopMouseX( )-EventWidget( )\x
 ;                deltay = DesktopMouseY( )-EventWidget( )\y
-               SetColor(EventWidget( ), #__color_frame, $ffff0000)
+               SetColor(EventWidget( ), #__FrameColor, $ffff0000)
                
             Case #__event_dragstart
                drag = EventWidget( )
@@ -26,19 +26,19 @@ CompilerIf #PB_Compiler_IsMainFile
             Case #__event_up : Debug "up "+EventWidget( )\class ;+" "+ Entered( )\class+" "+Pressed( )\class
                drag = 0
                If EventWidget( )\enter
-                  SetColor(EventWidget( ), #__color_frame, $ff0000ff)
+                  SetColor(EventWidget( ), #__FrameColor, $ff0000ff)
                Else
-                  SetColor(EventWidget( ), #__color_frame, $ff00ff00)
+                  SetColor(EventWidget( ), #__FrameColor, $ff00ff00)
                EndIf
                
             Case #__event_mouseenter : Debug "enter "+EventWidget( )\class 
                If Not EventWidget( )\press
-                  SetColor(EventWidget( ), #__color_frame, $ff0000ff)
+                  SetColor(EventWidget( ), #__FrameColor, $ff0000ff)
                EndIf
                
             Case #__event_mouseleave : Debug "leave "+EventWidget( )\class 
                If Not EventWidget( )\press
-                  SetColor(EventWidget( ), #__color_frame, $ff00ff00)
+                  SetColor(EventWidget( ), #__FrameColor, $ff00ff00)
                EndIf
                
                
@@ -115,7 +115,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 96
+; CursorPosition = 40
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
 ; DPIAware

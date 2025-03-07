@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If Open(0, 0, 0, X+(Width+space)*3 + 15, Y+(Height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor( widget( ), #__color_Back, $FFffffff )
+      SetColor( widget( ), #pb_gadget_backcolor, $FFffffff )
       a_init( widget() )
       
       ; horizontal
@@ -72,8 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17
-; FirstLine = 6
+; CursorPosition = 38
+; FirstLine = 34
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-   SetColor(parent, #__color_back, $FFAC97DB)
+   SetColor(parent, #pb_gadget_backcolor, $FFAC97DB)
    SetFrame(parent, 20 )
    
    ;\\
@@ -75,6 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 16
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; DPIAware

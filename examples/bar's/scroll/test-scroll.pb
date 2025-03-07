@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   If Open(0, 0, 0, 250,240, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetColor(root(), #__color_back, RGBA(244, 245, 233, 255))
+    SetColor(root(), #pb_gadget_backcolor, RGBA(244, 245, 233, 255))
     
     
     Define *g._S_WIDGET = Editor(20,20,200,100);, #__flag_autosize);|#__flag_transparent)
@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 26
+; CursorPosition = 8
+; FirstLine = 4
 ; Folding = --
 ; EnableXP

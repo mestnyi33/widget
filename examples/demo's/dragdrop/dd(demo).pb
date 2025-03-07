@@ -411,7 +411,7 @@ Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
   ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
   
    ;\\
-   Text(X,Y,Width,20,title, #__flag_textinline) : SetColor( widget( ), #__color_back, $FFC2C2C2)
+   Text(X,Y,Width,20,title, #__flag_textinline) : SetColor( widget( ), #pb_gadget_backcolor, $FFC2C2C2)
    
    ProcedureReturn Tree(X,Y+20,Width,Height-20)
 EndProcedure
@@ -510,8 +510,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 170
-; FirstLine = 134
+; CursorPosition = 413
+; FirstLine = 409
 ; Folding = -----
 ; Optimizer
 ; EnableXP

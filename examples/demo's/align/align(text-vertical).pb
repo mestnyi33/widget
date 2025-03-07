@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define Y,X = (Width+space)*3 + 5
    
    If Open(0, 0, 0, X+(Width+space)*3 + 15, Y+(Height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor( widget( ), #__color_Back, $FFffffff )
+      SetColor( widget( ), #pb_gadget_backcolor, $FFffffff )
       
       ; vertical
       GadgeCreate(0, 10, 10,                  Width, Height, text_v,                      #__text_Vertical|#__text_left|#__text_Top);
@@ -61,8 +61,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 32
+; CursorPosition = 28
+; FirstLine = 24
 ; Folding = -
 ; Optimizer
 ; EnableXP

@@ -334,7 +334,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Not Open( #Window );, #Canvas )
       Debug "Unable to initialize the object manager !"    
    EndIf
-   SetColor(root( ), #__color_back, $FFF0F0F0 )
+   SetColor(root( ), #pb_gadget_backcolor, $FFF0F0F0 )
    a_init(root( ), 0)
    
    ; 2DDrawing 
@@ -389,7 +389,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 158
-; FirstLine = 149
+; CursorPosition = 336
+; FirstLine = 332
 ; Folding = -----
 ; EnableXP

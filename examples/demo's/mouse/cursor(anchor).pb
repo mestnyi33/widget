@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-   SetColor(parent, #__color_back, $FFE9E9E9)
+   SetColor(parent, #PB_Gadget_BackColor, $FFE9E9E9)
    SetFrame(parent, 20 )
    ;a_init(parent, 4)
    
@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    ;\\
    ;    ;     parent = Root( )
    ;    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu)
-   ;    SetColor(parent, #__color_back, $FFE9E9E9)
+   ;    SetColor(parent, #pb_gadget_backcolor, $FFE9E9E9)
    ;    SetFrame(parent, 20 )
    ;    
    ;    ;\\
@@ -100,8 +100,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 69
+; CursorPosition = 46
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
 ; DPIAware

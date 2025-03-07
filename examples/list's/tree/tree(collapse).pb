@@ -389,8 +389,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ; LoadFont(5, "Arial", 16)
     SetItemFont(*g, 3, 5)
     SetItemText(*g, 3, "16_font and text change")
-    SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
-    SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
+    SetItemColor(*g, 5, #PB_Gadget_FrontColor, $FFFFFF00)
+    SetItemColor(*g, 5, #pb_gadget_backcolor, $FFFF00FF)
     SetItemText(*g, 5, "backcolor and text change")
    ; LoadFont(6, "Arial", 25)
     SetItemFont(*g, 4, 6)
@@ -503,8 +503,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 345
-; FirstLine = 341
+; CursorPosition = 392
+; FirstLine = 387
 ; Folding = --------
 ; Optimizer
 ; EnableXP

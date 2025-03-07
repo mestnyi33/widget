@@ -270,15 +270,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   
   AddItem(widget(), -1, "form_0") : Resize(widget(), 50, 30, 500, 500) : *new = widget()
-  SetColor(widget(), #__color_back, $C0AED8F2)
+  SetColor(widget(), #PB_Gadget_BackColor, $C0AED8F2)
   ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
   ; ; container(30,30,450-2,450-2)
   ;;ScrollArea(30,30,450-2,450-2, 0,0)
   ScrollArea(30,30,450-2,450-2, 250,750, 1);a_transform()\grid\size)
-  SetColor(widget(), #__color_back, $C0F2AEDA)
+  SetColor(widget(), #PB_Gadget_BackColor, $C0F2AEDA)
   
   Panel(30,30,400,400)
-  SetColor(widget(), #__color_back, $C0AEF2D5)
+  SetColor(widget(), #pb_gadget_backcolor, $C0AEF2D5)
   AddItem(widget(), -1, "item-1")
   ;container(30,30,400,400)
   ComboBox(120,160,115,50)
@@ -322,8 +322,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 227
-; FirstLine = 210
+; CursorPosition = 280
+; FirstLine = 272
 ; Folding = --
 ; EnableXP
 ; DPIAware

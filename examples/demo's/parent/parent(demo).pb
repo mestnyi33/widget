@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
   Open(10)
-  Root( )\class = "new"
+  root( )\class = "new"
   ;*window_10 = Window(0, 0, 425, 350,"demo set gadget new parent", Flags)
   *window_10 = Container(0, 0, 425, 350)
   
@@ -148,7 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Flags = #PB_Window_Invisible | #PB_Window_TitleBar
   OpenWindow(20, WindowX(10)-210-35, WindowY(10), 240, 350, "old parent", Flags, WindowID(10))
   Open(20)
-  Root( )\class = "last"
+  root( )\class = "last"
   ;*window_20 = Window(0,0, 425, 350,"demo set gadget new parent", Flags, *window_10)
   *window_20 = Container(0,0, 425, 350)
   
@@ -201,7 +201,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*COMBO, #PB_GadgetType_Button);:  PostEvent(#PB_Event_, #CHILD, *COMBO, #__event_Change)
   
   *DESKTOP = Button(30,150,160,20,"Button >>(Desktop)") 
-  *CANVASCONTAINER = Container(30,180,200,160) : SetColor(*CANVASCONTAINER, #__color_back, $ffffffff) ;Canvas(30,180,200,160,#PB_Canvas_Container) 
+  *CANVASCONTAINER = Container(30,180,200,160) : SetColor(*CANVASCONTAINER, #pb_gadget_backcolor, $ffffffff) ;Canvas(30,180,200,160,#PB_Canvas_Container) 
   *_11 = Button(30,90,160,30,"Button >>(Canvas)") 
   CloseList()
   
@@ -218,8 +218,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 28
+; CursorPosition = 203
+; FirstLine = 147
 ; Folding = -0
 ; EnableXP
 ; DPIAware

@@ -18,7 +18,7 @@
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
   parent = Container(50, 50, 500, 500)
   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  SetColor(parent, #__color_back, $FFE9E9E9)
+  SetColor(parent, #pb_gadget_backcolor, $FFE9E9E9)
   
   ;\\
   object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
@@ -151,8 +151,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndProcedure
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 96
+; CursorPosition = 20
+; FirstLine = 16
 ; Folding = --
 ; EnableXP
 ; DPIAware

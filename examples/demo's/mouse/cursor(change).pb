@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
       a_init(widget( ), 4)
       
       parent = Window(50, 50, 250, 250, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-      SetColor(parent, #__color_back, $FFAC97DB)
+      SetColor(parent, #pb_gadget_backcolor, $FFAC97DB)
       SetFrame(parent, 20 )
       
       object = Splitter(50, 50, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
@@ -47,8 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 16
+; CursorPosition = 32
+; FirstLine = 17
 ; Folding = --
 ; EnableXP
 ; DPIAware

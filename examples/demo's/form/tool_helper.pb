@@ -48,8 +48,8 @@ Procedure Tool_Gadget_Event( )
                Disable(Tool_Line_Container,State2)  
                
 ;                ;\\
-;                SetColor(Tool_Align_To_Grid, #__Color_Front, State1 * $757B7B)
-;                SetColor(Tool_Align_To_Line, #__Color_Front, State2 * $757B7B)
+;                SetColor(Tool_Align_To_Grid, #PB_Gadget_FrontColor, State1 * $757B7B)
+;                SetColor(Tool_Align_To_Line, #PB_Gadget_FrontColor, State2 * $757B7B)
          EndSelect
          
       Case Tool_Grid_Show
@@ -87,7 +87,7 @@ Procedure Tool_Gadget( Window, Width, Height )
    Tool_Line_Snap = CheckBox(6, 44, 136, 16, "Привязать к линии", #__flag_BorderLess|#__flag_Transparent)
    Tool_Line_Size_Info = Text(65, 72, 126, 16, "Размер линии", #__flag_BorderLess|#__flag_Transparent)
    Tool_Line_Size = Spin(6, 69, 55, 23,0,20,#__spin_Plus)
-   ;SetColor( Tool_Line_Frame, #__color_back, GetColor(Tool_Line_Size_Info, #__color_back))
+   ;SetColor( Tool_Line_Frame, #pb_gadget_backcolor, GetColor(Tool_Line_Size_Info, #pb_gadget_backcolor))
    CloseList( )
    
    Tool_Align_To_Grid = Option(X(Tool_Grid_Container, 3)+6, Y(Tool_Grid_Container, 3)+2, 152-12, 16, "Выровнять по сетке", #__flag_BorderLess|#__flag_Transparent)
@@ -102,7 +102,7 @@ Procedure Tool_Gadget( Window, Width, Height )
 ;    Disable(Tool_Line_Size,1)
 ;    ;Disable(Tool_Line_Frame,1)
 ;    Disable(Tool_Line_Container,1)
-;    SetColor(Tool_Align_To_Line, #__Color_Front, $757B7B)
+;    SetColor(Tool_Align_To_Line, #PB_Gadget_FrontColor, $757B7B)
    
    Bind(root( ), @Tool_Gadget_Event( ))
 EndProcedure
@@ -124,8 +124,8 @@ CompilerEndIf
 DisableExplicit
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 69
+; CursorPosition = 89
+; FirstLine = 67
 ; Folding = --
 ; Optimizer
 ; EnableXP

@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
       
       If *toolbar
-         SetColor( *toolbar, #__color_back, $FFDFDFDF )
+         SetColor( *toolbar, #pb_gadget_backcolor, $FFDFDFDF )
          BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New") ;: Debug widget( )\class
          BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
          BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -128,8 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 73
+; CursorPosition = 79
+; FirstLine = 75
 ; Folding = --
 ; EnableXP
 ; DPIAware

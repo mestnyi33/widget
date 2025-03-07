@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; If Open(Window(100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
   ; If Window(100, 200, Width, Height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
   ;a_init(Root())
-  SetColor( root( ), #__color_back, $ff00ffff)
+  SetColor( root( ), #pb_gadget_backcolor, $ff00ffff)
   
   ;\\
   Window(10, 10, 190, 90, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
@@ -92,7 +92,7 @@ EndIf
 End  
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 45
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = -
 ; EnableXP

@@ -91,7 +91,7 @@ If Open(0, 0, 0, 800, 450, "vector Example 4: Changing the order of the objects 
    SetFont( root(), #Font)
    ; Container(0, 0, 800, 450) 
    a_init(widget() , 0);6)
-   SetColor(widget(), #__color_back, RGB(255, 255, 255))
+   SetColor(widget(), #pb_gadget_backcolor, RGB(255, 255, 255))
    
    
    a_object(20, 20, 200, 100, "Layer = 1", RGB(64, 128, 192))   : SetDrawCallBack( widget( ), @MyDrawingObject( ), RGB(64, 128, 192))
@@ -106,7 +106,7 @@ If Open(0, 0, 0, 800, 450, "vector Example 4: Changing the order of the objects 
    WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 35
+; CursorPosition = 93
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ReDraw(root())
     
-    SetColor(*parent, #__color_back, $C0F2AEDA)
+    SetColor(*parent, #pb_gadget_backcolor, $C0F2AEDA)
     
     OpenList( *parent )
     *object = Button(50,60,450,250,"button")
@@ -32,6 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15
+; CursorPosition = 19
+; FirstLine = 2
 ; Folding = -
 ; EnableXP

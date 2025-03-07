@@ -85,6 +85,33 @@
 ; ; # - В группе (ProcedureName) - название процедуры
 ; ; # - В группе (ProcArguments) - перечень всех аргументов найденной процедуры
 
+; ; https://www.purebasic.fr/english/viewtopic.php?t=79212
+; !macro ppublic name{
+; !if name eq _SYS_StaticStringEnd
+; !repeat $-_SYS_StaticStringStart
+; !load zczc from _SYS_StaticStringStart+%-1
+; !store zczc xor 137 at _SYS_StaticStringStart+%-1
+; !end repeat
+; !end if
+; !public name}
+; !public fix ppublic
+; CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
+;    !mov edi,_SYS_StaticStringStart
+;    !mov ecx,_SYS_StaticStringEnd-_SYS_StaticStringStart
+;    !@@:
+;    !xor byte[edi],137
+;    !inc edi
+;    !dec ecx
+; CompilerElse
+;    !mov rdi,_SYS_StaticStringStart
+;    !mov rcx,_SYS_StaticStringEnd-_SYS_StaticStringStart
+;    !@@:
+;    !xor byte[rdi],137
+;    !inc rdi
+;    !dec rcx
+; CompilerEndIf
+; !jnz @b
+
 
 ; ver: 3.0.0.1 ;
 CompilerSelect #PB_Compiler_OS
@@ -3278,10 +3305,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;SetFrame( *this, framesize)
          *this\fs = framesize
          ;
-         SetColor( *this, #__color_back, Color)
+         SetBackgroundColor( *this, Color)
          ;
          If framesize
-            SetColor( *this, #__color_frame, Color & $FFFFFF | 255 << 24)
+            SetColor( *this, #__FrameColor, Color & $FFFFFF | 255 << 24)
          EndIf
          ;
          a_set( *this, #__a_full )
@@ -8641,15 +8668,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          Select _color_type_
-            Case #__color_line
-               If _address_\line#_column_ <> _color_
-                  _address_\line#_column_ = _color_
-                  If _address_\alpha
-                     _address_\alpha\line#_column_ = _alpha_
-                  EndIf
-                  _result_ = #True
-               EndIf
-            Case #__color_back
+            Case #PB_Gadget_BackColor
                If _address_\back#_column_ <> _color_
                   _address_\back#_column_ = _color_
                   If _address_\alpha
@@ -8657,15 +8676,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   _result_ = #True
                EndIf
-            Case #__color_fore
-               If _address_\fore#_column_ <> _color_
-                  _address_\fore#_column_ = _color_
+            Case #PB_Gadget_LineColor
+               If _address_\line#_column_ <> _color_
+                  _address_\line#_column_ = _color_
                   If _address_\alpha
-                     _address_\alpha\fore#_column_ = _alpha_
+                     _address_\alpha\line#_column_ = _alpha_
                   EndIf
                   _result_ = #True
                EndIf
-            Case #__color_front
+            Case #PB_Gadget_FrontColor
                If _address_\front#_column_ <> _color_
                   _address_\front#_column_ = _color_
                   If _address_\alpha
@@ -8673,7 +8692,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   _result_ = #True
                EndIf
-            Case #__color_frame
+            Case #__ForeColor
+               If _address_\fore#_column_ <> _color_
+                  _address_\fore#_column_ = _color_
+                  If _address_\alpha
+                     _address_\alpha\fore#_column_ = _alpha_
+                  EndIf
+                  _result_ = #True
+               EndIf
+            Case #__FrameColor
                If _address_\frame#_column_ <> _color_
                   _address_\frame#_column_ = _color_
                   If _address_\alpha
@@ -8690,10 +8717,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          With *This
             Select ColorType
-               Case #__color_line : Color = *this\color\line
-               Case #__color_back : Color = *this\color\back
-               Case #__color_front : Color = *this\color\front
-               Case #__color_frame : Color = *this\color\frame
+               Case #PB_Gadget_LineColor : Color = *this\color\line
+               Case #PB_Gadget_BackColor : Color = *this\color\back
+               Case #PB_Gadget_FrontColor : Color = *this\color\front
+               Case #__FrameColor : Color = *this\color\frame
             EndSelect
          EndWith
          
@@ -8711,7 +8738,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          add_color( result, *this\color, ColorType, Color, alpha, [Column] )
          
          If *this\scroll
-            If ColorType = #__color_back
+            If ColorType = #PB_Gadget_BackColor
                If *this\scroll\v
                   *this\scroll\v\color\back[Column] = color
                EndIf
@@ -8742,10 +8769,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndSelect
          
          Select ColorType
-            Case #__color_line : result = *color\line[Column]
-            Case #__color_back : result = *color\back[Column]
-            Case #__color_front : result = *color\front[Column]
-            Case #__color_frame : result = *color\frame[Column]
+            Case #PB_Gadget_LineColor : result = *color\line[Column]
+            Case #PB_Gadget_BackColor : result = *color\back[Column]
+            Case #PB_Gadget_FrontColor : result = *color\front[Column]
+            Case #__FrameColor : result = *color\frame[Column]
          EndSelect
          
          ProcedureReturn result
@@ -8803,7 +8830,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure SetBackgroundColor( *this._s_WIDGET, color.l )
-         ProcedureReturn SetColor( *this, #__color_back, color )
+         ProcedureReturn SetColor( *this, #PB_Gadget_BackColor, color )
       EndProcedure
       
       ;-
@@ -10455,6 +10482,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   tabindex = 0
                EndIf
             EndIf
+           
             ;
             ;\\ get the last widget to add it after it
             If *parent\LastWidget( )
@@ -12800,7 +12828,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             count + 1
             *this\popupbar = *menu
             ;
-            SetColor( *this, #__color_back, $FFF2F2F2)
+            SetBackgroundColor( *this, $FFF2F2F2)
             Hide( *this, #True ) 
          Else
             If Not *parent
@@ -16044,7 +16072,7 @@ chr$ = ","
       EndProcedure
       
       Procedure.i Button( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, Text, flag, (-1), 0, 0, 0, round )
+        ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, Text, flag, (-1), 0, 0, 0, round )
       EndProcedure
       
       Procedure.i ButtonImage( X.l, Y.l, Width.l, Height.l, Image.i = -1 , flag.q = 0, round.l = 0 )
@@ -22793,6 +22821,7 @@ chr$ = ","
       Procedure.i OpenList( *this._s_WIDGET, item.l = 0 )
          Protected result.i = Opened( )
          
+    
          If *this = Opened( )
             If Not( *this\tabbar And *this\tabbar\type = #__type_TabBar And *this\tabbar\TabIndex( ) <> item )
                ProcedureReturn result
@@ -22820,6 +22849,11 @@ chr$ = ","
             ; add 
             If *this\tabbar And 
                *this\tabbar\type = #__type_TabBar
+               
+               ; tab\index.c так как не принимает минусавое значение
+               If Item < 0
+                  Item = 0
+               EndIf
                *this\tabbar\TabIndex( ) = Item
             EndIf
             
@@ -24325,7 +24359,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global *menu = CreateMenuBar( *root0 ) : SetClass(*menu, "*root_MenuBar" )
    If *menu
-      SetColor( *menu, #__color_back, $FFC8F0EC )
+      SetBackgroundColor( *menu, $FFC8F0EC )
       
       BarTitle("Title-1")
       BarItem(1, "title-1-item-1")
@@ -24373,7 +24407,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    *toolbar = ToolBar( *root0, #__flag_BarSmall|#__flag_BarText |#__flag_BarInlineText)
    If *toolbar
-      SetColor( *toolbar, #__color_back, $FFC8ECF0 )
+      SetBackgroundColor( *toolbar, $FFC8ECF0 )
       
       BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #__flag_BarNormal, "open")
@@ -24868,7 +24902,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_RowMultiSelect) ; |#__flag_gridlines
-   SetColor( *w, #__color_back, $FF07EAF6 )
+   SetBackgroundColor( *w, $FF07EAF6 )
    For i = 1 To 10;00000
       AddItem(*w, i, "text-" + Str(i))
    Next
@@ -24930,9 +24964,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12616
-; FirstLine = 12603
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 8678
+; FirstLine = 8671
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

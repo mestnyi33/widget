@@ -280,11 +280,11 @@ CompilerIf #PB_Compiler_IsMainFile
             *new = Window( X,Y,Width,Height, "", flag, *parent )
           EndIf
           
-          SetColor( *new, #__color_back, $FFECECEC )
+          SetColor( *new, #PB_Gadget_BackColor, $FFECECEC )
           Bind( *new, @widget_events( ) )
           
         Case "container"   : *new = Container( X,Y,Width,Height, flag )                             : CloseList( )
-          SetColor( *new, #__color_back, $FFF1F1F1 )
+          SetColor( *new, #pb_gadget_backcolor, $FFF1F1F1 )
           
         Case "button"      : *new = Button( X,Y,Width,Height, "", flag ) 
           
@@ -908,8 +908,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 302
-; FirstLine = 298
+; CursorPosition = 286
+; FirstLine = 278
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

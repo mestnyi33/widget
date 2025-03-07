@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   ;
   If Open(0, 0, 0, 800, 450, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetColor(root( ), #__color_back, RGBA(245, 245, 245, 255))
+    SetColor(root( ), #pb_gadget_backcolor, RGBA(245, 245, 245, 255))
     ;
     ;\\
     a_init(root( ))

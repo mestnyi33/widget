@@ -14,10 +14,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SplitterGadget( #PB_Any, 10,10,200,200, 1,2 )
     
     Container( 10,10,200,100, #PB_Container_Flat ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 10,120,200,100, #PB_Container_Single ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Splitter( 220,10,200,200, ID(0),ID(1) )
     
@@ -31,11 +31,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SplitterGadget( #PB_Any, 10,230,200,200, 3,4 )
     
     Container( 0,0,0,0, #PB_Container_Flat ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     ToolBar( widget( ) )
     CloseList( )
     Container( 0,0,0,0, #PB_Container_Single ) 
-    SetColor( widget( ), #__color_Back, $FF95E3F6 )
+    SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
     ToolBar( widget( ) )
     CloseList( )
     Splitter( 220,230,200,200, ID(3),ID(4) )
@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 17
+; CursorPosition = 37
+; FirstLine = 7
 ; Folding = -
 ; EnableXP

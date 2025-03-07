@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 
    If Open( 3, 0, 0, 750, 300, "Panel add childrens hide state", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      SetColor(root(), #__color_back, $FFE8E8E6)
+      SetColor(root(), #pb_gadget_backcolor, $FFE8E8E6)
       
       *PANEL_1 = Panel( 30, 30, 340, 240 )
       BarPosition( *PANEL_1\tabbar, 1, 100 )
@@ -112,7 +112,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13
+; CursorPosition = 17
+; FirstLine = 13
 ; Folding = -
 ; EnableXP
 ; DPIAware

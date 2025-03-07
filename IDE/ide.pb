@@ -10,23 +10,26 @@ EnableExplicit
 ;
 ; properties items
 Enumeration 
-   #_pi_group_0 
+   #_pi_group_common 
    #_pi_id
    #_pi_class
    #_pi_text
    
-   #_pi_group_1 
+   #_pi_group_layout 
    #_pi_align
    #_pi_x
    #_pi_y
    #_pi_width
    #_pi_height
    
-   #_pi_group_2 
+   #_pi_group_state 
    #_pi_disable
    #_pi_hide
    
-   #_pi_group_3
+   #_pi_group_2 
+   #_pi_Font
+   #_pi_Color
+   #_pi_flag
 EndEnumeration
 
 ; events items
@@ -142,7 +145,7 @@ Declare   Properties_Updates( *object, type$ )
 Declare   widget_Create( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   ide_addline( *new )
-Declare   MakeObject( class$ )
+Declare   MakeID( class$ )
 ;
 Declare.s GenerateGUICODE( *mdi, mode.a = 0 )
 Declare.s GeneratePBCode( *parent )
@@ -1033,10 +1036,13 @@ EndProcedure
 
 ;-
 Procedure MakeLine( string$, findtext$ )
+   Static *parent
    Protected result
    Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
    Protected param1, param2, param3, flags.q
-            
+   Protected *new._s_WIDGET
+                  
+                  
    Define string_len = Len( String$ )
    Define arg_start, arg_stop, arg$ = MakeArgString( string$, string_len, @arg_start, @arg_stop ) 
    If arg$
@@ -1095,10 +1101,10 @@ Procedure MakeLine( string$, findtext$ )
                ; ProcedureReturn 
             EndIf
             
-            Debug "[Make]"+\func$;arg$
-            ;; \func$ = RemoveString( \func$, "" )
+            Debug "func[" + \func$ +"]" 
+            Debug " arg["+ arg$ +"]"
             
-            ;
+            ; Identificator
             Select \func$
                Case "OpenWindow", "﻿OpenWindow",
                     "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
@@ -1109,11 +1115,6 @@ Procedure MakeLine( string$, findtext$ )
                     "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
                     "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
                     "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
-                  
-                  
-                  Static *parent
-                  Protected *new._s_WIDGET
-                  
                   ;
                   \func$ = ReplaceString( \func$, "Gadget", "")
                   \func$ = ReplaceString( \func$, "Open", "")
@@ -1121,6 +1122,10 @@ Procedure MakeLine( string$, findtext$ )
                   ; id$
                   If FindString( str$, "=" )
                      \id$ = Trim( StringField( str$, 1, "=" ))
+                     If Not enumerations
+                        \id$ = Trim( \id$, "#" )
+                     EndIf
+                     \id$ = UCase( \id$ )
                   Else
                      \id$ = Trim( StringField( arg$, 1, "," ))
                      
@@ -1136,13 +1141,85 @@ Procedure MakeLine( string$, findtext$ )
                         If Not enumerations
                            \id$ = Trim( \id$, "#" )
                         EndIf
-                        GetObject( ) = UCase(\id$)
+                        \id$ = UCase( \id$ )
+                        GetObject( ) = \id$
                      Else
                         If Not enumerations
                            \id$ = Trim( \id$, "#" )
                         EndIf
+                        \id$ = UCase( \id$ )
                      EndIf
                   EndIf   
+                  
+               Case "ResizeGadget",
+                    "CanvasOutput",
+                    "CanvasVectorOutput",
+                    "AddGadgetColumn",
+                    "AddGadgetItem",
+                    "RemoveGadgetColumn",
+                    "RemoveGadgetItem",
+                    "ClearGadgetItems",
+                    "CountGadgetItems",
+                    "OpenGadgetList",
+                    "BindGadgetEvent",
+                    "UnbindGadgetEvent",
+                    "DisableGadget",
+                    "FreeGadget",
+                    "HideGadget",
+                    "IsGadget",
+                    "GadgetHeight",
+                    "GadgetID",
+                    "GadgetItemID",
+                    "GadgetToolTip",
+                    "GadgetType",
+                    "GadgetWidth",
+                    "GadgetX",
+                    "GadgetY",
+                    "GetActiveGadget",
+                    "GetGadgetAttribute",
+                    "GetGadgetColor",
+                    "GetGadgetData",
+                    "GetGadgetFont",
+                    "GetGadgetItemAttribute",
+                    "GetGadgetItemColor",
+                    "GetGadgetItemData",
+                    "GetGadgetItemState",
+                    "GetGadgetItemText",
+                    "GetGadgetState",
+                    "GetGadgetText",
+                    "SetActiveGadget",
+                    "SetGadgetAttribute",
+                    "SetGadgetColor",
+                    "SetGadgetData",
+                    "SetGadgetFont",
+                    "SetGadgetItemAttribute",
+                    "SetGadgetItemColor",
+                    "SetGadgetItemData",
+                    "SetGadgetItemImage",
+                    "SetGadgetItemState",
+                    "SetGadgetItemText",
+                    "SetGadgetState",
+                    "SetGadgetText"
+                  
+                  \id$ = Trim( StringField( arg$, 1, "," ))
+                  If Not enumerations
+                     \id$ = Trim( \id$, "#" )
+                  EndIf
+                  \id$ = UCase( \id$ )
+                  *new = MakeID( \id$ ) 
+            EndSelect
+            
+            ;
+            Select \func$
+               Case "Window",
+                    "Button","String","Text","CheckBox",
+                    "Option","ListView","Frame","ComboBox",
+                    "Image","HyperLink","Container","ListIcon",
+                    "IPAddress","ProgressBar","ScrollBar","ScrollArea",
+                    "TrackBar","Web","ButtonImage","Calendar",
+                    "Date","Editor","ExplorerList","ExplorerTree",
+                    "ExplorerCombo","Spin","Tree","Panel",
+                    "Splitter","MDI","Scintilla","Shortcut","Canvas"
                   
                   ;
                   x$      = Trim(StringField( arg$, 2, ","))
@@ -1197,7 +1274,7 @@ Procedure MakeLine( string$, findtext$ )
                         param1 = Val( param1$ )
                         
                      Case "Splitter" 
-                        param1 = MakeObject(UCase(Param1$))
+                        param1 = MakeID(UCase(Param1$))
                         
                      Case "ListIcon"
                         param1 = Val( param2$ ) ; *this\columns( )\width
@@ -1211,7 +1288,7 @@ Procedure MakeLine( string$, findtext$ )
                         param2 = Val( param2$ )
                         
                      Case "Splitter" 
-                        param2 = MakeObject(UCase(Param2$))
+                        param2 = MakeID(UCase(Param2$))
                         
                   EndSelect
                   
@@ -1250,7 +1327,7 @@ Procedure MakeLine( string$, findtext$ )
                   ; window parent ID
                   If \func$ = "Window"
                      If param3$
-                        *Parent = MakeObject( param3$ )
+                        *Parent = MakeID( param3$ )
                         If Not *Parent
                            Debug "window ParentID"
                            *Parent = ide_design_panel_MDI
@@ -1263,7 +1340,8 @@ Procedure MakeLine( string$, findtext$ )
                      y$ = Str(Val(y$)+10)
                   EndIf
                   
-                  
+                  ;Debug "[Make]"+\func$ +" "+ Bool(\func$ = "Window") +" "+ *parent ;arg$
+            
                   *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
                   
                   If *new
@@ -1287,19 +1365,6 @@ Procedure MakeLine( string$, findtext$ )
                      result = 1
                   EndIf
                   
-               Case "SetGadgetColor"
-                  \id$ = Trim( StringField( arg$, 1, "," ))
-                  Define ID = MakeObject( \id$ )
-                  
-                  param1$ = Trim( StringField( arg$, 2, "," ))
-                  ;param2$ = Trim( StringField( arg$, 3, "," ))
-                  
-                  Debug ""+\id$ +" "+ ID ; +" "+ StringField( arg$, 1, "," );arg$
-                  
-                  If ID
-                     SetColor( ID, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
-                  EndIf
-                  
                Case "CloseGadgetList"
                   If Not *parent
                      Debug "ERROR "+\func$
@@ -1308,20 +1373,21 @@ Procedure MakeLine( string$, findtext$ )
                   *Parent = GetParent( *Parent )
                   ; CloseList( ) 
                   
+               Case "SetGadgetColor"
+                  If *new
+                     param1$ = Trim( StringField( arg$, 2, "," ))
+                     SetColor( *new, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
+                  EndIf
+                  
                Case "AddGadgetItem"
-                  If *parent
-                     ; AddGadgetItem(#Gadget , Position , Text$ [, ImageID [, Flags]])
-                     
-                     \id$ = Trim( StringField( arg$, 1, "," ))
-                     ID = MakeObject( \id$ ) 
+                  If *new
                      param1$ = Trim( StringField( arg$, 2, "," ))
                      param2$ = Trim( StringField( arg$, 3, "," ))
                      param3$ = Trim( StringField( arg$, 4, "," ))
                      flag$ = Trim( StringField( arg$, 5, "," ))
                      ;
-                     If param1$ = "- 1" Or 
-                        param1$ = "-1"
-                        param1 = - 1
+                     If FindString( param1$, "-" )
+                        param1 = #PB_Default
                      Else
                         param1 = Val(param1$)
                      EndIf
@@ -1329,23 +1395,10 @@ Procedure MakeLine( string$, findtext$ )
                      param3 = Val(param3$)
                      Flags = MakeFlag( flag$ )
                      
+                     AddItem( *new, param1, text$, param3, Flags )
                      
-                     ;          Select Asc(\id$)
-                     ;             Case '0' To '9'
-                     ;                \id$ = "#" + \func$ +"_"+ \id$
-                     ;          EndSelect
-                     
-                     ;
-                     If ID
-                        AddItem( ID, param1, text$, param3, Flags )
-                        
-                        If IsContainer( ID ) > 0
-                           *parent = ID 
-                           If Not *parent
-                              Debug "ERROR " + \func$ +" "+ \id$ 
-                              ProcedureReturn 
-                           EndIf
-                        EndIf
+                     If IsContainer( *new ) > 0
+                        *parent = *new 
                      EndIf
                   EndIf
                   
@@ -1418,6 +1471,119 @@ Procedure.S Help_elements(Class.s)
    
    ProcedureReturn Result.S
 EndProcedure
+
+;-
+#File = 0
+Procedure   ide_NewFile( )
+   ; удаляем всех детей MDI
+   Delete( ide_design_panel_MDI )
+   ; Очишаем текст
+   ClearItems( ide_design_DEBUG ) 
+   ; затем создаем новое окно
+   ide_design_form = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
+   
+   ; и показываем гаджеты для добавления
+   SetState( ide_design_panel, 0 )
+   SetState( ide_inspector_panel, 0 )
+   
+   If Not Hide( ide_design_panel_CODE )
+      SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+      ;                SetActive( ide_design_panel_CODE )
+   EndIf
+   ; SetText( ide_design_DEBUG, GeneratePBCode( ide_design_panel_MDI ) )
+   
+EndProcedure
+
+Procedure   ide_OpenFile(Path$) ; Открытие файла
+   Protected Text$, String$
+   
+   If Path$
+      ClearDebugOutput( )
+      ClearItems( ide_design_DEBUG )
+      Debug "Открываю файл '"+Path$+"'"
+      ;
+      SetState( ide_design_panel, 0 )
+      SetState( ide_inspector_panel, 0 )
+      ;
+      Delete( ide_design_panel_MDI )
+      ReDraw( GetRoot( ide_design_panel_MDI ))   
+      
+      If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
+         Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         FileSeek( #File, 0 )                                   ; 
+         
+         While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
+            String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
+            String$ = RemoveString( String$, "﻿" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
+   
+            MakeLine( String$, Text$ )
+         Wend
+         
+         ;          
+         ;          ForEach *parser\Line()
+         ;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
+         ;          Next
+         
+         ;          ;          ;
+         ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         ;          
+         ;          ; bug hides
+         ;          If Not Hide( ide_design_panel_CODE )
+         ;             SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+         ;             ;                SetActive( ide_design_panel_CODE )
+         ;          EndIf
+         
+         
+         Define code$ = GenerateGUICODE( ide_design_panel_MDI )
+         SetText( ide_design_DEBUG, code$ )
+         
+         ;
+         CloseFile(#File) ; Закрывает ранее открытый файл
+         Debug "..успешно"
+         ProcedureReturn 1
+      Else
+         ProcedureReturn 0
+      EndIf
+   Else
+      ProcedureReturn 1
+   EndIf 
+EndProcedure
+
+Procedure   ide_SaveFile(Path$) ; Процедура сохранения файла
+   Protected Space$, Text$
+   Protected len, Length, Position, Object
+   
+   If Path$
+      ClearDebugOutput()
+      Debug "Сохраняю файл '"+Path$+"'"
+      
+      ;
+      If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
+                                            " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
+                                            " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
+         Text$ = GeneratePBCode( ide_design_panel_MDI )
+      Else
+         Text$ = GetText( ide_design_panel_CODE )
+      EndIf
+      
+      ;
+      If CreateFile( #File, Path$, #PB_UTF8 )
+         ; TruncateFile( #File )
+         
+         WriteStringFormat( #File, #PB_UTF8 )
+         WriteString( #File, Text$, #PB_UTF8 )
+         CloseFile( #File )
+         
+         Debug "..успешно"
+         ProcedureReturn 1
+      Else
+         ProcedureReturn 0
+      EndIf
+   Else
+      ProcedureReturn 1
+   EndIf
+EndProcedure
+
 
 ;-
 Macro widget_copy( )
@@ -1510,6 +1676,29 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
+Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+   Protected *new._s_widget
+   ; flag.i | #__flag_NoFocus
+   
+   If *parent 
+      ; OpenList( *parent, CountItems( *parent ) - 1 )
+      *new = widget_Create( *parent, Class.s, X,Y, Width, Height, "", 0,100,0, flag )
+      
+      If *new
+         If LCase(Class.s) = "panel"
+            AddItem( *new, -1, Class.s+"_item_0" )
+         EndIf
+         
+         ide_addline( *new )
+      EndIf
+      ; CloseList( )
+   EndIf
+   
+   ProcedureReturn *new
+EndProcedure
+
+
+;-
 Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
@@ -1654,27 +1843,6 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
       EndIf
       
       CloseList( ) 
-   EndIf
-   
-   ProcedureReturn *new
-EndProcedure
-
-Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
-   Protected *new._s_widget
-   ; flag.i | #__flag_NoFocus
-   
-   If *parent 
-      ; OpenList( *parent, CountItems( *parent ) - 1 )
-      *new = widget_Create( *parent, Class.s, X,Y, Width, Height, "", 0,100,0, flag )
-      
-      If *new
-         If LCase(Class.s) = "panel"
-            AddItem( *new, -1, Class.s+"_item_0" )
-         EndIf
-         
-         ide_addline( *new )
-      EndIf
-      ; CloseList( )
    EndIf
    
    ProcedureReturn *new
@@ -1866,121 +2034,7 @@ Procedure widget_events( )
 EndProcedure
 
 ;-
-#File = 0
-Procedure   ide_NewFile( )
-   ; удаляем всех детей MDI
-   Delete( ide_design_panel_MDI )
-   ; Очишаем текст
-   ClearItems( ide_design_DEBUG ) 
-   ; затем создаем новое окно
-   ide_design_form = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
-   
-   ; и показываем гаджеты для добавления
-   SetState( ide_design_panel, 0 )
-   SetState( ide_inspector_panel, 0 )
-   
-   If Not Hide( ide_design_panel_CODE )
-      SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
-      ;                SetActive( ide_design_panel_CODE )
-   EndIf
-   ; SetText( ide_design_DEBUG, GeneratePBCode( ide_design_panel_MDI ) )
-   
-EndProcedure
-
-Procedure   ide_OpenFile(Path$) ; Открытие файла
-   Protected Text$, String$
-   
-   If Path$
-      ClearDebugOutput( )
-      ClearItems( ide_design_DEBUG )
-      Debug "Открываю файл '"+Path$+"'"
-      ;
-      SetState( ide_design_panel, 0 )
-      SetState( ide_inspector_panel, 0 )
-      ;
-      Delete( ide_design_panel_MDI )
-      ReDraw( GetRoot( ide_design_panel_MDI ))   
-      
-      If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
-         Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         FileSeek( #File, 0 )                                   ; 
-         
-         While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
-            String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
-            String$ = RemoveString( String$, "﻿" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
-   
-            MakeLine( String$, Text$ )
-         Wend
-         
-         
-         ;          
-         ;          ForEach *parser\Line()
-         ;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
-         ;          Next
-         
-         ;          ;          ;
-         ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         ;          
-         ;          ; bug hides
-         ;          If Not Hide( ide_design_panel_CODE )
-         ;             SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
-         ;             ;                SetActive( ide_design_panel_CODE )
-         ;          EndIf
-         
-         
-         Define code$ = GenerateGUICODE( ide_design_panel_MDI )
-         SetText( ide_design_DEBUG, code$ )
-         
-         ;
-         CloseFile(#File) ; Закрывает ранее открытый файл
-         Debug "..успешно"
-         ProcedureReturn 1
-      Else
-         ProcedureReturn 0
-      EndIf
-   Else
-      ProcedureReturn 1
-   EndIf 
-EndProcedure
-
-Procedure   ide_SaveFile(Path$) ; Процедура сохранения файла
-   Protected Space$, Text$
-   Protected len, Length, Position, Object
-   
-   If Path$
-      ClearDebugOutput()
-      Debug "Сохраняю файл '"+Path$+"'"
-      
-      ;
-      If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
-                                            " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
-                                            " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
-         Text$ = GeneratePBCode( ide_design_panel_MDI )
-      Else
-         Text$ = GetText( ide_design_panel_CODE )
-      EndIf
-      
-      ;
-      If CreateFile( #File, Path$, #PB_UTF8 )
-         ; TruncateFile( #File )
-         
-         WriteStringFormat( #File, #PB_UTF8 )
-         WriteString( #File, Text$, #PB_UTF8 )
-         CloseFile( #File )
-         
-         Debug "..успешно"
-         ProcedureReturn 1
-      Else
-         ProcedureReturn 0
-      EndIf
-   Else
-      ProcedureReturn 1
-   EndIf
-EndProcedure
-
-
-;-
-Procedure.i ide_add_image_list( *id, Directory$ )
+Procedure.i ide_addimage_list( *id, Directory$ )
    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
    
    If FileSize( ZipFile$ ) < 1
@@ -2380,7 +2434,7 @@ Procedure ide_events( )
                name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
                
                If name$
-                  object = MakeObject( name$ )
+                  object = MakeID( name$ )
                   If Not object
                      If CountString( text$, "=" )
                         name$ = Trim( StringField( text$, 1, "=" ))
@@ -2389,7 +2443,7 @@ Procedure ide_events( )
                         EndIf
                      EndIf
                      
-                     object = MakeObject( name$ )
+                     object = MakeID( name$ )
                   EndIf
                EndIf
                
@@ -2451,7 +2505,7 @@ Procedure ide_events( )
    
 EndProcedure
 
-Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
+Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
    
@@ -2465,7 +2519,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    
    ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
    ide_toolbar = ToolBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
-   SetColor(ide_toolbar, #__color_back, $fffefefe )
+   SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
    
    OpenSubBar("Menu")
    BarItem( #_tb_file_new, "New" + Space(9) + Chr(9) + "Ctrl+O")
@@ -2526,7 +2580,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ide_design_panel = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__flag_Vertical ) : OpenList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
    ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
-   SetColor( ide_design_panel_MDI, #__color_back, RGBA(195, 156, 191, 255) )
+   SetColor( ide_design_panel_MDI, #pb_gadget_backcolor, RGBA(195, 156, 191, 255) )
    a_init( ide_design_panel_MDI);, 0 )
    
    AddItem( ide_design_panel, -1, "Code" )
@@ -2561,30 +2615,33 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    AddItem( ide_inspector_panel, -1, "elements", 0, 0 ) 
    ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_borderless ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
    If ide_inspector_elements
-      ide_add_image_list( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
+      ide_addimage_list( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
    ; ide_inspector_panel_item_2
    AddItem( ide_inspector_panel, -1, "properties", 0, 0 )  
    ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
    If ide_inspector_properties
-      Properties_AddItem( ide_inspector_properties, #_pi_group_0,  "Common"+Chr(10) )
-      Properties_AddItem( ide_inspector_properties, #_pi_id,       "#ID"  , #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_class,    "Class"   , #__Type_String, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_text,     "Text"    , #__Type_String, 1 )
-      
-      Properties_AddItem( ide_inspector_properties, #_pi_group_1,  "Layout" )
-      Properties_AddItem( ide_inspector_properties, #_pi_align,    "align"+Chr(10)+"LEFT&TOP"   , #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_x,        "x"       , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_y,        "Y"       , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_width,    "Width"   , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_height,   "Height"  , #__Type_Spin, 1 )
-      
-      Properties_AddItem( ide_inspector_properties, #_pi_group_2,  "State" )
-      Properties_AddItem( ide_inspector_properties, #_pi_disable,  "Disable" , #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_hide,     "Hide"    , #__Type_ComboBox, 1 )
-      
-      Properties_AddItem( ide_inspector_properties, #_pi_group_3,  "Flag" )
+      Properties_AddItem( ide_inspector_properties, #_pi_group_common, "COMMON" )
+      Properties_AddItem( ide_inspector_properties, #_pi_id,           "#ID"  , #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_class,        "Class"   , #__Type_String, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_text,         "Text"    , #__Type_String, 1 )
+      ;
+      Properties_AddItem( ide_inspector_properties, #_pi_group_layout, "LAYOUT" )
+      Properties_AddItem( ide_inspector_properties, #_pi_align,        "Align"+Chr(10)+"LEFT&TOP"   , #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_x,            "X"       , #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_y,            "Y"       , #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_width,        "Width"   , #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_height,       "Height"  , #__Type_Spin, 1 )
+      ;
+      Properties_AddItem( ide_inspector_properties, #_pi_group_state, "STATE" )
+      Properties_AddItem( ide_inspector_properties, #_pi_disable,     "Disable" , #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_hide,        "Hide"    , #__Type_ComboBox, 1 )
+      ;
+      Properties_AddItem( ide_inspector_properties, #_pi_group_2,     "" )
+      Properties_AddItem( ide_inspector_properties, #_pi_Font,        "Font"    , #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_Color,       "Color"   , #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_flag,        "Flag"    , #__Type_ComboBox, 1 )
    EndIf
    
    ; ide_inspector_panel_item_3 
@@ -2928,11 +2985,11 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1129
-; FirstLine = 1118
-; Folding = --------------------------------------------------------
+; CursorPosition = 2582
+; FirstLine = 2511
+; Folding = -------------------------vh+----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = ..\widgets-ide.app.exe
+; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe

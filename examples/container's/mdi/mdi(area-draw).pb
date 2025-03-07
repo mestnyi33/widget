@@ -205,7 +205,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+X*2, Height+Y*2 ) )
-   SetColor(root(), #__color_back, $ffffffff)
+   SetColor(root(), #PB_Gadget_BackColor, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
@@ -213,8 +213,8 @@ CompilerIf #PB_Compiler_IsMainFile
    *mdi = MDI(X,Y,Width,Height);, #__flag_autosize)
    mouse( )\steps = 35
    a_init( *mdi )
-   ;SetColor(*mdi, #__color_back, $ffffffff)
-   SetColor(*mdi, #__color_frame, $ffffffff)
+   ;SetColor(*mdi, #pb_gadget_backcolor, $ffffffff)
+   SetColor(*mdi, #__FrameColor, $ffffffff)
    
    Define b=DPIScaled(19);20        
    *mdi\scroll\v\round = DPIScaled(11)
@@ -244,8 +244,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 107
+; CursorPosition = 216
+; FirstLine = 207
 ; Folding = ---
 ; EnableXP
 ; DPIAware

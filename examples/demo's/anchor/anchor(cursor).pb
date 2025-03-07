@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
    parent = Container(50, 50, 500, 500)
    widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-   SetColor(parent, #__color_back, $FFE9E9E9)
+   SetColor(parent, #pb_gadget_backcolor, $FFE9E9E9)
    
    ;\\
    object = Button(50, 50, 150, 150, "button")
@@ -95,7 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9
+; CursorPosition = 22
+; FirstLine = 18
 ; Folding = --
 ; EnableXP
 ; DPIAware
