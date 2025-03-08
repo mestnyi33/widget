@@ -34,10 +34,10 @@ Enumeration
    #_pi_colorgroup
    #_pi_colortype
    #_pi_color
-   #_pi_colorred
-   #_pi_colorgreen
-   #_pi_colorblue
    #_pi_coloralpha
+   #_pi_colorblue
+   #_pi_colorgreen
+   #_pi_colorred
    ;
    #_pi_group_2 
    #_pi_flag
@@ -566,12 +566,8 @@ Procedure   Properties_ButtonEvents( )
                      Message$ = "Запрос был отменён."
                   EndIf
                   
-                  Properties_SetItemText( ide_inspector_properties, #_pi_color,     "$"+Hex(Color))
-                  Properties_SetItemText( ide_inspector_properties, #_pi_colorred,   Str(Red(Color)))
-                  Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(Color)))
-                  Properties_SetItemText( ide_inspector_properties, #_pi_colorblue,  Str(Blue(Color)))
-                  Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(Color)))
                   SetBackgroundColor( a_focused( ), RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ))
+                  Properties_Updates( a_focused( ), "Color" )
                   ;MessageRequester("Инфо", Message$, 0)
                EndIf
                
@@ -604,6 +600,32 @@ Procedure   Properties_ButtonEvents( )
                   Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState(*g), #PB_Ignore, #PB_Ignore )
                   Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState(*g), #PB_Ignore )
                   Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(*g) )
+                     
+                  Case #_pi_coloralpha
+                     SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
+                                                             (GetState(*g)) ))
+                     Properties_Updates( a_focused( ), "Color" )
+                     
+                  Case #_pi_colorblue
+                     SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
+                                                             (GetState(*g)),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
+                     Properties_Updates( a_focused( ), "Color" )
+                  Case #_pi_colorgreen
+                     SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                                                             (GetState(*g)),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
+                     Properties_Updates( a_focused( ), "Color" )
+                  Case #_pi_colorred
+                     SetBackgroundColor( a_focused( ), RGBA( (GetState(*g)),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
+                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
+                     Properties_Updates( a_focused( ), "Color" )
                EndSelect
                
                
@@ -659,7 +681,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
          ;          EndSelect
          
          Select item
-            Case #_pi_colorred, #_pi_colorgreen, #_pi_colorblue, #_pi_coloralpha
+            Case #_pi_coloralpha, #_pi_colorblue, #_pi_colorgreen, #_pi_colorred
                *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, 0, 255, 0, #__bar_button_size, 0, 1 )
             Default
                *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
@@ -769,7 +791,8 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
    
    item = CountItems( *first ) - 1
    If mode = 0
-      Define color_properties = $BE80817D
+      Define color_properties = $86907E51;$BE80817D
+      Define fcolor_properties = $FFFEFEFE
       SetItemFont( *first, item, font_properties)
       SetItemFont( *second, item, font_properties)
       SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties)
@@ -777,7 +800,13 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 1)
       SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 1)
       SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 2)
-      SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 2)
+      SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 2)
+      SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties)
+      SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties)
+      SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 1)
+      SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 1)
+      SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 2)
+      SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 2)
    EndIf
    *this = Properties_ButtonCreate( Type, *second, item )
    
@@ -913,12 +942,12 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       Properties_SetItemText( ide_inspector_properties, #_pi_text, replace$ )
    EndIf
    If type$ = "Focus" Or type$ = "Color"
-      Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype)) ) & $ffffffff
-      Properties_SetItemText( ide_inspector_properties, #_pi_color,     "$"+Hex(Color))
-      Properties_SetItemText( ide_inspector_properties, #_pi_colorred, Str(Red(color)) )
-      Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
-      Properties_SetItemText( ide_inspector_properties, #_pi_colorblue, Str(Blue(color)) )
+      Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype)) ) & $FFFFFF | *object\color\_alpha << 24
+      Properties_SetItemText( ide_inspector_properties, #_pi_color,     "$"+Hex(Color & $FFFFFF | *object\color\_alpha << 24))
       Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(color)) )
+      Properties_SetItemText( ide_inspector_properties, #_pi_colorblue, Str(Blue(color)) )
+      Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
+      Properties_SetItemText( ide_inspector_properties, #_pi_colorred, Str(Red(color)) )
    EndIf
    If type$ = "Focus" Or type$ = "Resize"
       ; Debug "---- "+type$
@@ -2753,10 +2782,10 @@ Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorgroup,      "Color"   )
       Properties_AddItem( ide_inspector_properties, #_pi_colortype,       "type"   , #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_color,           "hex"   , #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorred,        "red"   , #__Type_spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green"   , #__Type_spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue"   , #__Type_spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_coloralpha,      "alpha"   , #__Type_spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue"   , #__Type_spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green"   , #__Type_spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorred,        "red"   , #__Type_spin, 1 )
       ;
       Properties_AddItem( ide_inspector_properties, #_pi_group_2,     "" )
       Properties_AddItem( ide_inspector_properties, #_pi_flag,        "Flag"    , #__Type_ComboBox, 1 )
@@ -3105,8 +3134,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 856
-; FirstLine = 855
+; CursorPosition = 2786
+; FirstLine = 2707
 ; Folding = ----------------------------G7----------------------------
 ; Optimizer
 ; EnableAsm
