@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   LoadFont( #Font18R, "Arial Unicode MS Regular", igFS18 );, #PB_Font_HighQuality )
   ;LoadFont( #Font18R, "Arial", 18-Bool( #PB_Compiler_OS=#PB_OS_Windows )*4 )
   
-  fs = 12
+  fs = 14
   LoadFont( 0, "Arial", fs + Bool( #PB_Compiler_OS=#PB_OS_MacOS )*( fs-8 ) )
     
   If Not LoadImage( 0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" )
@@ -80,12 +80,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 10+222, 40, 200, 20, "Left button", #__text_left )
     Button( 10+222, 70, 200, 20, "Right button", #__text_Right )
     Button( 10+222,100, 200, 60, "Default button and change font", #__flag_ButtonDefault,4 )
-    SetFont(widget(), FontID(0))
+    SetFont(widget(), (0))
     Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline,4 )
     Button( 10+222,170+70, 200, 25, "Toggle button", #__flag_ButtonToggle )
     
     SetState( ID( 5 ), 1 )
-    SetFont( ID( 5 ), FontID( 0 ) )
+    SetFont( ID( 5 ), ( 0 ) )
     Bind( #PB_All, @events_widgets( ) )
     
   EndIf
@@ -112,13 +112,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *Button_0 = Button( 15, 42, 250,  60, "Button (Horisontal)", #__flag_Textmultiline,-1 )
 ;     SetColor( *Button_0, #__ForeColor, $0000FF )
-;     SetColor( *Button_0, #pb_gadget_backcolor, $00FF00 )
+     SetColor( *Button_0, #PB_Gadget_BackColor, $00FF00 )
      SetColor( *Button_0, #PB_Gadget_FrontColor, $4919D5 ) 
-;     SetFont( *Button_0, FontID( 10 ) )
+     SetFont( *Button_0, ( 0 ) )
     
     *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #__flag_Textmultiline|#__text_Vertical|#__text_Invert )
      SetColor( *Button_1, #PB_Gadget_FrontColor, $FFD56F1A )
-;     SetFont( *Button_1, FontID( 10 ) )
+     SetFont( *Button_1, ( 0 ) )
     
     
     ResizeWindow( 11, #PB_Ignore, WindowY( main )+WindowHeight( main, #PB_Window_FrameCoordinate )+10, #PB_Ignore, #PB_Ignore )
@@ -143,8 +143,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 106
+; CursorPosition = 118
+; FirstLine = 104
 ; Folding = ---
 ; Optimizer
 ; EnableXP

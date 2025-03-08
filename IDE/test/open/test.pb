@@ -1,88 +1,101 @@
-﻿;- Top
-; -----------------------------------------------------------------------------
-;           Name:
-;    Description:
-;         Author:
-;           Date: 2025-03-07
-;        Version:
-;     PB-Version:
-;             OS:
-;         Credit:
-;          Forum:
-;     Created by: IceDesign
-; -----------------------------------------------------------------------------
+﻿EnableExplicit
 
-CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-CompilerEndIf
+Global WINDOW_0 = - 1
 
-;- Enumerations
-Enumeration Window
-  #Window_0
-EndEnumeration
+Global BUTTON_0 = - 1
+Global TEXT_0 = - 1
+Global BUTTON_1 = - 1
+Global STRING_0 = - 1
+Global SCROLLAREA_0 = - 1
+Global BUTTON_2 = - 1
+Global TEXT_1 = - 1
+Global BUTTON_3 = - 1
+Global TEXT_2 = - 1
+Global PANEL_0 = - 1
+Global BUTTON_4 = - 1
+Global TEXT_3 = - 1
+Global BUTTON_5 = - 1
+Global TEXT_4 = - 1
+Global BUTTON_6 = - 1
+Global TEXT_5 = - 1
+Global BUTTON_7 = - 1
+Global TEXT_6 = - 1
 
-Enumeration Gadgets
-  #Btn_1
-  #Btn_2
-  #Btn_3
-  #Btn_4
-  #Btn_5
-  #Btn_6
-  #Panel_1
-  #ScrlArea_1
-  #String_1
-  #Txt_1
-  #Txt_2
-  #Txt_3
-  #Txt_4
-  #Txt_5
-EndEnumeration
-
-;- Declare
-Declare Resize_Window_0()
-Declare Open_Window_0(X = 0, Y = 0, Width = 1170, Height = 560)
-
-Procedure Resize_Window_0()
-EndProcedure
-
-Procedure Open_Window_0(X = 0, Y = 0, Width = 1170, Height = 560)
-  If OpenWindow(#Window_0, X, Y, Width, Height, "Title", #PB_Window_SystemMenu)
-;     ButtonGadget(#Btn_1, 50, 10, 140, 50, "Button_1")
-;     ScrollAreaGadget(#ScrlArea_1, 330, 20, 330, 320, 1200, 800, 10, #PB_ScrollArea_Raised)
-; ;       ButtonGadget(#Btn_3, 30, 20, 100, 40, "Button_3")
-;       TextGadget(#Txt_2, 50, 70, 100, 38, "Text_2")
-; ;       ButtonGadget(#Btn_4, 80, 140, 100, 40, "Button_4")
-; ;       TextGadget(#Txt_3, 100, 230, 100, 38, "Text_3")
-;     CloseGadgetList()   ; #ScrlArea_1
-    PanelGadget(#Panel_1, 320, 50, 360, 290)
-      AddGadgetItem(#Panel_1, -1, "Tab_0")
-      ButtonGadget(#Btn_5, 20, 20, 100, 40, "Button_5")
-;       TextGadget(#Txt_4, 40, 80, 100, 38, "Text_4")
-;       ButtonGadget(#Btn_6, 70, 150, 100, 40, "Button_6")
-;       TextGadget(#Txt_5, 90, 200, 100, 27, "Text_5")
-      ;AddGadgetItem(#Panel_1, -1, "Tab_1")
-    CloseGadgetList()   ; #Panel_1
-;     TextGadget(#Txt_1, 80, 80, 150, 50, "Text_1")
-;     ButtonGadget(#Btn_2, 110, 160, 170, 40, "Button_2")
-;     StringGadget(#String_1, 120, 230, 190, 60, "String_1")
-
-;     BindEvent(#PB_Event_SizeWindow, @Resize_Window_0(), #Window_0)
-;     PostEvent(#PB_Event_SizeWindow, #Window_0, 0)
-    ProcedureReturn #True
-  EndIf
+Procedure Open_WINDOW_0( )
+   WINDOW_0 = OpenWindow( #PB_Any, 7, 7, 498, 253, "window_0",  #PB_Window_SystemMenu | #PB_Window_SizeGadget  )
+      BUTTON_0 = ButtonGadget( #PB_Any, 14, 28, 50, 29, "button_0",  #PB_Button_MultiLine  )
+         DisableGadget( BUTTON_0, #True )
+      
+      TEXT_0 = TextGadget( #PB_Any, 28, 63, 50, 29, "text_0" )
+         SetGadgetColor( TEXT_0, #PB_Gadget_BackColor, $4080FF )
+      
+      BUTTON_1 = ButtonGadget( #PB_Any, 35, 105, 50, 29, "button_1" )
+      STRING_0 = StringGadget( #PB_Any, 42, 147, 50, 29, "string_0" )
+         SetGadgetColor( STRING_0, #PB_Gadget_BackColor, $FFFFFF )
+      
+      SCROLLAREA_0 = ScrollAreaGadget( #PB_Any, 119, 28, 169, 176, 165, 175, 5,  #PB_ScrollArea_Flat  )
+         BUTTON_2 = ButtonGadget( #PB_Any, 14, 28, 29, 29, "button_2" )
+         TEXT_1 = TextGadget( #PB_Any, 28, 63, 50, 29, "text_1" )
+            SetGadgetColor( TEXT_1, #PB_Gadget_BackColor, $F8F8F8 )
+         
+         BUTTON_3 = ButtonGadget( #PB_Any, 35, 105, 78, 29, "button_3" )
+         TEXT_2 = TextGadget( #PB_Any, 42, 147, 50, 29, "text_2" )
+            SetGadgetColor( TEXT_2, #PB_Gadget_BackColor, $F8F8F8 )
+      CloseGadgetList( ) ; SCROLLAREA_0
+      
+      PANEL_0 = PanelGadget( #PB_Any, 322, 28, 169, 176 )
+         AddGadgetItem( PANEL_0, - 1, "panel_item_0" )
+         BUTTON_4 = ButtonGadget( #PB_Any, 14, 28, 29, 29, "button_4" )
+         TEXT_3 = TextGadget( #PB_Any, 28, 63, 50, 29, "text_3" )
+            SetGadgetColor( TEXT_3, #PB_Gadget_BackColor, $F8F8F8 )
+         
+         BUTTON_5 = ButtonGadget( #PB_Any, 35, 105, 78, 29, "button_5" )
+         TEXT_4 = TextGadget( #PB_Any, 42, 147, 50, 29, "text_4" )
+            SetGadgetColor( TEXT_4, #PB_Gadget_BackColor, $F8F8F8 )
+         
+         AddGadgetItem( PANEL_0, - 1, "panel_item_1" )
+         
+         BUTTON_6 = ButtonGadget( #PB_Any, 112, 28, 29, 29, "button_6" )
+         TEXT_5 = TextGadget( #PB_Any, 126, 63, 50, 29, "text_5" )
+            SetGadgetColor( TEXT_5, #PB_Gadget_BackColor, $F8F8F8 )
+         
+         BUTTON_7 = ButtonGadget( #PB_Any, 133, 105, 78, 29, "button_7" )
+         TEXT_6 = TextGadget( #PB_Any, 147, 147, 50, 29, "text_6" )
+            SetGadgetColor( TEXT_6, #PB_Gadget_BackColor, $F8F8F8 )
+      
+         SetGadgetState( PANEL_0, 1 )
+      CloseGadgetList( ) ; PANEL_0
 EndProcedure
 
 CompilerIf #PB_Compiler_IsMainFile
-;- Main Program
-If Open_Window_0()
+   Open_WINDOW_0( )
 
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-EndIf
+   Define event
+   While IsWindow( WINDOW_0 )
+      event = WaitWindowEvent( )
+      
+      Select EventWindow( )
+         Case WINDOW_0
+      EndSelect
+      
+      Select event
+         Case #PB_Event_CloseWindow
+            If WINDOW_0 = EventWindow( )
+               If #PB_MessageRequester_Yes = MessageRequester( "Message", 
+                                                               "Are you sure you want To go out?", 
+                                                               #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                  CloseWindow( EventWindow( ) )
+               EndIf
+            Else
+               CloseWindow( EventWindow( ) )
+            EndIf
+      EndSelect
+   Wend
+   End
 CompilerEndIf
-
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 38
+; CursorPosition = 94
+; FirstLine = 54
 ; Folding = --
 ; EnableXP
 ; DPIAware

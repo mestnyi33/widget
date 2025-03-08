@@ -14,21 +14,32 @@ Enumeration
    #_pi_id
    #_pi_class
    #_pi_text
-   
+   ;
    #_pi_group_layout 
    #_pi_align
    #_pi_x
    #_pi_y
    #_pi_width
    #_pi_height
-   
+   ;
    #_pi_group_state 
    #_pi_disable
    #_pi_hide
-   
+   ;
+   #_pi_fontgroup
+   #_pi_fontname
+   #_pi_fontsize
+   #_pi_fontstyle
+   ;
+   #_pi_colorgroup
+   #_pi_colortype
+   #_pi_color
+   #_pi_colorred
+   #_pi_colorgreen
+   #_pi_colorblue
+   #_pi_coloralpha
+   ;
    #_pi_group_2 
-   #_pi_Font
-   #_pi_Color
    #_pi_flag
 EndEnumeration
 
@@ -105,6 +116,7 @@ Global group_drag
 Global enumerations 
 
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
+Global font_properties = LoadFont( #PB_Any, "", 12 )
 
 ; test_docursor = 1
 ; test_changecursor = 1
@@ -140,7 +152,7 @@ Global *parser._s_PARSER = AllocateStructure( _s_PARSER )
 ;- DECLAREs
 Declare   widget_events( )
 Declare   Properties_SetItemText( *splitter, item, Text.s )
-Declare.s Properties_GetItemText( *splitter, item, mode = 0 )
+Declare.s Properties_GetItemText( *splitter, item )
 Declare   Properties_Updates( *object, type$ )
 Declare   widget_Create( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
@@ -411,12 +423,20 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
             EndIf
             ;
             ;Debug *this\WIdgetChange(  ) = 1
-            Resize(*this,
-                   *row\x + *second\scroll_x( ),; +30, 
-                   *row\y + *second\scroll_y( ), 
-                   *second\inner_width( )-dpiscaled(2),;*row\width,;; -30, 
-                   *row\height, 0 )
-            
+            Select *row\index
+               Case #_pi_fontname, #_pi_Color
+                  Resize(*this,
+                         *row\x + *second\scroll_x( ) + (*second\inner_width( )-dpiscaled(2)-*this\width), 
+                         *row\y + *second\scroll_y( ), 
+                         #PB_Ignore, 
+                         *row\height, 0 )
+               Default
+                  Resize(*this,
+                         *row\x + *second\scroll_x( ),; +30, 
+                         *row\y + *second\scroll_y( ), 
+                         *second\inner_width( )-dpiscaled(2),;*row\width,;; -30, 
+                         *row\height, 0 )
+            EndSelect 
             ;             ;*this\WIdgetChange( ) = 1
             ;             *this\TextChange( ) = 1
          EndIf
@@ -499,6 +519,65 @@ Procedure   Properties_ButtonEvents( )
          ;             Case #__type_ComboBox : SetItemText(*g\parent, GetData(*g), Str(GetState(*g)) )
          ;          EndSelect
          
+
+         
+      Case #__event_LeftClick
+         Select GetData(*g)
+            Case #_pi_fontname
+               Define FontName$ = "Arial"  ; установить начальный шрифт (также может быть пустым)
+               Define FontSize  = 14       ; установить начальный размер (также может быть 0)
+               Define Result = FontRequester(FontName$, FontSize, #PB_FontRequester_Effects)
+               If Result
+                  Define Message$ = "Вы выбрали следующий шрифт:"  + #LF$
+                  Message$ + "Имя:  " + SelectedFontName()         + #LF$
+                  Message$ + "Размер:  " + Str(SelectedFontSize()) + #LF$
+                  Message$ + "Цвет: " + Str(SelectedFontColor())   + #LF$
+                  If SelectedFontStyle() & #PB_Font_Bold
+                     Message$ + "Полужирный" + #LF$
+                  EndIf
+                  If SelectedFontStyle() & #PB_Font_StrikeOut
+                     Message$ + "Перечёркнутый" + #LF$
+                  EndIf
+                  If SelectedFontStyle() & #PB_Font_Underline
+                     Message$ + "Подчеркнутый" + #LF$
+                  EndIf
+               Else
+                  Message$ = "Запрос был отменён."
+               EndIf
+               If a_focused( )
+                  Define font = LoadFont( #PB_Any, SelectedFontName( ), SelectedFontSize( ), SelectedFontStyle( ))
+                  SetFont( a_focused( ), font )
+               EndIf
+               MessageRequester("Инфо", Message$, #PB_MessageRequester_Ok)
+
+               
+            Case #_pi_Color
+               If a_focused( )
+                  Define Color = ColorRequester( GetColor( a_focused( ), #PB_Gadget_BackColor )) & $FFFFFF | a_focused( )\color\_alpha << 24
+                  
+                  If Color > - 1
+                     Message$ = "Вы выбрали следующее значение цвета:"   + #LF$
+                     Message$ + "32 Bit value: " + Str(Color)            + #LF$
+                     Message$ + "Red значение:    " + Str(Red(Color))    + #LF$
+                     Message$ + "Green значение:  " + Str(Green(Color))  + #LF$
+                     Message$ + "Blue значение:  " + Str(Blue(Color))  + #LF$
+                     Message$ + "Alpha значение:  " + Str(Alpha(Color))
+                  Else
+                     Message$ = "Запрос был отменён."
+                  EndIf
+                  
+                  Properties_SetItemText( ide_inspector_properties, #_pi_color,     "$"+Hex(Color))
+                  Properties_SetItemText( ide_inspector_properties, #_pi_colorred,   Str(Red(Color)))
+                  Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(Color)))
+                  Properties_SetItemText( ide_inspector_properties, #_pi_colorblue,  Str(Blue(Color)))
+                  Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(Color)))
+                  SetBackgroundColor( a_focused( ), RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ))
+                  ;MessageRequester("Инфо", Message$, 0)
+               EndIf
+               
+              
+         EndSelect
+         
       Case #__event_MouseWheel
          If __item > 0
             SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
@@ -530,6 +609,11 @@ Procedure   Properties_ButtonEvents( )
                
             Case #__type_ComboBox
                Select GetData(*g) 
+                  Case #_pi_colortype
+                     ;Debug GetItemText( *g, GetState( *g))
+                     Properties_SetItemText( ide_inspector_properties, #_pi_colortype, GetItemText( *g, GetState( *g)))
+                     Properties_Updates( a_focused( ), "Color" ) 
+                         
                   Case #_pi_id
                      If GetState(*g) 
                         If SetClass( a_focused( ), "#"+Trim( GetClass( a_focused( ) ), "#" ))
@@ -574,8 +658,12 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
          ;                *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, #Null$, flag|#__flag_invert, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
          ;          EndSelect
          
-         *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
-         
+         Select item
+            Case #_pi_colorred, #_pi_colorgreen, #_pi_colorblue, #_pi_coloralpha
+               *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, 0, 255, 0, #__bar_button_size, 0, 1 )
+            Default
+               *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+         EndSelect
          ;SetState( *this, Val(StringField(Text.s, 2, Chr(10))))
       Case #__type_CheckBox
          *this = Create( *parent, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", flag, 0, 0, 0, 0, 0, 0 )
@@ -584,12 +672,28 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
          ;*this = Create( *parent, "String", #__type_String, 0, 0, 0, 0, StringField(Text.s, 2, Chr(10)), flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_Button
-         *this = AnchorBox::Create( *parent, 0,0,0,20 )
+         Select item
+            Case #_pi_align
+               *this = AnchorBox::Create( *parent, 0,0,0,20 )
+            Case #_pi_fontname, #_pi_Color
+                 *this = Create( *parent, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", flag, 0, 0, 0, 0, 0, 0 )
+      
+         EndSelect
          
       Case #__type_ComboBox
          *this = Create( *parent, "ComboBox", Type, 0, 0, 0, 0, "", flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
-         AddItem(*this, -1, "False")
-         AddItem(*this, -1, "True")
+         Select item
+            Case #_pi_colortype
+               AddItem(*this, -1, "BackColor")
+               AddItem(*this, -1, "LineColor")
+               AddItem(*this, -1, "FontColor")
+               AddItem(*this, -1, "FrameColor")
+               AddItem(*this, -1, "ForeColor")
+               ;Properties_SetItemText( ide_inspector_properties, #_pi_colortype, "BackColor")
+            Default
+               AddItem(*this, -1, "False")
+               AddItem(*this, -1, "True")
+         EndSelect
          SetState(*this, 0)
    EndSelect
    
@@ -643,25 +747,12 @@ Procedure   Properties_StatusChange( *this._s_WIDGET, item )
    
 EndProcedure
 
-Procedure.s Properties_GetItemText( *splitter._s_WIDGET, item, mode = 0 )
-   Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-   ;
-   If mode = 0
-      ProcedureReturn GetItemText( *first, item )
-   Else
-      ProcedureReturn GetItemText( *second, item )
-   EndIf
+Procedure.s Properties_GetItemText( *splitter._s_WIDGET, item )
+   ProcedureReturn GetItemText( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item )
 EndProcedure
 
 Procedure   Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
-   Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-   ;
-   SetItemText( *first, item, StringField(Text.s, 1, Chr(10)) )
-   SetItemText( *second, item, StringField(Text.s, 2, Chr(10)) )
-   
-   ;Properties_ButtonChange( *splitter )
+  ProcedureReturn SetItemText( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, Text.s )
 EndProcedure
 
 Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
@@ -669,11 +760,25 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    
-   AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+   If mode
+      AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+   Else
+      AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
+   EndIf
    AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
    
    item = CountItems( *first ) - 1
-   
+   If mode = 0
+      Define color_properties = $BE80817D
+      SetItemFont( *first, item, font_properties)
+      SetItemFont( *second, item, font_properties)
+      SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties)
+      SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties)
+      SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 1)
+      SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 1)
+      SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 2)
+      SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 2)
+   EndIf
    *this = Properties_ButtonCreate( Type, *second, item )
    
    ; SetItemData(*first, item, *this)
@@ -749,7 +854,7 @@ Procedure   Properties_Events( )
 EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
-   Protected position = 70
+   Protected position = 90
    Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines)
    Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines)
    
@@ -759,7 +864,7 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    ;
    *splitter\bar\button\size = DPIScaled(2)
    *splitter\bar\button\round = 0;  DPIScaled(1)
-                                 ;SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
+                                 SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
    
    ;
    SetClass(*first\scroll\v, "first_v")
@@ -785,33 +890,35 @@ EndProcedure
 
 Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    Protected find$, replace$, name$, class$, x$, y$, width$, height$
-   ; class$ = Properties_GetItemText( ide_inspector_properties, #_pi_class, 1 )
+   ; class$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
    
    If type$ = "Focus" Or type$ = "ID"
-      Properties_SetItemText( ide_inspector_properties, #_pi_id,     
-                              Properties_GetItemText( ide_inspector_properties, #_pi_id ) +
-                              Chr( 10 ) + BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
+      Properties_SetItemText( ide_inspector_properties, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
    EndIf
    If type$ = "Focus" Or type$ = "Hide"
-      Properties_SetItemText( ide_inspector_properties, #_pi_hide,    
-                              Properties_GetItemText( ide_inspector_properties, #_pi_hide ) + 
-                              Chr( 10 ) + BoolToStr( Hide( *object )))
+      Properties_SetItemText( ide_inspector_properties, #_pi_hide, BoolToStr( Hide( *object )))
    EndIf
    If type$ = "Focus" Or type$ = "Disable"
-      Properties_SetItemText( ide_inspector_properties, #_pi_disable, 
-                              Properties_GetItemText( ide_inspector_properties, #_pi_disable ) +
-                              Chr( 10 ) + BoolToStr( Disable( *object )))
+      Properties_SetItemText( ide_inspector_properties, #_pi_disable, BoolToStr( Disable( *object )))
    EndIf
    
    If type$ = "Focus" Or type$ = "Class"
-      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_class, 1 )
+      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
       replace$ = GetClass( *object )
-      Properties_SetItemText( ide_inspector_properties, #_pi_class,  Properties_GetItemText( ide_inspector_properties, #_pi_class ) + Chr( 10 ) + replace$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_class, replace$ )
    EndIf
    If type$ = "Focus" Or type$ = "Text"
-      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_text, 1 )
+      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_text )
       replace$ = GetText( *object )
-      Properties_SetItemText( ide_inspector_properties, #_pi_text,   Properties_GetItemText( ide_inspector_properties, #_pi_text ) + Chr( 10 ) + replace$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_text, replace$ )
+   EndIf
+   If type$ = "Focus" Or type$ = "Color"
+      Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype)) ) & $ffffffff
+      Properties_SetItemText( ide_inspector_properties, #_pi_color,     "$"+Hex(Color))
+      Properties_SetItemText( ide_inspector_properties, #_pi_colorred, Str(Red(color)) )
+      Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
+      Properties_SetItemText( ide_inspector_properties, #_pi_colorblue, Str(Blue(color)) )
+      Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(color)) )
    EndIf
    If type$ = "Focus" Or type$ = "Resize"
       ; Debug "---- "+type$
@@ -827,16 +934,16 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          height$ = Str( Height( *object ))
       EndIf
       
-      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x, 1 ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_y, 1 ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_width, 1 ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_height, 1 )
+      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_y ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_width ) +", "+ 
+              Properties_GetItemText( ide_inspector_properties, #_pi_height )
       replace$ = x$ +", "+ y$ +", "+ width$ +", "+ height$
       
-      Properties_SetItemText( ide_inspector_properties, #_pi_x,      Properties_GetItemText( ide_inspector_properties, #_pi_x )      + Chr( 10 ) + x$ )
-      Properties_SetItemText( ide_inspector_properties, #_pi_y,      Properties_GetItemText( ide_inspector_properties, #_pi_y )      + Chr( 10 ) + y$ )
-      Properties_SetItemText( ide_inspector_properties, #_pi_width,  Properties_GetItemText( ide_inspector_properties, #_pi_width )  + Chr( 10 ) + width$ )
-      Properties_SetItemText( ide_inspector_properties, #_pi_height, Properties_GetItemText( ide_inspector_properties, #_pi_height ) + Chr( 10 ) + height$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_x,      x$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_y,      y$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_width,  width$ )
+      Properties_SetItemText( ide_inspector_properties, #_pi_height, height$ )
       
       ;
       Properties_ButtonChange( ide_inspector_properties )
@@ -2580,7 +2687,7 @@ Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
    ide_design_panel = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__flag_Vertical ) : OpenList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
    ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
-   SetColor( ide_design_panel_MDI, #pb_gadget_backcolor, RGBA(195, 156, 191, 255) )
+   SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, RGBA(195, 156, 191, 255) )
    a_init( ide_design_panel_MDI);, 0 )
    
    AddItem( ide_design_panel, -1, "Code" )
@@ -2638,9 +2745,20 @@ Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_properties, #_pi_disable,     "Disable" , #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_hide,        "Hide"    , #__Type_ComboBox, 1 )
       ;
+      Properties_AddItem( ide_inspector_properties, #_pi_fontgroup,       "Font" )
+      Properties_AddItem( ide_inspector_properties, #_pi_fontname,        "name"    , #__Type_button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_fontsize,        "size"    , #__Type_spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_fontstyle,       "style"   , #__Type_combobox, 1 )
+      ;
+      Properties_AddItem( ide_inspector_properties, #_pi_colorgroup,      "Color"   )
+      Properties_AddItem( ide_inspector_properties, #_pi_colortype,       "type"   , #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_color,           "hex"   , #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorred,        "red"   , #__Type_spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green"   , #__Type_spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue"   , #__Type_spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_coloralpha,      "alpha"   , #__Type_spin, 1 )
+      ;
       Properties_AddItem( ide_inspector_properties, #_pi_group_2,     "" )
-      Properties_AddItem( ide_inspector_properties, #_pi_Font,        "Font"    , #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_Color,       "Color"   , #__Type_Button, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_flag,        "Flag"    , #__Type_ComboBox, 1 )
    EndIf
    
@@ -2742,10 +2860,12 @@ Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
    
    ; set splitters dafault positions
    SetState( ide_splitter, Height( ide_toolbar ))
-   SetState( ide_design_splitter, 200 )
+   ; SetState( ide_design_splitter, 200 )
+   SetState( ide_design_splitter, 250 )
    SetState( ide_design_panel_splitter, Height( ide_design_panel_splitter )-180 )
    ;SetState( ide_inspector_panel_splitter, 250 )
-   SetState( ide_inspector_view_splitter, 200 )
+   ;SetState( ide_inspector_view_splitter, 200 )
+   SetState( ide_inspector_view_splitter, 100 )
    
    ;
    ;\\\ ide events binds
@@ -2985,9 +3105,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2582
-; FirstLine = 2511
-; Folding = -------------------------vh+----------------------------
+; CursorPosition = 856
+; FirstLine = 855
+; Folding = ----------------------------G7----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

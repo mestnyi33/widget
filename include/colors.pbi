@@ -6,6 +6,7 @@
     green.structures::_s_color
     red.structures::_s_color
     blue.structures::_s_color
+  ;  black.structures::_s_color
   EndStructure
   
   Define *this._s_color = AllocateStructure(_s_color)
@@ -151,7 +152,6 @@
     \frame[3] = $FFCECECE
   EndWith
   
-  
 EndDeclareModule
 
 Module colors
@@ -178,7 +178,6 @@ EndModule
 ; CompilerEndSelect
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 152
-; FirstLine = 118
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP

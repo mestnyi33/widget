@@ -366,28 +366,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;===TEMP====
       Macro AlphaState( ) 
-         color\_alpha ; << 24
+         color\_alpha
       EndMacro
       
       Macro AlphaState24( ) 
          color\_alpha << 24
       EndMacro
-      
-      Macro ColorAlphaState( ) 
-         color\_alpha
-      EndMacro
-      
-      Macro ColorAlphaColor( ) 
-         color\alpha
-      EndMacro
-      
-      Macro AlphaColor( ) 
-         color\alpha ; << 24
-      EndMacro
-      
-      Macro AlphaColor24( ) 
-         color\alpha << 24
-      EndMacro
+     
       
       Macro is_drag_move( )
          a_index( ) = #__a_moved
@@ -1317,7 +1302,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Macro draw_background_image_( _this_, _x_, _y_, _mode_ = )
          ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         DrawAlphaImage( _this_\img#_mode_\imageID, _x_ + _this_\img#_mode_\x + _this_\scroll_x( ), _y_ + _this_\img#_mode_\y + _this_\scroll_y( ), _this_\ColorAlphaState( ) )
+         DrawAlphaImage( _this_\img#_mode_\imageID, _x_ + _this_\img#_mode_\x + _this_\scroll_x( ), _y_ + _this_\img#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
       EndMacro
       
       ;     Macro Close( )
@@ -4095,7 +4080,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; Draw items image
          If _address_\img\imageID
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawAlphaImage( _address_\img\imageID, _x_ + _address_\img\x, _y_ + _address_\img\y, _address_\ColorAlphaState( ) )
+            DrawAlphaImage( _address_\img\imageID, _x_ + _address_\img\x, _y_ + _address_\img\y, _address_\color\ialpha )
          EndIf
          ;
          ; Draw items text
@@ -8663,49 +8648,49 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro add_color( _result_, _address_, _color_type_, _color_, _alpha_, _column_ = )
-         If Not _address_\alpha And _alpha_
-            _address_\alpha.allocate( COLOR )
-         EndIf
+;          If Not _address_\alpha And _alpha_
+;             _address_\alpha.allocate( COLOR )
+;          EndIf
          
          Select _color_type_
             Case #PB_Gadget_BackColor
                If _address_\back#_column_ <> _color_
                   _address_\back#_column_ = _color_
-                  If _address_\alpha
-                     _address_\alpha\back#_column_ = _alpha_
-                  EndIf
+;                   If _address_\alpha
+;                      _address_\alpha\back#_column_ = _alpha_
+;                   EndIf
                   _result_ = #True
                EndIf
             Case #PB_Gadget_LineColor
                If _address_\line#_column_ <> _color_
                   _address_\line#_column_ = _color_
-                  If _address_\alpha
-                     _address_\alpha\line#_column_ = _alpha_
-                  EndIf
+;                   If _address_\alpha
+;                      _address_\alpha\line#_column_ = _alpha_
+;                   EndIf
                   _result_ = #True
                EndIf
             Case #PB_Gadget_FrontColor
                If _address_\front#_column_ <> _color_
                   _address_\front#_column_ = _color_
-                  If _address_\alpha
-                     _address_\alpha\front#_column_ = _alpha_
-                  EndIf
+;                   If _address_\alpha
+;                      _address_\alpha\front#_column_ = _alpha_
+;                   EndIf
                   _result_ = #True
                EndIf
             Case #__ForeColor
                If _address_\fore#_column_ <> _color_
                   _address_\fore#_column_ = _color_
-                  If _address_\alpha
-                     _address_\alpha\fore#_column_ = _alpha_
-                  EndIf
+;                   If _address_\alpha
+;                      _address_\alpha\fore#_column_ = _alpha_
+;                   EndIf
                   _result_ = #True
                EndIf
             Case #__FrameColor
                If _address_\frame#_column_ <> _color_
                   _address_\frame#_column_ = _color_
-                  If _address_\alpha
-                     _address_\alpha\frame#_column_ = _alpha_
-                  EndIf
+;                   If _address_\alpha
+;                      _address_\alpha\frame#_column_ = _alpha_
+;                   EndIf
                   _result_ = #True
                EndIf
          EndSelect
@@ -8728,13 +8713,15 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l SetColor( *this._s_WIDGET, ColorType.l, Color.l, Column.l = 0 )
-         *this\ColorAlphaColor( ).allocate( COLOR )
+;          *this\color\alpha.allocate( COLOR )
          Protected result.l, alpha.a = Alpha( Color )
          
          If Not alpha
             Color = Color & $FFFFFF | 255 << 24
+            alpha.a = Alpha( Color )
          EndIf
          
+         *this\color\_alpha = alpha
          add_color( result, *this\color, ColorType, Color, alpha, [Column] )
          
          If *this\scroll
@@ -9722,6 +9709,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.s GetItemText( *this._s_WIDGET, Item.l, Column.l = 0 )
          Protected result.s
+         
+         If *this\type = #__type_combobox
+            If *this\popupbar
+               If is_no_select_item_( *this\popupbar\__rows( ), Item )
+                  ProcedureReturn ""
+               EndIf
+               
+               result = *this\popupbar\__rows( )\text\string
+            EndIf
+         EndIf
          
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
@@ -15321,8 +15318,8 @@ chr$ = ","
                   If *parent\type <> #__type_Splitter
                      *this\autosize = 1
                      ; set transparent parent
-                     *parent\color\back      = - 1
-                     *parent\ColorAlphaState( ) = 0
+                     *parent\color\back   = - 1
+                     *parent\color\_alpha = 0
                   EndIf
                EndIf
             EndIf
@@ -15464,7 +15461,7 @@ chr$ = ","
                EndIf
             EndIf
             
-            *this\ColorAlphaState( ) = 255
+            *this\color\_alpha = 255
             *this\color\fore[#__s_0] = - 1
             *this\color\back[#__s_0] = $ffffffff ; _get_colors_( )\fore
             *this\color\front[#__s_0] = _get_colors_( )\front
@@ -15633,7 +15630,7 @@ chr$ = ","
                *this\bar\PageChange( ) = 1
                
                *this\color\back   = - 1
-               *this\ColorAlphaState( ) = 255
+               *this\color\_alpha = 255
                *this\color\back   = $FFFFFFFF
                
                *BB1\color = _get_colors_( )
@@ -16827,7 +16824,7 @@ chr$ = ","
             ;\\ Draw items image
             If *rows( )\img\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *rows( )\img\imageID, xs + *rows( )\img\x, ys + *rows( )\img\y, *rows( )\AlphaState( ) )
+               DrawAlphaImage( *rows( )\img\imageID, xs + *rows( )\img\x, ys + *rows( )\img\y, *rows( )\color\ialpha )
             EndIf
             
             ;\\ Draw items text
@@ -17043,7 +17040,7 @@ chr$ = ","
             ;\\ Draw background image
             If *this\img\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\AlphaState( ) )
+               DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\color\ialpha )
             EndIf
             
             ;\\
@@ -17558,7 +17555,7 @@ chr$ = ","
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
                   DrawAlphaImage( *this\img\imageID,
                                   *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\img\x,
-                                  *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\img\y - 2, *this\AlphaState( ) )
+                                  *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\img\y - 2, *this\color\ialpha )
                EndIf
                
                If *this\TitleText( )\string
@@ -17634,7 +17631,7 @@ chr$ = ","
             ;\\ Draw background image
             If *this\img\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\AlphaState( ) )
+               DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\color\ialpha )
             EndIf
             
             ;\\
@@ -17662,7 +17659,7 @@ chr$ = ","
                ;\\ Draw items image
                If *this\columns( )\img\imageID
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawAlphaImage( *this\columns( )\img\imageID, X + *this\columns( )\img\x, Y + *this\columns( )\img\y, *this\AlphaState( ) )
+                  DrawAlphaImage( *this\columns( )\img\imageID, X + *this\columns( )\img\x, Y + *this\columns( )\img\y, *this\color\ialpha )
                EndIf
                
                ;\\ Draw items text
@@ -17820,7 +17817,7 @@ chr$ = ","
             
             ;\\ scroll image draw
             If *this\img\imageID
-               DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\AlphaState( ) )
+               DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
             EndIf
             
             ;\\
@@ -18012,7 +18009,7 @@ chr$ = ","
             ;\\ draw image
             If *this\img\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\AlphaState( ) )
+               DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
             EndIf
             
             ;\\ Draw frames
@@ -23118,6 +23115,7 @@ chr$ = ","
                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_SIZEBOX) 
+               ;                      SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE) | #WS_EX_TOOLWINDOW)
                ;                   CompilerElse
                ;                      ;  
                ;                   CompilerEndIf
@@ -24964,9 +24962,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8678
-; FirstLine = 8671
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9717
+; FirstLine = 9709
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

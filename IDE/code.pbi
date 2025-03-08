@@ -1149,7 +1149,7 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
    ;
    result$ + " )" + #LF$ 
    
-   If Not IsContainer( *g)
+   If Not is_window_(*g) ; IsContainer( *g)
       If Hide(*g) > 0
          result$ + Space$ + Space(codeindent) + "HideGadget( " + GetClass( *g ) + ", #True )" + #LF$
       EndIf
@@ -1169,7 +1169,7 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
          GetState(*g) > 0
          line_break1 = 1
       EndIf
- EndIf
+   EndIf
    
    ;
    ProcedureReturn result$
@@ -1804,8 +1804,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1034
-; FirstLine = 1021
+; CursorPosition = 1151
+; FirstLine = 1077
 ; Folding = --------------------------fv----+-8-----
 ; EnableXP
 ; DPIAware
