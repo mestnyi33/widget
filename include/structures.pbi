@@ -214,11 +214,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TEXT
       Structure _s_TEXT Extends _s_edit
          change.b
-         *color._s_color
          ;
-         *fontID 
-         
-         strpass.s
+         fontID.i
+         fontname.s
+         fontsize.a
+         fontstyle.q
+         ;
+         pass$
          pass.b
          
          lower.b
@@ -770,8 +772,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 136
-; FirstLine = 132
+; CursorPosition = 222
+; FirstLine = 219
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

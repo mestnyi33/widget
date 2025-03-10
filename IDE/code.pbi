@@ -360,6 +360,23 @@ Procedure$  MakeFlagString( type$, flag.q ) ;
    Protected result$
    
    Select type$
+      Case "Font"
+         If flag & #PB_Font_Bold
+            result$ + " #PB_Font_Bold |"
+         EndIf
+         If flag & #PB_Font_Italic
+            result$ + " #PB_Font_Italic |"
+         EndIf
+         If flag & #PB_Font_Underline
+            result$ + " #PB_Font_Underline |"
+         EndIf
+         If flag & #PB_Font_StrikeOut
+            result$ + " #PB_Font_StrikeOut |"
+         EndIf
+         If flag & #PB_Font_HighQuality
+            result$ + " #PB_Font_HighQuality |"
+         EndIf
+         
       Case "Window"
          If flag & #PB_Window_SystemMenu
             flag &~ #PB_Window_SystemMenu
@@ -1148,29 +1165,36 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
    EndIf
    ;
    result$ + " )" + #LF$ 
-   
-   If Not is_window_(*g) ; IsContainer( *g)
-      If Hide(*g) > 0
-         result$ + Space$ + Space(codeindent) + "HideGadget( " + GetClass( *g ) + ", #True )" + #LF$
-      EndIf
-      If Disable(*g) > 0
-         result$ + Space$ + Space(codeindent) + "DisableGadget( " + GetClass( *g ) + ", #True )" + #LF$
-      EndIf
-      If GetState(*g) > 0
-         result$ + Space$ + Space(codeindent) + "SetGadgetState( " + GetClass( *g ) + ", "+ GetState(*g) + " )" + #LF$
-      EndIf
-      
-      If Bool(*g\color\back <> _get_colors_( )\back)
-         result$ + Space$ + Space(codeindent) + "SetGadgetColor( " + GetClass( *g ) + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
-         line_break1 = 1
-      EndIf            
-      If Hide(*g) > 0 Or 
-         Disable(*g) > 0 Or 
-         GetState(*g) > 0
-         line_break1 = 1
-      EndIf
+   ;
+   If is_window_(*g) ; IsContainer( *g)
+      Define object$ = "Window"
+   Else
+      object$ = "Gadget"
    EndIf
-   
+   ;
+   If Hide(*g) > 0
+      result$ + Space$ + Space(codeindent) + "Hide" + object$ + "( " + GetClass( *g ) + ", #True )" + #LF$
+   EndIf
+   If Disable(*g) > 0
+      result$ + Space$ + Space(codeindent) + "Disable" + object$ + "( " + GetClass( *g ) + ", #True )" + #LF$
+   EndIf
+   If GetState(*g) > 0
+      result$ + Space$ + Space(codeindent) + "Set" + object$ + "State( " + GetClass( *g ) + ", "+ GetState(*g) + " )" + #LF$
+   EndIf
+   ;
+   If Bool(*g\color\back <> _get_colors_( )\back)
+      If is_window_(*g) 
+         result$ + Space$ + Space(codeindent) + "SetWindowColor( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+      Else
+         result$ + Space$ + Space(codeindent) + "SetGadgetColor( " + GetClass( *g ) + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+      EndIf
+      line_break1 = 1
+   EndIf            
+   If Hide(*g) > 0 Or 
+      Disable(*g) > 0 Or 
+      GetState(*g) > 0
+      line_break1 = 1
+   EndIf
    ;
    ProcedureReturn result$
 EndProcedure
@@ -1804,8 +1828,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1151
-; FirstLine = 1077
-; Folding = --------------------------fv----+-8-----
+; CursorPosition = 358
+; FirstLine = 353
+; Folding = ----------P+------v--------v4----+b8H+---
 ; EnableXP
 ; DPIAware

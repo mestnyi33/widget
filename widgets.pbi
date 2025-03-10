@@ -1335,7 +1335,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
       Declare a_update( *parent )
       Declare a_free( *this )
-      Declare a_object( X.l, Y.l, Width.l, Height.l, Text.s, Color.l, flag.q = #Null, framesize = 1 )
+      Declare a_object( X.l, Y.l, Width.l, Height.l, Text.s, color.i, flag.q = #Null, framesize = 1 )
       
       Declare.b bar_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
@@ -1358,10 +1358,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i TypeFromClass( Class.s )
       Declare.s ClassFromType( Type.w )
       Declare.s ClassFromEvent( event.i )
-      Declare   SetBackgroundColor( *this, color.l )
+      Declare   SetBackgroundColor( *this, color.i )
       
       
-      Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color = $ff000000 )
+      Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color.i = $ff000000 )
       Declare   Draw_Button( *this )
       Declare.b Draw( *this )
       Declare   ReDraw( *this )
@@ -1439,6 +1439,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i GetItemData( *this, item.l )
       Declare.i SetItemData( *this, item.l, *data )
       
+      Declare.s GetFontName( *this )
+      Declare.i GetFontColor( *this )
+      Declare.a GetFontSize( *this )
+      Declare.q GetFontStyle( *this )
+      Declare   SetFontName( *this, name.s )
+      Declare   SetFontColor( *this, color.i )
+      Declare   SetFontSize( *this, size.a )
+      Declare   SetFontStyle( *this, style.q )
       Declare.i GetFont( *this )
       Declare.i SetFont( *this, FontID.i )
       Declare.i GetItemFont( *this, Item.l )
@@ -1449,10 +1457,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.l GetItemState( *this, Item.l )
       Declare.b SetItemState( *this, Item.l, State.b )
       
-      Declare.l GetColor( *this, ColorType.l )
-      Declare.l SetColor( *this, ColorType.l, Color.l, Column.l = 0 )
-      Declare.l GetItemColor( *this, Item.l, ColorType.l, Column.l = 0 )
-      Declare.l SetItemColor( *this, Item.l, ColorType.l, Color.l, Column.l = 0 )
+      Declare.i GetColor( *this, ColorType.l, ColorState.a = 0 )
+      Declare.l SetColor( *this, ColorType.l, color.i, ColorState.b = 0 )
+      Declare.l GetItemColor( *this, Item.l, ColorType.l, Column.l = 0, ColorState.a = 0 )
+      Declare.l SetItemColor( *this, Item.l, ColorType.l, color.i, Column.l = 0, ColorState.b = 0 )
       
       Declare.i GetAttribute( *this, Attribute.l )
       Declare.i SetAttribute( *this, Attribute.l, *value )
@@ -2106,7 +2114,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;     ProcedureReturn (( Bool( *value>Max ) * Max ) + ( Bool( Grid And *value<Max ) * ( Round(( *value/Grid ), #PB_round_nearest ) * Grid ) ))
       EndProcedure
       
-      Procedure Draw_Datted( X, Y, SourceColor.l, TargetColor.l )
+      Procedure Draw_Datted( X, Y, Sourcecolor.l, Targetcolor.l )
          Static Len.b
          Protected Color,
                    Dot = mouse( )\selector\dotted,
@@ -3272,7 +3280,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;                  mouse( )\selector\height + 6);a_anchors( )\pos * 2 )
       EndProcedure
       
-      Procedure a_object( X.l, Y.l, Width.l, Height.l, Text.s, Color.l, flag.q = #Null, framesize = 1 )
+      Procedure a_object( X.l, Y.l, Width.l, Height.l, Text.s, color.i, flag.q = #Null, framesize = 1 )
          ;framesize = 0
          Protected *this._s_WIDGET
          If Not Alpha(Color)
@@ -8653,7 +8661,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;          EndIf
          
          Select _color_type_
-            Case #PB_Gadget_BackColor
+            Case #__BackColor
                If _address_\back#_column_ <> _color_
                   _address_\back#_column_ = _color_
 ;                   If _address_\alpha
@@ -8661,7 +8669,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                   EndIf
                   _result_ = #True
                EndIf
-            Case #PB_Gadget_LineColor
+            Case #__LineColor
                If _address_\line#_column_ <> _color_
                   _address_\line#_column_ = _color_
 ;                   If _address_\alpha
@@ -8669,7 +8677,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                   EndIf
                   _result_ = #True
                EndIf
-            Case #PB_Gadget_FrontColor
+            Case #__FrontColor
                If _address_\front#_column_ <> _color_
                   _address_\front#_column_ = _color_
 ;                   If _address_\alpha
@@ -8697,52 +8705,57 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndMacro
       
-      Procedure.l GetColor( *this._s_WIDGET, ColorType.l )
-         Protected Color.l
+      Procedure.i GetColor( *this._s_WIDGET, ColorType.l, ColorState.a = 0 )
+         Protected color.i
          
-         With *This
-            Select ColorType
-               Case #PB_Gadget_LineColor : Color = *this\color\line
-               Case #PB_Gadget_BackColor : Color = *this\color\back
-               Case #PB_Gadget_FrontColor : Color = *this\color\front
-               Case #__FrameColor : Color = *this\color\frame
-            EndSelect
-         EndWith
+         Select ColorType
+            Case #__LineColor  : Color = *this\color\line[ColorState]
+            Case #__BackColor  : Color = *this\color\back[ColorState]
+            Case #__FrontColor : Color = *this\color\front[ColorState]
+            Case #__FrameColor : Color = *this\color\frame[ColorState]
+            Case #__ForeColor : Color = *this\color\fore[ColorState]
+         EndSelect
          
          ProcedureReturn Color
       EndProcedure
       
-      Procedure.l SetColor( *this._s_WIDGET, ColorType.l, Color.l, Column.l = 0 )
+      Procedure.l SetColor( *this._s_WIDGET, ColorType.l, color.i, ColorState.b = 0 )
 ;          *this\color\alpha.allocate( COLOR )
          Protected result.l, alpha.a = Alpha( Color )
          
-         If Not alpha
-            Color = Color & $FFFFFF | 255 << 24
-            alpha.a = Alpha( Color )
-         EndIf
-         
-         *this\color\_alpha = alpha
-         add_color( result, *this\color, ColorType, Color, alpha, [Column] )
-         
-         If *this\scroll
-            If ColorType = #PB_Gadget_BackColor
-               If *this\scroll\v
-                  *this\scroll\v\color\back[Column] = color
-               EndIf
-               If *this\scroll\h
-                  *this\scroll\h\color\back[Column] = color
+         If ColorState = #PB_All
+            SetColor( *this, ColorType, color, 0 )
+            SetColor( *this, ColorType, color, 1 )
+            SetColor( *this, ColorType, color, 2 )
+         Else
+            If Not alpha
+               Color = Color & $FFFFFF | 255 << 24
+               alpha.a = Alpha( Color )
+            EndIf
+            
+            *this\color\_alpha = alpha
+            add_color( result, *this\color, ColorType, Color, alpha, [ColorState] )
+            
+            If *this\scroll
+               If ColorType = #__BackColor
+                  If *this\scroll\v
+                     *this\scroll\v\color\back[ColorState] = color
+                  EndIf
+                  If *this\scroll\h
+                     *this\scroll\h\color\back[ColorState] = color
+                  EndIf
                EndIf
             EndIf
-         EndIf
-         
-         If result
-            PostRepaint( *this\root )
+            
+            If result
+               PostRepaint( *this\root )
+            EndIf
          EndIf
          
          ProcedureReturn result
       EndProcedure
       
-      Procedure.l GetItemColor( *this._s_WIDGET, Item.l, ColorType.l, Column.l = 0 )
+      Procedure.l GetItemColor( *this._s_WIDGET, Item.l, ColorType.l, Column.l = 0, ColorState.a = 0 )
          Protected result, *color._s_color
          
          Select *this\type
@@ -8756,16 +8769,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndSelect
          
          Select ColorType
-            Case #PB_Gadget_LineColor : result = *color\line[Column]
-            Case #PB_Gadget_BackColor : result = *color\back[Column]
-            Case #PB_Gadget_FrontColor : result = *color\front[Column]
-            Case #__FrameColor : result = *color\frame[Column]
+            Case #__LineColor  : result = *color\line[ColorState]
+            Case #__BackColor  : result = *color\back[ColorState]
+            Case #__FrontColor : result = *color\front[ColorState]
+            Case #__FrameColor : result = *color\frame[ColorState]
+            Case #__ForeColor  : result = *color\fore[ColorState]
          EndSelect
          
          ProcedureReturn result
       EndProcedure
       
-      Procedure.l SetItemColor( *this._s_WIDGET, Item.l, ColorType.l, Color.l, Column.l = 0 )
+      Procedure.l SetItemColor( *this._s_WIDGET, Item.l, ColorType.l, color.i, Column.l = 0, ColorState.b = 0 )
          Protected result, alpha.a = Alpha( Color )
          
          ;
@@ -8779,7 +8793,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                
             Else
                If SelectItem( *this, Item )
-                  add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [Column] )
+                  If ColorState = #PB_All
+                     add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [0] )
+                     add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [1] )
+                     add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [2] )
+                  Else
+                     add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [ColorState] )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -8807,7 +8827,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             Else
                If IsItem( *this, Item )
                   If SelectElement( *this\__tabs( ), Item )
-                     add_color( result, *this\__tabs( )\color, ColorType, Color, alpha, [Column] )
+                     If ColorState = #PB_All
+                        add_color( result, *this\__tabs( )\color, ColorType, Color, alpha, [0] )
+                        add_color( result, *this\__tabs( )\color, ColorType, Color, alpha, [1] )
+                        add_color( result, *this\__tabs( )\color, ColorType, Color, alpha, [2] )
+                     Else
+                        add_color( result, *this\__tabs( )\color, ColorType, Color, alpha, [ColorState] )
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -8816,9 +8842,18 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure SetBackgroundColor( *this._s_WIDGET, color.l )
-         ProcedureReturn SetColor( *this, #PB_Gadget_BackColor, color )
+      Procedure SetBackgroundColor( *this._s_WIDGET, color.i )
+         ProcedureReturn SetColor( *this, #__BackColor, color )
       EndProcedure
+      
+      Procedure   SetFontColor( *this._s_WIDGET, color.i )
+        ProcedureReturn SetColor( *this, #__FrontColor, color )
+      EndProcedure
+      
+      Procedure.i GetFontColor( *this._s_WIDGET )
+         ProcedureReturn GetColor( *this, #__FrontColor )
+      EndProcedure
+      
       
       ;-
       Macro add_image( _address_, _image_, _size_ = 0 )
@@ -9701,7 +9736,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If *this\text\pass
-            ProcedureReturn *this\text\strpass
+            ProcedureReturn *this\text\pass$
          Else
             ProcedureReturn *this\text\string
          EndIf
@@ -9816,6 +9851,30 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure.i GetFont( *this._s_WIDGET )
          ProcedureReturn GetFontID( *this )
+      EndProcedure
+      
+      Procedure.s  GetFontName( *this._s_WIDGET )
+         ProcedureReturn *this\text\fontname
+      EndProcedure
+      
+      Procedure.a GetFontSize( *this._s_WIDGET )
+         ProcedureReturn *this\text\fontsize
+      EndProcedure
+      
+      Procedure.q GetFontStyle( *this._s_WIDGET )
+         ProcedureReturn *this\text\fontstyle
+      EndProcedure
+      
+      Procedure   SetFontName( *this._s_WIDGET, name.s )
+        *this\text\fontname = name
+      EndProcedure
+      
+      Procedure   SetFontSize( *this._s_WIDGET, size.a )
+         *this\text\fontsize = size
+      EndProcedure
+      
+      Procedure   SetFontStyle( *this._s_WIDGET, style.q )
+         *this\text\fontstyle = style
       EndProcedure
       
       Procedure.i SetFont( *this._s_WIDGET, FontID.i )
@@ -18589,8 +18648,8 @@ chr$ = ","
                         ;\\ draw selector frame
                         If selector_framecolor
                            If mouse( )\selector\dotted
-                              CustomFilterCallback( @Draw_Datted( ))
                               draw_mode_alpha_( #PB_2DDrawing_CustomFilter | #PB_2DDrawing_Outlined )
+                              CustomFilterCallback( @Draw_Datted( ))
                            Else
                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
                            EndIf
@@ -18711,7 +18770,7 @@ chr$ = ","
                *This\text\string.s = Text.s
                ;
                If *this\text\pass
-                  *this\text\strpass = *this\text\string
+                  *this\text\pass$ = *this\text\string
                EndIf
                
                ; ;                ;
@@ -24243,7 +24302,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;BindWidgetEvent( *root, @HandlerEvents( ) )
    view = Container(10, 10, 406, 238, #PB_Container_Flat)
-   SetColor(view, #PB_Gadget_BackColor, RGB(213, 213, 213))
+   SetBackgroundColor(view, RGB(213, 213, 213))
    a_init( view, 10 )
    
    Procedure ToolBarEvents( )
@@ -24962,9 +25021,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9717
-; FirstLine = 9709
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 18772
+; FirstLine = 18769
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

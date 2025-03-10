@@ -155,6 +155,9 @@
 ;       #__color_Frame      = 7
 ;       #__color_Fore       = 8
       
+      #__FrontColor       = #PB_Gadget_FrontColor
+      #__LineColor        = #PB_Gadget_LineColor
+      #__BackColor        = #PB_Gadget_BackColor
       #__ForeColor        = 8
       #__FrameColor       = 7
       
@@ -747,7 +750,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 155
+; CursorPosition = 157
 ; FirstLine = 141
 ; Folding = ----
 ; Optimizer
