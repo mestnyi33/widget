@@ -12016,7 +12016,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *columns\width = DPIScaled( Width )
             ;*columns\text\TextChange( ) = 1
             *columns\text\string.s = Text.s
-            *columns\x = (*this\padding\x + *this\scroll_width( ))
+            *columns\x = *this\scroll_width( ) ; (*this\padding\x + *this\scroll_width( ))
             *this\scroll_width( ) + *columns\width
             
             ;\\
@@ -14705,7 +14705,12 @@ chr$ = ","
                   EndIf
                   
                   If constants::BinaryFlag( Flag, #__flag_gridLines ) 
-                     *this\mode\gridlines = state * 10
+                     If state 
+                        *this\mode\gridlines = DPIScaled(1)
+                        *this\mode\gridlines + Bool( *this\mode\gridlines % 2 )
+                     Else
+                        *this\mode\gridlines = 0
+                     EndIf
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_collapsed ) 
                      *this\mode\collapsed = state
@@ -15866,6 +15871,7 @@ chr$ = ","
             If *this\type = #__type_Splitter
                *this\container  = - 1
                *this\color\back = - 1
+               *this\color\line = - 1
                
                *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
                *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__flag_Vertical ) And 
@@ -16600,7 +16606,7 @@ chr$ = ","
                            ;
                            *rows( )\buttonbox\width  = buttonsize
                            *rows( )\buttonbox\height = buttonsize
-                           *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - dpi_scale_two
+                           *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - dpi_scale_two   
                            *rows( )\buttonbox\y = ( *rows( )\height ) - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
                         EndIf
                         
@@ -16627,7 +16633,7 @@ chr$ = ","
                      EndIf
                      
                      If *rows( )\columnindex = 0
-                        *rows( )\x = *this\columns( )\x
+                        *rows( )\x = *this\columns( )\x           
                      Else
                         *rows( )\x = *this\columns( )\x + *this\row\sublevelpos + *this\MarginLine( )\width
                      EndIf
@@ -16645,6 +16651,13 @@ chr$ = ","
                         EndIf
                         *rows( )\text\y = ( *rows( )\height - *rows( )\text\height ) / 2
                      EndIf
+                     
+;                      ;
+;                      *rows( )\x + *this\row\sublevelsize
+;                      *rows( )\text\x - *this\row\sublevelsize
+;                      If *rows( )\buttonbox
+;                         *rows( )\buttonbox\x - *this\row\sublevelsize
+;                      EndIf
                      
                      ;\\ vertical scroll max value
                      *this\scroll_height( ) + *rows( )\height + Bool( *this\__rows( )\rindex <> *this\countitems - 1 ) * *this\mode\GridLines
@@ -16904,11 +16917,11 @@ chr$ = ","
             state = *rows( )\ColorState( )
             X     = row_x_( *this, *rows( ) )
             Y     = row_y_( *this, *rows( ) )
-            Xs    = X - _scroll_x_
+            Xs    = X - _scroll_x_ + *this\row\sublevelsize
             Ys    = Y - _scroll_y_
             
             ;\\ Draw selector back
-            If *rows( )\color\back[state]
+            If *rows( )\color\back[state] >= 0
                If ListSize( *this\columns( )) = 1
                   draw_mode_alpha_( #PB_2DDrawing_Default )
                   If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
@@ -16918,7 +16931,7 @@ chr$ = ","
                   EndIf
                Else
                   If *rows( ) = *this\RowEntered( )
-                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
+                     draw_roundbox_( xs, ys, *this\scroll_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
                   EndIf
                EndIf
             EndIf
@@ -16926,13 +16939,17 @@ chr$ = ","
             ;\\ Draw items image
             If *rows( )\img\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *rows( )\img\imageID, xs + *rows( )\img\x, ys + *rows( )\img\y, *rows( )\color\ialpha )
+               DrawAlphaImage( *rows( )\img\imageID, xs + *rows( )\img\x - *this\row\sublevelsize, ys + *rows( )\img\y, *rows( )\color\ialpha )
             EndIf
             
             ;\\ Draw items text
             If *rows( )\text\string.s
                draw_mode_( #PB_2DDrawing_Transparent )
-               DrawRotatedText( xs + *rows( )\text\x, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
+               If *rows( )\text\x > *this\row\sublevelsize
+                  DrawRotatedText( xs + *rows( )\text\x - *this\row\sublevelsize, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
+               Else
+                  DrawRotatedText( xs + *rows( )\text\x, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
+               EndIf
             EndIf
             
             ;\\ Draw selector frame
@@ -16941,16 +16958,18 @@ chr$ = ","
                If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
                   draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
                Else
-                  draw_roundbox_( X, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
+                  draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
                EndIf
             EndIf
             
             ;\\ Horizontal line
-            If *this\mode\GridLines And
-               ;*rows( )\color\line And
-               *rows( )\color\line <> *rows( )\color\back
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               draw_box_( X, ys + *rows( )\height, *rows( )\width, *this\mode\GridLines, $fff0f0f0 )
+            If *this\mode\GridLines
+                ;*rows( )\color\line And
+                draw_mode_alpha_( #PB_2DDrawing_Default )
+                ;If *rows( )\color\line <> *rows( )\color\back
+                  draw_box_( X, ys + *rows( )\height, *rows( )\width, *this\mode\GridLines, *this\color\line )
+               ;EndIf
+               draw_box_( X, ys, *this\row\sublevelsize, *rows( )\height, *this\color\line )
             EndIf
          Next
          
@@ -25064,9 +25083,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9853
-; FirstLine = 9809
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 12018
+; FirstLine = 12000
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----f407---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

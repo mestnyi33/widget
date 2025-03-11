@@ -10,19 +10,19 @@ EnableExplicit
 ;
 ; properties items
 Enumeration 
-   #_pi_group_common 
-   #_pi_id
+   #_pi_group_COMMON 
+   #_pi_ID 
    #_pi_class
    #_pi_text
    ;
-   #_pi_group_layout 
+   #_pi_LAYOUT 
    #_pi_align
    #_pi_x
    #_pi_y
    #_pi_width
    #_pi_height
    ;
-   #_pi_group_state 
+   #_pi_STATE 
    #_pi_disable
    #_pi_hide
    ;
@@ -37,7 +37,6 @@ Enumeration
    #_pi_colorgreen
    #_pi_colorred
    ;
-   #_pi_group_2 
    #_pi_flag
 EndEnumeration
 
@@ -423,7 +422,7 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
             Select *row\index
                Case #_pi_FONT, #_pi_colorhex
                   Resize(*this,
-                         *row\x + *second\scroll_x( ) + (*second\inner_width( )-dpiscaled(2)-*this\width), 
+                         *row\x + *second\scroll_x( ) + (*second\inner_width( )-*this\width), 
                          *row\y + *second\scroll_y( ), 
                          #PB_Ignore, 
                          *row\height, 0 )
@@ -431,7 +430,7 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
                   Resize(*this,
                          *row\x + *second\scroll_x( ),; +30, 
                          *row\y + *second\scroll_y( ), 
-                         *second\inner_width( )-dpiscaled(2),;*row\width,;; -30, 
+                         *second\inner_width( ),;*row\width,;; -30, 
                          *row\height, 0 )
             EndSelect 
             ;             ;*this\WIdgetChange( ) = 1
@@ -759,7 +758,8 @@ Procedure   Properties_StatusChange( *this._s_WIDGET, item )
    If *g\__rows( ) 
       PushListPosition( *this\__rows( ) )
       SelectElement( *this\__rows( ), *g\__rows( )\index)
-      *this\__rows( )\color = *g\__rows( )\color
+      ;*this\__rows( )\color = *g\__rows( )\color
+      *this\__rows( )\colorState( ) = *g\__rows( )\colorState( )
       
       If *this\__rows( )\colorState( ) = #__s_2
          If *this\RowFocused( )
@@ -804,18 +804,27 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
    
    item = CountItems( *first ) - 1
    If mode = 0
-      Define color_properties.q = $86907E51;$BE80817D
-      Define fcolor_properties.q = $FFFEFEFE
+      Define color_properties.q = $FFBF9CC3;$BE80817D
+      Define fcolor_properties.q = $CA2E2E2E
       
-      SetItemFont( *first, item, font_properties)
-      SetItemFont( *second, item, font_properties)
-      
-      SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-      SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-      
-      SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-      SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-      
+      If Type > 0
+         SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
+      SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
+   Else
+         ;SetItemFont( *first, item, font_properties)
+         ;SetItemFont( *second, item, font_properties)
+         
+         SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
+         SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
+         ; SetItemColor( *first, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
+         ;       SetItemColor( *second, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
+         
+         SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+         SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+      EndIf
+   Else
+      SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
+      SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
    EndIf
    *this = Properties_ButtonCreate( Type, *second, item )
    
@@ -833,6 +842,13 @@ Procedure   Properties_Events( )
    Protected *second._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_SecondGadget)
    ;  
    Select __event
+      Case #__event_Draw
+         UnclipOutput( )
+         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend )
+;          Define Image = GrabDrawingImage( #PB_Any, *g\parent\bar\button\x-*g\parent\bar\button\width,*g\parent\bar\button\y, *g\parent\bar\button\width, *g\scroll_height( ) + *g\mode\GridLines )
+;          DrawImage( ImageID(Image), *g\parent\bar\button\x, *g\parent\bar\button\y )
+         Box( *g\parent\bar\button\x+(*g\parent\bar\button\width-*g\mode\GridLines)/2, *g\parent\bar\button\y, *g\mode\GridLines, *g\scroll_height( ) + *g\mode\GridLines, $FFBF9CC3 )
+         
       Case #__event_Down
          If is_parent_item( *g, __item )
            ; Properties_ButtonHide( *second, #True)
@@ -893,16 +909,17 @@ EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected position = 90
-   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines)
-   Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines)
-   ;*second\row\sublevelsize = 0
+   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_borderLess)
+   Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_borderLess)
+   ;*second\padding\x = 10
    
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    ;
-   *splitter\bar\button\size = DPIScaled(2)
-   *splitter\bar\button\round = 0;  DPIScaled(1)
+   *splitter\bar\button\size = DPIScaled(1)
+   *splitter\bar\button\size + Bool( *splitter\bar\button\size % 2 )
+   *Splitter\bar\button\round = 0;  DPIScaled(1)
                                  SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
    
    ;
@@ -918,12 +935,17 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    
    ;CloseList( )
    
+   SetColor( *splitter, #PB_Gadget_BackColor, -1, #PB_All )
+   SetColor( *first, #PB_Gadget_LineColor, $FFBF9CC3)
+   SetColor( *second, #PB_Gadget_LineColor, $FFBF9CC3)
+      
    ;
    Bind(*first, @Properties_Events( ))
    Bind(*second, @Properties_Events( ))
    
    ; draw и resize отдельно надо включать пока поэтому вот так
-   Bind(*second, @Properties_Events( ), #__event_resize)
+   Bind(*second, @Properties_Events( ), #__event_Resize)
+   Bind(*second, @Properties_Events( ), #__event_Draw)
    ProcedureReturn *splitter
 EndProcedure
 
@@ -2741,7 +2763,7 @@ Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
    ide_design_panel = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel, "ide_design_panel" ) ; , #__flag_Vertical ) : OpenList( ide_design_panel )
    AddItem( ide_design_panel, -1, "Form" )
    ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
-   SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, RGBA(195, 156, 191, 255) )
+   SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, $FFBF9CC3 )
    a_init( ide_design_panel_MDI);, 0 )
    
    AddItem( ide_design_panel, -1, "Code" )
@@ -2783,35 +2805,34 @@ Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
    AddItem( ide_inspector_panel, -1, "properties", 0, 0 )  
    ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
    If ide_inspector_properties
-      Properties_AddItem( ide_inspector_properties, #_pi_group_common, "COMMON" )
-      Properties_AddItem( ide_inspector_properties, #_pi_id,           "#ID"  , #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_group_COMMON,     "COMMON"  )
+      Properties_AddItem( ide_inspector_properties, #_pi_ID,     "#ID"  , #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_class,        "Class"   , #__Type_String, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_text,         "Text"    , #__Type_String, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_group_layout, "LAYOUT" )
-      Properties_AddItem( ide_inspector_properties, #_pi_align,        "Align"+Chr(10)+"LEFT&TOP"   , #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_LAYOUT, "LAYOUT" )
+      Properties_AddItem( ide_inspector_properties, #_pi_align, "Align"+Chr(10)+"LEFT&TOP", #__Type_Button, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_x,            "X"       , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_y,            "Y"       , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_width,        "Width"   , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_height,       "Height"  , #__Type_Spin, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_group_state, "STATE" )
+      Properties_AddItem( ide_inspector_properties, #_pi_STATE,  "STATE" )
       Properties_AddItem( ide_inspector_properties, #_pi_disable,     "Disable" , #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_hide,        "Hide"    , #__Type_ComboBox, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_FONT,            "Font"    , #__Type_Button, 0 )
+      Properties_AddItem( ide_inspector_properties, #_pi_FONT,   "FONT"    , #__Type_Button, 0 )
       Properties_AddItem( ide_inspector_properties, #_pi_fontsize,        "size"    , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_fontstyle,       "style"   , #__Type_ComboBox, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_COLOR,           "Color"   , #__Type_ComboBox, 0 )
+      Properties_AddItem( ide_inspector_properties, #_pi_COLOR,   "COLOR"   , #__Type_ComboBox, 0 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorhex,        "hex"   , #__Type_Button, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_coloralpha,      "alpha"   , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue"   , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green"   , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorred,        "red"   , #__Type_Spin, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_group_2,     "" )
-      Properties_AddItem( ide_inspector_properties, #_pi_flag,        "Flag"    , #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_flag,        "Flag"    , #__Type_ComboBox, 0 )
    EndIf
    
    ; ide_inspector_panel_item_3 
@@ -3164,9 +3185,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 168
-; FirstLine = 165
-; Folding = -----------45---------------fD0----------------------------
+; CursorPosition = 939
+; FirstLine = 886
+; Folding = -----------45----------------G7----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
