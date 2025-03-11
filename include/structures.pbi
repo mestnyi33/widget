@@ -215,10 +215,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TEXT Extends _s_edit
          change.b
          ;
+         font.i
          fontID.i
-         fontname.s
-         fontsize.a
-         fontstyle.q
          ;
          pass$
          pass.b
@@ -746,9 +744,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
          List *queues._s_EVENTDATA( )  ; __events( )
       EndStructure
       
+      Structure _s_FONT
+         name.s
+         size.a
+         style.q
+      EndStructure
+      
       ;--     GUI
       Structure _s_GUI
-         *fontID                       ; current drawing fontID
+         fontID.i                       ; current drawing fontID
+         Map font._s_FONT( )
+         ;
          *root._s_ROOT                 ; enumerate root
          *drawingroot._s_ROOT
          *opened._s_WIDGET             ; last opened-list element
@@ -772,8 +778,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 219
+; CursorPosition = 401
+; FirstLine = 396
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

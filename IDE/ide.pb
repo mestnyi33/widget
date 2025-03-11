@@ -26,14 +26,12 @@ Enumeration
    #_pi_disable
    #_pi_hide
    ;
-   #_pi_fontgroup
-   #_pi_fontname
+   #_pi_FONT
    #_pi_fontsize
    #_pi_fontstyle
    ;
-   #_pi_colorgroup
-   #_pi_colortype
-   #_pi_color
+   #_pi_COLOR
+   #_pi_colorhex
    #_pi_coloralpha
    #_pi_colorblue
    #_pi_colorgreen
@@ -168,7 +166,6 @@ Declare$  GetWord( text$, len, caret )
 ;
 Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   NumericString( string$ )
-Declare.q MakeFlag( Flag_Str.s )
 Declare.q MakeConstants( string$ )
 ;
 ;- INCLUDEs
@@ -296,7 +293,7 @@ Procedure ide_addline( *new._s_widget )
       Protected img =- 1
       CountItems = CountItems( ide_inspector_elements )
       For i = 0 To CountItems - 1
-         If LCase(newClass.s) = LCase(GetItemText( ide_inspector_elements, i ))
+         If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_elements, i ))
             img = GetItemData( ide_inspector_elements, i )
             Break
          EndIf
@@ -424,7 +421,7 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
             ;
             ;Debug *this\WIdgetChange(  ) = 1
             Select *row\index
-               Case #_pi_fontname, #_pi_Color
+               Case #_pi_FONT, #_pi_colorhex
                   Resize(*this,
                          *row\x + *second\scroll_x( ) + (*second\inner_width( )-dpiscaled(2)-*this\width), 
                          *row\y + *second\scroll_y( ), 
@@ -453,48 +450,43 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
    If *row
       *this = *row\data
       
+      If *last 
+         If *last = *this
+            Hide( *this, #False )
+         Else
+            Hide( *last, #True )
+         EndIf
+      EndIf
+      
       ;  
       If *this 
-         If *row\childrens
-            If Not Hide( *this )
-               Hide( *this, #True )
-            EndIf
-         Else
-            If *last = *this
-               ;\\ show widget
-               Hide( *this, #False )
-            Else
-               If *last 
-                  Hide( *last, #True )
-               EndIf
-               
-               *last = *this
-               
-               ;
-               Select Type( *this )
-                  Case #__type_String
-                     If GetData( *this ) = #_pi_class
-                        *this\text\upper = 1
-                     Else
-                        *this\text\upper = 0
-                     EndIf
-                     SetText( *this, *row\text\string )
-                     
-                  Case #__type_Spin
-                     SetState( *this, Val(*row\text\string) )
-                     
-                  Case #__type_ComboBox
-                     Select LCase(*row\text\string)
-                        Case "false" : SetState( *this, 0)
-                        Case "true"  : SetState( *this, 1)
-                     EndSelect
-                     
-               EndSelect
-               
-               ;
-               Properties_ButtonResize( *second )
-               ;SetActive( *this )
-            EndIf
+         If *last <> *this
+            *last = *this
+            
+            ;
+            Select Type( *this )
+               Case #__type_String
+                  If GetData( *this ) = #_pi_class
+                     *this\text\upper = 1
+                  Else
+                     *this\text\upper = 0
+                  EndIf
+                  SetText( *this, *row\text\string )
+                  
+               Case #__type_Spin
+                  SetState( *this, Val(*row\text\string) )
+                  
+               Case #__type_ComboBox
+                  Select LCase(*row\text\string)
+                     Case "false" : SetState( *this, 0)
+                     Case "true"  : SetState( *this, 1)
+                  EndSelect
+                  
+            EndSelect
+            
+            ;
+            Properties_ButtonResize( *second )
+            ;SetActive( *this )
          EndIf
       EndIf
    EndIf
@@ -515,10 +507,20 @@ Procedure   Properties_ButtonEvents( )
          
       Case #__event_LeftClick
          Select GetData(*g)
-            Case #_pi_fontname
-               Define FontName$ = "Arial"  ; установить начальный шрифт (также может быть пустым)
-               Define FontSize  = 14       ; установить начальный размер (также может быть 0)
-               Define Result = FontRequester(FontName$, FontSize, #PB_FontRequester_Effects, GetFontStyle( a_focused( )))
+            Case #_pi_FONT
+               Define font = GetFont( a_focused( ) )
+               Define FontName$ = GetFontName( font ) ; установить начальный шрифт (также может быть пустым)
+               Define FontSize  = GetFontSize( font ) ; установить начальный размер (также может быть 0)
+               Define FontStyle = GetFontStyle( font )
+               Define FontColor = GetFontColor( a_focused( ) ) & $FFFFFF ;| a_focused( )\color\_alpha << 24
+               If Not FontSize
+                  FontSize = 8
+               EndIf
+               If FontName$ = ""
+                  FontName$ = "Courier"
+               EndIf
+               
+               Define Result = FontRequester( FontName$, FontSize, #PB_FontRequester_Effects, FontColor, FontStyle )
                If Result
                   Define Message$ = "Вы выбрали следующий шрифт:"  + #LF$
                   Message$ + "Имя:  " + SelectedFontName()         + #LF$
@@ -535,11 +537,12 @@ Procedure   Properties_ButtonEvents( )
                   EndIf
                   
                   If a_focused( )
-                     Define font = LoadFont( #PB_Any, SelectedFontName( ), SelectedFontSize( ), SelectedFontStyle( ))
+                     font = LoadFont( #PB_Any, SelectedFontName( ), SelectedFontSize( ), SelectedFontStyle( ))
                      SetFont( a_focused( ), font )
-                     SetFontName( a_focused( ), SelectedFontName( ))
-                     SetFontSize( a_focused( ), SelectedFontSize( ))
-                     SetFontStyle( a_focused( ), SelectedFontStyle( ))
+                     font = GetFont( a_focused( ) )
+                     SetFontName( font, SelectedFontName( ))
+                     SetFontSize( font, SelectedFontSize( ))
+                     SetFontStyle( font, SelectedFontStyle( ))
                      Define Color.q = SelectedFontColor( ) & $FFFFFF | a_focused( )\color\_alpha << 24
                      ; SetFontColor( a_focused( ), RGB( Red(Color), Green(Color), Blue(Color) ))
                      SetFontColor( a_focused( ), RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ))
@@ -552,7 +555,7 @@ Procedure   Properties_ButtonEvents( )
                EndIf
                ;MessageRequester("Инфо", Message$, #PB_MessageRequester_Ok)
    
-            Case #_pi_Color
+            Case #_pi_colorhex
                If a_focused( )
                   Define Color.q = ColorRequester( GetColor( a_focused( ), #PB_Gadget_BackColor )) & $FFFFFF | a_focused( )\color\_alpha << 24
                   
@@ -626,9 +629,9 @@ Procedure   Properties_ButtonEvents( )
                
             Case #__type_ComboBox
                Select GetData(*g) 
-                  Case #_pi_colortype
+                  Case #_pi_COLOR
                      ;Debug GetItemText( *g, GetState( *g))
-                     Properties_SetItemText( ide_inspector_properties, #_pi_colortype, GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_properties, #_pi_COLOR, GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
                          
                   Case #_pi_id
@@ -692,7 +695,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
             Case #_pi_align
                *this = AnchorBox::Create( *parent, 0,0,0,20 )
                
-            Case #_pi_fontname, #_pi_Color
+            Case #_pi_FONT, #_pi_colorhex
                *this = Create( *parent, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", flag, 0, 0, 0, 0, 0, 0 )
                
          EndSelect
@@ -712,7 +715,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                   *this\popupbar\flag | #__flag_CheckBoxes
                EndIf
                
-            Case #_pi_colortype
+            Case #_pi_COLOR
                AddItem(*this, -1, "BackColor")
                AddItem(*this, -1, "LineColor")
                AddItem(*this, -1, "FontColor")
@@ -832,7 +835,7 @@ Procedure   Properties_Events( )
    Select __event
       Case #__event_Down
          If is_parent_item( *g, __item )
-            Properties_ButtonHide( *second, #True)
+           ; Properties_ButtonHide( *second, #True)
          EndIf
          If Not EnteredButton( )
             SetState( *g, __item)
@@ -892,6 +895,7 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected position = 90
    Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines)
    Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines)
+   ;*second\row\sublevelsize = 0
    
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
@@ -948,8 +952,8 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       Properties_SetItemText( ide_inspector_properties, #_pi_text, replace$ )
    EndIf
    If type$ = "Focus" Or type$ = "Color"
-      Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype)) ) & $FFFFFF | *object\color\_alpha << 24
-      Properties_SetItemText( ide_inspector_properties, #_pi_color,     "$"+Hex(Color & $FFFFFF | *object\color\_alpha << 24))
+      Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_COLOR)) ) & $FFFFFF | *object\color\_alpha << 24
+      Properties_SetItemText( ide_inspector_properties, #_pi_colorhex,     "$"+Hex(Color & $FFFFFF | *object\color\_alpha << 24))
       Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(color)) )
       Properties_SetItemText( ide_inspector_properties, #_pi_colorblue, Str(Blue(color)) )
       Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
@@ -957,14 +961,18 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    EndIf
    If type$ = "Focus" Or type$ = "Font"
       Define font = GetFont( *object )
-      Properties_SetItemText( ide_inspector_properties, #_pi_fontname, GetFontName( *object ) )
-      ; Properties_SetItemText( ide_inspector_properties, #_pi_fontcolor, Str( GetFontColor( *object ) ))
-      If GetFontName( *object )
-         Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, Str( GetFontSize( *object ) ))
+      Properties_SetItemText( ide_inspector_properties, #_pi_FONT, GetFontName( font ) )
+      ; Properties_SetItemText( ide_inspector_properties, #_pi_fontcolor, Str( GetFontColor( font ) ))
+      If GetFontName( font )
+         Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, Str( GetFontSize( font ) ))
       Else
          Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, "" )
       EndIf
-      Properties_SetItemText( ide_inspector_properties, #_pi_fontstyle, RemoveString( MakeFlagString( "Font", GetFontStyle( *object ) ), "#PB_Font_"))
+      Define style$ = RemoveString( MakeConstantsString( "Font", GetFontStyle( font ) ), "#PB_Font_")
+      If style$ = ""
+         style$ = "None"
+      EndIf
+      Properties_SetItemText( ide_inspector_properties, #_pi_fontstyle, style$)
    EndIf 
    If type$ = "Focus" Or type$ = "Resize"
       ; Debug "---- "+type$
@@ -1474,7 +1482,7 @@ Procedure MakeLine( string$, findtext$ )
                   
                   ; flag
                   If flag$
-                     flags = MakeFlag(Flag$)
+                     flags = MakeConstants(Flag$)
                   EndIf
                   
                   ; window parent ID
@@ -1546,7 +1554,7 @@ Procedure MakeLine( string$, findtext$ )
                      EndIf
                      text$ = Trim( param2$, Chr('"'))
                      param3 = Val(param3$)
-                     Flags = MakeFlag( flag$ )
+                     Flags = MakeConstants( flag$ )
                      
                      AddItem( *new, param1, text$, param3, Flags )
                      
@@ -2791,14 +2799,12 @@ Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_properties, #_pi_disable,     "Disable" , #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_hide,        "Hide"    , #__Type_ComboBox, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_fontgroup,       "Font" )
-      Properties_AddItem( ide_inspector_properties, #_pi_fontname,        "name"    , #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_FONT,            "Font"    , #__Type_Button, 0 )
       Properties_AddItem( ide_inspector_properties, #_pi_fontsize,        "size"    , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_fontstyle,       "style"   , #__Type_ComboBox, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_colorgroup,      "Color"   )
-      Properties_AddItem( ide_inspector_properties, #_pi_colortype,       "type"   , #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_color,           "hex"   , #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_COLOR,           "Color"   , #__Type_ComboBox, 0 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorhex,        "hex"   , #__Type_Button, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_coloralpha,      "alpha"   , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue"   , #__Type_Spin, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green"   , #__Type_Spin, 1 )
@@ -3113,6 +3119,13 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    EndIf
    ;    
    
+   
+   Define font = GetFont( root( ) )
+   SetFontName( font, "Courier")
+   SetFontSize( font, 9)
+   ;SetFontStyle( font, SelectedFontStyle( ))
+                     
+   
    a_set( ide_design_form )
    Define code$ = GenerateGUICODE( ide_design_panel_MDI )
    SetText( ide_design_DEBUG, code$ )
@@ -3151,9 +3164,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 713
-; FirstLine = 606
-; Folding = ----------vb9---------------4Q-----------------------------
+; CursorPosition = 168
+; FirstLine = 165
+; Folding = -----------45---------------fD0----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

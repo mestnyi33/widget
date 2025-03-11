@@ -257,22 +257,24 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global DrawingDC = 0
       
       Global __gui._s_GUI
-      Global _macro_call_count_
       ;Global NewMap *roots._s_root( )
       ;Global *event._s_EVENT( )
       
       ;-  ----------------
       ;-   DECLARE_macros
       ;-  ----------------
-      Macro Debugger( _text_ = "" )
+      Macro allocate( _struct_name_, _struct_type_ = )
+         _s_#_struct_name_#_struct_type_ = AllocateStructure( _s_#_struct_name_ )
+      EndMacro
+      
+      Global _macro_call_count_
+      Macro Debug_out( _text_ = "" )
          CompilerIf #PB_Compiler_Debugger  ; Only enable assert in debug mode
             Debug " " + _macro_call_count_ + _text_ + "   ( debug >> " + #PB_Compiler_Procedure + " ( " + #PB_Compiler_Line + " ))"
             _macro_call_count_ + 1
          CompilerEndIf
       EndMacro
-      
-      ;- demo text
-      Macro debug_position( _root_, _text_ = "" )
+      Macro Debug_position( _root_, _text_ = "" )
          Debug " " + _text_ + " - "
          ForEach widgets( )
             If widgets( )\root = _root_
@@ -360,10 +362,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare DPIScaled( _value_ )
       
       ;-
-      Macro allocate( _struct_name_, _struct_type_ = )
-         _s_#_struct_name_#_struct_type_ = AllocateStructure( _s_#_struct_name_ )
-      EndMacro
-      
       ;===TEMP====
       Macro AlphaState( ) 
          color\_alpha
@@ -1438,17 +1436,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i SetData( *this, *data )
       Declare.i GetItemData( *this, item.l )
       Declare.i SetItemData( *this, item.l, *data )
-      
-      Declare.s GetFontName( *this )
+      ;
+      Declare.s GetFontName( FontID.i )
+      Declare.a GetFontSize( FontID.i )
+      Declare.q GetFontStyle( FontID.i )
+      Declare   SetFontName( FontID.i, name.s )
+      Declare   SetFontSize( FontID.i, size.a )
+      Declare   SetFontStyle( FontID.i, style.q )
+      ;
       Declare.i GetFontColor( *this )
-      Declare.a GetFontSize( *this )
-      Declare.q GetFontStyle( *this )
-      Declare   SetFontName( *this, name.s )
       Declare   SetFontColor( *this, color.i )
-      Declare   SetFontSize( *this, size.a )
-      Declare   SetFontStyle( *this, style.q )
       Declare.i GetFont( *this )
-      Declare.i SetFont( *this, FontID.i )
+      Declare.i SetFont( *this, Font.i )
       Declare.i GetItemFont( *this, Item.l )
       Declare.i SetItemFont( *this, Item.l, Font.i )
       
@@ -8727,6 +8726,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             SetColor( *this, ColorType, color, 0 )
             SetColor( *this, ColorType, color, 1 )
             SetColor( *this, ColorType, color, 2 )
+            SetColor( *this, ColorType, color, 3 )
          Else
             If Not alpha
                Color = Color & $FFFFFF | 255 << 24
@@ -8797,6 +8797,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [0] )
                      add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [1] )
                      add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [2] )
+                     add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [3] )
                   Else
                      add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [ColorState] )
                   EndIf
@@ -9849,43 +9850,78 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.i GetFont( *this._s_WIDGET )
-         ProcedureReturn GetFontID( *this )
+      Procedure.s  GetFontName( FontID.i )
+        ; Debug " get "+FontID
+         With __gui
+            If FindMapElement( \font( ), Str(FontID) )
+               ProcedureReturn \font( )\name
+            EndIf
+         EndWith
       EndProcedure
       
-      Procedure.s  GetFontName( *this._s_WIDGET )
-         ProcedureReturn *this\text\fontname
+      Procedure.a GetFontSize( FontID.i )
+         With __gui
+            If FindMapElement( \font( ), Str(FontID) )
+               ProcedureReturn \font( )\size
+            EndIf
+         EndWith
       EndProcedure
       
-      Procedure.a GetFontSize( *this._s_WIDGET )
-         ProcedureReturn *this\text\fontsize
+      Procedure.q GetFontStyle( FontID.i )
+         With __gui
+            If FindMapElement( \font( ), Str(FontID) )
+               ProcedureReturn \font( )\style
+            EndIf
+         EndWith
       EndProcedure
       
-      Procedure.q GetFontStyle( *this._s_WIDGET )
-         ProcedureReturn *this\text\fontstyle
-      EndProcedure
-      
-      Procedure   SetFontName( *this._s_WIDGET, name.s )
-        *this\text\fontname = name
-      EndProcedure
-      
-      Procedure   SetFontSize( *this._s_WIDGET, size.a )
-         *this\text\fontsize = size
-      EndProcedure
-      
-      Procedure   SetFontStyle( *this._s_WIDGET, style.q )
-         *this\text\fontstyle = style
-      EndProcedure
-      
-      Procedure.i SetFont( *this._s_WIDGET, FontID.i )
-         Protected result
-         
-         If IsFont( FontID )
-            FontID = FontID( FontID )
+      Procedure   SetFontName( FontID.i, name.s )
+         With __gui
+;             If Not FindMapElement( \font( ), Str(FontID) )
+;                AddMapElement( \font( ), Str(FontID) )
+;             EndIf
+            \font( Str(FontID) )\name = name
             
-            If GetFontID( *this ) <> FontID
-               SetFontID( *this, FontID )
-               result = #True
+         ;Debug "set "+FontID
+            ; Debug GetFontName( FontID )
+         EndWith
+      EndProcedure
+      
+      Procedure   SetFontSize( FontID.i, size.a )
+         With __gui
+;             If Not FindMapElement( \font( ), Str(FontID) )
+;                AddMapElement( \font( ), Str(FontID) )
+;             EndIf
+            \font( Str(FontID) )\size = size
+         EndWith
+      EndProcedure
+      
+      Procedure   SetFontStyle( FontID.i, style.q )
+         With __gui
+;             If Not FindMapElement( \font( ), Str(FontID) )
+;                AddMapElement( \font( ), Str(FontID) )
+;             EndIf
+            \font( Str(FontID) )\style = style
+         EndWith
+      EndProcedure
+      
+      ;-
+      Procedure.i GetFont( *this._s_WIDGET )
+         ProcedureReturn *this\text\font
+         ProcedureReturn GetFontID( *this ) 
+      EndProcedure
+      
+      Procedure.i SetFont( *this._s_WIDGET, Font.i )
+         Protected result, FontID
+         
+         If IsFont( Font )
+            If *this\text\font <> Font
+               *this\text\font = Font
+               FontID = FontID( Font )
+               
+               If ChangeFontID( *this, FontID )
+                  result = #True
+               EndIf
             EndIf
          EndIf
          
@@ -9905,39 +9941,44 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             
-            result = GetFontID( *this\__rows( ) )
+            result = *this\__rows( )\text\font ; GetFontID( *this\__rows( ) )
          EndIf
          
          ProcedureReturn result
       EndProcedure
       
       Procedure.i SetItemFont( *this._s_WIDGET, Item.l, Font.i )
-         Protected result
-         Protected FontID.i = FontID( Font )
+         Protected result, FontID
          
-         Protected *TabBox._s_WIDGET
-         If *this\type = #__type_Panel
-            *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_TabBar
-            *TabBox = *this
-         EndIf
-         
-         If *TabBox
-            If is_no_select_item_( *TabBox\__tabs( ), Item )
-               ProcedureReturn #False
+         If IsFont( Font )
+            FontID = FontID( Font )
+            
+            Protected *TabBox._s_WIDGET
+            If *this\type = #__type_Panel
+               *TabBox = *this\tabbar
+            ElseIf *this\type = #__type_TabBar
+               *TabBox = *this
             EndIf
-            ;
-            If ChangeFontID( *TabBox\__tabs( ), FontID )
-               result = #True
-            EndIf
-         Else
-            If *this\row
-               If is_no_select_item_( *this\__rows( ), Item )
+            
+            If *TabBox
+               If is_no_select_item_( *TabBox\__tabs( ), Item )
                   ProcedureReturn #False
                EndIf
                ;
-               If ChangeFontID( *this\__rows( ), FontID )
+               If ChangeFontID( *TabBox\__tabs( ), FontID )
+                  *TabBox\__tabs( )\text\font = Font
                   result = #True
+               EndIf
+            Else
+               If *this\row
+                  If is_no_select_item_( *this\__rows( ), Item )
+                     ProcedureReturn #False
+                  EndIf
+                  ;
+                  If ChangeFontID( *this\__rows( ), FontID )
+                     *this\__rows( )\text\font = Font
+                     result = #True
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -16501,13 +16542,15 @@ chr$ = ","
                   EndIf
                   
                   ; reset item z - order
-                  Protected buttonpos = DPIScaled(6)
-                  Protected buttonsize = DPIScaled(9)
+                  If *this\mode\Buttons
+                     Protected buttonpos = DPIScaled(6)
+                     Protected buttonsize = DPIScaled(9)
+                  EndIf
                   Protected boxpos = DPIScaled(4)
                   Protected boxsize = buttonsize + dpi_scale_two
                   Protected bs = Bool( *this\fs )
                   Protected scroll_width
-                  
+                        
                   ;\\
                   PushListPosition( *rows( ))
                   ForEach *rows( )
@@ -23050,7 +23093,7 @@ chr$ = ","
             If constants::BinaryFlag( Flag, #__flag_Transparent )
                *root\color\back  = - 1
             EndIf
-            SetFontID( *root, PB_( GetGadgetFont )( #PB_Default ))
+            ChangeFontID( *root, PB_( GetGadgetFont )( #PB_Default ))
             
             ;\\
             PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
@@ -25021,9 +25064,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18772
-; FirstLine = 18769
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9853
+; FirstLine = 9809
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

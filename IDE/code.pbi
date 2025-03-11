@@ -339,24 +339,7 @@ Procedure NumericString( string$ )
 EndProcedure
 
 ;-
-Procedure.q MakeConstants( string$ )
-   Protected.q result
-   
-   Select string$
-      Case "#True"                      : result = #True
-      Case "#False"                     : result = #False
-      Case "#PB_Gadget_FrontColor"      : result = #PB_Gadget_FrontColor      ; Цвет текста гаджета
-      Case "#PB_Gadget_BackColor"       : result = #PB_Gadget_BackColor       ; Фон гаджета
-      Case "#PB_Gadget_LineColor"       : result = #PB_Gadget_LineColor       ; Цвет линий сетки
-      Case "#PB_Gadget_TitleFrontColor" : result = #PB_Gadget_TitleFrontColor ; Цвет текста в заголовке    (для гаджета CalendarGadget())
-      Case "#PB_Gadget_TitleBackColor"  : result = #PB_Gadget_TitleBackColor  ; Цвет фона в заголовке 	 (для гаджета CalendarGadget())
-      Case "#PB_Gadget_GrayTextColor"   : result = #PB_Gadget_GrayTextColor   ; Цвет для серого текста     (для гаджета CalendarGadget())
-   EndSelect
-   
-   ProcedureReturn result
-EndProcedure
-
-Procedure$  MakeFlagString( type$, flag.q ) ; 
+Procedure$  MakeConstantsString( type$, flag.q ) ; 
    Protected result$
    
    Select type$
@@ -553,15 +536,23 @@ Procedure$  MakeFlagString( type$, flag.q ) ;
    ProcedureReturn Trim( result$, "|" )
 EndProcedure
 
-Procedure.q MakeFlag( Flag_Str.s )
-   Protected i, Flag.q, count, String$
+Procedure.q MakeConstants( string$ )
+   Protected i, Flag.q, count, str$
    
-   If Flag_Str
-      count = CountString(Flag_Str,"|")
+   If string$
+      count = CountString(string$,"|")
       For I = 0 To count
-         String$ = Trim(StringField(Flag_Str,(I+1),"|"))
+         str$ = Trim(StringField(string$,(I+1),"|"))
          
-         Select String$
+         Select str$
+            Case "#True"                              : Flag = Flag | #True
+            Case "#False"                             : Flag = Flag | #False
+            Case "#PB_Gadget_FrontColor"              : Flag = Flag | #PB_Gadget_FrontColor
+            Case "#PB_Gadget_BackColor"               : Flag = Flag | #PB_Gadget_BackColor 
+            Case "#PB_Gadget_LineColor"               : Flag = Flag | #PB_Gadget_LineColor 
+            Case "#PB_Gadget_TitleFrontColor"         : Flag = Flag | #PB_Gadget_TitleFrontColor
+            Case "#PB_Gadget_TitleBackColor"          : Flag = Flag | #PB_Gadget_TitleBackColor 
+            Case "#PB_Gadget_GrayTextColor"           : Flag = Flag | #PB_Gadget_GrayTextColor 
                ; window
             Case "#PB_Window_BorderLess"              : Flag = Flag | #PB_Window_BorderLess
             Case "#PB_Window_Invisible"               : Flag = Flag | #PB_Window_Invisible
@@ -989,7 +980,7 @@ Procedure$  MakeObjectString( *g._s_WIDGET, space$ )
    Select type$
       Case "Panel", "Web", "IPAddress", "Option", "Scintilla", "Shortcut"
       Default
-         Flag$ = MakeFlagString( type$, *g\flag )
+         Flag$ = MakeConstantsString( type$, *g\flag )
    EndSelect
    
    ;
@@ -1828,8 +1819,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 358
-; FirstLine = 353
-; Folding = ----------P+------v--------v4----+b8H+---
+; CursorPosition = 539
+; FirstLine = 478
+; Folding = ---------+-----------------80---v-3+h---
 ; EnableXP
 ; DPIAware
