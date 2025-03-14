@@ -15,23 +15,25 @@ Enumeration
    #_pi_class
    #_pi_text
    ;
-   #_pi_LAYOUT 
+   #_pi_group_LAYOUT 
    #_pi_align
    #_pi_x
    #_pi_y
    #_pi_width
    #_pi_height
    ;
-   #_pi_STATE 
-   #_pi_disable
+   #_pi_group_VIEW 
    #_pi_hide
+   #_pi_disable
+   #_pi_cursor
+   #_pi_IMAGE
    ;
    #_pi_FONT
    #_pi_fontsize
    #_pi_fontstyle
    ;
    #_pi_COLOR
-   #_pi_colorhex
+   #_pi_colortype
    #_pi_coloralpha
    #_pi_colorblue
    #_pi_colorgreen
@@ -156,8 +158,7 @@ Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#P
 Declare   ide_addline( *new )
 Declare   MakeID( class$ )
 ;
-Declare.s GenerateGUICODE( *mdi, mode.a = 0 )
-Declare.s GeneratePBCode( *parent )
+Declare.s Code_Generate( *parent )
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   MakeCallFunction( str$, arg$, findtext$ )
 Declare   GetArgIndex( text$, len, caret, mode.a = 0 )
@@ -166,6 +167,7 @@ Declare$  GetWord( text$, len, caret )
 Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   NumericString( string$ )
 Declare.q MakeConstants( string$ )
+Declare$  MakeConstantsString( type$, flag.q ) ; 
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
@@ -186,7 +188,12 @@ Procedure RunPreview(SourceCode$)
    Protected TempFileName$, hTempFile
    Protected CompilerPath$, CompilPreview, CompilPreviewOutput$
    
-   CompilerPath$ = #PB_Compiler_Home + "Compilers\pbcompiler.exe"
+   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      CompilerPath$ = #PB_Compiler_Home + "Compilers\pbcompiler.exe"
+   CompilerElse
+      CompilerPath$ = #PB_Compiler_Home + "pbcompiler"
+   CompilerEndIf
+
    If FileSize(CompilerPath$)
       TempFileName$ = "~preview.pb"
       hTempFile = CreateFile(#PB_Any, TempFileName$, #PB_UTF8)
@@ -194,19 +201,23 @@ Procedure RunPreview(SourceCode$)
          WriteStringFormat(hTempFile, #PB_UTF8)
          WriteStringN(hTempFile, SourceCode$)
          CloseFile(hTempFile)
-         
+         ;
          PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension) + ".exe"
          CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " /EXE " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /XP /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
          If CompilPreview
+            ; WaitProgram(CompilPreview)
             While ProgramRunning(CompilPreview)
                If AvailableProgramOutput(CompilPreview)
                   CompilPreviewOutput$ = ReadProgramString(CompilPreview)
                EndIf
             Wend
+            
             If ProgramExitCode(CompilPreview)
+               KillProgram(CompilPreview)
                CloseProgram(CompilPreview)
                MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe " + GetFilePart(TempFileName$) + " /EXE " + GetFilePart(PreviewProgramName$) + #CRLF$+#CRLF$+ CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
             Else
+               KillProgram(CompilPreview)
                CloseProgram(CompilPreview)
                If FileSize(PreviewProgramName$)
                   DeleteFile(TempFileName$)
@@ -420,7 +431,7 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
             ;
             ;Debug *this\WIdgetChange(  ) = 1
             Select *row\index
-               Case #_pi_FONT, #_pi_colorhex
+               Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
                   Resize(*this,
                          *row\x + *second\scroll_x( ) + (*second\inner_width( )-*this\width), 
                          *row\y + *second\scroll_y( ), 
@@ -554,7 +565,7 @@ Procedure   Properties_ButtonEvents( )
                EndIf
                ;MessageRequester("Инфо", Message$, #PB_MessageRequester_Ok)
    
-            Case #_pi_colorhex
+            Case #_pi_COLOR
                If a_focused( )
                   Define Color.q = ColorRequester( GetColor( a_focused( ), #PB_Gadget_BackColor )) & $FFFFFF | a_focused( )\color\_alpha << 24
                   
@@ -628,9 +639,9 @@ Procedure   Properties_ButtonEvents( )
                
             Case #__type_ComboBox
                Select GetData(*g) 
-                  Case #_pi_COLOR
+                  Case #_pi_colortype
                      ;Debug GetItemText( *g, GetState( *g))
-                     Properties_SetItemText( ide_inspector_properties, #_pi_COLOR, GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_properties, #_pi_colortype, GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
                          
                   Case #_pi_id
@@ -694,7 +705,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
             Case #_pi_align
                *this = AnchorBox::Create( *parent, 0,0,0,20 )
                
-            Case #_pi_FONT, #_pi_colorhex
+            Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
                *this = Create( *parent, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", flag, 0, 0, 0, 0, 0, 0 )
                
          EndSelect
@@ -705,21 +716,35 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
          Select item
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
-               AddItem(*this, -1, "#PB_Font_Bold")        ; Шрифт будет выделен жирным
-               AddItem(*this, -1, "#PB_Font_Italic")      ; Шрифт будет набран курсивом
-               AddItem(*this, -1, "#PB_Font_Underline")   ; Шрифт будет подчеркнут (только для Windows)
-               AddItem(*this, -1, "#PB_Font_StrikeOut")   ; Шрифт будет зачеркнут (только для Windows)
-               AddItem(*this, -1, "#PB_Font_HighQuality") ; Шрифт будет в высококачественном режиме (медленнее) (только для Windows)
+               AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
+               AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
+               AddItem(*this, -1, "Underline")   ; Шрифт будет подчеркнут (только для Windows)
+               AddItem(*this, -1, "StrikeOut")   ; Шрифт будет зачеркнут (только для Windows)
+               AddItem(*this, -1, "HighQuality") ; Шрифт будет в высококачественном режиме (медленнее) (только для Windows)
                If *this\popupbar
                   *this\popupbar\flag | #__flag_CheckBoxes
                EndIf
                
-            Case #_pi_COLOR
+            Case #_pi_colortype
                AddItem(*this, -1, "BackColor")
-               AddItem(*this, -1, "LineColor")
                AddItem(*this, -1, "FontColor")
-               AddItem(*this, -1, "FrameColor")
-               AddItem(*this, -1, "ForeColor")
+;                AddItem(*this, -1, "LineColor")
+;                AddItem(*this, -1, "FrameColor")
+;                AddItem(*this, -1, "ForeColor")
+               
+            Case #_pi_cursor
+               AddItem(*this, -1, "Default")
+               AddItem(*this, -1, "Arrows")
+               AddItem(*this, -1, "Busy")
+               AddItem(*this, -1, "Cross")
+               AddItem(*this, -1, "Denied")
+               AddItem(*this, -1, "Hand")
+               AddItem(*this, -1, "IBeam")
+               AddItem(*this, -1, "Invisible")
+               AddItem(*this, -1, "LeftDownRightUp")
+               AddItem(*this, -1, "LeftRight")
+               AddItem(*this, -1, "LeftUpRightDown")
+               AddItem(*this, -1, "UpDown")
                
             Default
                AddItem(*this, -1, "False")
@@ -807,12 +832,12 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       Define color_properties.q = $FFBF9CC3;$BE80817D
       Define fcolor_properties.q = $CA2E2E2E
       
-      If Type > 0
-         SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
-      SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
-   Else
-         ;SetItemFont( *first, item, font_properties)
-         ;SetItemFont( *second, item, font_properties)
+;       If Type > 0
+;          SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
+;          SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
+;       Else
+;          ;SetItemFont( *first, item, font_properties)
+;          ;SetItemFont( *second, item, font_properties)
          
          SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
          SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
@@ -821,7 +846,7 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
          
          SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
          SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-      EndIf
+;       EndIf
    Else
       SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
       SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
@@ -911,7 +936,8 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected position = 90
    Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_borderLess)
    Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_borderLess)
-   ;*second\padding\x = 10
+;    *first\padding\x = 10
+;    *second\padding\x = 10
    
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
@@ -974,8 +1000,8 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       Properties_SetItemText( ide_inspector_properties, #_pi_text, replace$ )
    EndIf
    If type$ = "Focus" Or type$ = "Color"
-      Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_COLOR)) ) & $FFFFFF | *object\color\_alpha << 24
-      Properties_SetItemText( ide_inspector_properties, #_pi_colorhex,     "$"+Hex(Color & $FFFFFF | *object\color\_alpha << 24))
+      Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype)) ) & $FFFFFF | *object\color\_alpha << 24
+      Properties_SetItemText( ide_inspector_properties, #_pi_COLOR,     "$"+Hex(Color & $FFFFFF | *object\color\_alpha << 24))
       Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(color)) )
       Properties_SetItemText( ide_inspector_properties, #_pi_colorblue, Str(Blue(color)) )
       Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
@@ -1670,10 +1696,10 @@ Procedure   ide_NewFile( )
    SetState( ide_inspector_panel, 0 )
    
    If Not Hide( ide_design_panel_CODE )
-      SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+      SetText( ide_design_panel_CODE, Code_Generate( ide_design_panel_MDI ) )
       ;                SetActive( ide_design_panel_CODE )
    EndIf
-   ; SetText( ide_design_DEBUG, GeneratePBCode( ide_design_panel_MDI ) )
+   ; SetText( ide_design_DEBUG, Code_Generate( ide_design_panel_MDI ) )
    
 EndProcedure
 
@@ -1712,12 +1738,14 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          ;          
          ;          ; bug hides
          ;          If Not Hide( ide_design_panel_CODE )
-         ;             SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+         ;             SetText( ide_design_panel_CODE, Code_Generate( ide_design_panel_MDI ) )
          ;             ;                SetActive( ide_design_panel_CODE )
          ;          EndIf
          
          
-         Define code$ = GenerateGUICODE( ide_design_panel_MDI )
+         Define code$ = Code_Generate( ide_design_panel_MDI )
+         code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
+         code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
          SetText( ide_design_DEBUG, code$ )
          
          ;
@@ -1744,7 +1772,7 @@ Procedure   ide_SaveFile(Path$) ; Процедура сохранения фай
       If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
                                             " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
                                             " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
-         Text$ = GeneratePBCode( ide_design_panel_MDI )
+         Text$ = Code_Generate( ide_design_panel_MDI )
       Else
          Text$ = GetText( ide_design_panel_CODE )
       EndIf
@@ -2372,20 +2400,8 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          
          ;-  RUN
       Case #_tb_file_run
-         Define Code.s = GeneratePBCode( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
-         Protected sFilePath.s, hFile.i, CompilerPath.s, ProgramName.s
-         Protected Compiler.i, LastProgramString.s, SavTitle.s
-         
-         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-            CompilerPath = #PB_Compiler_Home + "Compilers\pbcompiler.exe"
-         CompilerElse
-            CompilerPath = #PB_Compiler_Home + "pbcompiler"
-         CompilerEndIf
-         
-         Debug "run "+CompilerPath
-         
-         
-         
+         Define Code.s = Code_Generate( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
+
          RunPreview( Code )
          
          
@@ -2560,7 +2576,7 @@ Procedure ide_events( )
          If *g = ide_design_panel
             If __item = 1
                AddItem( ide_design_panel_CODE, 0, "" ) ; BUG 
-               SetText( ide_design_panel_CODE, GeneratePBCode( ide_design_panel_MDI ) )
+               SetText( ide_design_panel_CODE, Code_Generate( ide_design_panel_MDI ) )
                SetActive( ide_design_panel_CODE )
             EndIf
          EndIf
@@ -2688,7 +2704,7 @@ Procedure ide_events( )
    
 EndProcedure
 
-Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
+Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
    
@@ -2805,34 +2821,36 @@ Procedure ide_open( X=100,Y=100,Width=900,Height=700 )
    AddItem( ide_inspector_panel, -1, "properties", 0, 0 )  
    ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
    If ide_inspector_properties
-      Properties_AddItem( ide_inspector_properties, #_pi_group_COMMON,     "COMMON"  )
-      Properties_AddItem( ide_inspector_properties, #_pi_ID,     "#ID"  , #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_class,        "Class"   , #__Type_String, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_text,         "Text"    , #__Type_String, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_group_COMMON, "COMMON" )
+      Properties_AddItem( ide_inspector_properties, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_class,          "Class",    #__Type_String, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_text,           "Text",     #__Type_String, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_LAYOUT, "LAYOUT" )
-      Properties_AddItem( ide_inspector_properties, #_pi_align, "Align"+Chr(10)+"LEFT&TOP", #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_x,            "X"       , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_y,            "Y"       , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_width,        "Width"   , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_height,       "Height"  , #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_group_LAYOUT, "LAYOUT" )
+      Properties_AddItem( ide_inspector_properties, #_pi_align,          "Align"+Chr(10)+"LEFT|TOP", #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_x,              "X",        #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_y,              "Y",        #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_width,          "Width",    #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_height,         "Height",   #__Type_Spin, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_STATE,  "STATE" )
-      Properties_AddItem( ide_inspector_properties, #_pi_disable,     "Disable" , #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_hide,        "Hide"    , #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_group_VIEW,   "VIEW" )
+      Properties_AddItem( ide_inspector_properties, #_pi_hide,           "Hide",     #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_disable,        "Disable",  #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_FONT,   "FONT"    , #__Type_Button, 0 )
-      Properties_AddItem( ide_inspector_properties, #_pi_fontsize,        "size"    , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_fontstyle,       "style"   , #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_FONT,           "Font",     #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_fontsize,       "size",     #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_properties, #_pi_fontstyle,      "style",    #__Type_ComboBox, 2 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_COLOR,   "COLOR"   , #__Type_ComboBox, 0 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorhex,        "hex"   , #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_coloralpha,      "alpha"   , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue"   , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green"   , #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorred,        "red"   , #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_COLOR,           "Color",   #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colortype,       "type",    #__Type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_properties, #_pi_coloralpha,      "alpha",   #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue",    #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green",   #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_properties, #_pi_colorred,        "red",     #__Type_Spin, 2 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_flag,        "Flag"    , #__Type_ComboBox, 0 )
+      Properties_AddItem( ide_inspector_properties, #_pi_flag,          "Flag",      #__Type_ComboBox, 0 )
    EndIf
    
    ; ide_inspector_panel_item_3 
@@ -3148,10 +3166,13 @@ CompilerIf #PB_Compiler_IsMainFile
                      
    
    a_set( ide_design_form )
-   Define code$ = GenerateGUICODE( ide_design_panel_MDI )
-   SetText( ide_design_DEBUG, code$ )
    
-   ;Define code$ = GeneratePBCode( ide_design_panel_MDI )
+    Define code$ = Code_Generate( ide_design_panel_MDI )
+    code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
+    code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
+    SetText( ide_design_DEBUG, code$ )
+        
+   ;Define code$ = Code_Generate( ide_design_panel_MDI )
    ; SetText( ide_design_panel_CODE, code$ )
    ;SetText( ide_design_DEBUG, code$ )
    
@@ -3185,9 +3206,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 939
-; FirstLine = 886
-; Folding = -----------45----------------G7----------------------------
+; CursorPosition = 223
+; FirstLine = 200
+; Folding = -----------vx----------------G7----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

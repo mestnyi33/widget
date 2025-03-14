@@ -58,7 +58,7 @@ EndProcedure
 DeclareModule func
   Declare   SetMouseCursor( CursorID.I, handle.i = #NUL )
   Declare.s InvertCase( Text.s )  
-  Declare.i CreateCursor( ImageID.i, x.l = 0, y.l = 0 )
+  Declare.i CreateCursor( ImageID.i, X.l = 0, Y.l = 0 )
   Declare.s TrimRight(*a, n)
   Declare.s TrimLeft(*a, n)
   
@@ -329,15 +329,15 @@ EndProcedure
     CompilerEndSelect
   EndProcedure
   
-  Procedure.i CreateCursor( ImageID.i, x.l = 0, y.l = 0 )
+  Procedure.i CreateCursor( ImageID.i, X.l = 0, Y.l = 0 )
     If ImageID
       CompilerSelect #PB_Compiler_OS
         CompilerCase #PB_OS_Windows
           Protected *ic
           Protected ico.ICONINFO
           ico\fIcon = 0
-          ico\xHotspot =- x 
-          ico\yHotspot =- y 
+          ico\xHotspot =- X 
+          ico\yHotspot =- Y 
           ico\hbmMask = ImageID
           ico\hbmColor = ImageID
           *ic = CreateIconIndirect_( ico ) 
@@ -346,13 +346,13 @@ EndProcedure
           EndIf
         CompilerCase #PB_OS_Linux
           CompilerIf Subsystem("gtk3")
-            Protected *ic.GdkCursor = gdk_cursor_new_from_pixbuf_( gdk_display_get_default_( ), ImageID, x, y )
+            Protected *ic.GdkCursor = gdk_cursor_new_from_pixbuf_( gdk_display_get_default_( ), ImageID, X, Y )
           CompilerEndIf
         CompilerCase #PB_OS_MacOS
           Protected *ic
           Protected Hotspot.NSPoint
-          Hotspot\x = x
-          Hotspot\y = y
+          Hotspot\x = X
+          Hotspot\y = Y
           *ic = CocoaMessage( 0, 0, "NSCursor alloc" )
           CocoaMessage( 0, *ic, "initWithImage:", ImageID, "hotSpot:@", @Hotspot )
       CompilerEndSelect
@@ -380,12 +380,12 @@ EndProcedure
   EndProcedure
   
   Procedure.s TrimRight(*a, n)
-    Protected *p.string = @*a
+    Protected *p.String = @*a
     *p\s = Left(*p\s, Len(*p\s) - n)
   EndProcedure
   
   Procedure.s TrimLeft(*a, n)
-    Protected *p.string = @*a
+    Protected *p.String = @*a
     *p\s = Right(*p\s, Len(*p\s) - n)
   EndProcedure
   
@@ -473,7 +473,80 @@ EndProcedure
     EndProcedure
   CompilerEndIf
   
-  Procedure.i GetImageHeight( ImageID.i )
+  Procedure.s GetFontName_(FontID)
+  ;
+  ; Return the system name of the font defined by 'FontID'.
+  ;
+  Protected FontName$
+  ;
+  If IsFont(FontID)
+    FontID = FontID(FontID)
+  EndIf
+  ;
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    ; returns the font name of FontID
+    ;
+    Protected String
+    If FontID
+      String = CocoaMessage(0, FontID, "displayName") ; "familyName" and "fontName" for internal use
+                                                      ; use "displayName" for the real name
+      If String
+        FontName$ = PeekS(CocoaMessage(0, String, "UTF8String"), -1, #PB_UTF8)
+      EndIf
+    EndIf
+  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+    ;    
+    ; Create a HDC to get the font info:
+    Protected hdc = GetDC_(#Null)
+    Protected oldFont = SelectObject_(hdc, FontID)
+    ;
+    ; Get the real font name:
+    FontName$ = Space(#LF_FACESIZE) ; Maximum size for font name.
+    GetTextFace_(hdc, #LF_FACESIZE, @FontName$)
+    If FontName$ = "" : FontName$ = "Arial" : EndIf
+    ;
+    ; Clean up:
+    SelectObject_(hdc, oldFont)
+    ReleaseDC_(#Null, hdc)
+  CompilerEndIf
+  ;
+  ProcedureReturn FontName$
+  ;
+EndProcedure
+;
+Procedure.f GetFontSize_(FontID)
+  ;
+  ; Return the size of the font defined by 'FontID'.
+  ;
+  Protected FpointSize.f
+  ;
+  If IsFont(FontID)
+    FontID = FontID(FontID)
+  EndIf
+  ;
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    ; returns the font size of FontID
+    ;
+    Protected pointSize.CGFloat = 0.0
+    ;
+    If FontID
+       CocoaMessage(@pointSize, FontID, "pointSize")
+    EndIf
+    FpointSize = pointSize
+    ProcedureReturn FpointSize
+  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+    ; Get gadget font height in points (to the nearest integer)
+    Protected finfo.LOGFONT
+    Protected hdc = GetDC_(#Null) ; Obtenir le contexte de périphérique
+    If GetObject_(FontID, SizeOf(LOGFONT), @finfo.LOGFONT)
+      FpointSize = -finfo\lfHeight * 72 / GetDeviceCaps_(hdc, #LOGPIXELSY)
+    EndIf
+    ProcedureReturn FpointSize
+  CompilerEndIf
+  ;
+EndProcedure
+;
+Procedure.i GetImageHeight( ImageID.i )
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Protected size.NSSize
       CocoaMessage(@size, ImageID, "size")
@@ -493,18 +566,18 @@ EndProcedure
     CompilerEndIf
   EndProcedure
   
-  Procedure.i SetImageWidth( ImageID.i, width.l )
+  Procedure.i SetImageWidth( ImageID.i, Width.l )
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Protected size.NSSize
-      size\width = width
+      size\width = Width
       CocoaMessage(0, ImageID, "setSize:@", @Size)
     CompilerEndIf
   EndProcedure
   
-  Procedure.i SetImageHeight( ImageID.i, height.l )
+  Procedure.i SetImageHeight( ImageID.i, Height.l )
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Protected size.NSSize
-      size\height = height
+      size\height = Height
       CocoaMessage(0, ImageID, "setSize:@", @Size)
       
       
@@ -534,7 +607,7 @@ EndProcedure
       ImportC ""
         gtk_widget_is_visible(widget)
         gtk_widget_get_window(*Widget.GtkWidget)
-        gtk_entry_set_placeholder_text(*entry, text.p-utf8)
+        gtk_entry_set_placeholder_text(*entry, Text.p-utf8)
         gtk_entry_get_placeholder_text(*entry)
       EndImport
     CompilerEndIf
@@ -800,17 +873,17 @@ EndProcedure
     Dim TempPixelArray.l( array_max_x, array_max_y )
     StartDrawing( ImageOutput( source_image ) )
     DrawingMode( #PB_2DDrawing_AllChannels )
-    For y = 0 To array_max_y
-      For x = 0 To array_max_x
+    For Y = 0 To array_max_y
+      For X = 0 To array_max_x
         Select flip_mode
           Case 0 ; Don't flip.
-            TempPixelArray( x, y ) = Point( x, y )
+            TempPixelArray( X, Y ) = Point( X, Y )
           Case 1 ; Flip vertically.
-            TempPixelArray( x, y ) = Point( x, array_max_y - y )
+            TempPixelArray( X, Y ) = Point( X, array_max_y - Y )
           Case 2 ; Flip horizontally.
-            TempPixelArray( x, y ) = Point( array_max_x - x, y )
+            TempPixelArray( X, Y ) = Point( array_max_x - X, Y )
           Case 3 ; Flip both vertically and horizontally.
-            TempPixelArray( x, y ) = Point( array_max_x - x, array_max_y - y )
+            TempPixelArray( X, Y ) = Point( array_max_x - X, array_max_y - Y )
         EndSelect
       Next
     Next
@@ -827,18 +900,18 @@ EndProcedure
     
     Select rotation_mode
       Case 0 ; Don't rotate.
-        For y = 0 To array_max_y
-          For x = 0 To array_max_x
-            Plot( x, y , TempPixelArray( x, y ) )
+        For Y = 0 To array_max_y
+          For X = 0 To array_max_x
+            Plot( X, Y , TempPixelArray( X, Y ) )
           Next
         Next
         
       Case 1 ; Rotate 90 degrees clockwise.
         out_x = output_image_max_x
-        For y = 0 To array_max_y
+        For Y = 0 To array_max_y
           out_y = 0
-          For x = 0 To array_max_x
-            Plot( out_x, out_y , TempPixelArray( x, y ) )
+          For X = 0 To array_max_x
+            Plot( out_x, out_y , TempPixelArray( X, Y ) )
             out_y + 1
           Next
           out_x - 1
@@ -846,10 +919,10 @@ EndProcedure
         
       Case 2 ; Rotate 180 degrees clockwise.
         out_y = output_image_max_y
-        For y = 0 To array_max_y
+        For Y = 0 To array_max_y
           out_x = output_image_max_x
-          For x = 0 To array_max_x
-            Plot( out_x, out_y , TempPixelArray( x, y ) )
+          For X = 0 To array_max_x
+            Plot( out_x, out_y , TempPixelArray( X, Y ) )
             out_x - 1
           Next
           out_y - 1
@@ -857,10 +930,10 @@ EndProcedure
         
       Case 3 ; Rotate 270 degrees clockwise.
         out_x = 0
-        For y = 0 To array_max_y
+        For Y = 0 To array_max_y
           out_y = output_image_max_y
-          For x = 0 To array_max_x
-            Plot( out_x, out_y , TempPixelArray( x, y ) )
+          For X = 0 To array_max_x
+            Plot( out_x, out_y , TempPixelArray( X, Y ) )
             out_y - 1
           Next
           out_x + 1
@@ -880,9 +953,9 @@ EndModule
 
 CompilerIf #PB_Compiler_IsMainFile
   UseModule func
-  Define x.s = "Привет"
+  Define X.s = "Привет"
   TrimRight(@x, 2)
-  Debug x
+  Debug X
 CompilerEndIf
 
 
@@ -921,8 +994,8 @@ CompilerEndIf
 ;     gtk_main_()
 ;   EndIf
 ; EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 4
-; Folding = ---------------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 443
+; FirstLine = 443
+; Folding = -----------------
 ; EnableXP

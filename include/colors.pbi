@@ -15,14 +15,11 @@
   With *this\blue                        
     \state = 0
     \_alpha = 255
-    
-    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
      
     ; Цвета по умолчанию
     \front[0] = $ff000001
     \fore[0] = $ffF8F8F8 
     \back[0] = $ffE2E2E2
-    \line[0] = $ff000000
     \frame[0] = $ffC8C8C8
     
     ; Цвета если мышь на виджете
@@ -125,28 +122,24 @@
     
     ; Цвета по умолчанию
     \front[0] = $ff000000
-    \Line[0] = $ff000000
     \fore[0] = $FFF6F6F6
     \back[0] = $FFE8E8E8
     \frame[0] = $FFBABABA
     
     ; Цвета если курсор на виджете
     \front[1] = $ff000000
-    \Line[1] = $ff000000
     \fore[1] = $FFF2F2F2 
     \back[1] = $FFDCDCDC 
     \frame[1] = $FFB0B0B0 
     
     ; Цвета если нажали на виджет
     \front[2] = $ff000000
-    \Line[2] = $FFFEFEFE
     \fore[2] = $FFE2E2E2
     \back[2] = $FFB4B4B4
     \frame[2] = $FF6F6F6F
     
     ; Цвета если отключили виджет
     \front[3] = $FFBABABA
-    \Line[3] = $FFBABABA
     \fore[3] = $FFF6F6F6 
     \back[3] = $FFE2E2E2 
     \frame[3] = $FFCECECE
@@ -178,6 +171,6 @@ EndModule
 ; CompilerEndSelect
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
+; CursorPosition = 16
 ; Folding = -
 ; EnableXP

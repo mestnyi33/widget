@@ -1553,7 +1553,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   PostQuit( *root = #Null )
       Declare   WaitQuit( *root = #Null )
       Declare   PostClose( *this )
-      Declare   WaitClose( waittime.l = #PB_Default )
+      Declare   WaitClose( *window = #Null )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Declare   Free( *this )
@@ -8668,14 +8668,6 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                   EndIf
                   _result_ = #True
                EndIf
-            Case #__LineColor
-               If _address_\line#_column_ <> _color_
-                  _address_\line#_column_ = _color_
-;                   If _address_\alpha
-;                      _address_\alpha\line#_column_ = _alpha_
-;                   EndIf
-                  _result_ = #True
-               EndIf
             Case #__FrontColor
                If _address_\front#_column_ <> _color_
                   _address_\front#_column_ = _color_
@@ -8705,17 +8697,17 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Procedure.i GetColor( *this._s_WIDGET, ColorType.l, ColorState.a = 0 )
-         Protected color.i
+         Protected result
          
          Select ColorType
-            Case #__LineColor  : Color = *this\color\line[ColorState]
-            Case #__BackColor  : Color = *this\color\back[ColorState]
-            Case #__FrontColor : Color = *this\color\front[ColorState]
-            Case #__FrameColor : Color = *this\color\frame[ColorState]
-            Case #__ForeColor : Color = *this\color\fore[ColorState]
+            Case #__LineColor  : result = *this\LineColor
+            Case #__BackColor  : result = *this\color\back[ColorState]
+            Case #__FrontColor : result = *this\color\front[ColorState]
+            Case #__FrameColor : result = *this\color\frame[ColorState]
+            Case #__ForeColor  : result = *this\color\fore[ColorState]
          EndSelect
          
-         ProcedureReturn Color
+         ProcedureReturn result
       EndProcedure
       
       Procedure.l SetColor( *this._s_WIDGET, ColorType.l, color.i, ColorState.b = 0 )
@@ -8735,6 +8727,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\color\_alpha = alpha
             add_color( result, *this\color, ColorType, Color, alpha, [ColorState] )
+            If ColorType = #__LineColor
+               If *this\LineColor <> Color
+                  *this\LineColor = Color
+                  result = #True
+               EndIf
+            EndIf
             
             If *this\scroll
                If ColorType = #__BackColor
@@ -8769,7 +8767,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndSelect
          
          Select ColorType
-            Case #__LineColor  : result = *color\line[ColorState]
             Case #__BackColor  : result = *color\back[ColorState]
             Case #__FrontColor : result = *color\front[ColorState]
             Case #__FrameColor : result = *color\frame[ColorState]
@@ -14708,8 +14705,10 @@ chr$ = ","
                      If state 
                         *this\mode\gridlines = DPIScaled(1)
                         *this\mode\gridlines + Bool( *this\mode\gridlines % 2 )
+                        *this\lineColor = $FFC0C0C0
                      Else
                         *this\mode\gridlines = 0
+                        *this\lineColor = 0
                      EndIf
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_collapsed ) 
@@ -15482,7 +15481,6 @@ chr$ = ","
             ;\\ - Create Editor
             If *this\type = #__type_Editor
                *this\mode\fullselection = constants::BinaryFlag( *this\flag, #__flag_RowFullSelect, #False ) * DPIScaled(7)
-               *this\mode\gridlines     = constants::BinaryFlag( *this\flag, #__flag_gridlines ) * DPIScaled(10)
                
                *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_TextNumeric, #False )
                *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
@@ -15871,7 +15869,6 @@ chr$ = ","
             If *this\type = #__type_Splitter
                *this\container  = - 1
                *this\color\back = - 1
-               *this\color\line = - 1
                
                *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
                *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__flag_Vertical ) And 
@@ -16913,11 +16910,15 @@ chr$ = ","
             ;\\ init real drawing font
             draw_font( *rows( ) )
             
+            If ListSize( *this\columns( )) = 1
+               Define property = *this\row\sublevelsize
+            EndIf
+            
             ;\\
             state = *rows( )\ColorState( )
             X     = row_x_( *this, *rows( ) )
             Y     = row_y_( *this, *rows( ) )
-            Xs    = X - _scroll_x_ + *this\row\sublevelsize
+            Xs    = X - _scroll_x_ + property
             Ys    = Y - _scroll_y_
             
             ;\\ Draw selector back
@@ -16939,14 +16940,14 @@ chr$ = ","
             ;\\ Draw items image
             If *rows( )\img\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *rows( )\img\imageID, xs + *rows( )\img\x - *this\row\sublevelsize, ys + *rows( )\img\y, *rows( )\color\ialpha )
+               DrawAlphaImage( *rows( )\img\imageID, xs + *rows( )\img\x - property, ys + *rows( )\img\y, *rows( )\color\ialpha )
             EndIf
             
             ;\\ Draw items text
             If *rows( )\text\string.s
                draw_mode_( #PB_2DDrawing_Transparent )
                If *rows( )\text\x > *this\row\sublevelsize
-                  DrawRotatedText( xs + *rows( )\text\x - *this\row\sublevelsize, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
+                  DrawRotatedText( xs + *rows( )\text\x - property, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
                Else
                   DrawRotatedText( xs + *rows( )\text\x, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
                EndIf
@@ -16964,12 +16965,13 @@ chr$ = ","
             
             ;\\ Horizontal line
             If *this\mode\GridLines
-                ;*rows( )\color\line And
                 draw_mode_alpha_( #PB_2DDrawing_Default )
-                ;If *rows( )\color\line <> *rows( )\color\back
-                  draw_box_( X, ys + *rows( )\height, *rows( )\width, *this\mode\GridLines, *this\color\line )
+               ;If *this\LineColor <> *rows( )\color\back
+                  draw_box_( X, ys + *rows( )\height, *rows( )\width, *this\mode\GridLines, *this\LineColor )
                ;EndIf
-               draw_box_( X, ys, *this\row\sublevelsize, *rows( )\height, *this\color\line )
+               If property
+                  draw_box_( X, ys, *this\row\sublevelsize, *rows( )\height, *this\LineColor )
+               EndIf
             EndIf
          Next
          
@@ -17036,18 +17038,18 @@ chr$ = ","
                      ;                            Debug "panel_0 "+iheight
                      ;                         EndIf
                      
-                     Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, *this\__rows( )\color\line )
+                     Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, *this\LineColor )
                   EndIf
                   
                   ;  for the tree horizontal line
                   If *this\__rows( )\visible And Not *this\__rows( )\hide And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
-                     Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), DPIScaled(7), 1, *this\__rows( )\color\line )
+                     Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), DPIScaled(7), 1, *this\LineColor )
                   EndIf
                Next
                
                ; for the tree item first vertical line
                If *this\RowFirstLevelFirst( ) And *this\RowFirstLevelLast( ) And *this\RowFirstLevelFirst( )\buttonbox
-                  Line((*this\inner_x( ) + *this\padding\x + *this\RowFirstLevelFirst( )\buttonbox\x + *this\RowFirstLevelFirst( )\buttonbox\width / 2) - _scroll_x_, (row_y_( *this, *this\RowFirstLevelFirst( ) ) + *this\RowFirstLevelFirst( )\height / 2) - _scroll_y_, 1, (*this\RowFirstLevelLast( )\y - *this\RowFirstLevelFirst( )\y), *this\RowFirstLevelFirst( )\color\line )
+                  Line((*this\inner_x( ) + *this\padding\x + *this\RowFirstLevelFirst( )\buttonbox\x + *this\RowFirstLevelFirst( )\buttonbox\width / 2) - _scroll_x_, (row_y_( *this, *this\RowFirstLevelFirst( ) ) + *this\RowFirstLevelFirst( )\height / 2) - _scroll_y_, 1, (*this\RowFirstLevelLast( )\y - *this\RowFirstLevelFirst( )\y), *this\LineColor )
                EndIf
                
                ;                If MapSize( *this\linelevel( ) )
@@ -17335,9 +17337,9 @@ chr$ = ","
                
                ; Horizontal line
                If *this\mode\GridLines And
-                  e_rows( )\color\line And e_rows( )\color\line <> e_rows( )\color\back
+                  *this\LineColor And *this\LineColor <> e_rows( )\color\back
                   draw_mode_alpha_( #PB_2DDrawing_Default )
-                  draw_box_( row_x_( *this, e_rows( ) ), Y + e_rows( )\height, e_rows( )\width, *this\mode\GridLines, $fff0f0f0 )
+                  draw_box_( row_x_( *this, e_rows( ) ), Y + e_rows( )\height, e_rows( )\width, *this\mode\GridLines, *this\LineColor )
                EndIf
             EndIf
          Next
@@ -17796,10 +17798,10 @@ chr$ = ","
             X = *this\frame_x( ) + *this\fs + *this\scroll_x( ) + *this\row\sublevelpos + *this\MarginLine( )\width
             ForEach *this\columns( )
                If ListIndex( *this\columns( )) = 0
-                  ; draw_box_( x + *this\columns( )\x, *this\frame_y( ), 1, *this\columns( )\height + *this\fs, $ff000000 )
-                  draw_box_( X + *this\columns( )\x, *this\frame_y( ), 1, *this\frame_height( ), $ff000000 )
+                  ; draw_box_( x + *this\columns( )\x, *this\frame_y( ), *this\mode\GridLines, *this\columns( )\height + *this\fs, *this\LIneColor )
+                  draw_box_( X + *this\columns( )\x, *this\frame_y( ), *this\mode\GridLines, *this\frame_height( ), *this\LIneColor )
                EndIf
-               draw_box_( X + *this\columns( )\x + *this\columns( )\width - 1, *this\frame_y( ), 1, *this\frame_height( ), $ff000000 )
+               draw_box_( X + *this\columns( )\x + *this\columns( )\width - 1, *this\frame_y( ), *this\mode\GridLines, *this\frame_height( ), *this\LIneColor )
             Next
          EndIf
          
@@ -21547,7 +21549,7 @@ chr$ = ","
                NextMapElement(roots( ))
             EndIf
             
-            PushMapPosition(roots( ))
+            ;PushMapPosition(roots( ))
             If EventData( ) <> roots( )\canvas\gadgetID
                ChangeCurrentCanvas( EventData( ), 0 )
                ; root( ) = roots( )
@@ -21563,7 +21565,7 @@ chr$ = ","
                ReDraw( roots( ) )
                roots( )\canvas\repaint = 0
             EndIf
-            PopMapPosition(roots())
+            ;PopMapPosition(roots())
          EndIf
       EndProcedure
       
@@ -23752,11 +23754,11 @@ chr$ = ","
          ProcedureReturn Send( GetWindow( *this ), #__event_close )
       EndProcedure
       
-      Procedure  WaitClose( waittime.l  = #PB_Default )
+      Procedure  WaitClose( *window._s_WIDGET = #Null )
          
          If MapSize( roots( ) )
             Repeat
-               Select WaitWindowEvent( waittime )
+               Select WaitWindowEvent( )
                   Case #PB_Event_CloseWindow
                      Protected window = PB(EventWindow)( )
                      Protected Canvas = - 1 ;PB(GetWindowData)( window )
@@ -25083,9 +25085,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12018
-; FirstLine = 12000
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----f407---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21567
+; FirstLine = 21376
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d4r---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

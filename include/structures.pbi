@@ -127,7 +127,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_COLOR
          state.b ; entered; selected; disabled;
          front.i[4]
-         line.i[4]
          fore.i[4]
          back.i[4]
          Frame.i[4]
@@ -556,8 +555,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-         ;CountType.l
+         lineColor.i
          padding._s_point
+         
+         ;CountType.l
          ;indent.a
          
          ;;; Map *linelevel._s_COORDINATE( )
@@ -778,8 +779,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 401
-; FirstLine = 396
+; CursorPosition = 559
+; FirstLine = 546
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

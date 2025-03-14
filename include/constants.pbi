@@ -405,11 +405,11 @@
       ; #__flag_ = 1<<21
       #__flag_RowMultiSelect  = 1<<21
       ; #__flag_ = 1<<22
-      #__flag_GridLines       = 1<<22
+      #__flag_RowFullSelect   = 1<<22
       ; #__flag_ = 1<<23
       ; #__flag_ = 1<<24
       ; #__flag_ = 1<<25
-      #__flag_RowFullSelect   = 1<<25
+      #__flag_GridLines       = 1<<25
       #__flag_BorderRaised    = 1<<26
       #__flag_BorderDouble    = 1<<27
       ; #__flag_ = 1<<28
@@ -750,8 +750,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 141
+; CursorPosition = 407
+; FirstLine = 399
 ; Folding = ----
 ; Optimizer
 ; EnableXP
