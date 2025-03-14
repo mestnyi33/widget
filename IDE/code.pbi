@@ -345,7 +345,7 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
    
    ;
    If line_break1 = 1
-      line_break1 = - 1
+      line_break1 = 0
       If Not is_window_( *g )
          result$ + space$ + #LF$
       EndIf
@@ -361,7 +361,12 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
       EndIf
    EndIf
    ;
-   If Bool(*g\color\back <> _get_colors_( )\back)
+   If *g\ChangeFont
+      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", ("+ Str( *g\text\font ) +") )" + #LF$
+      line_break1 = 1
+   EndIf            
+   
+   If *g\ChangeColor 
       If is_window_(*g) 
          If pb_object$
             result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
@@ -375,21 +380,18 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
    EndIf            
    ;
    If GetState(*g) > 0
+      line_break1 = 1
       result$ + Space$ + "Set" + pb_object$ + "State( " + GetClass( *g ) + ", "+ GetState(*g) + " )" + #LF$
    EndIf
    If Disable(*g) > 0
+      line_break1 = 1
       result$ + Space$ + "Disable" + pb_object$ + "( " + GetClass( *g ) + ", #True )" + #LF$
    EndIf
    If Hide(*g) > 0
+      line_break1 = 1
       result$ + Space$ + "Hide" + pb_object$ + "( " + GetClass( *g ) + ", #True )" + #LF$
    EndIf
    ;
-   If Hide(*g) > 0 Or 
-      Disable(*g) > 0 Or 
-      GetState(*g) > 0
-      line_break1 = 1
-   EndIf
-   
    ProcedureReturn result$
 EndProcedure
 
@@ -1336,6 +1338,14 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
       
       result$ + #LF$
       
+      ForEach __gui\font( )
+         If __gui\font( )\style
+            result$ + "LoadFont( " + MapKey(__gui\font( )) + ", " + Chr('"') + __gui\font( )\name + Chr('"') + ", " + __gui\font( )\size + ", " + MakeConstantsString( "Font", __gui\font( )\style) + " )" + #LF$
+         Else
+            result$ + "LoadFont( " + MapKey(__gui\font( )) + ", " + Chr('"') + __gui\font( )\name + Chr('"') + ", " + __gui\font( )\size + " )" + #LF$
+         EndIf
+      Next
+      
       result$ + ";- " + #LF$
       If StartEnum( *mdi )
          *g = widgets( )
@@ -1492,12 +1502,20 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Button( 10, 45, 100, 30, "Button19" )                  
       ;       CloseList( )                               
       ;       SetState( *parent, 1 )
-      ;       
+      ;     
+      #font_2 = 2
+      
+      AddFont(1, "Arial", 19 )
+      AddFont(#font_2, "Consolas", 21, #PB_Font_Bold )
       
       WINDOW_1 = Window( 10, 300, Width-30, 253, "window_1" ) : SetClass( widget( ), "WINDOW_1")
       BUTTON_8 = Button( 21, 14, 120, 64, "button_8" )
+      SetFont( BUTTON_8, (1))
+      SetColor( BUTTON_8, #PB_Gadget_BackColor, (0))
       BUTTON_9 = Button( 21, 91, 120, 71, "button_9" )
+      SetFont( BUTTON_9, (2))
       BUTTON_10 = Button( 21, 175, 120, 64, "button_10" )
+      SetFont( BUTTON_10, (1))
       
       ;             CONTAINER_0 = Container( 154, 14, 330, 225 )
       ;             BUTTON_11 = Button( 14, 21, 141, 43, "button_11" )
@@ -1582,8 +1600,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1582
-; FirstLine = 1545
-; Folding = --------------------------------------
+; CursorPosition = 1505
+; FirstLine = 1461
+; Folding = --------------------------------4-----
 ; EnableXP
 ; DPIAware

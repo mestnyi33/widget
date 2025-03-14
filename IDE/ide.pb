@@ -211,7 +211,7 @@ Procedure RunPreview(SourceCode$)
                   CompilPreviewOutput$ = ReadProgramString(CompilPreview)
                EndIf
             Wend
-            
+            ;
             If ProgramExitCode(CompilPreview)
                KillProgram(CompilPreview)
                CloseProgram(CompilPreview)
@@ -232,6 +232,26 @@ Procedure RunPreview(SourceCode$)
       EndIf
    Else
       MessageRequester("Preview Error", "PBcompiler.exe was not found in Compilers folder", #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+   EndIf
+EndProcedure
+
+Procedure AddFont( font, name$, size, style = 0 )
+   Protected fontID
+   fontID = LoadFont(font, name$, size )
+   If font = #PB_Any
+      font = fontID
+   EndIf
+   
+   ;__gui\font( Str(Font) )\id = font
+   SetFontName( font, name$ )
+   SetFontSize( font, size )
+   If style
+      SetFontStyle( font, style )
+   EndIf
+   If font = fontID
+      ProcedureReturn font
+   Else
+      ProcedureReturn FontID(font)
    EndIf
 EndProcedure
 
@@ -1582,8 +1602,15 @@ Procedure MakeLine( string$, findtext$ )
                   *Parent = GetParent( *Parent )
                   ; CloseList( ) 
                   
+               Case "SetGadgetFont"
+                  If *new
+                     *new\ChangeFont = 1
+                     SetFont( *new, MakeFunc( arg$, 2 ))
+                  EndIf
+                  
                Case "SetGadgetColor"
                   If *new
+                     *new\ChangeColor = 1
                      param1$ = Trim( StringField( arg$, 2, "," ))
                      SetColor( *new, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
                   EndIf
@@ -2043,7 +2070,10 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
                   a_set(*new, #__a_full, (10))
                EndIf
                SetBackgroundColor( *new, $FFF1F1F1 )
-            EndIf  
+            EndIf 
+            
+            ; 
+            *new\ChangeColor = 0
          Else
             If Not flag & #__flag_NoFocus 
                a_set(*new, #__a_full)
@@ -2270,7 +2300,7 @@ Procedure.i ide_addimage_list( *id, Directory$ )
          UseZipPacker( )
       CompilerEndIf
       
-      Protected PackEntryName.s, ImageSize, *memory, Image, ZipFile
+      Protected PackEntryName.s, ImageSize, *memory, Image, ZipFile, name$
       ZipFile = OpenPack( #PB_Any, ZipFile$, #PB_PackerPlugin_Zip )
       
       If ZipFile  
@@ -2300,56 +2330,63 @@ Procedure.i ide_addimage_list( *id, Directory$ )
                            PackEntryName.S = ReplaceString( PackEntryName.S,"bar","" )
                            PackEntryName = LCase( PackEntryName.S )
                            
-                           If FindString( PackEntryName, "cursor" )
-                              PackEntryName.S = UCase( Left( PackEntryName.S, 1 ) ) + 
+                           name$ = UCase( Left( PackEntryName.S, 1 ) ) + 
                                                 Right( PackEntryName.S, Len( PackEntryName.S )-1 )
                               
+                              
+                           If FindString( PackEntryName, "cursor" )
                               Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, 0, PackEntryName.S, Image )
+                              AddItem( *id, 0, name$, Image )
                               SetItemData( *id, 0, Image )
                               Image = #Null
                               
-                           ElseIf FindString( PackEntryName, "window" )
-                              Image = #PB_Any
+                           ElseIf FindString( PackEntryName, "window" ) Or
+                                  FindString( PackEntryName, "panel" ) Or
+                                  FindString( PackEntryName, "container" ) Or
+                                  FindString( PackEntryName, "scrollarea" ) Or
+                                  FindString( PackEntryName, "splitter" )
+                              
+                              name$ = ReplaceString( name$,"area","Area", #PB_String_NoCase )
+                              Image = CatchImage( #PB_Any, *memory, ImageSize )
+                              AddItem( *id, -1, name$, Image )
+                              SetItemData( *id, CountItems( *id )-1, Image )
+                              
+                           ElseIf FindString( PackEntryName, "button" ) Or
+                                  FindString( PackEntryName, "option" ) Or
+                                  FindString( PackEntryName, "checkbox" ) Or
+                                  FindString( PackEntryName, "combobox" )
+                              
+                              name$ = ReplaceString( name$,"image","Image", #PB_String_NoCase )
+                              name$ = ReplaceString( name$,"box","Box", #PB_String_NoCase )
+                              Image = CatchImage( #PB_Any, *memory, ImageSize )
+                              AddItem( *id, -1, name$, Image )
+                              SetItemData( *id, CountItems( *id )-1, Image )
+                              
                            ElseIf FindString( PackEntryName, "image" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "button" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "option" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "checkbox" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "string" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "text" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "progress" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "combobox" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "panel" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "container" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "scrollarea" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "splitter" )
-                              Image = #PB_Any
-                           ElseIf FindString( PackEntryName, "spin" )
-                              Image = #PB_Any
-                           Else
-                              ; Image = #PB_Any
-                           EndIf
-                           
-                           If Image
-                              PackEntryName.S = UCase( Left( PackEntryName.S, 1 ) ) + 
-                                                Right( PackEntryName.S, Len( PackEntryName.S )-1 )
+                              Image = CatchImage( #PB_Any, *memory, ImageSize )
+                              AddItem( *id, -1, name$, Image )
+                              SetItemData( *id, CountItems( *id )-1, Image )
+                              
+                           ElseIf FindString( PackEntryName, "string" ) Or
+                                  FindString( PackEntryName, "text" )
                               
                               Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, -1, PackEntryName.S, Image )
+                              AddItem( *id, -1, name$, Image )
                               SetItemData( *id, CountItems( *id )-1, Image )
-                              Image = #Null
+                              
+                           ElseIf FindString( PackEntryName, "progress" ) Or
+                                  FindString( PackEntryName, "spin" )
+                              
+                              Image = CatchImage( #PB_Any, *memory, ImageSize )
+                              AddItem( *id, -1, name$, Image )
+                              SetItemData( *id, CountItems( *id )-1, Image )
+                              
+                           Else
+;                               Image = CatchImage( #PB_Any, *memory, ImageSize )
+;                               AddItem( *id, -1, name$, Image )
+;                               SetItemData( *id, CountItems( *id )-1, Image )
                            EndIf
+                           
                         EndIf    
                   EndSelect
                   
@@ -3206,9 +3243,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 200
-; Folding = -----------vx----------------G7----------------------------
+; CursorPosition = 244
+; FirstLine = 185
+; Folding = 4-----------b9---------------vh+----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

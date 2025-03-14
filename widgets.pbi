@@ -8666,7 +8666,8 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                   If _address_\alpha
 ;                      _address_\alpha\back#_column_ = _alpha_
 ;                   EndIf
-                  _result_ = #True
+                 *this\ChangeColor | 1<<0
+                 _result_ = #True
                EndIf
             Case #__FrontColor
                If _address_\front#_column_ <> _color_
@@ -8674,7 +8675,8 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                   If _address_\alpha
 ;                      _address_\alpha\front#_column_ = _alpha_
 ;                   EndIf
-                  _result_ = #True
+                 *this\ChangeColor | 1<<2
+                 _result_ = #True
                EndIf
             Case #__ForeColor
                If _address_\fore#_column_ <> _color_
@@ -8682,7 +8684,8 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                   If _address_\alpha
 ;                      _address_\alpha\fore#_column_ = _alpha_
 ;                   EndIf
-                  _result_ = #True
+                  *this\ChangeColor | 1<<3
+                 _result_ = #True
                EndIf
             Case #__FrameColor
                If _address_\frame#_column_ <> _color_
@@ -8690,7 +8693,8 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                   If _address_\alpha
 ;                      _address_\alpha\frame#_column_ = _alpha_
 ;                   EndIf
-                  _result_ = #True
+                  *this\ChangeColor | 1<<4
+                 _result_ = #True
                EndIf
          EndSelect
          
@@ -9917,6 +9921,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                FontID = FontID( Font )
                
                If ChangeFontID( *this, FontID )
+                  *this\ChangeFont = 1
                   result = #True
                EndIf
             EndIf
@@ -25085,8 +25090,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 21567
-; FirstLine = 21376
+; CursorPosition = 8695
+; FirstLine = 8661
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d4r---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

@@ -555,6 +555,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
+         ; ide
+         ChangeFont.b
+         ChangeColor.b
+         
+         ;
          lineColor.i
          padding._s_point
          
@@ -746,6 +751,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       Structure _s_FONT
+         ;ID.i
          name.s
          size.a
          style.q
@@ -779,8 +785,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 559
-; FirstLine = 546
+; CursorPosition = 753
+; FirstLine = 746
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
