@@ -1,13 +1,13 @@
-﻿XIncludeFile "../../ide.pb"
-XIncludeFile "../../code.pbi"
-;- 
-CompilerIf #PB_Compiler_IsMainFile
-   DisableExplicit
-   Define Width = 350
+﻿CompilerIf #PB_Compiler_IsMainFile
+   XIncludeFile "../../ide.pb"
+   XIncludeFile "../../code.pbi"
+CompilerEndIf
+
+DisableExplicit
+
+If Open( 0, 0, 0, 350, 280, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
    
-   If Open( 0, 0, 0, Width, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      
-      TEST = Window( 0, 0, 582, 582, "",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
+   TEST = Window( 10, 10, 320, 253, "",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
       ;
       _0 = Container(7, 7, 568, 568,  #PB_Container_Single  )
          _1 = Container(7, 7, 274, 274,  #PB_Container_Single  )
@@ -41,24 +41,12 @@ CompilerIf #PB_Compiler_IsMainFile
      
    EndIf
    
-   Define *root = root( )
-   If Open( 1, 0, 0, Width*2, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      ResizeWindow( 0, WindowX( 0 ) - WindowWidth( 1 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-      ResizeWindow( 1, WindowX( 1 ) + WindowWidth( 0 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-      
-      Define *g = Editor( 0, 0, 0, 0, #__flag_autosize )
-      
-      Define code$ = GeneratePBCode( *root )
-      
-      SetText( *g, code$ )
-      Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
-   EndIf
-   
-   
+CompilerIf #PB_Compiler_IsMainFile
+   WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 17
+; CursorPosition = 45
+; FirstLine = 8
 ; Folding = -
 ; EnableXP
 ; DPIAware

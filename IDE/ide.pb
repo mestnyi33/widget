@@ -117,6 +117,8 @@ Global enumerations
 Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
 Global font_properties = LoadFont( #PB_Any, "", 12 )
 
+Global pb_object$ = "";"Gadget"
+
 ; test_docursor = 1
 ; test_changecursor = 1
 ; test_setcursor = 1
@@ -156,7 +158,7 @@ Declare   Properties_Updates( *object, type$ )
 Declare   widget_Create( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   ide_addline( *new )
-Declare   MakeID( class$ )
+Declare   MakeID( *rootParent, class$ )
 ;
 Declare.s Code_Generate( *parent )
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
@@ -168,6 +170,7 @@ Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 )
 Declare   NumericString( string$ )
 Declare.q MakeConstants( string$ )
 Declare$  MakeConstantsString( type$, flag.q ) ; 
+Declare   MakeLine( parent, string$, findtext$ )
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
@@ -235,26 +238,6 @@ Procedure RunPreview(SourceCode$)
    EndIf
 EndProcedure
 
-Procedure AddFont( font, name$, size, style = 0 )
-   Protected fontID
-   fontID = LoadFont(font, name$, size )
-   If font = #PB_Any
-      font = fontID
-   EndIf
-   
-   ;__gui\font( Str(Font) )\id = font
-   SetFontName( font, name$ )
-   SetFontSize( font, size )
-   If style
-      SetFontStyle( font, style )
-   EndIf
-   If font = fontID
-      ProcedureReturn font
-   Else
-      ProcedureReturn FontID(font)
-   EndIf
-EndProcedure
-
 ;
 ;- PUBLICs
 Procedure.s BoolToStr( val )
@@ -288,65 +271,67 @@ EndProcedure
 Procedure ide_addline( *new._s_widget )
    Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
    
-   If *new
-      *parent = GetParent( *new )
-      ;
-      ; get new add position & sublevel
-      Protected i, CountItems, sublevel, position = GetData( *parent ) 
-      CountItems = CountItems( ide_inspector_view )
-      For i = 0 To CountItems - 1
-         Position = ( i+1 )
-         
-         If *parent = GetItemData( ide_inspector_view, i ) 
-            SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
-            Continue
-         EndIf
-         
-         If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
-            Position = i
-            Break
-         EndIf
-      Next 
-      
-      ; set new widget data
-      SetData( *new, position )
-      
-      ; update new widget data item ;????
-      If CountItems > position
-         For i = position To CountItems - 1
-            SetData( GetItemData( ide_inspector_view, i ), i + 1 )
+   If ide_inspector_view
+      If *new
+         *parent = GetParent( *new )
+         ;
+         ; get new add position & sublevel
+         Protected i, CountItems, sublevel, position = GetData( *parent ) 
+         CountItems = CountItems( ide_inspector_view )
+         For i = 0 To CountItems - 1
+            Position = ( i+1 )
+            
+            If *parent = GetItemData( ide_inspector_view, i ) 
+               SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
+               Continue
+            EndIf
+            
+            If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
+               Position = i
+               Break
+            EndIf
          Next 
-      EndIf
-      
-      
-      ; get image associated with class
-      Protected img =- 1
-      CountItems = CountItems( ide_inspector_elements )
-      For i = 0 To CountItems - 1
-         If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_elements, i ))
-            img = GetItemData( ide_inspector_elements, i )
-            Break
+         
+         ; set new widget data
+         SetData( *new, position )
+         
+         ; update new widget data item ;????
+         If CountItems > position
+            For i = position To CountItems - 1
+               SetData( GetItemData( ide_inspector_view, i ), i + 1 )
+            Next 
          EndIf
-      Next  
-      
-      ; add to inspector
-      AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
-      SetItemData( ide_inspector_view, position, *new )
-      ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
-      
-      ; Debug " "+position
-      SetState( ide_inspector_view, position )
-      
-      If IsGadget( ide_g_code )
-         AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
-         SetGadgetItemData( ide_g_code, position, *new )
-         ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
-         SetGadgetState( ide_g_code, position ) ; Bug
+         
+         
+         ; get image associated with class
+         Protected img =- 1
+         CountItems = CountItems( ide_inspector_elements )
+         For i = 0 To CountItems - 1
+            If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_elements, i ))
+               img = GetItemData( ide_inspector_elements, i )
+               Break
+            EndIf
+         Next  
+         
+         ; add to inspector
+         AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
+         SetItemData( ide_inspector_view, position, *new )
+         ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
+         
+         ; Debug " "+position
+         SetState( ide_inspector_view, position )
+         
+         If IsGadget( ide_g_code )
+            AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
+            SetGadgetItemData( ide_g_code, position, *new )
+            ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
+            SetGadgetState( ide_g_code, position ) ; Bug
+         EndIf
+         
+         ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
       EndIf
-      
-      ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
    EndIf
-   
+
    ProcedureReturn *new
 EndProcedure
 
@@ -999,658 +984,153 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    Protected find$, replace$, name$, class$, x$, y$, width$, height$
    ; class$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
    
-   If type$ = "Focus" Or type$ = "ID"
-      Properties_SetItemText( ide_inspector_properties, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
-   EndIf
-   If type$ = "Focus" Or type$ = "Hide"
-      Properties_SetItemText( ide_inspector_properties, #_pi_hide, BoolToStr( Hide( *object )))
-   EndIf
-   If type$ = "Focus" Or type$ = "Disable"
-      Properties_SetItemText( ide_inspector_properties, #_pi_disable, BoolToStr( Disable( *object )))
-   EndIf
-   
-   If type$ = "Focus" Or type$ = "Class"
-      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
-      replace$ = GetClass( *object )
-      Properties_SetItemText( ide_inspector_properties, #_pi_class, replace$ )
-   EndIf
-   If type$ = "Focus" Or type$ = "Text"
-      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_text )
-      replace$ = GetText( *object )
-      Properties_SetItemText( ide_inspector_properties, #_pi_text, replace$ )
-   EndIf
-   If type$ = "Focus" Or type$ = "Color"
-      Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype)) ) & $FFFFFF | *object\color\_alpha << 24
-      Properties_SetItemText( ide_inspector_properties, #_pi_COLOR,     "$"+Hex(Color & $FFFFFF | *object\color\_alpha << 24))
-      Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(color)) )
-      Properties_SetItemText( ide_inspector_properties, #_pi_colorblue, Str(Blue(color)) )
-      Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
-      Properties_SetItemText( ide_inspector_properties, #_pi_colorred, Str(Red(color)) )
-   EndIf
-   If type$ = "Focus" Or type$ = "Font"
-      Define font = GetFont( *object )
-      Properties_SetItemText( ide_inspector_properties, #_pi_FONT, GetFontName( font ) )
-      ; Properties_SetItemText( ide_inspector_properties, #_pi_fontcolor, Str( GetFontColor( font ) ))
-      If GetFontName( font )
-         Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, Str( GetFontSize( font ) ))
-      Else
-         Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, "" )
+   If ide_inspector_properties
+      If type$ = "Focus" Or type$ = "ID"
+         Properties_SetItemText( ide_inspector_properties, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
       EndIf
-      Define style$ = RemoveString( MakeConstantsString( "Font", GetFontStyle( font ) ), "#PB_Font_")
-      If style$ = ""
-         style$ = "None"
+      If type$ = "Focus" Or type$ = "Hide"
+         Properties_SetItemText( ide_inspector_properties, #_pi_hide, BoolToStr( Hide( *object )))
       EndIf
-      Properties_SetItemText( ide_inspector_properties, #_pi_fontstyle, style$)
-   EndIf 
-   If type$ = "Focus" Or type$ = "Resize"
-      ; Debug "---- "+type$
-      If is_window_( *object )
-         x$ = Str( X( *object, #__c_container ))
-         y$ = Str( Y( *object, #__c_container ))
-         width$ = Str( Width( *object, #__c_inner ))
-         height$ = Str( Height( *object, #__c_inner ))
-      Else
-         x$ = Str( X( *object ))
-         y$ = Str( Y( *object ))
-         width$ = Str( Width( *object ))
-         height$ = Str( Height( *object ))
+      If type$ = "Focus" Or type$ = "Disable"
+         Properties_SetItemText( ide_inspector_properties, #_pi_disable, BoolToStr( Disable( *object )))
       EndIf
       
-      find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_y ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_width ) +", "+ 
-              Properties_GetItemText( ide_inspector_properties, #_pi_height )
-      replace$ = x$ +", "+ y$ +", "+ width$ +", "+ height$
-      
-      Properties_SetItemText( ide_inspector_properties, #_pi_x,      x$ )
-      Properties_SetItemText( ide_inspector_properties, #_pi_y,      y$ )
-      Properties_SetItemText( ide_inspector_properties, #_pi_width,  width$ )
-      Properties_SetItemText( ide_inspector_properties, #_pi_height, height$ )
-      
-      ;
-      Properties_ButtonChange( ide_inspector_properties )
-   EndIf
-   
-   ;\\
-   If type$ <> "Focus"
-      Protected NbOccurrences
-      Protected *this._s_WIDGET = GetActive( )
-      
-      If find$
-         If type$ = "Class"
-            If *this = ide_design_panel_CODE Or 
-               *this = ide_design_DEBUG
-               ;
-               Define code$ = GetText( *this )
-               
-               Define caret1 = FindString( code$, replace$ )
-               Define caret2 = GetCaret( *this )
-               
-               ; количество слов для замены до позиции коретки
-               Define count = CountString( Left( code$, caret1), find$ )
-               
-               Debug "caret "+caret1 +" "+ Str(caret2 - Len( find$ ))
-               
-               ; если коретка в конце слова Ok
-               If caret1 = caret2 - Len( find$ )
-                  code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
-                  
-                  ;             If Len( replace$ ) > Len( find$ )
-                  ;                SetCaret( *this, caret1 - (Len( replace$ ) - Len( find$ )))
-                  ;             EndIf
-               Else
-                  ; если коретка в начале слова
-                  If caret1 = caret2
-                     code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
-                  EndIf
-               EndIf
-               
-               ; caret update
-               If count
-                  If  keyboard( )\key
-                     If keyboard( )\key = #PB_Shortcut_Back
-                        If *this\text\edit[2]\len
-                           SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
-                        Else
-                           SetCaret( *this, caret2 - count )
-                        EndIf
-                     Else
-                        SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;
-               ; code$ = ReplaceString( code$, " "+find$+" ", " "+replace$+" ", #PB_String_CaseSensitive )
-               code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
-               If code$
-                  SetText( *this, code$ )
-               EndIf
-            EndIf
-            ; Меняем все найденные слова 
-            NbOccurrences = 0
+      If type$ = "Focus" Or type$ = "Class"
+         find$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
+         replace$ = GetClass( *object )
+         Properties_SetItemText( ide_inspector_properties, #_pi_class, replace$ )
+      EndIf
+      If type$ = "Focus" Or type$ = "Text"
+         find$ = Properties_GetItemText( ide_inspector_properties, #_pi_text )
+         replace$ = GetText( *object )
+         Properties_SetItemText( ide_inspector_properties, #_pi_text, replace$ )
+      EndIf
+      If type$ = "Focus" Or type$ = "Color"
+         Define color = GetColor( *object, MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype)) ) & $FFFFFF | *object\color\_alpha << 24
+         Properties_SetItemText( ide_inspector_properties, #_pi_COLOR,     "$"+Hex(Color & $FFFFFF | *object\color\_alpha << 24))
+         Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(color)) )
+         Properties_SetItemText( ide_inspector_properties, #_pi_colorblue, Str(Blue(color)) )
+         Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
+         Properties_SetItemText( ide_inspector_properties, #_pi_colorred, Str(Red(color)) )
+      EndIf
+      If type$ = "Focus" Or type$ = "Font"
+         Define font = GetFont( *object )
+         Properties_SetItemText( ide_inspector_properties, #_pi_FONT, GetFontName( font ) )
+         ; Properties_SetItemText( ide_inspector_properties, #_pi_fontcolor, Str( GetFontColor( font ) ))
+         If GetFontName( font )
+            Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, Str( GetFontSize( font ) ))
          Else
-            ; Меняем первое одно найденное слово 
-            NbOccurrences = 1
+            Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, "" )
          EndIf
+         Define style$ = RemoveString( MakeConstantsString( "Font", GetFontStyle( font ) ), "#PB_Font_")
+         If style$ = ""
+            style$ = "None"
+         EndIf
+         Properties_SetItemText( ide_inspector_properties, #_pi_fontstyle, style$)
+      EndIf 
+      If type$ = "Focus" Or type$ = "Resize"
+         ; Debug "---- "+type$
+         If is_window_( *object )
+            x$ = Str( X( *object, #__c_container ))
+            y$ = Str( Y( *object, #__c_container ))
+            width$ = Str( Width( *object, #__c_inner ))
+            height$ = Str( Height( *object, #__c_inner ))
+         Else
+            x$ = Str( X( *object ))
+            y$ = Str( Y( *object ))
+            width$ = Str( Width( *object ))
+            height$ = Str( Height( *object ))
+         EndIf
+         
+         find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x ) +", "+ 
+                 Properties_GetItemText( ide_inspector_properties, #_pi_y ) +", "+ 
+                 Properties_GetItemText( ide_inspector_properties, #_pi_width ) +", "+ 
+                 Properties_GetItemText( ide_inspector_properties, #_pi_height )
+         replace$ = x$ +", "+ y$ +", "+ width$ +", "+ height$
+         
+         Properties_SetItemText( ide_inspector_properties, #_pi_x,      x$ )
+         Properties_SetItemText( ide_inspector_properties, #_pi_y,      y$ )
+         Properties_SetItemText( ide_inspector_properties, #_pi_width,  width$ )
+         Properties_SetItemText( ide_inspector_properties, #_pi_height, height$ )
          
          ;
-         If *this <> ide_design_DEBUG
-            ReplaceText( ide_design_DEBUG, find$, replace$, NbOccurrences )
-         EndIf
-         If *this <> ide_design_panel_CODE
-            If Not Hide( ide_design_panel_CODE )
-               ReplaceText( ide_design_panel_CODE, find$, replace$, NbOccurrences )
-            EndIf 
-         EndIf
-      EndIf
-   EndIf
-   
-EndProcedure
-
-;-
-Procedure$  MakeArgString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
-   Protected i, chr$, start, stop 
-   Static ii
-   
-   For i = 0 To len
-      chr$ = Mid( string$, i, 1 )
-      If chr$ = "(" 
-         start = i + 1
-         For i = len To start Step - 1
-            chr$ = Mid( string$, i, 1 )
-            If chr$ = ")" 
-               stop = i - start
-               
-               For i = start To len
-                  chr$ = Mid( Mid( string$, start, stop ), i, 1 )
-                  
-                  If chr$ = ")" 
-                     stop = i - Bool(FindString( string$, ":" ))
-                     Break 
-                  EndIf
-               Next i
-               
-               If *start
-                  *start\i = start
-               EndIf
-               If *stop
-                  *stop\i = stop
-               EndIf
-               If Not stop
-                  ProcedureReturn " "
-               Else
-                  ; Debug Mid( string$, start, stop )
-                  ProcedureReturn Mid( string$, start, stop )
-               EndIf 
-               Break
-            EndIf
-         Next i
-         
-         Break
-      EndIf
-   Next i
-EndProcedure
-
-Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
-   Protected i, result$, str$, start, stop
-   Protected space, pos = FindString( string$, "=" )
-   
-   If pos
-      If pos > FindString( string$, "(" )
-         pos = 0
-      Else
-         string$ = Mid( string$, pos + 1, len - pos )
-      EndIf
-   Else
-      pos = FindString( string$, ":" )
-      If pos
-         string$ = StringField( string$, 2, ":" )
-      EndIf
-   EndIf
-   
-   For i = 1 To len
-      If Mid( string$, i, 1 ) = "(" 
-         stop = i - 1
-         str$ = Mid( string$, start, stop )
-         result$ = Trim( str$ )
-         space = FindString( str$, result$ )
-         If space 
-            start + space
-            stop - space
-         EndIf
-         If *start
-            *start\i = pos + start
-         EndIf
-         If *stop
-            *stop\i = stop + 1
-         EndIf
-         Break
-      EndIf
-   Next i
-   
-   ProcedureReturn result$
-EndProcedure
-
-Procedure MakeVal( string$ )
-   Protected result, len = Len( string$ ) 
-   
-   Define arg$ = MakeArgString( string$, len )
-   Define func$ = MakeFuncString( string$, len )
-   Debug "[MakeVal]"+func$ 
-   
-   Select Trim( func$ )
-      Case "RGB"
-         result = RGB( Val(Trim(StringField( arg$, 1, ","))), 
-                       Val(Trim(StringField( arg$, 2, ","))),
-                       Val(Trim(StringField( arg$, 3, ","))) )
-      Case "RGBA"
-         result = RGBA( Val(Trim(StringField( arg$, 1, ","))), 
-                        Val(Trim(StringField( arg$, 2, ","))),
-                        Val(Trim(StringField( arg$, 3, ","))),
-                        Val(Trim(StringField( arg$, 4, ","))) )
-   EndSelect
-   
-   ProcedureReturn result
-EndProcedure
-
-Procedure MakeFunc( string$, Index )
-   Protected result, result$
-   result$ = StringField(StringField(string$, 1, "("), Index, ",") +"("+ StringField(string$, 2, "(")
-   Debug "[MakeFunc]"+result$
-   result = MakeVal( result$ )
-   
-   ProcedureReturn result
-EndProcedure
-
-;-
-Procedure MakeLine( string$, findtext$ )
-   Static *parent
-   Protected result
-   Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
-   Protected param1, param2, param3, flags.q
-   Protected *new._s_WIDGET
-                  
-                  
-   Define string_len = Len( String$ )
-   Define arg_start, arg_stop, arg$ = MakeArgString( string$, string_len, @arg_start, @arg_stop ) 
-   If arg$
-      ; Debug arg$ +" "+ arg_start
-      Define str$ = Mid( String$, 1, arg_start - 1 - 1 ) ; исключаем открывающую скобку '('
-      
-      If FindString( str$, ";" )
-         ProcedureReturn 0
+         Properties_ButtonChange( ide_inspector_properties )
       EndIf
       
-      LastElement( *parser\Line( ))
-      If AddElement( *parser\Line( ))
-         *parser\Line( ) = AllocateStructure( _s_LINE )
+      ;\\
+      If type$ <> "Focus"
+         Protected NbOccurrences
+         Protected *this._s_WIDGET = GetActive( )
          
-         With *parser\Line( )
-            \arg$ = arg$
-            \string = string$
-            \func$ = MakeFuncString( string$, string_len )
-            ;\func$ = RemoveString(\func$, "﻿" )
-            
-            ;
-            \pos = FindString( str$, "Declare" )
-            If \pos
-               \type$ = "Declare"
-               ProcedureReturn 
-            EndIf
-            
-            \pos = FindString( str$, "Procedure" )
-            If \pos
-               \type$ = "Procedure"
-               ProcedureReturn 
-            EndIf
-            
-            \pos = FindString( str$, "Select" )
-            If \pos
-               \type$ = "Select"
-               ProcedureReturn 
-            EndIf
-            
-            \pos = FindString( str$, "While" )
-            If \pos
-               \type$ = "While"
-               ProcedureReturn 
-            EndIf
-            
-            \pos = FindString( str$, "Repeat" )
-            If \pos
-               \type$ = "Repeat"
-               ProcedureReturn 
-            EndIf
-            
-            \pos = FindString( str$, "If" )
-            If \pos
-               \type$ = "If"
-               \func$ = Trim( StringField( \func$, 2, " " ))
-               ; ProcedureReturn 
-            EndIf
-            
-            Debug "func[" + \func$ +"]" 
-            Debug " arg["+ arg$ +"]"
-            
-            ; Identificator
-            Select \func$
-               Case "OpenWindow", "﻿OpenWindow",
-                    "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
-                    "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
-                    "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
-                    "IPAddressGadget","ProgressBarGadget","ScrollBarGadget","ScrollAreaGadget",
-                    "TrackBarGadget","WebGadget","ButtonImageGadget","CalendarGadget",
-                    "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
-                    "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
-                    "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
+         If find$
+            If type$ = "Class"
+               If *this = ide_design_panel_CODE Or 
+                  *this = ide_design_DEBUG
                   ;
-                  \func$ = ReplaceString( \func$, "Gadget", "")
-                  \func$ = ReplaceString( \func$, "Open", "")
+                  Define code$ = GetText( *this )
                   
-                  ; id$
-                  If FindString( str$, "=" )
-                     \id$ = Trim( StringField( str$, 1, "=" ))
-                     If Not enumerations
-                        \id$ = Trim( \id$, "#" )
-                     EndIf
-                     \id$ = UCase( \id$ )
-                  Else
-                     \id$ = Trim( StringField( arg$, 1, "," ))
+                  Define caret1 = FindString( code$, replace$ )
+                  Define caret2 = GetCaret( *this )
+                  
+                  ; количество слов для замены до позиции коретки
+                  Define count = CountString( Left( code$, caret1), find$ )
+                  
+                  Debug "caret "+caret1 +" "+ Str(caret2 - Len( find$ ))
+                  
+                  ; если коретка в конце слова Ok
+                  If caret1 = caret2 - Len( find$ )
+                     code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
                      
-                     If \id$ = "#PB_Any" 
-                        \id$ = ""
-                     ElseIf FindString( \id$, "-" )
-                        ;  Если идентификатор просто - 1
-                        \id$ = ""
-                     ElseIf NumericString( \id$ )
-                        ; Если идентификатор просто цифры
-                        AddMapElement( GetObject( ), \id$ )
-                        \id$ = "#" + \func$ +"_"+ \id$
-                        If Not enumerations
-                           \id$ = Trim( \id$, "#" )
-                        EndIf
-                        \id$ = UCase( \id$ )
-                        GetObject( ) = \id$
-                     Else
-                        If Not enumerations
-                           \id$ = Trim( \id$, "#" )
-                        EndIf
-                        \id$ = UCase( \id$ )
-                     EndIf
-                  EndIf   
-                  
-               Case "ResizeGadget",
-                    "CanvasOutput",
-                    "CanvasVectorOutput",
-                    "AddGadgetColumn",
-                    "AddGadgetItem",
-                    "RemoveGadgetColumn",
-                    "RemoveGadgetItem",
-                    "ClearGadgetItems",
-                    "CountGadgetItems",
-                    "OpenGadgetList",
-                    "BindGadgetEvent",
-                    "UnbindGadgetEvent",
-                    "DisableGadget",
-                    "FreeGadget",
-                    "HideGadget",
-                    "IsGadget",
-                    "GadgetHeight",
-                    "GadgetID",
-                    "GadgetItemID",
-                    "GadgetToolTip",
-                    "GadgetType",
-                    "GadgetWidth",
-                    "GadgetX",
-                    "GadgetY",
-                    "GetActiveGadget",
-                    "GetGadgetAttribute",
-                    "GetGadgetColor",
-                    "GetGadgetData",
-                    "GetGadgetFont",
-                    "GetGadgetItemAttribute",
-                    "GetGadgetItemColor",
-                    "GetGadgetItemData",
-                    "GetGadgetItemState",
-                    "GetGadgetItemText",
-                    "GetGadgetState",
-                    "GetGadgetText",
-                    "SetActiveGadget",
-                    "SetGadgetAttribute",
-                    "SetGadgetColor",
-                    "SetGadgetData",
-                    "SetGadgetFont",
-                    "SetGadgetItemAttribute",
-                    "SetGadgetItemColor",
-                    "SetGadgetItemData",
-                    "SetGadgetItemImage",
-                    "SetGadgetItemState",
-                    "SetGadgetItemText",
-                    "SetGadgetState",
-                    "SetGadgetText"
-                  
-                  \id$ = Trim( StringField( arg$, 1, "," ))
-                  If Not enumerations
-                     \id$ = Trim( \id$, "#" )
-                  EndIf
-                  \id$ = UCase( \id$ )
-                  *new = MakeID( \id$ ) 
-            EndSelect
-            
-            ;
-            Select \func$
-               Case "Window",
-                    "Button","String","Text","CheckBox",
-                    "Option","ListView","Frame","ComboBox",
-                    "Image","HyperLink","Container","ListIcon",
-                    "IPAddress","ProgressBar","ScrollBar","ScrollArea",
-                    "TrackBar","Web","ButtonImage","Calendar",
-                    "Date","Editor","ExplorerList","ExplorerTree",
-                    "ExplorerCombo","Spin","Tree","Panel",
-                    "Splitter","MDI","Scintilla","Shortcut","Canvas"
-                  
-                  ;
-                  x$      = Trim(StringField( arg$, 2, ","))
-                  y$      = Trim(StringField( arg$, 3, ","))
-                  width$  = Trim(StringField( arg$, 4, ","))
-                  height$ = Trim(StringField( arg$, 5, ","))
-                  ;
-                  param1$ = Trim(StringField( arg$, 6, ","))
-                  param2$ = Trim(StringField( arg$, 7, ","))
-                  param3$ = Trim(StringField( arg$, 8, ",")) 
-                  param4$ = Trim(StringField( arg$, 9, ","))
-                  
-                  ;
-                  If Not NumericString( x$ )  
-                     x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  If Not NumericString( y$ )  
-                     y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  If Not NumericString( width$ )  
-                     width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  If Not NumericString( height$ )  
-                     height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  
-                  ; text
-                  Select \func$
-                     Case "Window",
-                          "Web", "Frame",
-                          "Text", "String", "Button", "CheckBox",
-                          "Option", "HyperLink", "ListIcon", "Date",
-                          "ExplorerList", "ExplorerTree", "ExplorerCombo"
-                        
-                        If FindString( param1$, Chr('"'))
-                           text$ = Trim( param1$, Chr('"'))
-                        Else
-                           text$ = Trim(StringField( StringField( Mid( findtext$, FindString( findtext$, param1$ ) ), 1, ")" ), 2, "=" ))
-                        EndIf
-                        If text$
-                           ;If FindString( text$, Chr('"'))
-                           text$ = Trim( text$, Chr('"'))
-                           ;EndIf
-                        EndIf
-                        
-                  EndSelect
-                  
-                  ; param1
-                  Select \func$
-                     Case "Track", "Progress", "Scroll", "ScrollArea",
-                          "TrackBar","ProgressBar", "ScrollBar"
-                        param1 = Val( param1$ )
-                        
-                     Case "Splitter" 
-                        param1 = MakeID(UCase(Param1$))
-                        
-                     Case "ListIcon"
-                        param1 = Val( param2$ ) ; *this\columns( )\width
-                        
-                  EndSelect
-                  
-                  ; param2
-                  Select \func$
-                     Case "Track", "Progress", "Scroll", "TrackBar", 
-                          "ProgressBar", "ScrollBar", "ScrollArea"
-                        param2 = Val( param2$ )
-                        
-                     Case "Splitter" 
-                        param2 = MakeID(UCase(Param2$))
-                        
-                  EndSelect
-                  
-                  ; param3
-                  Select \func$
-                     Case "Scroll", "ScrollBar", "ScrollArea"
-                        param3 = Val( param3$ )
-                  EndSelect
-                  
-                  ; param4
-                  Select \func$
-                     Case "Date", "Calendar", "Container", 
-                          "Tree", "ListView", "ComboBox", "Editor"
-                        flag$ = param1$
-                        
-                     Case "Window",
-                          "Web", "Frame",
-                          "Text", "String", "Button", "CheckBox", 
-                          "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
-                        flag$ = param2$
-                        
-                     Case "Track", "Progress", "TrackBar", "ProgressBar", 
-                          "Spin", "OpenGL", "Splitter", "MDI", "Canvas"
-                        flag$ = param3$
-                        
-                     Case "Scroll", "ScrollBar", "ScrollArea", "HyperLink", "ListIcon"  
-                        flag$ = param4$
-                        
-                  EndSelect
-                  
-                  ; flag
-                  If flag$
-                     flags = MakeConstants(Flag$)
-                  EndIf
-                  
-                  ; window parent ID
-                  If \func$ = "Window"
-                     If param3$
-                        *Parent = MakeID( param3$ )
-                        If Not *Parent
-                           Debug "window ParentID"
-                           *Parent = ide_design_panel_MDI
-                        EndIf
-                     Else
-                        *Parent = ide_design_panel_MDI
-                     EndIf
-                     
-                     x$ = Str(Val(x$)+10)
-                     y$ = Str(Val(y$)+10)
-                  EndIf
-                  
-                  ;Debug "[Make]"+\func$ +" "+ Bool(\func$ = "Window") +" "+ *parent ;arg$
-            
-                  *new = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
-                  
-                  If *new
-                     ;             If flag$
-                     ;                SetFlagsString( *new, flag$ )
+                     ;             If Len( replace$ ) > Len( find$ )
+                     ;                SetCaret( *this, caret1 - (Len( replace$ ) - Len( find$ )))
                      ;             EndIf
-                     
-                     If \id$
-                        SetClass( *new, UCase(\id$) )
-                     EndIf
-                     
-                     SetText( *new, text$ )
-                     
-                     ;
-                     If IsContainer( *new ) > 0
-                        *Parent = *new
-                     EndIf
-                     
-                     ; 
-                     ide_addline( *new )
-                     result = 1
-                  EndIf
-                  
-               Case "CloseGadgetList"
-                  If Not *parent
-                     Debug "ERROR "+\func$
-                     ProcedureReturn 
-                  EndIf
-                  *Parent = GetParent( *Parent )
-                  ; CloseList( ) 
-                  
-               Case "SetGadgetFont"
-                  If *new
-                     *new\ChangeFont = 1
-                     SetFont( *new, MakeFunc( arg$, 2 ))
-                  EndIf
-                  
-               Case "SetGadgetColor"
-                  If *new
-                     *new\ChangeColor = 1
-                     param1$ = Trim( StringField( arg$, 2, "," ))
-                     SetColor( *new, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
-                  EndIf
-                  
-               Case "AddGadgetItem"
-                  If *new
-                     param1$ = Trim( StringField( arg$, 2, "," ))
-                     param2$ = Trim( StringField( arg$, 3, "," ))
-                     param3$ = Trim( StringField( arg$, 4, "," ))
-                     flag$ = Trim( StringField( arg$, 5, "," ))
-                     ;
-                     If FindString( param1$, "-" )
-                        param1 = #PB_Default
-                     Else
-                        param1 = Val(param1$)
-                     EndIf
-                     text$ = Trim( param2$, Chr('"'))
-                     param3 = Val(param3$)
-                     Flags = MakeConstants( flag$ )
-                     
-                     AddItem( *new, param1, text$, param3, Flags )
-                     
-                     If IsContainer( *new ) > 0
-                        *parent = *new 
+                  Else
+                     ; если коретка в начале слова
+                     If caret1 = caret2
+                        code$ = ReplaceString( code$, replace$, find$, #PB_String_CaseSensitive, caret1, 1 )
                      EndIf
                   EndIf
                   
-            EndSelect
-         EndWith
+                  ; caret update
+                  If count
+                     If  keyboard( )\key
+                        If keyboard( )\key = #PB_Shortcut_Back
+                           If *this\text\edit[2]\len
+                              SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
+                           Else
+                              SetCaret( *this, caret2 - count )
+                           EndIf
+                        Else
+                           SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                  ;
+                  ; code$ = ReplaceString( code$, " "+find$+" ", " "+replace$+" ", #PB_String_CaseSensitive )
+                  code$ = ReplaceString( code$, find$, replace$, #PB_String_CaseSensitive )
+                  If code$
+                     SetText( *this, code$ )
+                  EndIf
+               EndIf
+               ; Меняем все найденные слова 
+               NbOccurrences = 0
+            Else
+               ; Меняем первое одно найденное слово 
+               NbOccurrences = 1
+            EndIf
+            
+            ;
+            If *this <> ide_design_DEBUG
+               ReplaceText( ide_design_DEBUG, find$, replace$, NbOccurrences )
+            EndIf
+            If *this <> ide_design_panel_CODE
+               If Not Hide( ide_design_panel_CODE )
+                  ReplaceText( ide_design_panel_CODE, find$, replace$, NbOccurrences )
+               EndIf 
+            EndIf
+         EndIf
       EndIf
-      
-      ; Mid( String$, arg_start+arg_stop + 1 )
-      ; если строка такого ввида "containergadget() : closegadgetlist()" 
-      Define lines$ = Trim( Mid( String$, arg_start+arg_stop + 1 ), ":" )
-      If lines$
-         MakeLine( lines$, findtext$ )
-      EndIf
-      
-      ProcedureReturn result
-      ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
    EndIf
    
 EndProcedure
@@ -1752,7 +1232,7 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
             String$ = RemoveString( String$, "﻿" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
    
-            MakeLine( String$, Text$ )
+            MakeLine( ide_design_panel_MDI, String$, Text$ )
          Wend
          
          ;          
@@ -2670,7 +2150,7 @@ Procedure ide_events( )
                name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
                
                If name$
-                  object = MakeID( name$ )
+                  object = MakeID( ide_design_panel_MDI, name$ )
                   If Not object
                      If CountString( text$, "=" )
                         name$ = Trim( StringField( text$, 1, "=" ))
@@ -2679,7 +2159,7 @@ Procedure ide_events( )
                         EndIf
                      EndIf
                      
-                     object = MakeID( name$ )
+                     object = MakeID( ide_design_panel_MDI, name$ )
                   EndIf
                EndIf
                
@@ -3243,9 +2723,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 244
-; FirstLine = 185
-; Folding = 4-----------b9---------------vh+----------------------------
+; CursorPosition = 160
+; FirstLine = 157
+; Folding = 4--+-------fj------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

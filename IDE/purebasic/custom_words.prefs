@@ -278,7 +278,7 @@ SetFontName
 SetFontColor
 SetFontSize
 SetFontStyle
-
+AddLoadFont
 
 SetItemAttribute
 SetItemColor

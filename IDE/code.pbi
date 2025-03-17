@@ -1,6 +1,5 @@
 ﻿;- GLOBALs
 Global line_break1
-Global pb_object$ = "";"Gadget"
 
 ;
 ;- INCLUDEs
@@ -446,6 +445,31 @@ EndProcedure
 
 
 ;-
+Procedure   MakeID( *rootParent._s_WIDGET, class$ )
+   If FindMapElement( GetObject( ), class$ )
+      class$ = GetObject( )
+   EndIf
+   
+   Protected result
+   ;class$ = Trim(class$)
+   class$ = UCase(class$)
+   
+   If StartEnum( *rootParent )
+      ; Debug ""+GetClass( widget( )) +" "+ class$
+      If Trim(GetClass( widget( )), "#") = Trim(class$, "#")
+         result = widget( )
+         Break
+      EndIf
+      StopEnum( )
+   EndIf
+   
+   
+   If result
+      a_set( result )
+   EndIf      
+   ProcedureReturn result
+EndProcedure
+
 Procedure$  MakeConstantsString( type$, flag.q ) ; 
    Protected result$
    
@@ -654,6 +678,14 @@ Procedure.q MakeConstants( string$ )
          Select str$
             Case "#True"                              : Flag = Flag | #True
             Case "#False"                             : Flag = Flag | #False
+               ; font
+            Case "#PB_Font_Bold"                      : Flag = Flag | #PB_Font_Bold 
+            Case "#PB_Font_Italic"                    : Flag = Flag | #PB_Font_Italic 
+            Case "#PB_Font_StrikeOut"                 : Flag = Flag | #PB_Font_StrikeOut  
+            Case "#PB_Font_Underline"                 : Flag = Flag | #PB_Font_Underline  
+            Case "#PB_Font_HighQuality"               : Flag = Flag | #PB_Font_HighQuality  
+            Case "#PB_FontRequester_Effects"          : Flag = Flag | #PB_FontRequester_Effects  
+               ; color
             Case "#PB_Gadget_FrontColor"              : Flag = Flag | #PB_Gadget_FrontColor
             Case "#PB_Gadget_BackColor"               : Flag = Flag | #PB_Gadget_BackColor 
             Case "#PB_Gadget_LineColor"               : Flag = Flag | #PB_Gadget_LineColor 
@@ -831,82 +863,7 @@ Procedure.q MakeConstants( string$ )
    ProcedureReturn Flag
 EndProcedure
 
-Procedure MakeCoordinate( string$ ) ; 
-   Protected result
-   
-   Select Asc( string$ )
-      Case '0' To '9'
-         result = Val(string$) ; Если строка такого рода "10"
-         
-      Default
-         ;          result = GetVal(string$) ; Если строка такого рода "GadgetX(#Gadget)"
-         ;          If result = 0
-         ;             result = Val(GetVarValue(string$)) ; Если строка такого рода "x"
-         ;          EndIf
-         
-   EndSelect
-   
-   ProcedureReturn result
-EndProcedure
-
-Procedure   MakeID( class$ )
-   If FindMapElement( GetObject( ), class$ )
-      class$ = GetObject( )
-   EndIf
-   
-   Protected result, *parent._s_WIDGET = ide_design_panel_MDI
-   ;class$ = Trim(class$)
-   class$ = UCase(class$)
-   
-   If StartEnum( *parent )
-      ; Debug ""+GetClass( widget( )) +" "+ class$
-      If Trim(GetClass( widget( )), "#") = Trim(class$, "#")
-         result = widget( )
-         Break
-      EndIf
-      StopEnum( )
-   EndIf
-   
-   
-   If result
-      a_set( result )
-   EndIf      
-   ProcedureReturn result
-EndProcedure
-
-Procedure$  MakeIDString( string$ )
-   ;        Protected result$ ;= UCase( Trim( StringField( string$, 1, "," )))
-   ;    ;    ProcedureReturn result$
-   ;    
-   ;    If FindString( string$, "=" )
-   ;       result$ = Trim( StringField( string$, 1, "=" ))
-   ;    Else
-   ;       result$ = Trim( StringField( string$, 1, "," ))
-   ;       
-   ;       If result$ = "#PB_Any" 
-   ;          result$ = ""
-   ;       ElseIf FindString( result$, "-" )
-   ;          ;  Если идентификатор просто - 1
-   ;          result$ = ""
-   ;       ElseIf NumericString( result$ )
-   ;          ; Если идентификатор просто цифры
-   ;          AddMapElement( GetObject( ), result$ )
-   ;          result$ = "#" + \func$ +"_"+ result$
-   ;          If Not enumerations
-   ;             result$ = Trim( result$, "#" )
-   ;          EndIf
-   ;          GetObject( ) = UCase(result$)
-   ;       Else
-   ;          If Not enumerations
-   ;             result$ = Trim( result$, "#" )
-   ;          EndIf
-   ;       EndIf
-   ;    EndIf
-   ;    
-   ;    ProcedureReturn UCase( result$ )
-EndProcedure
-
-Procedure$ MakeCloseList( *g._s_WIDGET, *before = 0 )
+Procedure$  MakeCloseList( *g._s_WIDGET, *before = 0 )
    Protected result$
    ;
    While Not is_window_(*g) 
@@ -928,6 +885,581 @@ Procedure$ MakeCloseList( *g._s_WIDGET, *before = 0 )
    ;
    ProcedureReturn result$
 EndProcedure
+
+;-
+Procedure$  MakeArgString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+   Protected i, chr$, start, stop 
+   Static ii
+   
+   For i = 0 To len
+      chr$ = Mid( string$, i, 1 )
+      If chr$ = "(" 
+         start = i + 1
+         For i = len To start Step - 1
+            chr$ = Mid( string$, i, 1 )
+            If chr$ = ")" 
+               stop = i - start
+               
+               For i = start To len
+                  chr$ = Mid( Mid( string$, start, stop ), i, 1 )
+                  
+                  If chr$ = ")" 
+                     stop = i - Bool(FindString( string$, ":" ))
+                     Break 
+                  EndIf
+               Next i
+               
+               If *start
+                  *start\i = start
+               EndIf
+               If *stop
+                  *stop\i = stop
+               EndIf
+               If Not stop
+                  ProcedureReturn " "
+               Else
+                  ; Debug Mid( string$, start, stop )
+                  ProcedureReturn Mid( string$, start, stop )
+               EndIf 
+               Break
+            EndIf
+         Next i
+         
+         Break
+      EndIf
+   Next i
+EndProcedure
+
+Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+   Protected i, result$, str$, start, stop
+   Protected space, pos = FindString( string$, "=" )
+   
+   If pos
+      If pos > FindString( string$, "(" )
+         pos = 0
+      Else
+         string$ = Mid( string$, pos + 1, len - pos )
+      EndIf
+   Else
+      pos = FindString( string$, ":" )
+      If pos
+         string$ = StringField( string$, 2, ":" )
+      EndIf
+   EndIf
+   
+   For i = 1 To len
+      If Mid( string$, i, 1 ) = "(" 
+         stop = i - 1
+         str$ = Mid( string$, start, stop )
+         result$ = Trim( str$ )
+         space = FindString( str$, result$ )
+         If space 
+            start + space
+            stop - space
+         EndIf
+         If *start
+            *start\i = pos + start
+         EndIf
+         If *stop
+            *stop\i = stop + 1
+         EndIf
+         Break
+      EndIf
+   Next i
+   
+   ProcedureReturn result$
+EndProcedure
+
+Procedure MakeVal( string$ )
+   Protected result, len = Len( string$ ) 
+   
+   String$ = Trim( String$ )
+         
+   Define arg$ = MakeArgString( string$, len )
+   Define func$ = MakeFuncString( string$, len )
+   Debug "[MakeVal]"+func$ 
+   
+   Select Trim( func$ )
+      Case "RGB"
+         result = RGB( Val(Trim(StringField( arg$, 1, ","))), 
+                       Val(Trim(StringField( arg$, 2, ","))),
+                       Val(Trim(StringField( arg$, 3, ","))) )
+      Case "RGBA"
+         result = RGBA( Val(Trim(StringField( arg$, 1, ","))), 
+                        Val(Trim(StringField( arg$, 2, ","))),
+                        Val(Trim(StringField( arg$, 3, ","))),
+                        Val(Trim(StringField( arg$, 4, ","))) )
+      Default ; (1...9)
+         String$ = Trim( String$, "(" )
+         String$ = Trim( String$, ")" )
+         result = Val( String$ )
+        
+   EndSelect
+   
+   ProcedureReturn result
+EndProcedure
+
+Procedure MakeFunc( string$, Index )
+   Protected result, result$
+   result$ = StringField(StringField(string$, 1, "("), Index, ",") +"("+ StringField(string$, 2, "(")
+   Debug "[MakeFunc]"+result$
+   result = MakeVal( result$ )
+   
+   ProcedureReturn result
+EndProcedure
+
+Procedure   MakeLine( parent, string$, findtext$ )
+   Static *parent
+   Protected result
+   Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
+   Protected param1, param2, param3, flags.q
+   Protected *id._s_WIDGET
+                  
+                  
+   Define string_len = Len( String$ )
+   Define arg_start, arg_stop, arg$ = MakeArgString( string$, string_len, @arg_start, @arg_stop ) 
+   If arg$
+      ; Debug arg$ +" "+ arg_start
+      Define str$ = Mid( String$, 1, arg_start - 1 - 1 ) ; исключаем открывающую скобку '('
+      
+      If FindString( str$, ";" )
+         ProcedureReturn 0
+      EndIf
+      
+      LastElement( *parser\Line( ))
+      If AddElement( *parser\Line( ))
+         *parser\Line( ) = AllocateStructure( _s_LINE )
+         
+         With *parser\Line( )
+            \arg$ = arg$
+            \string = string$
+            \func$ = MakeFuncString( string$, string_len )
+            ;\func$ = RemoveString(\func$, "﻿" )
+            
+            ;
+            \pos = FindString( str$, "Declare" )
+            If \pos
+               \type$ = "Declare"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "Procedure" )
+            If \pos
+               \type$ = "Procedure"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "Select" )
+            If \pos
+               \type$ = "Select"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "While" )
+            If \pos
+               \type$ = "While"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "Repeat" )
+            If \pos
+               \type$ = "Repeat"
+               ProcedureReturn 
+            EndIf
+            
+            \pos = FindString( str$, "If" )
+            If \pos
+               \type$ = "If"
+               \func$ = Trim( StringField( \func$, 2, " " ))
+               ; ProcedureReturn 
+            EndIf
+            
+            Debug "func[" + \func$ +"]" 
+            Debug " arg["+ arg$ +"]"
+            
+            ; Identificator
+            Select \func$
+               Case "OpenWindow", "﻿OpenWindow",
+                    "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
+                    "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
+                    "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
+                    "IPAddressGadget","ProgressBarGadget","ScrollBarGadget","ScrollAreaGadget",
+                    "TrackBarGadget","WebGadget","ButtonImageGadget","CalendarGadget",
+                    "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
+                    "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
+                    "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
+                  ;
+                  \func$ = ReplaceString( \func$, "Gadget", "")
+                  \func$ = ReplaceString( \func$, "OpenWindow", "Window")
+                  pb_object$ =  "PB"
+                  
+               Case "ResizeGadget",
+                    "CanvasOutput",
+                    "CanvasVectorOutput",
+                    "AddGadgetColumn",
+                    "AddGadgetItem",
+                    "RemoveGadgetColumn",
+                    "RemoveGadgetItem",
+                    "ClearGadgetItems",
+                    "CountGadgetItems",
+                    "OpenGadgetList",
+                    "BindGadgetEvent",
+                    "UnbindGadgetEvent",
+                    "DisableGadget",
+                    "FreeGadget",
+                    "HideGadget",
+                    "IsGadget",
+                    "GadgetHeight",
+                    "GadgetID",
+                    "GadgetItemID",
+                    "GadgetToolTip",
+                    "GadgetType",
+                    "GadgetWidth",
+                    "GadgetX",
+                    "GadgetY",
+                    "GetActiveGadget",
+                    "GetGadgetAttribute",
+                    "GetGadgetColor",
+                    "GetGadgetData",
+                    "GetGadgetFont",
+                    "GetGadgetItemAttribute",
+                    "GetGadgetItemColor",
+                    "GetGadgetItemData",
+                    "GetGadgetItemState",
+                    "GetGadgetItemText",
+                    "GetGadgetState",
+                    "GetGadgetText",
+                    "SetActiveGadget",
+                    "SetGadgetAttribute",
+                    "SetGadgetColor",
+                    "SetGadgetData",
+                    "SetGadgetFont",
+                    "SetGadgetItemAttribute",
+                    "SetGadgetItemColor",
+                    "SetGadgetItemData",
+                    "SetGadgetItemImage",
+                    "SetGadgetItemState",
+                    "SetGadgetItemText",
+                    "SetGadgetState",
+                    "SetGadgetText", 
+                    "Resize",
+                    "AddColumn",
+                    "AddItem",
+                    "RemoveColumn",
+                    "RemoveItem",
+                    "ClearItems",
+                    "CountItems",
+                    "OpenList",
+                    "BindEvent",
+                    "UnbindEvent",
+                    "Disable",
+                    "Free",
+                    "Hide",
+                    "Height",
+                    "ItemID",
+                    "ToolTip",
+                    "Type",
+                    "Width",
+                    "X",
+                    "Y",
+                    "GetActive",
+                    "GetAttribute",
+                    "GetColor",
+                    "GetData",
+                    "GetFont",
+                    "GetItemAttribute",
+                    "GetItemColor",
+                    "GetItemData",
+                    "GetItemState",
+                    "GetItemText",
+                    "GetState",
+                    "GetText",
+                    "SetActive",
+                    "SetAttribute",
+                    "SetColor",
+                    "SetData",
+                    "SetFont",
+                    "SetItemAttribute",
+                    "SetItemColor",
+                    "SetItemData",
+                    "SetItemImage",
+                    "SetItemState",
+                    "SetItemText",
+                    "SetState",
+                    "SetText"
+                  
+                  \func$ = ReplaceString( \func$, "Gadget", "")
+                  
+                  \id$ = Trim( StringField( arg$, 1, "," ))
+                  If Not enumerations
+                     \id$ = Trim( \id$, "#" )
+                  EndIf
+                  \id$ = UCase( \id$ )
+                  Debug "---- "+\id$ +" "+ *parent
+                  *id = MakeID( parent, \id$ ) 
+            EndSelect
+            
+            ;
+            Select \func$
+               Case "Window",
+                    "Button","String","Text","CheckBox",
+                    "Option","ListView","Frame","ComboBox",
+                    "Image","HyperLink","Container","ListIcon",
+                    "IPAddress","ProgressBar","ScrollBar","ScrollArea",
+                    "TrackBar","Web","ButtonImage","Calendar",
+                    "Date","Editor","ExplorerList","ExplorerTree",
+                    "ExplorerCombo","Spin","Tree","Panel",
+                    "Splitter","MDI","Scintilla","Shortcut","Canvas"
+                  
+                  If pb_object$ = ""
+                     arg$ = "," + arg$
+                  EndIf
+                  
+                  ; id$
+                  If FindString( str$, "=" )
+                     \id$ = Trim( StringField( str$, 1, "=" ))
+                     If Not enumerations
+                        \id$ = Trim( \id$, "#" )
+                     EndIf
+                     \id$ = UCase( \id$ )
+                  Else
+                     If pb_object$
+                        \id$ = Trim( StringField( arg$, 1, "," ))
+                        
+                        If \id$ = "#PB_Any" 
+                           \id$ = ""
+                        ElseIf FindString( \id$, "-" )
+                           ;  Если идентификатор просто - 1
+                           \id$ = ""
+                        ElseIf NumericString( \id$ )
+                           ; Если идентификатор просто цифры
+                           AddMapElement( GetObject( ), \id$ )
+                           \id$ = "#" + \func$ +"_"+ \id$
+                           If Not enumerations
+                              \id$ = Trim( \id$, "#" )
+                           EndIf
+                           \id$ = UCase( \id$ )
+                           GetObject( ) = \id$
+                        Else
+                           If Not enumerations
+                              \id$ = Trim( \id$, "#" )
+                           EndIf
+                           \id$ = UCase( \id$ )
+                        EndIf
+                     EndIf
+                  EndIf   
+                  
+                  ;
+                  x$      = Trim(StringField( arg$, 2, ","))
+                  y$      = Trim(StringField( arg$, 3, ","))
+                  width$  = Trim(StringField( arg$, 4, ","))
+                  height$ = Trim(StringField( arg$, 5, ","))
+                  ;
+                  param1$ = Trim(StringField( arg$, 6, ","))
+                  param2$ = Trim(StringField( arg$, 7, ","))
+                  param3$ = Trim(StringField( arg$, 8, ",")) 
+                  param4$ = Trim(StringField( arg$, 9, ","))
+                  
+                  ;
+                  If Not NumericString( x$ )  
+                     x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  If Not NumericString( y$ )  
+                     y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  If Not NumericString( width$ )  
+                     width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  If Not NumericString( height$ )  
+                     height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  
+                  ; text
+                  Select \func$
+                     Case "Window",
+                          "Web", "Frame",
+                          "Text", "String", "Button", "CheckBox",
+                          "Option", "HyperLink", "ListIcon", "Date",
+                          "ExplorerList", "ExplorerTree", "ExplorerCombo"
+                        
+                        If FindString( param1$, Chr('"'))
+                           text$ = Trim( param1$, Chr('"'))
+                        Else
+                           text$ = Trim(StringField( StringField( Mid( findtext$, FindString( findtext$, param1$ ) ), 1, ")" ), 2, "=" ))
+                        EndIf
+                        If text$
+                           ;If FindString( text$, Chr('"'))
+                           text$ = Trim( text$, Chr('"'))
+                           ;EndIf
+                        EndIf
+                        
+                  EndSelect
+                  
+                  ; param1
+                  Select \func$
+                     Case "Track", "Progress", "Scroll", "ScrollArea",
+                          "TrackBar","ProgressBar", "ScrollBar"
+                        param1 = Val( param1$ )
+                        
+                     Case "Splitter" 
+                        param1 = MakeID( parent, UCase(Param1$))
+                        
+                     Case "ListIcon"
+                        param1 = Val( param2$ ) ; *this\columns( )\width
+                        
+                  EndSelect
+                  
+                  ; param2
+                  Select \func$
+                     Case "Track", "Progress", "Scroll", "TrackBar", 
+                          "ProgressBar", "ScrollBar", "ScrollArea"
+                        param2 = Val( param2$ )
+                        
+                     Case "Splitter" 
+                        param2 = MakeID( parent, UCase(Param2$))
+                        
+                  EndSelect
+                  
+                  ; param3
+                  Select \func$
+                     Case "Scroll", "ScrollBar", "ScrollArea"
+                        param3 = Val( param3$ )
+                  EndSelect
+                  
+                  ; param4
+                  Select \func$
+                     Case "Date", "Calendar", "Container", 
+                          "Tree", "ListView", "ComboBox", "Editor"
+                        flag$ = param1$
+                        
+                     Case "Window",
+                          "Web", "Frame",
+                          "Text", "String", "Button", "CheckBox", 
+                          "ExplorerCombo", "ExplorerList", "ExplorerTree", "Image", "ButtonImage"
+                        flag$ = param2$
+                        
+                     Case "Track", "Progress", "TrackBar", "ProgressBar", 
+                          "Spin", "OpenGL", "Splitter", "MDI", "Canvas"
+                        flag$ = param3$
+                        
+                     Case "Scroll", "ScrollBar", "ScrollArea", "HyperLink", "ListIcon"  
+                        flag$ = param4$
+                        
+                  EndSelect
+                  
+                  ; flag
+                  If flag$
+                     flags = MakeConstants(Flag$)
+                  EndIf
+                  
+                  ; window parent ID
+                  If \func$ = "Window"
+                     If param3$
+                        *Parent = MakeID( parent, param3$ )
+                        If Not *Parent
+                           Debug "window ParentID"
+                           *Parent = parent
+                        EndIf
+                     Else
+                        *Parent = parent
+                     EndIf
+                     
+                     x$ = Str(Val(x$)+10)
+                     y$ = Str(Val(y$)+10)
+                  EndIf
+                  
+                  ;Debug "[Make]"+\func$ +" "+ Bool(\func$ = "Window") +" "+ *parent ;arg$
+                  *id = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
+                  
+                  If *id
+                     ;             If flag$
+                     ;                SetFlagsString( *id, flag$ )
+                     ;             EndIf
+                     
+                     If \id$
+                        SetClass( *id, UCase(\id$) )
+                     EndIf
+                     
+                     SetText( *id, text$ )
+                     
+                     ;
+                     If IsContainer( *id ) > 0
+                        *Parent = *id
+                     EndIf
+                     ; 
+                     ide_addline( *id )
+                     result = 1
+                  EndIf
+                  
+               Case "CloseList"
+                  If Not *parent
+                     Debug "ERROR "+\func$
+                     ProcedureReturn 
+                  EndIf
+                  *Parent = GetParent( *Parent )
+                  ; CloseList( ) 
+                  
+               Case "LoadFont", "AddLoadFont"
+                  *id = Val( Trim(StringField( arg$, 1, "," )))
+                  param1$ = Trim(Trim( StringField( arg$, 2, "," )), Chr('"'))
+                  param2 = Val( StringField( arg$, 3, "," ))
+                  param3 = MakeConstants( StringField( arg$, 4, "," ))
+                     
+                  AddLoadFont( *id, param1$, param2, param3 )
+                  
+               Case "SetFont"
+                  If *id
+                     *id\ChangeFont = 1
+                     SetFont( *id, MakeFunc( arg$, 2 ))
+                  EndIf
+                  
+               Case "SetColor"
+                  If *id
+                     *id\ChangeColor = 1
+                     param1$ = Trim( StringField( arg$, 2, "," ))
+                     SetColor( *id, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
+                  EndIf
+                  
+               Case "AddItem"
+                  If *id
+                     param1$ = Trim( StringField( arg$, 2, "," ))
+                     param2$ = Trim( StringField( arg$, 3, "," ))
+                     param3$ = Trim( StringField( arg$, 4, "," ))
+                     flag$ = Trim( StringField( arg$, 5, "," ))
+                     ;
+                     If FindString( param1$, "-" )
+                        param1 = #PB_Default
+                     Else
+                        param1 = Val(param1$)
+                     EndIf
+                     text$ = Trim( param2$, Chr('"'))
+                     param3 = Val(param3$)
+                     Flags = MakeConstants( flag$ )
+                     
+                     AddItem( *id, param1, text$, param3, Flags )
+                     
+                     If IsContainer( *id ) > 0
+                        *parent = *id 
+                     EndIf
+                  EndIf
+                  
+            EndSelect
+         EndWith
+      EndIf
+      
+      ; Mid( String$, arg_start+arg_stop + 1 )
+      ; если строка такого ввида "containergadget() : closegadgetlist()" 
+      Define lines$ = Trim( Mid( String$, arg_start+arg_stop + 1 ), ":" )
+      If lines$
+         MakeLine( ide_design_panel_MDI, lines$, findtext$ )
+      EndIf
+      
+      ProcedureReturn result
+      ; Debug "["+start +" "+ stop +"] " + Mid( str$, start, stop ) ;+" "+ str$ ; arg$
+   EndIf
+   
+EndProcedure
+
 
 ;- 
 Procedure$  Code_GenerateObject( *g._s_WIDGET, space$ )
@@ -1210,7 +1742,7 @@ EndProcedure
 Procedure.s Code_Generate( *mdi._s_WIDGET ) ; 
    Protected Type, Count, Image, Parent
    Protected Space$, id$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
-   Protected GlobalWindow$, GlobalGadget$, EnumWindow$, EnumGadget$
+   Protected GlobalWindow$, GlobalGadget$, EnumWindow$, EnumGadget$, EnumFont$
    
    Static JPEGPlugin$, JPEG2000Plugin$, PNGPlugin$, TGAPlugin$, TIFFPlugin$
    Protected *g._s_WIDGET
@@ -1234,6 +1766,7 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
       EndIf
       
       result$ + "EnableExplicit" + #LF$
+      result$ + #LF$
       
       If StartEnum( *mdi )
          *w = widgets( )
@@ -1310,43 +1843,58 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
       ;\\ enumeration windows
       ;
       If EnumWindow$
-         result$ + #LF$
          result$ + "Enumeration FormWindow" + #LF$
          result$ + EnumWindow$
          result$ + "EndEnumeration" + #LF$
+         result$ + #LF$
       EndIf
       ; 
       If EnumGadget$
-         result$ + #LF$
          result$ + "Enumeration FormGadget" + #LF$
          result$ + EnumGadget$
          result$ + "EndEnumeration" + #LF$
+         result$ + #LF$
       EndIf
       
       ;
       ;\\ global windows
       ;
       If GlobalWindow$
-         result$ + #LF$
          result$ + GlobalWindow$
+         result$ + #LF$
       EndIf
       ; 
       If GlobalGadget$
-         result$ + #LF$
          result$ + GlobalGadget$
+         result$ + #LF$
       EndIf
       
-      result$ + #LF$
-      
-      ForEach __gui\font( )
-         If __gui\font( )\style
-            result$ + "LoadFont( " + MapKey(__gui\font( )) + ", " + Chr('"') + __gui\font( )\name + Chr('"') + ", " + __gui\font( )\size + ", " + MakeConstantsString( "Font", __gui\font( )\style) + " )" + #LF$
-         Else
-            result$ + "LoadFont( " + MapKey(__gui\font( )) + ", " + Chr('"') + __gui\font( )\name + Chr('"') + ", " + __gui\font( )\size + " )" + #LF$
+      ; load fonts
+      If MapSize(loadfonts( ))
+         ForEach loadfonts( )
+            If NumericString( MapKey(loadfonts( )) )
+               EnumFont$ + Space$ + "#FONT_" + MapKey(loadfonts( )) + #LF$
+            EndIf
+         Next
+         ;
+         If EnumFont$
+            result$ + "Enumeration Font" + #LF$
+            result$ + EnumFont$
+            result$ + "EndEnumeration" + #LF$
+            result$ + #LF$
          EndIf
-      Next
-      
-      result$ + ";- " + #LF$
+         ;
+         ForEach loadfonts( )
+            If loadfonts( )\style
+               result$ + "LoadFont( " + MapKey(loadfonts( )) + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
+            Else
+               result$ + "LoadFont( " + MapKey(loadfonts( )) + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
+            EndIf
+         Next
+         result$ + "" + #LF$
+      EndIf
+   
+      ;result$ + ";- " + #LF$
       If StartEnum( *mdi )
          *g = widgets( )
          ;If Not is_window_( *g )
@@ -1457,151 +2005,64 @@ EndProcedure
 ;- 
 CompilerIf #PB_Compiler_IsMainFile
    DisableExplicit
-   Define Width = 350
    
-   If Open( 0, 0, 0, Width, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      Define i, *parent._s_Widget
+  ; XIncludeFile "test\code\addfont.pb"
+;    XIncludeFile "test\code\additem1.pb"
+;    XIncludeFile "test\code\additem2.pb"
+;    XIncludeFile "test\code\additem3.pb"
+;    XIncludeFile "test\code\additem4.pb"
+;    XIncludeFile "test\code\additem5.pb"
+;    XIncludeFile "test\code\global&enum.pb"
+;    XIncludeFile "test\code\closelist.pb"
+;    XIncludeFile "test\code\windows.pb"
+   
+   If Open(0, 0, 0, 400, 400, "read", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
-      ;       i = 0
-      ;       Window( 10 + (i+1)*30, (i+1)*140 - 120, 255, 95 + 2, "Window_" + Trim( Str( i ) ), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget )  
-      ;       SetEventsString(widget( ), "#PB_Event_Gadget|#PB_Event_SizeWindow")
-      ;       
-      ;       Container( 5, 5, 120 + 2, 85 + 2, #PB_Container_Flat )                  
-      ;       Button( 10, 10, 100, 30, "Button_" + Trim( Str( i + 10 ) ) )                  
-      ;       Button( 10, 45, 100, 30, "Button_" + Trim( Str( i + 20 ) ) )                 
-      ;       CloseList( )                               
-      ;       Container( 127, 5, 120 + 2, 85 + 2, #PB_Container_Flat )                  
-      ;       Button( 10, 10, 100, 30, "Button_" + Trim( Str( i + 10 ) ) )                  
-      ;       Button( 10, 45, 100, 30, "Button_" + Trim( Str( i + 20 ) ) )                 
-      ;       CloseList( )                               
-      ;       
-      ;       i = 1 
-      ;       Window( 10 + (i+1)*30, (i+1)*140 - 120, 255, 95 + 2, "Window_" + Trim( Str( i ) ), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget )  
-      ;       *parent = Panel( 5, 5, 120 + 2, 85 + 2 ) 
-      ;       AddItem( *parent, - 1, "item - 1" )
-      ;       Button( 10, 10, 100, 30, "Button14" )                  
-      ;       Button( 10, 45, 100, 30, "Button15" )                  
-      ;       AddItem( *parent, - 1, "item - 2" )
-      ;       Button( 10, 10, 100, 30, "Button16" )                  
-      ;       Button( 10, 45, 100, 30, "Button17" )                  
-      ;       AddItem( *parent, - 1, "item - 3" )
-      ;       Button( 10, 10, 100, 30, "Button18" )                  
-      ;       Button( 10, 45, 100, 30, "Button19" )                  
-      ;       CloseList( )                               
-      ;       SetState( *parent, 1 )
-      ;       
-      ;       *parent = Panel( 127, 5, 120 + 2, 85 + 2 ) 
-      ;       AddItem( *parent, - 1, "item - 1" )
-      ;       Button( 10, 10, 100, 30, "Button14" )                  
-      ;       Button( 10, 45, 100, 30, "Button15" )                  
-      ;       AddItem( *parent, - 1, "item - 2" )
-      ;       Button( 10, 10, 100, 30, "Button16" )                  
-      ;       Button( 10, 45, 100, 30, "Button17" )                  
-      ;       AddItem( *parent, - 1, "item - 3" )
-      ;       Button( 10, 10, 100, 30, "Button18" )                  
-      ;       Button( 10, 45, 100, 30, "Button19" )                  
-      ;       CloseList( )                               
-      ;       SetState( *parent, 1 )
-      ;     
-      #font_2 = 2
-      
-      AddFont(1, "Arial", 19 )
-      AddFont(#font_2, "Consolas", 21, #PB_Font_Bold )
-      
-      WINDOW_1 = Window( 10, 300, Width-30, 253, "window_1" ) : SetClass( widget( ), "WINDOW_1")
-      BUTTON_8 = Button( 21, 14, 120, 64, "button_8" )
-      SetFont( BUTTON_8, (1))
-      SetColor( BUTTON_8, #PB_Gadget_BackColor, (0))
-      BUTTON_9 = Button( 21, 91, 120, 71, "button_9" )
-      SetFont( BUTTON_9, (2))
-      BUTTON_10 = Button( 21, 175, 120, 64, "button_10" )
-      SetFont( BUTTON_10, (1))
-      
-      ;             CONTAINER_0 = Container( 154, 14, 330, 225 )
-      ;             BUTTON_11 = Button( 14, 21, 141, 43, "button_11" )
-      ;             BUTTON_12 = Button( 14, 77, 141, 71, "button_12" )
-      ;             BUTTON_13 = Button( 14, 161, 141, 50, "button_13" )
-      ;             
-      ;             PANEL_0 = Panel( 168, 21, 148, 183 )
-      ;             AddItem( PANEL_0, -1, "tab_0")
-      ;             BUTTON_14 = Button( 7, 14, 134, 29, "button_14" )
-      ;             AddItem( PANEL_0, -1, "tab_1")
-      ;             BUTTON_15 = Button( 7, 56, 134, 71, "button_15" )
-      ;             AddItem( PANEL_0, -1, "tab_2")
-      ;             BUTTON_16 = Button( 7, 140, 134, 36, "button_16" )
-      ;             CloseList( )
-      ;             CloseList( )
-      ;       
-      ;       SCROLLAREA_0 = ScrollArea( 0, 0, 241, 393, 241, 391, 0 )
-      ;       CloseList( )
-      ;       TREE_0 = Tree( 0, 0, 241, 192 )
-      ;       PANEL_0 = Panel( 0, 201, 241, 192 )
-      ;       AddItem( PANEL_0, -1, "tab_1")
-      ;       AddItem( PANEL_0, -1, "tab_2")
-      ;       CloseList( )
-      ;       
-      ;       ; SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, 0 )
-      ;       SPLITTER_0 = Splitter( 250, 0, 241, 393, TREE_0, PANEL_0 )
-      ;       SPLITTER_1 = Splitter( 7, 7, Width-30-14, 253-14, SCROLLAREA_0, SPLITTER_0, #PB_Splitter_Vertical )
-      ;       
-      ;       ;       ;
-      ;       ;       R1 = Container(7, 7, 568, 568,  #PB_Container_Single  )
-      ;       ;       R1Y1 = Container(7, 7, 274, 274,  #PB_Container_Single  )
-      ;       ;       
-      ;       ;       R1Y1G1 = Container(7, 7, 127, 127,  #PB_Container_Single  )
-      ;       ;       R1Y1G1B1 = Container(7, 7, 50, 50,  #PB_Container_Single  )
-      ;       ;       R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
-      ;       ;       R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
-      ;       ;       R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
-      ;       ;       CloseList( )
-      ;       ;       R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
-      ;       ;       CloseList( )
-      ;       ;       CloseList( )
-      ;       ;       CloseList( )
-      ;       ;       CloseList( )
-      ;       ;       CloseList( )
-      ;       ;       
-      ;       ;       R1Y1G1 = Container(7, 7, 127, 127,  #PB_Container_Single  )
-      ;       ;       ;                R1Y1G1B1 = Container(7, 7, 50, 50,  #PB_Container_Single  )
-      ;       ;       ;                   R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
-      ;       ;       ;                      R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
-      ;       ;       ;                         R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
-      ;       ;       ;                         CloseList( )
-      ;       ;       ;                         R1Y1G1B1P1 = Container(7, 7, 15, 15,  #PB_Container_Single  )
-      ;       ;       ;                         CloseList( )
-      ;       ;       ;                      CloseList( )
-      ;       ;       ;                   CloseList( )
-      ;       ;       ;                CloseList( )
-      ;       ;       CloseList( )
-      ;       ;       
-      ;       ;       CloseList( )
-      ;       ;       CloseList( )
-      ;       
-      ;       
-      ;       ;       If StartEnum( root( ) )
-      ;       ;          StopEnum( )
-      ;       ;       EndIf
-      ;       
+      Path$ = "test\code\addfont.pb"
+      If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
+         Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         FileSeek( #File, 0 )                                   ; 
+         
+         While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
+            String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
+            String$ = RemoveString( String$, "﻿" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
+            
+            MakeLine( root( ), String$, Text$ )
+         Wend
+         
+         ;          
+         ;          ForEach *parser\Line()
+         ;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
+         ;          Next
+         
+         ;
+         CloseFile(#File) ; Закрывает ранее открытый файл
+         Debug "..успешно"
+      EndIf
    EndIf
-   
-   Define *root = root( )
-   If Open( 1, 0, 0, Width*2, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      ResizeWindow( 0, WindowX( 0 ) - WindowWidth( 1 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-      ResizeWindow( 1, WindowX( 1 ) + WindowWidth( 0 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-      
-      Define *g = Editor( 0, 0, 0, 0, #__flag_autosize )
-      
-      Define code$ = Code_Generate( *root )
-      
-      SetText( *g, code$ )
-      Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
-   EndIf
-   
-   
-CompilerEndIf
+
+   ;
+      Define *root = root( )
+      If *root
+         Define Width = Width( *root )
+         Define TEST = GetCanvasWindow( *root )
+         
+         If Open( 1, 0, 0, Width*2, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+            ResizeWindow( TEST, WindowX( TEST ) - WindowWidth( 1 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            ResizeWindow( 1, WindowX( 1 ) + WindowWidth( TEST )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            
+            Define *g = Editor( 0, 0, 0, 0, #__flag_autosize )
+            
+            Define code$ = Code_Generate( *root )
+            
+            SetText( *g, code$ )
+            Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
+         EndIf
+      EndIf
+   CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1505
-; FirstLine = 1461
-; Folding = --------------------------------4-----
+; CursorPosition = 1403
+; FirstLine = 863
+; Folding = -------------8--------v0-----+gB3---------4------
 ; EnableXP
 ; DPIAware

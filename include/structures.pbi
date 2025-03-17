@@ -760,7 +760,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     GUI
       Structure _s_GUI
          fontID.i                       ; current drawing fontID
-         Map font._s_FONT( )
          ;
          *root._s_ROOT                 ; enumerate root
          *drawingroot._s_ROOT
@@ -785,7 +784,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 753
+; CursorPosition = 762
 ; FirstLine = 746
 ; Folding = ----------
 ; Optimizer

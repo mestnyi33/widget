@@ -259,10 +259,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global __gui._s_GUI
       ;Global NewMap *roots._s_root( )
       ;Global *event._s_EVENT( )
+      Global NewMap loadfonts._s_FONT( )
       
       ;-  ----------------
       ;-   DECLARE_macros
       ;-  ----------------
+      
       Macro allocate( _struct_name_, _struct_type_ = )
          _s_#_struct_name_#_struct_type_ = AllocateStructure( _s_#_struct_name_ )
       EndMacro
@@ -1443,6 +1445,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   SetFontName( FontID.i, name.s )
       Declare   SetFontSize( FontID.i, size.a )
       Declare   SetFontStyle( FontID.i, style.q )
+      Declare   AddLoadFont( font, name$, size, style = 0 )
       ;
       Declare.i GetFontColor( *this )
       Declare   SetFontColor( *this, color.i )
@@ -9853,59 +9856,80 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure.s  GetFontName( FontID.i )
         ; Debug " get "+FontID
-         With __gui
-            If FindMapElement( \font( ), Str(FontID) )
-               ProcedureReturn \font( )\name
+         
+            If FindMapElement( loadfonts( ), Str(FontID) )
+               ProcedureReturn loadfonts( )\name
             EndIf
-         EndWith
+         
       EndProcedure
       
       Procedure.a GetFontSize( FontID.i )
-         With __gui
-            If FindMapElement( \font( ), Str(FontID) )
-               ProcedureReturn \font( )\size
+         
+            If FindMapElement( loadfonts( ), Str(FontID) )
+               ProcedureReturn loadfonts( )\size
             EndIf
-         EndWith
+         
       EndProcedure
       
       Procedure.q GetFontStyle( FontID.i )
-         With __gui
-            If FindMapElement( \font( ), Str(FontID) )
-               ProcedureReturn \font( )\style
+         
+            If FindMapElement( loadfonts( ), Str(FontID) )
+               ProcedureReturn loadfonts( )\style
             EndIf
-         EndWith
+         
       EndProcedure
       
       Procedure   SetFontName( FontID.i, name.s )
-         With __gui
-;             If Not FindMapElement( \font( ), Str(FontID) )
-;                AddMapElement( \font( ), Str(FontID) )
+        
+;             If Not FindMapElement( loadfonts( ), Str(FontID) )
+;                AddMapElement( loadfonts( ), Str(FontID) )
 ;             EndIf
-            \font( Str(FontID) )\name = name
+            loadfonts( Str(FontID) )\name = name
             
          ;Debug "set "+FontID
             ; Debug GetFontName( FontID )
-         EndWith
+       
       EndProcedure
       
       Procedure   SetFontSize( FontID.i, size.a )
-         With __gui
-;             If Not FindMapElement( \font( ), Str(FontID) )
-;                AddMapElement( \font( ), Str(FontID) )
+         
+;             If Not FindMapElement( loadfonts( ), Str(FontID) )
+;                AddMapElement( loadfonts( ), Str(FontID) )
 ;             EndIf
-            \font( Str(FontID) )\size = size
-         EndWith
+            loadfonts( Str(FontID) )\size = size
+         
       EndProcedure
       
       Procedure   SetFontStyle( FontID.i, style.q )
-         With __gui
-;             If Not FindMapElement( \font( ), Str(FontID) )
-;                AddMapElement( \font( ), Str(FontID) )
+         
+;             If Not FindMapElement( loadfonts( ), Str(FontID) )
+;                AddMapElement( loadfonts( ), Str(FontID) )
 ;             EndIf
-            \font( Str(FontID) )\style = style
-         EndWith
+            loadfonts( Str(FontID) )\style = style
+        
       EndProcedure
       
+      Procedure   AddLoadFont( font, name$, size, style = 0 )
+         Protected fontID
+         fontID = LoadFont(font, name$, size )
+         If font = #PB_Any
+            font = fontID
+         EndIf
+         
+         ;__gui\font( Str(Font) )\id = font
+         SetFontName( font, name$ )
+         SetFontSize( font, size )
+         If style
+            SetFontStyle( font, style )
+         EndIf
+         If font = fontID
+            ProcedureReturn font
+         Else
+            ProcedureReturn FontID(font)
+         EndIf
+      EndProcedure
+      
+
       ;-
       Procedure.i GetFont( *this._s_WIDGET )
          ProcedureReturn *this\text\font
@@ -9916,14 +9940,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result, FontID
          
          If IsFont( Font )
-            If *this\text\font <> Font
+            FontID = FontID( Font )
+            
+            If ChangeFontID( *this, FontID )
                *this\text\font = Font
-               FontID = FontID( Font )
-               
-               If ChangeFontID( *this, FontID )
-                  *this\ChangeFont = 1
-                  result = #True
-               EndIf
+               *this\ChangeFont = 1
+               result = #True
             EndIf
          EndIf
          
@@ -9991,6 +10013,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure.i GetAttribute( *this._s_WIDGET, Attribute.l )
          Protected result.i
+         If Not *this
+            ProcedureReturn 
+         EndIf
          
          If *this\type = #__type_Panel
             Select Attribute
@@ -25090,9 +25115,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8695
-; FirstLine = 8661
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d4r---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 9949
+; FirstLine = 9938
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f407---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
