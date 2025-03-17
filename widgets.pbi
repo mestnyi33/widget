@@ -1439,14 +1439,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i GetItemData( *this, item.l )
       Declare.i SetItemData( *this, item.l, *data )
       ;
-      Declare.s GetFontName( FontID.i )
-      Declare.a GetFontSize( FontID.i )
-      Declare.q GetFontStyle( FontID.i )
-      Declare   SetFontName( FontID.i, name.s )
-      Declare   SetFontSize( FontID.i, size.a )
-      Declare   SetFontStyle( FontID.i, style.q )
-      Declare   AddLoadFont( font, name$, size, style = 0 )
-      ;
       Declare.i GetFontColor( *this )
       Declare   SetFontColor( *this, color.i )
       Declare.i GetFont( *this )
@@ -9853,83 +9845,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      ;-
-      Procedure.s  GetFontName( FontID.i )
-        ; Debug " get "+FontID
-         
-            If FindMapElement( loadfonts( ), Str(FontID) )
-               ProcedureReturn loadfonts( )\name
-            EndIf
-         
-      EndProcedure
-      
-      Procedure.a GetFontSize( FontID.i )
-         
-            If FindMapElement( loadfonts( ), Str(FontID) )
-               ProcedureReturn loadfonts( )\size
-            EndIf
-         
-      EndProcedure
-      
-      Procedure.q GetFontStyle( FontID.i )
-         
-            If FindMapElement( loadfonts( ), Str(FontID) )
-               ProcedureReturn loadfonts( )\style
-            EndIf
-         
-      EndProcedure
-      
-      Procedure   SetFontName( FontID.i, name.s )
-        
-;             If Not FindMapElement( loadfonts( ), Str(FontID) )
-;                AddMapElement( loadfonts( ), Str(FontID) )
-;             EndIf
-            loadfonts( Str(FontID) )\name = name
-            
-         ;Debug "set "+FontID
-            ; Debug GetFontName( FontID )
-       
-      EndProcedure
-      
-      Procedure   SetFontSize( FontID.i, size.a )
-         
-;             If Not FindMapElement( loadfonts( ), Str(FontID) )
-;                AddMapElement( loadfonts( ), Str(FontID) )
-;             EndIf
-            loadfonts( Str(FontID) )\size = size
-         
-      EndProcedure
-      
-      Procedure   SetFontStyle( FontID.i, style.q )
-         
-;             If Not FindMapElement( loadfonts( ), Str(FontID) )
-;                AddMapElement( loadfonts( ), Str(FontID) )
-;             EndIf
-            loadfonts( Str(FontID) )\style = style
-        
-      EndProcedure
-      
-      Procedure   AddLoadFont( font, name$, size, style = 0 )
-         Protected fontID
-         fontID = LoadFont(font, name$, size )
-         If font = #PB_Any
-            font = fontID
-         EndIf
-         
-         ;__gui\font( Str(Font) )\id = font
-         SetFontName( font, name$ )
-         SetFontSize( font, size )
-         If style
-            SetFontStyle( font, style )
-         EndIf
-         If font = fontID
-            ProcedureReturn font
-         Else
-            ProcedureReturn FontID(font)
-         EndIf
-      EndProcedure
-      
-
       ;-
       Procedure.i GetFont( *this._s_WIDGET )
          ProcedureReturn *this\text\font
@@ -25115,9 +25030,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9949
-; FirstLine = 9938
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f407---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 1440
+; FirstLine = 1423
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v8e0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -158,7 +158,7 @@ Declare   Properties_Updates( *object, type$ )
 Declare   widget_Create( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   ide_addline( *new )
-Declare   MakeID( *rootParent, class$ )
+Declare   MakeID( class$, *rootParent )
 ;
 Declare.s Code_Generate( *parent )
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
@@ -171,6 +171,14 @@ Declare   NumericString( string$ )
 Declare.q MakeConstants( string$ )
 Declare$  MakeConstantsString( type$, flag.q ) ; 
 Declare   MakeLine( parent, string$, findtext$ )
+;
+Declare.s GetFontName( FontID.i )
+Declare.a GetFontSize( FontID.i )
+Declare.q GetFontStyle( FontID.i )
+Declare   SetFontName( FontID.i, name.s )
+Declare   SetFontSize( FontID.i, size.a )
+Declare   SetFontStyle( FontID.i, style.q )
+
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
@@ -196,7 +204,7 @@ Procedure RunPreview(SourceCode$)
    CompilerElse
       CompilerPath$ = #PB_Compiler_Home + "pbcompiler"
    CompilerEndIf
-
+   
    If FileSize(CompilerPath$)
       TempFileName$ = "~preview.pb"
       hTempFile = CreateFile(#PB_Any, TempFileName$, #PB_UTF8)
@@ -331,7 +339,7 @@ Procedure ide_addline( *new._s_widget )
          ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
       EndIf
    EndIf
-
+   
    ProcedureReturn *new
 EndProcedure
 
@@ -569,7 +577,7 @@ Procedure   Properties_ButtonEvents( )
                   Message$ = "Запрос был отменён."
                EndIf
                ;MessageRequester("Инфо", Message$, #PB_MessageRequester_Ok)
-   
+               
             Case #_pi_COLOR
                If a_focused( )
                   Define Color.q = ColorRequester( GetColor( a_focused( ), #PB_Gadget_BackColor )) & $FFFFFF | a_focused( )\color\_alpha << 24
@@ -590,7 +598,7 @@ Procedure   Properties_ButtonEvents( )
                   
                   ; MessageRequester("Инфо", Message$, 0)
                EndIf
-              
+               
          EndSelect
          
       Case #__event_Change
@@ -648,7 +656,7 @@ Procedure   Properties_ButtonEvents( )
                      ;Debug GetItemText( *g, GetState( *g))
                      Properties_SetItemText( ide_inspector_properties, #_pi_colortype, GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
-                         
+                     
                   Case #_pi_id
                      If GetState(*g) 
                         If SetClass( a_focused( ), "#"+Trim( GetClass( a_focused( ) ), "#" ))
@@ -733,9 +741,9 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
             Case #_pi_colortype
                AddItem(*this, -1, "BackColor")
                AddItem(*this, -1, "FontColor")
-;                AddItem(*this, -1, "LineColor")
-;                AddItem(*this, -1, "FrameColor")
-;                AddItem(*this, -1, "ForeColor")
+               ;                AddItem(*this, -1, "LineColor")
+               ;                AddItem(*this, -1, "FrameColor")
+               ;                AddItem(*this, -1, "ForeColor")
                
             Case #_pi_cursor
                AddItem(*this, -1, "Default")
@@ -817,7 +825,7 @@ Procedure.s Properties_GetItemText( *splitter._s_WIDGET, item )
 EndProcedure
 
 Procedure   Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
-  ProcedureReturn SetItemText( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, Text.s )
+   ProcedureReturn SetItemText( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, Text.s )
 EndProcedure
 
 Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
@@ -837,21 +845,21 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       Define color_properties.q = $FFBF9CC3;$BE80817D
       Define fcolor_properties.q = $CA2E2E2E
       
-;       If Type > 0
-;          SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
-;          SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
-;       Else
-;          ;SetItemFont( *first, item, font_properties)
-;          ;SetItemFont( *second, item, font_properties)
-         
-         SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-         SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-         ; SetItemColor( *first, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
-         ;       SetItemColor( *second, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
-         
-         SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-         SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-;       EndIf
+      ;       If Type > 0
+      ;          SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
+      ;          SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
+      ;       Else
+      ;          ;SetItemFont( *first, item, font_properties)
+      ;          ;SetItemFont( *second, item, font_properties)
+      
+      SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
+      SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
+      ; SetItemColor( *first, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
+      ;       SetItemColor( *second, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
+      
+      SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+      SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+      ;       EndIf
    Else
       SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
       SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
@@ -875,13 +883,13 @@ Procedure   Properties_Events( )
       Case #__event_Draw
          UnclipOutput( )
          DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend )
-;          Define Image = GrabDrawingImage( #PB_Any, *g\parent\bar\button\x-*g\parent\bar\button\width,*g\parent\bar\button\y, *g\parent\bar\button\width, *g\scroll_height( ) + *g\mode\GridLines )
-;          DrawImage( ImageID(Image), *g\parent\bar\button\x, *g\parent\bar\button\y )
+         ;          Define Image = GrabDrawingImage( #PB_Any, *g\parent\bar\button\x-*g\parent\bar\button\width,*g\parent\bar\button\y, *g\parent\bar\button\width, *g\scroll_height( ) + *g\mode\GridLines )
+         ;          DrawImage( ImageID(Image), *g\parent\bar\button\x, *g\parent\bar\button\y )
          Box( *g\parent\bar\button\x+(*g\parent\bar\button\width-*g\mode\GridLines)/2, *g\parent\bar\button\y, *g\mode\GridLines, *g\scroll_height( ) + *g\mode\GridLines, $FFBF9CC3 )
          
       Case #__event_Down
          If is_parent_item( *g, __item )
-           ; Properties_ButtonHide( *second, #True)
+            ; Properties_ButtonHide( *second, #True)
          EndIf
          If Not EnteredButton( )
             SetState( *g, __item)
@@ -941,8 +949,8 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected position = 90
    Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_borderLess)
    Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_borderLess)
-;    *first\padding\x = 10
-;    *second\padding\x = 10
+   ;    *first\padding\x = 10
+   ;    *second\padding\x = 10
    
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
@@ -951,7 +959,7 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    *splitter\bar\button\size = DPIScaled(1)
    *splitter\bar\button\size + Bool( *splitter\bar\button\size % 2 )
    *Splitter\bar\button\round = 0;  DPIScaled(1)
-                                 SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
+   SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
    
    ;
    SetClass(*first\scroll\v, "first_v")
@@ -969,7 +977,7 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    SetColor( *splitter, #PB_Gadget_BackColor, -1, #PB_All )
    SetColor( *first, #PB_Gadget_LineColor, $FFBF9CC3)
    SetColor( *second, #PB_Gadget_LineColor, $FFBF9CC3)
-      
+   
    ;
    Bind(*first, @Properties_Events( ))
    Bind(*second, @Properties_Events( ))
@@ -1231,7 +1239,7 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
             String$ = RemoveString( String$, "﻿" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
-   
+            
             MakeLine( ide_design_panel_MDI, String$, Text$ )
          Wend
          
@@ -1811,9 +1819,9 @@ Procedure.i ide_addimage_list( *id, Directory$ )
                            PackEntryName = LCase( PackEntryName.S )
                            
                            name$ = UCase( Left( PackEntryName.S, 1 ) ) + 
-                                                Right( PackEntryName.S, Len( PackEntryName.S )-1 )
-                              
-                              
+                                   Right( PackEntryName.S, Len( PackEntryName.S )-1 )
+                           
+                           
                            If FindString( PackEntryName, "cursor" )
                               Image = CatchImage( #PB_Any, *memory, ImageSize )
                               AddItem( *id, 0, name$, Image )
@@ -1862,9 +1870,9 @@ Procedure.i ide_addimage_list( *id, Directory$ )
                               SetItemData( *id, CountItems( *id )-1, Image )
                               
                            Else
-;                               Image = CatchImage( #PB_Any, *memory, ImageSize )
-;                               AddItem( *id, -1, name$, Image )
-;                               SetItemData( *id, CountItems( *id )-1, Image )
+                              ;                               Image = CatchImage( #PB_Any, *memory, ImageSize )
+                              ;                               AddItem( *id, -1, name$, Image )
+                              ;                               SetItemData( *id, CountItems( *id )-1, Image )
                            EndIf
                            
                         EndIf    
@@ -1918,7 +1926,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          ;-  RUN
       Case #_tb_file_run
          Define Code.s = Code_Generate( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
-
+         
          RunPreview( Code )
          
          
@@ -2150,7 +2158,7 @@ Procedure ide_events( )
                name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
                
                If name$
-                  object = MakeID( ide_design_panel_MDI, name$ )
+                  object = MakeID( name$, ide_design_panel_MDI )
                   If Not object
                      If CountString( text$, "=" )
                         name$ = Trim( StringField( text$, 1, "=" ))
@@ -2159,7 +2167,7 @@ Procedure ide_events( )
                         EndIf
                      EndIf
                      
-                     object = MakeID( ide_design_panel_MDI, name$ )
+                     object = MakeID( name$, ide_design_panel_MDI )
                   EndIf
                EndIf
                
@@ -2680,15 +2688,15 @@ CompilerIf #PB_Compiler_IsMainFile
    SetFontName( font, "Courier")
    SetFontSize( font, 9)
    ;SetFontStyle( font, SelectedFontStyle( ))
-                     
+   
    
    a_set( ide_design_form )
    
-    Define code$ = Code_Generate( ide_design_panel_MDI )
-    code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
-    code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
-    SetText( ide_design_DEBUG, code$ )
-        
+   Define code$ = Code_Generate( ide_design_panel_MDI )
+   code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
+   code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
+   SetText( ide_design_DEBUG, code$ )
+   
    ;Define code$ = Code_Generate( ide_design_panel_MDI )
    ; SetText( ide_design_panel_CODE, code$ )
    ;SetText( ide_design_DEBUG, code$ )
@@ -2723,9 +2731,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 160
-; FirstLine = 157
-; Folding = 4--+-------fj------------------------------------
+; CursorPosition = 2731
+; FirstLine = 2692
+; Folding = -------------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

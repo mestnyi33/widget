@@ -19,6 +19,63 @@ Global codeindent = 3
 ;
 ;- PUBLICs
 ;
+;-
+Procedure.s  GetFontName( FontID.i )
+   ; Debug " get "+FontID
+   
+   If FindMapElement( loadfonts( ), Str(FontID) )
+      ProcedureReturn loadfonts( )\name
+   EndIf
+   
+EndProcedure
+
+Procedure.a GetFontSize( FontID.i )
+   
+   If FindMapElement( loadfonts( ), Str(FontID) )
+      ProcedureReturn loadfonts( )\size
+   EndIf
+   
+EndProcedure
+
+Procedure.q GetFontStyle( FontID.i )
+   
+   If FindMapElement( loadfonts( ), Str(FontID) )
+      ProcedureReturn loadfonts( )\style
+   EndIf
+   
+EndProcedure
+
+Procedure   SetFontName( FontID.i, name.s )
+   
+   ;             If Not FindMapElement( loadfonts( ), Str(FontID) )
+   ;                AddMapElement( loadfonts( ), Str(FontID) )
+   ;             EndIf
+   loadfonts( Str(FontID) )\name = name
+   
+   ;Debug "set "+FontID
+   ; Debug GetFontName( FontID )
+   
+EndProcedure
+
+Procedure   SetFontSize( FontID.i, size.a )
+   
+   ;             If Not FindMapElement( loadfonts( ), Str(FontID) )
+   ;                AddMapElement( loadfonts( ), Str(FontID) )
+   ;             EndIf
+   loadfonts( Str(FontID) )\size = size
+   
+EndProcedure
+
+Procedure   SetFontStyle( FontID.i, style.q )
+   
+   ;             If Not FindMapElement( loadfonts( ), Str(FontID) )
+   ;                AddMapElement( loadfonts( ), Str(FontID) )
+   ;             EndIf
+   loadfonts( Str(FontID) )\style = style
+   
+EndProcedure
+
+
 Procedure.s GetClassString( Element )
    
    ProcedureReturn ClassFromType( Type(Element) )
@@ -361,7 +418,12 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
    EndIf
    ;
    If *g\ChangeFont
-      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", ("+ Str( *g\text\font ) +") )" + #LF$
+      ForEach loadfonts( )
+         If *g\text\font = loadfonts( )\font
+            result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ MapKey(loadfonts( )) +" )" + #LF$
+         EndIf
+      Next
+      ; result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", ("+ Str( *g\text\font ) +") )" + #LF$
       line_break1 = 1
    EndIf            
    
@@ -445,7 +507,7 @@ EndProcedure
 
 
 ;-
-Procedure   MakeID( *rootParent._s_WIDGET, class$ )
+Procedure   MakeID( class$, *rootParent._s_WIDGET )
    If FindMapElement( GetObject( ), class$ )
       class$ = GetObject( )
    EndIf
@@ -970,11 +1032,46 @@ Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 
    ProcedureReturn result$
 EndProcedure
 
+Procedure$  MakeIDString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
+   Protected i, result$, pos = FindString( string$, "=" )
+   
+   If pos
+      len = FindString( string$, "(" )
+      If len > pos
+         len = pos - 1
+      EndIf
+      pos = 1
+      If *start
+         *start\i = pos
+      EndIf
+      If *stop
+         *stop\i = len
+      EndIf
+      result$ = Mid( string$, pos, len )
+   Else
+      pos = FindString( string$, "," )
+      If pos
+         len = pos
+         pos = FindString( string$, "(" ) + 1
+         len - pos
+         If *start
+            *start\i = pos
+         EndIf
+         If *stop
+            *stop\i = len
+         EndIf
+         result$ = Mid( string$, pos, len )
+      EndIf
+   EndIf
+   
+   ProcedureReturn result$
+EndProcedure
+
 Procedure MakeVal( string$ )
    Protected result, len = Len( string$ ) 
    
    String$ = Trim( String$ )
-         
+   
    Define arg$ = MakeArgString( string$, len )
    Define func$ = MakeFuncString( string$, len )
    Debug "[MakeVal]"+func$ 
@@ -993,7 +1090,7 @@ Procedure MakeVal( string$ )
          String$ = Trim( String$, "(" )
          String$ = Trim( String$, ")" )
          result = Val( String$ )
-        
+         
    EndSelect
    
    ProcedureReturn result
@@ -1014,8 +1111,8 @@ Procedure   MakeLine( parent, string$, findtext$ )
    Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
    Protected param1, param2, param3, flags.q
    Protected *id._s_WIDGET
-                  
-                  
+   
+   
    Define string_len = Len( String$ )
    Define arg_start, arg_stop, arg$ = MakeArgString( string$, string_len, @arg_start, @arg_stop ) 
    If arg$
@@ -1034,7 +1131,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
             \arg$ = arg$
             \string = string$
             \func$ = MakeFuncString( string$, string_len )
-            ;\func$ = RemoveString(\func$, "﻿" )
+            \id$ = MakeIDString( string$, string_len )
             
             ;
             \pos = FindString( str$, "Declare" )
@@ -1079,7 +1176,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
             
             ; Identificator
             Select \func$
-               Case "OpenWindow", "﻿OpenWindow",
+               Case "OpenWindow",
                     "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
                     "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
                     "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
@@ -1142,61 +1239,58 @@ Procedure   MakeLine( parent, string$, findtext$ )
                     "SetGadgetItemText",
                     "SetGadgetState",
                     "SetGadgetText", 
-                    "Resize",
-                    "AddColumn",
-                    "AddItem",
-                    "RemoveColumn",
-                    "RemoveItem",
-                    "ClearItems",
-                    "CountItems",
-                    "OpenList",
-                    "BindEvent",
-                    "UnbindEvent",
-                    "Disable",
-                    "Free",
-                    "Hide",
-                    "Height",
-                    "ItemID",
-                    "ToolTip",
-                    "Type",
-                    "Width",
-                    "X",
-                    "Y",
-                    "GetActive",
-                    "GetAttribute",
-                    "GetColor",
-                    "GetData",
-                    "GetFont",
-                    "GetItemAttribute",
-                    "GetItemColor",
-                    "GetItemData",
-                    "GetItemState",
-                    "GetItemText",
-                    "GetState",
-                    "GetText",
-                    "SetActive",
-                    "SetAttribute",
-                    "SetColor",
-                    "SetData",
-                    "SetFont",
-                    "SetItemAttribute",
-                    "SetItemColor",
-                    "SetItemData",
-                    "SetItemImage",
-                    "SetItemState",
-                    "SetItemText",
-                    "SetState",
-                    "SetText"
-                  
-                  \func$ = ReplaceString( \func$, "Gadget", "")
+                    
+                  "Resize",
+"AddColumn",
+"AddItem",
+"RemoveColumn",
+"RemoveItem",
+"ClearItems",
+"CountItems",
+"OpenList",
+"BindEvent",
+"UnbindEvent",
+"Disable",
+"Free",
+"Hide",
+"Height",
+"ItemID",
+"ToolTip",
+"Type",
+"Width",
+"X",
+"Y",
+"GetActive",
+"GetAttribute",
+"GetColor",
+"GetData",
+"GetFont",
+"GetItemAttribute",
+"GetItemColor",
+"GetItemData",
+"GetItemState",
+"GetItemText",
+"GetState",
+"GetText",
+"SetActive",
+"SetAttribute",
+"SetColor",
+"SetData",
+"SetFont",
+"SetItemAttribute",
+"SetItemColor",
+"SetItemData",
+"SetItemImage",
+"SetItemState",
+"SetItemText",
+"SetState",
+"SetText"
                   
                   \id$ = Trim( StringField( arg$, 1, "," ))
                   If Not enumerations
                      \id$ = Trim( \id$, "#" )
                   EndIf
                   \id$ = UCase( \id$ )
-                  Debug "---- "+\id$ +" "+ *parent
-                  *id = MakeID( parent, \id$ ) 
             EndSelect
             
             ;
@@ -1302,7 +1396,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                         param1 = Val( param1$ )
                         
                      Case "Splitter" 
-                        param1 = MakeID( parent, UCase(Param1$))
+                        param1 = MakeID( UCase(Param1$), parent )
                         
                      Case "ListIcon"
                         param1 = Val( param2$ ) ; *this\columns( )\width
@@ -1316,7 +1410,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                         param2 = Val( param2$ )
                         
                      Case "Splitter" 
-                        param2 = MakeID( parent, UCase(Param2$))
+                        param2 = MakeID( UCase(Param2$), parent )
                         
                   EndSelect
                   
@@ -1355,7 +1449,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   ; window parent ID
                   If \func$ = "Window"
                      If param3$
-                        *Parent = MakeID( parent, param3$ )
+                        *Parent = MakeID( param3$, parent )
                         If Not *Parent
                            Debug "window ParentID"
                            *Parent = parent
@@ -1399,21 +1493,50 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   *Parent = GetParent( *Parent )
                   ; CloseList( ) 
                   
-               Case "LoadFont", "AddLoadFont"
-                  *id = Val( Trim(StringField( arg$, 1, "," )))
+               Case "LoadFont";, "AddLoadFont"
+                              ;                   \id$ = StringField( arg$, 1, "," )
+                  \id$ = Trim( \id$ )
+                  If NumericString( \id$ )
+                     \id$ = "#FONT_"+\id$
+                     ;                   ElseIf \id$ = "#PB_Any"
+                     ;                      Debug 77777
+                     ;                      ;\id$ = 
+                  EndIf
+                  ; Debug \id$
+                  
                   param1$ = Trim(Trim( StringField( arg$, 2, "," )), Chr('"'))
                   param2 = Val( StringField( arg$, 3, "," ))
                   param3 = MakeConstants( StringField( arg$, 4, "," ))
-                     
-                  AddLoadFont( *id, param1$, param2, param3 )
+                  
+                  *id = MapSize( loadfonts( ))
+                  
+                  LoadFont( *id, param1$, param2, param3 )
+                  
+                  If AddMapElement( loadfonts( ), \id$ )
+                     loadfonts( )\font = *id
+                     loadfonts( )\name = param1$
+                     loadfonts( )\size = param2
+                     loadfonts( )\style = param3
+                  EndIf
                   
                Case "SetFont"
+                  *id = MakeID( \id$, parent ) 
                   If *id
                      *id\ChangeFont = 1
-                     SetFont( *id, MakeFunc( arg$, 2 ))
+                     arg$ = Trim( StringField( arg$, 2, "," ) )
+                     arg$ = Trim( arg$, "(" )
+                     arg$ = Trim( arg$, ")" )
+                     
+                     If NumericString( arg$ )
+                        arg$ = "#FONT_"+arg$
+                     EndIf
+                     If FindMapElement( loadfonts( ), arg$ )
+                        SetFont( *id, loadfonts( )\font )
+                     EndIf
                   EndIf
                   
                Case "SetColor"
+                  *id = MakeID( \id$, parent ) 
                   If *id
                      *id\ChangeColor = 1
                      param1$ = Trim( StringField( arg$, 2, "," ))
@@ -1421,6 +1544,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   EndIf
                   
                Case "AddItem"
+                  *id = MakeID( \id$, parent ) 
                   If *id
                      param1$ = Trim( StringField( arg$, 2, "," ))
                      param2$ = Trim( StringField( arg$, 3, "," ))
@@ -1742,7 +1866,9 @@ EndProcedure
 Procedure.s Code_Generate( *mdi._s_WIDGET ) ; 
    Protected Type, Count, Image, Parent
    Protected Space$, id$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
-   Protected GlobalWindow$, GlobalGadget$, EnumWindow$, EnumGadget$, EnumFont$
+   Protected GlobalWindow$, EnumWindow$,
+             GlobalGadget$, EnumGadget$,
+             GloballoadFont$, EnumFont$, Enumloadfont$
    
    Static JPEGPlugin$, JPEG2000Plugin$, PNGPlugin$, TGAPlugin$, TIFFPlugin$
    Protected *g._s_WIDGET
@@ -1839,6 +1965,30 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
          StopEnum( )
       EndIf
       
+      ; load fonts
+      If MapSize(loadfonts( ))
+         ForEach loadfonts( )
+            id$ = MapKey(loadfonts( )) ; loadfonts( )\id$ ; 
+            
+            If Trim( id$, "#") = id$
+               If loadfonts( )\style
+                  GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
+               Else
+                  GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
+               EndIf
+            Else
+               EnumFont$ + Space$ + id$ + #LF$
+               If loadfonts( )\style
+                  Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
+               Else
+                  Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
+               EndIf
+            EndIf
+            
+         Next
+         ;          result$ + "" + #LF$
+      EndIf
+      
       ;
       ;\\ enumeration windows
       ;
@@ -1855,7 +2005,13 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
          result$ + "EndEnumeration" + #LF$
          result$ + #LF$
       EndIf
-      
+      ;
+      If EnumFont$
+         result$ + "Enumeration Font" + #LF$
+         result$ + EnumFont$
+         result$ + "EndEnumeration" + #LF$
+         result$ + #LF$
+      EndIf
       ;
       ;\\ global windows
       ;
@@ -1868,32 +2024,17 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
          result$ + GlobalGadget$
          result$ + #LF$
       EndIf
-      
-      ; load fonts
-      If MapSize(loadfonts( ))
-         ForEach loadfonts( )
-            If NumericString( MapKey(loadfonts( )) )
-               EnumFont$ + Space$ + "#FONT_" + MapKey(loadfonts( )) + #LF$
-            EndIf
-         Next
-         ;
-         If EnumFont$
-            result$ + "Enumeration Font" + #LF$
-            result$ + EnumFont$
-            result$ + "EndEnumeration" + #LF$
-            result$ + #LF$
-         EndIf
-         ;
-         ForEach loadfonts( )
-            If loadfonts( )\style
-               result$ + "LoadFont( " + MapKey(loadfonts( )) + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
-            Else
-               result$ + "LoadFont( " + MapKey(loadfonts( )) + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
-            EndIf
-         Next
-         result$ + "" + #LF$
+      ; 
+      If GloballoadFont$
+         result$ + GloballoadFont$
+         result$ + #LF$
       EndIf
-   
+      
+      If Enumloadfont$
+         result$ + Enumloadfont$
+         result$ + #LF$
+      EndIf
+      
       ;result$ + ";- " + #LF$
       If StartEnum( *mdi )
          *g = widgets( )
@@ -2006,15 +2147,15 @@ EndProcedure
 CompilerIf #PB_Compiler_IsMainFile
    DisableExplicit
    
-  ; XIncludeFile "test\code\addfont.pb"
-;    XIncludeFile "test\code\additem1.pb"
-;    XIncludeFile "test\code\additem2.pb"
-;    XIncludeFile "test\code\additem3.pb"
-;    XIncludeFile "test\code\additem4.pb"
-;    XIncludeFile "test\code\additem5.pb"
-;    XIncludeFile "test\code\global&enum.pb"
-;    XIncludeFile "test\code\closelist.pb"
-;    XIncludeFile "test\code\windows.pb"
+   ; XIncludeFile "test\code\addfont.pb"
+   ;    XIncludeFile "test\code\additem1.pb"
+   ;    XIncludeFile "test\code\additem2.pb"
+   ;    XIncludeFile "test\code\additem3.pb"
+   ;    XIncludeFile "test\code\additem4.pb"
+   ;    XIncludeFile "test\code\additem5.pb"
+   ;    XIncludeFile "test\code\global&enum.pb"
+   ;    XIncludeFile "test\code\closelist.pb"
+   ;    XIncludeFile "test\code\windows.pb"
    
    If Open(0, 0, 0, 400, 400, "read", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
@@ -2040,29 +2181,29 @@ CompilerIf #PB_Compiler_IsMainFile
          Debug "..успешно"
       EndIf
    EndIf
-
+   
    ;
-      Define *root = root( )
-      If *root
-         Define Width = Width( *root )
-         Define TEST = GetCanvasWindow( *root )
+   Define *root = root( )
+   If *root
+      Define Width = Width( *root )
+      Define TEST = GetCanvasWindow( *root )
+      
+      If Open( 1, 0, 0, Width*2, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+         ResizeWindow( TEST, WindowX( TEST ) - WindowWidth( 1 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         ResizeWindow( 1, WindowX( 1 ) + WindowWidth( TEST )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
          
-         If Open( 1, 0, 0, Width*2, 600, "enumeration widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-            ResizeWindow( TEST, WindowX( TEST ) - WindowWidth( 1 )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            ResizeWindow( 1, WindowX( 1 ) + WindowWidth( TEST )/2, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            
-            Define *g = Editor( 0, 0, 0, 0, #__flag_autosize )
-            
-            Define code$ = Code_Generate( *root )
-            
-            SetText( *g, code$ )
-            Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
-         EndIf
+         Define *g = Editor( 0, 0, 0, 0, #__flag_autosize )
+         
+         Define code$ = Code_Generate( *root )
+         
+         SetText( *g, code$ )
+         Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
       EndIf
-   CompilerEndIf
+   EndIf
+CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1403
-; FirstLine = 863
-; Folding = -------------8--------v0-----+gB3---------4------
+; CursorPosition = 2202
+; FirstLine = 2163
+; Folding = -----------------------------------------------------
 ; EnableXP
 ; DPIAware
