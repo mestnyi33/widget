@@ -751,6 +751,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       Structure _s_FONT
+         id$
          font.i
          name.s
          size.a
@@ -784,7 +785,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 749
+; CursorPosition = 754
 ; FirstLine = 743
 ; Folding = ----------
 ; Optimizer

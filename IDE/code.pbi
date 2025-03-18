@@ -22,7 +22,7 @@ Global codeindent = 3
 ;-
 Procedure.s  GetFontName( FontID.i )
    ; Debug " get "+FontID
-   
+   ; FontID = FontID(FontID)
    If FindMapElement( loadfonts( ), Str(FontID) )
       ProcedureReturn loadfonts( )\name
    EndIf
@@ -75,7 +75,25 @@ Procedure   SetFontStyle( FontID.i, style.q )
    
 EndProcedure
 
+Procedure AddFont( id$, name$, size, style )
+   Protected font = LoadFont( #PB_Any, name$, size, style )
+   ;
+   If NumericString( id$ )
+      id$ = "#FONT_"+id$
+   EndIf
+   ;
+   If AddMapElement( loadfonts( ), Str(FontID(font)) )
+      loadfonts( )\id$ = id$ 
+      loadfonts( )\font = font 
+      loadfonts( )\name = name$
+      loadfonts( )\size = size
+      loadfonts( )\style = style
+   EndIf
+   ;
+   ProcedureReturn font
+EndProcedure
 
+;-
 Procedure.s GetClassString( Element )
    
    ProcedureReturn ClassFromType( Type(Element) )
@@ -417,16 +435,6 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
       EndIf
    EndIf
    ;
-   If *g\ChangeFont
-      ForEach loadfonts( )
-         If *g\text\font = loadfonts( )\font
-            result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ MapKey(loadfonts( )) +" )" + #LF$
-         EndIf
-      Next
-      ; result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", ("+ Str( *g\text\font ) +") )" + #LF$
-      line_break1 = 1
-   EndIf            
-   
    If *g\ChangeColor 
       If is_window_(*g) 
          If pb_object$
@@ -439,6 +447,11 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
       EndIf
       line_break1 = 1
    EndIf            
+   If *g\ChangeFont
+      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ loadfonts( Str(*g\text\fontID) )\id$ +" )" + #LF$
+      line_break1 = 1
+   EndIf            
+   
    ;
    If GetState(*g) > 0
       line_break1 = 1
@@ -1131,7 +1144,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
             \arg$ = arg$
             \string = string$
             \func$ = MakeFuncString( string$, string_len )
-            \id$ = MakeIDString( string$, string_len )
+            \id$ = Trim(MakeIDString( string$, string_len ))
             
             ;
             \pos = FindString( str$, "Declare" )
@@ -1188,7 +1201,10 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   ;
                   \func$ = ReplaceString( \func$, "Gadget", "")
                   \func$ = ReplaceString( \func$, "OpenWindow", "Window")
-                  pb_object$ =  "PB"
+                  
+                  If pb_object$ = ""
+                     pb_object$ = "PB"
+                  EndIf
                   
                Case "ResizeGadget",
                     "CanvasOutput",
@@ -1239,52 +1255,51 @@ Procedure   MakeLine( parent, string$, findtext$ )
                     "SetGadgetItemText",
                     "SetGadgetState",
                     "SetGadgetText", 
-                    
-                  "Resize",
-"AddColumn",
-"AddItem",
-"RemoveColumn",
-"RemoveItem",
-"ClearItems",
-"CountItems",
-"OpenList",
-"BindEvent",
-"UnbindEvent",
-"Disable",
-"Free",
-"Hide",
-"Height",
-"ItemID",
-"ToolTip",
-"Type",
-"Width",
-"X",
-"Y",
-"GetActive",
-"GetAttribute",
-"GetColor",
-"GetData",
-"GetFont",
-"GetItemAttribute",
-"GetItemColor",
-"GetItemData",
-"GetItemState",
-"GetItemText",
-"GetState",
-"GetText",
-"SetActive",
-"SetAttribute",
-"SetColor",
-"SetData",
-"SetFont",
-"SetItemAttribute",
-"SetItemColor",
-"SetItemData",
-"SetItemImage",
-"SetItemState",
-"SetItemText",
-"SetState",
-"SetText"
+                    "Resize",
+                    "AddColumn",
+                    "AddItem",
+                    "RemoveColumn",
+                    "RemoveItem",
+                    "ClearItems",
+                    "CountItems",
+                    "OpenList",
+                    "BindEvent",
+                    "UnbindEvent",
+                    "Disable",
+                    "Free",
+                    "Hide",
+                    "Height",
+                    "ItemID",
+                    "ToolTip",
+                    "Type",
+                    "Width",
+                    "X",
+                    "Y",
+                    "GetActive",
+                    "GetAttribute",
+                    "GetColor",
+                    "GetData",
+                    "GetFont",
+                    "GetItemAttribute",
+                    "GetItemColor",
+                    "GetItemData",
+                    "GetItemState",
+                    "GetItemText",
+                    "GetState",
+                    "GetText",
+                    "SetActive",
+                    "SetAttribute",
+                    "SetColor",
+                    "SetData",
+                    "SetFont",
+                    "SetItemAttribute",
+                    "SetItemColor",
+                    "SetItemData",
+                    "SetItemImage",
+                    "SetItemState",
+                    "SetItemText",
+                    "SetState",
+                    "SetText"
                   
                   \id$ = Trim( StringField( arg$, 1, "," ))
                   If Not enumerations
@@ -1307,6 +1322,10 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   
                   If pb_object$ = ""
                      arg$ = "," + arg$
+                  Else
+                     If pb_object$ = "PB"
+                        pb_object$ = ""
+                     EndIf
                   EndIf
                   
                   ; id$
@@ -1491,33 +1510,18 @@ Procedure   MakeLine( parent, string$, findtext$ )
                      ProcedureReturn 
                   EndIf
                   *Parent = GetParent( *Parent )
-                  ; CloseList( ) 
-                  
-               Case "LoadFont";, "AddLoadFont"
-                              ;                   \id$ = StringField( arg$, 1, "," )
+                   
+               Case "LoadFont"
+                  ; \id$ = StringField( arg$, 1, "," )
                   \id$ = Trim( \id$ )
-                  If NumericString( \id$ )
-                     \id$ = "#FONT_"+\id$
-                     ;                   ElseIf \id$ = "#PB_Any"
-                     ;                      Debug 77777
-                     ;                      ;\id$ = 
-                  EndIf
                   ; Debug \id$
                   
                   param1$ = Trim(Trim( StringField( arg$, 2, "," )), Chr('"'))
                   param2 = Val( StringField( arg$, 3, "," ))
                   param3 = MakeConstants( StringField( arg$, 4, "," ))
                   
-                  *id = MapSize( loadfonts( ))
-                  
-                  LoadFont( *id, param1$, param2, param3 )
-                  
-                  If AddMapElement( loadfonts( ), \id$ )
-                     loadfonts( )\font = *id
-                     loadfonts( )\name = param1$
-                     loadfonts( )\size = param2
-                     loadfonts( )\style = param3
-                  EndIf
+                  Define font = AddFont( \id$, param1$, param2, param3 )
+                  Debug "-- fontname -- "+ GetFontName( FontID(font) )
                   
                Case "SetFont"
                   *id = MakeID( \id$, parent ) 
@@ -1530,9 +1534,14 @@ Procedure   MakeLine( parent, string$, findtext$ )
                      If NumericString( arg$ )
                         arg$ = "#FONT_"+arg$
                      EndIf
-                     If FindMapElement( loadfonts( ), arg$ )
-                        SetFont( *id, loadfonts( )\font )
-                     EndIf
+                     
+                     ; get font from id$
+                     ForEach loadfonts( )
+                        If loadfonts( )\id$ = arg$
+                           SetFont( *id, loadfonts( )\font )
+                        EndIf
+                     Next
+                     
                   EndIf
                   
                Case "SetColor"
@@ -1968,23 +1977,25 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
       ; load fonts
       If MapSize(loadfonts( ))
          ForEach loadfonts( )
-            id$ = MapKey(loadfonts( )) ; loadfonts( )\id$ ; 
+            id$ = loadfonts( )\id$ ; MapKey(loadfonts( )) ; 
             
-            If Trim( id$, "#") = id$
-               If loadfonts( )\style
-                  GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
+            If id$ ; Not NumericString( id$ )
+               If Trim( id$, "#") = id$
+                  If loadfonts( )\style
+                     GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
+                  Else
+                     GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
+                  EndIf
                Else
-                  GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
-               EndIf
-            Else
-               EnumFont$ + Space$ + id$ + #LF$
-               If loadfonts( )\style
-                  Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
-               Else
-                  Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
+                  EnumFont$ + Space$ + id$ + #LF$
+                  ;
+                  If loadfonts( )\style
+                     Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
+                  Else
+                     Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
+                  EndIf
                EndIf
             EndIf
-            
          Next
          ;          result$ + "" + #LF$
       EndIf
@@ -2202,8 +2213,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2202
-; FirstLine = 2163
-; Folding = -----------------------------------------------------
+; CursorPosition = 445
+; FirstLine = 433
+; Folding = --------------------------------v-bo----------4------
 ; EnableXP
 ; DPIAware

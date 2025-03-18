@@ -172,6 +172,7 @@ Declare.q MakeConstants( string$ )
 Declare$  MakeConstantsString( type$, flag.q ) ; 
 Declare   MakeLine( parent, string$, findtext$ )
 ;
+Declare   AddFont( id$, name$, size, style )
 Declare.s GetFontName( FontID.i )
 Declare.a GetFontSize( FontID.i )
 Declare.q GetFontStyle( FontID.i )
@@ -560,17 +561,17 @@ Procedure   Properties_ButtonEvents( )
                   EndIf
                   
                   If a_focused( )
-                     font = LoadFont( #PB_Any, SelectedFontName( ), SelectedFontSize( ), SelectedFontStyle( ))
+                     font = AddFont( Str(MapSize( loadfonts( ))), 
+                                     SelectedFontName( ),
+                                     SelectedFontSize( ),
+                                     SelectedFontStyle( ))
+                     
                      SetFont( a_focused( ), font )
-                     font = GetFont( a_focused( ) )
-                     SetFontName( font, SelectedFontName( ))
-                     SetFontSize( font, SelectedFontSize( ))
-                     SetFontStyle( font, SelectedFontStyle( ))
+                     
                      Define Color.q = SelectedFontColor( ) & $FFFFFF | a_focused( )\color\_alpha << 24
                      ; SetFontColor( a_focused( ), RGB( Red(Color), Green(Color), Blue(Color) ))
                      SetFontColor( a_focused( ), RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ))
-                     ; a_focused( )\color\_alpha = 80
-                     ;SetFontColor( a_focused( ), RGBA( Red(Color), Green(Color), Blue(Color), a_focused( )\color\_alpha ))
+                     
                      Properties_Updates( a_focused( ), "Font" )
                   EndIf
                Else
@@ -1023,6 +1024,9 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       EndIf
       If type$ = "Focus" Or type$ = "Font"
          Define font = GetFont( *object )
+         If IsFont( font )
+            font = FontID(font)
+         EndIf
          Properties_SetItemText( ide_inspector_properties, #_pi_FONT, GetFontName( font ) )
          ; Properties_SetItemText( ide_inspector_properties, #_pi_fontcolor, Str( GetFontColor( font ) ))
          If GetFontName( font )
@@ -2685,6 +2689,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Define font = GetFont( root( ) )
+   loadfonts( Str(font) )\font = font
    SetFontName( font, "Courier")
    SetFontSize( font, 9)
    ;SetFontStyle( font, SelectedFontStyle( ))
@@ -2731,8 +2736,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2731
-; FirstLine = 2692
+; CursorPosition = 568
+; FirstLine = 547
 ; Folding = -------------------------------------------------
 ; Optimizer
 ; EnableAsm
