@@ -114,7 +114,7 @@ Global group_select
 Global group_drag
 Global enumerations 
 
-Global img = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" ) 
+
 Global font_properties = LoadFont( #PB_Any, "", 12 )
 
 Global pb_object$ = "";"Gadget"
@@ -127,12 +127,12 @@ Global pb_object$ = "";"Gadget"
 ; test_focus_set = 1
 ; test_changecursor = 1
 
-Global NewMap FlagsString.s( )
 Global NewMap EventsString.s( )
-Global NewMap ImagePuchString.s( )
-Global NewMap ClassString.s( )
 Global NewMap GetObject.s( )
-
+;
+Global NewMap imageName.s( )
+Global NewMap fontName.s( )
+      
 Structure _s_LINE
    type$
    pos.i
@@ -178,6 +178,7 @@ Declare   SetFontName( FontID.i, name.s )
 Declare   SetFontSize( FontID.i, size.a )
 Declare   SetFontStyle( FontID.i, style.q )
 
+Declare   GetLoadImage( id$ )
 Declare   AddLoadImage( id$, file$, flags = 0 )
 
 ;
@@ -539,7 +540,7 @@ Procedure   Properties_ButtonEvents( )
                
                If File$
                   Debug File$ 
-                  SetImage( a_focused( ), AddLoadImage( "", File$ ))
+                  SetImage( a_focused( ), AddLoadImage( Str(ListSize(loadimages( ))), File$ ))
                   
                EndIf
                
@@ -1560,8 +1561,10 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
                CompilerIf #PB_Compiler_DPIAware
                   ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
                CompilerEndIf
-               SetImage( *new, *imagelogo )
                
+               ; ImageName( Str(*imagelogo) ) = "*imagelogo"
+               SetImage( *new, *imagelogo )
+                 
                If Not flag & #__flag_NoFocus 
                   a_set(*new, #__a_full, (14))
                EndIf
@@ -2748,8 +2751,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 541
-; FirstLine = 529
+; CursorPosition = 1518
+; FirstLine = 1504
 ; Folding = -------------------------------------------------
 ; Optimizer
 ; EnableAsm

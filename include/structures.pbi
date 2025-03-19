@@ -556,8 +556,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
          ; ide
-         ChangeImage.b
-         ChangeFont.b
          ChangeColor.b
          
          ;
@@ -792,8 +790,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 764
-; FirstLine = 743
+; CursorPosition = 761
+; FirstLine = 745
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

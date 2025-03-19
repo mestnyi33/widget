@@ -88,9 +88,11 @@ Procedure AddLoadFont( id$, name$, size, style )
          loadfonts( )\id$ = id$ 
          loadfonts( )\font = font 
          loadfonts( )\name = name$
-         loadfonts(   )\size = size
+         loadfonts( )\size = size
          loadfonts( )\style = style
       EndIf
+      
+      fontName( Str(FontID(font)) ) = id$
    EndIf
    ;
    ProcedureReturn font
@@ -103,17 +105,6 @@ Procedure   GetLoadFont( id$ )
       EndIf
    Next
 EndProcedure
-
-Procedure$  GetLoadFontName( FontID )
-   
-   If FindMapElement( loadfonts( ), Str(FontID) )
-      ProcedureReturn loadfonts( )\id$
-   EndIf
-   
-EndProcedure
-
-UsePNGImageDecoder( )
-UseJPEGImageDecoder()
 
 ;-
 Procedure   AddLoadImage( id$, file$, flags=0 )
@@ -143,6 +134,9 @@ Procedure   AddLoadImage( id$, file$, flags=0 )
          loadimages( )\file$ = file$
          loadimages( )\image = Image 
       EndIf
+      
+      ImageName( Str(Image) ) = id$
+               
    EndIf
    ;
    ProcedureReturn Image
@@ -152,14 +146,6 @@ Procedure   GetLoadImage( id$ )
    ForEach loadimages( )
       If loadimages( )\id$ = id$
          ProcedureReturn loadimages( )\image
-      EndIf
-   Next
-EndProcedure
-
-Procedure$  GetLoadImageName( Image )
-   ForEach loadimages( )
-      If loadimages( )\Image = Image
-         ProcedureReturn loadimages( )\id$
       EndIf
    Next
 EndProcedure
@@ -490,16 +476,19 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
       line_break1 = 1
    EndIf            
    ;
-   If *g\ChangeFont
-      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ GetLoadFontName( *g\text\fontID ) +" )" + #LF$
+   If FindMapElement( fontName( ), Str( *g\text\fontID ))
+      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ fontName( ) +" )" + #LF$
       line_break1 = 1
    EndIf            
    ;
-   If *g\ChangeImage
-      result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ GetLoadImageName( *g\img\image ) +" )" + #LF$
-      line_break1 = 1
-   EndIf            
-   
+   If *g\type = #__type_image
+   Else
+      If FindMapElement( imageName( ), Str( *g\img\image ))
+         result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ imageName( ) +" )" + #LF$
+         line_break1 = 1
+      EndIf            
+   EndIf
+
    ;
    If GetState(*g) > 0
       line_break1 = 1
@@ -1100,6 +1089,16 @@ Procedure   MakeLine( parent, string$, findtext$ )
                      Case "ListIcon"
                         param1 = Val( param2$ ) ; *this\columns( )\width
                         
+                     Case "Image"
+                        param1$ = Trim( param1$, "(" )
+                        param1$ = Trim( param1$, ")" )
+                        
+                        If NumericString( param1$ )
+                           param1$ = "#IMAGE_"+param1$
+                        EndIf
+                        
+                        param1 = GetLoadImage( param1$ )
+                    
                   EndSelect
                   
                   ; param2
@@ -1205,7 +1204,6 @@ Procedure   MakeLine( parent, string$, findtext$ )
                Case "SetFont"
                   *id = MakeID( \id$, parent ) 
                   If *id
-                     *id\ChangeFont = 1
                      arg$ = Trim( StringField( arg$, 2, "," ) )
                      arg$ = Trim( arg$, "(" )
                      arg$ = Trim( arg$, ")" )
@@ -1229,7 +1227,6 @@ Procedure   MakeLine( parent, string$, findtext$ )
                Case "SetImage"
                   *id = MakeID( \id$, parent ) 
                   If *id
-                     *id\ChangeImage = 1
                      arg$ = Trim( StringField( arg$, 2, "," ) )
                      arg$ = Trim( arg$, "(" )
                      arg$ = Trim( arg$, ")" )
@@ -1346,9 +1343,17 @@ Procedure$  Code_GenerateObject( *g._s_WIDGET, space$ )
          EndIf
       Case "Image", "ButtonImage"
          If IsImage( *g\Img\Image )
-            param1$ = "ImageID( " + *g\Img\Image + " )"
+            If pb_object$
+               param1$ = "ImageID( " + *g\Img\Image + " )"
+            Else
+               param1$ = imageName( Str( *g\Img\Image ))
+            EndIf
          Else
-            param1$ = "0"
+            If pb_object$
+               param1$ = "0"
+            Else
+               param1$ = "-1"
+            EndIf
          EndIf
    EndSelect
    
@@ -1607,7 +1612,7 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
          id$ = GetClass( *w )
          Image = GetImage( *w )
          
-         ; Debug GetClass( GetParent(*w)) +" "+ GetClass( *w)
+         ; Debug GetClass( GetParent(*w)) +" "+ GetClass( *w) +" "+ Image
          ;
          If Not *mainWindow
             If is_window_( *w )
@@ -1667,10 +1672,26 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
                Case #PB_ImagePlugin_ICON
                   
             EndSelect
-            
-            result$ + "LoadImage( " + Image + ", " + #DQUOTE$ + ImagePuchString( Str( Image ) ) + #DQUOTE$ + " )" + #LF$
          EndIf
          StopEnum( )
+      EndIf
+      
+      ; load images
+      If ListSize(loadimages( ))
+         result$ + #LF$
+         ForEach loadimages( )
+            id$ = loadimages( )\id$
+            
+            If id$ 
+               If Trim( id$, "#") = id$
+                  Globalloadimage$ + "Global " + id$ + " = " + "Loadimage( " + "#PB_Any" + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+               Else
+                  Enumimage$ + Space$ + id$ + #LF$
+                  ;
+                  Enumloadimage$ + "Loadimage( " + id$ + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+               EndIf
+            EndIf
+         Next
       EndIf
       
       ; load fonts
@@ -1693,23 +1714,6 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
                   Else
                      Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
                   EndIf
-               EndIf
-            EndIf
-         Next
-      EndIf
-      
-      ; load images
-      If ListSize(loadimages( ))
-         ForEach loadimages( )
-            id$ = loadimages( )\id$
-            
-            If id$ 
-               If Trim( id$, "#") = id$
-                  Globalloadimage$ + "Global " + id$ + " = " + "Loadimage( " + "#PB_Any" + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
-               Else
-                  Enumimage$ + Space$ + id$ + #LF$
-                  ;
-                  Enumloadimage$ + "Loadimage( " + id$ + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
                EndIf
             EndIf
          Next
@@ -1891,6 +1895,7 @@ CompilerIf #PB_Compiler_IsMainFile
    DisableExplicit
    
    ; XIncludeFile "test\code\addfont.pb"
+   ; XIncludeFile "test\code\addimage.pb"
    ;    XIncludeFile "test\code\additem1.pb"
    ;    XIncludeFile "test\code\additem2.pb"
    ;    XIncludeFile "test\code\additem3.pb"
@@ -1947,8 +1952,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 96
-; Folding = -v--0------------------++vh3----------+-------
+; CursorPosition = 1681
+; FirstLine = 1407
+; Folding = --v-------------------44-0o0------------------
 ; EnableXP
 ; DPIAware

@@ -59,7 +59,7 @@ If Open( 0, 0, 0, 592, 532, "Редактор изображения", #PB_Windo
    
    SetFont( BUTTON_OK, (my_font_2))
   
-   SetImage( IMAGE_VIEW, (0))
+   ;SetImage( IMAGE_VIEW, (0))
    SetColor( IMAGE_VIEW, #PB_Gadget_BackColor, RGBA(222, 237, 84, 186) )
 EndIf
 
@@ -67,8 +67,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 27
+; CursorPosition = 46
+; FirstLine = 30
 ; Folding = --
 ; EnableXP
 ; DPIAware

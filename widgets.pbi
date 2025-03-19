@@ -261,7 +261,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;Global *event._s_EVENT( )
       Global NewMap loadfonts._s_FONT( )
       Global NewList loadimages._s_Img( )
-      
+
+
       ;-  ----------------
       ;-   DECLARE_macros
       ;-  ----------------
@@ -8884,7 +8885,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Procedure.i GetImage( *this._s_WIDGET )
-         ProcedureReturn *this\img
+         ProcedureReturn *this\img\image
       EndProcedure
       
       Procedure SetImage( *this._s_WIDGET, *image );, mode.a = 0 )
@@ -9869,7 +9870,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If ChangeFontID( *this, FontID )
                *this\text\font = Font
-               *this\ChangeFont = 1
                result = #True
             EndIf
          EndIf
@@ -15199,12 +15199,20 @@ chr$ = ","
                   If flag & #PB_Button_Default   : result$ + " #PB_Button_Default |" : EndIf
                   If flag & #PB_Button_MultiLine : result$ + " #PB_Button_MultiLine |" : EndIf
                   
-                  If flag & #__flag_text_Left = #__flag_text_Left                   : result$ + " #PB_Button_Left |" : EndIf
-                  If flag & #__flag_text_Right = #__flag_text_Right                 : result$ + " #PB_Button_Right |" : EndIf
-                  If flag & #__flag_text_WordWrap = #__flag_text_WordWrap   : result$ + " #PB_Button_MultiLine |" : EndIf
-                  If flag & #__flag_text_MultiLine = #__flag_text_MultiLine : result$ + " #PB_Button_MultiLine |" : EndIf
-                  If flag & #PB_Button_Toggle = #PB_Button_Toggle   : result$ + " #PB_Button_Toggle |" : EndIf
-                  If flag & #__flag_button_Default = #__flag_button_Default : result$ + " #PB_Button_Default |" : EndIf
+                  If flag & #__align_image 
+                     If flag & #__image_Left = #__image_Left           : result$ + " #__image_Left |" : EndIf
+                     If flag & #__image_Top = #__image_Top             : result$ + " #__image_Top |" : EndIf
+                     If flag & #__image_Right = #__image_Right         : result$ + " #__image_Right |" : EndIf
+                     If flag & #__image_Bottom = #__image_Bottom       : result$ + " #__image_Bottom |" : EndIf
+                  Else
+                     If flag & #__align_text 
+                        If flag & #__flag_text_Left = #__flag_text_Left           : result$ + " #__flag_text_Left |" : EndIf
+                        If flag & #__flag_text_Right = #__flag_text_Right         : result$ + " #__flag_text_Right |" : EndIf
+                        If flag & #__flag_text_WordWrap = #__flag_text_WordWrap   : result$ + " #__flag_text_WordWrap |" : EndIf
+                        If flag & #__flag_text_MultiLine = #__flag_text_MultiLine : result$ + " #__flag_text_MultiLine |" : EndIf
+                        If flag & #__flag_button_Default = #__flag_button_Default : result$ + " #__flag_button_Default |" : EndIf
+                     EndIf
+                  EndIf
                   
                Case "Container"
                   If flag & #PB_Container_Flat       : result$ + " #PB_Container_Flat |" : EndIf
@@ -25676,9 +25684,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 257
-; FirstLine = 252
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---v----------7---r---------u82---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 15211
+; FirstLine = 14944
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n--------------f0---2--------f407---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
