@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     CloseGadgetList()
 ;     SplitterGadget(-1,20,20,260,260,GetCanvasGadget(root()), ButtonGadget(-1,0,0,0,0,""))
     
-;     ;Window(0,0,0,0,"window", #__window_systemmenu|#__flag_autosize)
+;     ;Window(0,0,0,0,"window", #PB_Window_systemmenu|#__flag_autosize)
 ;     ;MDI(0,0,0,0, #__flag_autosize) : OpenList(widget())
 ;     ;Container(0,0,0,0, #__flag_autosize)
 ;     ; ScrollArea(0,0,0,0, 800,800,0, #__flag_autosize)

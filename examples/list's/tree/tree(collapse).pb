@@ -305,7 +305,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 10, 103, 210, #__flag_BorderLess|#__flag_collapsed)                                         
+    *g6 = Tree(341, 10, 103, 210, #__flag_border_Less|#__flag_collapsed)                                         
     
     add(*g6, 0, "Tree_1", -1, 1) 
     add(*g6, 0, "Tree_2_1", -1, 2) 

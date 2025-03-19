@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *object._s_WIDGET
   Global *parent._s_WIDGET
   
-  If Open( 1, 150, 150, 649, 441, "button - draw parent-inner-clip coordinate", #__Window_SizeGadget | #__Window_SystemMenu)
+  If Open( 1, 150, 150, 649, 441, "button - draw parent-inner-clip coordinate", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
     a_init( root( ) )
     Define scrollstep = mouse( )\steps
     

@@ -101,7 +101,7 @@ EndProcedure
 
 Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, WindowID = #False, Flag.q = #PB_Window_ScreenCentered)
    Protected i = 10, ii = 10
-  Protected X=30,Y=30,Width=376+ii+i*2,Height=226+i*2, View
+  Protected X=30,Y=30,Width=392+ii+i*2,Height=226+i*2, View
    Flag.q | #PB_Window_SystemMenu|#PB_Window_SizeGadget
    
    ; = Open(#PB_Any, #PB_Ignore,#PB_Ignore,200,300, "Image editor",Flag, Parent) 
@@ -120,22 +120,17 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
    Window_0 = Window( X,Y, Width, Height, "Редактор изображения", Flag|#PB_Window_Invisible)
    Sticky(Window_0, #True)
    
-;    Image_View = Image(5, 5, 231, 166, 0);, #_Flag_Image_Center)
-;                                         ;
-;    Button_Load = Button(240, 5, 101, 21, "Загрузить")
-;    Button_Ok = Button(240, 125, 101, 21, "Применить")
-;    Button_Cancel = Button(240, 150, 101, 21, "Отмена")
-   ;Button_ScrollArea_0 = ScrollArea( 5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
+  ;Button_ScrollArea_0 = ScrollArea( 5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
   image_View = Image(i, i, 271, 225, (0),#__image_Center) 
   SetBackgroundColor( image_View, $FFB3FDFF )
   ;CloseList( )
-  Button_Load = Button(i+271+ii, i, 101, 25, "Загрузить", #__image_left )       : SetImage(Button_Load, (0))
-  Button_Save = Button(i+271+ii, i+30, 101, 25, "Сохранить", #__image_left )      : SetImage(Button_Save, (1))
-  Button_Copy = Button(i+271+ii, i+70, 101, 25, "Копировать", #__image_left )      : SetImage(Button_Copy, (2))
-  Button_Cut = Button(i+271+ii, i+100, 101, 25, "Вырезать", #__image_left )        : SetImage(Button_Cut, (3))
-  Button_Paste = Button(i+271+ii, i+130, 101, 25, "Вставить", #__image_left )   : SetImage(Button_Paste, (4)) 
-  Button_Ok = Button(i+271+ii, i+170, 101, 25, "Применить")         ;: SetImage(Button_Ok, (0))
-  Button_Cancel = Button(i+271+ii, i+200, 101, 25, "Отмена") ;: SetImage(Button_Cancel, (0))                                                            
+  Button_Load = Button(i+271+ii, i, 121, 25, "Загрузить", #__image_left )       : SetImage(Button_Load, (0))
+  Button_Save = Button(i+271+ii, i+30, 121, 25, "Сохранить", #__image_left )    : SetImage(Button_Save, (1))
+  Button_Copy = Button(i+271+ii, i+70, 121, 25, "Копировать", #__image_left )   : SetImage(Button_Copy, (2))
+  Button_Cut = Button(i+271+ii, i+100, 121, 25, "Вырезать", #__image_left )     : SetImage(Button_Cut, (3))
+  Button_Paste = Button(i+271+ii, i+130, 121, 25, "Вставить", #__image_left )   : SetImage(Button_Paste, (4)) 
+  Button_Ok = Button(i+271+ii, i+170, 121, 25, "Применить", #__image_left)         ;: SetImage(Button_Ok, (0))
+  Button_Cancel = Button(i+271+ii, i+200, 121, 25, "Отмена", #__image_left) ;: SetImage(Button_Cancel, (0))                                                            
   
    
    ;
@@ -172,8 +167,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 41
+; CursorPosition = 122
+; FirstLine = 112
 ; Folding = ----
 ; Optimizer
 ; EnableXP

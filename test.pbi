@@ -207,13 +207,13 @@ Procedure$  MakeFlagString( type$, flag.q ) ;
          EndIf
          
       Case "Text"
-         If flag & #__Text_Center
+         If flag & #__flag_text_Center
             result$ + " #PB_Text_Center |"
          EndIf
-         If flag & #__Text_Right
+         If flag & #__flag_text_Right
             result$ + " #PB_Button_Right |"
          EndIf
-         If flag & #__flag_BorderFlat
+         If flag & #__flag_border_Flat
             result$ + " #PB_Text_Border |"
          EndIf
          
@@ -235,22 +235,22 @@ Procedure$  MakeFlagString( type$, flag.q ) ;
                result$ + " #PB_Button_Default |"
             EndIf
             
-            If flag & #__text_Left = #__text_Left
+            If flag & #__flag_text_Left = #__flag_text_Left
                result$ + " #PB_Button_Left |"
             EndIf
-            If flag & #__text_Right = #__text_Right
+            If flag & #__flag_text_Right = #__flag_text_Right
                result$ + " #PB_Button_Right |"
             EndIf
-            If flag & #__flag_TextMultiLine = #__flag_TextMultiLine
+            If flag & #__flag_text_MultiLine = #__flag_text_MultiLine
                result$ + " #PB_Button_MultiLine |"
             EndIf
-            If flag & #__flag_TextWordWrap = #__flag_TextWordWrap
+            If flag & #__flag_text_WordWrap = #__flag_text_WordWrap
                result$ + " #PB_Button_MultiLine |"
             EndIf
-            If flag & #__flag_ButtonToggle = #__flag_ButtonToggle
+            If flag & #PB_Button_Toggle = #PB_Button_Toggle
                result$ + " #PB_Button_Toggle |"
             EndIf
-            If flag & #__flag_ButtonDefault = #__flag_ButtonDefault
+            If flag & #__flag_button_Default = #__flag_button_Default
                result$ + " #PB_Button_Default |"
             EndIf
          EndIf
@@ -270,16 +270,16 @@ Procedure$  MakeFlagString( type$, flag.q ) ;
                result$ + " #PB_Container_BorderLess |"
             EndIf
             
-            If flag & #__flag_BorderFlat = #__flag_BorderFlat
+            If flag & #__flag_border_Flat = #__flag_border_Flat
                result$ + " #PB_Container_Flat |"
             EndIf
-            If flag & #__flag_BorderRaised = #__flag_BorderRaised
+            If flag & #__flag_border_Raised = #__flag_border_Raised
                result$ + " #PB_Container_Raised |"
             EndIf
-            If flag & #__flag_BorderSingle = #__flag_BorderSingle
+            If flag & #__flag_border_Single = #__flag_border_Single
                result$ + " #PB_Container_Single |"
             EndIf
-            If flag & #__flag_BorderLess = #__flag_BorderLess
+            If flag & #__flag_border_Less = #__flag_border_Less
                result$ + " #PB_Container_BorderLess |"
             EndIf
          EndIf
@@ -302,16 +302,16 @@ Procedure$  MakeFlagString( type$, flag.q ) ;
                result$ + " #PB_ScrollArea_Center |"
             EndIf
             
-            If flag & #__flag_BorderFlat = #__flag_BorderFlat
+            If flag & #__flag_border_Flat = #__flag_border_Flat
                result$ + " #PB_ScrollArea_Flat |"
             EndIf
-            If flag & #__flag_BorderRaised = #__flag_BorderRaised
+            If flag & #__flag_border_Raised = #__flag_border_Raised
                result$ + " #PB_ScrollArea_Raised |"
             EndIf
-            If flag & #__flag_BorderSingle = #__flag_BorderSingle
+            If flag & #__flag_border_Single = #__flag_border_Single
                result$ + " #PB_ScrollArea_Single |"
             EndIf
-            If flag & #__flag_BorderLess = #__flag_BorderLess
+            If flag & #__flag_border_Less = #__flag_border_Less
                result$ + " #PB_ScrollArea_BorderLess |"
             EndIf
             If flag & #__flag_Center = #__flag_Center
@@ -1711,10 +1711,10 @@ Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, H
       Select Class
          Case "window"    
             If Type( *parent ) = #__Type_MDI
-               *new = AddItem( *parent, #PB_Any, "", - 1, flag | #__window_NoActivate )
+               *new = AddItem( *parent, #PB_Any, "", - 1, flag | #PB_Window_NoActivate )
                Resize( *new, X, Y, Width,Height )
             Else
-               flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
+               flag | #PB_Window_systemmenu | #PB_Window_maximizegadget | #PB_Window_minimizegadget | #PB_Window_NoActivate
                *new = Window( X,Y,Width,Height, "", flag, *parent )
             EndIf
             
@@ -2508,7 +2508,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)
    
-   ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
+   ide_toolbar_container = Container( 0,0,0,0, #__flag_border_Flat ) 
    ide_toolbar = ToolBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
    SetColor(ide_toolbar, #__color_back, $fffefefe )
    
@@ -2602,14 +2602,14 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    
    ; ide_inspector_panel_item_1 
    AddItem( ide_inspector_panel, -1, "elements", 0, 0 ) 
-   ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_borderless ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
+   ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_border_less ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
    If ide_inspector_elements
       ide_add_image_list( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
    ; ide_inspector_panel_item_2
    AddItem( ide_inspector_panel, -1, "properties", 0, 0 )  
-   ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
+   ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
    If ide_inspector_properties
       Properties_AddItem( ide_inspector_properties, #_pi_group_0,  "Common"+Chr(10) )
       Properties_AddItem( ide_inspector_properties, #_pi_id,       "#ID"  , #__Type_ComboBox, 1 )
@@ -2632,7 +2632,7 @@ Procedure ide_open( X=100,Y=100,Width=850,Height=600 )
    
    ; ide_inspector_panel_item_3 
    AddItem( ide_inspector_panel, -1, "events", 0, 0 )  
-   ide_inspector_events = Tree( 0,0,0,0, #__flag_autosize | #__flag_borderless ) : SetClass(ide_inspector_events, "ide_inspector_events" ) 
+   ide_inspector_events = Tree( 0,0,0,0, #__flag_autosize | #__flag_border_less ) : SetClass(ide_inspector_events, "ide_inspector_events" ) 
    If ide_inspector_events
       AddItem( ide_inspector_events, #_ei_leftclick,  "LeftClick" )
       AddItem( ide_inspector_events, #_ei_change,  "Change" )

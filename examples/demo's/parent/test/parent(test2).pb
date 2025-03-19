@@ -274,7 +274,7 @@ CompilerIf #PB_Compiler_IsMainFile
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, Width,Height )
           Else
-            flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
+            flag | #PB_Window_systemmenu | #PB_Window_maximizegadget | #PB_Window_minimizegadget
             a_init(*parent)
             ;;a_set(*parent)
             *new = Window( X,Y,Width,Height, "", flag, *parent )
@@ -819,7 +819,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
     id_design_code = TreeGadget(-1, 590,270,200,250 )
-    id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
+    id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_border_less )
     id_design_form = MDI( 10,10,410,510 ) 
     a_init( id_design_form )
     
@@ -838,7 +838,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ; ;     
     ; ; ;     ; id_inspector_panel 1 item
     ; ; ;     AddItem( id_inspector_panel, -1, "elements", 0, 0 ) 
-    ; ;     id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_borderless )
+    ; ;     id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_border_less )
     ; ;     id_inspector_panel = id_elements_tree
     ; ; ;     ; id_inspector_panel 2 item
     ; ; ;     AddItem( id_inspector_panel, -1, "properties", 0, 0 )  

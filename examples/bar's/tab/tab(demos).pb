@@ -284,7 +284,7 @@ CompilerIf #PB_Compiler_IsMainFile
          *g_ItemChecked = CheckBox(10, 140, 100, 20, "checked")
          *g_ItemCloseButton = CheckBox(210, 100, 100, 20, "close button")
          *g_ItemCheckBox = CheckBox(210, 120, 100, 20, "check box")
-         *g_ItemImage = Button(10, 165, 100, 20, "image or icon", #__flag_ButtonToggle)
+         *g_ItemImage = Button(10, 165, 100, 20, "image or icon", #PB_Button_Toggle)
          CloseList()
       EndIf
       

@@ -48,8 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;\\
     IPAddress(18+290,  10, 290, 40)
-    IPAddress(18+290,  55, 290, 40, #__text_Center)
-    IPAddress(18+290,  100, 290, 40, #__text_Right)
+    IPAddress(18+290,  55, 290, 40, #__flag_text_Center)
+    IPAddress(18+290,  100, 290, 40, #__flag_text_Right)
     
     ;\\
     SetState(ID(0), MakeIPAddress(127, 0, 30, 1))   ; set a valid ip address

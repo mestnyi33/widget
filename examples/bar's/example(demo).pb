@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     ; example scroll widget bar
-    widget::Text(300 + 10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#__text_Center)
+    widget::Text(300 + 10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#__flag_text_Center)
     *w = widget::Scroll  (300 + 10, 42, 250,  20, 30, 100, 30, 0)
     widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
     *w = widget::Scroll  (300 + 10, 42 + 30, 250,  15, 30, 100, 30, #__flag_Invert);|#__flag_NoButtons, 7)
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *w = widget::Scroll  (300 + 10, 42 + 30 + 20, 250,  10, 30, 150, 230, #__flag_Invert, 7)
     widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300 + 10,110, 250,  20, "ScrollBar Vertical  (start = 100, page = 50/300)",#__text_Right)
+    widget::Text(300 + 10,110, 250,  20, "ScrollBar Vertical  (start = 100, page = 50/300)",#__flag_text_Right)
     *w = widget::Scroll  (300 + 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical|#__flag_Invert)
     widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
     *w = widget::Scroll  (300 + 270 + 30, 10,  25, 120 ,0, 300, 50, #__flag_Vertical, 7)
@@ -63,16 +63,16 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(1212, 8000)
     
     ; example_2 track widget bar
-    widget::Text(300 + 10,  140 + 10, 250, 20,"TrackBar Standard");, #__text_Center)
+    widget::Text(300 + 10,  140 + 10, 250, 20,"TrackBar Standard");, #__flag_text_Center)
     *w = widget::Track(300 + 10,  140 + 40, 250, 20, 0, 10000, 0)
     widget::SetState(*w, 5000)
     *w = widget::Track(300 + 10,  140 + 40 + 20, 250, 20, 0, 10000, #__flag_Invert)
     widget::SetState(*w, 5000)
-    widget::Text(300 + 10, 140 + 90, 250, 20, "TrackBar Ticks", #__text_Center)
+    widget::Text(300 + 10, 140 + 90, 250, 20, "TrackBar Ticks", #__flag_text_Center)
     ;     widget::Track(300 + 10, 140 + 120, 250, 20, 0, 30, #__bar_ticks)
     *w = widget::Track(300 + 10, 140 + 120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
     widget::SetState(*w, 60)
-    widget::Text(300 + 60, 140 + 160, 200, 20, "TrackBar Vertical", #__text_Right)
+    widget::Text(300 + 60, 140 + 160, 200, 20, "TrackBar Vertical", #__flag_text_Right)
     *w = widget::Track(300 + 270, 140 + 10, 25, 170, 0, 10000, #PB_TrackBar_Vertical|#__flag_Invert)
     ;widget::SetAttribute(*w, #__flag_Inverted, 0)
     widget::SetState(*w, 8000)
@@ -89,12 +89,12 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     ; example_3 progress widget bar
-    widget::Text(300 + 10, 140 + 200 + 10, 250,  20, "ProgressBar Standard  (start = 65, page = 30/100)",#__text_Center)
+    widget::Text(300 + 10, 140 + 200 + 10, 250,  20, "ProgressBar Standard  (start = 65, page = 30/100)",#__flag_text_Center)
     *w = widget::Progress  (300 + 10, 140 + 200 + 42, 250,  20, 30, 100, 0)
     widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
     *w = widget::Progress  (300 + 10, 140 + 200 + 42 + 30, 250,  20, 30, 100, #__flag_Invert, 14)
     widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300 + 10,140 + 200 + 100, 250,  20, "ProgressBar Vertical  (start = 100, page = 50/300)",#__text_Right)
+    widget::Text(300 + 10,140 + 200 + 100, 250,  20, "ProgressBar Vertical  (start = 100, page = 50/300)",#__flag_text_Right)
     *w = widget::Progress  (300 + 270, 140 + 200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical|#__flag_Invert, 19)
     ;widget::SetAttribute(*w, #__flag_Inverted, 0)
     widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
@@ -235,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetItemColor(*Tree,  #PB_All, #PB_Gadget_LineColor,  $FF00f000)
     
     AddItem(Button_1, -1, "window_5") 
-    Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#__Window_titleBar|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget, Button_1) 
+    Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#PB_Window_titleBar|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget, Button_1) 
     widget::Container(10,10,100,100)
     widget::Container(10,10,100,100)
     widget::Container(10,10,100,100)
@@ -250,7 +250,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     
     ;     ;     Button_1 = widget::Editor(0, 0, 0, 0) : SetText(Button_1, text)
     ;     ;     Button_1 = widget::Button(0, 0, 0, 0, text) ; No need to specify size or coordinates
-    ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__flag_Textborder) ; No need to specify size or coordinates
+    ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__flag_text_border) ; No need to specify size or coordinates
     ;     ; ;     Button_1 = widget::MDI(0, 0, 0, 0) ; No need to specify size or coordinates
     ;     ; ;     widget::AddItem(Button_1, -1, "Form_0")
     ;     ; ;     widget::AddItem(Button_1, -1, "Form_1")

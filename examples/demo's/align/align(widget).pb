@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global NewMap wlist.i()
   Global.i Window_0, Canvas_0, gEvent, gQuit, X=10,Y=10
   
-  Procedure Events()
+  Procedure _events()
     Protected *eventWidget._s_widget = EventWidget()
     Select WidgetEvent()
       Case #__event_mouseenter ; leftclick
@@ -64,14 +64,11 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  #__text_left = #__text_left
-  #__text_Right = #__text_Right
-  
   Procedure example_1( )
     *root = Open( 1, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
     Canvas_0 = GetCanvasGadget(*root)
     Window_0 = GetCanvasWindow(*root)
-    SetColor(*root, #pb_gadget_backcolor, $FFACE3FF )
+    SetColor(*root, #PB_Gadget_BackColor, $FFACE3FF )
     
     wlist(Hex(2)) = Button(55, 5, 80, 20, "center")   ; center \2     align_proportional_horizontal
     wlist(Hex(3)) = Button(55, 25, 80, 20, "right")   ; right         #right
@@ -81,14 +78,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     wlist(Hex(5)) = Button(55, 65, 80, 20, ">>|<<")    ; proportional  #proportion
     
-    wlist(Hex(6)) = Button(10, 90, 80, 20, ">>|", #__text_Right) ; proportional
-    wlist(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__text_left) ; proportional
+    wlist(Hex(6)) = Button(10, 90, 80, 20, ">>|", #PB_Button_Right) ; proportional
+    wlist(Hex(7)) = Button(100, 90, 80, 20, "|<<", #PB_Button_Left) ; proportional
     
-    wlist(Hex(8)) = Button(10, 115, 50, 20, ">>|", #__text_Right) ; proportional
+    wlist(Hex(8)) = Button(10, 115, 50, 20, ">>|", #PB_Button_Right) ; proportional
     wlist(Hex(9)) = Button(60, 115, 20, 20, "|")                    ; proportional
     wlist(Hex(10)) = Button(80, 115, 30, 20, "<<>>")                ; proportional
     wlist(Hex(11)) = Button(110, 115, 20, 20, "|")                  ; proportional
-    wlist(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__text_left); proportional
+    wlist(Hex(12)) = Button(130, 115, 50, 20, "|<<", #PB_Button_Left); proportional
     
     
     SetAlign(wlist(Hex(2)), 0, 0,1,0,#__align_proportional )    
@@ -107,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlign(wlist(Hex(11)), 0, 0,0,1,1 )
     SetAlign(wlist(Hex(12)), 0, 0,0,1,1 )
     
-    Bind(root(), @events())
+    Bind(root(), @_events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
   EndProcedure
   
@@ -149,7 +146,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlign( wlist(Hex(5)), #__align_center ) ; , 0,0,0,0 )
     
     
-    Bind(root(), @events())
+    Bind(root(), @_events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,260)
   EndProcedure
   
@@ -206,7 +203,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetAlign(wlist(Hex(55)), #__align_full )
     
-    Bind(root(), @events())
+    Bind(root(), @_events())
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
@@ -264,7 +261,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetAlign(wlist(Hex(55)), #__align_full )
     
-    Bind(root(), @events())
+    Bind(root(), @_events())
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
@@ -319,7 +316,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     
     SetAlign(wlist(Hex(55)), #__align_auto )
     
-    Bind(root(), @events())
+    Bind(root(), @_events())
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
@@ -397,7 +394,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetAlign( wlist(Hex(4)), #__align_proportional, 0,0,0,-5 )
     ;     SetAlign( wlist(Hex(9)), #__align_proportional, 0,0,-5,-5 )
     
-    Bind(root(), @events())
+    Bind(root(), @_events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 490,390)
   EndProcedure
   
@@ -466,7 +463,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetAlign(tree_button1, 0, 1,0,1,1 )
     SetAlign(tree_button2, 0, 1,0,1,1 )
     
-    Bind(root(), @events())
+    Bind(root(), @_events())
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,400)
   EndProcedure
   
@@ -493,9 +490,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 69
-; Folding = --R-
+; CursorPosition = 465
+; FirstLine = 425
+; Folding = ----
 ; Optimizer
 ; EnableXP
 ; DPIAware

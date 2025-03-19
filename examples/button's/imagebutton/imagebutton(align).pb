@@ -17,17 +17,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Define i, Width = 200
    
    If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      ButtonImage(10,  10, Width, 65, Image, #__flag_BorderFlat|#__image_Left|#__image_Top)
-      ButtonImage(10,  10+65+10, Width, 65, Image, #__flag_BorderFlat|#__image_Top|#__image_Right)
-      ButtonImage(10, 160, Width, 65, Image, #__flag_BorderFlat|#__image_Right|#__image_Bottom)
-      ButtonImage(10, 160+65+10, Width, 65, Image, #__flag_BorderFlat|#__image_Left|#__image_Bottom)
+      ButtonImage(10,  10, Width, 65, Image, #__flag_border_Flat|#__image_Left|#__image_Top)
+      ButtonImage(10,  10+65+10, Width, 65, Image, #__flag_border_Flat|#__image_Top|#__image_Right)
+      ButtonImage(10, 160, Width, 65, Image, #__flag_border_Flat|#__image_Right|#__image_Bottom)
+      ButtonImage(10, 160+65+10, Width, 65, Image, #__flag_border_Flat|#__image_Left|#__image_Bottom)
       
-      ButtonImage(10, 310, Width, 65, Image, #__flag_BorderFlat|#__image_Center|#__image_Left)
-      ButtonImage(10, 310+65+10, Width, 65, Image, #__flag_BorderFlat|#__image_Center|#__image_Top)
-      ButtonImage(10, 460, Width, 65, Image, #__flag_BorderFlat|#__image_Center|#__image_Right)
-      ButtonImage(10, 460+65+10, Width, 65, Image, #__flag_BorderFlat|#__image_Center|#__image_Bottom)
+      ButtonImage(10, 310, Width, 65, Image, #__flag_border_Flat|#__image_Center|#__image_Left)
+      ButtonImage(10, 310+65+10, Width, 65, Image, #__flag_border_Flat|#__image_Center|#__image_Top)
+      ButtonImage(10, 460, Width, 65, Image, #__flag_border_Flat|#__image_Center|#__image_Right)
+      ButtonImage(10, 460+65+10, Width, 65, Image, #__flag_border_Flat|#__image_Center|#__image_Bottom)
       
-      ButtonImage(10, 610, Width, 140, Image, #__flag_BorderFlat);|#__image_Center)
+      ButtonImage(10, 610, Width, 140, Image, #__flag_border_Flat);|#__image_Center)
       
       For i=0 To 8
          SetAlign(ID(i), 0, 1,0,1,0)

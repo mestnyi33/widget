@@ -260,6 +260,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;Global NewMap *roots._s_root( )
       ;Global *event._s_EVENT( )
       Global NewMap loadfonts._s_FONT( )
+      Global NewList loadimages._s_Img( )
       
       ;-  ----------------
       ;-   DECLARE_macros
@@ -463,7 +464,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;       EndMacro
       
       Macro IPAddress( X,Y,Width,Height, flag=0 )
-         String( X,Y,Width,Height, "", #__flag_Textnumeric|flag )
+         String( X,Y,Width,Height, "", #__flag_text_numeric|flag )
          widget( )\class = "IPAddress"
       EndMacro
       
@@ -1350,13 +1351,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Declare   GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
+      
       Declare.q ToPBFlag( Type, Flag.q )
       Declare.q FromPBFlag( Type, Flag.q )
       Declare.q Flag( *this, flag.q = #Null, state.b = #PB_Default )
+      Declare.s MakeFlagsString( Type )
+      Declare.q MakeConstants( string$ )
+      Declare$  MakeStringConstants( string$ )
+      Declare$  MakeConstantsString( type$, flag.q ) 
       
       Declare.i PBEventType( event.i )
       Declare.i TypeFromClass( Class.s )
-      Declare.s ClassFromType( Type.w )
+      Declare.s ClassFromType( Type )
       Declare.s ClassFromEvent( event.i )
       Declare   SetBackgroundColor( *this, color.i )
       
@@ -1528,9 +1534,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i Properties( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
       
       ; container
-      Declare.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
-      Declare.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
-      Declare.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
+      Declare.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
+      Declare.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
+      Declare.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_border_Flat )
       Declare.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = #__flag_nogadgets )
       Declare.i Image( X.l, Y.l, Width.l, Height.l, Image.i, flag.q = 0 )
       Declare.i MDI( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
@@ -1860,16 +1866,16 @@ CompilerIf Not Defined( widget, #PB_Module )
             _this_\text\x        = _x_
             _this_\text\y        = _y_
             
-            _this_\text\editable = Bool( Not constants::BinaryFlag( _flag_, #__flag_Textreadonly ))
-            _this_\text\lower    = constants::BinaryFlag( _flag_, #__flag_Textlowercase )
-            _this_\text\upper    = constants::BinaryFlag( _flag_, #__flag_Textuppercase )
-            _this_\text\pass     = constants::BinaryFlag( _flag_, #__flag_Textpassword )
-            _this_\text\invert   = constants::BinaryFlag( _flag_, #__text_Invert )
-            _this_\text\vertical = constants::BinaryFlag( _flag_, #__text_Vertical )
+            _this_\text\editable = Bool( Not constants::BinaryFlag( _flag_, #__flag_text_readonly ))
+            _this_\text\lower    = constants::BinaryFlag( _flag_, #__flag_text_lowercase )
+            _this_\text\upper    = constants::BinaryFlag( _flag_, #__flag_text_uppercase )
+            _this_\text\pass     = constants::BinaryFlag( _flag_, #__flag_text_password )
+            _this_\text\invert   = constants::BinaryFlag( _flag_, #__flag_text_Invert )
+            _this_\text\vertical = constants::BinaryFlag( _flag_, #__flag_text_Vertical )
             
-            If constants::BinaryFlag( _flag_, #__flag_Textwordwrap )
+            If constants::BinaryFlag( _flag_, #__flag_text_wordwrap )
                _this_\text\multiLine = 1
-            ElseIf constants::BinaryFlag( _flag_, #__flag_Textmultiline )
+            ElseIf constants::BinaryFlag( _flag_, #__flag_text_multiline )
                _this_\text\multiLine = - 1
             Else
                _this_\text\multiLine = 0
@@ -1911,7 +1917,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   _this_\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
                Else
                   _this_\MarginLine( )\hide = 1
-                  _this_\text\numeric       = Bool( _flag_ & #__flag_Textnumeric = #__flag_Textnumeric )
+                  _this_\text\numeric       = Bool( _flag_ & #__flag_text_numeric = #__flag_text_numeric )
                EndIf
             EndIf
             
@@ -3282,7 +3288,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          ;
          ;*this._s_WIDGET = Text(X, Y, Width, Height, "", #__flag_nogadgets|#__flag_Transparent)
-         *this._s_WIDGET = Container(X, Y, Width, Height, #__flag_nogadgets|#__flag_BorderLess) : *this\container = 0
+         *this._s_WIDGET = Container(X, Y, Width, Height, #__flag_nogadgets|#__flag_border_Less) : *this\container = 0
          ;*this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, 0, X, Y, Width, Height, #Null$, 0, 0, 0, 0, 0, 0, 0 )
          
          If Text
@@ -8995,8 +9001,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.i GetState( *this._s_WIDGET )
          ; This is a universal function which works For almost all gadgets: 
          ; 
-         ; - ButtonImage( )  : returns 1 If a #__flag_ButtonToggle button is toggled, Else 0. 
-         ; - Button( )       : returns 1 If a #__flag_ButtonToggle button is toggled, Else 0. 
+         ; - ButtonImage( )  : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
+         ; - Button( )       : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
          ; - Option( )       : returns 1 If activated, 0 otherwise. 
          ; - CheckBox( )     : returns one of the following values:
          ;                           #PB_Checkbox_Checked  : The check mark is set.
@@ -9113,8 +9119,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.b SetState( *this._s_WIDGET, state.i )
          ; This is a universal function which works For almost all gadgets: 
          ; 
-         ; - ButtonImage( ) : change the current state of a #__flag_ButtonToggle gadget (1 = toggled, 0 = normal). 
-         ; - Button( )      : change the current state of a #__flag_ButtonToggle gadget (1 = toggled, 0 = normal). 
+         ; - ButtonImage( ) : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
+         ; - Button( )      : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
          ; - Option( )      : 1 To activate it, 0 otherwise. 
          ; - CheckBox( )    : Change the state of the checkbox. The following values are possible:
          ;                     #PB_Checkbox_Checked  : Set the check mark.
@@ -13787,7 +13793,7 @@ chr$ = ","
                CompilerIf #PB_Compiler_Version =< 546
                   For i = 1 To Len : String.s + "*" : Next
                CompilerElse
-                  For i = 1 To Len : String.s + "●" : Next ; "•●"
+                  For i = 1 To Len : String.s + "?" : Next ; "•?"
                CompilerEndIf
                
             Else
@@ -14442,6 +14448,234 @@ chr$ = ","
       
       
       ;-
+      Procedure.q ToPBFlag( Type, Flag.q )
+         Protected flags.q = Flag
+         
+         Select Type
+            Case #__type_Container
+               If constants::BinaryFlag( Flag, #__flag_border_Less )
+                  flags & ~ #__flag_border_Less
+                  flags | #PB_Container_BorderLess
+               EndIf
+               If constants::BinaryFlag( Flag, #__flag_border_Flat )
+                  flags & ~ #__flag_border_Flat
+                  flags | #PB_Container_Flat
+               EndIf
+               If constants::BinaryFlag( Flag, #__flag_border_Single )
+                  flags & ~ #__flag_border_Single
+                  flags | #PB_Container_Single
+               EndIf
+               If constants::BinaryFlag( Flag, #__flag_border_Raised )
+                  flags & ~ #__flag_border_Raised
+                  flags | #PB_Container_Raised
+               EndIf
+               If constants::BinaryFlag( Flag, #__flag_border_Double ) 
+                  flags & ~ #__flag_border_Double
+                  flags | #PB_Container_Double
+               EndIf
+               
+            Case #__type_Button
+               If constants::BinaryFlag( Flag, #__flag_text_MultiLine ) 
+                  flags & ~ #__flag_text_MultiLine
+                  flag | #PB_Button_MultiLine
+               EndIf
+               If constants::BinaryFlag( Flag, #__flag_text_Left ) 
+                  flags & ~ #__flag_text_Left
+                  flags | #PB_Button_Left
+               EndIf
+               If constants::BinaryFlag( Flag, #__flag_text_Right ) 
+                  flags & ~ #__flag_text_Right
+                  flags | #PB_Button_Right
+               EndIf
+         EndSelect
+         
+         ProcedureReturn flags
+      EndProcedure
+      
+      Procedure.q FromPBFlag( Type, Flag.q )
+         Protected flags.q = Flag
+         
+         Select Type
+            Case #__type_window
+               If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
+                  flags & ~ #PB_Window_BorderLess
+                  flags | #__flag_border_Less
+               EndIf
+               ;
+            Case #__type_Container
+               ;                If constants::BinaryFlag( Flag, #PB_Container_BorderLess ) 
+               ;                   flags & ~ #PB_Container_BorderLess
+               ;                   flags = #__flag_border_Less
+               ;                EndIf
+               If constants::BinaryFlag( Flag, #PB_Container_Flat )
+                  flags & ~ #PB_Container_Flat
+                  flags = #__flag_border_Flat
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Container_Single )
+                  flags & ~ #PB_Container_Single
+                  flags = #__flag_border_Single
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Container_Raised ) 
+                  flags & ~ #PB_Container_Raised
+                  flags = #__flag_border_Raised
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Container_Double )
+                  flags & ~ #PB_Container_Double
+                  flags = #__flag_border_Double
+               EndIf
+               ;
+            Case #__type_Frame
+               ;                If constants::BinaryFlag( Flag, #PB_Frame_BorderLess ) 
+               ;                   flags & ~ #PB_Frame_BorderLess
+               ;                   flags = #__flag_border_Less
+               ;                EndIf
+               If constants::BinaryFlag( Flag, #PB_Frame_Flat )
+                  flags & ~ #PB_Frame_Flat
+                  flags = #__flag_border_Flat
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Frame_Single )
+                  flags & ~ #PB_Frame_Single
+                  flags = #__flag_border_Single
+               EndIf
+               ;                If constants::BinaryFlag( Flag, #PB_Frame_Raised ) 
+               ;                   flags & ~ #PB_Frame_Raised
+               ;                   flags = #__flag_border_Raised
+               ;                EndIf
+               If constants::BinaryFlag( Flag, #PB_Frame_Double )
+                  flags & ~ #PB_Frame_Double
+                  flags = #__flag_border_Double
+               EndIf
+               ;
+            Case #__type_MDI
+               If constants::BinaryFlag( Flag, #PB_MDI_AutoSize ) 
+                  flags & ~ #PB_MDI_AutoSize
+                  flags | #__flag_AutoSize
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_MDI_BorderLess )
+                  flags & ~ #PB_MDI_BorderLess
+                  flags | #__flag_border_Less
+               EndIf
+               ;
+            Case #__type_CheckBox
+               If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
+                  flags & ~ #PB_CheckBox_Right
+                  flags | #__flag_text_Right
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_CheckBox_Center )
+                  flags & ~ #PB_CheckBox_Center
+                  flags | #__flag_text_Center
+               EndIf
+               ;
+            Case #__type_Text
+               If constants::BinaryFlag( Flag, #PB_Text_Center )
+                  flags & ~ #PB_Text_Center
+                  flags | #__flag_text_Center
+                  ;flags & ~ #__flag_text_Left
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Text_Right )
+                  flags & ~ #PB_Text_Right
+                  flags | #__flag_text_Right
+               EndIf
+               ;
+            Case #__type_Button ; ok
+               If constants::BinaryFlag( Flag, #PB_Button_MultiLine ) 
+                  flags & ~ #PB_Button_MultiLine
+                  flags | #__flag_text_MultiLine
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Button_Left ) 
+                  flags & ~ #PB_Button_Left
+                  flags | #__flag_text_Left
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Button_Right ) 
+                  flags & ~ #PB_Button_Right
+                  flags | #__flag_text_Right
+               EndIf
+               ;
+            Case #__type_String ; ok
+               If constants::BinaryFlag( Flag, #PB_String_Password ) 
+                  flags & ~ #PB_String_Password
+                  flags | #__flag_text_password
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_LowerCase )
+                  flags & ~ #PB_String_LowerCase
+                  flags | #__flag_text_lowercase
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_UpperCase ) 
+                  flags & ~ #PB_String_UpperCase
+                  flags | #__flag_text_uppercase
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_BorderLess )
+                  flags & ~ #PB_String_BorderLess
+                  flags | #__flag_border_Less
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_Numeric ) 
+                  flags & ~ #PB_String_Numeric
+                  flags | #__flag_text_numeric
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_ReadOnly )
+                  flags & ~ #PB_String_ReadOnly
+                  flags | #__flag_text_readonly
+               EndIf
+               ;
+            Case #__type_Editor
+               If constants::BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
+                  flags & ~ #PB_Editor_ReadOnly
+                  flags | #__flag_text_readonly
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Editor_WordWrap ) 
+                  flags & ~ #PB_Editor_WordWrap
+                  flags | #__flag_text_wordwrap
+               EndIf
+               ;
+            Case #__type_Tree
+               If constants::BinaryFlag( Flag, #PB_Tree_AlwaysShowSelection ) 
+                  flags & ~ #PB_Tree_AlwaysShowSelection
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Tree_CheckBoxes ) 
+                  flags & ~ #PB_Tree_CheckBoxes
+                  flags | #__tree_checkboxes
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Tree_ThreeState ) 
+                  flags & ~ #PB_Tree_ThreeState
+                  flags | #__tree_threestate
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Tree_NoButtons )
+                  flags & ~ #PB_Tree_NoButtons
+                  flags | #__tree_nobuttons
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Tree_NoLines ) 
+                  flags & ~ #PB_Tree_NoLines
+                  flags | #__tree_nolines
+               EndIf
+               ;   
+            Case #__type_ListView ; Ok
+               If constants::BinaryFlag( Flag, #PB_ListView_ClickSelect ) 
+                  flags & ~ #PB_ListView_ClickSelect
+                  flags | #__flag_RowClickSelect
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListView_MultiSelect ) 
+                  flags & ~ #PB_ListView_MultiSelect
+                  flags | #__flag_RowMultiSelect
+               EndIf
+               ;  
+            Case #__type_listicon
+               If constants::BinaryFlag( Flag, #PB_ListIcon_AlwaysShowSelection ) 
+                  flags & ~ #PB_ListIcon_AlwaysShowSelection
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_CheckBoxes )
+                  flags & ~ #PB_ListIcon_CheckBoxes
+                  flags | #__tree_checkboxes
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_ThreeState )
+                  flags & ~ #PB_ListIcon_ThreeState
+                  flags | #__tree_threestate
+               EndIf
+               
+         EndSelect
+         
+         ProcedureReturn flags
+      EndProcedure
+      
       Procedure.q Flag( *this._s_WIDGET, flag.q = #Null, state.b = #PB_Default )
          Protected result.q
          ;
@@ -14493,56 +14727,56 @@ chr$ = ","
                If string_bar
                   *this\TextChange( ) = 1
                   ; 
-                  If constants::BinaryFlag( Flag, #__text_Invert )
+                  If constants::BinaryFlag( Flag, #__flag_text_Invert )
                      *this\text\invert = state
                   EndIf
-                  If constants::BinaryFlag( Flag, #__text_Vertical )
+                  If constants::BinaryFlag( Flag, #__flag_text_Vertical )
                      *this\text\vertical = state
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_Textwordwrap )
+                  If constants::BinaryFlag( Flag, #__flag_text_wordwrap )
                      *this\text\multiline = - state
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_Textmultiline )
+                  If constants::BinaryFlag( Flag, #__flag_text_multiline )
                      *this\text\multiline = state
                   EndIf
                   ;
-                  If constants::BinaryFlag( Flag, #__text_Left )
+                  If constants::BinaryFlag( Flag, #__flag_text_Left )
                      *this\text\align\left = state
                      ;
                      If Not *this\text\align\left 
-                        If constants::BinaryFlag( *this\flag, #__text_Right )
+                        If constants::BinaryFlag( *this\flag, #__flag_text_Right )
                            *this\text\align\right = #True
                         EndIf
                      EndIf
                   EndIf
-                  If constants::BinaryFlag( Flag, #__text_Top )
+                  If constants::BinaryFlag( Flag, #__flag_text_Top )
                      *this\text\align\top = state
                      ;
                      If Not *this\text\align\top 
-                        If constants::BinaryFlag( *this\flag, #__text_Bottom )
+                        If constants::BinaryFlag( *this\flag, #__flag_text_Bottom )
                            *this\text\align\bottom = #True
                         EndIf
                      EndIf
                   EndIf
-                  If constants::BinaryFlag( Flag, #__text_Right )
+                  If constants::BinaryFlag( Flag, #__flag_text_Right )
                      *this\text\align\right = state
                      ;
                      If Not *this\text\align\right 
-                        If constants::BinaryFlag( *this\flag, #__text_Left )
+                        If constants::BinaryFlag( *this\flag, #__flag_text_Left )
                            *this\text\align\left = #True
                         EndIf
                      EndIf
                   EndIf
-                  If constants::BinaryFlag( Flag, #__text_Bottom )
+                  If constants::BinaryFlag( Flag, #__flag_text_Bottom )
                      *this\text\align\bottom = state
                      ;
                      If Not *this\text\align\bottom 
-                        If constants::BinaryFlag( *this\flag, #__text_Top )
+                        If constants::BinaryFlag( *this\flag, #__flag_text_Top )
                            *this\text\align\top = #True
                         EndIf
                      EndIf
                   EndIf
-                  If constants::BinaryFlag( Flag, #__text_Center )
+                  If constants::BinaryFlag( Flag, #__flag_text_Center )
                      *this\text\align\left   = #False
                      *this\text\align\top    = #False
                      *this\text\align\right  = #False
@@ -14552,8 +14786,8 @@ chr$ = ","
                   ;\\0в ,
                   If *this\type = #__type_Button
                      ; set toggle button
-                     If constants::BinaryFlag( flag, #__flag_ButtonToggle )
-                        If constants::BinaryFlag( *this\Flag, #__flag_ButtonToggle )
+                     If constants::BinaryFlag( flag, #PB_Button_Toggle )
+                        If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
                            If Not *this\togglebox
                               *this\togglebox.allocate( BOX )
                            EndIf
@@ -14692,6 +14926,742 @@ chr$ = ","
          ProcedureReturn result
       EndProcedure
       
+      ;-
+      Procedure.s MakeFlagsString( Type ) ; 
+         Protected result$
+         
+         Select Type
+            Case #__Type_Window        
+               ;{- Ok
+               result$ = "#PB_Window_TitleBar|"+
+                         "#PB_Window_BorderLess|"+
+                         "#PB_Window_SystemMenu|"+
+                         "#PB_Window_MaximizeGadget|"+
+                         "#PB_Window_MinimizeGadget|"+
+                         "#PB_Window_ScreenCentered|"+
+                         "#PB_Window_SizeGadget|"+
+                         "#PB_Window_WindowCentered|"+
+                         "#PB_Window_Tool|"+
+                         "#PB_Window_Normal|"+
+                         "#PB_Window_Minimize|"+
+                         "#PB_Window_Maximize|"+
+                         "#PB_Window_Invisible|"+
+                         "#PB_Window_NoActivate|"+
+                         "#PB_Window_NoGadgets|"
+               ;}
+               
+            Case #__Type_Button         
+               ;{- Ok
+               result$ = "#PB_Button_Default|"+
+                         "#PB_Button_Toggle|"+
+                         "#PB_Button_Left|"+
+                         "#PB_Button_Center|"+
+                         "#PB_Button_Right|"+
+                         "#PB_Button_MultiLine"
+               
+               ;}
+               
+            Case #__Type_String         
+               ;{- Ok
+               result$ = "#PB_String_BorderLess|"+
+                         "#PB_String_Numeric|"+
+                         "#PB_String_Password|"+
+                         "#PB_String_ReadOnly|"+
+                         "#PB_String_LowerCase|"+
+                         "#PB_String_UpperCase"
+               
+               ;}
+               
+            Case #__Type_Text           
+               ;{- Ok
+               result$ = "#PB_Text_Left|"+
+                         "#PB_Text_Center|"+
+                         "#PB_Text_Right|"+
+                         "#PB_Text_Border"
+               ;}
+               
+            Case #__Type_CheckBox       
+               ;{- Ok
+               result$ = "#PB_CheckBox_Right|"+
+                         "#PB_CheckBox_Center|"+
+                         "#PB_CheckBox_ThreeState"
+               ;}
+               
+            Case #__Type_Option         
+               result$ = ""
+               
+            Case #__Type_ListView       
+               ;{- Ok
+               result$ = "#PB_ListView_Multiselect|"+
+                         "#PB_ListView_ClickSelect"
+               ;}
+               
+            Case #__Type_Frame          
+               ;{- Ok
+               result$ = "#PB_Frame_Single|"+
+                         "#PB_Frame_Double|"+
+                         "#PB_Frame_Flat"
+               ;}
+               
+            Case #__Type_ComboBox       
+               ;{- Ok
+               result$ = "#PB_ComboBox_Editable|"+
+                         "#PB_ComboBox_LowerCase|"+
+                         "#PB_ComboBox_UpperCase|"+
+                         "#PB_ComboBox_Image"
+               ;}
+               
+            Case #__Type_Image          
+               ;{- Ok
+               result$ = "#PB_Image_Border|"+
+                         "#PB_Image_Raised"
+               ;}
+               
+            Case #__Type_HyperLink      
+               ;{- Ok
+               result$ = "#PB_Hyperlink_Underline"
+               ;}
+               
+            Case #__Type_Container      
+               ;{- Ok
+               result$ = "#PB_Container_BorderLess|"+
+                         "#PB_Container_Flat|"+
+                         "#PB_Container_Raised|"+
+                         "#PB_Container_Single|"+
+                         "#PB_Container_Double"
+               ;}
+               
+            Case #__Type_ListIcon       
+               ;{- Ok
+               result$ = "#PB_ListIcon_CheckBoxes|"+
+                         "#PB_ListIcon_ThreeState|"+
+                         "#PB_ListIcon_MultiSelect|"+
+                         "#PB_ListIcon_GridLines|"+
+                         "#PB_ListIcon_FullRowSelect|"+
+                         "#PB_ListIcon_HeaderDragDrop|"+
+                         "#PB_ListIcon_AlwaysShowSelection"
+               ;}
+               
+            Case #__Type_IPAddress      
+               result$ = ""
+               
+            Case #__type_Progress    
+               ;{- Ok
+               result$ = "#PB_ProgressBar_Smooth|"+
+                         "#PB_ProgressBar_Vertical"
+               ;}
+               
+            Case #__type_Scroll      
+               ;{- Ok
+               result$ = "#PB_ScrollBar_Vertical"
+               ;}
+               
+            Case #__Type_ScrollArea     
+               ;{- Ok
+               result$ = "#PB_ScrollArea_Flat|"+
+                         "#PB_ScrollArea_Raised|"+
+                         "#PB_ScrollArea_Single|"+
+                         "#PB_ScrollArea_BorderLess|"+
+                         "#PB_ScrollArea_Center"
+               ;}
+               
+            Case #__type_Track       
+               ;{- Ok
+               result$ = "#PB_TrackBar_Ticks|"+
+                         "#PB_TrackBar_Vertical"
+               ;}
+               
+            Case #__Type_Web            
+               result$ = ""
+               
+            Case #__Type_ButtonImage    
+               ;{- Ok
+               result$ = "#PB_Button_Toggle"
+               ;}
+               
+            Case #__Type_Calendar       
+               ;{- Ok
+               result$ = "#PB_Calendar_Borderless"
+               ;}
+               
+            Case #__Type_Date           
+               ;{- Ok
+               result$ = "#PB_Date_UpDown"
+               ;}
+               
+            Case #__Type_Editor         
+               ;{- Ok
+               result$ = "#PB_Editor_ReadOnly|"+
+                         "#PB_Editor_WordWrap"
+               ;}
+               
+            Case #__Type_ExplorerList   
+               result$ = "#PB_Explorer_BorderLess|"+          ; Создать Гаджет без границ.
+                         "#PB_Explorer_AlwaysShowSelection|"+ ; Выделение отображается даже если Гаджет не активирован.
+                         "#PB_Explorer_MultiSelect|"+         ; Разрешить множественное выделение элементов в Гаджете.
+                         "#PB_Explorer_GridLines|"+           ; Отображать разделительные линии между строками и колонками.
+                         "#PB_Explorer_HeaderDragDrop|"+      ; В режиме таблицы заголовки можно перетаскивать (Drag'n'Drop).
+                         "#PB_Explorer_FullRowSelect|"+       ; Выделение охватывает всю строку, а не первую колонку.
+                         "#PB_Explorer_NoFiles|"+             ; Не показывать файлы.
+                         "#PB_Explorer_NoFolders|"+           ; Не показывать каталоги.
+                         "#PB_Explorer_NoParentFolder|"+      ; Не показывать ссылку на родительский каталог [..].
+                         "#PB_Explorer_NoDirectoryChange|"+   ; Пользователь не может сменить директорию.
+                         "#PB_Explorer_NoDriveRequester|"+    ; Не показывать запрос 'пожалуйста, вставьте диск X;'.
+                         "#PB_Explorer_NoSort|"+              ; Пользователь не может сортировать содержимое по клику на заголовке колонки.
+                         "#PB_Explorer_NoMyDocuments|"+       ; Не показывать каталог 'Мои документы' в виде отдельного элемента.
+                         "#PB_Explorer_AutoSort|"+            ; Содержимое автоматически упорядочивается по имени.
+                         "#PB_Explorer_HiddenFiles"           ; Будет отображать скрытые файлы (поддерживается только в Linux и OS X).
+               
+            Case #__Type_ExplorerTree   
+               result$ = "#PB_Explorer_BorderLess|"+          ; Создать Гаджет без границ.
+                         "#PB_Explorer_AlwaysShowSelection|"+ ; Выделение отображается даже если Гаджет не активирован.
+                         "#PB_Explorer_NoLines|"+             ; Скрыть линии, соединяющие узлы дерева.
+                         "#PB_Explorer_NoButtons|"+           ; Скрыть кнопки разворачивания узлов в виде символов '+'.
+                         "#PB_Explorer_NoFiles|"+             ; Не показывать файлы.
+                         "#PB_Explorer_NoDriveRequester|"+    ; Не показывать запрос 'пожалуйста, вставьте диск X:'.
+                         "#PB_Explorer_NoMyDocuments|"+       ; Не показывать каталог 'Мои документы' в виде отдельного элемента.
+                         "#PB_Explorer_AutoSort"              ; Содержимое автоматически упорядочивается по имени.
+               
+            Case #__Type_ExplorerCombo  
+               result$ = "#PB_Explorer_DrivesOnly|"+          ; Гаджет будет отображать только диски, которые вы можете выбрать.
+                         "#PB_Explorer_Editable|"+            ; Гаджет будет доступен для редактирования с функцией автозаполнения.                   С этим флагом он действует точно так же, как тот что в Windows Explorer.
+                         "#PB_Explorer_NoMyDocuments"         ; Папка "Мои документы" не будет отображаться как отдельный элемент.
+               
+            Case #__Type_Spin           
+               result$ = ""
+               
+            Case #__Type_Tree           
+               ;{- Ok
+               result$ = "#PB_Tree_AlwaysShowSelection|"+
+                         "#PB_Tree_NoLines|"+
+                         "#PB_Tree_NoButtons|"+
+                         "#PB_Tree_CheckBoxes|"+
+                         "#PB_Tree_ThreeState"
+               ;}
+               
+            Case #__Type_Panel          
+               result$ = ""
+               
+            Case #__Type_Splitter       
+               ;{- Ok
+               result$ = "#PB_Splitter_Vertical|"+
+                         "#PB_Splitter_Separator|"+
+                         "#PB_Splitter_FirstFixed|"+
+                         "#PB_Splitter_SecondFixed" 
+               ;}
+               
+               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               Case #__Type_MDI           
+                  result$ = ""
+               CompilerEndIf
+               
+            Case #__Type_Scintilla      
+               result$ = ""
+               
+               ;       Case #__Type_Shortcut       
+               ;         result$ = ""
+               ;         
+               ;       Case #__Type_Canvas 
+               ;         ;{- Ok
+               ;         result$ = "#PB_Canvas_Border|"+
+               ;                   "#PB_Canvas_Container|"+
+               ;                   "#PB_Canvas_ClipMouse|"+
+               ;                   "#PB_Canvas_Keyboard|"+
+               ;                   "#PB_Canvas_DrawFocus"
+               
+               
+         EndSelect
+         
+         ProcedureReturn result$
+      EndProcedure
+      
+      Procedure$  MakeConstantsString( type$, flag.q ) ; 
+         Protected result$
+         
+         If flag
+            Select type$
+               Case "Font"
+                  If flag & #PB_Font_Bold        : result$ + " #PB_Font_Bold |" : EndIf
+                  If flag & #PB_Font_Italic      : result$ + " #PB_Font_Italic |" : EndIf
+                  If flag & #PB_Font_Underline   : result$ + " #PB_Font_Underline |" : EndIf
+                  If flag & #PB_Font_StrikeOut   : result$ + " #PB_Font_StrikeOut |" : EndIf
+                  If flag & #PB_Font_HighQuality : result$ + " #PB_Font_HighQuality |" : EndIf
+                  
+               Case "Text"
+                  If flag & #__flag_text_Center     : result$ + " #PB_Text_Center |" : EndIf
+                  If flag & #__flag_text_Right      : result$ + " #PB_Text_Right |" : EndIf
+                  If flag & #__flag_border_Flat : result$ + " #PB_Text_Border |" : EndIf
+                  
+               Case "Button"
+                  If flag & #PB_Button_Left      : result$ + " #PB_Button_Left |" : EndIf
+                  If flag & #PB_Button_Right     : result$ + " #PB_Button_Right |" : EndIf
+                  If flag & #PB_Button_Toggle    : result$ + " #PB_Button_Toggle |" : EndIf
+                  If flag & #PB_Button_Default   : result$ + " #PB_Button_Default |" : EndIf
+                  If flag & #PB_Button_MultiLine : result$ + " #PB_Button_MultiLine |" : EndIf
+                  
+                  If flag & #__flag_text_Left = #__flag_text_Left                   : result$ + " #PB_Button_Left |" : EndIf
+                  If flag & #__flag_text_Right = #__flag_text_Right                 : result$ + " #PB_Button_Right |" : EndIf
+                  If flag & #__flag_text_WordWrap = #__flag_text_WordWrap   : result$ + " #PB_Button_MultiLine |" : EndIf
+                  If flag & #__flag_text_MultiLine = #__flag_text_MultiLine : result$ + " #PB_Button_MultiLine |" : EndIf
+                  If flag & #PB_Button_Toggle = #PB_Button_Toggle   : result$ + " #PB_Button_Toggle |" : EndIf
+                  If flag & #__flag_button_Default = #__flag_button_Default : result$ + " #PB_Button_Default |" : EndIf
+                  
+               Case "Container"
+                  If flag & #PB_Container_Flat       : result$ + " #PB_Container_Flat |" : EndIf
+                  If flag & #PB_Container_Raised     : result$ + " #PB_Container_Raised |" : EndIf
+                  If flag & #PB_Container_Single     : result$ + " #PB_Container_Single |" : EndIf
+                  If flag & #PB_Container_BorderLess : result$ + " #PB_Container_BorderLess |" : EndIf
+                  
+                  If flag & #__flag_border_Flat = #__flag_border_Flat     : result$ + " #PB_Container_Flat |" : EndIf
+                  If flag & #__flag_border_Raised = #__flag_border_Raised : result$ + " #PB_Container_Raised |" : EndIf
+                  If flag & #__flag_border_Single = #__flag_border_Single : result$ + " #PB_Container_Single |" : EndIf
+                  If flag & #__flag_border_Less = #__flag_border_Less     : result$ + " #PB_Container_BorderLess |" : EndIf
+                  
+               Case "ScrollArea"
+                  If flag & #PB_ScrollArea_Flat       : result$ + " #PB_ScrollArea_Flat |" : EndIf
+                  If flag & #PB_ScrollArea_Raised     : result$ + " #PB_ScrollArea_Raised |" : EndIf
+                  If flag & #PB_ScrollArea_Single     : result$ + " #PB_ScrollArea_Single |" : EndIf
+                  If flag & #PB_ScrollArea_BorderLess : result$ + " #PB_ScrollArea_BorderLess |" : EndIf
+                  If flag & #PB_ScrollArea_Center     : result$ + " #PB_ScrollArea_Center |" : EndIf
+                  
+                  If flag & #__flag_border_Flat = #__flag_border_Flat     : result$ + " #PB_ScrollArea_Flat |" : EndIf
+                  If flag & #__flag_border_Raised = #__flag_border_Raised : result$ + " #PB_ScrollArea_Raised |" : EndIf
+                  If flag & #__flag_border_Single = #__flag_border_Single : result$ + " #PB_ScrollArea_Single |" : EndIf
+                  If flag & #__flag_border_Less = #__flag_border_Less     : result$ + " #PB_ScrollArea_BorderLess |" : EndIf
+                  If flag & #__flag_Center = #__flag_Center             : result$ + " #PB_ScrollArea_Center |" : EndIf
+                  
+               Case "Splitter"
+                  If flag & #PB_Splitter_Vertical    : result$ + " #PB_Splitter_Vertical |" : EndIf
+                  If flag & #PB_Splitter_Separator   : result$ + " #PB_Splitter_Separator |" : EndIf
+                  If flag & #PB_Splitter_FirstFixed  : result$ + " #PB_Splitter_FirstFixed |" : EndIf
+                  If flag & #PB_Splitter_SecondFixed : result$ + " #PB_Splitter_SecondFixed |" : EndIf
+                  
+               Case "Window"
+                  If flag & #PB_Window_SystemMenu
+                     flag &~ #PB_Window_SystemMenu
+                     result$ + " #PB_Window_SystemMenu |"
+                  EndIf
+                  If flag & #PB_Window_SizeGadget
+                     ;flag &~ #PB_Window_SizeGadget
+                     result$ + " #PB_Window_SizeGadget |"
+                  EndIf
+                  If flag & #PB_Window_ScreenCentered
+                     result$ + " #PB_Window_ScreenCentered |"
+                  EndIf
+                  If flag & #PB_Window_Invisible
+                     result$ + " #PB_Window_Invisible |"
+                  EndIf
+                  ;          If flag & #PB_Window_MaximizeGadget
+                  ;             ;flag &~ #PB_Window_MaximizeGadget
+                  ;             result$ + " #PB_Window_MaximizeGadget |"
+                  ;          EndIf
+                  ;          If flag & #PB_Window_MinimizeGadget
+                  ;             ;flag &~ #PB_Window_MinimizeGadget
+                  ;             result$ + " #PB_Window_MinimizeGadget |"
+                  ;          EndIf
+                  ;          If flag & #PB_Window_NoActivate = #PB_Window_NoActivate
+                  ;             result$ + " #PB_Window_NoActivate |"
+                  ;          EndIf
+                  If flag & #PB_Window_BorderLess
+                     result$ + " #PB_Window_BorderLess |"
+                  EndIf
+                  If flag & #PB_Window_NoGadgets
+                     result$ + " #PB_Window_NoGadgets |"
+                  EndIf
+                  If flag & #PB_Window_TitleBar = #PB_Window_TitleBar
+                     result$ + " #PB_Window_TitleBar |"
+                  EndIf
+                  If flag & #PB_Window_Tool 
+                     result$ + " #PB_Window_Tool |" 
+                  EndIf
+                  If flag & #PB_Window_WindowCentered 
+                     result$ + " #PB_Window_WindowCentered |" 
+                  EndIf
+                  
+            EndSelect
+         EndIf
+         
+         ProcedureReturn Trim( result$, "|" )
+      EndProcedure
+      
+      Procedure$ MakeStringConstants( string$ )
+         Protected i, result$, count, str$
+         
+         If string$
+            count = CountString(string$,"|")
+            For I = 0 To count
+               str$ = Trim(StringField(string$,(I+1),"|"))
+               
+               Select str$
+                  Case "#PB_Compiler_File"      : result$ = #PB_Compiler_File  
+                  Case "#PB_Compiler_FilePath"  : result$ = #PB_Compiler_FilePath  
+                  Case "#PB_Compiler_Filename"  : result$ = #PB_Compiler_Filename  
+                  Case "#PB_Compiler_Home"      : result$ = ReplaceString( #PB_Compiler_Home, "\", "/")   
+                  Case "#PB_Compiler_Module"    : result$ = #PB_Compiler_Module  
+                  Case "#PB_Compiler_Procedure" : result$ = #PB_Compiler_Procedure  
+             EndSelect
+               
+            Next
+         EndIf
+         
+         ProcedureReturn result$
+      EndProcedure
+      
+      Procedure.q MakeConstants( string$ )
+         Protected i, Flag.q, count, str$
+         
+         If string$
+            count = CountString(string$,"|")
+            For I = 0 To count
+               str$ = Trim(StringField(string$,(I+1),"|"))
+               
+               Select str$
+                     ;
+;                   Case "PB_" : result$ = #PB_Compiler_File  
+;                   Case "PB_" : result$ = #PB_Compiler_FilePath  
+;                   Case "PB_" : result$ = #PB_Compiler_Filename  
+;                   Case "PB_" : result$ = #PB_Compiler_Home  
+;                   Case "PB_" : result$ = #PB_Compiler_Module  
+;                   Case "PB_" : result$ = #PB_Compiler_Procedure  
+                  Case "#PB_Compiler_DLL"                   : Flag = Flag | #PB_Compiler_DLL  
+                  Case "#PB_Compiler_Date"                  : Flag = Flag | #PB_Compiler_Date  
+                  Case "#PB_Compiler_Debugger"              : Flag = Flag | #PB_Compiler_Debugger  
+                  Case "#PB_Compiler_EnableExplicit"        : Flag = Flag | #PB_Compiler_EnableExplicit  
+                  Case "#PB_Compiler_EnumerationValue"      : Flag = Flag | #PB_Compiler_EnumerationValue  
+                  Case "#PB_Compiler_Executable"            : Flag = Flag | #PB_Compiler_Executable  
+                  Case "#PB_Compiler_ExecutableFormat"      : Flag = Flag | #PB_Compiler_ExecutableFormat  
+                  Case "#PB_Compiler_InlineAssembly"        : Flag = Flag | #PB_Compiler_InlineAssembly  
+                  Case "#PB_Compiler_IsIncludeFile"         : Flag = Flag | #PB_Compiler_IsIncludeFile  
+                  Case "#PB_Compiler_IsMainFile"            : Flag = Flag | #PB_Compiler_IsMainFile  
+                  Case "#PB_Compiler_Line"                  : Flag = Flag | #PB_Compiler_Line  
+                  Case "#PB_Compiler_LineNumbering"         : Flag = Flag | #PB_Compiler_LineNumbering  
+                  Case "#PB_Compiler_OS"                    : Flag = Flag | #PB_Compiler_OS 
+                  Case "#PB_Compiler_Processor"             : Flag = Flag | #PB_Compiler_Processor  
+                  Case "#PB_Compiler_Thread"                : Flag = Flag | #PB_Compiler_Thread  
+                  Case "#PB_Compiler_Unicode"               : Flag = Flag | #PB_Compiler_Unicode 
+                  Case "#PB_Compiler_Version"               : Flag = Flag | #PB_Compiler_Version  
+                     ;
+                  Case "#True"                              : Flag = Flag | #True
+                  Case "#False"                             : Flag = Flag | #False
+                     ; font
+                  Case "#PB_Font_Bold"                      : Flag = Flag | #PB_Font_Bold 
+                  Case "#PB_Font_Italic"                    : Flag = Flag | #PB_Font_Italic 
+                  Case "#PB_Font_StrikeOut"                 : Flag = Flag | #PB_Font_StrikeOut  
+                  Case "#PB_Font_Underline"                 : Flag = Flag | #PB_Font_Underline  
+                  Case "#PB_Font_HighQuality"               : Flag = Flag | #PB_Font_HighQuality  
+                  Case "#PB_FontRequester_Effects"          : Flag = Flag | #PB_FontRequester_Effects  
+                     ; color
+                  Case "#PB_Gadget_FrontColor"              : Flag = Flag | #PB_Gadget_FrontColor
+                  Case "#PB_Gadget_BackColor"               : Flag = Flag | #PB_Gadget_BackColor 
+                  Case "#PB_Gadget_LineColor"               : Flag = Flag | #PB_Gadget_LineColor 
+                  Case "#PB_Gadget_TitleFrontColor"         : Flag = Flag | #PB_Gadget_TitleFrontColor
+                  Case "#PB_Gadget_TitleBackColor"          : Flag = Flag | #PB_Gadget_TitleBackColor 
+                  Case "#PB_Gadget_GrayTextColor"           : Flag = Flag | #PB_Gadget_GrayTextColor 
+                     ; window
+                  Case "#PB_Window_BorderLess"              : Flag = Flag | #PB_Window_BorderLess
+                  Case "#PB_Window_Invisible"               : Flag = Flag | #PB_Window_Invisible
+                  Case "#PB_Window_Maximize"                : Flag = Flag | #PB_Window_Maximize
+                  Case "#PB_Window_Minimize"                : Flag = Flag | #PB_Window_Minimize
+                  Case "#PB_Window_MaximizeGadget"          : Flag = Flag | #PB_Window_MaximizeGadget
+                  Case "#PB_Window_MinimizeGadget"          : Flag = Flag | #PB_Window_MinimizeGadget
+                  Case "#PB_Window_NoActivate"              : Flag = Flag | #PB_Window_NoActivate
+                  Case "#PB_Window_NoGadgets"               : Flag = Flag | #PB_Window_NoGadgets
+                  Case "#PB_Window_SizeGadget"              : Flag = Flag | #PB_Window_SizeGadget
+                  Case "#PB_Window_SystemMenu"              : Flag = Flag | #PB_Window_SystemMenu
+                  Case "#PB_Window_TitleBar"                : Flag = Flag | #PB_Window_TitleBar
+                  Case "#PB_Window_Tool"                    : Flag = Flag | #PB_Window_Tool
+                  Case "#PB_Window_ScreenCentered"          : Flag = Flag | #PB_Window_ScreenCentered
+                  Case "#PB_Window_WindowCentered"          : Flag = Flag | #PB_Window_WindowCentered
+                     ; buttonimage 
+                  Case "#PB_Button_Image"                   : Flag = Flag | #PB_Button_Image
+                  Case "#PB_Button_PressedImage"            : Flag = Flag | #PB_Button_PressedImage
+                     ; button  
+                  Case "#PB_Button_Default"                 : Flag = Flag | #PB_Button_Default
+                  Case "#PB_Button_Left"                    : Flag = Flag | #PB_Button_Left
+                  Case "#PB_Button_MultiLine"               : Flag = Flag | #PB_Button_MultiLine
+                  Case "#PB_Button_Right"                   : Flag = Flag | #PB_Button_Right
+                  Case "#PB_Button_Toggle"                  : Flag = Flag | #PB_Button_Toggle
+                     ; string
+                  Case "#PB_String_BorderLess"              : Flag = Flag | #PB_String_BorderLess
+                  Case "#PB_String_LowerCase"               : Flag = Flag | #PB_String_LowerCase
+                  Case "#PB_String_MaximumLength"           : Flag = Flag | #PB_String_MaximumLength
+                  Case "#PB_String_Numeric"                 : Flag = Flag | #PB_String_Numeric
+                  Case "#PB_String_Password"                : Flag = Flag | #PB_String_Password
+                  Case "#PB_String_ReadOnly"                : Flag = Flag | #PB_String_ReadOnly
+                  Case "#PB_String_UpperCase"               : Flag = Flag | #PB_String_UpperCase
+                     ; text
+                  Case "#PB_Text_Border"                    : Flag = Flag | #PB_Text_Border
+                  Case "#PB_Text_Center"                    : Flag = Flag | #PB_Text_Center
+                  Case "#PB_Text_Right"                     : Flag = Flag | #PB_Text_Right
+                     ; option
+                     ; checkbox
+                  Case "#PB_CheckBox_Center"                : Flag = Flag | #PB_CheckBox_Center
+                  Case "#PB_CheckBox_Right"                 : Flag = Flag | #PB_CheckBox_Right
+                  Case "#PB_CheckBox_ThreeState"            : Flag = Flag | #PB_CheckBox_ThreeState
+                     ; listview
+                  Case "#PB_ListView_ClickSelect"           : Flag = Flag | #PB_ListView_ClickSelect
+                  Case "#PB_ListView_MultiSelect"           : Flag = Flag | #PB_ListView_MultiSelect
+                     ; frame
+                  Case "#PB_Frame_Double"                   : Flag = Flag | #PB_Frame_Double
+                  Case "#PB_Frame_Flat"                     : Flag = Flag | #PB_Frame_Flat
+                  Case "#PB_Frame_Single"                   : Flag = Flag | #PB_Frame_Single
+                     ; combobox
+                  Case "#PB_ComboBox_Editable"              : Flag = Flag | #PB_ComboBox_Editable
+                  Case "#PB_ComboBox_Image"                 : Flag = Flag | #PB_ComboBox_Image
+                  Case "#PB_ComboBox_LowerCase"             : Flag = Flag | #PB_ComboBox_LowerCase
+                  Case "#PB_ComboBox_UpperCase"             : Flag = Flag | #PB_ComboBox_UpperCase
+                     ; image 
+                  Case "#PB_Image_Border"                   : Flag = Flag | #PB_Image_Border
+                  Case "#PB_Image_Raised"                   : Flag = Flag | #PB_Image_Raised
+                     ; hyperlink 
+                  Case "#PB_HyperLink_Underline"            : Flag = Flag | #PB_HyperLink_Underline
+                     ; container 
+                  Case "#PB_Container_BorderLess"           : Flag = Flag | #PB_Container_BorderLess
+                  Case "#PB_Container_Double"               : Flag = Flag | #PB_Container_Double
+                  Case "#PB_Container_Flat"                 : Flag = Flag | #PB_Container_Flat
+                  Case "#PB_Container_Raised"               : Flag = Flag | #PB_Container_Raised
+                  Case "#PB_Container_Single"               : Flag = Flag | #PB_Container_Single
+                     ; listicon
+                  Case "#PB_ListIcon_AlwaysShowSelection"   : Flag = Flag | #PB_ListIcon_AlwaysShowSelection
+                  Case "#PB_ListIcon_CheckBoxes"            : Flag = Flag | #PB_ListIcon_CheckBoxes
+                  Case "#PB_ListIcon_ColumnWidth"           : Flag = Flag | #PB_ListIcon_ColumnWidth
+                  Case "#PB_ListIcon_DisplayMode"           : Flag = Flag | #PB_ListIcon_DisplayMode
+                  Case "#PB_ListIcon_GridLines"             : Flag = Flag | #PB_ListIcon_GridLines
+                  Case "#PB_ListIcon_FullRowSelect"         : Flag = Flag | #PB_ListIcon_FullRowSelect
+                  Case "#PB_ListIcon_HeaderDragDrop"        : Flag = Flag | #PB_ListIcon_HeaderDragDrop
+                  Case "#PB_ListIcon_LargeIcon"             : Flag = Flag | #PB_ListIcon_LargeIcon
+                  Case "#PB_ListIcon_List"                  : Flag = Flag | #PB_ListIcon_List
+                  Case "#PB_ListIcon_MultiSelect"           : Flag = Flag | #PB_ListIcon_MultiSelect
+                  Case "#PB_ListIcon_Report"                : Flag = Flag | #PB_ListIcon_Report
+                  Case "#PB_ListIcon_SmallIcon"             : Flag = Flag | #PB_ListIcon_SmallIcon
+                  Case "#PB_ListIcon_ThreeState"            : Flag = Flag | #PB_ListIcon_ThreeState
+                     ; ipaddress
+                     ; progressbar 
+                  Case "#PB_ProgressBar_Smooth"             : Flag = Flag | #PB_ProgressBar_Smooth
+                  Case "#PB_ProgressBar_Vertical"           : Flag = Flag | #PB_ProgressBar_Vertical
+                     ; scrollbar 
+                  Case "#PB_ScrollBar_Vertical"             : Flag = Flag | #PB_ScrollBar_Vertical
+                     ; scrollarea 
+                  Case "#PB_ScrollArea_BorderLess"          : Flag = Flag | #PB_ScrollArea_BorderLess
+                  Case "#PB_ScrollArea_Center"              : Flag = Flag | #PB_ScrollArea_Center
+                  Case "#PB_ScrollArea_Flat"                : Flag = Flag | #PB_ScrollArea_Flat
+                  Case "#PB_ScrollArea_Raised"              : Flag = Flag | #PB_ScrollArea_Raised
+                  Case "#PB_ScrollArea_Single"              : Flag = Flag | #PB_ScrollArea_Single
+                     ; trackbar
+                  Case "#PB_TrackBar_Ticks"                 : Flag = Flag | #PB_TrackBar_Ticks
+                  Case "#PB_TrackBar_Vertical"              : Flag = Flag | #PB_TrackBar_Vertical
+                     ; web
+                     ; calendar
+                  Case "#PB_Calendar_Borderless"            : Flag = Flag | #PB_Calendar_Borderless
+                     
+                     ; date
+                  Case "#PB_Date_CheckBox"                  : Flag = Flag | #PB_Date_CheckBox
+                  Case "#PB_Date_UpDown"                    : Flag = Flag | #PB_Date_UpDown
+                     
+                     ; editor
+                  Case "#PB_Editor_ReadOnly"                : Flag = Flag | #PB_Editor_ReadOnly
+                  Case "#PB_Editor_WordWrap"                : Flag = Flag | #PB_Editor_WordWrap
+                     
+                     ; explorerlist
+                  Case "#PB_Explorer_BorderLess"            : Flag = Flag | #PB_Explorer_BorderLess         
+                  Case "#PB_Explorer_AlwaysShowSelection"   : Flag = Flag | #PB_Explorer_AlwaysShowSelection
+                  Case "#PB_Explorer_MultiSelect"           : Flag = Flag | #PB_Explorer_MultiSelect
+                  Case "#PB_Explorer_GridLines"             : Flag = Flag | #PB_Explorer_GridLines
+                  Case "#PB_Explorer_HeaderDragDrop"        : Flag = Flag | #PB_Explorer_HeaderDragDrop
+                  Case "#PB_Explorer_FullRowSelect"         : Flag = Flag | #PB_Explorer_FullRowSelect
+                  Case "#PB_Explorer_NoFiles"               : Flag = Flag | #PB_Explorer_NoFiles
+                  Case "#PB_Explorer_NoFolders"             : Flag = Flag | #PB_Explorer_NoFolders
+                  Case "#PB_Explorer_NoParentFolder"        : Flag = Flag | #PB_Explorer_NoParentFolder 
+                  Case "#PB_Explorer_NoDirectoryChange"     : Flag = Flag | #PB_Explorer_NoDirectoryChange
+                  Case "#PB_Explorer_NoDriveRequester"      : Flag = Flag | #PB_Explorer_NoDriveRequester
+                  Case "#PB_Explorer_NoSort"                : Flag = Flag | #PB_Explorer_NoSort
+                  Case "#PB_Explorer_AutoSort"              : Flag = Flag | #PB_Explorer_AutoSort
+                  Case "#PB_Explorer_HiddenFiles"           : Flag = Flag | #PB_Explorer_HiddenFiles
+                  Case "#PB_Explorer_NoMyDocuments"         : Flag = Flag | #PB_Explorer_NoMyDocuments
+                     
+                     ; explorercombo
+                  Case "#PB_Explorer_DrivesOnly"            : Flag = Flag | #PB_Explorer_DrivesOnly
+                  Case "#PB_Explorer_Editable"              : Flag = Flag | #PB_Explorer_Editable
+                     
+                     ; explorertree
+                  Case "#PB_Explorer_NoLines"               : Flag = Flag | #PB_Explorer_NoLines
+                  Case "#PB_Explorer_NoButtons"             : Flag = Flag | #PB_Explorer_NoButtons
+                     
+                     ; spin
+                  Case "#PB_Spin_Numeric"                   : Flag = Flag | #PB_Spin_Numeric
+                  Case "#PB_Spin_ReadOnly"                  : Flag = Flag | #PB_Spin_ReadOnly
+                     ; tree
+                  Case "#PB_Tree_AlwaysShowSelection"       : Flag = Flag | #PB_Tree_AlwaysShowSelection
+                  Case "#PB_Tree_CheckBoxes"                : Flag = Flag | #PB_Tree_CheckBoxes
+                  Case "#PB_Tree_NoButtons"                 : Flag = Flag | #PB_Tree_NoButtons
+                  Case "#PB_Tree_NoLines"                   : Flag = Flag | #PB_Tree_NoLines
+                  Case "#PB_Tree_ThreeState"                : Flag = Flag | #PB_Tree_ThreeState
+                     ; panel
+                     ; splitter
+                  Case "#PB_Splitter_Separator"             : Flag = Flag | #PB_Splitter_Separator
+                  Case "#PB_Splitter_Vertical"              : Flag = Flag | #PB_Splitter_Vertical
+                  Case "#PB_Splitter_FirstFixed"            : Flag = Flag | #PB_Splitter_FirstFixed
+                  Case "#PB_Splitter_SecondFixed"           : Flag = Flag | #PB_Splitter_SecondFixed
+                     ; mdi
+                  Case "#PB_MDI_AutoSize"                   : Flag = Flag | #PB_MDI_AutoSize
+                  Case "#PB_MDI_BorderLess"                 : Flag = Flag | #PB_MDI_BorderLess
+                  Case "#PB_MDI_NoScrollBars"               : Flag = Flag | #PB_MDI_NoScrollBars
+                     ; scintilla
+                     ; shortcut
+                     ; canvas
+                  Case "#PB_Canvas_Border"                  : Flag = Flag | #PB_Canvas_Border
+                  Case "#PB_Canvas_ClipMouse"               : Flag = Flag | #PB_Canvas_ClipMouse
+                  Case "#PB_Canvas_Container"               : Flag = Flag | #PB_Canvas_Container
+                  Case "#PB_Canvas_DrawFocus"               : Flag = Flag | #PB_Canvas_DrawFocus
+                  Case "#PB_Canvas_Keyboard"                : Flag = Flag | #PB_Canvas_Keyboard
+                     
+                  Default
+                     ; widgets
+                     Select LCase(str$)
+                        Case "#__flag_text_left"                 : Flag = Flag | #__flag_text_Left
+                        Case "#__flag_text_top"                  : Flag = Flag | #__flag_text_Top
+                        Case "#__flag_text_right"                : Flag = Flag | #__flag_text_Right
+                        Case "#__flag_text_bottom"               : Flag = Flag | #__flag_text_Bottom
+                        Case "#__flag_text_center"               : Flag = Flag | #__flag_text_Center
+                        Case "#__flag_text_password"             : Flag = Flag | #__flag_text_Password
+                        Case "#__flag_text_wordwrap"             : Flag = Flag | #__flag_text_WordWrap
+                        Case "#__flag_text_multiline"            : Flag = Flag | #__flag_text_MultiLine
+                        Case "#__flag_text_inline"               : Flag = Flag | #__flag_text_InLine
+                        Case "#__flag_text_numeric"              : Flag = Flag | #__flag_text_Numeric
+                        Case "#__flag_text_readonly"             : Flag = Flag | #__flag_text_Readonly
+                        Case "#__flag_text_lowercase"            : Flag = Flag | #__flag_text_LowerCase
+                        Case "#__flag_text_uppercase"            : Flag = Flag | #__flag_text_UpperCase
+                           ; 
+                        Case "#__image_left"                     : Flag = Flag | #__image_Left
+                        Case "#__image_top"                      : Flag = Flag | #__image_Top
+                        Case "#__image_right"                    : Flag = Flag | #__image_Right
+                        Case "#__image_bottom"                   : Flag = Flag | #__image_Bottom
+                        Case "#__image_center"                   : Flag = Flag | #__image_Center
+                           ;
+                        Case "#__flag_border_less"               : Flag = Flag | #__flag_border_Less
+                        Case "#__flag_border_flat"               : Flag = Flag | #__flag_border_Flat
+                        Case "#__flag_border_raised"             : Flag = Flag | #__flag_border_Raised
+                        Case "#__flag_border_single"             : Flag = Flag | #__flag_border_Single
+                        Case "#__flag_border_double"             : Flag = Flag | #__flag_border_Double
+                           
+                        Default
+                           ;             Select Asc(String$)
+                           ;               Case '0' To '9'
+                           Flag = Flag | Val(String$)
+                           ;             EndSelect
+                     EndSelect
+               EndSelect
+               
+            Next
+         EndIf
+         
+         ProcedureReturn Flag
+      EndProcedure
+      
+      ;-
+      Procedure.i TypeFromClass( Class.s )
+         Protected result.i
+         
+         Select Trim( LCase( Class.s ))
+            Case "status"        : result = #__type_StatusBar
+            Case "popupmenu"     : result = #__type_PopupBar
+            Case "tool"          : result = #__type_ToolBar
+            Case "tab"           : result = #__type_TabBar
+            Case "menu"          : result = #__type_MenuBar
+            Case "window"        : result = #__type_window
+               
+            Case "unknown"       : result = #__type_Unknown
+              
+            Case "button"        : result = #__type_Button
+            Case "buttonimage"   : result = #__type_ButtonImage
+            Case "calendar"      : result = #__type_Calendar
+            Case "checkbox"      : result = #__type_CheckBox
+            Case "combobox"      : result = #__type_ComboBox
+            Case "container"     : result = #__type_Container
+            Case "date"          : result = #__type_Date
+            Case "editor"        : result = #__type_Editor
+            Case "explorercombo" : result = #__type_ExplorerCombo
+            Case "explorerlist"  : result = #__type_ExplorerList
+            Case "explorertree"  : result = #__type_ExplorerTree
+            Case "frame"         : result = #__type_Frame
+            Case "hyperlink"     : result = #__type_HyperLink
+            Case "image"         : result = #__type_Image
+            Case "ipaddress"     : result = #__type_IPAddress
+            Case "listicon"      : result = #__type_ListIcon
+            Case "listview"      : result = #__type_ListView
+            Case "mdi"           : result = #__type_MDI
+            Case "option"        : result = #__type_Option
+            Case "panel"         : result = #__type_Panel
+            Case "progress"      : result = #__type_Progress
+            Case "scintilla"     : result = #__type_Scintilla
+            Case "scrollarea"    : result = #__type_ScrollArea
+            Case "scroll"        : result = #__type_Scroll
+            Case "spin"          : result = #__type_Spin
+            Case "splitter"      : result = #__type_Splitter
+            Case "string"        : result = #__type_String
+            Case "text"          : result = #__type_Text
+            Case "track"         : result = #__type_Track
+            Case "tree"          : result = #__type_Tree
+            Case "web"           : result = #__type_Web
+               ;case "property"       : result = #__type_Properties
+               ;Case "canvas" : result = #__type_Canvas
+               ;Case "opengl"    : result = #__type_OpenGL
+               ;Case "shortcut" : result = #__type_Shortcut
+         EndSelect
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure.s ClassFromType( Type )
+         Protected result.s
+         
+         Select Type
+            Case #__type_StatusBar     : result.s = "Status"
+            Case #__type_PopupBar      : result.s = "PopupMenu"
+            Case #__type_ToolBar       : result.s = "ToolBar"
+            Case #__type_TabBar        : result.s = "Tab"
+            Case #__type_MenuBar       : result.s = "Menu"
+            Case #__type_Window        : result.s = "Window"
+               
+            Case #__type_Unknown       : result.s = "Create"
+               
+            Case #__type_Button        : result.s = "Button"
+            Case #__type_ButtonImage   : result.s = "ButtonImage"
+            Case #__type_String        : result.s = "String"
+            Case #__type_Text          : result.s = "Text"
+            Case #__type_CheckBox      : result.s = "CheckBox"
+            Case #__type_Option        : result.s = "Option"
+            Case #__type_ListView      : result.s = "ListView"
+            Case #__type_Frame         : result.s = "Frame"
+            Case #__type_ComboBox      : result.s = "ComboBox"
+            Case #__type_Image         : result.s = "Image"
+            Case #__type_HyperLink     : result.s = "HyperLink"
+            Case #__type_Container     : result.s = "Container"
+            Case #__type_ListIcon      : result.s = "ListIcon"
+            Case #__type_IPAddress     : result.s = "IPAddress"
+            Case #__type_Progress      : result.s = "Progress"
+            Case #__type_Scroll        : result.s = "Scroll"
+            Case #__type_ScrollArea    : result.s = "ScrollArea"
+            Case #__type_Track         : result.s = "Track"
+            Case #__type_Web           : result.s = "Web"
+            Case #__type_Calendar      : result.s = "Calendar"
+            Case #__type_Date          : result.s = "Date"
+            Case #__type_Editor        : result.s = "Editor"
+            Case #__type_ExplorerList  : result.s = "ExplorerList"
+            Case #__type_ExplorerTree  : result.s = "ExplorerTree"
+            Case #__type_ExplorerCombo : result.s = "ExplorerCombo"
+            Case #__type_Spin          : result.s = "Spin"
+            Case #__type_Tree          : result.s = "Tree"
+            Case #__type_Panel         : result.s = "Panel"
+            Case #__type_Splitter      : result.s = "Splitter"
+            Case #__type_MDI           : result.s = "Mdi"
+            Case #__type_Scintilla     : result.s = "Scintilla"
+         EndSelect
+         
+         ProcedureReturn result.s
+      EndProcedure
+      
+      ;-
       Procedure.i PBEventType( event.i )
          If event = #__event_MouseEnter
             ProcedureReturn #PB_EventType_MouseEnter
@@ -14769,334 +15739,6 @@ chr$ = ","
          EndIf
       EndProcedure
       
-      ;-
-      Procedure.q ToPBFlag( Type, Flag.q )
-         Protected flags.q = Flag
-         
-         Select Type
-            Case #__type_Container
-               If constants::BinaryFlag( Flag, #__flag_BorderLess )
-                  flags & ~ #__flag_BorderLess
-                  flags | #PB_Container_BorderLess
-               EndIf
-               If constants::BinaryFlag( Flag, #__flag_BorderFlat )
-                  flags & ~ #__flag_BorderFlat
-                  flags | #PB_Container_Flat
-               EndIf
-               If constants::BinaryFlag( Flag, #__flag_BorderSingle )
-                  flags & ~ #__flag_BorderSingle
-                  flags | #PB_Container_Single
-               EndIf
-               If constants::BinaryFlag( Flag, #__flag_BorderRaised )
-                  flags & ~ #__flag_BorderRaised
-                  flags | #PB_Container_Raised
-               EndIf
-               If constants::BinaryFlag( Flag, #__flag_BorderDouble ) 
-                  flags & ~ #__flag_BorderDouble
-                  flags | #PB_Container_Double
-               EndIf
-               
-            Case #__type_Button
-               If constants::BinaryFlag( Flag, #__flag_TextMultiLine ) 
-                  flags & ~ #__flag_TextMultiLine
-                  flag | #PB_Button_MultiLine
-               EndIf
-               If constants::BinaryFlag( Flag, #__text_Left ) 
-                  flags & ~ #__text_Left
-                  flags | #PB_Button_Left
-               EndIf
-               If constants::BinaryFlag( Flag, #__text_Right ) 
-                  flags & ~ #__text_Right
-                  flags | #PB_Button_Right
-               EndIf
-         EndSelect
-         
-         ProcedureReturn flags
-      EndProcedure
-      
-      ;
-      Procedure.q FromPBFlag( Type, Flag.q )
-         Protected flags.q = Flag
-         
-         Select Type
-            Case #__type_window
-               If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
-                  flags & ~ #PB_Window_BorderLess
-                  flags | #__flag_BorderLess
-               EndIf
-               ;
-            Case #__type_Container
-               ;                If constants::BinaryFlag( Flag, #PB_Container_BorderLess ) 
-               ;                   flags & ~ #PB_Container_BorderLess
-               ;                   flags = #__flag_BorderLess
-               ;                EndIf
-               If constants::BinaryFlag( Flag, #PB_Container_Flat )
-                  flags & ~ #PB_Container_Flat
-                  flags = #__flag_BorderFlat
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Container_Single )
-                  flags & ~ #PB_Container_Single
-                  flags = #__flag_BorderSingle
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Container_Raised ) 
-                  flags & ~ #PB_Container_Raised
-                  flags = #__flag_BorderRaised
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Container_Double )
-                  flags & ~ #PB_Container_Double
-                  flags = #__flag_BorderDouble
-               EndIf
-               ;
-            Case #__type_Frame
-               ;                If constants::BinaryFlag( Flag, #PB_Frame_BorderLess ) 
-               ;                   flags & ~ #PB_Frame_BorderLess
-               ;                   flags = #__flag_BorderLess
-               ;                EndIf
-               If constants::BinaryFlag( Flag, #PB_Frame_Flat )
-                  flags & ~ #PB_Frame_Flat
-                  flags = #__flag_BorderFlat
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Frame_Single )
-                  flags & ~ #PB_Frame_Single
-                  flags = #__flag_BorderSingle
-               EndIf
-               ;                If constants::BinaryFlag( Flag, #PB_Frame_Raised ) 
-               ;                   flags & ~ #PB_Frame_Raised
-               ;                   flags = #__flag_BorderRaised
-               ;                EndIf
-               If constants::BinaryFlag( Flag, #PB_Frame_Double )
-                  flags & ~ #PB_Frame_Double
-                  flags = #__flag_BorderDouble
-               EndIf
-               ;
-            Case #__type_MDI
-               If constants::BinaryFlag( Flag, #PB_MDI_AutoSize ) 
-                  flags & ~ #PB_MDI_AutoSize
-                  flags | #__flag_AutoSize
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_MDI_BorderLess )
-                  flags & ~ #PB_MDI_BorderLess
-                  flags | #__flag_BorderLess
-               EndIf
-               ;
-            Case #__type_CheckBox
-               If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
-                  flags & ~ #PB_CheckBox_Right
-                  flags | #__text_Right
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_CheckBox_Center )
-                  flags & ~ #PB_CheckBox_Center
-                  flags | #__text_Center
-               EndIf
-               ;
-            Case #__type_Text
-               If constants::BinaryFlag( Flag, #PB_Text_Center )
-                  flags & ~ #PB_Text_Center
-                  flags | #__text_Center
-                  ;flags & ~ #__text_Left
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Text_Right )
-                  flags & ~ #PB_Text_Right
-                  flags | #__text_Right
-               EndIf
-               ;
-            Case #__type_Button ; ok
-               If constants::BinaryFlag( Flag, #PB_Button_MultiLine ) 
-                  flags & ~ #PB_Button_MultiLine
-                  flags | #__flag_TextMultiLine
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Button_Left ) 
-                  flags & ~ #PB_Button_Left
-                  flags | #__text_Left
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Button_Right ) 
-                  flags & ~ #PB_Button_Right
-                  flags | #__text_Right
-               EndIf
-               ;
-            Case #__type_String ; ok
-               If constants::BinaryFlag( Flag, #PB_String_Password ) 
-                  flags & ~ #PB_String_Password
-                  flags | #__flag_Textpassword
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_String_LowerCase )
-                  flags & ~ #PB_String_LowerCase
-                  flags | #__flag_Textlowercase
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_String_UpperCase ) 
-                  flags & ~ #PB_String_UpperCase
-                  flags | #__flag_Textuppercase
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_String_BorderLess )
-                  flags & ~ #PB_String_BorderLess
-                  flags | #__flag_BorderLess
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_String_Numeric ) 
-                  flags & ~ #PB_String_Numeric
-                  flags | #__flag_Textnumeric
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_String_ReadOnly )
-                  flags & ~ #PB_String_ReadOnly
-                  flags | #__flag_Textreadonly
-               EndIf
-               ;
-            Case #__type_Editor
-               If constants::BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
-                  flags & ~ #PB_Editor_ReadOnly
-                  flags | #__flag_Textreadonly
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Editor_WordWrap ) 
-                  flags & ~ #PB_Editor_WordWrap
-                  flags | #__flag_Textwordwrap
-               EndIf
-               ;
-            Case #__type_Tree
-               If constants::BinaryFlag( Flag, #PB_Tree_AlwaysShowSelection ) 
-                  flags & ~ #PB_Tree_AlwaysShowSelection
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Tree_CheckBoxes ) 
-                  flags & ~ #PB_Tree_CheckBoxes
-                  flags | #__tree_checkboxes
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Tree_ThreeState ) 
-                  flags & ~ #PB_Tree_ThreeState
-                  flags | #__tree_threestate
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Tree_NoButtons )
-                  flags & ~ #PB_Tree_NoButtons
-                  flags | #__tree_nobuttons
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_Tree_NoLines ) 
-                  flags & ~ #PB_Tree_NoLines
-                  flags | #__tree_nolines
-               EndIf
-               ;   
-            Case #__type_ListView ; Ok
-               If constants::BinaryFlag( Flag, #PB_ListView_ClickSelect ) 
-                  flags & ~ #PB_ListView_ClickSelect
-                  flags | #__flag_RowClickSelect
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_ListView_MultiSelect ) 
-                  flags & ~ #PB_ListView_MultiSelect
-                  flags | #__flag_RowMultiSelect
-               EndIf
-               ;  
-            Case #__type_listicon
-               If constants::BinaryFlag( Flag, #PB_ListIcon_AlwaysShowSelection ) 
-                  flags & ~ #PB_ListIcon_AlwaysShowSelection
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_ListIcon_CheckBoxes )
-                  flags & ~ #PB_ListIcon_CheckBoxes
-                  flags | #__tree_checkboxes
-               EndIf
-               If constants::BinaryFlag( Flag, #PB_ListIcon_ThreeState )
-                  flags & ~ #PB_ListIcon_ThreeState
-                  flags | #__tree_threestate
-               EndIf
-               
-         EndSelect
-         
-         ProcedureReturn flags
-      EndProcedure
-      
-      ;-
-      Procedure.i TypeFromClass( Class.s )
-         Protected result.i
-         
-         Select Trim( LCase( Class.s ))
-            Case "popupmenu" : result = #__type_PopupBar
-               ;case "property"       : result = #__type_Properties
-            Case "window" : result = #__type_window
-               
-            Case "button" : result = #__type_Button
-            Case "buttonimage" : result = #__type_ButtonImage
-            Case "calendar" : result = #__type_Calendar
-               ;Case "canvas" : result = #__type_Canvas
-            Case "checkbox" : result = #__type_CheckBox
-            Case "combobox" : result = #__type_ComboBox
-            Case "container" : result = #__type_Container
-            Case "date" : result = #__type_Date
-            Case "editor" : result = #__type_Editor
-            Case "explorercombo" : result = #__type_ExplorerCombo
-            Case "explorerlist" : result = #__type_ExplorerList
-            Case "explorertree" : result = #__type_ExplorerTree
-            Case "frame" : result = #__type_Frame
-            Case "hyperlink" : result = #__type_HyperLink
-            Case "image" : result = #__type_Image
-            Case "ipaddress" : result = #__type_IPAddress
-            Case "listicon" : result = #__type_ListIcon
-            Case "listview" : result = #__type_ListView
-            Case "mdi" : result = #__type_MDI
-               ;Case "opengl" : result = #__type_OpenGL
-            Case "option" : result = #__type_Option
-            Case "panel" : result = #__type_Panel
-            Case "progress" : result = #__type_Progress
-            Case "scintilla" : result = #__type_Scintilla
-            Case "scrollarea" : result = #__type_ScrollArea
-            Case "scroll" : result = #__type_Scroll
-               ;Case "shortcut" : result = #__type_Shortcut
-            Case "spin" : result = #__type_Spin
-            Case "splitter" : result = #__type_Splitter
-            Case "string" : result = #__type_String
-            Case "text" : result = #__type_Text
-            Case "track" : result = #__type_Track
-            Case "tree" : result = #__type_Tree
-            Case "unknown" : result = #__type_Unknown
-            Case "web" : result = #__type_Web
-         EndSelect
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      Procedure.s ClassFromType( Type.w )
-         Protected result.s
-         
-         Select Type
-            Case #__type_StatusBar     : result.s = "Status"
-            Case #__type_PopupBar      : result.s = "PopupMenu"
-            Case #__type_ToolBar       : result.s = "ToolBar"
-            Case #__type_TabBar        : result.s = "Tab"
-            Case #__type_MenuBar       : result.s = "Menu"
-            Case #__type_Window        : result.s = "Window"
-               
-            Case #__type_Unknown       : result.s = "Create"
-               
-            Case #__type_Button        : result.s = "Button"
-            Case #__type_String        : result.s = "String"
-            Case #__type_Text          : result.s = "Text"
-            Case #__type_CheckBox      : result.s = "CheckBox"
-            Case #__type_Option        : result.s = "Option"
-            Case #__type_ListView      : result.s = "ListView"
-            Case #__type_Frame         : result.s = "Frame"
-            Case #__type_ComboBox      : result.s = "ComboBox"
-            Case #__type_Image         : result.s = "Image"
-            Case #__type_HyperLink     : result.s = "HyperLink"
-            Case #__type_Container     : result.s = "Container"
-            Case #__type_ListIcon      : result.s = "ListIcon"
-            Case #__type_IPAddress     : result.s = "IPAddress"
-            Case #__type_Progress      : result.s = "Progress"
-            Case #__type_Scroll        : result.s = "Scroll"
-            Case #__type_ScrollArea    : result.s = "ScrollArea"
-            Case #__type_Track         : result.s = "Track"
-            Case #__type_Web           : result.s = "Web"
-            Case #__type_Calendar      : result.s = "Calendar"
-            Case #__type_Date          : result.s = "Date"
-            Case #__type_Editor        : result.s = "Editor"
-            Case #__type_ExplorerList  : result.s = "ExplorerList"
-            Case #__type_ExplorerTree  : result.s = "ExplorerTree"
-            Case #__type_ExplorerCombo : result.s = "ExplorerCombo"
-            Case #__type_Spin          : result.s = "Spin"
-            Case #__type_Tree          : result.s = "Tree"
-            Case #__type_Panel         : result.s = "Panel"
-            Case #__type_Splitter      : result.s = "Splitter"
-            Case #__type_MDI           : result.s = "Mdi"
-            Case #__type_Scintilla     : result.s = "Scintilla"
-         EndSelect
-         
-         ProcedureReturn result.s
-      EndProcedure
-      
-      ;-
       Procedure.s ClassFromEvent( event.i )
          Protected result$
          
@@ -15256,8 +15898,8 @@ chr$ = ","
          *this\frame_height( ) = #PB_Ignore
          
          If *this\type = #__type_Button 
-            If constants::BinaryFlag( flag, #__flag_ButtonToggle )
-               flag &~ #__flag_ButtonToggle
+            If constants::BinaryFlag( flag, #PB_Button_Toggle )
+               flag &~ #PB_Button_Toggle
                If Not *this\togglebox
                   *this\togglebox.allocate( BOX )
                EndIf
@@ -15289,7 +15931,7 @@ chr$ = ","
          If *this\type = #__type_Button Or
             *this\type = #__type_HyperLink
             
-            *this\flag | #__text_Center
+            *this\flag | #__flag_text_Center
             
          ElseIf *this\type = #__type_ComboBox Or
                 *this\type = #__type_Spin Or
@@ -15297,18 +15939,18 @@ chr$ = ","
                 *this\type = #__type_Option Or
                 *this\type = #__type_CheckBox
             
-            If constants::BinaryFlag( Flag, #__text_Center, #False )
-               *this\flag | #__text_Center | #__text_Left
+            If constants::BinaryFlag( Flag, #__flag_text_Center, #False )
+               *this\flag | #__flag_text_Center | #__flag_text_Left
             EndIf
             
-            If constants::BinaryFlag( Flag, #__text_Right )
-               *this\flag & ~ #__text_Left
-               *this\flag | #__text_Right
+            If constants::BinaryFlag( Flag, #__flag_text_Right )
+               *this\flag & ~ #__flag_text_Left
+               *this\flag | #__flag_text_Right
             EndIf
             
          ElseIf *this\type = #__type_Text
-            If constants::BinaryFlag( Flag, #__flag_TextInLine, #False )
-               *this\flag | #__flag_Textwordwrap
+            If constants::BinaryFlag( Flag, #__flag_text_InLine, #False )
+               *this\flag | #__flag_text_wordwrap
             EndIf
          EndIf
          
@@ -15339,10 +15981,10 @@ chr$ = ","
             ;                 *this\type = #__type_Frame
             
          Else
-            If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
-               constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
+            If constants::BinaryFlag( *this\flag, #__flag_border_Double ) Or
+               constants::BinaryFlag( *this\flag, #__flag_border_Raised )
                *this\fs = 2
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
+            ElseIf constants::BinaryFlag( *this\Flag, #__flag_border_Less )
                *this\fs = 0
             Else
                *this\fs = 1
@@ -15431,7 +16073,7 @@ chr$ = ","
             If *this\type = #__type_Editor
                *this\mode\fullselection = constants::BinaryFlag( *this\flag, #__flag_RowFullSelect, #False ) * DPIScaled(7)
                
-               *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_TextNumeric, #False )
+               *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_text_Numeric, #False )
                *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
                *this\MarginLine( )\color\back  = $C8F0F0F0 ; *this\color\back[0]
                
@@ -15609,7 +16251,7 @@ chr$ = ","
             ;\\
             If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
                *this\stringbar = Create( *this, "ComboString", #__type_String,
-                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_borderless )
+                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_border_less )
             EndIf
             
             *this\fs[3] = size
@@ -15698,7 +16340,7 @@ chr$ = ","
                      constants::BinaryFlag( Flag, #PB_Splitter_Vertical )
                      *this\bar\vertical = #True
                   EndIf
-                  *this\flag = flag | #__text_Center
+                  *this\flag = flag | #__flag_text_Center
                Else
                   If Not Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or 
                                constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
@@ -15715,7 +16357,7 @@ chr$ = ","
                ;\\
                *this\stringbar = Create( *this, "SpinString",
                                          #__type_String, 0, 0, 0, 0, #Null$,
-                                         #__flag_child | #__flag_Textnumeric | #__flag_borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
+                                         #__flag_child | #__flag_text_numeric | #__flag_border_less | *this\flag&~(#__flag_invert|#__flag_vertical) )
                
                
             EndIf
@@ -16148,15 +16790,15 @@ chr$ = ","
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, flag | #__flag_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
       EndProcedure
       
-      Procedure.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
+      Procedure.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
-      Procedure.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
+      Procedure.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
-      Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
+      Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_border_Flat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, flag, ScrollAreaWidth, ScrollAreaHeight, ScrollStep, #__bar_button_size, 0, ScrollStep )
       EndProcedure
       
@@ -17821,14 +18463,14 @@ chr$ = ","
          With *this
             If *this\fs
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               If constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or 
-                  constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+               If constants::BinaryFlag( *this\flag, #__flag_border_Single ) Or 
+                  constants::BinaryFlag( *this\flag, #__flag_border_Double )
                   draw_roundbox_(*this\frame_x( ), *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
                   draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
                   draw_roundbox_(*this\frame_x( ), *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
                   draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
                EndIf
-               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+               If constants::BinaryFlag( *this\flag, #__flag_border_Double )
                   draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
                   draw_roundbox_(*this\frame_x( )+1+*this\frame_width( )-*this\round*2, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
                   draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
@@ -17916,7 +18558,7 @@ chr$ = ","
                ;                 EndIf
                ;               EndIf
                
-               If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
+               If constants::BinaryFlag( *this\flag, #__flag_border_Flat )
                   ;                   If *this\inner_width( ) And 
                   ;                      *this\inner_height( ) 
                   ;                      ;If *this\type <> #__type_Panel
@@ -17929,8 +18571,8 @@ chr$ = ","
                   EndIf
                   ;                   EndIf
                   
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
-                      constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_border_Single ) Or
+                      constants::BinaryFlag( *this\flag, #__flag_border_Double )
                   Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
                   Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
                   Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
@@ -17938,7 +18580,7 @@ chr$ = ","
                   ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
                   ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
                   
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_border_Raised )
                   Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
                   Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
                   Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
@@ -17950,7 +18592,7 @@ chr$ = ","
                   Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
                EndIf
                
-               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+               If constants::BinaryFlag( *this\flag, #__flag_border_Double )
                   ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
                   ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
                   ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
@@ -23261,7 +23903,7 @@ chr$ = ","
          *this\caption\color    = _get_colors_( )
          
          ; border frame size
-         *this\fs = constants::BinaryFlag( *this\flag, #__flag_borderless, #False ) * fs
+         *this\fs = constants::BinaryFlag( *this\flag, #__flag_border_less, #False ) * fs
          
          
          ;
@@ -23283,7 +23925,7 @@ chr$ = ","
             *this\TitleBarHeight = 0
             *this\fs[2] = 0
          Else
-            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_borderless, #False ) * barHeight
+            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_border_less, #False ) * barHeight
             *this\TitleBarHeight = *this\fs[2]
             
             *this\padding\x = 5
@@ -23925,7 +24567,7 @@ chr$ = ","
          
          ;          ;\\ 1)
          ;          x = ( root( )\width - width )/2
-         ;          y = ( root( )\height - height )/2 - #pb_window_CaptionHeight
+         ;          y = ( root( )\height - height )/2 - #__window_CaptionHeight
          ;          *message = Window( x, y, width, height, Title, #pb_window_TitleBar, *parent)
          ; ;
          ; ; ;          ;\\ 2)
@@ -24086,11 +24728,11 @@ chr$ = ","
          Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
          SetClass( widget( ), "message_CONT" )
          If IsImage( img )
-            Image( f2, f2, iw, iw, img, #__image_Center | #__flag_borderflat | #__flag_transparent )
+            Image( f2, f2, iw, iw, img, #__image_Center | #__flag_border_flat | #__flag_transparent )
             SetClass( widget( ), "message_IMG" )
-            Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__text_Center | #__text_Left | #__flag_transparent );| #__flag_borderless )
+            Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_text_Center | #__flag_text_Left | #__flag_transparent );| #__flag_border_less )
          Else
-            Text( f2, f2, Width - f2 * 2, iw, Text, #__text_Center | #__text_Left | #__flag_transparent );| #__flag_borderless )
+            Text( f2, f2, Width - f2 * 2, iw, Text, #__flag_text_Center | #__flag_text_Left | #__flag_transparent );| #__flag_border_less )
          EndIf
          SetClass( widget( ), "message_TXT" )
          CloseList( )
@@ -24215,7 +24857,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
    Define i
-   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
+   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_border_Flat
    
    Procedure anchor_events( )
       Protected change
@@ -24601,7 +25243,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(*button_panel, 2)
    CloseList( ) ; close panel lists
    
-   *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__text_Right)
+   *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_text_password | #__flag_text_Right)
    
    ;\\
    Global *button_item1, *button_item2, *button_menu
@@ -24621,8 +25263,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    *button_menu = Button( 120, 5, 150, 25, "popup menu")
    Bind(*button_menu, @button_tab_events( ), #__event_Down )
-   *button_item1 = Button( 220, 200, 25, 50, "1", #__flag_ButtonToggle)
-   *button_item2 = Button( 220 + 25, 200, 25, 50, "2", #__flag_ButtonToggle)
+   *button_item1 = Button( 220, 200, 25, 50, "1", #PB_Button_Toggle)
+   *button_item2 = Button( 220 + 25, 200, 25, 50, "2", #PB_Button_Toggle)
    Bind(*button_item1, @button_tab_events( ), #__event_Down )
    Bind(*button_item2, @button_tab_events( ), #__event_Down )
    ;\\Close( )
@@ -24747,7 +25389,7 @@ CompilerIf #PB_Compiler_IsMainFile
    *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
    AddItem( *panel, -1, "item_1" )
    ;Button( 20,20, 80,80, "item_1")
-   *g = Editor(0, 0, 0, 0, #__flag_autosize|#__flag_borderless|#__flag_textwordwrap)
+   *g = Editor(0, 0, 0, 0, #__flag_autosize|#__flag_border_less|#__flag_text_wordwrap)
    ;    For a = 0 To 2
    ;       AddItem(*g, a, "Line " + Str(a))
    ;    Next
@@ -24779,7 +25421,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ; Button( 10,10, 80,80, "item_2")
    Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
    Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
-   Bind(Option( 5, 55, 95, 22, "show_children", #__flag_ButtonToggle ), @hide_show_panel_events( ))
+   Bind(Option( 5, 55, 95, 22, "show_children", #PB_Button_Toggle ), @hide_show_panel_events( ))
    ;SetState(widget( ), 1)
    
    *c = Panel(110, 5, 150, 155)
@@ -24947,17 +25589,17 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
    
-   Spin(10, 195, 80, 25, 5, 30, #__text_Left )
-   Spin(10, 225, 80, 25, 5, 30, #__text_Center|#__spin_mirror)
-   Spin(10, 255, 80, 25, 5, 30, #__text_Right|#__flag_invert)
+   Spin(10, 195, 80, 25, 5, 30, #__flag_text_Left )
+   Spin(10, 225, 80, 25, 5, 30, #__flag_text_Center|#__spin_mirror)
+   Spin(10, 255, 80, 25, 5, 30, #__flag_text_Right|#__flag_invert)
    
-   Spin(95, 195, 80, 25, 5, 30, #__text_Left|#__spin_Plus )
-   Spin(95, 225, 80, 25, 5, 30, #__text_Center|#__spin_Plus|#__spin_mirror)
-   Spin(95, 255, 80, 25, 5, 30, #__text_Right|#__spin_Plus|#__flag_invert)
+   Spin(95, 195, 80, 25, 5, 30, #__flag_text_Left|#__spin_Plus )
+   Spin(95, 225, 80, 25, 5, 30, #__flag_text_Center|#__spin_Plus|#__spin_mirror)
+   Spin(95, 255, 80, 25, 5, 30, #__flag_text_Right|#__spin_Plus|#__flag_invert)
    
-   Spin(180, 195, 80, 25, 5, 30, #__spin_vertical|#__text_Right )
-   Spin(180, 225, 80, 25, 5, 30, #__spin_vertical|#__text_Center|#__spin_mirror)
-   Spin(180, 255, 80, 25, 5, 30, #__spin_vertical|#__text_Right|#__flag_invert)
+   Spin(180, 195, 80, 25, 5, 30, #__spin_vertical|#__flag_text_Right )
+   Spin(180, 225, 80, 25, 5, 30, #__spin_vertical|#__flag_text_Center|#__spin_mirror)
+   Spin(180, 255, 80, 25, 5, 30, #__spin_vertical|#__flag_text_Right|#__flag_invert)
    
    ;-\\ OPENROOT3
    OpenList( *root3 )
@@ -24971,7 +25613,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetItemFont(*tree, 4, 6)
    
    ;\\
-   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_borderless | #__flag_RowMultiSelect) ; |#__flag_gridlines
+   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_border_less | #__flag_RowMultiSelect) ; |#__flag_gridlines
    SetBackgroundColor( *w, $FF07EAF6 )
    For i = 1 To 10;00000
       AddItem(*w, i, "text-" + Str(i))
@@ -25034,9 +25676,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9028
-; FirstLine = 9005
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f407---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 257
+; FirstLine = 252
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---v----------7---r---------u82---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

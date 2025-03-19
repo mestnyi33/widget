@@ -449,7 +449,7 @@ EndProcedure
     ;AddItem(*g5, 7, "Tree_4", -1, 0) 
    
     ; 4_example
-    *g6 = Tree(341, 100, 103, 210, #__flag_BorderLess|#PB_Tree_Collapsed)                                         
+    *g6 = Tree(341, 100, 103, 210, #__flag_border_Less|#PB_Tree_Collapsed)                                         
     
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 

@@ -75,55 +75,96 @@ Procedure   SetFontStyle( FontID.i, style.q )
    
 EndProcedure
 
-Procedure AddFont( id$, name$, size, style )
+;-
+Procedure AddLoadFont( id$, name$, size, style )
    Protected font = LoadFont( #PB_Any, name$, size, style )
    ;
-   If NumericString( id$ )
-      id$ = "#FONT_"+id$
-   EndIf
-   ;
-   If AddMapElement( loadfonts( ), Str(FontID(font)) )
-      loadfonts( )\id$ = id$ 
-      loadfonts( )\font = font 
-      loadfonts( )\name = name$
-      loadfonts( )\size = size
-      loadfonts( )\style = style
+   If IsFont( font )
+      If NumericString( id$ )
+         id$ = "#FONT_"+id$
+      EndIf
+      ;
+      If AddMapElement( loadfonts( ), Str(FontID(font)) )
+         loadfonts( )\id$ = id$ 
+         loadfonts( )\font = font 
+         loadfonts( )\name = name$
+         loadfonts(   )\size = size
+         loadfonts( )\style = style
+      EndIf
    EndIf
    ;
    ProcedureReturn font
 EndProcedure
 
-;-
-Procedure.s GetClassString( Element )
-   
-   ProcedureReturn ClassFromType( Type(Element) )
-   ;ProcedureReturn StringField( GetClass(Element), 1, "_" )
-   ;ProcedureReturn ULCase(StringField( GetClass(Element), 1, "_" ))
-   
-EndProcedure
-
-Procedure.s GetFlagsString( Element )
-   
-   ProcedureReturn Trim( FlagsString( Str( Element ) ), "|" )
-   
-EndProcedure
-
-Procedure SetFlagsString( Element, Flags$ )
-   
-   If Not FindMapElement( FlagsString( ), Str( Element ) )
-      AddMapElement( FlagsString( ), Str( Element ) )
-   EndIf
-   
-   If Flags$
-      If Not FindString( FlagsString( ), LCase( Flags$ ), - 1, #PB_String_NoCase )
-         FlagsString( ) + "|" + Flags$
+Procedure   GetLoadFont( id$ )
+   ForEach loadfonts( )
+      If loadfonts( )\id$ = id$
+         ProcedureReturn loadfonts( )\font
       EndIf
-   Else
-      FlagsString( ) = ""
+   Next
+EndProcedure
+
+Procedure$  GetLoadFontName( FontID )
+   
+   If FindMapElement( loadfonts( ), Str(FontID) )
+      ProcedureReturn loadfonts( )\id$
    EndIf
    
 EndProcedure
 
+UsePNGImageDecoder( )
+UseJPEGImageDecoder()
+
+;-
+Procedure   AddLoadImage( id$, file$, flags=0 )
+   If CountString(file$, "+" )
+      file$ = RemoveString( file$, " " )
+      file$ = RemoveString( file$, Chr('"') )
+      file$ = MakeStringConstants(StringField( file$, 1, "+" )) + StringField( file$, 2, "+" )
+;     file$ = MakeStringConstants(StringField( file$, 1, "+" )) + Trim( Trim(StringField( file$, 2, "+" )), Chr('"') )
+   EndIf
+   
+   Protected Image = LoadImage( #PB_Any, file$ );, flags )
+   
+   ;
+   If IsImage( Image )
+      CompilerIf #PB_Compiler_DPIAware
+         If ImageWidth(Image) = 16
+            ResizeImage(Image, DesktopScaledX(ImageWidth(Image)), DesktopScaledY(ImageHeight(Image)), #PB_Image_Raw )
+         EndIf
+      CompilerEndIf
+      
+      If NumericString( id$ )
+         id$ = "#IMAGE_"+id$
+      EndIf
+      ;
+      If AddElement( loadimages( ) )
+         loadimages( )\id$ = id$ 
+         loadimages( )\file$ = file$
+         loadimages( )\image = Image 
+      EndIf
+   EndIf
+   ;
+   ProcedureReturn Image
+EndProcedure
+
+Procedure   GetLoadImage( id$ )
+   ForEach loadimages( )
+      If loadimages( )\id$ = id$
+         ProcedureReturn loadimages( )\image
+      EndIf
+   Next
+EndProcedure
+
+Procedure$  GetLoadImageName( Image )
+   ForEach loadimages( )
+      If loadimages( )\Image = Image
+         ProcedureReturn loadimages( )\id$
+      EndIf
+   Next
+EndProcedure
+
+;-
 Procedure.s GetEventsString( Element )
    
    ProcedureReturn Trim( EventsString( Str( Element ) ), "|" )
@@ -424,7 +465,7 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
          result$ + space$ + #LF$
       EndIf
    EndIf
-   
+   ;
    If pb_object$ = "Gadget" Or 
       pb_object$ = "Window"
       ;
@@ -434,6 +475,7 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
          pb_object$ = "Gadget"
       EndIf
    EndIf
+   
    ;
    If *g\ChangeColor 
       If is_window_(*g) 
@@ -447,8 +489,14 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
       EndIf
       line_break1 = 1
    EndIf            
+   ;
    If *g\ChangeFont
-      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ loadfonts( Str(*g\text\fontID) )\id$ +" )" + #LF$
+      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ GetLoadFontName( *g\text\fontID ) +" )" + #LF$
+      line_break1 = 1
+   EndIf            
+   ;
+   If *g\ChangeImage
+      result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ GetLoadImageName( *g\img\image ) +" )" + #LF$
       line_break1 = 1
    EndIf            
    
@@ -545,399 +593,6 @@ Procedure   MakeID( class$, *rootParent._s_WIDGET )
    ProcedureReturn result
 EndProcedure
 
-Procedure$  MakeConstantsString( type$, flag.q ) ; 
-   Protected result$
-   
-   Select type$
-      Case "Font"
-         If flag & #PB_Font_Bold
-            result$ + " #PB_Font_Bold |"
-         EndIf
-         If flag & #PB_Font_Italic
-            result$ + " #PB_Font_Italic |"
-         EndIf
-         If flag & #PB_Font_Underline
-            result$ + " #PB_Font_Underline |"
-         EndIf
-         If flag & #PB_Font_StrikeOut
-            result$ + " #PB_Font_StrikeOut |"
-         EndIf
-         If flag & #PB_Font_HighQuality
-            result$ + " #PB_Font_HighQuality |"
-         EndIf
-         
-      Case "Window"
-         If flag & #PB_Window_SystemMenu
-            flag &~ #PB_Window_SystemMenu
-            result$ + " #PB_Window_SystemMenu |"
-         EndIf
-         If flag & #PB_Window_SizeGadget
-            ;flag &~ #PB_Window_SizeGadget
-            result$ + " #PB_Window_SizeGadget |"
-         EndIf
-         If flag & #PB_Window_ScreenCentered
-            result$ + " #PB_Window_ScreenCentered |"
-         EndIf
-         If flag & #PB_Window_Invisible
-            result$ + " #PB_Window_Invisible |"
-         EndIf
-         ;          If flag & #PB_Window_MaximizeGadget
-         ;             ;flag &~ #PB_Window_MaximizeGadget
-         ;             result$ + " #PB_Window_MaximizeGadget |"
-         ;          EndIf
-         ;          If flag & #PB_Window_MinimizeGadget
-         ;             ;flag &~ #PB_Window_MinimizeGadget
-         ;             result$ + " #PB_Window_MinimizeGadget |"
-         ;          EndIf
-         ;          If flag & #PB_Window_NoActivate = #PB_Window_NoActivate
-         ;             result$ + " #PB_Window_NoActivate |"
-         ;          EndIf
-         If flag & #PB_Window_BorderLess
-            result$ + " #PB_Window_BorderLess |"
-         EndIf
-         If flag & #PB_Window_NoGadgets
-            result$ + " #PB_Window_NoGadgets |"
-         EndIf
-         If flag & #PB_Window_TitleBar = #PB_Window_TitleBar
-            result$ + " #PB_Window_TitleBar |"
-         EndIf
-         If flag & #PB_Window_Tool 
-            result$ + " #PB_Window_Tool |"
-         EndIf
-         If flag & #PB_Window_WindowCentered
-            result$ + " #PB_Window_WindowCentered |"
-         EndIf
-         
-      Case "Text"
-         If flag & #__Text_Center
-            result$ + " #PB_Text_Center |"
-         EndIf
-         If flag & #__Text_Right
-            result$ + " #PB_Button_Right |"
-         EndIf
-         If flag & #__flag_BorderFlat
-            result$ + " #PB_Text_Border |"
-         EndIf
-         
-      Case "Button"
-         If flag
-            If flag & #PB_Button_Left
-               result$ + " #PB_Button_Left |"
-            EndIf
-            If flag & #PB_Button_Right
-               result$ + " #PB_Button_Right |"
-            EndIf
-            If flag & #PB_Button_MultiLine
-               result$ + " #PB_Button_MultiLine |"
-            EndIf
-            If flag & #PB_Button_Toggle
-               result$ + " #PB_Button_Toggle |"
-            EndIf
-            If flag & #PB_Button_Default
-               result$ + " #PB_Button_Default |"
-            EndIf
-            
-            If flag & #__text_Left = #__text_Left
-               result$ + " #PB_Button_Left |"
-            EndIf
-            If flag & #__text_Right = #__text_Right
-               result$ + " #PB_Button_Right |"
-            EndIf
-            If flag & #__flag_TextMultiLine = #__flag_TextMultiLine
-               result$ + " #PB_Button_MultiLine |"
-            EndIf
-            If flag & #__flag_TextWordWrap = #__flag_TextWordWrap
-               result$ + " #PB_Button_MultiLine |"
-            EndIf
-            If flag & #__flag_ButtonToggle = #__flag_ButtonToggle
-               result$ + " #PB_Button_Toggle |"
-            EndIf
-            If flag & #__flag_ButtonDefault = #__flag_ButtonDefault
-               result$ + " #PB_Button_Default |"
-            EndIf
-         EndIf
-         
-      Case "Container"
-         If flag
-            If flag & #PB_Container_Flat
-               result$ + " #PB_Container_Flat |"
-            EndIf
-            If flag & #PB_Container_Raised
-               result$ + " #PB_Container_Raised |"
-            EndIf
-            If flag & #PB_Container_Single
-               result$ + " #PB_Container_Single |"
-            EndIf
-            If flag & #PB_Container_BorderLess
-               result$ + " #PB_Container_BorderLess |"
-            EndIf
-            
-            If flag & #__flag_BorderFlat = #__flag_BorderFlat
-               result$ + " #PB_Container_Flat |"
-            EndIf
-            If flag & #__flag_BorderRaised = #__flag_BorderRaised
-               result$ + " #PB_Container_Raised |"
-            EndIf
-            If flag & #__flag_BorderSingle = #__flag_BorderSingle
-               result$ + " #PB_Container_Single |"
-            EndIf
-            If flag & #__flag_BorderLess = #__flag_BorderLess
-               result$ + " #PB_Container_BorderLess |"
-            EndIf
-         EndIf
-         
-      Case "ScrollArea"
-         If flag
-            If flag & #PB_ScrollArea_Flat
-               result$ + " #PB_ScrollArea_Flat |"
-            EndIf
-            If flag & #PB_ScrollArea_Raised
-               result$ + " #PB_ScrollArea_Raised |"
-            EndIf
-            If flag & #PB_ScrollArea_Single
-               result$ + " #PB_ScrollArea_Single |"
-            EndIf
-            If flag & #PB_ScrollArea_BorderLess
-               result$ + " #PB_ScrollArea_BorderLess |"
-            EndIf
-            If flag & #PB_ScrollArea_Center
-               result$ + " #PB_ScrollArea_Center |"
-            EndIf
-            
-            If flag & #__flag_BorderFlat = #__flag_BorderFlat
-               result$ + " #PB_ScrollArea_Flat |"
-            EndIf
-            If flag & #__flag_BorderRaised = #__flag_BorderRaised
-               result$ + " #PB_ScrollArea_Raised |"
-            EndIf
-            If flag & #__flag_BorderSingle = #__flag_BorderSingle
-               result$ + " #PB_ScrollArea_Single |"
-            EndIf
-            If flag & #__flag_BorderLess = #__flag_BorderLess
-               result$ + " #PB_ScrollArea_BorderLess |"
-            EndIf
-            If flag & #__flag_Center = #__flag_Center
-               result$ + " #PB_ScrollArea_Center |"
-            EndIf
-         EndIf
-         
-      Case "Splitter"
-         If flag
-            If flag & #PB_Splitter_Vertical
-               result$ + " #PB_Splitter_Vertical |"
-            EndIf
-            If flag & #PB_Splitter_Separator
-               result$ + " #PB_Splitter_Separator |"
-            EndIf
-            If flag & #PB_Splitter_FirstFixed
-               result$ + " #PB_Splitter_FirstFixed |"
-            EndIf
-            If flag & #PB_Splitter_SecondFixed
-               result$ + " #PB_Splitter_SecondFixed |"
-            EndIf
-         EndIf
-         
-   EndSelect
-   
-   ProcedureReturn Trim( result$, "|" )
-EndProcedure
-
-Procedure.q MakeConstants( string$ )
-   Protected i, Flag.q, count, str$
-   
-   If string$
-      count = CountString(string$,"|")
-      For I = 0 To count
-         str$ = Trim(StringField(string$,(I+1),"|"))
-         
-         Select str$
-            Case "#True"                              : Flag = Flag | #True
-            Case "#False"                             : Flag = Flag | #False
-               ; font
-            Case "#PB_Font_Bold"                      : Flag = Flag | #PB_Font_Bold 
-            Case "#PB_Font_Italic"                    : Flag = Flag | #PB_Font_Italic 
-            Case "#PB_Font_StrikeOut"                 : Flag = Flag | #PB_Font_StrikeOut  
-            Case "#PB_Font_Underline"                 : Flag = Flag | #PB_Font_Underline  
-            Case "#PB_Font_HighQuality"               : Flag = Flag | #PB_Font_HighQuality  
-            Case "#PB_FontRequester_Effects"          : Flag = Flag | #PB_FontRequester_Effects  
-               ; color
-            Case "#PB_Gadget_FrontColor"              : Flag = Flag | #PB_Gadget_FrontColor
-            Case "#PB_Gadget_BackColor"               : Flag = Flag | #PB_Gadget_BackColor 
-            Case "#PB_Gadget_LineColor"               : Flag = Flag | #PB_Gadget_LineColor 
-            Case "#PB_Gadget_TitleFrontColor"         : Flag = Flag | #PB_Gadget_TitleFrontColor
-            Case "#PB_Gadget_TitleBackColor"          : Flag = Flag | #PB_Gadget_TitleBackColor 
-            Case "#PB_Gadget_GrayTextColor"           : Flag = Flag | #PB_Gadget_GrayTextColor 
-               ; window
-            Case "#PB_Window_BorderLess"              : Flag = Flag | #PB_Window_BorderLess
-            Case "#PB_Window_Invisible"               : Flag = Flag | #PB_Window_Invisible
-            Case "#PB_Window_Maximize"                : Flag = Flag | #PB_Window_Maximize
-            Case "#PB_Window_Minimize"                : Flag = Flag | #PB_Window_Minimize
-            Case "#PB_Window_MaximizeGadget"          : Flag = Flag | #PB_Window_MaximizeGadget
-            Case "#PB_Window_MinimizeGadget"          : Flag = Flag | #PB_Window_MinimizeGadget
-            Case "#PB_Window_NoActivate"              : Flag = Flag | #PB_Window_NoActivate
-            Case "#PB_Window_NoGadgets"               : Flag = Flag | #PB_Window_NoGadgets
-            Case "#PB_Window_SizeGadget"              : Flag = Flag | #PB_Window_SizeGadget
-            Case "#PB_Window_SystemMenu"              : Flag = Flag | #PB_Window_SystemMenu
-            Case "#PB_Window_TitleBar"                : Flag = Flag | #PB_Window_TitleBar
-            Case "#PB_Window_Tool"                    : Flag = Flag | #PB_Window_Tool
-            Case "#PB_Window_ScreenCentered"          : Flag = Flag | #PB_Window_ScreenCentered
-            Case "#PB_Window_WindowCentered"          : Flag = Flag | #PB_Window_WindowCentered
-               ; buttonimage 
-            Case "#PB_Button_Image"                   : Flag = Flag | #PB_Button_Image
-            Case "#PB_Button_PressedImage"            : Flag = Flag | #PB_Button_PressedImage
-               ; button  
-            Case "#PB_Button_Default"                 : Flag = Flag | #PB_Button_Default
-            Case "#PB_Button_Left"                    : Flag = Flag | #PB_Button_Left
-            Case "#PB_Button_MultiLine"               : Flag = Flag | #PB_Button_MultiLine
-            Case "#PB_Button_Right"                   : Flag = Flag | #PB_Button_Right
-            Case "#PB_Button_Toggle"                  : Flag = Flag | #PB_Button_Toggle
-               ; string
-            Case "#PB_String_BorderLess"              : Flag = Flag | #PB_String_BorderLess
-            Case "#PB_String_LowerCase"               : Flag = Flag | #PB_String_LowerCase
-            Case "#PB_String_MaximumLength"           : Flag = Flag | #PB_String_MaximumLength
-            Case "#PB_String_Numeric"                 : Flag = Flag | #PB_String_Numeric
-            Case "#PB_String_Password"                : Flag = Flag | #PB_String_Password
-            Case "#PB_String_ReadOnly"                : Flag = Flag | #PB_String_ReadOnly
-            Case "#PB_String_UpperCase"               : Flag = Flag | #PB_String_UpperCase
-               ; text
-            Case "#PB_Text_Border"                    : Flag = Flag | #PB_Text_Border
-            Case "#PB_Text_Center"                    : Flag = Flag | #PB_Text_Center
-            Case "#PB_Text_Right"                     : Flag = Flag | #PB_Text_Right
-               ; option
-               ; checkbox
-            Case "#PB_CheckBox_Center"                : Flag = Flag | #PB_CheckBox_Center
-            Case "#PB_CheckBox_Right"                 : Flag = Flag | #PB_CheckBox_Right
-            Case "#PB_CheckBox_ThreeState"            : Flag = Flag | #PB_CheckBox_ThreeState
-               ; listview
-            Case "#PB_ListView_ClickSelect"           : Flag = Flag | #PB_ListView_ClickSelect
-            Case "#PB_ListView_MultiSelect"           : Flag = Flag | #PB_ListView_MultiSelect
-               ; frame
-            Case "#PB_Frame_Double"                   : Flag = Flag | #PB_Frame_Double
-            Case "#PB_Frame_Flat"                     : Flag = Flag | #PB_Frame_Flat
-            Case "#PB_Frame_Single"                   : Flag = Flag | #PB_Frame_Single
-               ; combobox
-            Case "#PB_ComboBox_Editable"              : Flag = Flag | #PB_ComboBox_Editable
-            Case "#PB_ComboBox_Image"                 : Flag = Flag | #PB_ComboBox_Image
-            Case "#PB_ComboBox_LowerCase"             : Flag = Flag | #PB_ComboBox_LowerCase
-            Case "#PB_ComboBox_UpperCase"             : Flag = Flag | #PB_ComboBox_UpperCase
-               ; image 
-            Case "#PB_Image_Border"                   : Flag = Flag | #PB_Image_Border
-            Case "#PB_Image_Raised"                   : Flag = Flag | #PB_Image_Raised
-               ; hyperlink 
-            Case "#PB_HyperLink_Underline"            : Flag = Flag | #PB_HyperLink_Underline
-               ; container 
-            Case "#PB_Container_BorderLess"           : Flag = Flag | #PB_Container_BorderLess
-            Case "#PB_Container_Double"               : Flag = Flag | #PB_Container_Double
-            Case "#PB_Container_Flat"                 : Flag = Flag | #PB_Container_Flat
-            Case "#PB_Container_Raised"               : Flag = Flag | #PB_Container_Raised
-            Case "#PB_Container_Single"               : Flag = Flag | #PB_Container_Single
-               ; listicon
-            Case "#PB_ListIcon_AlwaysShowSelection"   : Flag = Flag | #PB_ListIcon_AlwaysShowSelection
-            Case "#PB_ListIcon_CheckBoxes"            : Flag = Flag | #PB_ListIcon_CheckBoxes
-            Case "#PB_ListIcon_ColumnWidth"           : Flag = Flag | #PB_ListIcon_ColumnWidth
-            Case "#PB_ListIcon_DisplayMode"           : Flag = Flag | #PB_ListIcon_DisplayMode
-            Case "#PB_ListIcon_GridLines"             : Flag = Flag | #PB_ListIcon_GridLines
-            Case "#PB_ListIcon_FullRowSelect"         : Flag = Flag | #PB_ListIcon_FullRowSelect
-            Case "#PB_ListIcon_HeaderDragDrop"        : Flag = Flag | #PB_ListIcon_HeaderDragDrop
-            Case "#PB_ListIcon_LargeIcon"             : Flag = Flag | #PB_ListIcon_LargeIcon
-            Case "#PB_ListIcon_List"                  : Flag = Flag | #PB_ListIcon_List
-            Case "#PB_ListIcon_MultiSelect"           : Flag = Flag | #PB_ListIcon_MultiSelect
-            Case "#PB_ListIcon_Report"                : Flag = Flag | #PB_ListIcon_Report
-            Case "#PB_ListIcon_SmallIcon"             : Flag = Flag | #PB_ListIcon_SmallIcon
-            Case "#PB_ListIcon_ThreeState"            : Flag = Flag | #PB_ListIcon_ThreeState
-               ; ipaddress
-               ; progressbar 
-            Case "#PB_ProgressBar_Smooth"             : Flag = Flag | #PB_ProgressBar_Smooth
-            Case "#PB_ProgressBar_Vertical"           : Flag = Flag | #PB_ProgressBar_Vertical
-               ; scrollbar 
-            Case "#PB_ScrollBar_Vertical"             : Flag = Flag | #PB_ScrollBar_Vertical
-               ; scrollarea 
-            Case "#PB_ScrollArea_BorderLess"          : Flag = Flag | #PB_ScrollArea_BorderLess
-            Case "#PB_ScrollArea_Center"              : Flag = Flag | #PB_ScrollArea_Center
-            Case "#PB_ScrollArea_Flat"                : Flag = Flag | #PB_ScrollArea_Flat
-            Case "#PB_ScrollArea_Raised"              : Flag = Flag | #PB_ScrollArea_Raised
-            Case "#PB_ScrollArea_Single"              : Flag = Flag | #PB_ScrollArea_Single
-               ; trackbar
-            Case "#PB_TrackBar_Ticks"                 : Flag = Flag | #PB_TrackBar_Ticks
-            Case "#PB_TrackBar_Vertical"              : Flag = Flag | #PB_TrackBar_Vertical
-               ; web
-               ; calendar
-            Case "#PB_Calendar_Borderless"            : Flag = Flag | #PB_Calendar_Borderless
-               
-               ; date
-            Case "#PB_Date_CheckBox"                  : Flag = Flag | #PB_Date_CheckBox
-            Case "#PB_Date_UpDown"                    : Flag = Flag | #PB_Date_UpDown
-               
-               ; editor
-            Case "#PB_Editor_ReadOnly"                : Flag = Flag | #PB_Editor_ReadOnly
-            Case "#PB_Editor_WordWrap"                : Flag = Flag | #PB_Editor_WordWrap
-               
-               ; explorerlist
-            Case "#PB_Explorer_BorderLess"            : Flag = Flag | #PB_Explorer_BorderLess         
-            Case "#PB_Explorer_AlwaysShowSelection"   : Flag = Flag | #PB_Explorer_AlwaysShowSelection
-            Case "#PB_Explorer_MultiSelect"           : Flag = Flag | #PB_Explorer_MultiSelect
-            Case "#PB_Explorer_GridLines"             : Flag = Flag | #PB_Explorer_GridLines
-            Case "#PB_Explorer_HeaderDragDrop"        : Flag = Flag | #PB_Explorer_HeaderDragDrop
-            Case "#PB_Explorer_FullRowSelect"         : Flag = Flag | #PB_Explorer_FullRowSelect
-            Case "#PB_Explorer_NoFiles"               : Flag = Flag | #PB_Explorer_NoFiles
-            Case "#PB_Explorer_NoFolders"             : Flag = Flag | #PB_Explorer_NoFolders
-            Case "#PB_Explorer_NoParentFolder"        : Flag = Flag | #PB_Explorer_NoParentFolder 
-            Case "#PB_Explorer_NoDirectoryChange"     : Flag = Flag | #PB_Explorer_NoDirectoryChange
-            Case "#PB_Explorer_NoDriveRequester"      : Flag = Flag | #PB_Explorer_NoDriveRequester
-            Case "#PB_Explorer_NoSort"                : Flag = Flag | #PB_Explorer_NoSort
-            Case "#PB_Explorer_AutoSort"              : Flag = Flag | #PB_Explorer_AutoSort
-            Case "#PB_Explorer_HiddenFiles"           : Flag = Flag | #PB_Explorer_HiddenFiles
-            Case "#PB_Explorer_NoMyDocuments"         : Flag = Flag | #PB_Explorer_NoMyDocuments
-               
-               ; explorercombo
-            Case "#PB_Explorer_DrivesOnly"            : Flag = Flag | #PB_Explorer_DrivesOnly
-            Case "#PB_Explorer_Editable"              : Flag = Flag | #PB_Explorer_Editable
-               
-               ; explorertree
-            Case "#PB_Explorer_NoLines"               : Flag = Flag | #PB_Explorer_NoLines
-            Case "#PB_Explorer_NoButtons"             : Flag = Flag | #PB_Explorer_NoButtons
-               
-               ; spin
-            Case "#PB_Spin_Numeric"                   : Flag = Flag | #PB_Spin_Numeric
-            Case "#PB_Spin_ReadOnly"                  : Flag = Flag | #PB_Spin_ReadOnly
-               ; tree
-            Case "#PB_Tree_AlwaysShowSelection"       : Flag = Flag | #PB_Tree_AlwaysShowSelection
-            Case "#PB_Tree_CheckBoxes"                : Flag = Flag | #PB_Tree_CheckBoxes
-            Case "#PB_Tree_NoButtons"                 : Flag = Flag | #PB_Tree_NoButtons
-            Case "#PB_Tree_NoLines"                   : Flag = Flag | #PB_Tree_NoLines
-            Case "#PB_Tree_ThreeState"                : Flag = Flag | #PB_Tree_ThreeState
-               ; panel
-               ; splitter
-            Case "#PB_Splitter_Separator"             : Flag = Flag | #PB_Splitter_Separator
-            Case "#PB_Splitter_Vertical"              : Flag = Flag | #PB_Splitter_Vertical
-            Case "#PB_Splitter_FirstFixed"            : Flag = Flag | #PB_Splitter_FirstFixed
-            Case "#PB_Splitter_SecondFixed"           : Flag = Flag | #PB_Splitter_SecondFixed
-               ; mdi
-            Case "#PB_MDI_AutoSize"                   : Flag = Flag | #PB_MDI_AutoSize
-            Case "#PB_MDI_BorderLess"                 : Flag = Flag | #PB_MDI_BorderLess
-            Case "#PB_MDI_NoScrollBars"               : Flag = Flag | #PB_MDI_NoScrollBars
-               ; scintilla
-               ; shortcut
-               ; canvas
-            Case "#PB_Canvas_Border"                  : Flag = Flag | #PB_Canvas_Border
-            Case "#PB_Canvas_ClipMouse"               : Flag = Flag | #PB_Canvas_ClipMouse
-            Case "#PB_Canvas_Container"               : Flag = Flag | #PB_Canvas_Container
-            Case "#PB_Canvas_DrawFocus"               : Flag = Flag | #PB_Canvas_DrawFocus
-            Case "#PB_Canvas_Keyboard"                : Flag = Flag | #PB_Canvas_Keyboard
-               
-            Default
-               ;             Select Asc(String$)
-               ;               Case '0' To '9'
-               Flag = Flag | Val(String$)
-               ;             EndSelect
-         EndSelect
-         
-      Next
-   EndIf
-   
-   ProcedureReturn Flag
-EndProcedure
-
 Procedure$  MakeCloseList( *g._s_WIDGET, *before = 0 )
    Protected result$
    ;
@@ -1009,39 +664,55 @@ Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 
    Protected i, result$, str$, start, stop
    Protected space, pos = FindString( string$, "=" )
    
-   If pos
-      If pos > FindString( string$, "(" )
-         pos = 0
-      Else
-         string$ = Mid( string$, pos + 1, len - pos )
-      EndIf
-   Else
-      pos = FindString( string$, ":" )
-      If pos
-         string$ = StringField( string$, 2, ":" )
-      EndIf
-   EndIf
+;    If pos
+;       If pos > FindString( string$, "(" )
+;          pos = 0
+;       Else
+;          string$ = Mid( string$, pos + 1, len - pos )
+;       EndIf
+;    Else
+;       pos = FindString( string$, ":" )
+;       If pos
+;          string$ = StringField( string$, 2, ":" )
+;       EndIf
+;    EndIf
+; 
+;    For i = 1 To len
+;       If Mid( string$, i, 1 ) = "(" 
+;          stop = i - 1
+;          str$ = Mid( string$, start, stop )
+;          result$ = Trim( str$ )
+;          space = FindString( str$, result$ )
+;          If space 
+;             start + space
+;             stop - space
+;          EndIf
+;          If *start
+;             *start\i = pos + start
+;          EndIf
+;          If *stop
+;             *stop\i = stop + 1
+;          EndIf
+;          Break
+;       EndIf
+;    Next i
    
-   For i = 1 To len
-      If Mid( string$, i, 1 ) = "(" 
-         stop = i - 1
-         str$ = Mid( string$, start, stop )
-         result$ = Trim( str$ )
-         space = FindString( str$, result$ )
-         If space 
-            start + space
-            stop - space
-         EndIf
-         If *start
-            *start\i = pos + start
-         EndIf
-         If *stop
-            *stop\i = stop + 1
-         EndIf
+      
+   len = FindString( string$, "(" ) - pos - 1
+   pos + 1
+   
+   string$ = Trim(Mid( string$, pos, len ))
+   For i = len To 1 Step - 1
+      If Mid( String$, i, 1 ) = " " 
+         String$ = Mid( string$, i, len )
          Break
       EndIf
    Next i
+   result$ = Trim(String$)
    
+
+   ; Debug result$
+  
    ProcedureReturn result$
 EndProcedure
 
@@ -1054,6 +725,15 @@ Procedure$  MakeIDString( string$, len, *start.Integer = 0, *stop.Integer = 0 )
          len = pos - 1
       EndIf
       pos = 1
+      If CountString( Trim(String$), " " )
+         For i = 0 To len
+            If Mid( String$, i, 1 ) = " " 
+               pos = i
+               len - i
+               Break
+            EndIf
+         Next i
+      EndIf
       If *start
          *start\i = pos
       EndIf
@@ -1180,7 +860,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
             \pos = FindString( str$, "If" )
             If \pos
                \type$ = "If"
-               \func$ = Trim( StringField( \func$, 2, " " ))
+               ;\func$ = Trim( StringField( \func$, 2, " " ))
                ; ProcedureReturn 
             EndIf
             
@@ -1510,7 +1190,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                      ProcedureReturn 
                   EndIf
                   *Parent = GetParent( *Parent )
-                   
+                  
                Case "LoadFont"
                   ; \id$ = StringField( arg$, 1, "," )
                   \id$ = Trim( \id$ )
@@ -1520,8 +1200,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   param2 = Val( StringField( arg$, 3, "," ))
                   param3 = MakeConstants( StringField( arg$, 4, "," ))
                   
-                  Define font = AddFont( \id$, param1$, param2, param3 )
-                  Debug "-- fontname -- "+ GetFontName( FontID(font) )
+                  AddLoadFont( \id$, param1$, param2, param3 )
                   
                Case "SetFont"
                   *id = MakeID( \id$, parent ) 
@@ -1536,12 +1215,31 @@ Procedure   MakeLine( parent, string$, findtext$ )
                      EndIf
                      
                      ; get font from id$
-                     ForEach loadfonts( )
-                        If loadfonts( )\id$ = arg$
-                           SetFont( *id, loadfonts( )\font )
-                        EndIf
-                     Next
+                     SetFont( *id, GetLoadFont( arg$ ) )
                      
+                  EndIf
+                  
+               Case "LoadImage"
+                  param1$ = Trim( Trim( StringField( arg$, 2, "," )), Chr('"'))
+                  param2 = Val( StringField( arg$, 3, "," ))
+                  \id$ = Trim( \id$ )
+                  
+                  AddLoadImage( \id$, param1$, param2 )
+                  
+               Case "SetImage"
+                  *id = MakeID( \id$, parent ) 
+                  If *id
+                     *id\ChangeImage = 1
+                     arg$ = Trim( StringField( arg$, 2, "," ) )
+                     arg$ = Trim( arg$, "(" )
+                     arg$ = Trim( arg$, ")" )
+                     
+                     If NumericString( arg$ )
+                        arg$ = "#IMAGE_"+arg$
+                     EndIf
+                     
+                     ; get font from id$
+                     SetImage( *id, GetLoadImage( arg$ ) )
                   EndIf
                   
                Case "SetColor"
@@ -1877,7 +1575,8 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
    Protected Space$, id$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
    Protected GlobalWindow$, EnumWindow$,
              GlobalGadget$, EnumGadget$,
-             GloballoadFont$, EnumFont$, Enumloadfont$
+             GloballoadFont$, EnumFont$, Enumloadfont$,
+             GloballoadImage$, EnumImage$, EnumloadImage$
    
    Static JPEGPlugin$, JPEG2000Plugin$, PNGPlugin$, TGAPlugin$, TIFFPlugin$
    Protected *g._s_WIDGET
@@ -1997,7 +1696,23 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
                EndIf
             EndIf
          Next
-         ;          result$ + "" + #LF$
+      EndIf
+      
+      ; load images
+      If ListSize(loadimages( ))
+         ForEach loadimages( )
+            id$ = loadimages( )\id$
+            
+            If id$ 
+               If Trim( id$, "#") = id$
+                  Globalloadimage$ + "Global " + id$ + " = " + "Loadimage( " + "#PB_Any" + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+               Else
+                  Enumimage$ + Space$ + id$ + #LF$
+                  ;
+                  Enumloadimage$ + "Loadimage( " + id$ + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+               EndIf
+            EndIf
+         Next
       EndIf
       
       ;
@@ -2018,8 +1733,15 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
       EndIf
       ;
       If EnumFont$
-         result$ + "Enumeration Font" + #LF$
+         result$ + "Enumeration FormFont" + #LF$
          result$ + EnumFont$
+         result$ + "EndEnumeration" + #LF$
+         result$ + #LF$
+      EndIf
+      ;
+      If EnumImage$
+         result$ + "Enumeration FormImage" + #LF$
+         result$ + EnumImage$
          result$ + "EndEnumeration" + #LF$
          result$ + #LF$
       EndIf
@@ -2035,14 +1757,24 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
          result$ + GlobalGadget$
          result$ + #LF$
       EndIf
+      ;
+      If Globalloadfont$
+         result$ + Globalloadfont$
+         result$ + #LF$
+      EndIf
       ; 
-      If GloballoadFont$
-         result$ + GloballoadFont$
+      If Globalloadimage$
+         result$ + Globalloadimage$
          result$ + #LF$
       EndIf
       
       If Enumloadfont$
          result$ + Enumloadfont$
+         result$ + #LF$
+      EndIf
+      
+      If EnumloadImage$
+         result$ + EnumloadImage$
          result$ + #LF$
       EndIf
       
@@ -2170,7 +1902,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(0, 0, 0, 400, 400, "read", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
-      Path$ = "test\code\addfont.pb"
+      ;Path$ = "test\code\addfont.pb"
+      Path$ = "test\code\addimage.pb"
+      
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
          FileSeek( #File, 0 )                                   ; 
@@ -2213,8 +1947,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 445
-; FirstLine = 433
-; Folding = --------------------------------v-bo----------4------
+; CursorPosition = 132
+; FirstLine = 96
+; Folding = -v--0------------------++vh3----------+-------
 ; EnableXP
 ; DPIAware

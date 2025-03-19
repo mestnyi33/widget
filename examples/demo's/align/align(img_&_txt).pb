@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-     Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_textmultiline )
+     Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_text_multiline )
      SetImage( widget(), (0))
   EndMacro
   
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 908, (Height+5)*5+20+110, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;If OpenWindow(0, 0, 0, 458, (height)*3 + 30, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open(0);, 0, 0, 908, (height+5)*5+20+110, "", #__flag_borderless)
+    Open(0);, 0, 0, 908, (height+5)*5+20+110, "", #__flag_border_less)
     
     Gadget(0, 8,  10, 140, Height, text_h,                        #__image_Left|#__image_Top);
     Gadget(1, 8,  (Height+5)*1+10, 140, Height, text_h,           #__image_Left|#__image_Center);

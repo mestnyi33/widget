@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   OpenWindow( 1, 100, 100, 500, 400, "main window_1", #__Window_SystemMenu)
+   OpenWindow( 1, 100, 100, 500, 400, "main window_1", #PB_Window_SystemMenu)
    menu = CreatePopupMenu( #PB_Any )
    MenuItem(1, "Open")      ; You can use all commands for creating a menu
    MenuItem(2, "Save")      ; just like in a normal menu...

@@ -36,8 +36,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Define *g3 = AddItem(*g, -1, "form_3") : Resize(*g3, 90,  90, 230, 30)
     
     *b = AddItem(*g, -1, "form") : Resize(*b, Sw-130, Sh-30, 130, 30)
-    ;  *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseList()
-    ; *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__flag_child, *g) : CloseList()
+    ;  *b = Window(Sw-130, Sh-130, 130, 30,"Window", #PB_Window_systemmenu, *g) : CloseList()
+    ; *b = Window(Sw-130, Sh-130, 130, 30,"Window", #PB_Window_systemmenu|#__flag_child, *g) : CloseList()
     CloseList()
    
     ;

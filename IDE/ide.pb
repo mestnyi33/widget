@@ -168,17 +168,17 @@ Declare$  GetWord( text$, len, caret )
 ;
 Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   NumericString( string$ )
-Declare.q MakeConstants( string$ )
-Declare$  MakeConstantsString( type$, flag.q ) ; 
 Declare   MakeLine( parent, string$, findtext$ )
 ;
-Declare   AddFont( id$, name$, size, style )
+Declare   AddLoadFont( id$, name$, size, style )
 Declare.s GetFontName( FontID.i )
 Declare.a GetFontSize( FontID.i )
 Declare.q GetFontStyle( FontID.i )
 Declare   SetFontName( FontID.i, name.s )
 Declare   SetFontSize( FontID.i, size.a )
 Declare   SetFontStyle( FontID.i, style.q )
+
+Declare   AddLoadImage( id$, file$, flags = 0 )
 
 ;
 ;- INCLUDEs
@@ -531,6 +531,18 @@ Procedure   Properties_ButtonEvents( )
          
       Case #__event_LeftClick
          Select GetData(*g)
+            Case #_pi_IMAGE
+               Protected StandardFile$, Pattern$, File$
+               StandardFile$ = "open_example.pb" 
+               Pattern$ = "Image (*.*)|*.png;*.bmp;*.ico"
+               File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
+               
+               If File$
+                  Debug File$ 
+                  SetImage( a_focused( ), AddLoadImage( "", File$ ))
+                  
+               EndIf
+               
             Case #_pi_FONT
                Define font = GetFont( a_focused( ) )
                Define FontName$ = GetFontName( font ) ; установить начальный шрифт (также может быть пустым)
@@ -561,7 +573,7 @@ Procedure   Properties_ButtonEvents( )
                   EndIf
                   
                   If a_focused( )
-                     font = AddFont( Str(MapSize( loadfonts( ))), 
+                     font = AddLoadFont( Str(MapSize( loadfonts( ))), 
                                      SelectedFontName( ),
                                      SelectedFontSize( ),
                                      SelectedFontStyle( ))
@@ -948,8 +960,8 @@ EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected position = 90
-   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_borderLess)
-   Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_borderLess)
+   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_border_Less)
+   Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_border_Less)
    ;    *first\padding\x = 10
    ;    *second\padding\x = 10
    
@@ -1242,7 +1254,7 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          
          While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
-            String$ = RemoveString( String$, "﻿" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
+            String$ = RemoveString( String$, "?" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
             
             MakeLine( ide_design_panel_MDI, String$, Text$ )
          Wend
@@ -1471,10 +1483,10 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
       Select type$
          Case "window"    
             If Type( *parent ) = #__Type_MDI
-               *new = AddItem( *parent, #PB_Any, text$, - 1, flag | #__window_NoActivate )
+               *new = AddItem( *parent, #PB_Any, text$, - 1, flag | #PB_Window_NoActivate )
                Resize( *new, X, Y, Width, Height )
             Else
-               flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget | #__window_NoActivate
+               flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_NoActivate
                *new = Window( X,Y,Width,Height, text$, flag, *parent )
             EndIf
             
@@ -2245,7 +2257,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)
    
-   ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
+   ide_toolbar_container = Container( 0,0,0,0, #__flag_border_Flat ) 
    ide_toolbar = ToolBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
    SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
    
@@ -2341,14 +2353,14 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ; ide_inspector_panel_item_1 
    AddItem( ide_inspector_panel, -1, "elements", 0, 0 ) 
-   ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_borderless ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
+   ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_border_less ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
    If ide_inspector_elements
       ide_addimage_list( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
    ; ide_inspector_panel_item_2
    AddItem( ide_inspector_panel, -1, "properties", 0, 0 )  
-   ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
+   ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
    If ide_inspector_properties
       Properties_AddItem( ide_inspector_properties, #_pi_group_COMMON, "COMMON" )
       Properties_AddItem( ide_inspector_properties, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
@@ -2384,8 +2396,8 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ; ide_inspector_panel_item_3 
    AddItem( ide_inspector_panel, -1, "events", 0, 0 )  
-   ;ide_inspector_events = Tree( 0,0,0,0, #__flag_autosize | #__flag_borderless ) : SetClass(ide_inspector_events, "ide_inspector_events" ) 
-   ide_inspector_events = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_borderless ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
+   ;ide_inspector_events = Tree( 0,0,0,0, #__flag_autosize | #__flag_border_less ) : SetClass(ide_inspector_events, "ide_inspector_events" ) 
+   ide_inspector_events = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
    If ide_inspector_events
       Properties_AddItem( ide_inspector_events, #_ei_leftclick,  "LeftClick", #__Type_ComboBox )
       Properties_AddItem( ide_inspector_events, #_ei_change,  "Change", #__Type_ComboBox )
@@ -2736,8 +2748,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 568
-; FirstLine = 547
+; CursorPosition = 541
+; FirstLine = 529
 ; Folding = -------------------------------------------------
 ; Optimizer
 ; EnableAsm

@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TreeGadget(0, 10, 10, 180, 230)
     
-    Open(0, 200, 10, 180, 230);, "", #__flag_borderless)
+    Open(0, 200, 10, 180, 230);, "", #__flag_border_less)
     *w = Tree(0, 0, 180, 230)
     
     For i = 1 To 10

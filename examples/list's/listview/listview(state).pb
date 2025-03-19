@@ -182,9 +182,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(*w2, @widget_events())
     widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
-    *reset = widget::Button( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
-    *first = widget::Button( 525 - (10+120)*3, 435, 120, 30, "first item state", #__flag_ButtonToggle)
-    *last = widget::Button( 525 - (10+120)*2, 435, 120, 30, "last item state", #__flag_ButtonToggle)
+    *reset = widget::Button( 10, 435, 100, 30, "reset state", #PB_Button_Toggle)
+    *first = widget::Button( 525 - (10+120)*3, 435, 120, 30, "first item state", #PB_Button_Toggle)
+    *last = widget::Button( 525 - (10+120)*2, 435, 120, 30, "last item state", #PB_Button_Toggle)
     *added = widget::Button( 525 - (10+120)*1, 435, 120, 30, "add new item")
     
     widget::SetState( *reset, 1)

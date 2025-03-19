@@ -154,8 +154,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug GetGadgetText(6)+" - get gadget text"
     
     String(305+8, 10, 290, Height, "Read-only StringGadget...00000 00000 00000 00000 00000 00000 00000 00000", #PB_String_ReadOnly)
-    String(305+8, (Height+5)*1+10, 290, Height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__text_Center)
-    String(305+8, (Height+5)*2+10, 290, Height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__text_Right)
+    String(305+8, (Height+5)*1+10, 290, Height, "00000 00000 00000 00000 123-only-4567 00000 00000 00000 00000", #PB_String_Numeric|#__flag_text_Center)
+    String(305+8, (Height+5)*2+10, 290, Height, "00000 00000 00000 00000 00000 00000 00000 00000 ...Right-text StringGadget", #__flag_text_Right)
     String(305+8, (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
     String(305+8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
     String(305+8, (Height+5)*5+10, 290, Height, "Borderless StringGadget", #PB_String_BorderLess)

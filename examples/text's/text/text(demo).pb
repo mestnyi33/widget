@@ -39,10 +39,10 @@ CompilerIf #PB_Compiler_IsMainFile
    ; Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
    If Open(0, 0, 0, Width+min, 760, "text multiline", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      *B_0 = Text(10,  10, Width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_Top)
-      *B_1 = Text(10, 160, Width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_left)
+      *B_0 = Text(10,  10, Width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_text_Top)
+      *B_1 = Text(10, 160, Width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_text_left)
       *B_2 = Text(10, 310, Width, 140, Text, #PB_Text_Border|#PB_Text_Center|#PB_Text_Right)
-      *B_3 = Text(10, 460, Width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__text_Bottom)
+      *B_3 = Text(10, 460, Width, 140, Text, #PB_Text_Border|#PB_Text_Center|#__flag_text_Bottom)
       
       SetAlign(*B_0, 0, 1,0,1,0)
       SetAlign(*B_1, 0, 1,0,1,0)

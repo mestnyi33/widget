@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure MDI_AddObject( *mdi, Type, X, Y, Width, Height, Text.s, round=0 )
       Protected *Object._s_widget
       
-      *Object = AddItem( *mdi, -1, "", -1, #__flag_BorderLess )
+      *Object = AddItem( *mdi, -1, "", -1, #__flag_border_Less )
       *Object\class = "draw-"+Str(Type)
       *Object\cursor = #PB_Cursor_Hand
       *Object\round = DPIScaled(round)

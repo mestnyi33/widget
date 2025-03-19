@@ -39,26 +39,25 @@ Procedure GetFlag( *this._s_WIDGET )
 EndProcedure
 
 
-Define flag.q = #__text_left|#__text_Top|#__text_Right;|#__text_Bottom
+Define flag.q = #__flag_text_left|#__flag_text_Top|#__flag_text_Right;|#__flag_text_Bottom
 
-Define flags.q = #__text_Bottom | flag
+Define flags.q = #__flag_text_Bottom | flag
 
 ;RemoveFlag( )
-RemoveFlag( flags, #__text_Top|#__text_Right )
+RemoveFlag( flags, #__flag_text_Top|#__flag_text_Right )
 
-Debug constants::BinaryFlag( flag, #__text_left )
-Debug constants::BinaryFlag( flag, #__text_Top )
-Debug constants::BinaryFlag( flag, #__text_Right )
-Debug constants::BinaryFlag( flag, #__text_Bottom )
+Debug constants::BinaryFlag( flag, #__flag_text_left )
+Debug constants::BinaryFlag( flag, #__flag_text_Top )
+Debug constants::BinaryFlag( flag, #__flag_text_Right )
+Debug constants::BinaryFlag( flag, #__flag_text_Bottom )
 Debug ""
-Debug constants::BinaryFlag( flags, #__text_left )
-Debug constants::BinaryFlag( flags, #__text_Top )
-Debug constants::BinaryFlag( flags, #__text_Right )
-Debug constants::BinaryFlag( flags, #__text_Bottom )
+Debug constants::BinaryFlag( flags, #__flag_text_left )
+Debug constants::BinaryFlag( flags, #__flag_text_Top )
+Debug constants::BinaryFlag( flags, #__flag_text_Right )
+Debug constants::BinaryFlag( flags, #__flag_text_Bottom )
 
 
 
-; FromPBFlag( Type, Flag.q )
 
 Procedure Flag_Text( *this._s_WIDGET, flag.q )
   ;                           windows ; macos ; linux
@@ -68,42 +67,42 @@ Procedure Flag_Text( *this._s_WIDGET, flag.q )
   ;   
   
   If *this\type = #__type_Text
-    If constants::BinaryFlag( Flag, #__text_Invert )
+    If constants::BinaryFlag( Flag, #__flag_text_Invert )
       *this\text\invert = #True
     EndIf
     
-    If constants::BinaryFlag( Flag, #__text_Vertical )
+    If constants::BinaryFlag( Flag, #__flag_text_Vertical )
       *this\text\vertical = #True
     EndIf
     
-    If constants::BinaryFlag( Flag, #__flag_Textwordwrap )
+    If constants::BinaryFlag( Flag, #__flag_text_wordwrap )
       *this\text\multiline = - 1
     EndIf
     
-    If constants::BinaryFlag( Flag, #__flag_Textmultiline )
+    If constants::BinaryFlag( Flag, #__flag_text_multiline )
       *this\mode\multiSelect = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__text_Center )
+    If constants::BinaryFlag( flag, #__flag_text_Center )
       *this\text\align\left = #False
       *this\text\align\top = #False
       *this\text\align\right = #False
       *this\text\align\bottom = #False
     EndIf
     
-    If constants::BinaryFlag( flag, #__text_left )
+    If constants::BinaryFlag( flag, #__flag_text_left )
       *this\text\align\left = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__text_Top )
+    If constants::BinaryFlag( flag, #__flag_text_Top )
       *this\text\align\top = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__text_Right )
+    If constants::BinaryFlag( flag, #__flag_text_Right )
       *this\text\align\right = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__text_Bottom )
+    If constants::BinaryFlag( flag, #__flag_text_Bottom )
       *this\text\align\bottom = #True
     EndIf
   EndIf
@@ -114,13 +113,13 @@ Procedure Flag_Button( *this._s_WIDGET, flag.q )
   ;   Debug  #PB_Button_Default      ; 1                      ; Makes the button look As If it is the Default button in the window
   ;   Debug  #PB_Button_Left         ; 256                    ; Aligns the button text at the left.
   ;   Debug  #PB_Button_Right        ; 521                    ; Aligns the button text at the right.
-  ;   Debug  #__flag_ButtonToggle       ; 4099                   ; Creates a toggle button: one click pushes it, another will release it.
+  ;   Debug  #PB_Button_Toggle       ; 4099                   ; Creates a toggle button: one click pushes it, another will release it.
   ;   Debug  #PB_Button_MultiLine    ; 8192                   ; If the text is too long, it will be displayed on several lines. 
   ;   
   
   If *this\type = #__type_Button 
-    If constants::BinaryFlag( flag, #__flag_ButtonToggle )
-      flag &~ #__flag_ButtonToggle
+    If constants::BinaryFlag( flag, #PB_Button_Toggle )
+      flag &~ #PB_Button_Toggle
       If Not *this\togglebox
         *this\togglebox.allocate( BOX )
       EndIf
@@ -146,18 +145,18 @@ Procedure Flag_Button( *this._s_WIDGET, flag.q )
       *this\text\align\right = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__text_Top )
+    If constants::BinaryFlag( flag, #__flag_text_Top )
       *this\text\align\top = #True
     EndIf
     
-    If constants::BinaryFlag( flag, #__text_Bottom )
+    If constants::BinaryFlag( flag, #__flag_text_Bottom )
       *this\text\align\bottom = #True
     EndIf
   EndIf
 EndProcedure
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 82
+; CursorPosition = 60
+; FirstLine = 56
 ; Folding = -----
 ; EnableXP
 ; DPIAware

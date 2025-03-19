@@ -141,7 +141,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(widget(), 180)
       Bind( widget(), @track_h_events( ), #__event_change )
       
-      Button(w+10,h+10,20,20,"", #__flag_Buttontoggle)
+      Button(w+10,h+10,20,20,"", #PB_Button_Toggle)
       SetRound( widget(), 10 )
       Bind( widget(), @track_vh_events( ), #__event_Down )
       

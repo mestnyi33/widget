@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Container(20,28,8,203)
    CloseList()
    
-   *w = Panel(28, 28, 356, 203);, #__flag_borderless)
+   *w = Panel(28, 28, 356, 203);, #__flag_border_less)
       AddItem(*w, -1, "Панель 1")
       Button(5, 5, 80, 22,"кнопка 1")
       

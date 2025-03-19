@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventGadget()
                Case *buttonOpen
                   If Not *window
-                     *window = Window(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
+                     *window = Window(100,100,200,200,"window", #PB_Window_systemmenu|#PB_Window_maximizegadget|#PB_Window_minimizegadget)
                      Button(10, 10, 90,30,"button")
                      Button(10, 50, 90,30,"button")
                      ;*window = Button(Random(100,10), 10, 90,30,"button")
@@ -39,9 +39,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Open(0, 150, 150, 500, 400, "demo close", #__Window_SizeGadget | #__Window_SystemMenu)
+   Open(0, 150, 150, 500, 400, "demo close", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
    
-   *window = Window(100,100,200,200,"window", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
+   *window = Window(100,100,200,200,"window", #PB_Window_systemmenu|#PB_Window_maximizegadget|#PB_Window_minimizegadget)
    Button(10, 10, 90,30,"button")
    Button(10, 50, 90,30,"button")
    

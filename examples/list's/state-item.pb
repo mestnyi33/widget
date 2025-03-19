@@ -278,9 +278,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*this, @widget_events());, #__event_Change)
       
       OpenList( *this )
-      ; *test = String( 0, 0, 0, 0, "test") ; #__text_Center| bug
-      ;*test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__text_Center| bug
-      *test = Button( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__text_Center| bug
+      ; *test = String( 0, 0, 0, 0, "test") ; #__flag_text_Center| bug
+      ;*test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_text_Center| bug
+      *test = Button( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_text_Center| bug
       
       Bind( *test, @Properties_ButtonEvents( ))                       ;, #__event_Change)
       CloseList( )

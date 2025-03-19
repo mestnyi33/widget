@@ -96,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, a, "Line "+Str(a))
   Next 
   
-  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password|#__text_Right)
+  *g = String(10, 220, 200+60, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password|#__flag_text_Right)
   
   
   Define *root1._S_widget = Open(#window,300,10,300-20,300-20): *root1\class = "root1": SetText(*root1, "root1")
@@ -207,7 +207,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Next
   Container( 70,180, 80,80): CloseList( )
   
-  *w = Tree( 100,30, 100,260-20+300, #__flag_borderless)
+  *w = Tree( 100,30, 100,260-20+300, #__flag_border_less)
   SetColor( *w, #pb_gadget_backcolor, $FF07EAF6 )
   For i=1 To 10;00000
     AddItem(*w, i, "text-"+Str(i))

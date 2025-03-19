@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  ;   If Open(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_BorderLess)
+  ;   If Open(-1, 50, 50, 220, 220, "demo enter & leave", #__flag_border_Less)
   ;     SetData(Container(20, 20, 180, 180), 1)
   ;     SetData(Container(70, 10, 70, 180, #__flag_NoGadget), 9) 
   ;     SetData(Container(20, 20, 180, 180), 2)

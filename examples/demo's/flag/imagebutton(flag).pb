@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_LeftClick
             Select EventWidget
                Case *this
-                  If Flag_(*this, #__flag_ButtonToggle)
+                  If Flag_(*this, #PB_Button_Toggle)
                      SetState(button_toggle, GetState(EventWidget))
                   EndIf
                   
@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   ;
-               Case button_default   : flag = #__Flag_ButtonDefault
+               Case button_default   : flag = #__flag_button_Default
                ;Case button_multiline : flag = #__flag_ImageMultiline
                   ;
                Case button_top,
@@ -148,7 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      Case button_center    : flag = #__image_Center
                   EndSelect
                   ;
-               Case button_toggle    : flag = #__flag_ButtonToggle
+               Case button_toggle    : flag = #PB_Button_Toggle
                ;Case button_invert    : flag = #__flag_Imageinvert
                ;Case button_vertical  : flag = #__flag_Imagevertical
                Case button_mirror    ;: flag = #__flag_ImageMirror
@@ -197,18 +197,18 @@ CompilerIf #PB_Compiler_IsMainFile
       Define bh = 24
       Define p = bh+5
       ; flag
-      Button_type      = widget::Button(Width + 45, Y, 100, p, "gadget", #__flag_ButtonToggle)
-      button_default   = widget::Button(Width + 45, Y + p * 1, 100, bh, "default", #__flag_ButtonToggle)
-      ;button_multiline = widget::Button(Width + 45, Y + p * 2, 100, bh, "multiline", #__flag_ButtonToggle)
-      button_top       = widget::Button(Width + 45, Y + p * 3, 100, bh, "top", #__flag_ButtonToggle)
-      button_left      = widget::Button(Width + 45, Y + p * 4, 100, bh, "left", #__flag_ButtonToggle)
-      button_center    = widget::Button(Width + 45, Y + p * 5, 100, bh, "center", #__flag_ButtonToggle)
-      button_right     = widget::Button(Width + 45, Y + p * 6, 100, bh, "right", #__flag_ButtonToggle)
-      button_bottom    = widget::Button(Width + 45, Y + p * 7, 100, bh, "bottom", #__flag_ButtonToggle)
-      button_toggle    = widget::Button(Width + 45, Y + p * 8, 100, bh, "toggle", #__flag_ButtonToggle)
-      button_vertical  = widget::Button(Width + 45, Y + p * 9, 100, bh, "vertical", #__flag_ButtonToggle)
-      button_invert    = widget::Button(Width + 45, Y + p * 10, 100, bh, "invert", #__flag_ButtonToggle)
-      button_mirror    = widget::Button(Width + 45, Y + p * 11, 100, bh, "mirror", #__flag_ButtonToggle)
+      Button_type      = widget::Button(Width + 45, Y, 100, p, "gadget", #PB_Button_Toggle)
+      button_default   = widget::Button(Width + 45, Y + p * 1, 100, bh, "default", #PB_Button_Toggle)
+      ;button_multiline = widget::Button(Width + 45, Y + p * 2, 100, bh, "multiline", #PB_Button_Toggle)
+      button_top       = widget::Button(Width + 45, Y + p * 3, 100, bh, "top", #PB_Button_Toggle)
+      button_left      = widget::Button(Width + 45, Y + p * 4, 100, bh, "left", #PB_Button_Toggle)
+      button_center    = widget::Button(Width + 45, Y + p * 5, 100, bh, "center", #PB_Button_Toggle)
+      button_right     = widget::Button(Width + 45, Y + p * 6, 100, bh, "right", #PB_Button_Toggle)
+      button_bottom    = widget::Button(Width + 45, Y + p * 7, 100, bh, "bottom", #PB_Button_Toggle)
+      button_toggle    = widget::Button(Width + 45, Y + p * 8, 100, bh, "toggle", #PB_Button_Toggle)
+      button_vertical  = widget::Button(Width + 45, Y + p * 9, 100, bh, "vertical", #PB_Button_Toggle)
+      button_invert    = widget::Button(Width + 45, Y + p * 10, 100, bh, "invert", #PB_Button_Toggle)
+      button_mirror    = widget::Button(Width + 45, Y + p * 11, 100, bh, "mirror", #PB_Button_Toggle)
       
       ;     ; flag
       ;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__flag_optionboxes | #__tree_CheckBoxes | #__Tree_threestate)

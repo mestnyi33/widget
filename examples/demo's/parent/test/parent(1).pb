@@ -60,7 +60,7 @@ EndProcedure
     CloseList()
     CloseList()
     
-    Define change = Button(10,430, 200, 30, "change parent") : SetClass( widget( ), "change parent" );, #__flag_ButtonToggle)
+    Define change = Button(10,430, 200, 30, "change parent") : SetClass( widget( ), "change parent" );, #PB_Button_Toggle)
     
     Show_DEBUG( )
     i = 1

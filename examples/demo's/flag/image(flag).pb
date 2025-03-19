@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick
         Select EventWidget()
           Case *this
-            If Flag(*this, #__flag_ButtonToggle)
+            If Flag(*this, #PB_Button_Toggle)
               SetState(f_4, GetState(EventWidget()))
             EndIf
             
@@ -66,18 +66,18 @@ CompilerIf #PB_Compiler_IsMainFile
               SetText(EventWidget(), "gadget")
             EndIf
             
-          Case f_0 : flag = #__flag_ButtonDefault
-          Case f_1 : flag = #__flag_Textmultiline
-          Case f_4 : flag = #__flag_ButtonToggle
+          Case f_0 : flag = #__flag_button_Default
+          Case f_1 : flag = #__flag_text_multiline
+          Case f_4 : flag = #PB_Button_Toggle
             
-          Case f_5 : flag = #__text_Top
+          Case f_5 : flag = #__flag_text_Top
             ;SetState(f_6, 0)
-          Case f_2 : flag = #__text_left
-          Case f_3 : flag = #__text_Right
-          Case f_6 : flag = #__text_Bottom
+          Case f_2 : flag = #__flag_text_left
+          Case f_3 : flag = #__flag_text_Right
+          Case f_6 : flag = #__flag_text_Bottom
             
-          Case f_7 : flag = #__text_Invert
-          Case f_8 : flag = #__text_Vertical
+          Case f_7 : flag = #__flag_text_Invert
+          Case f_8 : flag = #__flag_text_Vertical
         EndSelect
         
         If flag
@@ -107,26 +107,26 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(f, -1, "vertical")
     AddItem(f, -1, "invert")
     
-    Button_type = widget::Button(Width+20,   Y, 150, 26, "gadget", #__flag_ButtonToggle) 
-    f_5 = widget::Button(Width+20, Y+30*1, 150, 26, "top", #__flag_ButtonToggle) 
-    f_2 = widget::Button(Width+20, Y+30*2, 73, 26, "left", #__flag_ButtonToggle) 
-    f_3 = widget::Button(Width+20 + 21 + 55, Y+30*2, 73, 26, "right", #__flag_ButtonToggle) 
-    f_6 = widget::Button(Width+20, Y+30*3, 150, 26, "bottom", #__flag_ButtonToggle) 
+    Button_type = widget::Button(Width+20,   Y, 150, 26, "gadget", #PB_Button_Toggle) 
+    f_5 = widget::Button(Width+20, Y+30*1, 150, 26, "top", #PB_Button_Toggle) 
+    f_2 = widget::Button(Width+20, Y+30*2, 73, 26, "left", #PB_Button_Toggle) 
+    f_3 = widget::Button(Width+20 + 21 + 55, Y+30*2, 73, 26, "right", #PB_Button_Toggle) 
+    f_6 = widget::Button(Width+20, Y+30*3, 150, 26, "bottom", #PB_Button_Toggle) 
     
-    f_0 = widget::Button(Width+20, Y+30*4, 150, 26, "center", #__flag_ButtonToggle) 
-    f_1 = widget::Button(Width+20, Y+30*5, 150, 26, "strech", #__flag_ButtonToggle) 
-    f_4 = widget::Button(Width+20, Y+30*6, 150, 26, "proportional", #__flag_ButtonToggle) 
+    f_0 = widget::Button(Width+20, Y+30*4, 150, 26, "center", #PB_Button_Toggle) 
+    f_1 = widget::Button(Width+20, Y+30*5, 150, 26, "strech", #PB_Button_Toggle) 
+    f_4 = widget::Button(Width+20, Y+30*6, 150, 26, "proportional", #PB_Button_Toggle) 
     
-    f_8 = widget::Button(Width+20, Y+30*7, 150, 26, "auto", #__flag_ButtonToggle) 
-;     f_7 = widget::Button(width+20, y+30*8, 150, 26, "invert", #__flag_ButtonToggle) 
+    f_8 = widget::Button(Width+20, Y+30*7, 150, 26, "auto", #PB_Button_Toggle) 
+;     f_7 = widget::Button(width+20, y+30*8, 150, 26, "invert", #PB_Button_Toggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(f_1, Flag(*this, #__flag_Textmultiline))
-    SetState(f_5, Flag(*this, #__text_Top))
-    SetState(f_2, Flag(*this, #__text_left))
-    SetState(f_3, Flag(*this, #__text_Right))
-    SetState(f_6, Flag(*this, #__text_Bottom))
+    SetState(f_1, Flag(*this, #__flag_text_multiline))
+    SetState(f_5, Flag(*this, #__flag_text_Top))
+    SetState(f_2, Flag(*this, #__flag_text_left))
+    SetState(f_3, Flag(*this, #__flag_text_Right))
+    SetState(f_6, Flag(*this, #__flag_text_Bottom))
     
     If Button_type
        Hide(Button_type, 1)

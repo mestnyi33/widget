@@ -1,5 +1,5 @@
 ﻿EnableExplicit
-#__flag_TextBorder = #PB_Text_Border
+#__flag_text_Border = #PB_Text_Border
 
 Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
 Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
@@ -9,12 +9,12 @@ Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, S
 Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
 window_ide = OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)
 
-toolbar_design = TextGadget(#PB_Any,0,0,0,0,"", #__flag_TextBorder)
-mdi_design = TextGadget(#PB_Any,0,0,0,0,"", #__flag_TextBorder)
-listview_debug = TextGadget(#PB_Any,0,0,0,0,"", #__flag_TextBorder)
-tree_inspector = TextGadget(#PB_Any,0,0,0,0,"", #__flag_TextBorder)
-panel_inspector = TextGadget(#PB_Any,0,0,0,0,"", #__flag_TextBorder)
-text_help  = TextGadget(#PB_Any,0,0,0,0,"", #__flag_TextBorder)
+toolbar_design = TextGadget(#PB_Any,0,0,0,0,"", #__flag_text_Border)
+mdi_design = TextGadget(#PB_Any,0,0,0,0,"", #__flag_text_Border)
+listview_debug = TextGadget(#PB_Any,0,0,0,0,"", #__flag_text_Border)
+tree_inspector = TextGadget(#PB_Any,0,0,0,0,"", #__flag_text_Border)
+panel_inspector = TextGadget(#PB_Any,0,0,0,0,"", #__flag_text_Border)
+text_help  = TextGadget(#PB_Any,0,0,0,0,"", #__flag_text_Border)
 
 Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
 Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically

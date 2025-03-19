@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
        ;Define *spin2 = Create( root( ), "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, #__flag_vertical|#__flag_invert, -1000, 1000, 0, #__bar_button_size, 0, 7 )
       SetState(*spin2, 15)
       
-      Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__text_Right)
+      Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__flag_text_Right)
       SetState(*spin3, 30)
       
       WaitClose( )

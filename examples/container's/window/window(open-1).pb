@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-  Open(Window(200, 200, 200, 200, "main window_2", #__Window_SizeGadget | #__Window_SystemMenu))
+  Open(Window(200, 200, 200, 200, "main window_2", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
 ;   ContainerGadget(#PB_Any, widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner], widget()\height[#__c_inner])

@@ -378,7 +378,7 @@
       
       ;-\\ create-flags
       ; #__flag_ = 1<<0
-      #__flag_ButtonDefault   = 1<<0
+      #__flag_button_Default   = 1<<0
       ; #__flag_ = 1<<1
       ; #__flag_ = 1<<2
       ; #__flag_ = 1<<3
@@ -393,11 +393,11 @@
       ; #__flag_ = 1<<10
       ; #__flag_ = 1<<11
       ; #__flag_ = 1<<12
-      #__flag_ButtonToggle    = 1<<12 
+      #__flag_ThreeState      = 1<<12 
       ; #__flag_ = 1<<13
       ; #__flag_ = 1<<14
       ; #__flag_ = 1<<15
-      #__flag_BorderFlat      = 1<<16   
+      #__flag_RowClickSelect  = 1<<16   
       ; #__flag_ = 1<<17
       ; #__flag_ = 1<<18
       ; #__flag_ = 1<<19
@@ -410,33 +410,34 @@
       ; #__flag_ = 1<<24
       ; #__flag_ = 1<<25
       #__flag_GridLines       = 1<<25
-      #__flag_BorderRaised    = 1<<26
-      #__flag_BorderDouble    = 1<<27
+      #__flag_border_Raised   = 1<<26
+      #__flag_border_Double   = 1<<27
       ; #__flag_ = 1<<28
-      #__flag_BorderSingle    = 1<<29  
+      #__flag_border_Single   = 1<<29  
       ; #__flag_ = 1<<30
-      #__flag_Borderless      = 1<<31
-      #__flag_Transparent     = 1<<34
-      #__flag_Invert          = 1<<32
-      #__flag_Vertical        = 1<<33
+      #__flag_border_less     = 1<<31
+      #__flag_border_Flat     = 1<<32
       ;
-      #__flag_ThreeState      = 1<<46
-      #__flag_Child           = 1<<47
+      #__flag_Child           = 1<<33
+      #__flag_Invert          = 1<<34
+      #__flag_Vertical        = 1<<35
+      #__flag_Transparent     = 1<<36
       ;
-      #__flag_NoFocus         = 1<<48
-      #__flag_NoLines         = 1<<44
-      #__flag_NoButtons       = 1<<45
-      #__flag_NoScrollBars    = 1<<35
+      #__flag_NoFocus         = 1<<37
+      #__flag_NoLines         = 1<<38
+      #__flag_NoButtons       = 1<<39
+      #__flag_NoScrollBars    = 1<<40
       ;
-      #__flag_TextNumeric     = 1<<36
-      #__flag_TextReadonly    = 1<<37
-      #__flag_TextLowerCase   = 1<<38
-      #__flag_TextUpperCase   = 1<<39
-      #__flag_TextPassword    = 1<<40
-      #__flag_TextWordWrap    = 1<<41
-      #__flag_TextMultiLine   = 1<<42
-      #__flag_TextInLine      = 1<<43
-      ; #__flag_              = 1<<49
+      #__flag_text_Password    = 1<<41
+      #__flag_text_WordWrap    = 1<<42
+      #__flag_text_MultiLine   = 1<<43
+      #__flag_text_InLine      = 1<<44
+      #__flag_text_Numeric     = 1<<45
+      #__flag_text_Readonly    = 1<<46
+      #__flag_text_LowerCase   = 1<<47
+      #__flag_text_UpperCase   = 1<<48
+      ;
+      #__flag_Modal            = 1<<49
       ; #__flag_              = 1<<50
       ; #__flag_              = 1<<51
       ; #__flag_              = 1<<52
@@ -465,7 +466,6 @@
       #__flag_AutoSize         = #__align_Auto
       ;
       #__flag_NoGadgets        = #__flag_NoButtons
-      #__flag_RowClickSelect   = #__flag_ButtonToggle ; 1<<3 ; 8
       
       ;-
       ;-\\ Bar
@@ -479,28 +479,9 @@
       #__bar_Invert            = #__flag_invert
       
       ;-\\ Window
-      ; constant
       #__window_FrameSize      = 4
       #__window_CaptionHeight  = 24
-      ; attribute
-      #__window_Normal         = #PB_Window_Normal
-      #__window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers sUpport this)
-      #__window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
-                                                           ; flag
-      #__window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
-      #__window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
-      #__window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
-                                                           ; (MacOS only ; #PB_window_SizeGadget will be also automatically added).
-      #__window_SizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
-      #__window_Invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
-      #__window_TitleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
-      #__window_Tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
-      #__window_BorderLess     = #__flag_BorderLess        ; Creates a window without any borders.
-      #__window_ScreenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
-      #__window_WindowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
-      #__window_NoGadgets      = #__flag_NoButtons         ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
-      #__window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
-      
+     
       ;-\\ Tree
       #__tree_nolines          = #__flag_NoLines
       #__tree_nobuttons        = #__flag_NoButtons
@@ -519,14 +500,14 @@
       #__spin_Mirror           = 1<<4
       
       ;-\\ Text
-      #__text_Invert           = #__flag_Invert
-      #__text_Vertical         = #__flag_Vertical
+      #__flag_text_Invert           = #__flag_Invert
+      #__flag_text_Vertical         = #__flag_Vertical
       ;  alignment
-      #__text_Left             = #__align_text|#__align_Left
-      #__text_Top              = #__align_text|#__align_Top
-      #__text_Right            = #__align_text|#__align_Right
-      #__text_Bottom           = #__align_text|#__align_Bottom
-      #__text_Center           = #__align_text|#__align_Center
+      #__flag_text_Left             = #__align_text|#__align_Left
+      #__flag_text_Top              = #__align_text|#__align_Top
+      #__flag_text_Right            = #__align_text|#__align_Right
+      #__flag_text_Bottom           = #__align_text|#__align_Bottom
+      #__flag_text_Center           = #__align_text|#__align_Center
       
       ;-\\ Image
       #__Image_Released        = 1
@@ -539,7 +520,7 @@
       #__image_Bottom          = #__align_image|#__align_Bottom
       #__image_Center          = #__align_image|#__align_Center
       
-      
+     
       
       ; Debug #PB_Checkbox_Unchecked ; 0
       ; Debug #PB_Checkbox_Checked   ; 1
@@ -625,23 +606,23 @@
       ;       ;-\\ Editor
       ;       ;#__editor_Inline = #__flag_InLine
       ;       #__editor_Readonly = #__flag_Readonly
-      ;       #__editor_wordwrap = #__flag_Textwordwrap
+      ;       #__editor_wordwrap = #__flag_text_wordwrap
       ;       ;#__editor_nomultiline   = #__flag_nolines
-      ;       ;#__editor_numeric       = #__flag_numeric | #__text_Multiline
+      ;       ;#__editor_numeric       = #__flag_numeric | #__flag_text_Multiline
       ;       ;#__editor_Fullselection = #__flag_Fullselection
       ;       ;#__editor_gridlines     = #__flag_gridLines
-      ;       ;#__editor_Borderless    = #__flag_Borderless
+      ;       ;#__editor_Borderless    = #__flag_border_less
       ;       
       ; ;       ;-\\ String
-      ;       #__string_Right     = #__text_Right
-      ;       #__string_Center    = #__text_Center
-      ;       #__string_numeric   = #__text_numeric
-      ;       #__string_password  = #__text_password
-      ;       #__string_Readonly  = #__text_Readonly
-      ;       #__string_Uppercase = #__text_Uppercase
-      ;       #__string_Lowercase = #__text_Lowercase
-      ;       #__string_Multiline = #__text_Multiline
-      ;       ;#__string_Borderless = #__flag_Borderless
+      ;       #__string_Right     = #__flag_text_Right
+      ;       #__string_Center    = #__flag_text_Center
+      ;       #__string_numeric   = #__flag_text_numeric
+      ;       #__string_password  = #__flag_text_password
+      ;       #__string_Readonly  = #__flag_text_Readonly
+      ;       #__string_Uppercase = #__flag_text_Uppercase
+      ;       #__string_Lowercase = #__flag_text_Lowercase
+      ;       #__string_Multiline = #__flag_text_Multiline
+      ;       ;#__string_Borderless = #__flag_border_less
       
       
       ;       If (#__flag_Limit >> 1) > 2147483647 ; 8589934592
@@ -750,8 +731,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 407
-; FirstLine = 399
+; CursorPosition = 439
+; FirstLine = 424
 ; Folding = ----
 ; Optimizer
 ; EnableXP

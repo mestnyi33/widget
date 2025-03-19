@@ -46,19 +46,19 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList( )
     
        
-    Container( 430,10,200,100, #__flag_BorderLess ) : widget( )\round = 20
+    Container( 430,10,200,100, #__flag_border_Less ) : widget( )\round = 20
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
-    Container( 430,120,200,100, #__flag_BorderFlat ) : widget( )\round = 20 
+    Container( 430,120,200,100, #__flag_border_Flat ) : widget( )\round = 20 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
-    Container( 430,230,200,100, #__flag_BorderSingle ) : widget( )\round = 20 
+    Container( 430,230,200,100, #__flag_border_Single ) : widget( )\round = 20 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
-    Container( 430,340,200,100, #__flag_BorderDouble ) : widget( )\round = 20 
+    Container( 430,340,200,100, #__flag_border_Double ) : widget( )\round = 20 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
-    Container( 430,450,200,100, #__flag_BorderRaised ) : widget( )\round = 20 
+    Container( 430,450,200,100, #__flag_border_Raised ) : widget( )\round = 20 
     SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
     CloseList( )
     

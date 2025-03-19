@@ -222,7 +222,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	AddItem (ID(0), -1,"Panel 3")
 	Button(10, 15, 100, 24,"Button 3_1")
-	*b = Button(10, 15+24+10, 100, 24,"auto resize button when changing font", #__flag_Textmultiline)
+	*b = Button(10, 15+24+10, 100, 24,"auto resize button when changing font", #__flag_text_multiline)
 	SetFont(*b, 5)
 	;SetState(ID(0), 2)
 	

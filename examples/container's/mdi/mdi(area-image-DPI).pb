@@ -134,7 +134,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;ResizeImage(img, DpiScaled(width), DPIScaled(height) )
       
-      *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess|#__flag_Transparent )
+      *this = AddItem( *mdi, -1, "", img, #__flag_border_Less|#__flag_Transparent )
       *this\class = "image-"+Str(img)
       *this\cursor = #PB_Cursor_Hand
       *this\round = DPIScaled(round)

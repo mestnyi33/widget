@@ -205,8 +205,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*w2, @widget_events())
       
       ;     *reset = Button( 10, 435, 100, 30, "reset [all] selected")
-      ;     *first = Button( 525 - (10+120)*3, 435, 120, 30, "select [first] item", #__flag_ButtonToggle)
-      ;     *last = Button( 525 - (10+120)*2, 435, 120, 30, "select [last] item", #__flag_ButtonToggle)
+      ;     *first = Button( 525 - (10+120)*3, 435, 120, 30, "select [first] item", #PB_Button_Toggle)
+      ;     *last = Button( 525 - (10+120)*2, 435, 120, 30, "select [last] item", #PB_Button_Toggle)
       ;     *added = Button( 525 - (10+120)*1, 435, 120, 30, "add [new] item")
       ;     
       ;     SetState( *reset, 1)

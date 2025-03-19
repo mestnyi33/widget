@@ -70,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 13, "Tree_6", -1 )
     
     
-    Define *splitter1 = Splitter(0,0,0,0, 0, Splitter(0,0,0,0, g,*g), #__flag_borderless|#__flag_autosize | #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    Define *splitter1 = Splitter(0,0,0,0, 0, Splitter(0,0,0,0, g,*g), #__flag_border_less|#__flag_autosize | #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     SetState(*splitter1, 0)
     ;SetGadgetData(g_Canvas, Splitter(8, 8, 306, 491-16, g,*g, #__flag_autosize))
     

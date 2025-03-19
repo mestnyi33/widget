@@ -76,13 +76,13 @@ CompilerIf #PB_Compiler_IsMainFile
       BindGadgetEvent( i, @events_gadgets( ) )
     Next
     
-    Button( 10+222, 10, 200, 20, "Standard button", #__flag_ButtonDefault,8 )
-    Button( 10+222, 40, 200, 20, "Left button", #__text_left )
-    Button( 10+222, 70, 200, 20, "Right button", #__text_Right )
-    Button( 10+222,100, 200, 60, "Default button and change font", #__flag_ButtonDefault,4 )
+    Button( 10+222, 10, 200, 20, "Standard button", #PB_Button_Default,8 )
+    Button( 10+222, 40, 200, 20, "Left button", #PB_Button_Left )
+    Button( 10+222, 70, 200, 20, "Right button", #PB_Button_Right )
+    Button( 10+222,100, 200, 60, "Default button and change font", #PB_Button_Default,4 )
     SetFont(widget(), (0))
-    Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #__flag_Textmultiline,4 )
-    Button( 10+222,170+70, 200, 25, "Toggle button", #__flag_ButtonToggle )
+    Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #PB_Button_MultiLine,4 )
+    Button( 10+222,170+70, 200, 25, "Toggle button", #PB_Button_Toggle )
     
     SetState( ID( 5 ), 1 )
     SetFont( ID( 5 ), ( 0 ) )
@@ -110,13 +110,13 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
     c2 = GetCanvasGadget( root( ) )
     
-    *Button_0 = Button( 15, 42, 250,  60, "Button (Horisontal)", #__flag_Textmultiline,-1 )
+    *Button_0 = Button( 15, 42, 250,  60, "Button (Horisontal)", #PB_Button_MultiLine )
 ;     SetColor( *Button_0, #__ForeColor, $0000FF )
      SetColor( *Button_0, #PB_Gadget_BackColor, $00FF00 )
      SetColor( *Button_0, #PB_Gadget_FrontColor, $4919D5 ) 
      SetFont( *Button_0, ( 0 ) )
     
-    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #__flag_Textmultiline|#__text_Vertical|#__text_Invert )
+    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #PB_Button_MultiLine|#__flag_text_Vertical|#__flag_text_Invert )
      SetColor( *Button_1, #PB_Gadget_FrontColor, $FFD56F1A )
      SetFont( *Button_1, ( 0 ) )
     
@@ -143,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 118
+; CursorPosition = 112
 ; FirstLine = 104
 ; Folding = ---
 ; Optimizer

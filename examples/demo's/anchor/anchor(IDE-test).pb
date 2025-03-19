@@ -110,7 +110,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;           ; SetCursor(EventWidget( ), ImageID(GetItemData(id_elements_tree, a_transform()\type)))
 ;         EndIf
 ;         
-;         If getclass(e_widget) = "ToolBar"
+;         If getclass(e_widget) = "Tool"
 ;           Protected transform, move_x, move_y, BarButton = GetData(e_widget)
 ;           Static NewList *copy._s_group()
 ;           
@@ -215,7 +215,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ButtonImage(2+((X(widget())+Width(widget())) * Bool(MacroExpandedCount - 1)), 2,barbuttonsize,barbuttonsize,_image_, _mode_)
     ;widget()\color = widget()\parent\color
     ;widget()\text\padding\x = 0
-    widget()\class = "ToolBar"
+    widget()\class = "Tool"
     widget()\data = _button_
     ;SetData(widget(), _button_)
     Bind(widget(), @toolbar_events())
@@ -229,12 +229,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndMacro
   
   
-  Open(0, 150, 150, 600, 600+barbuttonsize+6, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu)
+  Open(0, 150, 150, 600, 600+barbuttonsize+6, "PB (window_1)", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
   toolbar_design = Container(0,0,600,barbuttonsize+6) 
   ;SetAlignmentFlag(widget(), #__align_top)
   ;ToolBar(toolbar, window, flags)
   
-;   group_select = BarButton_(1, - 1, #__flag_ButtonToggle)
+;   group_select = BarButton_(1, - 1, #PB_Button_Toggle)
 ;   SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
 ;   SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
 ;   
@@ -271,14 +271,14 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   AddItem(widget(), -1, "form_0") : Resize(widget(), 50, 30, 500, 500) : *new = widget()
   SetColor(widget(), #PB_Gadget_BackColor, $C0AED8F2)
-  ; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
+  ; *new = Window(50, 30, 500, 500, "window_2", #PB_Window_SizeGadget | #PB_Window_SystemMenu, widget())
   ; ; container(30,30,450-2,450-2)
   ;;ScrollArea(30,30,450-2,450-2, 0,0)
   ScrollArea(30,30,450-2,450-2, 250,750, 1);a_transform()\grid\size)
   SetColor(widget(), #PB_Gadget_BackColor, $C0F2AEDA)
   
   Panel(30,30,400,400)
-  SetColor(widget(), #pb_gadget_backcolor, $C0AEF2D5)
+  SetColor(widget(), #PB_Gadget_BackColor, $C0AEF2D5)
   AddItem(widget(), -1, "item-1")
   ;container(30,30,400,400)
   ComboBox(120,160,115,50)
@@ -322,8 +322,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 280
-; FirstLine = 272
+; CursorPosition = 112
+; FirstLine = 109
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(*w2, @widget_events())
     widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
-    *reset = widget::Button( 10, 435, 100, 30, "reset state", #__flag_ButtonToggle)
+    *reset = widget::Button( 10, 435, 100, 30, "reset state", #PB_Button_Toggle)
     widget::SetState( *reset, 1)
     widget::Bind(*reset, @button_events())
     
@@ -183,7 +183,7 @@ CompilerEndIf
 ; ;   
 ; ;   EditorGadget(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
 ; ;   
-; ;   Open(0, 270, 170, 250, 520);, "", #__flag_borderless)
+; ;   Open(0, 270, 170, 250, 520);, "", #__flag_border_less)
 ; ;   *w=Editor(0, 0, 250, 520, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
 ; ;   ;
 ; ;   ;-

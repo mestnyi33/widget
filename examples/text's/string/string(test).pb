@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\ Open Root
    Define *root._S_WIDGET = Open(#window, 10, 10, 300 - 20, 300 - 20): *root\class = "root": SetText(*root, "root")
    
-   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password | #__text_Right)
+   *g = String(10, 220, 200, 50, "string gadget text text 1234567890 text text long long very long", #PB_String_Password | #__flag_text_Right)
    
    Procedure button_panel_events( )
       Select GetText( EventWidget( ) )

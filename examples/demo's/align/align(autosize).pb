@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define hfs = #__window_FrameSize*2
   
     ;a_init(Root())
-    ;Window(50,50,440-hfs,240-vfs,"window", #__window_systemmenu)
+    ;Window(50,50,440-hfs,240-vfs,"window", #PB_Window_systemmenu)
     ;MDI(50,50,440,240) : OpenList(widget())
     ;Container(50,50,440,240)
     ;ScrollArea(50,50,440,240, 800,500)
@@ -24,8 +24,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;
     ;String(0,0,0,0,"", #__flag_autosize);|#__flag_transparent)
     Button(0,0,0,0,"button", #__flag_autosize)
-    ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize, widget())
-    ;Window(0,0,0,0,"", #__window_systemmenu|#__flag_autosize|#__flag_child, widget())
+    ;Window(0,0,0,0,"", #PB_Window_systemmenu|#__flag_autosize, widget())
+    ;Window(0,0,0,0,"", #PB_Window_systemmenu|#__flag_autosize|#__flag_child, widget())
     ;MDI(0,0,0,0, #__flag_autosize)
     ;SetColor(widget( ), #pb_gadget_backcolor, -1 )
     

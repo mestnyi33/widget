@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *sp_0 = Splitter(0, 0, 0, 0, *f_1, *f_0, #__flag_Vertical)
     *sp_1 = Splitter(10, 10, 360, 360+25, *f_2, *sp_0)
     
-    *f_4 = window(370+10, 10, 180,  70, "form_4 BorderLess", #__flag_BorderLess)
+    *f_4 = window(370+10, 10, 180,  70, "form_4 BorderLess", #__flag_border_Less)
     Button(5, 5, 80, 20, "Butt_4_0")
     *f_5 = window(370+10, 130+10, 180,  70, "form_6 SizeGadget", #PB_Window_SizeGadget)
     Button(5, 5, 80, 20, "Butt_6_0")

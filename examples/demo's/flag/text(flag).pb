@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick
         Select EventWidget
           Case *this
-            If Flag(*this, #__flag_ButtonToggle)
+            If Flag(*this, #PB_Button_Toggle)
               SetState(button_toggle, GetState(EventWidget))
             EndIf
             
@@ -107,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
                button_center
             
             
-            Flag(*this, #PB_Button_Left|#PB_Button_Right|#__text_Top|#__text_Bottom, 0)
+            Flag(*this, #PB_Button_Left|#PB_Button_Right|#__flag_text_Top|#__flag_text_Bottom, 0)
             ;
             If EventWidget <> button_top And EventWidget <> button_left And EventWidget <> button_right
               SetState(button_top,0) 
@@ -122,26 +122,26 @@ CompilerIf #PB_Compiler_IsMainFile
               SetState(button_bottom,0) 
             EndIf
             If EventWidget <> button_center 
-              Flag(*this, #__text_Center, 0)
+              Flag(*this, #__flag_text_Center, 0)
               SetState(button_center,0) 
             EndIf
             
             If GetState(button_left) And GetState(button_bottom)
-              Flag(*this, #PB_Button_Left|#__text_Bottom, 1)
+              Flag(*this, #PB_Button_Left|#__flag_text_Bottom, 1)
             ElseIf GetState(button_right) And GetState(button_bottom)
-              Flag(*this, #PB_Button_Right|#__text_Bottom, 1)
+              Flag(*this, #PB_Button_Right|#__flag_text_Bottom, 1)
             ElseIf GetState(button_left) And GetState(button_top)
-              Flag(*this, #PB_Button_Left|#__text_Top, 1)
+              Flag(*this, #PB_Button_Left|#__flag_text_Top, 1)
             ElseIf GetState(button_right) And GetState(button_top)
-              Flag(*this, #PB_Button_Right|#__text_Top, 1)
+              Flag(*this, #PB_Button_Right|#__flag_text_Top, 1)
             ElseIf GetState(button_left)
               Flag(*this, #PB_Button_Left, 1)
             ElseIf GetState(button_right) 
               Flag(*this, #PB_Button_Right, 1)
             ElseIf GetState(button_bottom)
-              Flag(*this, #__text_Bottom, 1)
+              Flag(*this, #__flag_text_Bottom, 1)
             ElseIf GetState(button_top)
-              Flag(*this, #__text_Top, 1)
+              Flag(*this, #__flag_text_Top, 1)
             EndIf
             
             If GetState(button_left)=0 And 
@@ -149,21 +149,21 @@ CompilerIf #PB_Compiler_IsMainFile
                GetState(button_right)=0 And
                GetState(button_bottom)=0
               SetState(button_center,1) 
-              Flag(*this, #__text_Center, 1)
+              Flag(*this, #__flag_text_Center, 1)
             EndIf
             
             ;
             Select EventWidget
-              Case button_top       : flag = #__text_Top     
-              Case button_left      : flag = #__text_left
-              Case button_right     : flag = #__text_Right
-              Case button_bottom    : flag = #__text_Bottom
-              Case button_center    : flag = #__text_Center
+              Case button_top       : flag = #__flag_text_Top     
+              Case button_left      : flag = #__flag_text_left
+              Case button_right     : flag = #__flag_text_Right
+              Case button_bottom    : flag = #__flag_text_Bottom
+              Case button_center    : flag = #__flag_text_Center
             EndSelect
             ;
-          Case button_toggle    : flag = #__flag_ButtonToggle
-          Case button_invert    : flag = #__text_Invert
-          Case button_vertical  : flag = #__text_Vertical
+          Case button_toggle    : flag = #PB_Button_Toggle
+          Case button_invert    : flag = #__flag_text_Invert
+          Case button_vertical  : flag = #__flag_text_Vertical
         EndSelect
         
         If flag
@@ -206,18 +206,18 @@ CompilerIf #PB_Compiler_IsMainFile
     Define Y  = 10
     Define bh = 24
     ; flag
-    ; Button_type      = widget::Button(width + 45, y, 100, bh, "gadget", #__flag_ButtonToggle)
+    ; Button_type      = widget::Button(width + 45, y, 100, bh, "gadget", #PB_Button_Toggle)
     Container = Container( Width + 45, Y + bh * 1, 100, 100)
-    button_full       = widget::Button(0,0,0,0, "full", #__flag_ButtonToggle,-1,20)
-    button_lt       = widget::Button(0,0,bh,bh, "lt", #__flag_ButtonToggle,-1,20)
-    button_rt      = widget::Button(0,0,bh,bh, "rt", #__flag_ButtonToggle,-1,20)
-    button_top       = widget::Button(0,0,bh,bh, "t", #__flag_ButtonToggle,-1,20)
-    button_left      = widget::Button(0,0,bh,bh, "l", #__flag_ButtonToggle,-1,20)
-    button_center    = widget::Button(0,0,bh,bh, "c", #__flag_ButtonToggle,-1,20)
-    button_right     = widget::Button(0,0,bh,bh, "r", #__flag_ButtonToggle,-1,20)
-    button_bottom    = widget::Button(0,0,bh,bh, "b", #__flag_ButtonToggle,-1,20)
-    button_lb     = widget::Button(0,0,bh,bh, "lb", #__flag_ButtonToggle,-1,20)
-    button_rb    = widget::Button(0,0,bh,bh, "rb", #__flag_ButtonToggle,-1,20)
+    button_full       = widget::Button(0,0,0,0, "full", #PB_Button_Toggle,-1,20)
+    button_lt       = widget::Button(0,0,bh,bh, "lt", #PB_Button_Toggle,-1,20)
+    button_rt      = widget::Button(0,0,bh,bh, "rt", #PB_Button_Toggle,-1,20)
+    button_top       = widget::Button(0,0,bh,bh, "t", #PB_Button_Toggle,-1,20)
+    button_left      = widget::Button(0,0,bh,bh, "l", #PB_Button_Toggle,-1,20)
+    button_center    = widget::Button(0,0,bh,bh, "c", #PB_Button_Toggle,-1,20)
+    button_right     = widget::Button(0,0,bh,bh, "r", #PB_Button_Toggle,-1,20)
+    button_bottom    = widget::Button(0,0,bh,bh, "b", #PB_Button_Toggle,-1,20)
+    button_lb     = widget::Button(0,0,bh,bh, "lb", #PB_Button_Toggle,-1,20)
+    button_rb    = widget::Button(0,0,bh,bh, "rb", #PB_Button_Toggle,-1,20)
     
     SetAlign( button_full, #__align_full, 0,0,0,0)
     SetAlign( button_left, #__align_auto, 1,0,0,0)
@@ -233,17 +233,17 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Resize(container, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
     CloseList( )
     
-    ;     button_top       = widget::Button(width + 45, y + bh * 1, 100, bh, "top", #__flag_ButtonToggle)
-;     button_left      = widget::Button(width + 45, y + bh * 2, 100, bh, "left", #__flag_ButtonToggle)
-;     button_center    = widget::Button(width + 45, y + bh * 3, 100, bh, "center", #__flag_ButtonToggle)
-;     button_right     = widget::Button(width + 45, y + bh * 4, 100, bh, "right", #__flag_ButtonToggle)
-;     button_bottom    = widget::Button(width + 45, y + bh * 5, 100, bh, "bottom", #__flag_ButtonToggle)
+    ;     button_top       = widget::Button(width + 45, y + bh * 1, 100, bh, "top", #PB_Button_Toggle)
+;     button_left      = widget::Button(width + 45, y + bh * 2, 100, bh, "left", #PB_Button_Toggle)
+;     button_center    = widget::Button(width + 45, y + bh * 3, 100, bh, "center", #PB_Button_Toggle)
+;     button_right     = widget::Button(width + 45, y + bh * 4, 100, bh, "right", #PB_Button_Toggle)
+;     button_bottom    = widget::Button(width + 45, y + bh * 5, 100, bh, "bottom", #PB_Button_Toggle)
     
-    button_default   = widget::Button(Width + 45, Y + bh * 6, 100, bh, "default", #__flag_ButtonToggle)
-    button_multiline = widget::Button(Width + 45, Y + bh * 7, 100, bh, "multiline", #__flag_ButtonToggle)
-    button_toggle    = widget::Button(Width + 45, Y + bh * 8, 100, bh, "toggle", #__flag_ButtonToggle)
-    button_vertical  = widget::Button(Width + 45, Y + bh * 9, 100, bh, "vertical", #__flag_ButtonToggle)
-    button_invert    = widget::Button(Width + 45, Y + bh * 10, 100, bh, "invert", #__flag_ButtonToggle)
+    button_default   = widget::Button(Width + 45, Y + bh * 6, 100, bh, "default", #PB_Button_Toggle)
+    button_multiline = widget::Button(Width + 45, Y + bh * 7, 100, bh, "multiline", #PB_Button_Toggle)
+    button_toggle    = widget::Button(Width + 45, Y + bh * 8, 100, bh, "toggle", #PB_Button_Toggle)
+    button_vertical  = widget::Button(Width + 45, Y + bh * 9, 100, bh, "vertical", #PB_Button_Toggle)
+    button_invert    = widget::Button(Width + 45, Y + bh * 10, 100, bh, "invert", #PB_Button_Toggle)
     
 ;     ; flag
 ;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__flag_optionboxes | #__tree_CheckBoxes | #__Tree_threestate)
@@ -264,7 +264,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Debug _Flag(*this, #PB_Button_MultiLine)
     ;\\ set button toggled state
 ;     SetState(button_multiline, Flag(*this, #PB_Button_MultiLine ))
-;     SetState(button_center, Flag(*this, #__text_Center))
+;     SetState(button_center, Flag(*this, #__flag_text_Center))
 ;     Hide(Button_type, 1)
     
     ;\\

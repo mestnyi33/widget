@@ -27,8 +27,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug " * "+Width(*mdi, #__c_inner)+" "+Height(*mdi, #__c_inner)
   
   ; add childrens to mdi gadget
-  Define *g0 = Button(20, 20, 288,212, "button", #__text_left|#__text_Top)
-  Define *g1 = Button(50, 50, 288,212, "button", #__text_left|#__text_Top)
+  Define *g0 = Button(20, 20, 288,212, "button", #PB_Button_Left|#__flag_text_Top)
+  Define *g1 = Button(50, 50, 288,212, "button", #PB_Button_Left|#__flag_text_Top)
   
   ; Debug " - test parent - mdi show and size scroll bars - "
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,308,232 )
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 25
+; CursorPosition = 29
+; FirstLine = 11
 ; Folding = -
 ; EnableXP

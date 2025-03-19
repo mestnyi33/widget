@@ -11,6 +11,7 @@ Global BUTTON_PASTE = - 1
 Global BUTTON_OK = - 1
 Global BUTTON_CANCEL = - 1
 
+
 Procedure Open_WINDOW_IMAGE( )
    WINDOW_IMAGE = OpenWindow( #PB_Any, 7, 7, 372, 232, "Редактор изображения" )
    IMAGE_VIEW = ContainerGadget( #PB_Any, 7, 7, 253, 218, #PB_Container_Flat ) : CloseGadgetList( )
@@ -57,8 +58,8 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17
-; FirstLine = 13
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = --
 ; EnableXP
 ; DPIAware

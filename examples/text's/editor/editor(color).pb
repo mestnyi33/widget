@@ -14,7 +14,7 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     EditorGadget(0, 10, 10, 180, 230)
     SetGadgetFont(0, FontID(font))
     
-    Open(0, 200, 10, 180, 230);, "", #__flag_borderless)
+    Open(0, 200, 10, 180, 230);, "", #__flag_border_less)
     *w = Editor(0, 0, 180, 230)
     
     For i = 1 To 10

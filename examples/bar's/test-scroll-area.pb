@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
      
       test_resize = 1
      ; test_resize_area = 1
-      widget = Tree(0, 0, 0, 0, #__flag_borderless)
+      widget = Tree(0, 0, 0, 0, #__flag_border_less)
       Define i
       AddItem(widget, -1, Str(i)+"test item ")
       For i=1 To 20
@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
       Bind( widget(), @track_h_events( ), #__event_change )
       
       
-      Button(w+10,h+10,20,20,"", #__flag_Buttontoggle)
+      Button(w+10,h+10,20,20,"", #PB_Button_Toggle)
       SetRound( widget(), 10 )
       Bind( widget(), @track_vh_events( ), #__event_Down )
 ;       

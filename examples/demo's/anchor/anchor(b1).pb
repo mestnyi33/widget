@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;
     ;\\
     a_init(root( ))
-    ;a_init(Window(40,40,720,370,"window", #__window_systemmenu))
+    ;a_init(Window(40,40,720,370,"window", #PB_Window_systemmenu))
     ;a_init(MDI(40,40,720,370)) : OpenList(widget())
     ;a_init(Container(40,40,720,370))
     ;a_init(ScrollArea(40,40,720,370, 800,500))

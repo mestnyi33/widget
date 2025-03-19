@@ -16,14 +16,15 @@ If Open( 0, 0, 0, 350, 280, "demo font", #PB_Window_SystemMenu | #PB_Window_Scre
    
    WINDOW_1 = Window( 10, 10, 320, 253, "window_1" ) 
    SetClass( WINDOW_1, "WINDOW_1")
-   BUTTON_8 = Button( 21, 14, 120, 64, "button_8" )
+   BUTTON_8 = Button( 21, 14, 260, 64, "button_8", #PB_Button_Left )
    SetFont( BUTTON_8, (1))
    SetColor( BUTTON_8, #PB_Gadget_BackColor, (0))
-   BUTTON_9 = Button( 21, 91, 120, 71, "button_9" )
+   BUTTON_9 = Button( 21, 91, 260, 71, "button_9", #__flag_text_Right )
    ;SetFont( BUTTON_9, (2))
    SetFont( BUTTON_9, (#my_font_2))
-   BUTTON_10 = Button( 21, 175, 120, 64, "button_10" )
+   BUTTON_10 = Button( 21, 175, 260, 64, "button_10" )
    SetFont( BUTTON_10, (my_font_2))
+   SetColor( BUTTON_8, #PB_Gadget_FrontColor, (0))
    
 EndIf
 
@@ -31,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
+; CursorPosition = 16
 ; Folding = -
 ; EnableXP
 ; DPIAware

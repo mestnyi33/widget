@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftClick
         Select EventWidget( )
           Case *this
-            If Flag(*this, #__flag_ButtonToggle)
+            If Flag(*this, #PB_Button_Toggle)
               SetState(Button_4, GetState(EventWidget( )))
             EndIf
             
@@ -57,15 +57,15 @@ CompilerIf #PB_Compiler_IsMainFile
               SetText(Button_type, "gadget")
             EndIf
             
-          Case Button_0 : flag = #__flag_ButtonDefault
-          Case Button_1 : flag = #__text_multiline
-          Case Button_2 : flag = #__text_left
+          Case Button_0 : flag = #__flag_button_Default
+          Case Button_1 : flag = #__flag_text_multiline
+          Case Button_2 : flag = #__flag_text_left
           Case Button_3 : flag = #__button_right
-          Case Button_4 : flag = #__flag_ButtonToggle
-          Case Button_5 : flag = #__text_top
-          Case Button_6 : flag = #__text_bottom
-          Case Button_7 : flag = #__text_invert
-          Case Button_8 : flag = #__text_vertical
+          Case Button_4 : flag = #PB_Button_Toggle
+          Case Button_5 : flag = #__flag_text_top
+          Case Button_6 : flag = #__flag_text_bottom
+          Case Button_7 : flag = #__flag_text_invert
+          Case Button_8 : flag = #__flag_text_vertical
         EndSelect
         
         If flag
@@ -78,32 +78,32 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, Width+180, Height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__text_multiline);|);|#__text_left) 
-    *this = widget::Editor(100, 100, 250, 250, #__text_wordwrap) : SetText(*this, get_text())
+    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_text_multiline);|);|#__flag_text_left) 
+    *this = widget::Editor(100, 100, 250, 250, #__flag_text_wordwrap) : SetText(*this, get_text())
     
     Define Y = 10
     ; flag
-    Button_type = widget::Button(Width+45,   Y, 100, 26, "gadget", #__flag_ButtonToggle) 
-    Button_0 = widget::Button(Width+45, Y+30*1, 100, 26, "default", #__flag_ButtonToggle) 
-    Button_1 = widget::Button(Width+45, Y+30*2, 100, 26, "multiline", #__flag_ButtonToggle) 
-    Button_4 = widget::Button(Width+45, Y+30*3, 100, 26, "wordwrap", #__flag_ButtonToggle) 
+    Button_type = widget::Button(Width+45,   Y, 100, 26, "gadget", #PB_Button_Toggle) 
+    Button_0 = widget::Button(Width+45, Y+30*1, 100, 26, "default", #PB_Button_Toggle) 
+    Button_1 = widget::Button(Width+45, Y+30*2, 100, 26, "multiline", #PB_Button_Toggle) 
+    Button_4 = widget::Button(Width+45, Y+30*3, 100, 26, "wordwrap", #PB_Button_Toggle) 
     
-    Button_5 = widget::Button(Width+45, Y+30*4, 100, 26, "top", #__flag_ButtonToggle) 
-    Button_2 = widget::Button(Width+45, Y+30*5, 45, 26, "left", #__flag_ButtonToggle) 
-    Button_3 = widget::Button(Width+45 + 55, Y+30*5, 45, 26, "right", #__flag_ButtonToggle) 
-    Button_6 = widget::Button(Width+45, Y+30*6, 100, 26, "bottom", #__flag_ButtonToggle) 
+    Button_5 = widget::Button(Width+45, Y+30*4, 100, 26, "top", #PB_Button_Toggle) 
+    Button_2 = widget::Button(Width+45, Y+30*5, 45, 26, "left", #PB_Button_Toggle) 
+    Button_3 = widget::Button(Width+45 + 55, Y+30*5, 45, 26, "right", #PB_Button_Toggle) 
+    Button_6 = widget::Button(Width+45, Y+30*6, 100, 26, "bottom", #PB_Button_Toggle) 
     
-    Button_8 = widget::Button(Width+45, Y+30*7, 100, 26, "vertical", #__flag_ButtonToggle) 
-    Button_7 = widget::Button(Width+45, Y+30*8, 100, 26, "invert", #__flag_ButtonToggle) 
+    Button_8 = widget::Button(Width+45, Y+30*7, 100, 26, "vertical", #PB_Button_Toggle) 
+    Button_7 = widget::Button(Width+45, Y+30*8, 100, 26, "invert", #PB_Button_Toggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(Button_1, Flag(*this, #__text_multiline))
-    SetState(Button_4, Flag(*this, #__text_wordwrap))
-    SetState(Button_5, Flag(*this, #__text_top))
-    SetState(Button_2, Flag(*this, #__text_left))
-    SetState(Button_3, Flag(*this, #__text_right))
-    SetState(Button_6, Flag(*this, #__text_bottom))
+    SetState(Button_1, Flag(*this, #__flag_text_multiline))
+    SetState(Button_4, Flag(*this, #__flag_text_wordwrap))
+    SetState(Button_5, Flag(*this, #__flag_text_top))
+    SetState(Button_2, Flag(*this, #__flag_text_left))
+    SetState(Button_3, Flag(*this, #__flag_text_right))
+    SetState(Button_6, Flag(*this, #__flag_text_bottom))
     Hide(Button_type, 1)
     
         Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)

@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If OpenWindow(0, 0, 0, 800, 600, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
       Open(0, 10,10)
       
-      g = Editor( 0, 0, 0, 0 , #__flag_Textwordwrap) : Hide(HBar(g), #True )
+      g = Editor( 0, 0, 0, 0 , #__flag_text_wordwrap) : Hide(HBar(g), #True )
       *g = Editor(0, 0, 0, 0) 
       
       If g

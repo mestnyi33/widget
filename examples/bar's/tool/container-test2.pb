@@ -36,13 +36,13 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
     
-    Container( 100,100,200,100, #__flag_BorderFlat ) ; #__flag_BorderSingle ; #__flag_borderDouble
+    Container( 100,100,200,100, #__flag_border_Flat ) ; #__flag_border_Single ; #__flag_border_Double
     
     ToolBar( widget( ) );, #PB_ToolBar_Small )
     BarButton( #_tb_file_open, -1, 0, "Open" )
     BarButton( #_tb_file_save, -1, 0, "Save" )
     BarSeparator( )
-    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #__flag_ButtonToggle ) 
+    BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_Button_Toggle ) 
     BarSeparator( )
     BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
     BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )

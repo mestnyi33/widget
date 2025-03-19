@@ -8,7 +8,7 @@ Global *w
 If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)    ;, #PB_ListView_MultiSelect
   
-  Open(0, 270, 10, 250, 680);, "", #__flag_borderless)
+  Open(0, 270, 10, 250, 680);, "", #__flag_border_less)
   *w=Editor(0, 0, 250, 680);, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
   
   a=0
