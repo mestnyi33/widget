@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                Case "window_1_close"
-                  Send( GetWindow( EventWidget( ) ), #__event_Close )
+                  Post( GetWindow( EventWidget( ) ), #__event_Close )
                
                Case "window_all_close"
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
@@ -117,6 +117,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 76
-; FirstLine = 63
+; FirstLine = 72
 ; Folding = ---
 ; EnableXP

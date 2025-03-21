@@ -539,7 +539,7 @@ Procedure   Properties_ButtonEvents( )
                StandardFile$ = "open_example.pb" 
                Pattern$ = "Image (*.*)|*.png;*.bmp;*.ico"
                
-               Define img = open_EditorImages( )
+               Define img = open_EditorImages( EventWindow( ))
                If IsImage( img )
                   SetImage( a_focused( ), img )
                EndIf
@@ -2765,8 +2765,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 545
-; FirstLine = 534
+; CursorPosition = 541
+; FirstLine = 525
 ; Folding = --------------------------------------------------
 ; Optimizer
 ; EnableAsm

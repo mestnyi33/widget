@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_leftclick
             Select GetText( EventWidget())
                Case "window_0_close" 
-                  ; Send( GetWindow( EventWidget( ) ), #__event_Close )
+                  ; Post( GetWindow( EventWidget( ) ), #__event_Close )
                   
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( )\window )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                      
@@ -27,10 +27,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                Case "window_1_close"
-                  Send( GetWindow( EventWidget( ) ), #__event_Close )
+                  Post( GetWindow( EventWidget( ) ), #__event_Close )
                   
                Case "window_2_close"
-                  ; Send( GetWindow( EventWidget( ) ), #__event_Close )
+                  ; Post( GetWindow( EventWidget( ) ), #__event_Close )
                   
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                      
@@ -97,8 +97,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 58
+; CursorPosition = 32
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
 ; DPIAware

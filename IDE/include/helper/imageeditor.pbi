@@ -103,7 +103,7 @@ Procedure Events_EDITORIMAGES( )
                PostQuit( )
                           
             Case BUTTON_CANCEL
-               Send( GetWindow( BUTTON_CANCEL ), #__event_close )
+               Post( GetWindow( BUTTON_CANCEL ), #__event_Close )
                 
          EndSelect
    EndSelect
@@ -111,12 +111,13 @@ Procedure Events_EDITORIMAGES( )
    ProcedureReturn #PB_Ignore
 EndProcedure
 
-Procedure Open_EDITORIMAGES( )
-   CompilerIf #PB_Compiler_IsMainFile
-      EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
-   CompilerElse
-      EDITORIMAGES = Window( 20, 20, 392, 232, "Редактор изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
-   CompilerEndIf
+Procedure Open_EDITORIMAGES( window = #PB_Any, flag = #PB_Window_SystemMenu | #PB_Window_WindowCentered ) ;  | #PB_Window_ScreenCentered 
+;    CompilerIf #PB_Compiler_IsMainFile
+      EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", flag, WindowID( window ) )
+;     EDITORIMAGES = Open( window, 20, 20, 392, 232, "Редактор изображения", flag )
+;    CompilerElse
+;       EDITORIMAGES = Window( 20, 20, 392, 232, "Редактор изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
+;    CompilerEndIf
    
    SetClass( EDITORIMAGES, "EDITORIMAGES" )
    IMAGE_VIEW = Image( 7, 7, 253, 218, (-1), #__image_Center )
@@ -151,7 +152,7 @@ Procedure Open_EDITORIMAGES( )
    BUTTON_CANCEL = Button( 266, 203, 119, 22, "Отмена", #__image_Left )
    
    Bind( #PB_All, @Events_EDITORIMAGES( ))
-   BindEvent( #PB_Event_CloseWindow, @Event_CloseWindow( ), GetCanvasWindow( EDITORIMAGES ))
+   ;BindEvent( #PB_Event_CloseWindow, @Event_CloseWindow( ), GetCanvasWindow( EDITORIMAGES ))
    
    WaitQuit( EDITORIMAGES )
    
@@ -161,14 +162,29 @@ Procedure Open_EDITORIMAGES( )
 EndProcedure
 
 CompilerIf #PB_Compiler_IsMainFile
-   If IsImage( Open_EDITORIMAGES( ))
-      Debug "Это изображение " + LOADIMAGE
-   EndIf
+   Procedure button_left_click_event( )
+      Define root = EventWidget( )\root
+      If IsImage( Open_EDITORIMAGES( 0 ))
+         ; If IsImage( Open_EDITORIMAGES( 0, #PB_Window_BorderLess ))
+         Debug "Это изображение " + LOADIMAGE
+         SetImage( root, LOADIMAGE )
+      EndIf
+   EndProcedure
+   
+   Define root = Open( 0, 20, 20, 600, 600, "Загрузка изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
+   SetBackgroundColor( widget( ), $54DE94 )
+   Button( 600-300-10, 600-30-10, 300, 30, ~"Открыть окно \"Редактор изображения\"", #__image_Left )
+   Disable( widget( ), #True )
+   
+   Bind( widget( ), @button_left_click_event( ), #__event_LeftClick )
+   Post( widget( ), #__event_LeftClick )
+   
+   WaitClose( )
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 126
+; CursorPosition = 109
+; FirstLine = 98
 ; Folding = ---
 ; EnableXP
 ; DPIAware

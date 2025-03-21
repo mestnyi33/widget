@@ -1544,7 +1544,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i CloseList( )
       Declare.i OpenList( *this, item.l = 0 )
       ;
-      Declare.i Send( *this, event.l, *button = #PB_All, *data = #Null )
       Declare.i Post( *this, event.l, *button = #PB_All, *data = #Null )
       Declare.i Bind( *this, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
       Declare.i Unbind( *this, *callback, event.l = #PB_All, item.l = #PB_All )
@@ -5454,8 +5453,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             bar_area_resize( *this )
             
             ; example state-item.pb
-            ; Send( *this, #__event_Resize )
-            Send( *this, #__event_ScrollChange )
+            ; Post( *this, #__event_Resize )
+            Post( *this, #__event_ScrollChange )
          EndIf
          
          ; авто скроллим чтобы был виден выбранный итем
@@ -6800,7 +6799,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If mode = 2
                If is_scrollbars_( *this )
                   If *this\type = #__type_Scroll
-                     Send( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) ; *bar\PageChange( ) )
+                     Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) ; *bar\PageChange( ) )
                      If *this\parent\type = #__type_tree Or 
                         *this\parent\type = #__type_listicon Or 
                         *this\parent\type = #__type_listview
@@ -6809,7 +6808,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                Else
                   ; scroll area change
-                  Send( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
+                  Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
                EndIf  
             EndIf
             
@@ -8254,7 +8253,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ Post Event
             If *this\bindresize
-               Send( *this, #__event_resize )
+               Post( *this, #__event_resize )
             EndIf
          EndIf
          
@@ -8570,7 +8569,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             CurrentCursor( ) = *cursor
             ;
             If *this\bindcursor
-               result = Send( *this, #__event_CursorChange, #PB_All, CurrentCursor( ) )
+               result = Post( *this, #__event_CursorChange, #PB_All, CurrentCursor( ) )
                If result > 0
                   *cursor = result
                   CurrentCursor( ) = *cursor
@@ -9214,7 +9213,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ; toggle box change
-               If Not Send( *this, #__event_Change )
+               If Not Post( *this, #__event_Change )
                   PostEventRepaint( *this\root )
                EndIf
                
@@ -9255,7 +9254,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Window
             ; restore state
             If state = #PB_Window_Normal
-               If Not Send( *this, #__event_restore )
+               If Not Post( *this, #__event_restore )
                   *this\resize\flag | #__resize_restore
                   If *this\resize\flag & #__resize_minimize
                      *this\resize\flag & ~ #__resize_minimize
@@ -9283,7 +9282,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; maximize state
             If state = #PB_Window_Maximize
-               If Not Send( *this, #__event_maximize )
+               If Not Post( *this, #__event_maximize )
                   *this\resize\flag | #__resize_maximize
                   If *this\resize\flag & #__resize_minimize
                      *this\resize\flag & ~ #__resize_minimize
@@ -9311,7 +9310,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; minimize state
             If state = #PB_Window_Minimize
-               If Not Send( *this, #__event_Minimize )
+               If Not Post( *this, #__event_Minimize )
                   *this\resize\flag | #__resize_minimize
                   If *this\resize\flag & #__resize_maximize
                      *this\resize\flag & ~ #__resize_maximize
@@ -12648,8 +12647,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_ListView
             
             If *this\countitems <> 0
-               ;; Post( *this, #__event_Change, #PB_All ) ;
-               
                *this\WidgetChange( ) = 1
                *this\countitems     = 0
                
@@ -19001,7 +18998,7 @@ chr$ = ","
                            
                            ; FillVectorOutput()
                         EndIf
-                        Send( *this, #__event_Draw )
+                        Post( *this, #__event_Draw )
                         If *this\root\drawmode & 1<<1
                            RestoreVectorState( )
                         EndIf
@@ -19390,11 +19387,11 @@ chr$ = ","
          ProcedureReturn *root
       EndProcedure
       
-      Procedure   ReDraw( *this._s_WIDGET )
+      Procedure   ReDraw( *this._s_ROOT )
          If widget::__gui\DrawingRoot
             ; Debug " ----REDRAW---- "
          Else
-            widget::StartDraw( *this\root )
+            widget::StartDraw( *this )
          EndIf
          widget::Drawing( )
          widget::StopDraw( )
@@ -21178,14 +21175,14 @@ chr$ = ","
                               If *row\buttonbox\checked
                                  ; развернул список
                                  If SetItemState( *this, *row\rindex, #PB_Tree_Expanded )
-                                    Send( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Expanded )
-                                    Send( *this, #__event_ScrollChange )
+                                    Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Expanded )
+                                    Post( *this, #__event_ScrollChange )
                                  EndIf
                               Else
                                  ; свернул список
                                  If SetItemState( *this, *row\rindex, #PB_Tree_Collapsed )
-                                    Send( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Collapsed )
-                                    Send( *this, #__event_ScrollChange )
+                                    Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Collapsed )
+                                    Post( *this, #__event_ScrollChange )
                                  EndIf
                               EndIf
                            EndIf
@@ -21930,7 +21927,7 @@ chr$ = ","
                            If is_root_( *this )
                               PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, *this )
                            Else
-                              Send( *this, #__event_close )
+                              Post( *this, #__event_close )
                            EndIf
                            
                            ; maximize button
@@ -22110,18 +22107,18 @@ chr$ = ","
             ;\\ send-widget-events
             If event = #__event_Create
             ElseIf event = #__event_Focus
-               Send( *this, event, *button, *data )
+               Post( *this, event, *button, *data )
             ElseIf event = #__event_LostFocus
-               Send( *this, event, *button, *data )
+               Post( *this, event, *button, *data )
             ElseIf event = #__event_Change
-               Send( *this, event, *button, *data )
+               Post( *this, event, *button, *data )
             Else
-               Send( *this, event, *button, *data )
+               Post( *this, event, *button, *data )
                
                If event = #__event_Down
                   If *this\type = #__type_Spin
                      If *this\stringbar
-                        Send( *this, #__event_Change, *this\stringbar, *this\bar\PageChange( ) )
+                        Post( *this, #__event_Change, *this\stringbar, *this\bar\PageChange( ) )
                      EndIf
                   EndIf
                EndIf
@@ -23090,33 +23087,27 @@ chr$ = ","
       EndProcedure
       
       ;-
-      Procedure.i Post( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
-         If *this > 0
-            If test_event_send
-               Static test
-               Debug ""+*this\class + " - Post( test "+test +" ) "+ ClassFromEvent(event)
-               test + 1
-            EndIf
-            
-            ; Debug "post - "+*this\class +" "+ ClassFromEvent(event)
-            
-            If AddElement( __gui\event\queues( ) )
-               __gui\event\queues.allocate( EVENTDATA, ( ) )
-               __gui\event\queues( )\widget = *this
-               __gui\event\queues( )\type   = event
-               __gui\event\queues( )\item   = *button
-               __gui\event\queues( )\data   = *data
-               ProcedureReturn __gui\event\queues( )
-            EndIf
-         EndIf
-      EndProcedure
-      
-      Procedure.i Send( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+      Procedure.i Post( *this._s_root, event.l, *button = #PB_All, *data = #Null )
          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0
             If __gui\event\exit = 0
-               Post( *this, event, *button, *data )
+               If test_event_send
+                  Static test
+                  Debug ""+*this\class + " - Post( test "+test +" ) "+ ClassFromEvent(event)
+                  test + 1
+               EndIf
+               
+               ; Debug "post - "+*this\class +" "+ ClassFromEvent(event)
+               
+               If AddElement( __gui\event\queues( ) )
+                  __gui\event\queues.allocate( EVENTDATA, ( ) )
+                  __gui\event\queues( )\widget = *this
+                  __gui\event\queues( )\type   = event
+                  __gui\event\queues( )\item   = *button
+                  __gui\event\queues( )\data   = *data
+                  ProcedureReturn __gui\event\queues( )
+               EndIf
                
             ElseIf __gui\event\exit > 0
                If is_bar_( *this )
@@ -23288,6 +23279,7 @@ chr$ = ","
                If event = #__event_CursorChange
                   *this\bindcursor = 1
                EndIf
+               __gui\event\exit = 1
             EndIf
          EndIf
          
@@ -23323,192 +23315,6 @@ chr$ = ","
          EndIf
       EndProcedure
       
-      ;       Procedure.i Send( *this._s_root, event.l, *button = #PB_All, *data = #Null )
-      ;          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
-      ;          
-      ;          If *this > 0
-      ;             If __gui\event\exit = 0
-      ;                Post( *this, event, *button, *data )
-      ;                
-      ;             ElseIf __gui\event\exit > 0
-      ;                If is_bar_( *this )
-      ;                   If event = #__event_LeftClick Or
-      ;                      event = #__event_Change
-      ;                      If *this\TabEntered( )
-      ;                         *button = *this\TabEntered( )\tindex
-      ;                      EndIf
-      ;                   EndIf
-      ;                   ;
-      ;                   If *button < 0
-      ;                      ProcedureReturn 0
-      ;                   EndIf
-      ;                EndIf
-      ;                
-      ;                ;\\ 
-      ;                __widget = EventWidget( )
-      ;                __event   = WidgetEvent( )
-      ;                __item   = WidgetEventItem( )
-      ;                __data   = WidgetEventData( )
-      ;                
-      ;                ;\\
-      ;                EventWidget( )     = *this
-      ;                WidgetEvent( )     = event
-      ;                WidgetEventItem( ) = *button
-      ;                WidgetEventData( ) = *data
-      ;                
-      ;                ;\\ menu send bind event
-      ;                If is_bar_( *this ) 
-      ;                   If *this\popupbar
-      ;                      While *this\popupbar
-      ;                         *this = *this\popupbar
-      ;                      Wend
-      ;                      EventWidget( )     = *this
-      ;                   EndIf
-      ;                EndIf
-      ;                
-      ;                ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
-      ;                
-      ;                ;
-      ;                ;\\
-      ;                If Not is_root_( *this )
-      ;                   ;\\ 1 call (current-widget) bind event function
-      ;                   If __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(*button))
-      ;                      result = __gui\eventhook( )\function( )
-      ;                   ElseIf __gui\eventhook(Str(*this)+" "+Str(event)+" "+Str(#PB_All)) 
-      ;                      result = __gui\eventhook( )\function( )
-      ;                   EndIf
-      ;                   
-      ;                   ;\\ 2 call (current-widget-window) bind event function
-      ;                   If result <> #PB_Ignore
-      ;                      If *this\window 
-      ;                         If Not is_root_( *this\window )
-      ;                            If __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(*button)) 
-      ;                               result = __gui\eventhook( )\function( )
-      ;                            ElseIf __gui\eventhook(Str(*this\window)+" "+Str(event)+" "+Str(#PB_All)) 
-      ;                               result = __gui\eventhook( )\function( )
-      ;                            EndIf
-      ;                         EndIf
-      ;                      EndIf
-      ;                   EndIf
-      ;                EndIf
-      ;                
-      ;                ;\\ 3 call (current-widget-root) bind event function
-      ;                If result <> #PB_Ignore
-      ;                   If *this\root
-      ;                      If __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(*button)) 
-      ;                         result = __gui\eventhook( )\function( )
-      ;                      ElseIf __gui\eventhook(Str(*this\root)+" "+Str(event)+" "+Str(#PB_All)) 
-      ;                         result = __gui\eventhook( )\function( )
-      ;                      EndIf
-      ;                   EndIf
-      ;                EndIf
-      ;                
-      ;                ;\\
-      ;                If event = #__event_Close
-      ;                   If result <> #PB_Ignore
-      ;                      Select result
-      ;                         Case #PB_All
-      ;                            Free( #PB_All )
-      ;                            
-      ;                         Case 0
-      ;                            Free( *this )
-      ;                            
-      ;                      EndSelect
-      ;                   EndIf
-      ;                EndIf
-      ;                
-      ;                ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
-      ;                EventWidget( )       = __widget
-      ;                WidgetEvent( )   = __event
-      ;                WidgetEventItem( )   = __item
-      ;                WidgetEventData( )   = __data
-      ;             EndIf
-      ;          EndIf
-      ;          
-      ;          ProcedureReturn result
-      ;       EndProcedure
-      ;       
-      ;       Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-      ;          ;
-      ;          If *this < 0
-      ;             PushMapPosition(roots( ))
-      ;             ForEach roots( )
-      ;                Bind( roots( ), *callback, event, item )
-      ;             Next
-      ;             PopMapPosition(roots( ))
-      ;             ProcedureReturn #PB_All
-      ;             ;
-      ;          Else
-      ;             If event < 0 
-      ;                Define i
-      ;                For i = 0 To #__event - 1
-      ;                   If i = #__event_Draw And Not is_root_( *this )
-      ;                      Continue
-      ;                   EndIf
-      ;                   
-      ;                   ; set defaul widget events
-      ;                   Bind( *this, *callback, i, item )
-      ;                Next
-      ;                ;
-      ;             Else
-      ;                If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
-      ;                   Debug "eventhook"
-      ;                   
-      ;                   If Not __gui\eventhook( )
-      ;                      Debug "not EVENTHOOK"
-      ;                      ProcedureReturn 0
-      ;                   EndIf
-      ;                Else
-      ;                   AddMapElement(__gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
-      ;                   __gui\eventhook.allocate( HOOK, ( ))
-      ;                EndIf
-      ;                
-      ;                __gui\eventhook( )\function = *callback
-      ;                __gui\eventhook( )\type     = event
-      ;                __gui\eventhook( )\item     = item
-      ;                __gui\eventhook( )\widget   = *this
-      ;                
-      ;                ; 
-      ;                If event = #__event_Draw
-      ;                   *this\binddraw = 1
-      ;                EndIf
-      ;                If event = #__event_Resize
-      ;                   *this\bindresize = 1
-      ;                EndIf
-      ;                If event = #__event_CursorChange
-      ;                   *this\bindcursor = 1
-      ;                EndIf
-      ;             EndIf
-      ;          EndIf
-      ;          
-      ;       EndProcedure
-      ;       
-      ;       Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-      ;          If *this < 0
-      ;             PushMapPosition(roots( ))
-      ;             ForEach roots( )
-      ;                Unbind( roots( ), *callback, event, item )
-      ;             Next
-      ;             PopMapPosition(roots( ))
-      ;             ProcedureReturn #PB_All
-      ;             ;
-      ;          Else
-      ;             If event < 0
-      ;                Define i
-      ;                For i = 0 To #__event - 1
-      ;                   Unbind( *this, *callback, i, item )
-      ;                Next
-      ;                ;
-      ;             Else
-      ;                If FindMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item) )
-      ;                   If Not ( *callback > 0 And __gui\eventhook( )\function <> *callback )
-      ;                      DeleteMapElement( __gui\eventhook( ), Str(*this)+" "+Str(event)+" "+Str(item))
-      ;                   EndIf
-      ;                EndIf
-      ;             EndIf
-      ;          EndIf
-      ;       EndProcedure
-      ;       
       ;-
       Procedure.i CloseList( )
          Protected *open._s_WIDGET
@@ -23627,6 +23433,21 @@ chr$ = ","
                Height = #PB_Ignore
                canvasflag | #PB_Canvas_Container
             EndIf
+            
+            Protected IsWindow
+            If Not constants::BinaryFlag( Flag, #PB_Window_BorderLess ) 
+               If Width = #PB_Ignore
+               Else
+                  Width + #__window_FrameSize*2
+                  IsWindow = 1
+               EndIf
+               If Height = #PB_Ignore
+               Else
+                  ;Height + DPIScaled(#__window_FrameSize*2 + #__window_CaptionHeight)
+                  Height + #__window_FrameSize*2 + #__window_CaptionHeight
+                  IsWindow = 1
+               EndIf
+            EndIf
          Else
             If constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
                flag &~ #PB_Window_NoGadgets
@@ -23718,8 +23539,8 @@ chr$ = ","
             
             ;
             *root\address   = result
-            *root\container = 1
             *root\type      = #__type_Root
+            *root\container = 1
             *root\class     = "root"
             ;
             ; *root\parent   = Opened( )
@@ -23765,6 +23586,11 @@ chr$ = ","
                SetActive( *root )
                SetActiveGadget( *root\canvas\gadget )
             EndIf
+         EndIf
+         
+         ;;;;;;;;;;;
+         If IsWindow = 1
+           ; Window( 0,0, Width - #__window_FrameSize*2, Height - #__window_FrameSize*2 - #__window_CaptionHeight, title$, flag )
          EndIf
          
          If g
@@ -24117,7 +23943,7 @@ chr$ = ","
                   
                   ; 
                   If mode = 0 
-                     If Not Send( widgets( ), #__event_free )
+                     If Not Post( widgets( ), #__event_free )
                         If PreviousElement( widgets( ))
                            Continue
                         Else
@@ -24270,7 +24096,7 @@ chr$ = ","
       
       Procedure.i Free( *this._s_WIDGET )
          If *this > 0 
-            If Send( *this, #__event_free )
+            If Post( *this, #__event_free )
                If Opened( ) = *this
                   OpenList( *this\parent )
                EndIf
@@ -24363,7 +24189,7 @@ chr$ = ","
                      If test_event_repost
                         Debug "Repost "+ClassFromEvent(__type)+" "+GetClass(__widget)
                      EndIf
-                     ;If Not Send( __widget, __type, __item, __data )
+                     ;If Not Post( __widget, __type, __item, __data )
                      DoEvents( __widget, __type )
                      ;EndIf
                      
@@ -24394,7 +24220,7 @@ chr$ = ","
                         If ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
                            Debug "Wait close.... " + root( )\address + " " + root( )\canvas\window + " " + window + " - " + EventGadget( ) + " " + EventData( )
                            
-                           Send( root( ), #__event_Close )
+                           Post( root( ), #__event_Close )
                            
                         Else
                            FreeGadget( Canvas )
@@ -24413,17 +24239,17 @@ chr$ = ","
                      
                   Case #PB_Event_RestoreWindow
                      Debug "restore.... "
-                     Send( root( ), #__event_Restore )
+                     Post( root( ), #__event_Restore )
                      
                   Case #PB_Event_MaximizeWindow
                      Debug "maximize.... "
-                     If Send( root( ), #__event_Maximize )
+                     If Post( root( ), #__event_Maximize )
                         SetWindowState( window, #PB_Window_Normal )
                      EndIf
                      
                   Case #PB_Event_MinimizeWindow
                      Debug "minimize.... "
-                     If Send( root( ), #__event_Minimize )
+                     If Post( root( ), #__event_Minimize )
                         SetWindowState( window, #PB_Window_Normal )
                      EndIf
                      
@@ -24477,14 +24303,14 @@ chr$ = ","
       
       Procedure WaitQuit( *root._s_root = #Null )
          If __gui\event\loop = 0
-            If Not *root
-               *root = root( )
-            EndIf
-            ReDraw( *root )
-            
-            __gui\event\loop = *root
+            __gui\event\loop = 1
             __gui\event\exit = 1
             
+            PushMapPosition( roots( ))
+            ForEach roots( )
+               ReDraw( roots( ) )
+            Next
+            PopMapPosition( roots( ))
             
             ;\\ start main loop
             CompilerSelect #PB_Compiler_OS
@@ -25737,9 +25563,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 24524
-; FirstLine = 23877
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6--------------X---f0--------4dv+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 23592
+; FirstLine = 22898
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6--------------X---f0--------4dv+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------D-3---------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
