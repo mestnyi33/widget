@@ -20,6 +20,16 @@ Global codeindent = 3
 ;- PUBLICs
 ;
 ;-
+Procedure   AddFonts( font )
+;    Protected result = IsFont( font )
+;    If result
+;       If AddElement( loadfonts( ) )
+;          loadfonts( )\font = font 
+;       EndIf
+;    EndIf
+;    ProcedureReturn result
+EndProcedure
+
 Procedure.s  GetFontName( FontID.i )
    ; Debug " get "+FontID
    ; FontID = FontID(FontID)
@@ -47,39 +57,27 @@ EndProcedure
 
 Procedure   SetFontName( FontID.i, name.s )
    
-   ;             If Not FindMapElement( loadfonts( ), Str(FontID) )
-   ;                AddMapElement( loadfonts( ), Str(FontID) )
-   ;             EndIf
    loadfonts( Str(FontID) )\name = name
-   
-   ;Debug "set "+FontID
-   ; Debug GetFontName( FontID )
    
 EndProcedure
 
 Procedure   SetFontSize( FontID.i, size.a )
    
-   ;             If Not FindMapElement( loadfonts( ), Str(FontID) )
-   ;                AddMapElement( loadfonts( ), Str(FontID) )
-   ;             EndIf
    loadfonts( Str(FontID) )\size = size
    
 EndProcedure
 
 Procedure   SetFontStyle( FontID.i, style.q )
    
-   ;             If Not FindMapElement( loadfonts( ), Str(FontID) )
-   ;                AddMapElement( loadfonts( ), Str(FontID) )
-   ;             EndIf
    loadfonts( Str(FontID) )\style = style
    
 EndProcedure
 
-;-
-Procedure AddLoadFont( id$, name$, size, style )
+Procedure InitLoadFont( id$, name$, size, style )
    Protected font = LoadFont( #PB_Any, name$, size, style )
    ;
    If IsFont( font )
+      id$ = Trim( id$ )
       If NumericString( id$ )
          id$ = "#FONT_"+id$
       EndIf
@@ -99,6 +97,14 @@ Procedure AddLoadFont( id$, name$, size, style )
 EndProcedure
 
 Procedure   GetLoadFont( id$ )
+   id$ = Trim( id$ )
+   id$ = Trim( id$, "(" )
+   id$ = Trim( id$, ")" )
+   
+   If NumericString( id$ )
+      id$ = "#FONT_"+id$
+   EndIf
+   
    ForEach loadfonts( )
       If loadfonts( )\id$ = id$
          ProcedureReturn loadfonts( )\font
@@ -107,14 +113,23 @@ Procedure   GetLoadFont( id$ )
 EndProcedure
 
 ;-
-Procedure   AddLoadImage( id$, file$, flags=0 )
+Procedure   AddImages( Image )
+   Protected result = IsImage( Image )
+   If result
+      If AddElement( loadimages( ) )
+         loadimages( )\image = Image 
+      EndIf
+   EndIf
+   ProcedureReturn result
+EndProcedure
+
+Procedure   InitLoadImage( id$, file$, flags=0 )
    If CountString(file$, "+" )
       file$ = RemoveString( file$, " " )
       file$ = RemoveString( file$, Chr('"') )
       file$ = MakeStringConstants(StringField( file$, 1, "+" )) + StringField( file$, 2, "+" )
-;     file$ = MakeStringConstants(StringField( file$, 1, "+" )) + Trim( Trim(StringField( file$, 2, "+" )), Chr('"') )
+      ;     file$ = MakeStringConstants(StringField( file$, 1, "+" )) + Trim( Trim(StringField( file$, 2, "+" )), Chr('"') )
    EndIf
-   
    Protected Image = LoadImage( #PB_Any, file$ );, flags )
    
    ;
@@ -125,27 +140,46 @@ Procedure   AddLoadImage( id$, file$, flags=0 )
          EndIf
       CompilerEndIf
       
+      id$ = Trim( id$ )
       If NumericString( id$ )
          id$ = "#IMAGE_"+id$
       EndIf
-      ;
-      If AddElement( loadimages( ) )
-         loadimages( )\id$ = id$ 
-         loadimages( )\file$ = file$
-         loadimages( )\image = Image 
-      EndIf
       
-      ImageName( Str(Image) ) = id$
-               
+      ;Define name$ = "img_"+UCase( GetFilePart( file$, #PB_FileSystem_NoExtension ))
+      Define name$ = "#"+UCase( GetFilePart( file$, #PB_FileSystem_NoExtension ))+"_IMAGE"
+      ;
+      If AddImages( Image )
+         loadimages( )\id$ = id$ 
+         loadimages( )\name$ = name$ 
+         loadimages( )\file$ = file$
+      EndIf
    EndIf
    ;
    ProcedureReturn Image
 EndProcedure
 
 Procedure   GetLoadImage( id$ )
+   id$ = Trim( id$ )
+   id$ = Trim( id$, "(" )
+   id$ = Trim( id$, ")" )
+   
+   If NumericString( id$ )
+      id$ = "#IMAGE_"+id$
+   EndIf
+   
    ForEach loadimages( )
       If loadimages( )\id$ = id$
          ProcedureReturn loadimages( )\image
+      EndIf
+   Next
+EndProcedure
+
+Procedure$ GetLoadImageName( Image )
+   ForEach loadimages( )
+      If loadimages( )\id$
+         If loadimages( )\image = Image
+            ProcedureReturn loadimages( )\name$
+         EndIf
       EndIf
    Next
 EndProcedure
@@ -441,7 +475,7 @@ EndProcedure
 
 ;-
 Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
-   Protected result$
+   Protected result$, name$
    ;ProcedureReturn ""
    
    ;
@@ -483,10 +517,16 @@ Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
    ;
    If *g\type = #__type_image
    Else
-      If FindMapElement( imageName( ), Str( *g\img\image ))
-         result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ imageName( ) +" )" + #LF$
+;       If FindMapElement( imageName( ), Str( *g\img\image ))
+;          result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ imageName( ) +" )" + #LF$
+;          line_break1 = 1
+;       EndIf 
+      
+      name$ = GetLoadImageName( *g\img\image )
+      If name$
+         result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ name$ +" )" + #LF$
          line_break1 = 1
-      EndIf            
+      EndIf
    EndIf
 
    ;
@@ -1191,52 +1231,28 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   *Parent = GetParent( *Parent )
                   
                Case "LoadFont"
-                  ; \id$ = StringField( arg$, 1, "," )
-                  \id$ = Trim( \id$ )
-                  ; Debug \id$
-                  
-                  param1$ = Trim(Trim( StringField( arg$, 2, "," )), Chr('"'))
+                  param1$ = Trim( Trim( StringField( arg$, 2, "," )), Chr('"'))
                   param2 = Val( StringField( arg$, 3, "," ))
                   param3 = MakeConstants( StringField( arg$, 4, "," ))
                   
-                  AddLoadFont( \id$, param1$, param2, param3 )
+                  InitLoadFont( id$, param1$, param2, param3 )
                   
                Case "SetFont"
                   *id = MakeID( \id$, parent ) 
                   If *id
-                     arg$ = Trim( StringField( arg$, 2, "," ) )
-                     arg$ = Trim( arg$, "(" )
-                     arg$ = Trim( arg$, ")" )
-                     
-                     If NumericString( arg$ )
-                        arg$ = "#FONT_"+arg$
-                     EndIf
-                     
-                     ; get font from id$
-                     SetFont( *id, GetLoadFont( arg$ ) )
-                     
+                     SetFont( *id, GetLoadFont( StringField( arg$, 2, "," )))
                   EndIf
                   
                Case "LoadImage"
                   param1$ = Trim( Trim( StringField( arg$, 2, "," )), Chr('"'))
                   param2 = Val( StringField( arg$, 3, "," ))
-                  \id$ = Trim( \id$ )
                   
-                  AddLoadImage( \id$, param1$, param2 )
+                  InitLoadImage( \id$, param1$, param2 )
                   
                Case "SetImage"
                   *id = MakeID( \id$, parent ) 
                   If *id
-                     arg$ = Trim( StringField( arg$, 2, "," ) )
-                     arg$ = Trim( arg$, "(" )
-                     arg$ = Trim( arg$, ")" )
-                     
-                     If NumericString( arg$ )
-                        arg$ = "#IMAGE_"+arg$
-                     EndIf
-                     
-                     ; get font from id$
-                     SetImage( *id, GetLoadImage( arg$ ) )
+                     SetImage( *id, GetLoadImage( StringField( arg$, 2, "," )))
                   EndIf
                   
                Case "SetColor"
@@ -1346,7 +1362,7 @@ Procedure$  Code_GenerateObject( *g._s_WIDGET, space$ )
             If pb_object$
                param1$ = "ImageID( " + *g\Img\Image + " )"
             Else
-               param1$ = imageName( Str( *g\Img\Image ))
+               param1$ = GetLoadImageName( *g\Img\Image )
             EndIf
          Else
             If pb_object$
@@ -1680,15 +1696,18 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
       If ListSize(loadimages( ))
          result$ + #LF$
          ForEach loadimages( )
-            id$ = loadimages( )\id$
-            
+            id$ = loadimages( )\name$
             If id$ 
-               If Trim( id$, "#") = id$
-                  Globalloadimage$ + "Global " + id$ + " = " + "Loadimage( " + "#PB_Any" + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+               If loadimages( )\id$
+                  If Trim( id$, "#") = id$
+                     Globalloadimage$ + "Global " + id$ + " = " + "Loadimage( " + "#PB_Any" + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+                  Else
+                     Enumimage$ + Space$ + id$ + #LF$
+                     ;
+                     Enumloadimage$ + "Loadimage( " + id$ + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+                  EndIf
                Else
-                  Enumimage$ + Space$ + id$ + #LF$
-                  ;
-                  Enumloadimage$ + "Loadimage( " + id$ + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+                 ; Globalloadimage$ + "Global " + id$ + " = " + "CatchImage( " + "#PB_Any" + ", ?" + ReplaceString(loadimages( )\name$, "*", "" ) + " )" + #LF$
                EndIf
             EndIf
          Next
@@ -1885,6 +1904,22 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
       EndIf
       result$ + Space$ + "End" + #LF$
       result$ + "CompilerEndIf"
+      
+;       If ListSize(loadimages( ))
+;          ForEach loadimages( )
+;             id$ = loadimages( )\name$
+;             If id$ 
+;                If loadimages( )\id$ = ""
+;                   result$ + #LF$
+;                   result$ + #LF$
+;                   result$ + "DataSection" + #LF$
+;                   result$ + Space$ + loadimages( )\name$ +~": : IncludeBinary " + Chr('"') + loadimages( )\file$ + Chr('"') + #LF$
+;                   result$ + "EndDataSection" + #LF$
+;                EndIf
+;             EndIf
+;          Next
+;       EndIf
+      
    EndIf
    
    ProcedureReturn result$
@@ -1951,9 +1986,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1681
-; FirstLine = 1407
-; Folding = --v-------------------44-0o0------------------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 1237
+; FirstLine = 992
+; Folding = ------------------------++vHtz-----------------
 ; EnableXP
 ; DPIAware

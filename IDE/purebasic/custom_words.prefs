@@ -45,8 +45,6 @@ EventsType
 EventsData
 EventsItem
 
-PostClose
-
 mouse
 keyboard
 
@@ -285,6 +283,7 @@ SetItemColor
 SetItemData
 GetImage
 SetImage
+RemoveImage
 SetItemImage
 GetItemImage
 SetItemState

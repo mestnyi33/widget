@@ -130,7 +130,7 @@ Global pb_object$ = "";"Gadget"
 Global NewMap EventsString.s( )
 Global NewMap GetObject.s( )
 ;
-Global NewMap imageName.s( )
+;Global NewMap imageName.s( )
 Global NewMap fontName.s( )
       
 Structure _s_LINE
@@ -170,7 +170,7 @@ Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 )
 Declare   NumericString( string$ )
 Declare   MakeLine( parent, string$, findtext$ )
 ;
-Declare   AddLoadFont( id$, name$, size, style )
+Declare   InitLoadFont( id$, name$, size, style )
 Declare.s GetFontName( FontID.i )
 Declare.a GetFontSize( FontID.i )
 Declare.q GetFontStyle( FontID.i )
@@ -179,12 +179,14 @@ Declare   SetFontSize( FontID.i, size.a )
 Declare   SetFontStyle( FontID.i, style.q )
 
 Declare   GetLoadImage( id$ )
-Declare   AddLoadImage( id$, file$, flags = 0 )
+Declare   InitLoadImage( id$, file$, flags = 0 )
+Declare   AddImages( Image )
 
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
 XIncludeFile #ide_path + "include/newcreate/anchorbox.pbi"
+XIncludeFile #ide_path + "IDE/include/helper/imageeditor.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    XIncludeFile "code.pbi"
 CompilerEndIf
@@ -536,13 +538,19 @@ Procedure   Properties_ButtonEvents( )
                Protected StandardFile$, Pattern$, File$
                StandardFile$ = "open_example.pb" 
                Pattern$ = "Image (*.*)|*.png;*.bmp;*.ico"
-               File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
                
-               If File$
-                  Debug File$ 
-                  SetImage( a_focused( ), AddLoadImage( Str(ListSize(loadimages( ))), File$ ))
-                  
+               Define img = open_EditorImages( )
+               If IsImage( img )
+                  SetImage( a_focused( ), img )
                EndIf
+               
+;                File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
+;                
+;                If File$
+;                   Debug File$ 
+;                   SetImage( a_focused( ), InitLoadImage( Str(ListSize(loadimages( ))), File$ ))
+;                   
+;                EndIf
                
             Case #_pi_FONT
                Define font = GetFont( a_focused( ) )
@@ -574,7 +582,7 @@ Procedure   Properties_ButtonEvents( )
                   EndIf
                   
                   If a_focused( )
-                     font = AddLoadFont( Str(MapSize( loadfonts( ))), 
+                     font = InitLoadFont( Str(MapSize( loadfonts( ))), 
                                      SelectedFontName( ),
                                      SelectedFontSize( ),
                                      SelectedFontStyle( ))
@@ -1557,12 +1565,17 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
             If is_window_( *new )
-               Protected *imagelogo = CatchImage( #PB_Any,?group_bottom )
+               Protected *imagelogo = CatchImage( #PB_Any, ?imagelogo ); group_bottom )
                CompilerIf #PB_Compiler_DPIAware
                   ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
                CompilerEndIf
                
-               ; ImageName( Str(*imagelogo) ) = "*imagelogo"
+               If AddImages( *imagelogo )
+                  ;loadimages( )\file$ = ReplaceString( #PB_Compiler_Home, "\", "/" ) + "ide/include/images/group/group_bottom.png"
+                  loadimages( )\file$ = "ide/include/images/group/group_bottom.png"
+                  loadimages( )\name$ = "*imagelogo"
+               EndIf
+            
                SetImage( *new, *imagelogo )
                  
                If Not flag & #__flag_NoFocus 
@@ -1782,7 +1795,7 @@ Procedure widget_events( )
 EndProcedure
 
 ;-
-Procedure.i ide_addimage_list( *id, Directory$ )
+Procedure.i ide_AddImages_list( *id, Directory$ )
    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
    
    If FileSize( ZipFile$ ) < 1
@@ -2358,7 +2371,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    AddItem( ide_inspector_panel, -1, "elements", 0, 0 ) 
    ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_border_less ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
    If ide_inspector_elements
-      ide_addimage_list( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
+      ide_AddImages_list( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
    ; ide_inspector_panel_item_2
@@ -2740,6 +2753,7 @@ DataSection
    widget_paste:     : IncludeBinary "16/paste.png"
    widget_copy:      : IncludeBinary "16/copy.png"
    widget_cut:       : IncludeBinary "16/cut.png"
+   *imagelogo:       : IncludeBinary "group/group_bottom.png"
    
    group:            : IncludeBinary "group/group.png"
    group_un:         : IncludeBinary "group/group_un.png"
@@ -2750,10 +2764,10 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1518
-; FirstLine = 1504
-; Folding = -------------------------------------------------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 545
+; FirstLine = 534
+; Folding = --------------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

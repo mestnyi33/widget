@@ -1307,10 +1307,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          DrawAlphaImage( _this_\img#_mode_\imageID, _x_ + _this_\img#_mode_\x + _this_\scroll_x( ), _y_ + _this_\img#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
       EndMacro
       
-      ;     Macro Close( )
-      ;       PB(CloseGadgetList)( )
-      ;     EndMacro
-      
+     
       ;-  
       ;-\\   DECLARE_globals
       ;-  
@@ -1476,10 +1473,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   ChangeCurrentCursor( *this, *cursor )
       
       Declare.i GetImage( *this )
-      Declare   SetImage( *this, *image )
-      Declare   SetBackgroundImage( *this, *image )
+      Declare   SetImage( *this, img )
+      Declare   RemoveImage( *this, img )
+      Declare   SetBackgroundImage( *this, img )
       Declare.i GetItemImage( *this, Item.l )
-      Declare.i SetItemImage( *this, Item.l, Image.i )
+      Declare.i SetItemImage( *this, Item.l, img )
       
       Declare.i GetParent( *this )
       Declare   SetParent( *this, *parent, tabindex.l = #PB_Default )
@@ -1554,7 +1552,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
       Declare   PostQuit( *root = #Null )
       Declare   WaitQuit( *root = #Null )
-      Declare   PostClose( *this )
       Declare   WaitClose( *window = #Null )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
@@ -8888,8 +8885,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn *this\img\image
       EndProcedure
       
-      Procedure SetImage( *this._s_WIDGET, *image );, mode.a = 0 )
-         add_image( *this\img, *image )
+      Procedure SetImage( *this._s_WIDGET, img );, mode.a = 0 )
+         add_image( *this\img, img )
          
          If *this\type <> #__type_window
             *this\img\x   = *this\padding\x
@@ -8907,6 +8904,27 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; updatate scrollarea size
             bar_area_update( *this )
+         EndIf
+      EndProcedure
+      
+      Procedure   RemoveImage( *this._s_WIDGET, img )
+         SetImage( *this, - 1 )
+         
+         ForEach roots( )
+            If roots( )\img\image = img
+               ProcedureReturn - 1
+            EndIf
+         Next
+         ;
+         ForEach widgets( )
+            If widgets( )\img\image = img
+               ProcedureReturn - 1
+            EndIf
+         Next
+         
+         If IsImage( img )
+            FreeImage( img )
+            ProcedureReturn 1
          EndIf
       EndProcedure
       
@@ -8929,7 +8947,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.i SetItemImage( *this._s_WIDGET, Item.l, Image.i )
+      Procedure.i SetItemImage( *this._s_WIDGET, Item.l, img )
          Protected result
          
          If *this\type = #__type_Tree Or
@@ -8937,8 +8955,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_ListView
             
             If SelectItem( *this, Item )
-               If *this\__rows( )\img\image <> Image
-                  add_image( *this\__rows( )\img, Image, *this\imgsize )
+               If *this\__rows( )\img\image <> img
+                  add_image( *this\__rows( )\img, img, *this\imgsize )
                   *this\WidgetChange( ) = 1
                EndIf
             EndIf
@@ -22190,7 +22208,7 @@ chr$ = ","
                               Debug "CANVAS - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                            EndIf
                            If keyboard( )\deactive
-                              Debug "keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
+                              Debug "deactive keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
                            EndIf
                            SetActive( roots( )\active )
                            ReDraw( GetActive( )\root )
@@ -23199,7 +23217,14 @@ chr$ = ","
                   If result <> #PB_Ignore
                      Select result
                         Case #PB_All
-                           Free( #PB_All )
+                           Free( *this\root )
+                           If MapSize( roots() )
+                              Debug 777
+                           Else
+                              PostQuit( )
+                             ; PostEvent( #PB_Event_CloseWindow, EventWindow( ), EventGadget( ))
+                           EndIf
+                              CloseWindow( EventWindow( ))
                            
                         Case 1
                            Free( *this )
@@ -24088,9 +24113,6 @@ chr$ = ","
       
       ;-
       Procedure  Delete( *this._s_WIDGET, mode = 0 )
-         a_focused( ) = 0
-         a_entered( ) = 0
-         
          If LastElement(widgets( ))
             Repeat
                If ( mode And widgets( ) = *this ) Or 
@@ -24218,6 +24240,12 @@ chr$ = ","
                      If Pressed( ) = widgets( )
                         Pressed( ) = #Null
                      EndIf
+                     If a_focused( ) = widgets( )
+                        a_focused( ) = #Null
+                     EndIf
+                     If a_entered( ) = widgets( )
+                        a_entered( ) = #Null
+                     EndIf
                      
                      ;\\
                      widgets( )\parent  = #Null
@@ -24286,18 +24314,20 @@ chr$ = ","
                
                ;\\
                If is_root_( *this )
-                  DeleteMapElement( roots( ) )
-                  ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
-                  ; ResetMap( roots( ) )
-                  If test_delete
-                     Debug " FREE - " + *this\class + " " + *this\address
+                  If MapSize( roots( ) )
+                     DeleteMapElement( roots( ) )
+                     ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
+                     ; ResetMap( roots( ) )
+                     If test_delete
+                        Debug " FREE - " + *this\class + " " + *this\address
+                     EndIf
+                     
+                     If Not MapSize( roots( ) )
+                        __gui\event\quit = 1
+                     EndIf
+                     
+                     PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, #PB_Default ) 
                   EndIf
-                  
-                  If Not MapSize( roots( ) )
-                     __gui\event\quit = 1
-                  EndIf
-                  
-                  PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, #PB_Default ) 
                EndIf
                
                ProcedureReturn 1
@@ -24306,6 +24336,10 @@ chr$ = ","
             ForEach roots( ) : root( ) = roots( )
                Free( root( ) )
             Next
+            
+            If __gui\event\loop
+               PostQuit( )
+            EndIf
          EndIf
       EndProcedure
       
@@ -24347,10 +24381,6 @@ chr$ = ","
          EndIf
          
          ProcedureReturn __result
-      EndProcedure
-      
-      Procedure  PostClose( *this._s_WIDGET )
-         ProcedureReturn Send( GetWindow( *this ), #__event_close )
       EndProcedure
       
       Procedure  WaitClose( *window._s_WIDGET = #Null )
@@ -24429,51 +24459,74 @@ chr$ = ","
          
       EndProcedure
       
-      Procedure WaitQuit( *root._s_root = #Null )
-         __gui\event\loop = 1
-         __gui\event\exit = 1
-         
-         ;\\ start main loop
-         CompilerSelect #PB_Compiler_OS
-            CompilerCase #PB_OS_Linux
-               gtk_main_( )
-               
-            CompilerCase #PB_OS_Windows
-               Protected msg.MSG
-               
-               While GetMessage_( @msg, #Null, 0, 0 )
-                  TranslateMessage_( msg )
-                  DispatchMessage_( msg )
-               Wend
-               
-            CompilerCase #PB_OS_MacOS
-               ;                Define sharedApplication = CocoaMessage( 0, 0, "NSApplication sharedApplication" )
-               ;                Define currentEvent = CocoaMessage(0,sharedApplication , "currentEvent") ; var currentEvent: NSEvent? { get }
-               ;                Debug " WaitQuit - "+currentEvent
-               CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "run" )
-               
-         CompilerEndSelect
-         
-         __gui\event\loop = 0
-         
-         Debug "  end wait( QUIT ) "
+      Procedure PostQuit( *root._s_root = #Null )
+         If __gui\event\loop
+            Debug " POST QUIT MAIN LOOP"
+            
+            ;\\ stop main loop
+            CompilerSelect #PB_Compiler_OS
+               CompilerCase #PB_OS_Linux
+                  gtk_main_quit_( )
+                  
+               CompilerCase #PB_OS_Windows
+                  PostQuitMessage_( 0 )
+                  
+               CompilerCase #PB_OS_MacOS
+                  CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "stop:", 0 )
+                  
+            CompilerEndSelect
+         EndIf
       EndProcedure
       
-      Procedure PostQuit( *root._s_root = #Null )
-         Debug "post( QUIT )"
-         
-         ;\\ stop main loop
-         CompilerSelect #PB_Compiler_OS
-            CompilerCase #PB_OS_Linux
-               gtk_main_quit_( )
-               
-            CompilerCase #PB_OS_Windows
-               PostQuitMessage_( 0 )
-               
-            CompilerCase #PB_OS_MacOS
-               CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "stop:", 0 )
-               
-         CompilerEndSelect
+      Procedure WaitQuit( *root._s_root = #Null )
+         If __gui\event\loop = 0
+            If Not *root
+               *root = root( )
+            EndIf
+            ReDraw( *root )
+            
+            __gui\event\loop = *root
+            __gui\event\exit = 1
+            
+            
+            ;\\ start main loop
+            CompilerSelect #PB_Compiler_OS
+               CompilerCase #PB_OS_Linux
+                  gtk_main_( )
+                  
+               CompilerCase #PB_OS_Windows
+                  Protected msg.MSG
+                  
+                  While GetMessage_( @msg, #Null, 0, 0 )
+                     TranslateMessage_( msg )
+                     DispatchMessage_( msg )
+                  Wend
+                  
+               CompilerCase #PB_OS_MacOS
+                  ;                Define sharedApplication = CocoaMessage( 0, 0, "NSApplication sharedApplication" )
+                  ;                Define currentEvent = CocoaMessage(0,sharedApplication , "currentEvent") ; var currentEvent: NSEvent? { get }
+                  ;                Debug " WaitQuit - "+currentEvent
+                  CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "run" )
+                  
+            CompilerEndSelect
+            
+            If *root
+               Free( *root )
+               If IsWindow( *root\canvas\window )
+                  CloseWindow( *root\canvas\window )
+               EndIf
+               If IsGadget( *root\canvas\gadget )
+                  FreeGadget( *root\canvas\gadget )
+               EndIf
+               *root\canvas\gadgetID = 0
+               *root\address = 0
+               root( ) = 0
+            EndIf
+            
+            __gui\event\loop = 0
+            
+            Debug " QUIT MAIN LOOP"
+         EndIf
       EndProcedure
       
       ;-
@@ -25683,10 +25736,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15211
-; FirstLine = 14944
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n--------------f0---2--------f407---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 24246
+; FirstLine = 23587
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6--------------X---f0--------4dv+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

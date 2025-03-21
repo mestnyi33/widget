@@ -759,6 +759,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       Structure _s_Img
          id$
+         name$
          Image.i
          file$
       EndStructure
@@ -789,9 +790,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 761
-; FirstLine = 745
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 745
+; FirstLine = 739
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

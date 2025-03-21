@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Down
             Debug " down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
             
-            PostClose( EventWidget( ) )
+            Send( GetWindow( EventWidget( ) ), #__event_Close )
    ;             ;\\ to send not down
             ;                      ProcedureReturn 1
             ProcedureReturn #PB_Ignore
@@ -101,8 +101,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 52
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 23
+; FirstLine = 1
 ; Folding = --
 ; EnableXP
