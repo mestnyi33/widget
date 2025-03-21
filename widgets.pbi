@@ -23218,13 +23218,10 @@ chr$ = ","
                      Select result
                         Case #PB_All
                            Free( *this\root )
-                           If MapSize( roots() )
-                              Debug 777
-                           Else
-                              PostQuit( )
-                             ; PostEvent( #PB_Event_CloseWindow, EventWindow( ), EventGadget( ))
+                           If Not MapSize( roots() )
+                             PostQuit( )
                            EndIf
-                              CloseWindow( EventWindow( ))
+                           CloseWindow( EventWindow( ))
                            
                         Case 1
                            Free( *this )
@@ -24512,15 +24509,18 @@ chr$ = ","
             
             If *root
                Free( *root )
-               If IsWindow( *root\canvas\window )
-                  CloseWindow( *root\canvas\window )
+               
+               If is_root_( *root )
+                  If IsWindow( *root\canvas\window )
+                     CloseWindow( *root\canvas\window )
+                  EndIf
+                  If IsGadget( *root\canvas\gadget )
+                     FreeGadget( *root\canvas\gadget )
+                  EndIf
+                  *root\canvas\gadgetID = 0
+                  *root\address = 0
+                  root( ) = 0
                EndIf
-               If IsGadget( *root\canvas\gadget )
-                  FreeGadget( *root\canvas\gadget )
-               EndIf
-               *root\canvas\gadgetID = 0
-               *root\address = 0
-               root( ) = 0
             EndIf
             
             __gui\event\loop = 0
@@ -25737,8 +25737,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 24246
-; FirstLine = 23587
+; CursorPosition = 24524
+; FirstLine = 23877
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6--------------X---f0--------4dv+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

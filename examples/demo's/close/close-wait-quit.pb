@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Message( "message", "test", #__message_ScreenCentered )
   
   ;\\
-  WaitQuit( )
+  WaitQuit( root( ) )
   ;WaitClose( )
   
   ;\\
@@ -90,8 +90,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 61
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 59
+; FirstLine = 54
 ; Folding = -
 ; EnableXP

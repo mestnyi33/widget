@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_LeftClick
         Select GetText( EventWidget( ) )
           Case "window_2_root_butt_1"
-            Message( "message", "test WaitQuit( ) and PostQuit( )", #__message_ScreenCentered )
+            Message( "message", "test WaitQuit ( ) and PostQuit ( )", #__message_ScreenCentered )
             
         EndSelect
         
@@ -95,8 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 62
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 67
+; FirstLine = 32
 ; Folding = -
 ; EnableXP

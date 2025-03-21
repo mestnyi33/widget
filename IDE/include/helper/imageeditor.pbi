@@ -112,7 +112,12 @@ Procedure Events_EDITORIMAGES( )
 EndProcedure
 
 Procedure Open_EDITORIMAGES( )
-   EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
+   CompilerIf #PB_Compiler_IsMainFile
+      EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
+   CompilerElse
+      EDITORIMAGES = Window( 20, 20, 392, 232, "Редактор изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
+   CompilerEndIf
+   
    SetClass( EDITORIMAGES, "EDITORIMAGES" )
    IMAGE_VIEW = Image( 7, 7, 253, 218, (-1), #__image_Center )
    SetColor( IMAGE_VIEW, #PB_Gadget_BackColor, $54EDDE )
@@ -148,22 +153,22 @@ Procedure Open_EDITORIMAGES( )
    Bind( #PB_All, @Events_EDITORIMAGES( ))
    BindEvent( #PB_Event_CloseWindow, @Event_CloseWindow( ), GetCanvasWindow( EDITORIMAGES ))
    
-   WaitQuit( )
+   WaitQuit( EDITORIMAGES )
    
-   Debug ""+GetCanvasWindow(EDITORIMAGES) +" "+ IsWindow(GetCanvasWindow(EDITORIMAGES))
+   ; Debug ""+GetCanvasWindow(EDITORIMAGES) +" "+ IsWindow(GetCanvasWindow(EDITORIMAGES))
    
    ProcedureReturn LOADIMAGE
 EndProcedure
 
 CompilerIf #PB_Compiler_IsMainFile
    If IsImage( Open_EDITORIMAGES( ))
-      Debug "Это настоящее изображение"
+      Debug "Это изображение " + LOADIMAGE
    EndIf
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 71
+; CursorPosition = 155
+; FirstLine = 126
 ; Folding = ---
 ; EnableXP
 ; DPIAware
