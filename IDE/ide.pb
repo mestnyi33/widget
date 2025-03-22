@@ -540,8 +540,10 @@ Procedure   Properties_ButtonEvents( )
                Pattern$ = "Image (*.*)|*.png;*.bmp;*.ico"
                
                Define img = open_EditorImages( *g\root )
+               
                If IsImage( img )
-                  SetImage( a_focused( ), img )
+                Debug "a_focused( ) "+img
+                 SetImage( a_focused( ), img )
                EndIf
                
 ;                File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
@@ -2765,7 +2767,7 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 541
+; CursorPosition = 544
 ; FirstLine = 528
 ; Folding = --------------------------------------------------
 ; Optimizer

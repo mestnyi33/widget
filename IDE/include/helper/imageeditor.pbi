@@ -19,38 +19,32 @@ Global BUTTON_OK = - 1
 Global BUTTON_CANCEL = - 1
 
 Global LOADIMAGE = - 1
+Global OPEN_IMAGE = - 1
+Global SAVE_IMAGE = - 1
+Global COPY_IMAGE = - 1
+Global CUT_IMAGE = - 1
+Global PASTE_IMAGE = - 1
 
-Global OPEN_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Open.png" )
-Global SAVE_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Save.png" )
-Global COPY_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Copy.png" )
-Global CUT_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Cut.png" )
-Global PASTE_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Paste.png" )
-
-CompilerIf #PB_Compiler_DPIAware
-   ResizeImage(OPEN_IMAGE, DesktopScaledX(ImageWidth(OPEN_IMAGE)), DesktopScaledY(ImageHeight(OPEN_IMAGE)), #PB_Image_Raw )
-   ResizeImage(SAVE_IMAGE, DesktopScaledX(ImageWidth(SAVE_IMAGE)), DesktopScaledY(ImageHeight(SAVE_IMAGE)), #PB_Image_Raw )
-   ResizeImage(COPY_IMAGE, DesktopScaledX(ImageWidth(COPY_IMAGE)), DesktopScaledY(ImageHeight(COPY_IMAGE)), #PB_Image_Raw )
-   ResizeImage(CUT_IMAGE, DesktopScaledX(ImageWidth(CUT_IMAGE)), DesktopScaledY(ImageHeight(CUT_IMAGE)), #PB_Image_Raw )
-   ResizeImage(PASTE_IMAGE, DesktopScaledX(ImageWidth(PASTE_IMAGE)), DesktopScaledY(ImageHeight(PASTE_IMAGE)), #PB_Image_Raw )
-CompilerEndIf
-
-Procedure Event_CloseWindow( ) ; BUG 612
-   Debug "Event_CloseWindow "
+Procedure Load_IMAGES( )
+   OPEN_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Open.png" )
+   SAVE_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Save.png" )
+   COPY_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Copy.png" )
+   CUT_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Cut.png" )
+   PASTE_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Paste.png" )
+   
+   CompilerIf #PB_Compiler_DPIAware
+      ResizeImage(OPEN_IMAGE, DesktopScaledX(ImageWidth(OPEN_IMAGE)), DesktopScaledY(ImageHeight(OPEN_IMAGE)), #PB_Image_Raw )
+      ResizeImage(SAVE_IMAGE, DesktopScaledX(ImageWidth(SAVE_IMAGE)), DesktopScaledY(ImageHeight(SAVE_IMAGE)), #PB_Image_Raw )
+      ResizeImage(COPY_IMAGE, DesktopScaledX(ImageWidth(COPY_IMAGE)), DesktopScaledY(ImageHeight(COPY_IMAGE)), #PB_Image_Raw )
+      ResizeImage(CUT_IMAGE, DesktopScaledX(ImageWidth(CUT_IMAGE)), DesktopScaledY(ImageHeight(CUT_IMAGE)), #PB_Image_Raw )
+      ResizeImage(PASTE_IMAGE, DesktopScaledX(ImageWidth(PASTE_IMAGE)), DesktopScaledY(ImageHeight(PASTE_IMAGE)), #PB_Image_Raw )
+   CompilerEndIf
 EndProcedure
+
 
 Procedure Events_EDITORIMAGES( )
    
    Select WidgetEvent( )
-      Case #__event_Close
-         If GetImage( IMAGE_VIEW ) = LOADIMAGE
-            SetImage( IMAGE_VIEW, - 1 )
-         EndIf
-         If IsImage( LOADIMAGE )
-            FreeImage( LOADIMAGE )
-            LOADIMAGE = - 1
-         EndIf
-         ProcedureReturn #PB_All
-         
       Case #__event_leftClick
          Select EventWidget( )
             Case BUTTON_COPY,
@@ -59,22 +53,24 @@ Procedure Events_EDITORIMAGES( )
                Define img = GetImage( IMAGE_VIEW )
                If IsImage( img )
                   SetClipboardImage( img )
+                  ;
                   If BUTTON_CUT = EventWidget( )
-                     RemoveImage( IMAGE_VIEW, img )
-                     SetText( IMAGE_VIEW, "Загрузите изображения" )
-                     
-                     Disable( BUTTON_SAVE, #True )
-                     Disable( BUTTON_COPY, #True )
-                     Disable( BUTTON_CUT, #True )
-                     Disable( BUTTON_OK, #True )
-                     ReDraw( root( ))
+                     If RemoveImage( IMAGE_VIEW, img )
+                        SetText( IMAGE_VIEW, "Загрузите изображения" )
+                        ;
+                        Disable( BUTTON_SAVE, #True )
+                        Disable( BUTTON_COPY, #True )
+                        Disable( BUTTON_CUT, #True )
+                        Disable( BUTTON_OK, #True )
+                        ReDraw( root( ))
+                     EndIf
                   EndIf
                EndIf
                
             Case BUTTON_PASTE
                SetImage( IMAGE_VIEW, GetClipboardImage( #PB_Any, 32 ))
                SetText( IMAGE_VIEW, "" )
-               
+               ;
                Disable( BUTTON_SAVE, #False )
                Disable( BUTTON_COPY, #False )
                Disable( BUTTON_CUT, #False )
@@ -92,21 +88,22 @@ Procedure Events_EDITORIMAGES( )
                   LOADIMAGE = LoadImage( #PB_Any, file$ )
                   SetImage( IMAGE_VIEW, LOADIMAGE )
                   SetText( IMAGE_VIEW, "" )
-                  
+                  ;
                   Disable( BUTTON_SAVE, #False )
                   Disable( BUTTON_COPY, #False )
                   Disable( BUTTON_CUT, #False )
                   Disable( BUTTON_PASTE, #False )
                   Disable( BUTTON_OK, #False )
                   ReDraw( root( ))
-                  
                EndIf
                
             Case BUTTON_OK
+               LOADIMAGE = CopyImage( LOADIMAGE, #PB_Any )
                PostQuit( )
                           
             Case BUTTON_CANCEL
-               Post( GetWindow( BUTTON_CANCEL ), #__event_Close )
+               LOADIMAGE = - 1
+               PostQuit( )
                
          EndSelect
    EndSelect
@@ -115,6 +112,8 @@ Procedure Events_EDITORIMAGES( )
 EndProcedure
 
 Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
+   Load_IMAGES( )
+   
    EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", flag | #PB_Window_WindowCentered, WindowID( GetCanvasWindow( root )) )
    SetBackgroundColor( EDITORIMAGES, $DCDCDC )
    SetClass( EDITORIMAGES, "EDITORIMAGES" )
@@ -151,8 +150,6 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    BUTTON_CANCEL = Button( 266, 203, 119, 22, "Отмена", #__image_Left )
    
    Bind( #PB_All, @Events_EDITORIMAGES( ))
-   ;BindEvent( #PB_Event_CloseWindow, @Event_CloseWindow( ), GetCanvasWindow( EDITORIMAGES ))
-   
    WaitQuit( EDITORIMAGES )
    
    ; ChangeCurrentCanvas( GadgetID( GetCanvasGadget( root )))
@@ -188,8 +185,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 36
+; CursorPosition = 20
+; FirstLine = 135
 ; Folding = ---
 ; EnableXP
 ; DPIAware
