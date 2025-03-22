@@ -42,6 +42,9 @@ Procedure Events_EDITORIMAGES( )
    
    Select WidgetEvent( )
       Case #__event_Close
+         If GetImage( IMAGE_VIEW ) = LOADIMAGE
+            SetImage( IMAGE_VIEW, - 1 )
+         EndIf
          If IsImage( LOADIMAGE )
             FreeImage( LOADIMAGE )
             LOADIMAGE = - 1
@@ -104,24 +107,20 @@ Procedure Events_EDITORIMAGES( )
                           
             Case BUTTON_CANCEL
                Post( GetWindow( BUTTON_CANCEL ), #__event_Close )
-                
+               
          EndSelect
    EndSelect
    
    ProcedureReturn #PB_Ignore
 EndProcedure
 
-Procedure Open_EDITORIMAGES( window = #PB_Any, flag = #PB_Window_SystemMenu | #PB_Window_WindowCentered ) ;  | #PB_Window_ScreenCentered 
-;    CompilerIf #PB_Compiler_IsMainFile
-      EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", flag, WindowID( window ) )
-;     EDITORIMAGES = Open( window, 20, 20, 392, 232, "Редактор изображения", flag )
-;    CompilerElse
-;       EDITORIMAGES = Window( 20, 20, 392, 232, "Редактор изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
-;    CompilerEndIf
-   
+Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
+   EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", flag | #PB_Window_WindowCentered, WindowID( GetCanvasWindow( root )) )
+   SetBackgroundColor( EDITORIMAGES, $DCDCDC )
    SetClass( EDITORIMAGES, "EDITORIMAGES" )
-   IMAGE_VIEW = Image( 7, 7, 253, 218, (-1), #__image_Center )
-   SetColor( IMAGE_VIEW, #PB_Gadget_BackColor, $54EDDE )
+   
+   IMAGE_VIEW = Image( 7, 7, 253, 218, (-1), #__image_Center|#__flag_border_Flat )
+   SetBackgroundColor( IMAGE_VIEW, $54EDDE )
    
    SetText( IMAGE_VIEW, "Загрузите изображения" )
    widget( )\text\x = - 145
@@ -156,6 +155,7 @@ Procedure Open_EDITORIMAGES( window = #PB_Any, flag = #PB_Window_SystemMenu | #P
    
    WaitQuit( EDITORIMAGES )
    
+   ; ChangeCurrentCanvas( GadgetID( GetCanvasGadget( root )))
    ; Debug ""+GetCanvasWindow(EDITORIMAGES) +" "+ IsWindow(GetCanvasWindow(EDITORIMAGES))
    
    ProcedureReturn LOADIMAGE
@@ -163,12 +163,17 @@ EndProcedure
 
 CompilerIf #PB_Compiler_IsMainFile
    Procedure button_left_click_event( )
+      Define widget = EventWidget( )
       Define root = EventWidget( )\root
-      If IsImage( Open_EDITORIMAGES( 0 ))
-         ; If IsImage( Open_EDITORIMAGES( 0, #PB_Window_BorderLess ))
+      
+      If IsImage( Open_EDITORIMAGES( root ))
+         ; If IsImage( Open_EDITORIMAGES( root, -1, #PB_Window_BorderLess ))
          Debug "Это изображение " + LOADIMAGE
          SetImage( root, LOADIMAGE )
       EndIf
+      
+      Disable( widget, #False )
+   
    EndProcedure
    
    Define root = Open( 0, 20, 20, 600, 600, "Загрузка изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
@@ -183,8 +188,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 98
+; CursorPosition = 47
+; FirstLine = 36
 ; Folding = ---
 ; EnableXP
 ; DPIAware

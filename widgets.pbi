@@ -724,12 +724,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          If _root_
             ; Debug #PB_Compiler_Procedure
             If widget::__gui\event\loop
-               If test_draw_repaint
-                  Debug "post - ReDraw "+_root_\canvas\gadget +" "+ IsGadget(_root_\canvas\gadget)
-               EndIf
-               If IsGadget(_root_\canvas\gadget)
-                  widget::ReDraw( _root_ )
-               EndIf
+;                If test_draw_repaint
+;                   Debug "post - ReDraw "+_root_\canvas\gadget +" "+ IsGadget(_root_\canvas\gadget)
+;                EndIf
+;                If IsGadget(_root_\canvas\gadget)
+;                   widget::ReDraw( _root_ )
+;                EndIf
             Else
                If _root_\canvas\repaint = 0
                   _root_\canvas\repaint = 1
@@ -8412,7 +8412,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure.i GetCanvasGadget( *this._s_WIDGET = #Null ) ; Returns canvas gadget
-         Protected.i result
+         Protected.i result = #PB_Default
          If is_widget_( *this )
             result = *this\root\canvas\gadget
          Else
@@ -8424,7 +8424,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i GetCanvasWindow( *this._s_WIDGET = #Null ) ; Returns window
-         Protected.i result
+         Protected.i result = #PB_Default
          If is_widget_( *this )
             If is_root_( *this )
                result = *this\root\canvas\window
@@ -10910,10 +10910,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                SetForeground( *this )
             EndIf
          EndIf
-         If __gui\event\exit = 0
-            If Post( *this, event, *button, *data )
-               ; PostReDraw( *this\root )
-            EndIf
+         If __gui\event\bind = 0
+            Post( *this, event, *button, *data )
          Else
             ProcedureReturn DoEvents( *this, event, *button, *data )
          EndIf
@@ -18553,7 +18551,7 @@ chr$ = ","
             EndIf
             
             ;\\ scroll image draw
-            If *this\img\imageID
+            If *this\img\imageID 
                DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
             EndIf
             
@@ -18987,7 +18985,7 @@ chr$ = ","
                   ;
                   ; post event re draw
                   If *this\binddraw
-                     If __gui\event\exit 
+                     If __gui\event\bind 
                         If *this\root\drawmode & 1<<1
                            SaveVectorState( )
                            TranslateCoordinates( *this\x[#__c_frame], *this\y[#__c_frame] )
@@ -22129,11 +22127,11 @@ chr$ = ","
          If Not (*this\disable And Not *this\anchors)
             If *this\root\repaint > 0 
                ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(event)
-               If MouseButtonPress( ) And
+               If ( MouseButtonPress( ) And
                   ( event = #__event_Focus Or
                     event = #__event_Drop Or
-                    event = #__event_LostFocus )
-                  ;
+                    event = #__event_LostFocus )) Or __gui\event\loop
+                 ;
                   ReDraw( *this\root )
                Else
                   ; Debug "post redraw "+ *this\class +" "+ ClassFromEvent(event) +" "+ ClassFromEvent(*data)
@@ -23091,7 +23089,7 @@ chr$ = ","
          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0
-            If __gui\event\exit = 0
+            If Not __gui\event\bind
                If test_event_send
                   Static test
                   Debug ""+*this\class + " - Post( test "+test +" ) "+ ClassFromEvent(event)
@@ -23109,7 +23107,7 @@ chr$ = ","
                   ProcedureReturn __gui\event\queues( )
                EndIf
                
-            ElseIf __gui\event\exit > 0
+            Else
                If is_bar_( *this )
                   If event = #__event_LeftClick Or
                      event = #__event_Change
@@ -23208,11 +23206,10 @@ chr$ = ","
                   If result <> #PB_Ignore
                      Select result
                         Case #PB_All
-                           Free( *this\root )
-                           If Not MapSize( roots() )
-                             PostQuit( )
+                           If Not PostQuit( )
+                              Free( *this\root )
+                              CloseWindow( EventWindow( ))
                            EndIf
-                           CloseWindow( EventWindow( ))
                            
                         Case 1
                            Free( *this )
@@ -23258,7 +23255,8 @@ chr$ = ","
                Next
                ;
             Else
-               
+               __gui\event\bind = #True
+            
                LastElement( __gui\event\binds( ) )
                AddElement(__gui\event\binds( ))
                __gui\event\binds.allocate( HOOK, ( ))
@@ -23279,7 +23277,6 @@ chr$ = ","
                If event = #__event_CursorChange
                   *this\bindcursor = 1
                EndIf
-               __gui\event\exit = 1
             EndIf
          EndIf
          
@@ -23477,7 +23474,7 @@ chr$ = ","
                   If GetClassLongPtr_( w, #GCL_STYLE ) & #CS_DROPSHADOW = 0
                      SetClassLongPtr_( w, #GCL_STYLE, #CS_DROPSHADOW )
                   EndIf
-                  ;SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
+                  SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
                   SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
                   SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE)|#WS_EX_NOPARENTNOTIFY) 
                CompilerElse
@@ -24021,24 +24018,49 @@ chr$ = ","
                      EndIf
                      
                      ;\\
-                     If GetActive( ) = widgets( )
-                        GetActive( ) = 0
-                        If is_root_( *this )
+                     If PopupWindow( ) = widgets( )
+                        PopupWindow( ) = #Null
+                     EndIf
+                     If Pressed( ) = widgets( )
+                        Pressed( ) = #Null
+                     EndIf
+                     If a_focused( ) = widgets( )
+                        a_focused( ) = #Null
+                     EndIf
+                     If a_entered( ) = widgets( )
+                        a_entered( ) = #Null
+                     EndIf
+                     
+                     ;\\
+                     If GetActive( )
+                        If GetActive( ) = widgets( )
+                           GetActive( ) = #Null
                            
-                        Else
-                           If *this\BeforeWidget( )
-                              SetActive( *this\BeforeWidget( ) )
-                           Else
-                              If Not SetActive( *this\parent )
-                                 GetActive( ) = *this\parent
+                           If Not is_root_( *this )
+                              If *this\BeforeWidget( )
+                                 SetActive( *this\BeforeWidget( ) )
+                              Else
+                                 If Not SetActive( *this\parent )
+                                    GetActive( ) = *this\parent
+                                 EndIf
+                              EndIf
+                           EndIf
+                           
+                           If test_focus_set
+                              If keyboard( )\deactive
+                                 Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
                               EndIf
                            EndIf
                         EndIf
                         
-                        If test_focus_set
-                           If keyboard( )\deactive
-                              Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
-                           EndIf
+                        If GetActive( ) = *this
+                           Debug "a "+*this\class
+                           GetActive( ) = #Null
+                        EndIf
+                        
+                        If GetActive( ) And
+                           GetActive( )\root = *this
+                           GetActive( ) = #Null
                         EndIf
                      EndIf
                      
@@ -24059,17 +24081,9 @@ chr$ = ","
                         *this\LastWidget( ) = *this
                      EndIf
                      
-                     ;\\
-                     If Pressed( ) = widgets( )
-                        Pressed( ) = #Null
+                     If widgets( )\img\imageID
+                        RemoveImage( widgets( ), widgets( )\img\image )
                      EndIf
-                     If a_focused( ) = widgets( )
-                        a_focused( ) = #Null
-                     EndIf
-                     If a_entered( ) = widgets( )
-                        a_entered( ) = #Null
-                     EndIf
-                     
                      ;\\
                      widgets( )\parent  = #Null
                      widgets( )\address = #Null
@@ -24091,8 +24105,10 @@ chr$ = ","
             ForEver
          EndIf
          ;
-         PostReDraw( *this\root )
-      EndProcedure
+        ; If Not __gui\event\loop
+          PostReDraw( *this\root )
+        ; EndIf
+    EndProcedure
       
       Procedure.i Free( *this._s_WIDGET )
          If *this > 0 
@@ -24116,28 +24132,8 @@ chr$ = ","
                Delete( *this, #True )
                
                ;\\
-               If PopupWindow( ) = *this
-                  PopupWindow( ) = #Null
-               EndIf
-               
-               If Pressed( ) = *this
-                  Pressed( ) = #Null
-               EndIf
-               
-               If GetActive( ) = *this
-                  Debug "a "+*this\class
-                  ;SetActive( 0 )
-                  GetActive( ) = 0
-               EndIf
-               
-               If GetActive( ) And 
-                  GetActive( )\root = *this
-                  GetActive( ) = 0
-               EndIf
-               
-               ;\\
                If is_root_( *this )
-                  If MapSize( roots( ) )
+                  If FindMapElement( roots( ), Str( *this\root\canvas\gadgetID ) )
                      DeleteMapElement( roots( ) )
                      ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
                      ; ResetMap( roots( ) )
@@ -24147,8 +24143,10 @@ chr$ = ","
                      
                      If Not MapSize( roots( ) )
                         __gui\event\quit = 1
+                        PostQuit( )
                      EndIf
                      
+                     ; bug 612
                      PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, #PB_Default ) 
                   EndIf
                EndIf
@@ -24159,19 +24157,15 @@ chr$ = ","
             ForEach roots( ) : root( ) = roots( )
                Free( root( ) )
             Next
-            
-            If __gui\event\loop
-               PostQuit( )
-            EndIf
          EndIf
       EndProcedure
       
       Procedure Repost( )
-         Protected __result = Bool( __gui\event\exit <> 1 )
+         Protected __result = Bool( Not __gui\event\bind )
          Protected __widget, __type, __item, __data
          
          If __result
-            __gui\event\exit = 1
+            __gui\event\bind = #True
             
             ;\\ send posted events (queue events) 
             If ListSize( __gui\event\queues( ) )
@@ -24298,13 +24292,16 @@ chr$ = ","
                   CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "stop:", 0 )
                   
             CompilerEndSelect
+            
+            ProcedureReturn #True
          EndIf
       EndProcedure
       
       Procedure WaitQuit( *root._s_root = #Null )
-         If __gui\event\loop = 0
-            __gui\event\loop = 1
-            __gui\event\exit = 1
+         If __gui\event\loop = #False
+            __gui\event\loop = #True
+            ; __gui\event\bind = #True
+            Define canvasID = root( )\Beforeroot( )\canvas\gadgetid
             
             PushMapPosition( roots( ))
             ForEach roots( )
@@ -24349,8 +24346,9 @@ chr$ = ","
                EndIf
             EndIf
             
-            __gui\event\loop = 0
-            
+            __gui\event\loop = #False
+            ChangeCurrentCanvas( canvasID )
+   
             Debug " QUIT MAIN LOOP"
          EndIf
       EndProcedure
@@ -25563,9 +25561,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 23592
-; FirstLine = 22898
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6--------------X---f0--------4dv+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------D-3---------------------------------
+; CursorPosition = 24137
+; FirstLine = 23462
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9--------------r---v+--------8uX------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------xf8----------------e---------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

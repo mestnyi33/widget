@@ -539,7 +539,7 @@ Procedure   Properties_ButtonEvents( )
                StandardFile$ = "open_example.pb" 
                Pattern$ = "Image (*.*)|*.png;*.bmp;*.ico"
                
-               Define img = open_EditorImages( EventWindow( ))
+               Define img = open_EditorImages( *g\root )
                If IsImage( img )
                   SetImage( a_focused( ), img )
                EndIf
@@ -2766,7 +2766,7 @@ DataSection
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 541
-; FirstLine = 525
+; FirstLine = 528
 ; Folding = --------------------------------------------------
 ; Optimizer
 ; EnableAsm
