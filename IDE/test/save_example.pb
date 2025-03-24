@@ -1,81 +1,74 @@
-﻿EnableExplicit
+﻿CompilerIf #PB_Compiler_IsMainFile
+   XIncludeFile "../../ide.pb"
+   XIncludeFile "../../code.pbi"
+CompilerEndIf
 
-Global WINDOW_0 = - 1
+DisableExplicit
 
-Global BUTTON_0 = - 1
-Global TEXT_0 = - 1
-Global BUTTON_1 = - 1
-Global STRING_0 = - 1
-Global SCROLLAREA_0 = - 1
-Global BUTTON_2 = - 1
-Global TEXT_1 = - 1
-Global BUTTON_3 = - 1
-Global TEXT_2 = - 1
-Global PANEL_0 = - 1
-Global BUTTON_4 = - 1
-Global TEXT_3 = - 1
-Global BUTTON_5 = - 1
-Global TEXT_4 = - 1
-Global BUTTON_6 = - 1
-Global TEXT_5 = - 1
-Global BUTTON_7 = - 1
-Global TEXT_6 = - 1
+UsePNGImageDecoder()
 
-Procedure Open_WINDOW_0( )
-   WINDOW_0 = OpenWindow( #PB_Any, 7, 7, 498, 253, "window_0",  #PB_Window_SystemMenu | #PB_Window_SizeGadget  )
-      BUTTON_0 = ButtonGadget( #PB_Any, 14, 28, 50, 29, "button_0",  #PB_Button_MultiLine  )
-      TEXT_0 = TextGadget( #PB_Any, 28, 63, 50, 29, "text_0" )
-      BUTTON_1 = ButtonGadget( #PB_Any, 35, 105, 50, 29, "button_1" )
-      STRING_0 = StringGadget( #PB_Any, 42, 147, 50, 29, "string_0" )
-      
-      SCROLLAREA_0 = ScrollAreaGadget( #PB_Any, 119, 28, 169, 176, 165, 175, 5,  #PB_ScrollArea_Flat  )
-         BUTTON_2 = ButtonGadget( #PB_Any, 14, 28, 29, 29, "button_2" )
-         TEXT_1 = TextGadget( #PB_Any, 28, 63, 50, 29, "text_1" )
-         BUTTON_3 = ButtonGadget( #PB_Any, 35, 105, 78, 29, "button_3" )
-         TEXT_2 = TextGadget( #PB_Any, 42, 147, 50, 29, "text_2" )
-      CloseGadgetList( ) ; SCROLLAREA_0
+If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png")
+   End
+EndIf
 
-      PANEL_0 = PanelGadget( #PB_Any, 322, 28, 169, 176 )
-         AddGadgetItem( PANEL_0, - 1, "panel_item_0" )  
-         BUTTON_4 = ButtonGadget( #PB_Any, 14, 28, 29, 29, "button_4" )
-         TEXT_3 = TextGadget( #PB_Any, 28, 63, 50, 29, "text_3" )
-         BUTTON_5 = ButtonGadget( #PB_Any, 35, 105, 78, 29, "button_5" )
-         TEXT_4 = TextGadget( #PB_Any, 42, 147, 50, 29, "text_4" )
-         
-         AddGadgetItem( PANEL_0, - 1, "panel_item_1" )  
-         BUTTON_6 = ButtonGadget( #PB_Any, 112, 28, 29, 29, "button_6" )
-         TEXT_5 = TextGadget( #PB_Any, 126, 63, 50, 29, "text_5" )
-         BUTTON_7 = ButtonGadget( #PB_Any, 133, 105, 78, 29, "button_7" )
-         TEXT_6 = TextGadget( #PB_Any, 147, 147, 50, 29, "text_6" )
-      CloseGadgetList( ) ; PANEL_0
+If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png")
+   End
+EndIf
+
+If Not LoadImage(2, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png")
+   End
+EndIf
+
+If Not LoadImage(3, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png")
+   End
+EndIf
+
+Global img = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+If Not img
+   End
+EndIf
+
+; CompilerIf #PB_Compiler_DPIAware
+;    ResizeImage(0, DesktopScaledX(ImageWidth(0)), DesktopScaledY(ImageHeight(0)), #PB_Image_Raw )
+;    ResizeImage(1, DesktopScaledX(ImageWidth(1)), DesktopScaledY(ImageHeight(1)), #PB_Image_Raw )
+;    ResizeImage(2, DesktopScaledX(ImageWidth(2)), DesktopScaledY(ImageHeight(2)), #PB_Image_Raw )
+;    ResizeImage(3, DesktopScaledX(ImageWidth(3)), DesktopScaledY(ImageHeight(3)), #PB_Image_Raw )
+;    ResizeImage(img, DesktopScaledX(ImageWidth(img)), DesktopScaledY(ImageHeight(img)), #PB_Image_Raw )
+; CompilerEndIf
+
+Global my_font_2 = LoadFont(#PB_Any, "Consolas", 13, #PB_Font_Bold|#PB_Font_Underline )
+
+If Open( 0, 0, 0, 592, 532, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
    
-      DisableGadget( BUTTON_0, #True )
-      SetGadgetState( PANEL_0, 1 )
-EndProcedure
+   WINDOW_1 = Window( 10, 10, 392, 232, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
+   IMAGE_VIEW = Image(7, 7, 253, 218, (0), #__flag_border_flat|#__image_center )
+   BUTTON_OPEN = Button(266, 7, 119, 22, "Открыть", #__image_left )
+   button_SAVE = Button(266, 35, 119, 22, "Сохранить", #__image_left )
+   BUTTON_COPY = Button(266, 77, 119, 22, "Копировать", #__image_left )
+   button_CUT = Button(266, 105, 119, 22, "Вырезать", #__image_left )
+   BUTTON_PASTE = Button(266, 133, 119, 22, "Вставить", #__image_left )
+   BUTTON_OK = Button(266, 175, 119, 22, "Ок", #__image_left )
+   BUTTON_CANCEL = Button(266, 203, 119, 22, "Отмена", #__image_left )
+   
+   ;
+   SetImage(BUTTON_OPEN, (0))
+   SetImage(button_SAVE, (1))
+   SetImage(BUTTON_COPY, (2))
+   SetImage(BUTTON_CUT, (3))
+   SetImage(BUTTON_PASTE, (img))
+   
+   SetFont( BUTTON_OK, (my_font_2))
+  
+   ;SetImage( IMAGE_VIEW, (0))
+   SetColor( IMAGE_VIEW, #PB_Gadget_BackColor, RGBA(222, 237, 84, 186) )
+EndIf
 
 CompilerIf #PB_Compiler_IsMainFile
-   Open_WINDOW_0( )
-
-   Define event
-   While IsWindow( WINDOW_0 )
-      event = WaitWindowEvent( )
-      
-      Select EventWindow( )
-         Case WINDOW_0
-      EndSelect
-      
-      Select event
-         Case #PB_Event_CloseWindow
-            If WINDOW_0 = EventWindow( )
-               If #PB_MessageRequester_Yes = MessageRequester( "Message", 
-                                                               "Are you sure you want To go out?", 
-                                                               #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                  CloseWindow( EventWindow( ) )
-               EndIf
-            Else
-               CloseWindow( EventWindow( ) )
-            EndIf
-      EndSelect
-   Wend
-   End
+   WaitClose( )
 CompilerEndIf
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 27
+; Folding = --
+; EnableXP
+; DPIAware

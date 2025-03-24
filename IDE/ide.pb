@@ -112,7 +112,9 @@ Global ide_inspector_view_splitter,
 
 Global group_select
 Global group_drag
-Global enumerations 
+Global enum_object = 0
+Global enum_image = 0
+Global enum_font = 0
 
 
 Global font_properties = LoadFont( #PB_Any, "", 12 )
@@ -160,7 +162,8 @@ Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#P
 Declare   ide_addline( *new )
 Declare   MakeID( class$, *rootParent )
 ;
-Declare.s Code_Generate( *parent )
+Declare.s Generate_Code( *parent )
+;
 Declare$  FindArguments( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   MakeCallFunction( str$, arg$, findtext$ )
 Declare   GetArgIndex( text$, len, caret, mode.a = 0 )
@@ -185,10 +188,19 @@ Declare   AddImages( Image )
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
+; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
+; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
+;    ProcedureReturn widget::GetColor( *this, constants::#__Color_Front )
+; EndProcedure
+; Procedure   SetFontColor( *this.structures::_s_WIDGET, color.i )
+;    ProcedureReturn widget::SetColor( *this, constants::#__Color_Front, color )
+; EndProcedure
+      
+
 XIncludeFile #ide_path + "include/newcreate/anchorbox.pbi"
 XIncludeFile #ide_path + "IDE/include/helper/imageeditor.pbi"
 CompilerIf #PB_Compiler_IsMainFile
-   XIncludeFile "code.pbi"
+   XIncludeFile #ide_path + "IDE/code.pbi"
 CompilerEndIf
 
 ;
@@ -869,21 +881,21 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       Define color_properties.q = $FFBF9CC3;$BE80817D
       Define fcolor_properties.q = $CA2E2E2E
       
-      ;       If Type > 0
-      ;          SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
-      ;          SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
-      ;       Else
-      ;          ;SetItemFont( *first, item, font_properties)
-      ;          ;SetItemFont( *second, item, font_properties)
-      
-      SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-      SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-      ; SetItemColor( *first, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
-      ;       SetItemColor( *second, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
-      
-      SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-      SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-      ;       EndIf
+;       ;       If Type > 0
+;       ;          SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
+;       ;          SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
+;       ;       Else
+;       ;          ;SetItemFont( *first, item, font_properties)
+;       ;          ;SetItemFont( *second, item, font_properties)
+;       
+;       SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
+;       SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
+;       ; SetItemColor( *first, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
+;       ;       SetItemColor( *second, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
+;       
+;       SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+;       SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+;       ;       EndIf
    Else
       SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
       SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
@@ -1227,6 +1239,11 @@ EndProcedure
 #File = 0
 Procedure   ide_NewFile( )
    ; удаляем всех детей MDI
+;    ForEach widgets( )
+;       If GetParent( widgets( ) ) = ide_design_panel_MDI ; IsChild( widgets( ), ide_design_panel_MDI )
+;          Free( widgets( ) )
+;       EndIf
+;    Next
    Delete( ide_design_panel_MDI )
    ; Очишаем текст
    ClearItems( ide_design_DEBUG ) 
@@ -1238,10 +1255,10 @@ Procedure   ide_NewFile( )
    SetState( ide_inspector_panel, 0 )
    
    If Not Hide( ide_design_panel_CODE )
-      SetText( ide_design_panel_CODE, Code_Generate( ide_design_panel_MDI ) )
+      SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
       ;                SetActive( ide_design_panel_CODE )
    EndIf
-   ; SetText( ide_design_DEBUG, Code_Generate( ide_design_panel_MDI ) )
+   ; SetText( ide_design_DEBUG, Generate_Code( ide_design_panel_MDI ) )
    
 EndProcedure
 
@@ -1280,12 +1297,12 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          ;          
          ;          ; bug hides
          ;          If Not Hide( ide_design_panel_CODE )
-         ;             SetText( ide_design_panel_CODE, Code_Generate( ide_design_panel_MDI ) )
+         ;             SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
          ;             ;                SetActive( ide_design_panel_CODE )
          ;          EndIf
          
          
-         Define code$ = Code_Generate( ide_design_panel_MDI )
+         Define code$ = Generate_Code( ide_design_panel_MDI )
          code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
          code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
          SetText( ide_design_DEBUG, code$ )
@@ -1314,7 +1331,7 @@ Procedure   ide_SaveFile(Path$) ; Процедура сохранения фай
       If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
                                             " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
                                             " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
-         Text$ = Code_Generate( ide_design_panel_MDI )
+         Text$ = Generate_Code( ide_design_panel_MDI )
       Else
          Text$ = GetText( ide_design_panel_CODE )
       EndIf
@@ -1903,6 +1920,13 @@ Procedure.i ide_AddImages_list( *id, Directory$ )
                               AddItem( *id, -1, name$, Image )
                               SetItemData( *id, CountItems( *id )-1, Image )
                               
+                           ElseIf FindString( PackEntryName, "tree" ) Or
+                                  FindString( PackEntryName, "listview" )
+                              
+                              Image = CatchImage( #PB_Any, *memory, ImageSize )
+                              AddItem( *id, -1, name$, Image )
+                              SetItemData( *id, CountItems( *id )-1, Image )
+                              
                            Else
                               ;                               Image = CatchImage( #PB_Any, *memory, ImageSize )
                               ;                               AddItem( *id, -1, name$, Image )
@@ -1959,7 +1983,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          
          ;-  RUN
       Case #_tb_file_run
-         Define Code.s = Code_Generate( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
+         Define Code.s = Generate_Code( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
          
          RunPreview( Code )
          
@@ -2135,7 +2159,7 @@ Procedure ide_events( )
          If *g = ide_design_panel
             If __item = 1
                AddItem( ide_design_panel_CODE, 0, "" ) ; BUG 
-               SetText( ide_design_panel_CODE, Code_Generate( ide_design_panel_MDI ) )
+               SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
                SetActive( ide_design_panel_CODE )
             EndIf
          EndIf
@@ -2727,12 +2751,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    a_set( ide_design_form )
    
-   Define code$ = Code_Generate( ide_design_panel_MDI )
+   Define code$ = Generate_Code( ide_design_panel_MDI )
    code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
    code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
    SetText( ide_design_DEBUG, code$ )
    
-   ;Define code$ = Code_Generate( ide_design_panel_MDI )
+   ;Define code$ = Generate_Code( ide_design_panel_MDI )
    ; SetText( ide_design_panel_CODE, code$ )
    ;SetText( ide_design_DEBUG, code$ )
    
@@ -2767,8 +2791,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 544
-; FirstLine = 528
+; CursorPosition = 116
+; FirstLine = 114
 ; Folding = --------------------------------------------------
 ; Optimizer
 ; EnableAsm

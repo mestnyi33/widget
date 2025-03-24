@@ -467,6 +467,54 @@
       ;
       #__flag_NoGadgets        = #__flag_NoButtons
       
+      ; TEMP
+      #__flag_ButtonToggle = #PB_Button_Toggle
+      #__text_Invert           = #__flag_Invert
+      #__text_Vertical         = #__flag_Vertical
+      #__text_Left             = #__align_text|#__align_Left
+      #__text_Top              = #__align_text|#__align_Top
+      #__text_Right            = #__align_text|#__align_Right
+      #__text_Bottom           = #__align_text|#__align_Bottom
+      #__text_Center           = #__align_text|#__align_Center
+      #__flag_BorderFlat      = 1<<16   
+      #__flag_BorderRaised    = 1<<26
+      #__flag_BorderDouble    = 1<<27
+      #__flag_BorderSingle    = 1<<29  
+      #__flag_Borderless      = 1<<31
+      #__flag_TextNumeric     = 1<<36
+      #__flag_TextReadonly    = 1<<37
+      #__flag_TextLowerCase   = 1<<38
+      #__flag_TextUpperCase   = 1<<39
+      #__flag_TextPassword    = 1<<40
+      #__flag_TextWordWrap    = 1<<41
+      #__flag_TextMultiLine   = 1<<42
+      #__flag_TextInLine      = 1<<43
+      #__flag_ButtonDefault   = #__flag_button_Default
+      #__window_Normal         = #PB_Window_Normal
+      #__window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers sUpport this)
+      #__window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
+      #__window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
+      #__window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
+      #__window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
+      #__window_SizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
+      #__window_Invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
+      #__window_TitleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
+      #__window_Tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
+      #__window_BorderLess     = #__flag_BorderLess        ; Creates a window without any borders.
+      #__window_ScreenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
+      #__window_WindowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
+      #__window_NoGadgets      = #__flag_NoButtons         ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+      #__window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
+      ;-\\ Color
+      #__color_Front      = 1
+      #__color_Back       = 2
+      #__color_Line       = 3
+      #__color_titlefront = 4
+      #__color_titleback  = 5
+      #__color_graytext   = 6
+      #__color_Frame      = 7
+      #__color_Fore       = 8
+      
       ;-
       ;-\\ Bar
       ; attribute
@@ -730,9 +778,9 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 439
-; FirstLine = 424
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 516
+; FirstLine = 480
 ; Folding = ----
 ; Optimizer
 ; EnableXP

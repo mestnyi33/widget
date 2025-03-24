@@ -1,6 +1,8 @@
 ﻿;- GLOBALs
 Global line_break1
 
+Declare$  Generate_CodeCloseList( *g, Space$ )
+
 ;
 ;- INCLUDEs
 CompilerIf #PB_Compiler_IsMainFile
@@ -78,8 +80,9 @@ Procedure InitLoadFont( id$, name$, size, style )
    ;
    If IsFont( font )
       id$ = Trim( id$ )
-      If NumericString( id$ )
-         id$ = "#FONT_"+id$
+      ;
+      If enum_font
+         id$ = "#" + id$
       EndIf
       ;
       If AddMapElement( loadfonts( ), Str(FontID(font)) )
@@ -101,12 +104,8 @@ Procedure   GetLoadFont( id$ )
    id$ = Trim( id$, "(" )
    id$ = Trim( id$, ")" )
    
-   If NumericString( id$ )
-      id$ = "#FONT_"+id$
-   EndIf
-   
    ForEach loadfonts( )
-      If loadfonts( )\id$ = id$
+      If Trim(UCase(loadfonts( )\id$), "#") = Trim(UCase(id$), "#")
          ProcedureReturn loadfonts( )\font
       EndIf
    Next
@@ -141,12 +140,11 @@ Procedure   InitLoadImage( id$, file$, flags=0 )
       CompilerEndIf
       
       id$ = Trim( id$ )
-      If NumericString( id$ )
-         id$ = "#IMAGE_"+id$
+     
+      Define name$ = UCase( GetFilePart( file$, #PB_FileSystem_NoExtension ))+"_IMAGE"
+      If enum_image
+         name$ = "#" + name$
       EndIf
-      
-      ;Define name$ = "img_"+UCase( GetFilePart( file$, #PB_FileSystem_NoExtension ))
-      Define name$ = "#"+UCase( GetFilePart( file$, #PB_FileSystem_NoExtension ))+"_IMAGE"
       ;
       If AddImages( Image )
          loadimages( )\id$ = id$ 
@@ -163,12 +161,10 @@ Procedure   GetLoadImage( id$ )
    id$ = Trim( id$, "(" )
    id$ = Trim( id$, ")" )
    
-   If NumericString( id$ )
-      id$ = "#IMAGE_"+id$
-   EndIf
-   
    ForEach loadimages( )
-      If loadimages( )\id$ = id$
+      ; Debug  ""+loadimages( )\id$ +" "+ id$ 
+      
+      If Trim(UCase(loadimages( )\id$), "#") = Trim(UCase(id$), "#")
          ProcedureReturn loadimages( )\image
       EndIf
    Next
@@ -474,141 +470,15 @@ Procedure NumericString( string$ )
 EndProcedure
 
 ;-
-Procedure$ Code_GenerateStates( *g._s_WIDGET, Space$ )
-   Protected result$, name$
-   ;ProcedureReturn ""
-   
-   ;
-   If line_break1 = 1
-      line_break1 = 0
-      If Not is_window_( *g )
-         result$ + space$ + #LF$
-      EndIf
-   EndIf
-   ;
-   If pb_object$ = "Gadget" Or 
-      pb_object$ = "Window"
-      ;
-      If is_window_(*g)
-         pb_object$ = "Window"
-      Else
-         pb_object$ = "Gadget"
-      EndIf
-   EndIf
-   
-   ;
-   If *g\ChangeColor 
-      If is_window_(*g) 
-         If pb_object$
-            result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
-         Else
-            result$ + Space$ + "SetBackgroundColor( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
-         EndIf
-      Else
-         result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
-      EndIf
-      line_break1 = 1
-   EndIf            
-   ;
-   If FindMapElement( fontName( ), Str( *g\text\fontID ))
-      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ fontName( ) +" )" + #LF$
-      line_break1 = 1
-   EndIf            
-   ;
-   If *g\type = #__type_image
-   Else
-;       If FindMapElement( imageName( ), Str( *g\img\image ))
-;          result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ imageName( ) +" )" + #LF$
-;          line_break1 = 1
-;       EndIf 
-      
-      name$ = GetLoadImageName( *g\img\image )
-      If name$
-         result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ name$ +" )" + #LF$
-         line_break1 = 1
-      EndIf
-   EndIf
-
-   ;
-   If GetState(*g) > 0
-      line_break1 = 1
-      result$ + Space$ + "Set" + pb_object$ + "State( " + GetClass( *g ) + ", "+ GetState(*g) + " )" + #LF$
-   EndIf
-   If Disable(*g) > 0
-      line_break1 = 1
-      result$ + Space$ + "Disable" + pb_object$ + "( " + GetClass( *g ) + ", #True )" + #LF$
-   EndIf
-   If Hide(*g) > 0
-      line_break1 = 1
-      result$ + Space$ + "Hide" + pb_object$ + "( " + GetClass( *g ) + ", #True )" + #LF$
-   EndIf
-   ;
-   ProcedureReturn result$
-EndProcedure
-
-Procedure$ Code_GeneratePanelItems( *g._s_WIDGET, start, stop, space$ )
-   ; Debug " Code_GeneratePanelItems["+start+" "+stop +"]"
-   Protected i, result$
-   ;
-   For i = start To stop
-      If i > 0
-         result$ + space$ + #LF$
-         If line_break1
-            line_break1 = 0
-         EndIf
-      EndIf
-      result$ + space$ + "Add" + pb_object$ + "Item( " + GetClass( *g ) + 
-                ", - 1" + 
-                ", " + Chr( '"' ) + GetItemText( *g, i ) + Chr( '"' ) + 
-                " )" + #LF$
-   Next
-   ;
-   ProcedureReturn result$
-EndProcedure
-
-Procedure$ Code_GenerateCloseList( *g._s_WIDGET, Space$ )
-   Protected result$, Space2$ = Space$ + Space(codeindent)
-   
-   If IsContainer(*g) > 2
-      If *g\tabbar
-         If *g\tabbar\countitems
-            If *g = *g\LastWidget( )
-               result$ + Code_GeneratePanelItems( *g, 0, *g\tabbar\countitems - 1, Space2$ )
-            Else
-               If *g\LastWidget( )\TabIndex( ) = *g\tabbar\countitems - 1
-                  ; result$ + #LF$
-               Else
-                  result$ + Code_GeneratePanelItems( *g, *g\LastWidget( )\TabIndex( ) + 1, *g\tabbar\countitems - 1, Space2$ )
-                  ;  Debug ""+*g\class +" > "+ *g\LastWidget( )\class +" "+ *g\LastWidget( )\TabIndex( ) +" "+ *g\tabbar\countitems
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-      
-      ;
-      result$ + Code_GenerateStates( *g, Space2$ )
-      
-      ;
-      result$ + Space$ + "Close" + pb_object$ + "List( ) ; " + GetClass(*g) + #LF$ 
-   EndIf
-   
-   ProcedureReturn result$
-EndProcedure
-
-
-;-
 Procedure   MakeID( class$, *rootParent._s_WIDGET )
    If FindMapElement( GetObject( ), class$ )
       class$ = GetObject( )
    EndIf
    
    Protected result
-   ;class$ = Trim(class$)
-   class$ = UCase(class$)
    
    If StartEnum( *rootParent )
-      ; Debug ""+GetClass( widget( )) +" "+ class$
-      If Trim(GetClass( widget( )), "#") = Trim(class$, "#")
+      If Trim(UCase(GetClass( widget( ))), "#") = Trim(UCase(class$), "#")
          result = widget( )
          Break
       EndIf
@@ -631,7 +501,7 @@ Procedure$  MakeCloseList( *g._s_WIDGET, *before = 0 )
       If *g\parent And *g\parent\type = #__type_Splitter
          
       Else
-         result$ + Code_GenerateCloseList( *g, Space(((Level(*g) ) - parentlevel) * codeindent) )
+         result$ + Generate_CodeCloseList( *g, Space(((Level(*g) ) - parentlevel) * codeindent) )
       EndIf
       ;EndIf 
       ;
@@ -771,18 +641,23 @@ Procedure$  MakeIDString( string$, len, *start.Integer = 0, *stop.Integer = 0 )
       EndIf
       result$ = Mid( string$, pos, len )
    Else
-      pos = FindString( string$, "," )
-      If pos
-         len = pos
-         pos = FindString( string$, "(" ) + 1
-         len - pos
-         If *start
-            *start\i = pos
+      If FindString( string$, "Gadget" ) Or 
+         FindString( string$, "OpenWindow" ) Or 
+         FindString( string$, "Open" )
+         ;
+         pos = FindString( string$, "," )
+         If pos
+            len = pos
+            pos = FindString( string$, "(" ) + 1
+            len - pos
+            If *start
+               *start\i = pos
+            EndIf
+            If *stop
+               *stop\i = len
+            EndIf
+            result$ = Mid( string$, pos, len )
          EndIf
-         If *stop
-            *stop\i = len
-         EndIf
-         result$ = Mid( string$, pos, len )
       EndIf
    EndIf
    
@@ -827,6 +702,7 @@ Procedure MakeFunc( string$, Index )
    ProcedureReturn result
 EndProcedure
 
+
 Procedure   MakeLine( parent, string$, findtext$ )
    Static *parent
    Protected result
@@ -839,7 +715,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
    Define arg_start, arg_stop, arg$ = MakeArgString( string$, string_len, @arg_start, @arg_stop ) 
    If arg$
       ; Debug arg$ +" "+ arg_start
-      Define str$ = Mid( String$, 1, arg_start - 1 - 1 ) ; исключаем открывающую скобку '('
+      Define str$ = Mid( String$, 1, arg_start - 1 ) ; - 1  исключаем открывающую скобку '('
       
       If FindString( str$, ";" )
          ProcedureReturn 0
@@ -853,7 +729,8 @@ Procedure   MakeLine( parent, string$, findtext$ )
             \arg$ = arg$
             \string = string$
             \func$ = MakeFuncString( string$, string_len )
-            \id$ = Trim(MakeIDString( string$, string_len ))
+            ;\func$ = MakeFuncString( str$, Len(str$) )
+            
             
             ;
             \pos = FindString( str$, "Declare" )
@@ -889,134 +766,70 @@ Procedure   MakeLine( parent, string$, findtext$ )
             \pos = FindString( str$, "If" )
             If \pos
                \type$ = "If"
-               ;\func$ = Trim( StringField( \func$, 2, " " ))
-               ; ProcedureReturn 
             EndIf
             
-            Debug "func[" + \func$ +"]" 
-            Debug " arg["+ arg$ +"]"
+            Static Open$
+            ;
+            If FindString( \func$, "Gadget" )
+               \func$ = ReplaceString( \func$, "Gadget", "")
+            ElseIf FindString( \func$, "OpenWindow" )
+               \func$ = ReplaceString( \func$, "OpenWindow", "Window")
+               id$ = "Main"
+            ElseIf \func$ = "Open"
+               ; \func$ = ReplaceString( \func$, "Open", "Window")
+               ;id$ = "Main"
+               Open$ = "OpenWindow(" + arg$ +")"
+            Else
+               Select \func$
+                  Case "Window",
+                       "Button","String","Text","CheckBox",
+                       "Option","ListView","Frame","ComboBox",
+                       "Image","HyperLink","Container","ListIcon",
+                       "IPAddress","ProgressBar","ScrollBar","ScrollArea",
+                       "TrackBar","Web","ButtonImage","Calendar",
+                       "Date","Editor","ExplorerList","ExplorerTree",
+                       "ExplorerCombo","Spin","Tree","Panel",
+                       "Splitter","MDI","Scintilla","Shortcut","Canvas"
+                     
+                     If \func$ = "Window"
+                        Open$ = ""
+                     EndIf
+                     If Open$
+                        MakeLine( parent, Open$, findtext$ ) : Open$ = ""
+                        ProcedureReturn MakeLine( parent, String$, findtext$ )
+                     EndIf
+                     
+                     arg$ = ", " + arg$ 
+                     If FindString( str$, "=" )
+                        id$ = Trim( StringField( str$, 1, "=" ))
+                        If CountString( id$, " " )
+                           id$ = Trim( StringField( str$, 2, " " ))
+                        EndIf
+                     EndIf
+                  Default
+                     If FindString( str$, "=" )
+                        id$ = Trim( StringField( str$, 1, "=" ))
+                        If CountString( id$, " " )
+                           id$ = Trim( StringField( str$, 2, " " ))
+                        EndIf
+                     Else
+                        id$ = Trim( StringField( arg$, 1, "," ))
+                     EndIf
+               EndSelect
+            EndIf
             
-            ; Identificator
-            Select \func$
-               Case "OpenWindow",
-                    "ButtonGadget","StringGadget","TextGadget","CheckBoxGadget",
-                    "OptionGadget","ListViewGadget","FrameGadget","ComboBoxGadget",
-                    "ImageGadget","HyperLinkGadget","ContainerGadget","ListIconGadget",
-                    "IPAddressGadget","ProgressBarGadget","ScrollBarGadget","ScrollAreaGadget",
-                    "TrackBarGadget","WebGadget","ButtonImageGadget","CalendarGadget",
-                    "DateGadget","EditorGadget","ExplorerListGadget","ExplorerTreeGadget",
-                    "ExplorerComboGadget","SpinGadget","TreeGadget","PanelGadget",
-                    "SplitterGadget","MDIGadget","ScintillaGadget","ShortcutGadget","CanvasGadget"
-                  ;
-                  \func$ = ReplaceString( \func$, "Gadget", "")
-                  \func$ = ReplaceString( \func$, "OpenWindow", "Window")
-                  
-                  If pb_object$ = ""
-                     pb_object$ = "PB"
-                  EndIf
-                  
-               Case "ResizeGadget",
-                    "CanvasOutput",
-                    "CanvasVectorOutput",
-                    "AddGadgetColumn",
-                    "AddGadgetItem",
-                    "RemoveGadgetColumn",
-                    "RemoveGadgetItem",
-                    "ClearGadgetItems",
-                    "CountGadgetItems",
-                    "OpenGadgetList",
-                    "BindGadgetEvent",
-                    "UnbindGadgetEvent",
-                    "DisableGadget",
-                    "FreeGadget",
-                    "HideGadget",
-                    "IsGadget",
-                    "GadgetHeight",
-                    "GadgetID",
-                    "GadgetItemID",
-                    "GadgetToolTip",
-                    "GadgetType",
-                    "GadgetWidth",
-                    "GadgetX",
-                    "GadgetY",
-                    "GetActiveGadget",
-                    "GetGadgetAttribute",
-                    "GetGadgetColor",
-                    "GetGadgetData",
-                    "GetGadgetFont",
-                    "GetGadgetItemAttribute",
-                    "GetGadgetItemColor",
-                    "GetGadgetItemData",
-                    "GetGadgetItemState",
-                    "GetGadgetItemText",
-                    "GetGadgetState",
-                    "GetGadgetText",
-                    "SetActiveGadget",
-                    "SetGadgetAttribute",
-                    "SetGadgetColor",
-                    "SetGadgetData",
-                    "SetGadgetFont",
-                    "SetGadgetItemAttribute",
-                    "SetGadgetItemColor",
-                    "SetGadgetItemData",
-                    "SetGadgetItemImage",
-                    "SetGadgetItemState",
-                    "SetGadgetItemText",
-                    "SetGadgetState",
-                    "SetGadgetText", 
-                    "Resize",
-                    "AddColumn",
-                    "AddItem",
-                    "RemoveColumn",
-                    "RemoveItem",
-                    "ClearItems",
-                    "CountItems",
-                    "OpenList",
-                    "BindEvent",
-                    "UnbindEvent",
-                    "Disable",
-                    "Free",
-                    "Hide",
-                    "Height",
-                    "ItemID",
-                    "ToolTip",
-                    "Type",
-                    "Width",
-                    "X",
-                    "Y",
-                    "GetActive",
-                    "GetAttribute",
-                    "GetColor",
-                    "GetData",
-                    "GetFont",
-                    "GetItemAttribute",
-                    "GetItemColor",
-                    "GetItemData",
-                    "GetItemState",
-                    "GetItemText",
-                    "GetState",
-                    "GetText",
-                    "SetActive",
-                    "SetAttribute",
-                    "SetColor",
-                    "SetData",
-                    "SetFont",
-                    "SetItemAttribute",
-                    "SetItemColor",
-                    "SetItemData",
-                    "SetItemImage",
-                    "SetItemState",
-                    "SetItemText",
-                    "SetState",
-                    "SetText"
-                  
-                  \id$ = Trim( StringField( arg$, 1, "," ))
-                  If Not enumerations
-                     \id$ = Trim( \id$, "#" )
-                  EndIf
-                  \id$ = UCase( \id$ )
-            EndSelect
+            id$ = Trim( id$, "#" )
+            If enum_object
+               id$ = "#" + id$
+               pb_object$ = "PB"
+            EndIf
+            id$ = UCase( id$ )
             
+            \id$ = id$ 
+            ;Debug id$
+            
+;             Debug "func[" + \func$ +"]" 
+;             Debug " arg["+ arg$ +"]"
             ;
             Select \func$
                Case "Window",
@@ -1028,48 +841,6 @@ Procedure   MakeLine( parent, string$, findtext$ )
                     "Date","Editor","ExplorerList","ExplorerTree",
                     "ExplorerCombo","Spin","Tree","Panel",
                     "Splitter","MDI","Scintilla","Shortcut","Canvas"
-                  
-                  If pb_object$ = ""
-                     arg$ = "," + arg$
-                  Else
-                     If pb_object$ = "PB"
-                        pb_object$ = ""
-                     EndIf
-                  EndIf
-                  
-                  ; id$
-                  If FindString( str$, "=" )
-                     \id$ = Trim( StringField( str$, 1, "=" ))
-                     If Not enumerations
-                        \id$ = Trim( \id$, "#" )
-                     EndIf
-                     \id$ = UCase( \id$ )
-                  Else
-                     If pb_object$
-                        \id$ = Trim( StringField( arg$, 1, "," ))
-                        
-                        If \id$ = "#PB_Any" 
-                           \id$ = ""
-                        ElseIf FindString( \id$, "-" )
-                           ;  Если идентификатор просто - 1
-                           \id$ = ""
-                        ElseIf NumericString( \id$ )
-                           ; Если идентификатор просто цифры
-                           AddMapElement( GetObject( ), \id$ )
-                           \id$ = "#" + \func$ +"_"+ \id$
-                           If Not enumerations
-                              \id$ = Trim( \id$, "#" )
-                           EndIf
-                           \id$ = UCase( \id$ )
-                           GetObject( ) = \id$
-                        Else
-                           If Not enumerations
-                              \id$ = Trim( \id$, "#" )
-                           EndIf
-                           \id$ = UCase( \id$ )
-                        EndIf
-                     EndIf
-                  EndIf   
                   
                   ;
                   x$      = Trim(StringField( arg$, 2, ","))
@@ -1130,13 +901,6 @@ Procedure   MakeLine( parent, string$, findtext$ )
                         param1 = Val( param2$ ) ; *this\columns( )\width
                         
                      Case "Image"
-                        param1$ = Trim( param1$, "(" )
-                        param1$ = Trim( param1$, ")" )
-                        
-                        If NumericString( param1$ )
-                           param1$ = "#IMAGE_"+param1$
-                        EndIf
-                        
                         param1 = GetLoadImage( param1$ )
                     
                   EndSelect
@@ -1163,7 +927,6 @@ Procedure   MakeLine( parent, string$, findtext$ )
                      Case "Date", "Calendar", "Container", 
                           "Tree", "ListView", "ComboBox", "Editor"
                         flag$ = param1$
-                        
                      Case "Window",
                           "Web", "Frame",
                           "Text", "String", "Button", "CheckBox", 
@@ -1209,7 +972,8 @@ Procedure   MakeLine( parent, string$, findtext$ )
                      ;             EndIf
                      
                      If \id$
-                        SetClass( *id, UCase(\id$) )
+                       ; SetClass( *id, UCase(\id$) )
+                        SetClass( *id, (\id$) )
                      EndIf
                      
                      SetText( *id, text$ )
@@ -1252,6 +1016,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                Case "SetImage"
                   *id = MakeID( \id$, parent ) 
                   If *id
+                     ; Debug \id$ +" "+ StringField( arg$, 2, "," ) +" "+ GetLoadImage( StringField( arg$, 2, "," ))
                      SetImage( *id, GetLoadImage( StringField( arg$, 2, "," )))
                   EndIf
                   
@@ -1306,7 +1071,122 @@ EndProcedure
 
 
 ;- 
-Procedure$  Code_GenerateObject( *g._s_WIDGET, space$ )
+Procedure$ Generate_CodeStates( *g._s_WIDGET, Space$ )
+   Protected result$, name$
+   ;ProcedureReturn ""
+   
+   ;
+   If line_break1 = 1
+      line_break1 = 0
+      If Not is_window_( *g )
+         result$ + space$ + #LF$
+      EndIf
+   EndIf
+   
+   ;
+   If pb_object$
+      If is_window_(*g)
+         pb_object$ = "Window"
+      Else
+         pb_object$ = "Gadget"
+      EndIf
+   EndIf
+   
+   ;
+   If *g\ChangeColor 
+      line_break1 = 1
+      If is_window_(*g) 
+         If pb_object$
+            result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+         Else
+            result$ + Space$ + "SetBackgroundColor( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+         EndIf
+      Else
+         result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+      EndIf
+   EndIf            
+   ;
+   If FindMapElement( fontName( ), Str( *g\text\fontID ))
+      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ fontName( ) +" )" + #LF$
+      line_break1 = 1
+   EndIf            
+   ;
+   If *g\type = #__type_image
+   Else
+      name$ = GetLoadImageName( *g\img\image )
+      If name$
+         line_break1 = 1
+         result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ name$ +" )" + #LF$
+      EndIf
+   EndIf
+
+   ;
+   If GetState(*g) > 0
+      line_break1 = 1
+      result$ + Space$ + "Set" + pb_object$ + "State( " + GetClass( *g ) + ", "+ GetState(*g) + " )" + #LF$
+   EndIf
+   If Disable(*g) > 0
+      line_break1 = 1
+      result$ + Space$ + "Disable" + pb_object$ + "( " + GetClass( *g ) + ", #True )" + #LF$
+   EndIf
+   If Hide(*g) > 0
+      line_break1 = 1
+      result$ + Space$ + "Hide" + pb_object$ + "( " + GetClass( *g ) + ", #True )" + #LF$
+   EndIf
+   ;
+   ProcedureReturn result$
+EndProcedure
+
+Procedure$ Generate_CodePanelItems( *g._s_WIDGET, start, stop, space$ )
+   ; Debug " Generate_CodePanelItems["+start+" "+stop +"]"
+   Protected i, result$
+   ;
+   For i = start To stop
+      If i > 0
+         result$ + space$ + #LF$
+         If line_break1
+            line_break1 = 0
+         EndIf
+      EndIf
+      result$ + space$ + "Add" + pb_object$ + "Item( " + GetClass( *g ) + 
+                ", - 1" + 
+                ", " + Chr( '"' ) + GetItemText( *g, i ) + Chr( '"' ) + 
+                " )" + #LF$
+   Next
+   ;
+   ProcedureReturn result$
+EndProcedure
+
+Procedure$ Generate_CodeCloseList( *g._s_WIDGET, Space$ )
+   Protected result$, Space2$ = Space$ + Space(codeindent)
+   
+   If IsContainer(*g) > 2
+      If *g\tabbar
+         If *g\tabbar\countitems
+            If *g = *g\LastWidget( )
+               result$ + Generate_CodePanelItems( *g, 0, *g\tabbar\countitems - 1, Space2$ )
+            Else
+               If *g\LastWidget( )\TabIndex( ) = *g\tabbar\countitems - 1
+                  ; result$ + #LF$
+               Else
+                  result$ + Generate_CodePanelItems( *g, *g\LastWidget( )\TabIndex( ) + 1, *g\tabbar\countitems - 1, Space2$ )
+                  ;  Debug ""+*g\class +" > "+ *g\LastWidget( )\class +" "+ *g\LastWidget( )\TabIndex( ) +" "+ *g\tabbar\countitems
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+      
+      ;
+      result$ + Generate_CodeStates( *g, Space2$ )
+      
+      ;
+      result$ + Space$ + "Close" + pb_object$ + "List( ) ; " + GetClass(*g) + #LF$ 
+   EndIf
+   
+   ProcedureReturn result$
+EndProcedure
+
+Procedure$  Generate_CodeObject( *g._s_WIDGET, space$ )
    Protected result$, function$, x$, y$, width$, height$, text$, param1$, param2$, param3$, flag$, quotetext$
    Protected type$ = ClassFromType( Type(*g) )
    Protected id$ = GetClass(*g)
@@ -1399,10 +1279,11 @@ Procedure$  Code_GenerateObject( *g._s_WIDGET, space$ )
    EndSelect
    
    ; Flags
-   Select type$
+     Select type$
       Case "Panel", "Web", "IPAddress", "Option", "Scintilla", "Shortcut"
       Default
          Flag$ = MakeConstantsString( type$, *g\flag )
+         ; Debug type$ +" "+ Flag$ +" "+ *g\flag
    EndSelect
    
    ;
@@ -1436,10 +1317,10 @@ Procedure$  Code_GenerateObject( *g._s_WIDGET, space$ )
             If *g\TabIndex( ) = *g\BeforeWidget( )\TabIndex( )
                ; result$ + #LF$
             Else
-               result$ + Code_GeneratePanelItems( *g\parent, *g\BeforeWidget( )\TabIndex( ) + 1, *g\TabIndex( ), Space$ )
+               result$ + Generate_CodePanelItems( *g\parent, *g\BeforeWidget( )\TabIndex( ) + 1, *g\TabIndex( ), Space$ )
             EndIf
          Else
-            result$ + Code_GeneratePanelItems( *g\parent, 0, *g\TabIndex( ), Space$ )
+            result$ + Generate_CodePanelItems( *g\parent, 0, *g\TabIndex( ), Space$ )
          EndIf
          ;
          TabIndex = *g\TabIndex( ) 
@@ -1453,12 +1334,12 @@ Procedure$  Code_GenerateObject( *g._s_WIDGET, space$ )
       Define Second = GetAttribute( *g, #PB_Splitter_SecondGadget )
       ; result$ + #LF$
       If first
-         result$ + Code_GenerateObject( first, Space$ )
-         result$ + Code_GenerateCloseList( first, Space$ )
+         result$ + Generate_CodeObject( first, Space$ )
+         result$ + Generate_CodeCloseList( first, Space$ )
       EndIf
       If Second
-         result$ + Code_GenerateObject( second, Space$ )
-         result$ + Code_GenerateCloseList( Second, Space$ )
+         result$ + Generate_CodeObject( second, Space$ )
+         result$ + Generate_CodeCloseList( Second, Space$ )
       EndIf
    EndIf  
    
@@ -1585,13 +1466,13 @@ Procedure$  Code_GenerateObject( *g._s_WIDGET, space$ )
    result$ + " )" + #LF$ 
    ;   
    If Not IsContainer( *g ) Or is_window_(*g)
-      result$ + Code_GenerateStates( *g, Space$ + Space(codeindent) )
+      result$ + Generate_CodeStates( *g, Space$ + Space(codeindent) )
    EndIf
    ;
    ProcedureReturn result$
 EndProcedure
 
-Procedure.s Code_Generate( *mdi._s_WIDGET ) ; 
+Procedure.s Generate_Code( *mdi._s_WIDGET ) ; 
    Protected Type, Count, Image, Parent
    Protected Space$, id$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
    Protected GlobalWindow$, EnumWindow$,
@@ -1614,14 +1495,15 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
          Space$ = Space(codeindent)
       EndIf
       
-      If pb_object$ = ""
-         result$ + ~"XIncludeFile \"C:\\Users\\user\\Documents\\GitHub\\widget\\widgets.pbi\"" + #LF$ 
-         result$ + "UseWidgets( )" + #LF$
-         result$ + #LF$
-      EndIf
-      
       result$ + "EnableExplicit" + #LF$
-      result$ + #LF$
+      If pb_object$ = ""
+         result$ + #LF$
+         result$ + "CompilerIf #PB_Compiler_IsMainFile" + #LF$
+         result$ + Space$ + ~"XIncludeFile \"C:\\Users\\user\\Documents\\GitHub\\widget\\widgets.pbi\"" + #LF$ 
+         result$ + "CompilerEndIf" + #LF$
+         result$ + #LF$
+         result$ + "UseWidgets( )" + #LF$
+      EndIf
       
       If StartEnum( *mdi )
          *w = widgets( )
@@ -1692,9 +1574,10 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
          StopEnum( )
       EndIf
       
+      result$ + #LF$
+      
       ; load images
       If ListSize(loadimages( ))
-         result$ + #LF$
          ForEach loadimages( )
             id$ = loadimages( )\name$
             If id$ 
@@ -1711,6 +1594,9 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
                EndIf
             EndIf
          Next
+         If Globalloadimage$
+          ;  result$ + #LF$
+         EndIf
       EndIf
       
       ; load fonts
@@ -1807,7 +1693,7 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
          ;If Not is_window_( *g )
          Events$ = GetEventsString( *g )
          If Events$
-            result$ + Code::GenerateBindEventProcedure( 0, Trim( GetClass( *g ), "#" ) , Events$, "" ) 
+            result$ + Generate::CodeBindEventProcedure( 0, Trim( GetClass( *g ), "#" ) , Events$, "" ) 
          EndIf
          ;EndIf
          StopEnum( )
@@ -1821,19 +1707,19 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
             result$ + "Procedure Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #LF$
             
             ;\\ 
-            result$ + Code_GenerateObject( *w, Space(( Level(*w) - parentlevel ) * codeindent ))
+            result$ + Generate_CodeObject( *w, Space(( Level(*w) - parentlevel ) * codeindent ))
             
             If StartEnum( *w )
                *g = widgets( )
                If Type(GetParent(*g)) = #__type_Splitter
                Else
-                  result$ + Code_GenerateObject( *g, Space(( Level(*g) - parentlevel ) * codeindent ))
+                  result$ + Generate_CodeObject( *g, Space(( Level(*g) - parentlevel ) * codeindent ))
                EndIf
                
                StopEnum( )
             EndIf
             
-            ;- CLOSE LIST
+            ; CLOSE LIST
             If *g
                result$ + MakeCloseList( *g ) 
             EndIf
@@ -1841,7 +1727,7 @@ Procedure.s Code_Generate( *mdi._s_WIDGET ) ;
             ;
             If GetEventsString( *w )
                result$ + #LF$
-               result$ + Code::GenerateBindEvent( ( Level(*w) - parentlevel ) * codeindent, GetEventsString( *w ), GetClass( *w ) )
+               result$ + Generate::CodeBindEvent( ( Level(*w) - parentlevel ) * codeindent, GetEventsString( *w ), GetClass( *w ) )
             EndIf
             
             result$ + "EndProcedure" + #LF$
@@ -1943,7 +1829,9 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(0, 0, 0, 400, 400, "read", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
       ;Path$ = "test\code\addfont.pb"
-      Path$ = "test\code\addimage.pb"
+      ;Path$ = "test\code\addimage.pb"
+      ;Path$ = "test\open\image.pb"
+      Path$ = "test\save_example.pb"
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -1964,6 +1852,8 @@ CompilerIf #PB_Compiler_IsMainFile
          ;
          CloseFile(#File) ; Закрывает ранее открытый файл
          Debug "..успешно"
+      Else
+         Debug "Нет такого файла"
       EndIf
    EndIf
    
@@ -1979,7 +1869,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          Define *g = Editor( 0, 0, 0, 0, #__flag_autosize )
          
-         Define code$ = Code_Generate( *root )
+         Define code$ = Generate_Code( *root )
          
          SetText( *g, code$ )
          Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
@@ -1987,8 +1877,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1237
-; FirstLine = 992
-; Folding = ------------------------++vHtz-----------------
+; CursorPosition = 1597
+; FirstLine = 1435
+; Folding = ---8-------------f0---b5--------------+--------
 ; EnableXP
 ; DPIAware

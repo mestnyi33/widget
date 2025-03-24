@@ -1,23 +1,23 @@
-﻿;- Code
+﻿;-
 EnableExplicit
 
-DeclareModule Code
+DeclareModule Generate
    EnableExplicit
    
-   Declare.S GenerateEventType( Indent, Types.S )
-   Declare.S GenerateEventGadget( Indent, Types.S )
-   Declare.S GenerateBindGadgetEvent( Indent, StringS.S, Mode = 1)
-   Declare.S GenerateBindGadgetEventProcedure( Indent, ProcedureName.S, Gadgets.S, Types.S = "")
+   Declare.S CodeEventType( Indent, Types.S )
+   Declare.S CodeEventGadget( Indent, Types.S )
+   Declare.S CodeBindGadgetEvent( Indent, StringS.S, Mode = 1)
+   Declare.S CodeBindGadgetEventProcedure( Indent, ProcedureName.S, Gadgets.S, Types.S = "")
    
-   Declare.S GenerateEvent( Indent, Names$, Events$, Functions$, WaitWindowEvent$ = "Event" )
-   Declare.S GenerateBindEvent( Indent, Events$, Names$ )
-   Declare.S GenerateBindEventProcedure( Indent, Names$, Events$, Functions$ )
+   Declare.S CodeEvent( Indent, Names$, Events$, Functions$, WaitWindowEvent$ = "Event" )
+   Declare.S CodeBindEvent( Indent, Events$, Names$ )
+   Declare.S CodeBindEventProcedure( Indent, Names$, Events$, Functions$ )
    
 EndDeclareModule
 
-Module Code
+Module Generate
    
-   Procedure.S GenerateEvent( Indent, Names$, Events$, Functions$, WaitWindowEvent$ = "Event" )
+   Procedure.S CodeEvent( Indent, Names$, Events$, Functions$, WaitWindowEvent$ = "Event" )
       Protected Name$, Result$, Event$, Space$ = Space( Indent )
       Protected I, II, III, Function$
       
@@ -56,7 +56,7 @@ Module Code
       ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S GenerateEventType( Indent, Types.S ) ; Ok
+   Procedure.S CodeEventType( Indent, Types.S ) ; Ok
       Protected Includes.S, Include.S, EventType.S, Type.S, II, I, Result$, CountType = CountString( Types.S, "|" ) + (1)
       
       If Types.S And CountType
@@ -96,7 +96,7 @@ Module Code
       ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S GenerateEventGadget( Indent, Types.S ) ; Ok
+   Procedure.S CodeEventGadget( Indent, Types.S ) ; Ok
       Protected I, Gadget.S, Type.S, Gadgets.S, Result$, CountType = CountString( Types.S, "?" ) + (1)
       
       If Types.S And CountType
@@ -114,7 +114,7 @@ Module Code
                   Result$ + Space( Indent + ( 2 ) ) + "Case " + Gadget.S + #CRLF$ 
                   
                   Type.S = Trim(Mid( Gadgets.S, FindString( Gadgets.S, "\" )+(1)))
-                  Result$ + GenerateEventType( Indent + ( 4 ), Type.S) + #CRLF$ 
+                  Result$ + CodeEventType( Indent + ( 4 ), Type.S) + #CRLF$ 
                Else
                   Result$ + Space( Indent + ( 2 ) ) + "Case " + Gadgets.S + #CRLF$ 
                EndIf
@@ -132,7 +132,7 @@ Module Code
    
    
    ;-
-   Procedure.S GenerateBindEvent( Indent, Events$, Names$ ) 
+   Procedure.S CodeBindEvent( Indent, Events$, Names$ ) 
       ; Name$ = "Window_0|Window_1"
       ; Events$ = "#PB_Event_ActivateWindow|#PB_Event_DeactivateWindow"  
       ; Names$ = "" ; проверка если нет окон 
@@ -161,7 +161,7 @@ Module Code
       ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S GenerateBindEventProcedure( Indent, Names$, Events$, Functions$ )
+   Procedure.S CodeBindEventProcedure( Indent, Names$, Events$, Functions$ )
       Protected Name$, Result$, Event$, Space$ = Space( Indent )
       Protected I, II, III, Function$
       
@@ -215,7 +215,7 @@ Module Code
       ProcedureReturn Result$
    EndProcedure
    ;-
-   Procedure.S GenerateBindGadgetEvent( Indent, StringS.S, Mode = 1) ; Ok
+   Procedure.S CodeBindGadgetEvent( Indent, StringS.S, Mode = 1) ; Ok
       Protected II, String.S, EventType.S, Gadget.S, Type.S, I, Result$
       If StringS.S
          For I = (1) To CountString( StringS.S, "?" ) + (1)
@@ -258,7 +258,7 @@ Module Code
       ProcedureReturn Result$
    EndProcedure
    
-   Procedure.S GenerateBindGadgetEventProcedure( Indent, ProcedureName.S, Gadgets.S, Types.S = "") ; Ok
+   Procedure.S CodeBindGadgetEventProcedure( Indent, ProcedureName.S, Gadgets.S, Types.S = "") ; Ok
       Protected Result$
       If ProcedureName.S
          If Not ((Mid(ProcedureName.S, (1), (1)) = ".") Or 
@@ -278,9 +278,9 @@ Module Code
       EndIf
       
       If Gadgets.S
-         Result$ + GenerateEventGadget( Indent, Gadgets.S )
+         Result$ + CodeEventGadget( Indent, Gadgets.S )
       Else
-         Result$ + GenerateEventType( Indent, Types.S )
+         Result$ + CodeEventType( Indent, Types.S )
       EndIf
       
       If ProcedureName.S
@@ -336,16 +336,16 @@ CompilerIf #PB_Compiler_IsMainFile
                     "#PB_EventType_Change = UpdateList( ) | "+
                     "#PB_EventType_LostFocus = CallFunc1()/CallFunc2()/CallFunc3()"
    ; demo
-   ;Debug Code::GenerateEventType( Indent, Types.S)
-   ;Debug Code::GenerateBindGadgetEventProcedure( Indent, "#Form_0_Button_0", Types.S )
+   ;Debug Generate::CodeEventType( Indent, Types.S)
+   ;Debug Generate::CodeBindGadgetEventProcedure( Indent, "#Form_0_Button_0", Types.S )
    
    Define Mask$ = "?#Form_0_Button_0\#PB_EventType_LeftClick = CloseWindow( #Form_0 )"+
                   "?#Form_0_String_0\#PB_EventType_Change = UpdateList( ) | #PB_EventType_LostFocus = CallFunc1()/CallFunc2()/CallFunc3()"
    
    ; demo
-   ;Debug Code::GenerateEventGadget( Indent, Mask$)
-   Debug Code::GenerateBindGadgetEvent(  0, Mask$ )
-   ;Debug Code::GenerateBindGadgetEventProcedure( Indent, "WINDOW", Mask$ )
+   ;Debug Generate::CodeEventGadget( Indent, Mask$)
+   Debug Generate::CodeBindGadgetEvent(  0, Mask$ )
+   ;Debug Generate::CodeBindGadgetEventProcedure( Indent, "WINDOW", Mask$ )
    
    ;{ -Names$
    Define Names$ = "#Form_0|"+
@@ -385,15 +385,15 @@ CompilerIf #PB_Compiler_IsMainFile
    ;}
    
    ;Demo
-   ;Debug Code::GenerateBindEvent(0, Events$, Names$)
-   ;Debug Code::GenerateEvent(0, Names$, Events$, Functions$)
-   ;Debug Code::GenerateBindEventProcedure(0, Names$, Events$, Functions$)
+   ;Debug Generate::CodeBindEvent(0, Events$, Names$)
+   ;Debug Generate::CodeEvent(0, Names$, Events$, Functions$)
+   ;Debug Generate::CodeBindEventProcedure(0, Names$, Events$, Functions$)
 CompilerEndIf
 
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 288
-; FirstLine = 283
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 392
+; FirstLine = 356
 ; Folding = -------
 ; EnableXP
 ; DPIAware

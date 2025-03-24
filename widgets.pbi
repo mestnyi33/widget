@@ -8909,17 +8909,21 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure   RemoveImage( *this._s_WIDGET, img )
          SetImage( *this, - 1 )
          
+         PushMapPosition( roots( ) )
          ForEach roots( )
             If roots( )\img\image = img
                ProcedureReturn 0
             EndIf
          Next
+         PopMapPosition( roots( ) )
          ;
+         PushListPosition( widgets( ) )
          ForEach widgets( )
             If widgets( )\img\image = img
                ProcedureReturn 0
             EndIf
          Next
+         PopListPosition( widgets( ) )
          
          If IsImage( img )
             FreeImage( img )
@@ -15188,6 +15192,29 @@ chr$ = ","
          ProcedureReturn result$
       EndProcedure
       
+      Procedure$  MakeStringConstants( string$ )
+         Protected i, result$, count, str$
+         
+         If string$
+            count = CountString(string$,"|")
+            For I = 0 To count
+               str$ = Trim(StringField(string$,(I+1),"|"))
+               
+               Select str$
+                  Case "#PB_Compiler_File"      : result$ = #PB_Compiler_File  
+                  Case "#PB_Compiler_FilePath"  : result$ = #PB_Compiler_FilePath  
+                  Case "#PB_Compiler_Filename"  : result$ = #PB_Compiler_Filename  
+                  Case "#PB_Compiler_Home"      : result$ = ReplaceString( #PB_Compiler_Home, "\", "/")   
+                  Case "#PB_Compiler_Module"    : result$ = #PB_Compiler_Module  
+                  Case "#PB_Compiler_Procedure" : result$ = #PB_Compiler_Procedure  
+             EndSelect
+               
+            Next
+         EndIf
+         
+         ProcedureReturn result$
+      EndProcedure
+      
       Procedure$  MakeConstantsString( type$, flag.q ) ; 
          Protected result$
          
@@ -15200,10 +15227,18 @@ chr$ = ","
                   If flag & #PB_Font_StrikeOut   : result$ + " #PB_Font_StrikeOut |" : EndIf
                   If flag & #PB_Font_HighQuality : result$ + " #PB_Font_HighQuality |" : EndIf
                   
+               Case "String"
+                  If flag & #PB_String_Password     : result$ + " #PB_String_Password |" : EndIf
+                  If flag & #PB_String_Numeric      : result$ + " #PB_String_Numeric |" : EndIf
+                  If flag & #PB_String_LowerCase    : result$ + " #PB_String_LowerCase |" : EndIf
+                  If flag & #PB_String_UpperCase    : result$ + " #PB_String_UpperCase |" : EndIf
+                  If flag & #PB_String_ReadOnly     : result$ + " #PB_String_ReadOnly |" : EndIf
+                  If flag & #PB_String_BorderLess   : result$ + " #PB_String_BorderLess |" : EndIf
+                  
                Case "Text"
-                  If flag & #__flag_text_Center     : result$ + " #PB_Text_Center |" : EndIf
-                  If flag & #__flag_text_Right      : result$ + " #PB_Text_Right |" : EndIf
-                  If flag & #__flag_border_Flat : result$ + " #PB_Text_Border |" : EndIf
+                  If flag & #PB_Text_Center     : result$ + " #PB_Text_Center |" : EndIf
+                  If flag & #PB_Text_Right      : result$ + " #PB_Text_Right |" : EndIf
+                  If flag & #PB_Text_Border     : result$ + " #PB_Text_Border |" : EndIf
                   
                Case "Button"
                   If flag & #PB_Button_Left      : result$ + " #PB_Button_Left |" : EndIf
@@ -15212,20 +15247,9 @@ chr$ = ","
                   If flag & #PB_Button_Default   : result$ + " #PB_Button_Default |" : EndIf
                   If flag & #PB_Button_MultiLine : result$ + " #PB_Button_MultiLine |" : EndIf
                   
-                  If flag & #__align_image 
-                     If flag & #__image_Left = #__image_Left           : result$ + " #__image_Left |" : EndIf
-                     If flag & #__image_Top = #__image_Top             : result$ + " #__image_Top |" : EndIf
-                     If flag & #__image_Right = #__image_Right         : result$ + " #__image_Right |" : EndIf
-                     If flag & #__image_Bottom = #__image_Bottom       : result$ + " #__image_Bottom |" : EndIf
-                  Else
-                     If flag & #__align_text 
-                        If flag & #__flag_text_Left = #__flag_text_Left           : result$ + " #__flag_text_Left |" : EndIf
-                        If flag & #__flag_text_Right = #__flag_text_Right         : result$ + " #__flag_text_Right |" : EndIf
-                        If flag & #__flag_text_WordWrap = #__flag_text_WordWrap   : result$ + " #__flag_text_WordWrap |" : EndIf
-                        If flag & #__flag_text_MultiLine = #__flag_text_MultiLine : result$ + " #__flag_text_MultiLine |" : EndIf
-                        If flag & #__flag_button_Default = #__flag_button_Default : result$ + " #__flag_button_Default |" : EndIf
-                     EndIf
-                  EndIf
+               Case "CheckBox"
+                  If flag & #PB_CheckBox_Center    : result$ + " #PB_CheckBox_Center |" : EndIf
+                  If flag & #PB_CheckBox_Right     : result$ + " #PB_CheckBox_Right |" : EndIf
                   
                Case "Container"
                   If flag & #PB_Container_Flat       : result$ + " #PB_Container_Flat |" : EndIf
@@ -15233,29 +15257,24 @@ chr$ = ","
                   If flag & #PB_Container_Single     : result$ + " #PB_Container_Single |" : EndIf
                   If flag & #PB_Container_BorderLess : result$ + " #PB_Container_BorderLess |" : EndIf
                   
-                  If flag & #__flag_border_Flat = #__flag_border_Flat     : result$ + " #PB_Container_Flat |" : EndIf
-                  If flag & #__flag_border_Raised = #__flag_border_Raised : result$ + " #PB_Container_Raised |" : EndIf
-                  If flag & #__flag_border_Single = #__flag_border_Single : result$ + " #PB_Container_Single |" : EndIf
-                  If flag & #__flag_border_Less = #__flag_border_Less     : result$ + " #PB_Container_BorderLess |" : EndIf
-                  
                Case "ScrollArea"
                   If flag & #PB_ScrollArea_Flat       : result$ + " #PB_ScrollArea_Flat |" : EndIf
                   If flag & #PB_ScrollArea_Raised     : result$ + " #PB_ScrollArea_Raised |" : EndIf
                   If flag & #PB_ScrollArea_Single     : result$ + " #PB_ScrollArea_Single |" : EndIf
                   If flag & #PB_ScrollArea_BorderLess : result$ + " #PB_ScrollArea_BorderLess |" : EndIf
                   If flag & #PB_ScrollArea_Center     : result$ + " #PB_ScrollArea_Center |" : EndIf
-                  
-                  If flag & #__flag_border_Flat = #__flag_border_Flat     : result$ + " #PB_ScrollArea_Flat |" : EndIf
-                  If flag & #__flag_border_Raised = #__flag_border_Raised : result$ + " #PB_ScrollArea_Raised |" : EndIf
-                  If flag & #__flag_border_Single = #__flag_border_Single : result$ + " #PB_ScrollArea_Single |" : EndIf
-                  If flag & #__flag_border_Less = #__flag_border_Less     : result$ + " #PB_ScrollArea_BorderLess |" : EndIf
-                  If flag & #__flag_Center = #__flag_Center             : result$ + " #PB_ScrollArea_Center |" : EndIf
-                  
+                   
                Case "Splitter"
                   If flag & #PB_Splitter_Vertical    : result$ + " #PB_Splitter_Vertical |" : EndIf
                   If flag & #PB_Splitter_Separator   : result$ + " #PB_Splitter_Separator |" : EndIf
                   If flag & #PB_Splitter_FirstFixed  : result$ + " #PB_Splitter_FirstFixed |" : EndIf
                   If flag & #PB_Splitter_SecondFixed : result$ + " #PB_Splitter_SecondFixed |" : EndIf
+                  
+               Case "ComboBox"
+                  If flag & #PB_ComboBox_Image       : result$ + " #PB_ComboBox_Image |" : EndIf
+                  If flag & #PB_ComboBox_Editable    : result$ + " #PB_ComboBox_Editable |" : EndIf
+                  If flag & #PB_ComboBox_LowerCase   : result$ + " #PB_ComboBox_LowerCase |" : EndIf
+                  If flag & #PB_ComboBox_UpperCase   : result$ + " #PB_ComboBox_UpperCase |" : EndIf
                   
                Case "Window"
                   If flag & #PB_Window_SystemMenu
@@ -15300,32 +15319,44 @@ chr$ = ","
                   EndIf
                   
             EndSelect
+            
+            If constants::BinaryFlag( flag, #__flag_Transparent )          
+               result$ + " #__flag_Transparent |" 
+            EndIf
+                    
+            Select type$
+               Case "Container", "ScrollArea"
+                  If flag & #__flag_border_Flat = #__flag_border_Flat     : result$ + " #PB_" + type$ + "_Flat |" : EndIf
+                  If flag & #__flag_border_Raised = #__flag_border_Raised : result$ + " #PB_" + type$ + "_Raised |" : EndIf
+                  If flag & #__flag_border_Single = #__flag_border_Single : result$ + " #PB_" + type$ + "_Single |" : EndIf
+                  If flag & #__flag_border_Less = #__flag_border_Less     : result$ + " #PB_" + type$ + "_BorderLess |" : EndIf
+                  
+                  If type$ = "ScrollArea"
+                     If flag & #__flag_Center = #__flag_Center            : result$ + " #PB_ScrollArea_Center |" : EndIf
+                  EndIf
+                  
+               Case "Button", "Text", "CheckBox"
+                  If flag & #__align_image = #__align_image
+                     If flag & #__image_Left = #__image_Left           : result$ + " #__image_Left |" : EndIf
+                     If flag & #__image_Top = #__image_Top             : result$ + " #__image_Top |" : EndIf
+                     If flag & #__image_Right = #__image_Right         : result$ + " #__image_Right |" : EndIf
+                     If flag & #__image_Bottom = #__image_Bottom       : result$ + " #__image_Bottom |" : EndIf
+                  Else
+                     If flag & #__align_text 
+                        If flag & #__flag_text_Left = #__flag_text_Left           : result$ + " #__flag_text_Left |" : EndIf
+                        If flag & #__flag_text_Right = #__flag_text_Right         : result$ + " #__flag_text_Right |" : EndIf
+                        If flag & #__flag_text_WordWrap = #__flag_text_WordWrap   : result$ + " #__flag_text_WordWrap |" : EndIf
+                        If flag & #__flag_text_MultiLine = #__flag_text_MultiLine : result$ + " #__flag_text_MultiLine |" : EndIf
+                        If flag & #__flag_button_Default = #__flag_button_Default : result$ + " #__flag_button_Default |" : EndIf
+                     EndIf
+                  EndIf
+                  
+                  
+            EndSelect
+            
          EndIf
          
-         ProcedureReturn Trim( result$, "|" )
-      EndProcedure
-      
-      Procedure$ MakeStringConstants( string$ )
-         Protected i, result$, count, str$
-         
-         If string$
-            count = CountString(string$,"|")
-            For I = 0 To count
-               str$ = Trim(StringField(string$,(I+1),"|"))
-               
-               Select str$
-                  Case "#PB_Compiler_File"      : result$ = #PB_Compiler_File  
-                  Case "#PB_Compiler_FilePath"  : result$ = #PB_Compiler_FilePath  
-                  Case "#PB_Compiler_Filename"  : result$ = #PB_Compiler_Filename  
-                  Case "#PB_Compiler_Home"      : result$ = ReplaceString( #PB_Compiler_Home, "\", "/")   
-                  Case "#PB_Compiler_Module"    : result$ = #PB_Compiler_Module  
-                  Case "#PB_Compiler_Procedure" : result$ = #PB_Compiler_Procedure  
-             EndSelect
-               
-            Next
-         EndIf
-         
-         ProcedureReturn result$
+         ProcedureReturn Trim( Trim(result$), "|" )
       EndProcedure
       
       Procedure.q MakeConstants( string$ )
@@ -15539,32 +15570,64 @@ chr$ = ","
                   Default
                      ; widgets
                      Select LCase(str$)
-                        Case "#__flag_text_left"                 : Flag = Flag | #__flag_text_Left
-                        Case "#__flag_text_top"                  : Flag = Flag | #__flag_text_Top
-                        Case "#__flag_text_right"                : Flag = Flag | #__flag_text_Right
-                        Case "#__flag_text_bottom"               : Flag = Flag | #__flag_text_Bottom
-                        Case "#__flag_text_center"               : Flag = Flag | #__flag_text_Center
-                        Case "#__flag_text_password"             : Flag = Flag | #__flag_text_Password
-                        Case "#__flag_text_wordwrap"             : Flag = Flag | #__flag_text_WordWrap
-                        Case "#__flag_text_multiline"            : Flag = Flag | #__flag_text_MultiLine
-                        Case "#__flag_text_inline"               : Flag = Flag | #__flag_text_InLine
-                        Case "#__flag_text_numeric"              : Flag = Flag | #__flag_text_Numeric
-                        Case "#__flag_text_readonly"             : Flag = Flag | #__flag_text_Readonly
-                        Case "#__flag_text_lowercase"            : Flag = Flag | #__flag_text_LowerCase
-                        Case "#__flag_text_uppercase"            : Flag = Flag | #__flag_text_UpperCase
-                           ; 
-                        Case "#__image_left"                     : Flag = Flag | #__image_Left
-                        Case "#__image_top"                      : Flag = Flag | #__image_Top
-                        Case "#__image_right"                    : Flag = Flag | #__image_Right
-                        Case "#__image_bottom"                   : Flag = Flag | #__image_Bottom
-                        Case "#__image_center"                   : Flag = Flag | #__image_Center
-                           ;
-                        Case "#__flag_border_less"               : Flag = Flag | #__flag_border_Less
-                        Case "#__flag_border_flat"               : Flag = Flag | #__flag_border_Flat
-                        Case "#__flag_border_raised"             : Flag = Flag | #__flag_border_Raised
-                        Case "#__flag_border_single"             : Flag = Flag | #__flag_border_Single
-                        Case "#__flag_border_double"             : Flag = Flag | #__flag_border_Double
+                        Case "#__flag_button_default"                 : Flag = Flag | #__flag_button_Default ;0
+                        Case "#__flag_collapsed"                 : Flag = Flag | #__flag_Collapsed      ;6
+                        Case "#__flag_optionboxes"                 : Flag = Flag | #__flag_OptionBoxes    ;7
+                        Case "#__flag_checkboxes"                 : Flag = Flag | #__flag_CheckBoxes     ;8 
+                        Case "#__flag_threestate"                 : Flag = Flag | #__flag_ThreeState     ;12 
+                        Case "#__flag_rowclickselect"                 : Flag = Flag | #__flag_RowClickSelect ;16   
+                        Case "#__flag_rowmultiselect"                 : Flag = Flag | #__flag_RowMultiSelect ;21
+                        Case "#__flag_rowfullselect"                 : Flag = Flag | #__flag_RowFullSelect  ;22
+                        Case "#__flag_gridlines"                 : Flag = Flag | #__flag_GridLines      ;25
+                        Case "#__flag_border_raised"                 : Flag = Flag | #__flag_border_Raised  ;26
+                        Case "#__flag_border_double"                 : Flag = Flag | #__flag_border_Double  ;27
+                        Case "#__flag_border_single"                 : Flag = Flag | #__flag_border_Single  ;29  
+                        Case "#__flag_border_less"                 : Flag = Flag | #__flag_border_less    ;31
+                        Case "#__flag_border_flat"                 : Flag = Flag | #__flag_border_Flat    ;32
+                        Case "#__flag_child"                 : Flag = Flag | #__flag_Child          ;33
+                        Case "#__flag_invert"                 : Flag = Flag | #__flag_Invert         ;34
+                        Case "#__flag_vertical"                 : Flag = Flag | #__flag_Vertical       ;35
+                        Case "#__flag_transparent"                 : Flag = Flag | #__flag_Transparent    ;36
+                        Case "#__flag_nofocus"                 : Flag = Flag | #__flag_NoFocus        ;37
+                        Case "#__flag_nolines"                 : Flag = Flag | #__flag_NoLines        ;38
+                        Case "#__flag_nobuttons"                 : Flag = Flag | #__flag_NoButtons      ;39
+                        Case "#__flag_noscrollbars"                 : Flag = Flag | #__flag_NoScrollBars   ;40
+                        Case "#__flag_text_password"                 : Flag = Flag | #__flag_text_Password  ;41
+                        Case "#__flag_text_wordwrap"                 : Flag = Flag | #__flag_text_WordWrap  ;42
+                        Case "#__flag_text_multiline"                 : Flag = Flag | #__flag_text_MultiLine ;43
+                        Case "#__flag_text_inline"                 : Flag = Flag | #__flag_text_InLine    ;44
+                        Case "#__flag_text_numeric"                 : Flag = Flag | #__flag_text_Numeric   ;45
+                        Case "#__flag_text_readonly"                 : Flag = Flag | #__flag_text_Readonly  ;46
+                        Case "#__flag_text_lowercase"                 : Flag = Flag | #__flag_text_LowerCase ;47
+                        Case "#__flag_text_uppercase"                 : Flag = Flag | #__flag_text_UpperCase ;48
+                        Case "#__flag_modal"                 : Flag = Flag | #__flag_Modal          ;49
+                        Case "#__flag_left"                 : Flag = Flag | #__flag_Left           ;63
+                        Case "#__flag_top"                 : Flag = Flag | #__flag_Top            ;63
+                        Case "#__flag_right"                 : Flag = Flag | #__flag_Right          ;63
+                        Case "#__flag_bottom"                 : Flag = Flag | #__flag_Bottom         ;63
+                        Case "#__flag_center"                 : Flag = Flag | #__flag_Center         ;63
+                        Case "#__flag_autosize"                 : Flag = Flag | #__flag_AutoSize       ;63
+                        Case "#__flag_nogadgets"                 : Flag = Flag | #__flag_NoGadgets      
                            
+                        Case "#__align_text"                 : Flag = Flag | #__align_text 
+                        Case "#__align_image"                 : Flag = Flag | #__align_image
+                                                                                                      
+                        Case "#__align_top"                 : Flag = Flag | #__align_top  
+                        Case "#__align_bottom"                 : Flag = Flag | #__align_Bottom 
+                        Case "#__align_left"                 : Flag = Flag | #__align_Left   
+                        Case "#__align_right"                 : Flag = Flag | #__align_Right  
+                                                                                                        
+                        Case "#__align_center"                 : Flag = Flag | #__align_Center 
+                        Case "#__align_full"                 : Flag = Flag | #__align_Full   
+                        Case "#__align_proportional"                 : Flag = Flag | #__align_proportional 
+                        Case "#__align_auto"                 : Flag = Flag | #__align_auto         
+                           
+                        Case "#__image_left"                 : Flag = Flag | #__image_Left           ;63
+                        Case "#__image_top"                 : Flag = Flag | #__image_Top            ;63
+                        Case "#__image_right"                 : Flag = Flag | #__image_Right          ;63
+                        Case "#__image_bottom"                 : Flag = Flag | #__image_Bottom         ;63
+                        Case "#__image_center"                 : Flag = Flag | #__image_Center         ;63
+                        
                         Default
                            ;             Select Asc(String$)
                            ;               Case '0' To '9'
@@ -15974,6 +16037,7 @@ chr$ = ","
                *this\flag | #__flag_text_wordwrap
             EndIf
          EndIf
+         
          
          ;\\ Border & Frame size
          If is_integral_( *this )
@@ -23948,7 +24012,6 @@ chr$ = ","
                         EndIf
                      EndIf
                   EndIf
-                  
                   ;                   If is_widget_( widgets( ))
                   ;                      window_pos_x = mouse( )\steps - widgets( )\fs
                   ;                      window_pos_y = mouse( )\steps - widgets( )\fs ;- widgets( )\fs[2]
@@ -24018,11 +24081,11 @@ chr$ = ","
                      EndIf
                      
                      ;\\
-                     If PopupWindow( ) = widgets( )
-                        PopupWindow( ) = #Null
-                     EndIf
                      If Pressed( ) = widgets( )
                         Pressed( ) = #Null
+                     EndIf
+                     If PopupWindow( ) = widgets( )
+                        PopupWindow( ) = #Null
                      EndIf
                      If a_focused( ) = widgets( )
                         a_focused( ) = #Null
@@ -24105,10 +24168,8 @@ chr$ = ","
             ForEver
          EndIf
          ;
-        ; If Not __gui\event\loop
-          PostReDraw( *this\root )
-        ; EndIf
-    EndProcedure
+         PostReDraw( *this\root )
+      EndProcedure
       
       Procedure.i Free( *this._s_WIDGET )
          If *this > 0 
@@ -25561,9 +25622,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 24084
-; FirstLine = 23417
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9--------------r---v+--------8uX------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------xf8--------------------------------
+; CursorPosition = 15624
+; FirstLine = 15326
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9---0-----------f2---X---------d4r------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------5v0--------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

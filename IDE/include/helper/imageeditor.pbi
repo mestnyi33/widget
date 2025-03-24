@@ -41,6 +41,13 @@ Procedure Load_IMAGES( )
    CompilerEndIf
 EndProcedure
 
+Procedure Free_IMAGES( )
+   If IsImage( OPEN_IMAGE ) : FreeImage( OPEN_IMAGE ) : EndIf
+   If IsImage( SAVE_IMAGE ) : FreeImage( SAVE_IMAGE ) : EndIf
+   If IsImage( COPY_IMAGE ) : FreeImage( COPY_IMAGE ) : EndIf
+   If IsImage( CUT_IMAGE ) : FreeImage( CUT_IMAGE ) : EndIf
+   If IsImage( PASTE_IMAGE ) : FreeImage( PASTE_IMAGE ) : EndIf
+EndProcedure
 
 Procedure Events_EDITORIMAGES( )
    
@@ -53,6 +60,7 @@ Procedure Events_EDITORIMAGES( )
                Define img = GetImage( IMAGE_VIEW )
                If IsImage( img )
                   SetClipboardImage( img )
+                  Disable( BUTTON_PASTE, #False )
                   ;
                   If BUTTON_CUT = EventWidget( )
                      If RemoveImage( IMAGE_VIEW, img )
@@ -75,11 +83,13 @@ Procedure Events_EDITORIMAGES( )
                Disable( BUTTON_COPY, #False )
                Disable( BUTTON_CUT, #False )
                Disable( BUTTON_OK, #False )
+               Disable( BUTTON_PASTE, #True )
                ReDraw( root( ))
                   
             Case BUTTON_OPEN
                Define file$ = OpenFileRequester( "Пожалуйста выберите изображение для загрузки","",
-                                                "Image (*.png,*.bmp,*.ico,*.tiff)|*.png;*.bmp;*.ico;*.tiff|All files (*.*)|*.*", 0 )
+                                                 "Image (*.png,*.bmp,*.ico,*.tiff)|*.png;*.bmp;*.ico;*.tiff|All files (*.*)|*.*", 
+                                                 0,0, WindowID(EventWindow( )) )
                ;
                If file$
                   If IsImage( LOADIMAGE )
@@ -92,7 +102,7 @@ Procedure Events_EDITORIMAGES( )
                   Disable( BUTTON_SAVE, #False )
                   Disable( BUTTON_COPY, #False )
                   Disable( BUTTON_CUT, #False )
-                  Disable( BUTTON_PASTE, #False )
+                  ; Disable( BUTTON_PASTE, #False )
                   Disable( BUTTON_OK, #False )
                   ReDraw( root( ))
                EndIf
@@ -158,6 +168,7 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    ProcedureReturn LOADIMAGE
 EndProcedure
 
+;-
 CompilerIf #PB_Compiler_IsMainFile
    Procedure button_left_click_event( )
       Define widget = EventWidget( )
@@ -170,7 +181,6 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       Disable( widget, #False )
-   
    EndProcedure
    
    Define root = Open( 0, 20, 20, 600, 600, "Загрузка изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
@@ -182,11 +192,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Post( widget( ), #__event_LeftClick )
    
    WaitClose( )
+   Free_Images( )
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 135
-; Folding = ---
+; CursorPosition = 85
+; FirstLine = 63
+; Folding = ----
 ; EnableXP
 ; DPIAware
