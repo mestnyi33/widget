@@ -22,15 +22,15 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug " StatusChange"
             
             If *size
-               SetState(*size, *this\anchors\size )
+               SetState(*size, a_getsize( *this ))
             EndIf
             
             If *position
-               SetState(*position, *this\anchors\pos )
+               SetState(*position, a_getpos( *this ))
             EndIf
             
             If *grid
-               SetState(*grid, mouse( )\steps )
+               SetState(*grid, DesktopUnscaledX(mouse( )\steps) )
             EndIf
             
          Case #__event_Change
@@ -43,24 +43,19 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                Case *grid, *gridType
                   mouse( )\steps = DPIScaled(GetState(*grid))
+                  a_anchors( )\grid_type = GetState(*gridType)
+                 ; Debug 66666;                   ; remove background image
+                  ;                   SetBackgroundImage( a_focused( )\parent, - 1 )
+                  ;                   If IsImage( a_anchors( )\grid_image )
+                  ;                      FreeImage( a_anchors( )\grid_image )
+                  ;                      a_anchors( )\grid_image = - 1
+                  ;                   EndIf
+                  RemoveImage( a_focused( )\parent, a_anchors( )\grid_image )
                   
-                  ;             If IsImage( a_transform( )\grid_image )
-                  ;               FreeImage( a_transform( )\grid_image )
-                  ;             EndIf
-                  ;             a_transform( )\grid_image = a_grid_image( mouse( )\steps, GetState(*gridType) )
-                  ;             SetBackgroundImage( a_transform( )\grid_widget, a_transform( )\grid_image )
-                  
-                  ;             ; 
-                  ;             If StartEnum( a_transform( )\grid_widget )
-                  ;               Resize(widget(), 
-                  ;                      DPIUnScaled(widget()\container_x()),
-                  ;                      DPIUnScaled(widget()\container_y()),
-                  ;                      DPIUnScaled(widget()\container_width()),
-                  ;                      DPIUnScaled(widget()\container_height()))
-                  ;               StopEnum( )
-                  ;             EndIf
-                  ;             ;Resize(a_transform( )\grid_widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                  
+                  a_anchors( )\grid_image = a_grid_image( mouse( )\steps - 1, a_anchors( )\grid_type, $FF000000, 0,0);*this\fs, *this\fs )
+                  SetBackgroundImage( a_focused( )\parent, a_anchors( )\grid_image )
+                  Resize( a_focused( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  ReDraw( a_focused( )\root )
             EndSelect
       EndSelect
    EndProcedure
@@ -89,28 +84,24 @@ CompilerIf #PB_Compiler_IsMainFile
       Text( 10,10+Y,100,18, "grid size");, #PB_Text_Border )
       *grid = Spin( 10,30+Y,100,30, 0,100 )
       
-      Text( 10,70+Y,100,18, "anchor size", #PB_Text_Border )
+      Text( 10,70+Y,100,18, "anchor size");, #PB_Text_Border )
       *size = Spin( 10,90+Y,100,30, 0,30 )
       
-      Text( 10,130+Y,100,18, "anchor position", #PB_Text_Border )
+      Text( 10,130+Y,100,18, "anchor position");, #PB_Text_Border )
       *position = Spin( 10,150+Y,100,30, 0,59 )
-      
+      ;test_event_send=1
       ;\\
       *gridType = ComboBox( 120,30+Y,100,30 )
       AddItem(*gridType, -1, "grid [point]" )
       AddItem(*gridType, -1, "grid [line]" )
-      SetState(*gridType, 1)
+      SetState(*gridType, 0)
       
       *FrameColor = Button( 120,90+Y,100,30, "FrameColor" )
       *BackColor = Button( 120,150+Y,100,30, "BackColor" )
       
-      ; 
-      If a_focused( )
-         SetState(*grid, DPIUnScaled(mouse( )\steps) )
-         SetState(*size, a_focused( )\anchors\size )
-         SetState(*position, a_focused( )\anchors\pos )
-      EndIf
-      
+;      ;
+       Post( a_focused( ), #__event_StatusChange )
+;        
       ;\\
       Bind( *grid, @events_widgets( ), #__event_Change )
       Bind( *size, @events_widgets( ), #__event_Change )
@@ -120,14 +111,19 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind( *BackColor, @events_widgets( ), #__event_LeftClick )
       Bind( *FrameColor, @events_widgets( ), #__event_LeftClick )
       
+      
+      
+      ;Post( *gridType, #__event_Change )
+       ;SetState(*gridType, 1)
+      
       WaitClose( )
    EndIf
    
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 92
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 96
+; FirstLine = 85
 ; Folding = --
 ; EnableXP
 ; DPIAware

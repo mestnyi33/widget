@@ -261,8 +261,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;Global *event._s_EVENT( )
       Global NewMap loadfonts._s_FONT( )
       Global NewList loadimages._s_Img( )
-
-
+      
+      
       ;-  ----------------
       ;-   DECLARE_macros
       ;-  ----------------
@@ -374,7 +374,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro AlphaState24( ) 
          color\_alpha << 24
       EndMacro
-     
+      
       
       Macro is_drag_move( )
          a_index( ) = #__a_moved
@@ -724,12 +724,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          If _root_
             ; Debug #PB_Compiler_Procedure
             If widget::__gui\event\loop
-;                If test_draw_repaint
-;                   Debug "post - ReDraw "+_root_\canvas\gadget +" "+ IsGadget(_root_\canvas\gadget)
-;                EndIf
-;                If IsGadget(_root_\canvas\gadget)
-;                   widget::ReDraw( _root_ )
-;                EndIf
+               ;                If test_draw_repaint
+               ;                   Debug "post - ReDraw "+_root_\canvas\gadget +" "+ IsGadget(_root_\canvas\gadget)
+               ;                EndIf
+               ;                If IsGadget(_root_\canvas\gadget)
+               ;                   widget::ReDraw( _root_ )
+               ;                EndIf
             Else
                If _root_\canvas\repaint = 0
                   _root_\canvas\repaint = 1
@@ -1307,7 +1307,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          DrawAlphaImage( _this_\img#_mode_\imageID, _x_ + _this_\img#_mode_\x + _this_\scroll_x( ), _y_ + _this_\img#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
       EndMacro
       
-     
+      
       ;-  
       ;-\\   DECLARE_globals
       ;-  
@@ -1589,7 +1589,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;-\\ DECLARE PRIVATEs
       ;-
-      Declare   Repost( )
       Declare   DoFocus( *this, event.l, *button = #PB_All, *data = #Null )
       Declare   DoActive( *this, *active = 0 )
       
@@ -2770,6 +2769,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          hDC = CreateImage( #PB_Any, Width, Height, 32, #PB_Image_Transparent )
          ;
          ;\\
+         widget::StopDraw( )
          If StartDrawing( ImageOutput( hDC ))
             draw_mode_( #PB_2DDrawing_AllChannels )
             If Color = 0 : Color = $ff808080 : EndIf
@@ -8653,46 +8653,46 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro add_color( _result_, _address_, _color_type_, _color_, _alpha_, _column_ = )
-;          If Not _address_\alpha And _alpha_
-;             _address_\alpha.allocate( COLOR )
-;          EndIf
+         ;          If Not _address_\alpha And _alpha_
+         ;             _address_\alpha.allocate( COLOR )
+         ;          EndIf
          
          Select _color_type_
             Case #__BackColor
                If _address_\back#_column_ <> _color_
                   _address_\back#_column_ = _color_
-;                   If _address_\alpha
-;                      _address_\alpha\back#_column_ = _alpha_
-;                   EndIf
-                 *this\ChangeColor | 1<<0
-                 _result_ = #True
+                  ;                   If _address_\alpha
+                  ;                      _address_\alpha\back#_column_ = _alpha_
+                  ;                   EndIf
+                  *this\ChangeColor | 1<<0
+                  _result_ = #True
                EndIf
             Case #__FrontColor
                If _address_\front#_column_ <> _color_
                   _address_\front#_column_ = _color_
-;                   If _address_\alpha
-;                      _address_\alpha\front#_column_ = _alpha_
-;                   EndIf
-                 *this\ChangeColor | 1<<2
-                 _result_ = #True
+                  ;                   If _address_\alpha
+                  ;                      _address_\alpha\front#_column_ = _alpha_
+                  ;                   EndIf
+                  *this\ChangeColor | 1<<2
+                  _result_ = #True
                EndIf
             Case #__ForeColor
                If _address_\fore#_column_ <> _color_
                   _address_\fore#_column_ = _color_
-;                   If _address_\alpha
-;                      _address_\alpha\fore#_column_ = _alpha_
-;                   EndIf
+                  ;                   If _address_\alpha
+                  ;                      _address_\alpha\fore#_column_ = _alpha_
+                  ;                   EndIf
                   *this\ChangeColor | 1<<3
-                 _result_ = #True
+                  _result_ = #True
                EndIf
             Case #__FrameColor
                If _address_\frame#_column_ <> _color_
                   _address_\frame#_column_ = _color_
-;                   If _address_\alpha
-;                      _address_\alpha\frame#_column_ = _alpha_
-;                   EndIf
+                  ;                   If _address_\alpha
+                  ;                      _address_\alpha\frame#_column_ = _alpha_
+                  ;                   EndIf
                   *this\ChangeColor | 1<<4
-                 _result_ = #True
+                  _result_ = #True
                EndIf
          EndSelect
          
@@ -8713,7 +8713,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l SetColor( *this._s_WIDGET, ColorType.l, color.i, ColorState.b = 0 )
-;          *this\color\alpha.allocate( COLOR )
+         ;          *this\color\alpha.allocate( COLOR )
          Protected result.l, alpha.a = Alpha( Color )
          
          If ColorState = #PB_All
@@ -8847,7 +8847,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   SetFontColor( *this._s_WIDGET, color.i )
-        ProcedureReturn SetColor( *this, #__FrontColor, color )
+         ProcedureReturn SetColor( *this, #__FrontColor, color )
       EndProcedure
       
       Procedure.i GetFontColor( *this._s_WIDGET )
@@ -8888,26 +8888,35 @@ CompilerIf Not Defined( widget, #PB_Module )
          add_image( *this\img, img )
          
          If *this\type <> #__type_window
-            *this\img\x   = *this\padding\x
-            *this\img\y  = *this\padding\y
-            
-            ; make horizontal scroll max
-            If *this\scroll_width( ) <> *this\img\width + *this\padding\x * 2
-               *this\scroll_width( ) = *this\img\width + *this\padding\x * 2
+            If IsImage( img )
+               *this\img\x   = *this\padding\x
+               *this\img\y  = *this\padding\y
+               
+               ; make horizontal scroll max
+               If *this\scroll_width( ) <> *this\img\width + *this\padding\x * 2
+                  *this\scroll_width( ) = *this\img\width + *this\padding\x * 2
+               EndIf
+               
+               ; make vertical scroll max
+               If *this\scroll_height( ) <> *this\img\height + *this\padding\y * 2
+                  *this\scroll_height( ) = *this\img\height + *this\padding\y * 2
+               EndIf
+               
+               ; updatate scrollarea size
+               bar_area_update( *this )
             EndIf
-            
-            ; make vertical scroll max
-            If *this\scroll_height( ) <> *this\img\height + *this\padding\y * 2
-               *this\scroll_height( ) = *this\img\height + *this\padding\y * 2
-            EndIf
-            
-            ; updatate scrollarea size
-            bar_area_update( *this )
          EndIf
       EndProcedure
       
       Procedure   RemoveImage( *this._s_WIDGET, img )
-         SetImage( *this, - 1 )
+         If *this\img\imageID And 
+            *this\img\image = img
+            SetImage( *this, - 1 )
+         EndIf
+         If *this\img[#__image_background]\imageID And 
+            *this\img[#__image_background]\image = img
+            SetBackgroundImage( *this, - 1 )
+         EndIf
          
          PushMapPosition( roots( ) )
          ForEach roots( )
@@ -10552,7 +10561,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   tabindex = 0
                EndIf
             EndIf
-           
+            
             ;
             ;\\ get the last widget to add it after it
             If *parent\LastWidget( )
@@ -10914,7 +10923,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                SetForeground( *this )
             EndIf
          EndIf
-         If __gui\event\bind = 0
+         If Not __gui\event\queuesmask
             Post( *this, event, *button, *data )
          Else
             ProcedureReturn DoEvents( *this, event, *button, *data )
@@ -13810,7 +13819,7 @@ chr$ = ","
                CompilerIf #PB_Compiler_Version =< 546
                   For i = 1 To Len : String.s + "*" : Next
                CompilerElse
-                   For i = 1 To Len : String.s + Chr($25CF) : Next ; "•●"
+                  For i = 1 To Len : String.s + Chr($25CF) : Next ; "•●"
                CompilerEndIf
                
             Else
@@ -15207,7 +15216,7 @@ chr$ = ","
                   Case "#PB_Compiler_Home"      : result$ = ReplaceString( #PB_Compiler_Home, "\", "/")   
                   Case "#PB_Compiler_Module"    : result$ = #PB_Compiler_Module  
                   Case "#PB_Compiler_Procedure" : result$ = #PB_Compiler_Procedure  
-             EndSelect
+               EndSelect
                
             Next
          EndIf
@@ -15263,7 +15272,7 @@ chr$ = ","
                   If flag & #PB_ScrollArea_Single     : result$ + " #PB_ScrollArea_Single |" : EndIf
                   If flag & #PB_ScrollArea_BorderLess : result$ + " #PB_ScrollArea_BorderLess |" : EndIf
                   If flag & #PB_ScrollArea_Center     : result$ + " #PB_ScrollArea_Center |" : EndIf
-                   
+                  
                Case "Splitter"
                   If flag & #PB_Splitter_Vertical    : result$ + " #PB_Splitter_Vertical |" : EndIf
                   If flag & #PB_Splitter_Separator   : result$ + " #PB_Splitter_Separator |" : EndIf
@@ -15323,7 +15332,7 @@ chr$ = ","
             If constants::BinaryFlag( flag, #__flag_Transparent )          
                result$ + " #__flag_Transparent |" 
             EndIf
-                    
+            
             Select type$
                Case "Container", "ScrollArea"
                   If flag & #__flag_border_Flat = #__flag_border_Flat     : result$ + " #PB_" + type$ + "_Flat |" : EndIf
@@ -15369,12 +15378,12 @@ chr$ = ","
                
                Select str$
                      ;
-;                   Case "PB_" : result$ = #PB_Compiler_File  
-;                   Case "PB_" : result$ = #PB_Compiler_FilePath  
-;                   Case "PB_" : result$ = #PB_Compiler_Filename  
-;                   Case "PB_" : result$ = #PB_Compiler_Home  
-;                   Case "PB_" : result$ = #PB_Compiler_Module  
-;                   Case "PB_" : result$ = #PB_Compiler_Procedure  
+                     ;                   Case "PB_" : result$ = #PB_Compiler_File  
+                     ;                   Case "PB_" : result$ = #PB_Compiler_FilePath  
+                     ;                   Case "PB_" : result$ = #PB_Compiler_Filename  
+                     ;                   Case "PB_" : result$ = #PB_Compiler_Home  
+                     ;                   Case "PB_" : result$ = #PB_Compiler_Module  
+                     ;                   Case "PB_" : result$ = #PB_Compiler_Procedure  
                   Case "#PB_Compiler_DLL"                   : Flag = Flag | #PB_Compiler_DLL  
                   Case "#PB_Compiler_Date"                  : Flag = Flag | #PB_Compiler_Date  
                   Case "#PB_Compiler_Debugger"              : Flag = Flag | #PB_Compiler_Debugger  
@@ -15571,63 +15580,63 @@ chr$ = ","
                      ; widgets
                      Select LCase(str$)
                         Case "#__flag_button_default"                 : Flag = Flag | #__flag_button_Default ;0
-                        Case "#__flag_collapsed"                 : Flag = Flag | #__flag_Collapsed      ;6
-                        Case "#__flag_optionboxes"                 : Flag = Flag | #__flag_OptionBoxes    ;7
-                        Case "#__flag_checkboxes"                 : Flag = Flag | #__flag_CheckBoxes     ;8 
-                        Case "#__flag_threestate"                 : Flag = Flag | #__flag_ThreeState     ;12 
+                        Case "#__flag_collapsed"                 : Flag = Flag | #__flag_Collapsed           ;6
+                        Case "#__flag_optionboxes"                 : Flag = Flag | #__flag_OptionBoxes       ;7
+                        Case "#__flag_checkboxes"                 : Flag = Flag | #__flag_CheckBoxes         ;8 
+                        Case "#__flag_threestate"                 : Flag = Flag | #__flag_ThreeState         ;12 
                         Case "#__flag_rowclickselect"                 : Flag = Flag | #__flag_RowClickSelect ;16   
                         Case "#__flag_rowmultiselect"                 : Flag = Flag | #__flag_RowMultiSelect ;21
-                        Case "#__flag_rowfullselect"                 : Flag = Flag | #__flag_RowFullSelect  ;22
-                        Case "#__flag_gridlines"                 : Flag = Flag | #__flag_GridLines      ;25
-                        Case "#__flag_border_raised"                 : Flag = Flag | #__flag_border_Raised  ;26
-                        Case "#__flag_border_double"                 : Flag = Flag | #__flag_border_Double  ;27
-                        Case "#__flag_border_single"                 : Flag = Flag | #__flag_border_Single  ;29  
-                        Case "#__flag_border_less"                 : Flag = Flag | #__flag_border_less    ;31
-                        Case "#__flag_border_flat"                 : Flag = Flag | #__flag_border_Flat    ;32
-                        Case "#__flag_child"                 : Flag = Flag | #__flag_Child          ;33
-                        Case "#__flag_invert"                 : Flag = Flag | #__flag_Invert         ;34
-                        Case "#__flag_vertical"                 : Flag = Flag | #__flag_Vertical       ;35
-                        Case "#__flag_transparent"                 : Flag = Flag | #__flag_Transparent    ;36
-                        Case "#__flag_nofocus"                 : Flag = Flag | #__flag_NoFocus        ;37
-                        Case "#__flag_nolines"                 : Flag = Flag | #__flag_NoLines        ;38
-                        Case "#__flag_nobuttons"                 : Flag = Flag | #__flag_NoButtons      ;39
-                        Case "#__flag_noscrollbars"                 : Flag = Flag | #__flag_NoScrollBars   ;40
-                        Case "#__flag_text_password"                 : Flag = Flag | #__flag_text_Password  ;41
-                        Case "#__flag_text_wordwrap"                 : Flag = Flag | #__flag_text_WordWrap  ;42
+                        Case "#__flag_rowfullselect"                 : Flag = Flag | #__flag_RowFullSelect   ;22
+                        Case "#__flag_gridlines"                 : Flag = Flag | #__flag_GridLines           ;25
+                        Case "#__flag_border_raised"                 : Flag = Flag | #__flag_border_Raised   ;26
+                        Case "#__flag_border_double"                 : Flag = Flag | #__flag_border_Double   ;27
+                        Case "#__flag_border_single"                 : Flag = Flag | #__flag_border_Single   ;29  
+                        Case "#__flag_border_less"                 : Flag = Flag | #__flag_border_less       ;31
+                        Case "#__flag_border_flat"                 : Flag = Flag | #__flag_border_Flat       ;32
+                        Case "#__flag_child"                 : Flag = Flag | #__flag_Child                   ;33
+                        Case "#__flag_invert"                 : Flag = Flag | #__flag_Invert                 ;34
+                        Case "#__flag_vertical"                 : Flag = Flag | #__flag_Vertical             ;35
+                        Case "#__flag_transparent"                 : Flag = Flag | #__flag_Transparent       ;36
+                        Case "#__flag_nofocus"                 : Flag = Flag | #__flag_NoFocus               ;37
+                        Case "#__flag_nolines"                 : Flag = Flag | #__flag_NoLines               ;38
+                        Case "#__flag_nobuttons"                 : Flag = Flag | #__flag_NoButtons           ;39
+                        Case "#__flag_noscrollbars"                 : Flag = Flag | #__flag_NoScrollBars     ;40
+                        Case "#__flag_text_password"                 : Flag = Flag | #__flag_text_Password   ;41
+                        Case "#__flag_text_wordwrap"                 : Flag = Flag | #__flag_text_WordWrap   ;42
                         Case "#__flag_text_multiline"                 : Flag = Flag | #__flag_text_MultiLine ;43
-                        Case "#__flag_text_inline"                 : Flag = Flag | #__flag_text_InLine    ;44
-                        Case "#__flag_text_numeric"                 : Flag = Flag | #__flag_text_Numeric   ;45
-                        Case "#__flag_text_readonly"                 : Flag = Flag | #__flag_text_Readonly  ;46
+                        Case "#__flag_text_inline"                 : Flag = Flag | #__flag_text_InLine       ;44
+                        Case "#__flag_text_numeric"                 : Flag = Flag | #__flag_text_Numeric     ;45
+                        Case "#__flag_text_readonly"                 : Flag = Flag | #__flag_text_Readonly   ;46
                         Case "#__flag_text_lowercase"                 : Flag = Flag | #__flag_text_LowerCase ;47
                         Case "#__flag_text_uppercase"                 : Flag = Flag | #__flag_text_UpperCase ;48
-                        Case "#__flag_modal"                 : Flag = Flag | #__flag_Modal          ;49
-                        Case "#__flag_left"                 : Flag = Flag | #__flag_Left           ;63
-                        Case "#__flag_top"                 : Flag = Flag | #__flag_Top            ;63
-                        Case "#__flag_right"                 : Flag = Flag | #__flag_Right          ;63
-                        Case "#__flag_bottom"                 : Flag = Flag | #__flag_Bottom         ;63
-                        Case "#__flag_center"                 : Flag = Flag | #__flag_Center         ;63
-                        Case "#__flag_autosize"                 : Flag = Flag | #__flag_AutoSize       ;63
+                        Case "#__flag_modal"                 : Flag = Flag | #__flag_Modal                   ;49
+                        Case "#__flag_left"                 : Flag = Flag | #__flag_Left                     ;63
+                        Case "#__flag_top"                 : Flag = Flag | #__flag_Top                       ;63
+                        Case "#__flag_right"                 : Flag = Flag | #__flag_Right                   ;63
+                        Case "#__flag_bottom"                 : Flag = Flag | #__flag_Bottom                 ;63
+                        Case "#__flag_center"                 : Flag = Flag | #__flag_Center                 ;63
+                        Case "#__flag_autosize"                 : Flag = Flag | #__flag_AutoSize             ;63
                         Case "#__flag_nogadgets"                 : Flag = Flag | #__flag_NoGadgets      
                            
                         Case "#__align_text"                 : Flag = Flag | #__align_text 
                         Case "#__align_image"                 : Flag = Flag | #__align_image
-                                                                                                      
+                           
                         Case "#__align_top"                 : Flag = Flag | #__align_top  
                         Case "#__align_bottom"                 : Flag = Flag | #__align_Bottom 
                         Case "#__align_left"                 : Flag = Flag | #__align_Left   
                         Case "#__align_right"                 : Flag = Flag | #__align_Right  
-                                                                                                        
+                           
                         Case "#__align_center"                 : Flag = Flag | #__align_Center 
                         Case "#__align_full"                 : Flag = Flag | #__align_Full   
                         Case "#__align_proportional"                 : Flag = Flag | #__align_proportional 
                         Case "#__align_auto"                 : Flag = Flag | #__align_auto         
                            
                         Case "#__image_left"                 : Flag = Flag | #__image_Left           ;63
-                        Case "#__image_top"                 : Flag = Flag | #__image_Top            ;63
-                        Case "#__image_right"                 : Flag = Flag | #__image_Right          ;63
-                        Case "#__image_bottom"                 : Flag = Flag | #__image_Bottom         ;63
-                        Case "#__image_center"                 : Flag = Flag | #__image_Center         ;63
-                        
+                        Case "#__image_top"                 : Flag = Flag | #__image_Top             ;63
+                        Case "#__image_right"                 : Flag = Flag | #__image_Right         ;63
+                        Case "#__image_bottom"                 : Flag = Flag | #__image_Bottom       ;63
+                        Case "#__image_center"                 : Flag = Flag | #__image_Center       ;63
+                           
                         Default
                            ;             Select Asc(String$)
                            ;               Case '0' To '9'
@@ -15655,7 +15664,7 @@ chr$ = ","
             Case "window"        : result = #__type_window
                
             Case "unknown"       : result = #__type_Unknown
-              
+               
             Case "button"        : result = #__type_Button
             Case "buttonimage"   : result = #__type_ButtonImage
             Case "calendar"      : result = #__type_Calendar
@@ -16150,7 +16159,10 @@ chr$ = ","
                If *this\fs
                   *this\color\frame = _get_colors_( )\frame
                EndIf
-               
+               If constants::BinaryFlag( *this\flag, #PB_Text_Border, #False ) 
+                  *this\fs = 0
+                  *this\bs = 0
+               EndIf
                *this\padding\x = DPIScaled(2)
             EndIf
             
@@ -16848,7 +16860,7 @@ chr$ = ","
       EndProcedure
       
       Procedure.i Button( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, round.l = 0 )
-        ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, Text, flag, (-1), 0, 0, 0, round )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, Text, flag, (-1), 0, 0, 0, round )
       EndProcedure
       
       Procedure.i ButtonImage( X.l, Y.l, Width.l, Height.l, Image.i = -1 , flag.q = 0, round.l = 0 )
@@ -17229,7 +17241,7 @@ chr$ = ","
                   Protected boxsize = buttonsize + dpi_scale_two
                   Protected bs = Bool( *this\fs )
                   Protected scroll_width
-                        
+                  
                   ;\\
                   PushListPosition( *rows( ))
                   ForEach *rows( )
@@ -17325,12 +17337,12 @@ chr$ = ","
                         *rows( )\text\y = ( *rows( )\height - *rows( )\text\height ) / 2
                      EndIf
                      
-;                      ;
-;                      *rows( )\x + *this\row\sublevelsize
-;                      *rows( )\text\x - *this\row\sublevelsize
-;                      If *rows( )\buttonbox
-;                         *rows( )\buttonbox\x - *this\row\sublevelsize
-;                      EndIf
+                     ;                      ;
+                     ;                      *rows( )\x + *this\row\sublevelsize
+                     ;                      *rows( )\text\x - *this\row\sublevelsize
+                     ;                      If *rows( )\buttonbox
+                     ;                         *rows( )\buttonbox\x - *this\row\sublevelsize
+                     ;                      EndIf
                      
                      ;\\ vertical scroll max value
                      *this\scroll_height( ) + *rows( )\height + Bool( *this\__rows( )\rindex <> *this\countitems - 1 ) * *this\mode\GridLines
@@ -17641,9 +17653,9 @@ chr$ = ","
             
             ;\\ Horizontal line
             If *this\mode\GridLines
-                draw_mode_alpha_( #PB_2DDrawing_Default )
+               draw_mode_alpha_( #PB_2DDrawing_Default )
                ;If *this\LineColor <> *rows( )\color\back
-                  draw_box_( X, ys + *rows( )\height, *rows( )\width, *this\mode\GridLines, *this\LineColor )
+               draw_box_( X, ys + *rows( )\height, *rows( )\width, *this\mode\GridLines, *this\LineColor )
                ;EndIf
                If property
                   draw_box_( X, ys, *this\row\sublevelsize, *rows( )\height, *this\LineColor )
@@ -19049,7 +19061,7 @@ chr$ = ","
                   ;
                   ; post event re draw
                   If *this\binddraw
-                     If __gui\event\bind 
+                     If __gui\event\queuesmask 
                         If *this\root\drawmode & 1<<1
                            SaveVectorState( )
                            TranslateCoordinates( *this\x[#__c_frame], *this\y[#__c_frame] )
@@ -19437,6 +19449,7 @@ chr$ = ","
                   EndIf
                EndIf
             EndIf
+            
             
             ;             ; TEST ROW
             ;             If Entered( ) And Entered( )\root = *root And Entered( )\row And Entered( )\RowEntered( )
@@ -22192,10 +22205,10 @@ chr$ = ","
             If *this\root\repaint > 0 
                ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(event)
                If ( MouseButtonPress( ) And
-                  ( event = #__event_Focus Or
-                    event = #__event_Drop Or
-                    event = #__event_LostFocus )) Or __gui\event\loop
-                 ;
+                    ( event = #__event_Focus Or
+                      event = #__event_Drop Or
+                      event = #__event_LostFocus )) Or __gui\event\loop
+                  ;
                   ReDraw( *this\root )
                Else
                   ; Debug "post redraw "+ *this\class +" "+ ClassFromEvent(event) +" "+ ClassFromEvent(*data)
@@ -22232,7 +22245,7 @@ chr$ = ","
             EndIf
             
             If roots( )\canvas\repaint = 1
-               Repost( )
+               __gui\event\queuesmask = 1
                
                If test_draw_repaint
                   Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
@@ -23153,14 +23166,14 @@ chr$ = ","
          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0
-            If Not __gui\event\bind
+            If Not __gui\event\queuesmask And 
+               Not __gui\event\mask & 1<<event
+               ;
                If test_event_send
                   Static test
                   Debug ""+*this\class + " - Post( test "+test +" ) "+ ClassFromEvent(event)
                   test + 1
                EndIf
-               
-               ; Debug "post - "+*this\class +" "+ ClassFromEvent(event)
                
                If AddElement( __gui\event\queues( ) )
                   __gui\event\queues.allocate( EVENTDATA, ( ) )
@@ -23170,7 +23183,6 @@ chr$ = ","
                   __gui\event\queues( )\data   = *data
                   ProcedureReturn __gui\event\queues( )
                EndIf
-               
             Else
                If is_bar_( *this )
                   If event = #__event_LeftClick Or
@@ -23319,8 +23331,6 @@ chr$ = ","
                Next
                ;
             Else
-               __gui\event\bind = #True
-            
                LastElement( __gui\event\binds( ) )
                AddElement(__gui\event\binds( ))
                __gui\event\binds.allocate( HOOK, ( ))
@@ -23340,6 +23350,33 @@ chr$ = ","
                EndIf
                If event = #__event_CursorChange
                   *this\bindcursor = 1
+               EndIf
+               
+               If Not __gui\event\mask & 1<<event
+                  __gui\event\mask | 1<<event
+               EndIf
+               
+               ;\\ send posted events (queue events) 
+               If ListSize( __gui\event\queues( ) )
+                  ForEach __gui\event\queues( )
+                     Define __widget = __gui\event\queues( )\widget
+                     Define __type   = __gui\event\queues( )\type
+                     Define __item   = __gui\event\queues( )\item
+                     Define __data   = __gui\event\queues( )\data
+                     
+                     
+                     If __widget = *this And 
+                        __type = event
+                        
+                        DeleteElement( __gui\event\queues( ) )
+                        
+                        ; Debug 44444
+                        DoEvents( __widget, __type, __item, __data )
+                        
+                        ;  Debug ""+GetClass(__widget) +" "+ ClassFromEvent(__type)
+                        ;Post(  __widget, __type, __item, __data )
+                     EndIf
+                  Next
                EndIf
             EndIf
          EndIf
@@ -23429,7 +23466,7 @@ chr$ = ","
       Procedure.i OpenList( *this._s_WIDGET, item.l = 0 )
          Protected result.i = Opened( )
          
-    
+         
          If *this = Opened( )
             If Not( *this\tabbar And *this\tabbar\type = #__type_TabBar And *this\tabbar\TabIndex( ) <> item )
                ProcedureReturn result
@@ -23651,7 +23688,7 @@ chr$ = ","
          
          ;;;;;;;;;;;
          If IsWindow = 1
-           ; Window( 0,0, Width - #__window_FrameSize*2, Height - #__window_FrameSize*2 - #__window_CaptionHeight, title$, flag )
+            ; Window( 0,0, Width - #__window_FrameSize*2, Height - #__window_FrameSize*2 - #__window_CaptionHeight, title$, flag )
          EndIf
          
          If g
@@ -24221,46 +24258,6 @@ chr$ = ","
          EndIf
       EndProcedure
       
-      Procedure Repost( )
-         Protected __result = Bool( Not __gui\event\bind )
-         Protected __widget, __type, __item, __data
-         
-         If __result
-            __gui\event\bind = #True
-            
-            ;\\ send posted events (queue events) 
-            If ListSize( __gui\event\queues( ) )
-               ForEach __gui\event\queues( )
-                  __widget = __gui\event\queues( )\widget
-                  __type   = __gui\event\queues( )\type
-                  __item   = __gui\event\queues( )\item
-                  __data   = __gui\event\queues( )\data
-                  DeleteElement( __gui\event\queues( ) )
-                  
-                  ;\\
-                  If #__event_Focus = __type Or
-                     #__event_LostFocus = __type
-                     
-                     If test_event_repost
-                        Debug "Repost "+ClassFromEvent(__type)+" "+GetClass(__widget)
-                     EndIf
-                     ;If Not Post( __widget, __type, __item, __data )
-                     DoEvents( __widget, __type )
-                     ;EndIf
-                     
-                  Else
-                     ;  Debug ClassFromEvent(__type)
-                     DoEvents( __widget, __type, __item, __data )
-                  EndIf
-               Next
-            EndIf
-            
-            ; Debug "     -     "
-         EndIf
-         
-         ProcedureReturn __result
-      EndProcedure
-      
       Procedure  WaitClose( *window._s_WIDGET = #Null )
          
          If MapSize( roots( ) )
@@ -24361,7 +24358,6 @@ chr$ = ","
       Procedure WaitQuit( *root._s_root = #Null )
          If __gui\event\loop = #False
             __gui\event\loop = #True
-            ; __gui\event\bind = #True
             Define canvasID = root( )\Beforeroot( )\canvas\gadgetid
             
             PushMapPosition( roots( ))
@@ -24409,7 +24405,7 @@ chr$ = ","
             
             __gui\event\loop = #False
             ChangeCurrentCanvas( canvasID )
-   
+            
             Debug " QUIT MAIN LOOP"
          EndIf
       EndProcedure
@@ -25622,9 +25618,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 15624
-; FirstLine = 15326
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9---0-----------f2---X---------d4r------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------5v0--------------------------------
+; CursorPosition = 23375
+; FirstLine = 23350
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

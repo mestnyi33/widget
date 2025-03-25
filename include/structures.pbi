@@ -744,7 +744,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_EVENT Extends _s_EVENTDATA
          quit.b                        ; quit from main loop
          loop.b
-         Bind.b
+         queuesmask.b
+         mask.q
          List *binds._s_HOOk( )
          List *queues._s_EVENTDATA( )  ; __events( )
       EndStructure
@@ -791,7 +792,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 748
+; CursorPosition = 746
 ; FirstLine = 739
 ; Folding = ----------
 ; Optimizer

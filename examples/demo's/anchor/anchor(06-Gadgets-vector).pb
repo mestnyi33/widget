@@ -7,16 +7,16 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    EnumerationBinary
-		#State_Hidden
-		#State_Disabled
-		#State_Hovered
-		#State_Selected
-		#State_LeftMousePushed
-		#State_RightMousePushed
-		#State_MiddleMousePushed
-	EndEnumeration
-	#State_Normal = 0
-	
+      #State_Hidden
+      #State_Disabled
+      #State_Hovered
+      #State_Selected
+      #State_LeftMousePushed
+      #State_RightMousePushed
+      #State_MiddleMousePushed
+   EndEnumeration
+   #State_Normal = 0
+   
    ; Program constants
    Enumeration 1
       #Window
@@ -34,30 +34,35 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure.i ObjectState(*Object._s_WIDGET)
-			
-		Protected eState.i
-		
-		If *Object\disable : eState | #State_Disabled : EndIf
-		If *Object\press : eState | #State_Selected : EndIf
-		If *Object\hide   : eState | #State_Hidden   : EndIf
-		
-		If *Object\enter
-			eState | #State_Hovered
-		EndIf
-		If MouseButtonPress( ) = #PB_MouseButton_Left
-			eState | #State_LeftMousePushed
-		EndIf
-		If MouseButtonPress( ) = #PB_MouseButton_Right
-			eState | #State_RightMousePushed
-		EndIf
-		If MouseButtonPress( ) = #PB_MouseButton_Middle
-			eState | #State_MiddleMousePushed
-		EndIf
-		
-		ProcedureReturn eState
-		
-	EndProcedure
-	
+      
+      Protected eState.i
+      
+      If *Object\disable : eState | #State_Disabled : EndIf
+      If *Object\hide    : eState | #State_Hidden   : EndIf
+      
+      If Not a_index( )
+         If *Object\enter    
+            eState | #State_Hovered 
+         EndIf
+         
+         If *Object\press   
+            eState | #State_Selected 
+            If MouseButtonPress( ) = #PB_MouseButton_Left
+               eState | #State_LeftMousePushed
+            EndIf
+            If MouseButtonPress( ) = #PB_MouseButton_Right
+               eState | #State_RightMousePushed
+            EndIf
+            If MouseButtonPress( ) = #PB_MouseButton_Middle
+               eState | #State_MiddleMousePushed
+            EndIf
+         EndIf
+      EndIf
+      
+      ProcedureReturn eState
+      
+   EndProcedure
+   
    Procedure.i HSVA(Hue.i, Saturation.i, Value.i, Aplha.i=255) ; [0,360], [0,100], [0,255], [0,255]
       Protected H.i = Int(Hue/60)
       Protected f.f = (Hue/60-H)
@@ -93,8 +98,8 @@ CompilerIf #PB_Compiler_IsMainFile
          press = 0
       EndIf
       
-;       SaveVectorState()
-;       TranslateCoordinates( X,Y )
+      ;       SaveVectorState()
+      ;       TranslateCoordinates( X,Y )
       
       ; Box background
       AddPathBox(0.0, 0.0, Width, Height)
@@ -151,9 +156,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; Text
       Protected text_x.d = 30
-       Width - text_x*2
-       ;Height - 10
-       
+      Width - text_x*2
+      ;Height - 10
+      
       If Height > 0 And Width > 0
          VectorFont(FontID(#Font))
          AddPathBox(text_x, 0, Width, Height)
@@ -179,7 +184,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Draw
             Button_DrawCallback(*ew, *ew\x[#__c_frame], *ew\y[#__c_frame], *ew\width[#__c_frame], *ew\height[#__c_frame], *ew\data)
-               
+            
       EndSelect
    EndProcedure
    
@@ -203,221 +208,113 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    ;-\\ 
    ;
-   Procedure CheckBox_DrawCallback( ) ;Object.i, Width.i, Height.i, DataValue.i) ; Runtime 
-	Protected Object.i = EventWidget( )
-   Protected Width.i=EventWidget( )\Width[#__c_frame]
-   Protected Height.i=EventWidget( )\Height[#__c_frame]
-   Protected DataValue.i=WidgetEventData( ) ;EventWidget( )\color\back & $FFFFFF ;| 0 << 24 
-   
-	Protected Text.s = GetObjectDictionary(Object, "Text")
-	Protected State.i = Val(GetObjectDictionary(Object, "State"))
-	Protected Y.i = Int((Height-19)/2)
-	Protected Hue = 205
-	
-	; Box background
-	AddPathBox(0, Y, 19, 19)
-	VectorSourceLinearGradient(0.0, Y, 0.0, Y+19)
-	If ObjectState(Object) & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)
-		VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
-		VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
-	ElseIf ObjectState(Object) & #State_Hovered And MouseButtons( ) & #PB_Canvas_LeftButton = 0
-		VectorSourceGradientColor(HSVA(Hue, 20, $E8), 0.00)
-		VectorSourceGradientColor(HSVA(Hue, 5, $FF), 1.00)
-	Else
-		VectorSourceGradientColor(HSVA(0, 0, $D8), 0.00)
-		VectorSourceGradientColor(HSVA(0, 0, $F8), 1.00)
-	EndIf
-	FillPath()
-	
-	; Box frame
-	If ObjectState(Object) & #State_Disabled
-		AddPathBox(0.5, Y+0.5, 18, 18)
-		VectorSourceColor(HSVA(0, 0, $D0))
-		StrokePath(1)
-		AddPathBox(1.5, Y+1.5, 16, 16)
-		VectorSourceColor(HSVA(0, 0, $F0))
-		StrokePath(1)
-	ElseIf ObjectState(Object) & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)
-		AddPathBox(0.5, Y+0.5, 18, 18)
-		VectorSourceColor(HSVA(Hue, 100, $80))
-		StrokePath(1)
-		AddPathBox(1.5, Y+1.5, 16, 16)
-		VectorSourceColor(HSVA(Hue, 50, $FF))
-		StrokePath(1)
-	ElseIf ObjectState(Object) & #State_Hovered And MouseButtons( ) & #PB_Canvas_LeftButton = 0
-		AddPathBox(0.5, Y+0.5, 18, 18)
-		VectorSourceColor(HSVA(0, 0, $A0))
-		StrokePath(1)
-		AddPathBox(1.5, Y+1.5, 16, 16)
-		VectorSourceColor(HSVA(Hue, 10, $FF))
-		StrokePath(1)
-	Else
-		AddPathBox(0.5, Y+0.5, 18, 18)
-		VectorSourceColor(HSVA(0, 0, $A0))
-		StrokePath(1)
-		AddPathBox(1.5, Y+1.5, 16, 16)
-		VectorSourceColor(HSVA(0, 0, $FF))
-		StrokePath(1)
-	EndIf
-	
-	; Check
-	If State
-		MovePathCursor(9.5, Y+10.5+Bool(ObjectState(Object) & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)))
-		AddPathLine(10.5, -10.5, #PB_Path_Relative)
-		AddPathLine(2.5, 2.5, #PB_Path_Relative)
-		AddPathLine(-13, 13, #PB_Path_Relative)
-		AddPathLine(-5, -5, #PB_Path_Relative)
-		AddPathLine(2.5, -2.5, #PB_Path_Relative)
-		ClosePath()
-		If ObjectState(Object) & #State_Disabled
-			VectorSourceColor(HSVA(Hue, 0, $C0))
-		Else
-			VectorSourceColor(HSVA(Hue, 100, $C0))
-		EndIf
-		FillPath()
-	EndIf
-	
-	; Text
-	AddPathBox(25, 0, Width-25, Height)
-	ClipPath()
-	VectorFont(FontID(#Font))
-	If ObjectState(Object) & #State_Disabled
-		VectorSourceColor($40000000)
-	Else
-		VectorSourceColor($FF000000)
-	EndIf
-	If Height > 0 And Width - 25 > 0
-		If ObjectState(Object) & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)
-			MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2)
-		Else
-			MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2-1)
-		EndIf
-		DrawVectorParagraph(Text, Width-25, Height, #PB_VectorParagraph_Left)
-	EndIf
-	
-EndProcedure
-
-;    Procedure CheckBox_DrawCallback(*Object._s_widget, X.d,Y.d,Width.d,Height.d, DataValue.i)
-;       Protected Text.s = GetText(*Object)
-;       Protected State.i = GetState(*Object)
-;       Protected yi.i = Int((Height-19)/2)
-;       Protected Hue = 205
-;       
-;       Protected enter = Bool(*object\enter > 0)
-;       Protected press = Bool(*object\press > 0 And enter)
-;       
-;       If a_index( )
-;          enter = 0
-;          press = 0
-;       EndIf
-;       
-; ;       SaveVectorState()
-; ;       TranslateCoordinates( X,Y )
-;       
-;       ; Box background
-;       AddPathBox(0.0, 0.0, Width, Height)
-;       VectorSourceColor($FFF0F0F0)
-;       FillPath( )
-;       
-;       ; Box background
-;       AddPathBox(0, yi, 19, 19)
-;       VectorSourceLinearGradient(0.0, yi, 0.0, yi+19)
-;       If press
-;          VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
-;          VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
-;       ElseIf enter
-;          VectorSourceGradientColor(HSVA(Hue, 20, $E8), 0.00)
-;          VectorSourceGradientColor(HSVA(Hue, 5, $FF), 1.00)
-;       Else
-;          VectorSourceGradientColor(HSVA(0, 0, $D8), 0.00)
-;          VectorSourceGradientColor(HSVA(0, 0, $F8), 1.00)
-;       EndIf
-;       FillPath( )
-;       
-;       ; Box frame
-;       If *object\disable
-;          AddPathBox(0.5, yi+0.5, 18, 18)
-;          VectorSourceColor(HSVA(0, 0, $D0))
-;          StrokePath(1)
-;          AddPathBox(1.5, yi+1.5, 16, 16)
-;          VectorSourceColor(HSVA(0, 0, $F0))
-;          StrokePath(1)
-;       ElseIf press
-;          AddPathBox(0.5, yi+0.5, 18, 18)
-;          VectorSourceColor(HSVA(Hue, 100, $80))
-;          StrokePath(1)
-;          AddPathBox(1.5, yi+1.5, 16, 16)
-;          VectorSourceColor(HSVA(Hue, 50, $FF))
-;          StrokePath(1)
-;       ElseIf enter
-;          AddPathBox(0.5, yi+0.5, 18, 18)
-;          VectorSourceColor(HSVA(0, 0, $A0))
-;          StrokePath(1)
-;          AddPathBox(1.5, yi+1.5, 16, 16)
-;          VectorSourceColor(HSVA(Hue, 10, $FF))
-;          StrokePath(1)
-;       Else
-;          AddPathBox(0.5, yi+0.5, 18, 18)
-;          VectorSourceColor(HSVA(0, 0, $A0))
-;          StrokePath(1)
-;          AddPathBox(1.5, yi+1.5, 16, 16)
-;          VectorSourceColor(HSVA(0, 0, $FF))
-;          StrokePath(1)
-;       EndIf
-;       
-;       ; Check
-;       If State
-;          MovePathCursor(9.5, yi+10.5+Bool(*object\press))
-;          AddPathLine(10.5, -10.5, #PB_Path_Relative)
-;          AddPathLine(2.5, 2.5, #PB_Path_Relative)
-;          AddPathLine(-13, 13, #PB_Path_Relative)
-;          AddPathLine(-5, -5, #PB_Path_Relative)
-;          AddPathLine(2.5, -2.5, #PB_Path_Relative)
-;          ClosePath( )
-;          If *object\disable
-;             VectorSourceColor(HSVA(Hue, 0, $C0))
-;          Else
-;             VectorSourceColor(HSVA(Hue, 100, $C0))
-;          EndIf
-;          FillPath( )
-;       EndIf
-;       
-;       ; Text
-;       Protected text_x.d = 25
-;       Width - text_x
-;       
-;       If Height > 0 And Width > 0
-;          VectorFont(FontID(#Font))
-;          AddPathBox(text_x, 0, Width, Height)
-;          ClipPath( )
-;          MovePathCursor(text_x, (Height-VectorParagraphHeight(Text, Width, Height))/2-press)
-;          If *object\disable
-;             VectorSourceColor($40000000)
-;          Else
-;             VectorSourceColor($FF000000)
-;          EndIf
-;          DrawVectorParagraph(Text, Width, Height, #PB_VectorParagraph_Left)
-;          ;DrawVectorText(Text)
-;       EndIf
-;       
-; ;       ;
-; ;       RestoreVectorState()
-;    EndProcedure
-;    
+   Procedure CheckBox_DrawCallback( ) 
+      Protected Object.i = EventWidget( )
+      Protected Width.i=EventWidget( )\Width[#__c_frame]
+      Protected Height.i=EventWidget( )\Height[#__c_frame]
+      Protected DataValue.i=WidgetEventData( ) ;EventWidget( )\color\back & $FFFFFF ;| 0 << 24 
+      
+      Protected Text.s = GetObjectDictionary(Object, "Text")
+      Protected State.i = Val(GetObjectDictionary(Object, "State"))
+      Protected Y.i = Int((Height-19)/2)
+      Protected Hue = 205
+      Protected ObjectState = ObjectState(Object)
+      
+      ; Box background
+      AddPathBox(0, Y, 19, 19)
+      VectorSourceLinearGradient(0.0, Y, 0.0, Y+19)
+      If ObjectState & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)
+         VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
+         VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
+      ElseIf ObjectState & #State_Hovered And MouseButtons( ) & #PB_Canvas_LeftButton = 0
+         VectorSourceGradientColor(HSVA(Hue, 20, $E8), 0.00)
+         VectorSourceGradientColor(HSVA(Hue, 5, $FF), 1.00)
+      Else
+         VectorSourceGradientColor(HSVA(0, 0, $D8), 0.00)
+         VectorSourceGradientColor(HSVA(0, 0, $F8), 1.00)
+      EndIf
+      FillPath()
+      
+      ; Box frame
+      If ObjectState & #State_Disabled
+         AddPathBox(0.5, Y+0.5, 18, 18)
+         VectorSourceColor(HSVA(0, 0, $D0))
+         StrokePath(1)
+         AddPathBox(1.5, Y+1.5, 16, 16)
+         VectorSourceColor(HSVA(0, 0, $F0))
+         StrokePath(1)
+      ElseIf ObjectState & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)
+         AddPathBox(0.5, Y+0.5, 18, 18)
+         VectorSourceColor(HSVA(Hue, 100, $80))
+         StrokePath(1)
+         AddPathBox(1.5, Y+1.5, 16, 16)
+         VectorSourceColor(HSVA(Hue, 50, $FF))
+         StrokePath(1)
+      ElseIf ObjectState & #State_Hovered And MouseButtons( ) & #PB_Canvas_LeftButton = 0
+         AddPathBox(0.5, Y+0.5, 18, 18)
+         VectorSourceColor(HSVA(0, 0, $A0))
+         StrokePath(1)
+         AddPathBox(1.5, Y+1.5, 16, 16)
+         VectorSourceColor(HSVA(Hue, 10, $FF))
+         StrokePath(1)
+      Else
+         AddPathBox(0.5, Y+0.5, 18, 18)
+         VectorSourceColor(HSVA(0, 0, $A0))
+         StrokePath(1)
+         AddPathBox(1.5, Y+1.5, 16, 16)
+         VectorSourceColor(HSVA(0, 0, $FF))
+         StrokePath(1)
+      EndIf
+      
+      ; Check
+      If State
+         MovePathCursor(9.5, Y+10.5+Bool(ObjectState & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)))
+         AddPathLine(10.5, -10.5, #PB_Path_Relative)
+         AddPathLine(2.5, 2.5, #PB_Path_Relative)
+         AddPathLine(-13, 13, #PB_Path_Relative)
+         AddPathLine(-5, -5, #PB_Path_Relative)
+         AddPathLine(2.5, -2.5, #PB_Path_Relative)
+         ClosePath()
+         If ObjectState & #State_Disabled
+            VectorSourceColor(HSVA(Hue, 0, $C0))
+         Else
+            VectorSourceColor(HSVA(Hue, 100, $C0))
+         EndIf
+         FillPath()
+      EndIf
+      
+      ; Text
+      AddPathBox(25, 0, Width-25, Height)
+      ClipPath()
+      VectorFont(FontID(#Font))
+      If ObjectState & #State_Disabled
+         VectorSourceColor($40000000)
+      Else
+         VectorSourceColor($FF000000)
+      EndIf
+      If Height > 0 And Width - 25 > 0
+         If ObjectState & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)
+            MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2)
+         Else
+            MovePathCursor(25, (Height-VectorParagraphHeight(Text, Width-25, Height))/2-1)
+         EndIf
+         DrawVectorParagraph(Text, Width-25, Height, #PB_VectorParagraph_Left)
+      EndIf
+      
+   EndProcedure
+     
    Procedure CheckBox_Events( )
       Protected *ew._s_widget = EventWidget( )
       
       Select WidgetEvent( ) 
-         Case #__event_LeftClick;, #__event_Left2Click, #__event_Left3Click
+         Case #__event_LeftClick
             If Not a_index( )
                SetState(*ew, 1 - GetState(*ew))
                Debug "checkbox '" + GetText(*ew) + "' was changed."
             EndIf
-            
-         Case #__event_Draw
-           ; CheckBox_DrawCallback(*ew, *ew\x[#__c_frame], *ew\y[#__c_frame], *ew\width[#__c_frame], *ew\height[#__c_frame], 0)
-              
       EndSelect
+
+      ProcedureReturn #PB_Ignore
    EndProcedure
    
    ; Custom procedure to create a button object
@@ -426,14 +323,17 @@ EndProcedure
       
       *Object = a_object( X, Y, Width, Height, Text, 0)
       *Object\type = 0
-      *Object\class = "CheckBox"
       *Object\container = 0
-      ;SetText(*Object, Text)                                ; Set the button text as a dictionary entry
+      
+      Static Index
+      *Object\class = "CheckBox_"+Index
+      Index + 1
+      
+      ; SetText(*Object, Text)                                      ; Set the button text as a dictionary entry
+      ; a_set(*Object, #__a_size|#__a_position)                     ; Add handles if you want to edit the buttons.
+      
       Bind(*Object, @CheckBox_DrawCallback( ), #__event_Draw)       ; Set the drawing callback with the specified highlighting color
-      Bind(*Object, @CheckBox_Events( ), #__event_LeftClick)  ; Set the drawing callback with the specified highlighting color
-      Bind(*Object, @CheckBox_Events( ), #__event_Left2Click) ; Set the drawing callback with the specified highlighting color
-      Bind(*Object, @CheckBox_Events( ), #__event_Left3Click) ; Set the drawing callback with the specified highlighting color
-                                                              ;a_set(*Object, #__a_size|#__a_position)               ; Add handles if you want to edit the buttons.
+      Bind(*Object, @CheckBox_Events( ), #__event_LeftClick)        ; 
       
       ProcedureReturn *Object
    EndProcedure
@@ -461,7 +361,7 @@ EndProcedure
    If Not Open( #Window );, #Canvas )
       Debug "Unable to initialize the object manager !"    
    EndIf
-   SetColor(root( ), #pb_gadget_backcolor, $FFF0F0F0 )
+   SetColor(root( ), #PB_Gadget_BackColor, $FFF0F0F0 )
    a_init(root( ), 0)
    
    ; 2DDrawing 
@@ -515,9 +415,8 @@ EndProcedure
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 463
-; FirstLine = 459
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 43
+; FirstLine = 35
 ; Folding = -------
 ; EnableXP
-; DPIAware

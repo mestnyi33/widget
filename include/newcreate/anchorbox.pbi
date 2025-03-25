@@ -28,9 +28,9 @@ Module AnchorBox
    
    Procedure Events( )
       Protected *this.Structures::_s_widget = widget::EventWidget( )
-;       If *button = widget::EventWidget( )
-;          Debug "box "+widget::ClassFromEvent( widget::WidgetEvent( )) +" "+ widget::GetClass( widget::EventWidget( ))
-;       EndIf
+      ;       If *button = widget::EventWidget( )
+      ;          Debug "box "+widget::ClassFromEvent( widget::WidgetEvent( )) +" "+ widget::GetClass( widget::EventWidget( ))
+      ;       EndIf
       
       Select widget::WidgetEvent( )
          Case constants::#__event_LeftClick 
@@ -228,15 +228,15 @@ Module AnchorBox
                
                If widget::a_focused( )
                   Select widget::GetText(*button)
-                        Case "LEFT" : widget::SetAlign(widget::a_focused( ), 0, 1,0,0,0 )
-                        Case "TOP" : widget::SetAlign(widget::a_focused( ), 0, 0,1,0,0 )
-                        Case "RIGHT" : widget::SetAlign(widget::a_focused( ), 0, 0,0,1,0 )
-                        Case "BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 0,0,0,1 )
-                           
-                        Case "LEFT&TOP" : widget::SetAlign(widget::a_focused( ), 0, 1,1,0,0 )
-                        Case "LEFT&BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 1,0,0,1 )
-                        Case "RIGHT&TOP" : widget::SetAlign(widget::a_focused( ), 0, 0,1,1,0 )
-                        Case "RIGHT&BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 0,0,1,1 )
+                     Case "LEFT" : widget::SetAlign(widget::a_focused( ), 0, 1,0,0,0 )
+                     Case "TOP" : widget::SetAlign(widget::a_focused( ), 0, 0,1,0,0 )
+                     Case "RIGHT" : widget::SetAlign(widget::a_focused( ), 0, 0,0,1,0 )
+                     Case "BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 0,0,0,1 )
+                        
+                     Case "LEFT&TOP" : widget::SetAlign(widget::a_focused( ), 0, 1,1,0,0 )
+                     Case "LEFT&BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 1,0,0,1 )
+                     Case "RIGHT&TOP" : widget::SetAlign(widget::a_focused( ), 0, 0,1,1,0 )
+                     Case "RIGHT&BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 0,0,1,1 )
                   EndSelect
                EndIf
                
@@ -258,7 +258,7 @@ Module AnchorBox
       *Button = widget::Button(X,Y,Width, Height, "LEFT&TOP",flag|#PB_Button_Toggle)
       If *parent
          widget::CloseList( )
-        ; widget::OpenList( widget::root( ) )
+         ; widget::OpenList( widget::root( ) )
       EndIf
       
       *a = widget::Container(0,0,size*8,size*8, flag) 
@@ -293,7 +293,7 @@ Module AnchorBox
       ;
       widget::CloseList( )
       If *parent
-       ;  widget::CloseList( )
+         ;  widget::CloseList( )
       EndIf
       
       ;
@@ -353,9 +353,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    widget::WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 192
-; Folding = -vv-----
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 354
+; FirstLine = 313
+; Folding = --------
 ; EnableXP
 ; DPIAware

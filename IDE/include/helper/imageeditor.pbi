@@ -89,7 +89,7 @@ Procedure Events_EDITORIMAGES( )
             Case BUTTON_OPEN
                Define file$ = OpenFileRequester( "Пожалуйста выберите изображение для загрузки","",
                                                  "Image (*.png,*.bmp,*.ico,*.tiff)|*.png;*.bmp;*.ico;*.tiff|All files (*.*)|*.*", 
-                                                 0,0, WindowID(EventWindow( )) )
+                                                 0,0);, WindowID(EventWindow( )) )
                ;
                If file$
                   If IsImage( LOADIMAGE )
@@ -196,8 +196,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 63
+; CursorPosition = 91
+; FirstLine = 66
 ; Folding = ----
 ; EnableXP
 ; DPIAware

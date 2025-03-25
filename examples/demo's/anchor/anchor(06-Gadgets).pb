@@ -144,7 +144,12 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__event_Draw
-            Button_DrawCallback(*ew, *ew\x[#__c_frame], *ew\y[#__c_frame], *ew\width[#__c_frame], *ew\height[#__c_frame], *ew\data)
+            Button_DrawCallback(*ew, 
+                                *ew\x[#__c_frame],
+                                *ew\y[#__c_frame], 
+                                *ew\width[#__c_frame], 
+                                *ew\height[#__c_frame],
+                                *ew\data)
                
       EndSelect
    EndProcedure
@@ -173,11 +178,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CheckBox_DrawCallback(*Object._s_widget, X.d,Y.d,Width.d,Height.d, DataValue.i)
       Protected Text.s = GetText(*Object)
       Protected State.i = GetState(*Object)
-      Protected yi.i = Int((Height-19)/2)
+      Protected checkbox_size = DesktopScaledX(18)
+      Protected yi.i = Int((Height-checkbox_size)/2)
       Protected Hue = 205
       
       Protected enter = Bool(*object\enter > 0)
-      Protected press = Bool(*object\press > 0 And enter)
+      Protected press = Bool(*object\press > 0)
       
       If a_index( )
          enter = 0
@@ -193,14 +199,16 @@ CompilerIf #PB_Compiler_IsMainFile
       FillPath( )
       
       ; Box background
-      AddPathBox(0, yi, 19, 19)
-      VectorSourceLinearGradient(0.0, yi, 0.0, yi+19)
-      If press
-         VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
-         VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
-      ElseIf enter
-         VectorSourceGradientColor(HSVA(Hue, 20, $E8), 0.00)
-         VectorSourceGradientColor(HSVA(Hue, 5, $FF), 1.00)
+      AddPathBox(0, yi, checkbox_size, checkbox_size)
+      VectorSourceLinearGradient(0.0, yi, 0.0, yi+checkbox_size)
+      If enter
+         If press
+            VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
+            VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
+         Else
+            VectorSourceGradientColor(HSVA(Hue, 20, $E8), 0.00)
+            VectorSourceGradientColor(HSVA(Hue, 5, $FF), 1.00)
+         EndIf
       Else
          VectorSourceGradientColor(HSVA(0, 0, $D8), 0.00)
          VectorSourceGradientColor(HSVA(0, 0, $F8), 1.00)
@@ -209,42 +217,46 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; Box frame
       If *object\disable
-         AddPathBox(0.5, yi+0.5, 18, 18)
+         AddPathBox(0.5, yi+0.5, checkbox_size, checkbox_size)
          VectorSourceColor(HSVA(0, 0, $D0))
          StrokePath(1)
-         AddPathBox(1.5, yi+1.5, 16, 16)
+         AddPathBox(1.5, yi+1.5, (checkbox_size - 2), (checkbox_size - 2))
          VectorSourceColor(HSVA(0, 0, $F0))
          StrokePath(1)
-      ElseIf press
-         AddPathBox(0.5, yi+0.5, 18, 18)
-         VectorSourceColor(HSVA(Hue, 100, $80))
-         StrokePath(1)
-         AddPathBox(1.5, yi+1.5, 16, 16)
-         VectorSourceColor(HSVA(Hue, 50, $FF))
-         StrokePath(1)
-      ElseIf enter
-         AddPathBox(0.5, yi+0.5, 18, 18)
-         VectorSourceColor(HSVA(0, 0, $A0))
-         StrokePath(1)
-         AddPathBox(1.5, yi+1.5, 16, 16)
-         VectorSourceColor(HSVA(Hue, 10, $FF))
-         StrokePath(1)
       Else
-         AddPathBox(0.5, yi+0.5, 18, 18)
-         VectorSourceColor(HSVA(0, 0, $A0))
-         StrokePath(1)
-         AddPathBox(1.5, yi+1.5, 16, 16)
-         VectorSourceColor(HSVA(0, 0, $FF))
-         StrokePath(1)
+         If enter
+            If press
+               AddPathBox(0.5, yi+0.5, checkbox_size, checkbox_size)
+               VectorSourceColor(HSVA(Hue, 100, $80))
+               StrokePath(1)
+               AddPathBox(1.5, yi+1.5, (checkbox_size - 2), (checkbox_size - 2))
+               VectorSourceColor(HSVA(Hue, 50, $FF))
+               StrokePath(1)
+            Else
+               AddPathBox(0.5, yi+0.5, checkbox_size, checkbox_size)
+               VectorSourceColor(HSVA(0, 0, $A0))
+               StrokePath(1)
+               AddPathBox(1.5, yi+1.5, (checkbox_size - 2), (checkbox_size - 2))
+               VectorSourceColor(HSVA(Hue, 10, $FF))
+               StrokePath(1)
+            EndIf
+         Else
+            AddPathBox(0.5, yi+0.5, checkbox_size, checkbox_size)
+            VectorSourceColor(HSVA(0, 0, $A0))
+            StrokePath(1)
+            AddPathBox(1.5, yi+1.5, (checkbox_size - 2), (checkbox_size - 2))
+            VectorSourceColor(HSVA(0, 0, $FF))
+            StrokePath(1)
+         EndIf
       EndIf
       
       ; Check
       If State
-         MovePathCursor(9.5, yi+10.5+Bool(*object\press))
-         AddPathLine(10.5, -10.5, #PB_Path_Relative)
+         MovePathCursor(checkbox_size/2+1, yi+checkbox_size/2+3+Bool(*object\press))
+         AddPathLine(checkbox_size/2+3, -checkbox_size/2+3, #PB_Path_Relative)
          AddPathLine(2.5, 2.5, #PB_Path_Relative)
-         AddPathLine(-13, 13, #PB_Path_Relative)
-         AddPathLine(-5, -5, #PB_Path_Relative)
+         AddPathLine(-DesktopScaledX(13), DesktopScaledY(13), #PB_Path_Relative)
+         AddPathLine(-DesktopScaledX(5), -DesktopScaledY(8), #PB_Path_Relative)
          AddPathLine(2.5, -2.5, #PB_Path_Relative)
          ClosePath( )
          If *object\disable
@@ -256,7 +268,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ; Text
-      Protected text_x.d = 25
+      Protected text_x.d = checkbox_size + DesktopScaledX(7)
       Width - text_x
       
       If Height > 0 And Width > 0
@@ -288,7 +300,11 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__event_Draw
-            CheckBox_DrawCallback(*ew, *ew\x[#__c_frame], *ew\y[#__c_frame], *ew\width[#__c_frame], *ew\height[#__c_frame], 0)
+            CheckBox_DrawCallback(*ew, 
+                                  *ew\x[#__c_frame], 
+                                  *ew\y[#__c_frame], 
+                                  *ew\width[#__c_frame],
+                                  *ew\height[#__c_frame], 0)
               
       EndSelect
    EndProcedure
@@ -334,7 +350,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Not Open( #Window );, #Canvas )
       Debug "Unable to initialize the object manager !"    
    EndIf
-   SetColor(root( ), #pb_gadget_backcolor, $FFF0F0F0 )
+   SetColor(root( ), #PB_Gadget_BackColor, $FFF0F0F0 )
    a_init(root( ), 0)
    
    ; 2DDrawing 
@@ -388,8 +404,9 @@ CompilerIf #PB_Compiler_IsMainFile
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 336
-; FirstLine = 332
-; Folding = -----
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 270
+; FirstLine = 258
+; Folding = ------
 ; EnableXP
+; DPIAware

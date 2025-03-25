@@ -112,14 +112,15 @@ Global ide_inspector_view_splitter,
 
 Global group_select
 Global group_drag
+
 Global enum_object = 0
 Global enum_image = 0
 Global enum_font = 0
+Global pb_object$ = "";"Gadget"
 
 
 Global font_properties = LoadFont( #PB_Any, "", 12 )
 
-Global pb_object$ = "";"Gadget"
 
 ; test_docursor = 1
 ; test_changecursor = 1
@@ -2791,8 +2792,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 114
+; CursorPosition = 201
+; FirstLine = 189
 ; Folding = --------------------------------------------------
 ; Optimizer
 ; EnableAsm
