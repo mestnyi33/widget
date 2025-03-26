@@ -1,4 +1,5 @@
-﻿Procedure WindowCallback(hWnd, uMsg, wParam, lParam) 
+﻿; https://www.purebasic.fr/english/viewtopic.php?t=86604
+Procedure WindowCallback(hWnd, uMsg, wParam, lParam) 
   Select uMsg 
     Case #WM_CLOSE 
       DestroyWindow_(hWnd) 
@@ -21,20 +22,20 @@ wc\lpfnWndProc  = @WindowCallback()
 wc\lpszClassName  = @WindowClass 
 RegisterClassEx_(@wc) 
 
-Define width.i = 320
-Define height.i = 240
+Define Width.i = 320
+Define Height.i = 240
 
-screenx = GetSystemMetrics_(#SM_CXSCREEN)/2-width/2
-screeny = GetSystemMetrics_(#SM_CYSCREEN)/2-height/2
+screenx = GetSystemMetrics_(#SM_CXSCREEN)/2-Width/2
+screeny = GetSystemMetrics_(#SM_CYSCREEN)/2-Height/2
 
-hWndMain  = CreateWindow_( WindowClass, "Test Window", #Style, screenx, screeny, width, height, 0, 0, 0, 0) 
+hWndMain  = CreateWindow_( WindowClass, "win api window", #Style, screenx, screeny, Width, Height, 0, 0, 0, 0) 
 
 
 While GetMessage_(msg.MSG, #Null, 0, 0 ) 
   TranslateMessage_(msg) 
   DispatchMessage_(msg) 
 Wend 
-; IDE Options = PureBasic 5.73 LTS (Windows - x86)
-; CursorPosition = 24
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 34
 ; Folding = -
 ; EnableXP

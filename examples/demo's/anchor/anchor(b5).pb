@@ -69,6 +69,8 @@ SetAttach( *Object3, *Object1, 1 ) ; Прикрепите object3 к object1, н
 ; Здесь вы также можете переключаться между различными кадрами с помощью маленьких ручек вверху слева и вверху справа.
 
 *Object4 = Panel(450, 50, 300, 300);, ""
+BarPosition( *Object4, 2, 40)
+
 SetColor(*Object4, #PB_Gadget_BackColor, RGBA(64, 128, 192, alpha))
 SetColor(*Object4, #__FrameColor, RGB(64, 128, 192))
 ;;SetColor(*Object4, #__FrameColor, RGBa(64, 128, 192, alpha))
@@ -299,9 +301,9 @@ DataSection
 	Data.q $61F86359FC0F019D,$AFF8C3495FE63029,$C804C013131FCCC2,$DF8800030087C035,$0000CBF81800AA70
 	Data.q $42AE444E45490000,$0000000000008260
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 85
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 58
 ; Folding = +
 ; EnableXP
 ; DPIAware

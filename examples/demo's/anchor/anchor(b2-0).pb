@@ -1,16 +1,17 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-
+UseWidgets( )
 Global alpha = 125
 Global *Object1,*Object2,*Object3,*Object4,*Object5
-UseWidgets( )
+
 
 ; ;- TEMP DPI
 ; Macro a_set( this, mode, size )
 ;   PB(a_set)( this, mode, DPIScaled(size) )
 ; EndMacro
 
+
 Procedure SetSelectionStyle( *this._s_widget, mode.i, color, size )
-  ;;*this\_a_set = mode  
+  ;;*this\_a_\mode = mode  
   SetFrame(*this, size)
   If color <> #SelectionStyle_None
     SetColor(*this, #__FrameColor, Color&$FFFFFF | 255<<24)
@@ -19,47 +20,57 @@ EndProcedure
 
 If Open(0, 0, 0, 800, 450, "Exemple 2: Multiple object, different handles, cursors and selection styles as well as event management", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;
-  Define *g = Container(0,0,0,0, #__flag_autosize)
-  a_init(*g, 8)
-  ;SetColor(*g, #pb_gadget_backcolor, RGBA(128, 192, 64, alpha))
-  ;SetColor(root( ), #pb_gadget_backcolor, RGBA(255, 255, 255, 255))
+  a_init(root( ), 8)
+  ;SetColor(root( ), #pb_gadget_backcolor, RGBA(128, 192, 64, alpha))
+  SetColor(root( ), #PB_Gadget_BackColor, RGBA(255, 255, 255, 255))
   
-  ; Create five different objects
-  *Object1 = a_object(20, 20, 200, 100, "", RGBA(64, 128, 192, alpha)) 
-  *Object2 = a_object(20, 140, 200, 100, "", RGBA(192, 64, 128, alpha))
-  *Object3 = a_object(20, 260, 200, 100, "", RGBA(128, 192, 64, alpha))
-  *Object4 = a_object(240, 20, 200, 100, "", RGBA(192, 128, 64, alpha))
-  *Object5 = a_object(240, 140, 200, 100, "", RGBA(128, 64, 192, alpha))
+  ;\\ Create five different objects
+  *Object1 = a_object(20, 20, 200, 100, " vertically", RGBA(64, 128, 192, alpha) );, 0, 1*5) 
+  *Object2 = a_object(20, 140, 200, 100, " horizontally" +#LF$+ " cursor = hand", RGBA(192, 64, 128, alpha) );, 0, 2*5)
+  *Object3 = a_object(20, 260, 200, 100, " vertically" +#LF$+ " & horizontally" +#LF$+ " cursor = cross", RGBA(128, 192, 64, alpha) );, 0, 3*5)
+  *Object4 = a_object(240, 20, 200, 100, " left-top &" +#LF$+ " left-bottom &" +#LF$+ " right-top &" +#LF$+ " right-bottom &", RGBA(192, 128, 64, alpha) );, 0, 4*5)
+  *Object5 = a_object(240, 140, 200, 100, " full", RGBA(128, 64, 192, alpha) );, 0, 5*5)
   
-  ; Define different handles to the objects
-  a_set(*Object1, #__a_width | #__a_position, 10)
-  a_set(*Object2, #__a_height | #__a_position, 10)
-  a_set(*Object3, #__a_edge | #__a_position, 10)
-  a_set(*Object4, #__a_corner | #__a_position, 10)
-  a_set(*Object5, #__a_full | #__a_position, 10)
+;   ;\\
+;   Define size = 1
+;   SetFrame(*Object1, size)
+;   SetFrame(*Object2, size)
+;   SetFrame(*Object3, size)
+;   SetFrame(*Object4, size)
+;   SetFrame(*Object5, size)
   
-  ; Define different cursors to the objects
+  ;\\ Define different handles to the objects
+  a_set(*Object1, #__a_height | #__a_position, 8)
+  a_set(*Object2, #__a_width | #__a_position, 8)
+  a_set(*Object3, #__a_edge | #__a_position, 8);
+  a_set(*Object4, #__a_corner | #__a_position, 8)
+  a_set(*Object5, #__a_size | #__a_position, 8)
+  ;a_set( root( ))
+  
+  ;\\ Define different cursors to the objects
   SetCursor(*Object2, #PB_Cursor_Hand)
   SetCursor(*Object3, #PB_Cursor_Cross)
+;   SetCursor(*Object4, #PB_Cursor_Busy)
+;   SetCursor(*Object5, #PB_Cursor_Denied)
   
-  ; ; Sets the selection frame style of the specified object.
-  SetSelectionStyle(*Object1, #SelectionStyle_None, #SelectionStyle_None, 13)
-  SetSelectionStyle(*Object2, #SelectionStyle_Dotted, RGBA(255, 0, 0, 255), 13)
-  SetSelectionStyle(*Object3, #SelectionStyle_Dashed, RGBA(0, 255, 0, 255), 13)
-  SetSelectionStyle(*Object4, #SelectionStyle_Solid, RGBA(192, 128, 64, 255), 13)
-  SetSelectionStyle(*Object5, #SelectionStyle_Solid, RGBA(128, 64, 192, 255), 13)
-  ; ; Object 5 has no selection defined (None).
-  ; 
-  ; ; Enables and customizes the mouse cursor selection to select objects on the canvas gadget,
-  ; ; by default no selection with cursor frame is possible.
-  ; SetCursorSelectionStyle(#Canvas, #SelectionStyle_Solid|#SelectionStyle_Partially, RGBA(0, 128, 255, 255), 3, RGBA(0, 128, 255, 50)) 
+  
+;   ;\\ Sets the selection frame style of the specified object.
+;   SetSelectionStyle(*Object1, #SelectionStyle_None, #SelectionStyle_None, 6)
+;   SetSelectionStyle(*Object2, #SelectionStyle_Dotted, RGBA(255, 0, 0, 255), 9)
+;   SetSelectionStyle(*Object3, #SelectionStyle_Dashed, RGBA(0, 255, 0, 255), 13)
+;   SetSelectionStyle(*Object4, #SelectionStyle_Solid, RGBA(192, 128, 64, 255), 17)
+;   ; Object 5 has no selection defined (None).
+;    
+;   ; ; Enables and customizes the mouse cursor selection to select objects on the canvas gadget,
+;   ; ; by default no selection with cursor frame is possible.
+;   ; SetCursorSelectionStyle(#Canvas, #SelectionStyle_Solid|#SelectionStyle_Partially, RGBA(0, 128, 255, 255), 3, RGBA(0, 128, 255, 50)) 
 
   ;
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15
-; FirstLine = 11
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 69
+; FirstLine = 30
 ; Folding = -
 ; EnableXP
 ; DPIAware
