@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
-   XIncludeFile "C:\Users\user\Documents\GitHub\widget\widgets.pbi"
+  XIncludeFile "../../../widgets.pbi"
 CompilerEndIf
 
 EnableExplicit
@@ -26,11 +26,11 @@ Global CUT_IMAGE = - 1
 Global PASTE_IMAGE = - 1
 
 Procedure Load_IMAGES( )
-   OPEN_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Open.png" )
-   SAVE_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Save.png" )
-   COPY_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Copy.png" )
-   CUT_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Cut.png" )
-   PASTE_IMAGE = LoadImage( #PB_Any, "C:/Program Files/PureBasic_620/examples/sources/Data/ToolBar/Paste.png" )
+   OPEN_IMAGE = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png" )
+   SAVE_IMAGE = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png" )
+   COPY_IMAGE = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png" )
+   CUT_IMAGE = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png" )
+   PASTE_IMAGE = LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png" )
    
    CompilerIf #PB_Compiler_DPIAware
       ResizeImage(OPEN_IMAGE, DesktopScaledX(ImageWidth(OPEN_IMAGE)), DesktopScaledY(ImageHeight(OPEN_IMAGE)), #PB_Image_Raw )
@@ -124,7 +124,7 @@ EndProcedure
 Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    Load_IMAGES( )
    
-   EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", flag | #PB_Window_WindowCentered, WindowID( GetCanvasWindow( root )) )
+   EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", flag | #PB_Window_WindowCentered | #PB_Window_Invisible, WindowID( GetCanvasWindow( root )) )
    SetBackgroundColor( EDITORIMAGES, $DCDCDC )
    SetClass( EDITORIMAGES, "EDITORIMAGES" )
    
@@ -160,6 +160,7 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    BUTTON_CANCEL = Button( 266, 203, 119, 22, "Отмена", #__image_Left )
    
    Bind( #PB_All, @Events_EDITORIMAGES( ))
+   HideWindow( GetCanvasWindow( EDITORIMAGES), #False )
    WaitQuit( EDITORIMAGES )
    
    ; ChangeCurrentCanvas( GadgetID( GetCanvasGadget( root )))
@@ -195,9 +196,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Free_Images( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 66
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 166
+; FirstLine = 146
 ; Folding = ----
 ; EnableXP
 ; DPIAware

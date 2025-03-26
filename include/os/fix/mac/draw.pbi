@@ -119,7 +119,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         ; ProcedureReturn PB(TextHeight)(Text.s)
         If *drawing
           If Not *drawing\size\height
-            *drawing\size\height = PB(TextHeight)("A")
+            *drawing\size\height = 20;PB(TextHeight)("A")
           EndIf
           ProcedureReturn *drawing\size\height
         EndIf
@@ -537,8 +537,8 @@ CompilerIf #PB_Compiler_IsMainFile
   BindEvent( #PB_Event_Gadget, @events_gadgets() )
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 411
-; FirstLine = 406
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 121
+; FirstLine = 112
 ; Folding = -------43-
 ; EnableXP

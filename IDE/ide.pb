@@ -230,8 +230,10 @@ Procedure RunPreview(SourceCode$)
          WriteStringN(hTempFile, SourceCode$)
          CloseFile(hTempFile)
          ;
-         PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension) + ".exe"
-         CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " /EXE " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /XP /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+         PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension) + ""
+         ;CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " /EXE " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /XP /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+         CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " -e " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+         
          If CompilPreview
             ; WaitProgram(CompilPreview)
             While ProgramRunning(CompilPreview)
@@ -243,7 +245,7 @@ Procedure RunPreview(SourceCode$)
             If ProgramExitCode(CompilPreview)
                KillProgram(CompilPreview)
                CloseProgram(CompilPreview)
-               MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe " + GetFilePart(TempFileName$) + " /EXE " + GetFilePart(PreviewProgramName$) + #CRLF$+#CRLF$+ CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+               MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler " + GetFilePart(TempFileName$) + " -e " + GetFilePart(PreviewProgramName$) + #CRLF$+#CRLF$+ CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
             Else
                KillProgram(CompilPreview)
                CloseProgram(CompilPreview)
@@ -251,11 +253,11 @@ Procedure RunPreview(SourceCode$)
                   DeleteFile(TempFileName$)
                   PreviewRunning = RunProgram(PreviewProgramName$, "", "", #PB_Program_Open)
                Else
-                  MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe " + GetFilePart(TempFileName$) + " /EXE " + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+                  MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler " + GetFilePart(TempFileName$) + " -e " + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
                EndIf
             EndIf
          Else
-            MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler.exe " + GetFilePart(TempFileName$) + " /EXE " + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+            MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler " + GetFilePart(TempFileName$) + " -e " + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
          EndIf
       EndIf
    Else
@@ -2791,12 +2793,12 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 201
-; FirstLine = 189
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 232
+; FirstLine = 228
 ; Folding = --------------------------------------------------
-; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe
+; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
+; Optimizer
