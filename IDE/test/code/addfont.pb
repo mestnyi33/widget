@@ -1,6 +1,6 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
-   XIncludeFile "../../ide.pb"
-   XIncludeFile "../../code.pbi"
+   XIncludeFile "../../../widgets.pbi"
+   UseWidgets( )
 CompilerEndIf
 
 DisableExplicit
@@ -31,8 +31,8 @@ EndIf
 CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -205,7 +205,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             
             ;If Text
-            *row\text\TextChange( ) = 1
+            *row\TextChange( ) = 1
             *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
                                       ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
                                       ;EndIf
@@ -349,9 +349,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 223
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 207
+; FirstLine = 203
 ; Folding = -------
 ; EnableXP
 ; DPIAware

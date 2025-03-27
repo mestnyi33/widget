@@ -45,15 +45,18 @@ Module AnchorBox
                   
                   If widget::GetState(*this)
                      widget::Hide(a, #False )
+                     ;   
+                     Define Y = widget::Y(*this)
+                     Debug ""+*this\class +" "+ widget::Y(*this)+" "+Y
                      
-                     If widget::GetParent( a ) = widget::GetParent( *this )
-                        widget::Resize(a, widget::X(*this,constants::#__c_container), widget::Y(*this,constants::#__c_container)+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
-                     Else
-                        Debug ""+widget::X(*this) +" "+ widget::Y(*this)
-                        
-                        widget::Resize(a, widget::X(*this), widget::Height(*this), widget::Width(*this), widget::Width(*this) )
-                        ; widget::Resize(a, widget::X(*this), widget::Y(*this)+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
-                     EndIf
+;                      If widget::GetParent( a ) = widget::GetParent( *this )
+;                         widget::Resize(a, widget::X(*this,constants::#__c_container), widget::Y(*this,constants::#__c_container)+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+;                      Else
+;                         Debug ""+widget::X(*this) +" "+ widget::Y(*this)
+;                         
+;                         widget::Resize(a, widget::X(*this), widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+                        widget::Resize(a, widget::X(*this), Y+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+;                      EndIf
                   Else
                      widget::Hide(a, #True )
                   EndIf
@@ -256,13 +259,8 @@ Module AnchorBox
          widget::OpenList( *parent )
       EndIf
       *Button = widget::Button(X,Y,Width, Height, "LEFT&TOP",flag|#PB_Button_Toggle)
-      If *parent
-         widget::CloseList( )
-         ; widget::OpenList( widget::root( ) )
-      EndIf
-      
       *a = widget::Container(0,0,size*8,size*8, flag) 
-      
+      widget::SetBackgroundColor( *a, $A3E9ED )
       ;
       LBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
       LTBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
@@ -276,16 +274,17 @@ Module AnchorBox
       LBBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
       CENTER = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
       
+      Define pos = - radius
       ;
-      widget::SetAlign( LBUTTON, constants::#__align_auto, 1,0,0,0)
-      widget::SetAlign( TBUTTON, constants::#__align_auto, 0,1,0,0)
-      widget::SetAlign( RBUTTON, constants::#__align_auto, 0,0,1,0)
-      widget::SetAlign( BBUTTON, constants::#__align_auto, 0,0,0,1)
+      widget::SetAlign( LBUTTON, constants::#__align_auto, pos,0,0,0)
+      widget::SetAlign( TBUTTON, constants::#__align_auto, 0,pos,0,0)
+      widget::SetAlign( RBUTTON, constants::#__align_auto, 0,0,pos,0)
+      widget::SetAlign( BBUTTON, constants::#__align_auto, 0,0,0,pos)
       widget::SetAlign( CENTER, constants::#__align_center, 0,0,0,0)
-      widget::SetAlign( LTBUTTON, constants::#__align_auto, 1,1,0,0)
-      widget::SetAlign( RTBUTTON, constants::#__align_auto, 0,1,1,0)
-      widget::SetAlign( RBBUTTON, constants::#__align_auto, 0,0,1,1)
-      widget::SetAlign( LBBUTTON, constants::#__align_auto, 1,0,0,1)
+      widget::SetAlign( LTBUTTON, constants::#__align_auto, pos,pos,0,0)
+      widget::SetAlign( RTBUTTON, constants::#__align_auto, 0,pos,pos,0)
+      widget::SetAlign( RBBUTTON, constants::#__align_auto, 0,0,pos,pos)
+      widget::SetAlign( LBBUTTON, constants::#__align_auto, pos,0,0,pos)
       
       ;widget::SetState( TBUTTON,1 )
       widget::SetState( LTBUTTON,1 )
@@ -336,6 +335,11 @@ Module AnchorBox
       ;
       widget::Hide(*a, #True )
       widget::SetData(*a, *Button)
+      If *parent
+         widget::CloseList( )
+         ; widget::OpenList( widget::root( ) )
+      EndIf
+      
       ;
       ProcedureReturn *button
    EndProcedure
@@ -346,7 +350,8 @@ CompilerIf #PB_Compiler_IsMainFile
    If widget::Open( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
       ; widget::a_init(widget::root())
       
-      widget::Container(50,50,300,200)
+     ; widget::Container(50,50,300,200)
+      widget::Tree(50,50,300,200)
       AnchorBox::Create(widget::widget( ), 30,30,250,30)
       
    EndIf
@@ -354,8 +359,8 @@ CompilerIf #PB_Compiler_IsMainFile
    widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 354
-; FirstLine = 313
+; CursorPosition = 276
+; FirstLine = 249
 ; Folding = --------
 ; EnableXP
 ; DPIAware

@@ -230,9 +230,9 @@ Procedure RunPreview(SourceCode$)
          WriteStringN(hTempFile, SourceCode$)
          CloseFile(hTempFile)
          ;
-         PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension) + ""
-         ;CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " /EXE " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /XP /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
-         CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " -e " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+         PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension) + ".exe"
+         CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " /EXE " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /XP /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
+         ;CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " -e " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
          
          If CompilPreview
             ; WaitProgram(CompilPreview)
@@ -867,6 +867,11 @@ Procedure   Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
    ProcedureReturn SetItemText( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, Text.s )
 EndProcedure
 
+Procedure   Properties_HideItem( *splitter._s_WIDGET, item, state )
+   HideItem( GetAttribute(*splitter, #PB_Splitter_FirstGadget), item, state )
+   HideItem( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, state )
+EndProcedure
+
 Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
    Protected *this._s_WIDGET
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
@@ -1032,6 +1037,15 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    ; class$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
    
    If ide_inspector_properties
+      If type$ = "Focus" Or type$ = "Align"
+         If a_focused( )\parent = ide_design_panel_MDI
+            Properties_HideItem( ide_inspector_properties, #_pi_align, #True ) 
+         Else
+            Properties_HideItem( ide_inspector_properties, #_pi_align, #False ) 
+         EndIf
+         
+         ; Properties_SetItemText( ide_inspector_properties, #_pi_align, )
+      EndIf
       If type$ = "Focus" Or type$ = "ID"
          Properties_SetItemText( ide_inspector_properties, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
       EndIf
@@ -2793,12 +2807,12 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 232
-; FirstLine = 228
-; Folding = --------------------------------------------------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 868
+; FirstLine = 855
+; Folding = ---------------4----------------------------------
+; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
-; Optimizer
+; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe

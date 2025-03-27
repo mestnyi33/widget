@@ -7215,11 +7215,29 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure.b HideItem( *this._s_widget, item.l, state.b )
-         If *this\type = #__type_panel
-            If *this\tab
-               SelectElement( *this\tabbar\__tabs( ), item )
-               *this\tabbar\__tabs( )\hide = state
+         If *this\tabbar
+            SelectElement( *this\tabbar\__tabs( ), item )
+            *this\tabbar\__tabs( )\hide = state
+         EndIf
+         If *this\row
+            Protected *row._s_ROWS
+            SelectElement( *this\__rows( ), item )
+            *this\__rows( )\hide = state
+            *row = *this\__rows( )
+            ;
+            If *this\__rows( )\childrens
+               PushListPosition( *this\__rows( ))
+               While NextElement( *this\__rows( ))
+                  If *this\__rows( )\sublevel =< *row\sublevel
+                     Break
+                  EndIf
+                  If *this\__rows( )\RowParent( )
+                     *this\__rows( )\hide = Bool( *this\__rows( )\RowParent( )\buttonbox\checked | *this\__rows( )\RowParent( )\hide )
+                  EndIf
+               Wend
+               PopListPosition( *this\__rows( ))
             EndIf
+            *this\WidgetChange( ) = 1
          EndIf
       EndProcedure
       
@@ -7869,7 +7887,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If X = #PB_Ignore
                X = *this\container_x( )
-            ElseIf *this\parent And *this\parent\container
+            ElseIf *this\parent 
                If Not *this\child
                   X + *this\parent\scroll_x( )
                EndIf
@@ -7877,7 +7895,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             If Y = #PB_Ignore
                Y = *this\container_y( )
-            ElseIf *this\parent And *this\parent\container
+            ElseIf *this\parent 
                If Not *this\child
                   Y + *this\parent\scroll_y( )
                EndIf
@@ -17827,7 +17845,6 @@ chr$ = ","
          If Not *this\hide
             ;\\
             If *this\WidgetChange( ) Or *this\ResizeChange( )
-               ;
                Update_DrawRows( *this, *this\__rows( ), *this\WidgetChange( ) )
                
                bar_area_update( *this )
@@ -25619,10 +25636,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 24409
-; FirstLine = 24383
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 7227
+; FirstLine = 7223
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---4+---------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
